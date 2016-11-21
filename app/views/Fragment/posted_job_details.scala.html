@@ -1,11 +1,12 @@
-@(jobRoleCompanyName:String,jobRoleName:String)
+@(jobRoleCompanyName: String, jobRoleName: String)
 <html>
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Trujobs - Apply for @jobRoleName.split('_').map(_.capitalize).mkString(" ") Job at @jobRoleCompanyName.split('_').map(_.capitalize).mkString(" ")</title>
+        <title>
+            Trujobs - Apply for @jobRoleName.split('_').map(_.capitalize).mkString(" ") Job at @jobRoleCompanyName.split('_').map(_.capitalize).mkString(" ")</title>
 
         <meta name="keywords" content="driving jobs, fresher jobs, jobs for freshers, job search sites, job posting, sales jobs, beautician jobs,
                 medical transcription jobs, online job search, find jobs, receptionist jobs, admin jobs, office assistant jobs,
@@ -14,58 +15,58 @@
                 receptionist jobs, beautician jobs, experienced jobs, jobs in Bangalore, cashier jobs, entry level jobs,
                 plumber jobs, electrician jobs, job search, accountant jobs, job vacancy, bangalore vacancy">
 
-        <meta name="description" content="Search and apply for jobs online.Apply for @jobRoleName.split('_').map(_.capitalize).mkString(" ") Job at @jobRoleCompanyName.split('_').map(_.capitalize).mkString(" "). Give a missed call at 8880007799 for best jobs." />
+        <meta name="description" content="Search and apply for jobs online.Apply for @jobRoleName.split('_').map(_.capitalize).mkString(" ") Job at @jobRoleCompanyName.split('_').map(_.capitalize).mkString(" "). Give a missed call at 8880007799 for best jobs.">
         <meta http-equiv="Cache-control" content="public">
         <meta name="theme-color" content="#286ab6">
-        <!-- Bootstrap Core CSS -->
-        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
-        <link rel="stylesheet" type="text/css" href="/assets/common/css/myJobPost.css">
-        <link rel="stylesheet" type="text/css" href="/assets/common/css/pre_screen_candidate.css">
+            <!-- Bootstrap Core CSS -->
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css"/>
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css"/>
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/myJobPost.css"/>
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/pre_screen_candidate.css"/>
         <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
         <link rel="stylesheet" href="/assets/support/css/bootstrap-multiselect.css" type="text/css" />
-
 
         <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
         @*<script type="text/javascript" src="/assets/common/js/jquery.min_1_12_0.js"></script>*@
         <script type="text/javascript" src="/assets/support/js/jquery-ui.js"></script>
 
         <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
         <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
 
         <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
         <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+        <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
+
 
         <script>
-            $('html, body').css({
-                'overflow': 'hidden',
-                'height': '100%'
-            });
+                $('html, body').css({
+                    'overflow': 'hidden',
+                    'height': '100%'
+                });
         </script>
         <style>
-            .nav > li > a:hover{
-                background-color: #12449a;
-            }
+        .nav > li > a:hover {
+            background-color: #12449a;
+        }
         </style>
     </head>
     <body>
-    <div id="preloader">
-        <div id="loaderLogo">
-            <img id="leaderLogo" src="/assets/common/img/logo-color.gif" alt="TruJobs Logo" height="40px">
+        <div id="preloader">
+            <div id="loaderLogo">
+                <img id="leaderLogo" src="/assets/common/img/logo-color.gif" alt="TruJobs Logo" height="40px">
+            </div>
+            <div id="status">&nbsp;</div>
         </div>
-        <div id="status">&nbsp;</div>
-    </div>
 
-    <!-- Nav start -->
-    <div id="nav_bar_inc"></div>
+            <!-- Nav start -->
+        <div id="nav_bar_inc"></div>
         <script>
                 function processDataCheckNavBar(returnedData) {
-                    if(returnedData == '1'){
+                    if (returnedData == '1') {
                         $('#nav_bar_inc').load('/navBarLoggedIn');
                         $(".jobApplyBtnV2").show();
                         $("#incentiveSection").hide();
-                    } else if(returnedData == '2'){
+                    } else if (returnedData == '2') {
                         $('#nav_bar_inc').load('/partnerNavBarLoggedIn');
                         $(".jobApplyBtnV2").hide();
                         $("#incentiveSection").show();
@@ -75,7 +76,7 @@
                     }
                 }
 
-                $(document).ready(function(){
+                $(document).ready(function () {
                     try {
                         $.ajax({
                             type: "GET",
@@ -91,308 +92,378 @@
                 });
         </script>
 
-    <div class="container">
-        <div id="fixed-menu-shadow" style="padding-bottom: 0px; padding-top: 8px; display: none" ></div>
-    </div>
+        <div class="container">
+            <div id="fixed-menu-shadow" style="padding-bottom: 0px;
+                padding-top: 8px;
+                display: none" ></div>
+        </div>
 
-    <div class="modal fade" id="preScreenModal" role="dialog" aria-labelledby="preScreenModal">
-        <div class="modal-dialog" role="document" id="preScreenModalBody">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="">You are applying for <b><div style="display: inline-block" id="jobNameConfirmation"></div></b> job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>.</h4>
-                </div>
-                <div class="modal-body">
-                    <div id="missingInfo">
-
+        <div class="modal fade" id="preScreenModal" role="dialog" aria-labelledby="preScreenModal">
+            <div class="modal-dialog" role="document" id="preScreenModalBody">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="">
+                            You are applying for <b><div style="display: inline-block" id="jobNameConfirmation"></div></b>
+                            job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>.</h4>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" id="preScreenInterviewSetBtn" class="btn btn-primary disabled">Apply</button>
+                    <div class="modal-body">
+                        <div id="missingInfo">
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="preScreenInterviewSetBtn" class="btn btn-primary">Apply</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- confirm job modal -->
-    <div class="modal fade" id="jobApplyConfirm" tabindex="-1" role="dialog" aria-labelledby="jobApplyConfirm">
-        <div class="modal-dialog" role="document" id="customModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Job Application Confirmation</h4>
+            <!-- confirm job modal -->
+        <div class="modal fade" id="jobApplyConfirm" tabindex="-1" role="dialog" aria-labelledby="jobApplyConfirm">
+            <div class="modal-dialog" role="document" id="customModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Job Application Confirmation</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="confirmationMsg">
+                            <center>
+                                <img src="/assets/common/img/jobApply.png" width="48px">
+                            </center>
+                            <center>
+                                <h5>You are applying for <b><div style="display: inline-block" id="jobNameConfirmation"></div></b>
+                                    job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>
+                                    .</h5>
+                                <h5>Please select the location where you can work:</h5>
+                                <select id="jobLocality" class="selectDropdown"></select>
+                                <button type="submit" onclick="confirmApply()" id="applyButton" class="jobApplyBtnModal" style="display: none;
+                                    margin: 6px">Apply</button>
+                            </center>
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <div id="confirmationMsg">
+            </div>
+        </div>
+
+            <!-- custom message modal -->
+        <div class="modal fade" id="messagePromptModal" tabindex="-1" role="dialog" aria-labelledby="messagePromptModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">TruJobs</h4>
+                    </div>
+                    <div class="modal-body">
                         <center>
-                            <img src="/assets/common/img/jobApply.png" width="48px">
-                        </center>
-                        <center>
-                            <h5>You are applying for <b><div style="display: inline-block" id="jobNameConfirmation"></div></b> job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>.</h5>
-                            <h5>Please select the location where you can work:</h5>
-                            <select id="jobLocality" class="selectDropdown"></select>
-                            <button type="submit" onclick="confirmApply()" id="applyButton" class="jobApplyBtnModal" style="display : none; margin: 6px">Apply</button>
+                            <img id="customMsgIcon" width="48px">
+                            <div id="customMsg" style="padding: 16px"></div>
+                            <div id="customSubMsg" style="padding: 16px"></div>
                         </center>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- custom message modal -->
-    <div class="modal fade" id="messagePromptModal" tabindex="-1" role="dialog" aria-labelledby="messagePromptModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">TruJobs</h4>
+        <div class="container">
+                <!--Details for hot jobs-->
+            <div class="posted_job_details_container">
+                <div id="aboutCompanyTitle">Job Description</div>
+                <br>
+                <div id="incentiveSection">
+                    <div style="display: inline-block;">
+                        <img src="/assets/partner/img/money-bag.png" style="margin-top: -4px">
+                        <h5 id="interviewIncentiveVal" style="display: inline-block;
+                            font-weight: 600"></h5>
+                    </div>
+                    <div style="display: inline-block;" class="joiningIncentiveDiv">
+                        <img src="/assets/partner/img/money-bag.png" style="margin-top: -4px">
+                        <h5 id="joiningIncentiveVal" style="display: inline-block;
+                            font-weight: 600"></h5>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <center>
-                        <img id="customMsgIcon" width="48px">
-                        <div id="customMsg" style="padding: 16px"></div>
-                        <div id="customSubMsg" style="padding: 16px"></div>
-                    </center>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div class="container">
-            <!--Details for hot jobs-->
-        <div class="posted_job_details_container">
-            <div id="aboutCompanyTitle">Job Description</div>
-            <br>
-            <div id="incentiveSection">
-                <div style="display: inline-block;">
-                    <img src="/assets/partner/img/money-bag.png" style="margin-top: -4px">
-                    <h5 id="interviewIncentiveVal" style="display: inline-block; font-weight: 600"></h5>
-                </div>
-                <div style="display: inline-block;" class="joiningIncentiveDiv">
-                    <img src="/assets/partner/img/money-bag.png" style="margin-top: -4px">
-                    <h5 id="joiningIncentiveVal" style="display: inline-block; font-weight: 600"></h5>
-                </div>
-            </div>
-
-            <!--Job Details to display-->
-            <div class="posted_job_details_center">
-                <div class="row" style="padding:1% 3%;margin:1% 0% 1% 0%">
-                    <div class="col-sm-2" id="companyLogo" style="padding: 0%">
-                        <div style="display: inline-block;margin-left: auto">
-                            <img id="postedJobCompanyLogo" style="display: inline-block">
-                        </div>
-                    </div>
-                    <div class="col-sm-8" id="jobTitleHead">
-                        <div style="display: inline-block;">
-                            <h1 id="postedJobTitle" style="display: inline-block">Company</h1>
-                        </div>
-                    </div>
-                    <div class="col-sm-2" id="jobApplyBtnId">
-                        <div style="display: inline-block;">
-                            <button class="jobApplyBtnV2" style="float:right" onclick="applyJobBtnAction()">Apply</button>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-2">
-                        <p id="categoriesName">Job Details</p>
-                    </div>
-                    <div class="col-sm-10">
-                        <hr>
-                    </div>
-                </div>
-                <div class="workDetails" style="margin: 1% 0% 2% 0%">
-                    <div class="row" style="padding: 0% 3% 0% 3%">
-                        <div class="col-sm-6">
-                            <div style="display : inline-block; margin: 4px;">
-                                <img src="/assets/common/img/details/buildings.svg" height="24px;" style="margin-top: -4px">
+                    <!--Job Details to display-->
+                <div class="posted_job_details_center">
+                    <div class="row" style="padding: 1% 3%;
+                        margin: 1% 0% 1% 0%">
+                        <div class="col-sm-2" id="companyLogo" style="padding: 0%">
+                            <div style="display: inline-block;
+                                margin-left: auto">
+                                <img id="postedJobCompanyLogo" style="display: inline-block">
                             </div>
+                        </div>
+                        <div class="col-sm-8" id="jobTitleHead">
                             <div style="display: inline-block;">
-                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Job Localities</div>
-                                <div id="postedJobLocality" style="margin-left: 4px; display: inline-block">Not Specified</div>
+                                <h1 id="postedJobTitle" style="display: inline-block">Company</h1>
                             </div>
                         </div>
-                        <div class="col-sm-6" style="margin-bottom: 4px">
-                            <div style="display : inline-block; margin: 4px;">
-                                <img src="/assets/common/img/details/rupee.svg" height="24px;" style="margin-top: -4px">
-                            </div>
-                            <div style="display: inline-block; margin-top: 4px">
-                                <div id="salaryCondition" style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Salary</div>
-                                <div id="postedJobSalary" style="margin-left: 4px; display: inline-block">Not Specified</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row" style="padding: 0% 3% 0% 3%">
-                        <div class="col-sm-6">
-                            <div style="display : inline-block; margin: 4px;">
-                                <img src="/assets/common/img/details/coins.svg" height="24px;" style="margin-top: -4px">
-                            </div>
-                            <div style="display: inline-block; margin-top: 4px">
-                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Incentives</div>
-                                <div id="postedJobIncentives" style="margin: 4px; display: inline-block">Not Specified</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-2">
-                        <p id="categoriesName">Working Hours</p>
-                    </div>
-                    <div class="col-sm-10">
-                        <hr>
-                    </div>
-                </div>
-                <div class="workinghours" style="margin: 1% 0% 2% 0%">
-                    <div class="row" style="padding: 0% 3% 0% 3%">
-                        <div class="col-sm-6">
-                            <div style="display : inline-block; margin: 4px;">
-                                <img src="/assets/common/img/details/time-passing.svg" height="24px;" style="margin-top: -4px">
-                            </div>
+                        <div class="col-sm-2" id="jobApplyBtnId">
                             <div style="display: inline-block;">
-                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Work Shift</div>
-                                <div id="postedJobShift" style="margin-left: 4px; display: inline-block">Not Specified</div>
-                            </div>
-                        </div>
-
-                        <div class="col-sm-6" style="margin-bottom: 4px">
-                            <div style="display : inline-block; margin: 4px;">
-                                <img src="/assets/common/img/details/calendar.svg" height="24px;" style="margin-top: -4px">
-                            </div>
-                            <div style="display: inline-block; margin-top: 4px">
-                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Holidays</div>
-                                <div id="postedJobWorkingDays" style="margin-left: 4px; display: inline-block">Not Specified</div>
+                                <button class="jobApplyBtnV2" style="float: right" onclick="applyJobBtnAction()">Apply</button>
                             </div>
                         </div>
                     </div>
-                    <div class="row" style="padding: 0% 3% 0% 3%">
-                        <div class="col-sm-6">
-                            <div style="display : inline-block; margin: 4px;">
-                                <img src="/assets/common/img/details/clock.svg" height="24px;" style="margin-top: -4px">
-                            </div>
-                            <div style="display: inline-block; margin-top: 4px">
-                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Working Timings</div>
-                                <div id="postedJobTiming" style="margin: 4px; display: inline-block">Not Specified</div>
-                            </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <p id="categoriesName">Job Details</p>
                         </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-2">
-                        <p id="categoriesName">Requirements</p>
-                    </div>
-                    <div class="col-sm-10">
-                        <hr>
-                    </div>
-                </div>
-                <div class="workDetails" style="margin: 1% 0% 2% 0%">
-                    <div class="row" style="padding: 0% 3% 0% 3%">
-                        <div class="col-sm-6">
-                            <div style="display : inline-block; margin: 4px;">
-                                <img src="/assets/common/img/details/quality.svg" height="24px;" style="margin-top: -4px">
-                            </div>
-                            <div style="display: inline-block;">
-                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Experience</div>
-                                <div id="postedJobExperience" style="margin-left: 4px; display: inline-block">Not Specified</div>
-                            </div>
-                        </div>
-
-                        <div class="col-sm-6" style="margin-bottom: 4px">
-                            <div style="display : inline-block; margin: 4px;">
-                                <img src="/assets/common/img/details/science-book.svg" height="24px;" style="margin-top: -4px">
-                            </div>
-                            <div style="display: inline-block; margin-top: 4px">
-                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Education</div>
-                                <div id="postedJobEducation" style="margin-left: 4px; display: inline-block">Not Specified</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row" style="padding:0% 3% 0% 3%">
-                        <div class="col-sm-8">
-                            <div style="display : inline-block; margin: 4px;">
-                                <img src="/assets/common/img/details/list.svg" height="24px;" style="margin-top: -4px">
-                            </div>
-                            <div style="display: inline-block; margin-top: 4px">
-                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Mandatory Requirements</div>
-                                <div id="postedJobMinRequirement" style="margin: 4px; display: inline-block">Not Specified</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-2">
-                        <p id="categoriesName">Job Description</p>
-                    </div>
-                    <div class="col-sm-10">
-                        <hr>
-                    </div>
-                </div>
-                <div class="row" style=" padding:0% 3% 0% 3%">
-                    <div class="col-sm-12">
-                        <div style="display: inline-block; margin-top: 4px">
-                            <div id="postedJobDescription" style="margin: 4px 4px 4px 12px; display: inline-block;">Not Specified</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="aboutCompanyTitle">About Company</div>
-            <!--Company for posted jobs-->
-        <div class="posted_jobs_company_details">
-                <!--Company Details to display-->
-            <div class="posted_jobs_company_center_box">
-                <div class="row" style="padding:1% 3%;margin:0% 0% 1% 0%">
-                    <div class="col-sm-3" id="companyLogoCompanyDetails">
-                        <div style="display:inline-block;">
-                            <img id="postedCompanyLogo" src="">
-                        </div>
-                    </div>
-                    <div class="col-sm-9">
-                        <div class="row">
-                            <div class="companyTitleHead" id="postedCompanyTitle">Company Title</div>
+                        <div class="col-sm-10">
                             <hr>
-                            <div class="row" style="padding: 1% 0% 0% 0%">
-                                <div class="col-sm-4">
-                                    <div style="display : inline-block; margin: 4px;">
-                                        <img src="/assets/common/img/details/buildings.svg" height="24px;" style="margin-top: -4px">
-                                    </div>
-                                    <div style="display: inline-block;">
-                                        <div style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Company Location</div>
-                                        <div id="postedJobCompanyLocation" style="margin-left: 4px; display: inline-block">Not Specified</div>
-                                    </div>
+                        </div>
+                    </div>
+                    <div class="workDetails" style="margin: 1% 0% 2% 0%">
+                        <div class="row" style="padding: 0% 3% 0% 3%">
+                            <div class="col-sm-6">
+                                <div style="display: inline-block;
+                                    margin: 4px;">
+                                    <img src="/assets/common/img/details/buildings.svg" height="24px;" style="margin-top: -4px">
                                 </div>
-                                <div class="col-sm-4">
-                                    <div style="display : inline-block; margin: 4px;">
-                                        <img src="/assets/common/img/details/group.svg" height="24px;" style="margin-top: -4px">
-                                    </div>
-                                    <div style="display: inline-block;">
-                                        <div style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Company Type</div>
-                                        <div id="postedJobCompanyType" style="margin-left: 4px; display: inline-block">Not Specified</div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-4">
-                                    <div style="display : inline-block; margin: 4px;">
-                                        <img src="/assets/common/img/details/internet.svg" height="24px;" style="margin-top: -4px">
-                                    </div>
-                                    <div style="display: inline-block;">
-                                        <div style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Website</div>
-                                        <div id="postedJobCompanyWebsite" style="margin-left: 4px; display: inline-block">Not Specified</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row" style="padding: 2% 0% 0% 0%">
-                                <div class="col-sm-2">
-                                    <p id="categoriesNameDes">Description</p>
-                                </div>
-                                <div class="col-sm-10">
-                                    <hr>
-                                </div>
-                            </div>
-                            <div id="postedJobCompanyDescriotion" style="padding:0% 1%">Not Specified</div>
-
-                            <div id="jobApplyBtnId" style="text-align: right">
                                 <div style="display: inline-block;">
-                                    <button class="jobApplyBtnV2" style="float:right" onclick="applyJobBtnAction()">Apply</button>
+                                    <div style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 12px">Job Localities</div>
+                                    <div id="postedJobLocality" style="margin-left: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6" style="margin-bottom: 4px">
+                                <div style="display: inline-block;
+                                    margin: 4px;">
+                                    <img src="/assets/common/img/details/rupee.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block;
+                                    margin-top: 4px">
+                                    <div id="salaryCondition" style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 12px">Salary</div>
+                                    <div id="postedJobSalary" style="margin-left: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="padding: 0% 3% 0% 3%">
+                            <div class="col-sm-6">
+                                <div style="display: inline-block;
+                                    margin: 4px;">
+                                    <img src="/assets/common/img/details/coins.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block;
+                                    margin-top: 4px">
+                                    <div style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 12px">Incentives</div>
+                                    <div id="postedJobIncentives" style="margin: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <p id="categoriesName">Working Hours</p>
+                        </div>
+                        <div class="col-sm-10">
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="workinghours" style="margin: 1% 0% 2% 0%">
+                        <div class="row" style="padding: 0% 3% 0% 3%">
+                            <div class="col-sm-6">
+                                <div style="display: inline-block;
+                                    margin: 4px;">
+                                    <img src="/assets/common/img/details/time-passing.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block;">
+                                    <div style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 12px">Work Shift</div>
+                                    <div id="postedJobShift" style="margin-left: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6" style="margin-bottom: 4px">
+                                <div style="display: inline-block;
+                                    margin: 4px;">
+                                    <img src="/assets/common/img/details/calendar.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block;
+                                    margin-top: 4px">
+                                    <div style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 12px">Holidays</div>
+                                    <div id="postedJobWorkingDays" style="margin-left: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="padding: 0% 3% 0% 3%">
+                            <div class="col-sm-6">
+                                <div style="display: inline-block;
+                                    margin: 4px;">
+                                    <img src="/assets/common/img/details/clock.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block;
+                                    margin-top: 4px">
+                                    <div style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 12px">Working Timings</div>
+                                    <div id="postedJobTiming" style="margin: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <p id="categoriesName">Requirements</p>
+                        </div>
+                        <div class="col-sm-10">
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="workDetails" style="margin: 1% 0% 2% 0%">
+                        <div class="row" style="padding: 0% 3% 0% 3%">
+                            <div class="col-sm-6">
+                                <div style="display: inline-block;
+                                    margin: 4px;">
+                                    <img src="/assets/common/img/details/quality.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block;">
+                                    <div style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 12px">Experience</div>
+                                    <div id="postedJobExperience" style="margin-left: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6" style="margin-bottom: 4px">
+                                <div style="display: inline-block;
+                                    margin: 4px;">
+                                    <img src="/assets/common/img/details/science-book.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block;
+                                    margin-top: 4px">
+                                    <div style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 12px">Education</div>
+                                    <div id="postedJobEducation" style="margin-left: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="padding: 0% 3% 0% 3%">
+                            <div class="col-sm-8">
+                                <div style="display: inline-block;
+                                    margin: 4px;">
+                                    <img src="/assets/common/img/details/list.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block;
+                                    margin-top: 4px">
+                                    <div style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 12px">Mandatory Requirements</div>
+                                    <div id="postedJobMinRequirement" style="margin: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <p id="categoriesName">Job Description</p>
+                        </div>
+                        <div class="col-sm-10">
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="row" style=" padding: 0% 3% 0% 3%">
+                        <div class="col-sm-12">
+                            <div style="display: inline-block;
+                                margin-top: 4px">
+                                <div id="postedJobDescription" style="margin: 4px 4px 4px 12px;
+                                    display: inline-block;">Not Specified</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="aboutCompanyTitle">About Company</div>
+                <!--Company for posted jobs-->
+            <div class="posted_jobs_company_details">
+                    <!--Company Details to display-->
+                <div class="posted_jobs_company_center_box">
+                    <div class="row" style="padding: 1% 3%;
+                        margin: 0% 0% 1% 0%">
+                        <div class="col-sm-3" id="companyLogoCompanyDetails">
+                            <div style="display: inline-block;">
+                                <img id="postedCompanyLogo" src="">
+                            </div>
+                        </div>
+                        <div class="col-sm-9">
+                            <div class="row">
+                                <div class="companyTitleHead" id="postedCompanyTitle">Company Title</div>
+                                <hr>
+                                <div class="row" style="padding: 1% 0% 0% 0%">
+                                    <div class="col-sm-4">
+                                        <div style="display: inline-block;
+                                            margin: 4px;">
+                                            <img src="/assets/common/img/details/buildings.svg" height="24px;" style="margin-top: -4px">
+                                        </div>
+                                        <div style="display: inline-block;">
+                                            <div style="margin-left: 4px;
+                                                color: #9f9f9f;
+                                                font-size: 12px">Company Location</div>
+                                            <div id="postedJobCompanyLocation" style="margin-left: 4px;
+                                                display: inline-block">Not Specified</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div style="display: inline-block;
+                                            margin: 4px;">
+                                            <img src="/assets/common/img/details/group.svg" height="24px;" style="margin-top: -4px">
+                                        </div>
+                                        <div style="display: inline-block;">
+                                            <div style="margin-left: 4px;
+                                                color: #9f9f9f;
+                                                font-size: 12px">Company Type</div>
+                                            <div id="postedJobCompanyType" style="margin-left: 4px;
+                                                display: inline-block">Not Specified</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <div style="display: inline-block;
+                                            margin: 4px;">
+                                            <img src="/assets/common/img/details/internet.svg" height="24px;" style="margin-top: -4px">
+                                        </div>
+                                        <div style="display: inline-block;">
+                                            <div style="margin-left: 4px;
+                                                color: #9f9f9f;
+                                                font-size: 12px">Website</div>
+                                            <div id="postedJobCompanyWebsite" style="margin-left: 4px;
+                                                display: inline-block">Not Specified</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="padding: 2% 0% 0% 0%">
+                                    <div class="col-sm-2">
+                                        <p id="categoriesNameDes">Description</p>
+                                    </div>
+                                    <div class="col-sm-10">
+                                        <hr>
+                                    </div>
+                                </div>
+                                <div id="postedJobCompanyDescriotion" style="padding: 0% 1%">Not Specified</div>
+
+                                <div id="jobApplyBtnId" style="text-align: right">
+                                    <div style="display: inline-block;">
+                                        <button class="jobApplyBtnV2" style="float: right" onclick="applyJobBtnAction()">
+                                            Apply</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -400,67 +471,86 @@
                 </div>
             </div>
         </div>
-    </div>
-    <br>
+        <br>
 
-    <!-- Start Footer-->
-    <div id="footer_inc"></div>
-    <script>
-        $(document).ready(function(){
-        $('#footer_inc').load('/footer');
-        });
-    </script>
+            <!-- Start Footer-->
+        <div id="footer_inc"></div>
+        <script>
+                $(document).ready(function () {
+                    $('#footer_inc').load('/footer');
+                });
+        </script>
 
-    <!-- Including Bootstrap -->
-    <script type="text/javascript" src="/assets/common/js/validation.js"></script>
-    <script type="text/javascript" src="/assets/common/js/add_lead.js"></script>
-    <script type="text/javascript" src="/assets/common/js/apply_job.js"></script>
-    <script type="text/javascript" src="/assets/common/js/reset_password.js"></script>
-    <script type="text/javascript" src="/assets/common/js/login.js"></script>
-    <script type="text/javascript" src="/assets/common/js/signup_candidate.js"></script>
+            <!-- Including Bootstrap -->
+        <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+        <script type="text/javascript" src="/assets/common/js/add_lead.js"></script>
+        <script type="text/javascript" src="/assets/common/js/apply_job.js"></script>
+        <script type="text/javascript" src="/assets/common/js/reset_password.js"></script>
+        <script type="text/javascript" src="/assets/common/js/login.js"></script>
+        <script type="text/javascript" src="/assets/common/js/signup_candidate.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="/assets/css/assessment_modal.css">
-    <script type="text/javascript" src="/assets/js/bootbox.min.js"></script>
-    <script type="text/javascript" src="/assets/js/assessment_modal.js"></script>
-    <script>
-        $(document).ready(function () {
-            $(document).click(function (event) {
-                $(".navbar-collapse").collapse('hide');
-            });
-        });
-        $(document).ready(function(){
-            $('[data-toggle="tooltip"]').tooltip();
-        });
-    </script>
-        <!-- Facebook Pixel Code -->
-    <script>
-        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-                n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-            n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-            t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-                document,'script','https://connect.facebook.net/en_US/fbevents.js');
+        <link rel="stylesheet" type="text/css" href="/assets/css/assessment_modal.css"/>
+        <script type="text/javascript" src="/assets/js/bootbox.min.js"></script>
+        <script type="text/javascript" src="/assets/js/assessment_modal.js"></script>
+        <script>
+                $(document).ready(function () {
+                    $(document).click(function (event) {
+                        $(".navbar-collapse").collapse('hide');
+                    });
+                });
+                $(document).ready(function () {
+                    $('[data-toggle="tooltip"]').tooltip();
+                });
+        </script>
+            <!-- Facebook Pixel Code -->
+        <script>
+                !function (f, b, e, v, n, t, s) {
+                    if (f.fbq)return;
+                    n = f.fbq = function () {
+                        n.callMethod ?
+                                n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+                    };
+                    if (!f._fbq)f._fbq = n;
+                    n.push = n;
+                    n.loaded = !0;
+                    n.version = '2.0';
+                    n.queue = [];
+                    t = b.createElement(e);
+                    t.async = !0;
+                    t.src = v;
+                    s = b.getElementsByTagName(e)[0];
+                    s.parentNode.insertBefore(t, s)
+                }(window,
+                        document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
 
-        fbq('init', '535139956654403');
-        fbq('track', "PageView");
-    </script>
-    <noscript>
-        <img height="1" width="1" style="display:none"
-        src="https://www.facebook.com/tr?id=535139956654403&ev=PageView&noscript=1"/>
-    </noscript>
-        <!-- End Facebook Pixel Code -->
+                fbq('init', '535139956654403');
+                fbq('track', "PageView");
+        </script>
+        <noscript>
+            <img height="1" width="1" style="display: none"
+            src="https://www.facebook.com/tr?id=535139956654403&ev=PageView&noscript=1">
+        </noscript>
+            <!-- End Facebook Pixel Code -->
 
-        <!--  google page view -->
-    <script>
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-        ga('create', 'UA-77156203-1', 'auto');
-        ga('send', 'pageview');
-    </script>
+            <!--  google page view -->
+        <script>
+                (function (i, s, o, g, r, a, m) {
+                    i['GoogleAnalyticsObject'] = r;
+                    i[r] = i[r] || function () {
+                                (i[r].q = i[r].q || []).push(arguments)
+                            }, i[r].l = 1 * new Date();
+                    a = s.createElement(o),
+                            m = s.getElementsByTagName(o)[0];
+                    a.async = 1;
+                    a.src = g;
+                    m.parentNode.insertBefore(a, m)
+                })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+                ga('create', 'UA-77156203-1', 'auto');
+                ga('send', 'pageview');
+        </script>
 
-    <script type="text/javascript" src="/assets/common/js/posted_jobs_page.js"></script>
-    <script type="text/javascript" src="/assets/common/js/all_job_role_footer.js"></script>
-    <script type="text/javascript" src="/assets/common/js/pre_screen_candidate.js"></script>
+        <script type="text/javascript" src="/assets/common/js/posted_jobs_page.js"></script>
+        <script type="text/javascript" src="/assets/common/js/all_job_role_footer.js"></script>
+        <script type="text/javascript" src="/assets/common/js/pre_screen_candidate.js"></script>
     </body>
 </html>

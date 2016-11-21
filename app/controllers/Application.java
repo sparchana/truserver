@@ -1905,6 +1905,12 @@ public class Application extends Controller {
         return badRequest();
     }
 
+    public static String getUpdateObjFromJson(Integer propertyId, JsonNode updateCandidateDetailJSON, Candidate candidate) throws IOException {
+
+
+        return null;
+    }
+
     @Security.Authenticated(SecuredUser.class)
     public static Result updateCandidateInterviewDetail(Long candidateId, Long jobPostId) throws IOException {
         if(candidateId == null || jobPostId == null) {
@@ -1942,5 +1948,102 @@ public class Application extends Controller {
         }
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         return ok(JobPostWorkflowEngine.isInterviewRequired(jobPost));
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result updateCandidateDetailsViaPreScreen(String propertyIdList, String candidateMobile) throws IOException {
+        List<String> propertyIds = Arrays.asList(propertyIdList.split("\\s*,\\s*"));
+        if(propertyIdList == null || candidateMobile == null) {
+            badRequest("Empty Values!");
+        }
+        if(candidateMobile !=null){
+            Candidate candidate = CandidateService.isCandidateExists(candidateMobile);
+            if(candidate == null) {
+                Logger.info("Candidate not found");
+                return badRequest();
+            }
+            Logger.info("Candidate found");
+
+            JsonNode updateCandidateDetailJSON = request().body().asJson();
+            Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + updateCandidateDetailJSON);
+            if(updateCandidateDetailJSON == null){
+                return badRequest();
+            }
+            ObjectMapper newMapper = new ObjectMapper();
+            // since jsonReq has single/multiple values in array
+            newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+            UpdateCandidateDetail updateCandidateDetail = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateDetail.class);
+            String response = "";
+            for(String propId: propertyIds){
+                Integer propertyId = Integer.parseInt(propId);
+                if (ServerConstants.PropertyType.DOCUMENT.ordinal() == propertyId) {
+                    UpdateCandidateDocument updateCandidateDocument = new UpdateCandidateDocument();
+                    updateCandidateDocument.setIdProofWithIdNumberList(updateCandidateDetail.getIdProofWithIdNumberList());
+                    CandidateService.updateCandidateDocument(candidate, updateCandidateDocument);
+                    response = "ok";
+                } else if (ServerConstants.PropertyType.LANGUAGE.ordinal() == propertyId) {
+                    UpdateCandidateLanguageKnown updateCandidateLanguageKnown = new UpdateCandidateLanguageKnown();
+
+                    updateCandidateLanguageKnown.setCandidateKnownLanguageList(updateCandidateDetail.getCandidateKnownLanguageList());
+                    CandidateService.updateCandidateLanguageKnown(candidate, updateCandidateLanguageKnown);
+                    response = "ok";
+                } else if (ServerConstants.PropertyType.ASSET_OWNED.ordinal() == propertyId) {
+                    UpdateCandidateAsset updateCandidateAsset = new UpdateCandidateAsset();
+                    updateCandidateAsset.setAssetIdList(updateCandidateDetail.getAssetIdList());
+
+                    CandidateService.updateCandidateAssetOwned(candidate, updateCandidateAsset);
+                    response = "ok";
+                } else if (ServerConstants.PropertyType.MAX_AGE.ordinal() == propertyId) {
+                    UpdateCandidateDob updateCandidateDob = new UpdateCandidateDob();
+
+                    updateCandidateDob.setCandidateDob(updateCandidateDetail.getCandidateDob());
+                    CandidateService.updateCandidateDOB(candidate, updateCandidateDob);
+                    response = "ok";
+                } else if (ServerConstants.PropertyType.EXPERIENCE.ordinal() == propertyId) {
+                    UpdateCandidateTotalExperience updateCandidateTotalExperience = new UpdateCandidateTotalExperience();
+
+                    updateCandidateTotalExperience.setCandidateTotalExperience(updateCandidateDetail.getCandidateTotalExperience());
+                    CandidateService.updateCandidateTotalExperience(candidate, updateCandidateTotalExperience);
+                    response = "ok";
+                } else if (ServerConstants.PropertyType.EDUCATION.ordinal() == propertyId) {
+                    UpdateCandidateEducation updateCandidateEducation= new UpdateCandidateEducation();
+
+                    updateCandidateEducation.setCandidateDegree(updateCandidateDetail.getCandidateDegree());
+                    updateCandidateEducation.setCandidateEducationCompletionStatus(updateCandidateDetail.getCandidateEducationCompletionStatus());
+                    updateCandidateEducation.setCandidateEducationInstitute(updateCandidateDetail.getCandidateEducationInstitute());
+                    updateCandidateEducation.setCandidateEducationLevel(updateCandidateDetail.getCandidateEducationLevel());
+
+                    CandidateService.updateCandidateEducation(candidate, updateCandidateEducation);
+                    response = "ok";
+                } else if (ServerConstants.PropertyType.GENDER.ordinal() == propertyId) {
+                    UpdateCandidateGender updateCandidateGender = new UpdateCandidateGender();
+
+                    updateCandidateGender.setCandidateGender(updateCandidateDetail.getCandidateGender());
+                    CandidateService.updateCandidateGender(candidate, updateCandidateGender);
+                    response = "ok";
+                } else if (ServerConstants.PropertyType.SALARY.ordinal() == propertyId) {
+                    UpdateCandidateLastWithdrawnSalary lastWithdrawnSalary = new UpdateCandidateLastWithdrawnSalary();
+
+                    lastWithdrawnSalary.setCandidateLastWithdrawnSalary(updateCandidateDetail.getCandidateLastWithdrawnSalary());
+                    CandidateService.updateCandidateLastWithdrawnSalary(candidate, lastWithdrawnSalary);
+                    response = "ok";
+                } else if (ServerConstants.PropertyType.LOCALITY.ordinal() == propertyId) {
+                    UpdateCandidateHomeLocality updateCandidateHomeLocality = new UpdateCandidateHomeLocality();
+
+                    updateCandidateHomeLocality.setCandidateHomeLocality(updateCandidateDetail.getCandidateHomeLocality());
+                    CandidateService.updateCandidateHomeLocality(candidate, updateCandidateHomeLocality);
+                    response = "ok";
+                } else if (ServerConstants.PropertyType.WORK_SHIFT.ordinal() == propertyId) {
+                    UpdateCandidateTimeShiftPreference timeShiftPreference= new UpdateCandidateTimeShiftPreference();
+
+                    timeShiftPreference.setCandidateTimeShiftPref(updateCandidateDetail.getCandidateTimeShiftPref());
+                    CandidateService.updateCandidateWorkshift(candidate, timeShiftPreference);
+                    response = "ok";
+                }
+            }
+            return ok(response);
+        }
+        return badRequest();
     }
 }

@@ -347,7 +347,7 @@ function processDataAndFillAllFields(returnedData) {
         /* get Candidate's idProofs */
         try {
             var idProof = returnedData.idProofReferenceList;
-            var tempIdProofList = []
+            var tempIdProofList = [];
             idProof.forEach(function (singleIdProof) {
                 tempIdProofList.push(singleIdProof.idProof);
                 var id = singleIdProof.idProof.idProofId;

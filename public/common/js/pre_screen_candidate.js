@@ -5,9 +5,11 @@
 var langArray = [];
 var currentLocationArray = [];
 var localityArray = [];
+var propertyIdArray = [];
+
 function processTimeShift(returnedData) {
     if (returnedData != null) {
-        var data = [];
+        var data = [{label:"None Selected", value: -1}];
 
         returnedData.forEach(function (timeshift) {
             var opt = {
@@ -29,7 +31,7 @@ function processTimeShift(returnedData) {
 
 function processEducation(returnedEdu) {
     if (returnedEdu != null) {
-        var data = [];
+        var data = [{label:"None Selected", value: -1}];
 
         returnedEdu.forEach(function (education) {
             var opt = {
@@ -51,7 +53,7 @@ function processEducation(returnedEdu) {
 
 function processDegree(returnedDegree) {
     if (returnedDegree != null) {
-        var data = [];
+        var data = [{label:"None Selected", value: -1}];
 
         returnedDegree.forEach(function (degree) {
             var opt = {
@@ -239,6 +241,7 @@ function processIdProofsWithNumbers(returnedData, idProofId) {
                 });
             }
 }
+
 function validateInput() {
     console.log(this.id);
     var id = this.id.split("_")[1];
@@ -277,9 +280,10 @@ function validateInput() {
     }
     console.log(this.parentNode);
 }
+
 function processAllJobRole(returnedData) {
     if (returnedData != null) {
-        var data = [];
+        var data = [{label:"None Selected", value: -1}];
     for(var i=0;i<=3;i++){
         returnedData.forEach(function (jobrole) {
             var opt = {
@@ -299,6 +303,7 @@ function processAllJobRole(returnedData) {
         }
     }
 }
+
 function processLocality(returnedData) {
     console.log("fetched all locality. now rendering locality token input");
 
@@ -335,7 +340,7 @@ function getLocalityArray() {
 }
 // aux methods end
 var modalOpenAttempt = 0;
-function openPreScreenModal(jobPostId, candidateMobile) {
+function openCandidatePreScreenModal(jobPostId, candidateMobile) {
     if (candidateMobile != null) {
         var base_api_url = "/support/api/getJobPostVsCandidate/";
         candidateMobile = candidateMobile.substring(3);
@@ -357,6 +362,7 @@ function openPreScreenModal(jobPostId, candidateMobile) {
         }
         if (modalOpenAttempt == 0) {
             modalOpenAttempt = 1;
+            console.log(base_api_url);
             try {
                 $.ajax({
                     type: "GET",
@@ -367,7 +373,6 @@ function openPreScreenModal(jobPostId, candidateMobile) {
                     processData: false,
                     success: processPreScreenData
                 });
-                $("#preScreenModal").modal();
             } catch (exception) {
                 console.log("exception occured!!" + exception.stack);
             }
@@ -375,7 +380,9 @@ function openPreScreenModal(jobPostId, candidateMobile) {
     }
     $("#myLoginModal").modal();
 }
+
 function processPreScreenData(returnedData) {
+    console.log(returnedData);
     if (returnedData == null || returnedData.status != "SUCCESS") {
         if (returnedData != null && returnedData.status == "INVALID") {
             alert("Already Pre Screened");
@@ -384,6 +391,8 @@ function processPreScreenData(returnedData) {
         }
         return;
     }
+    $("#preScreenModal").modal();
+
     var parent = $('#missingInfo');
     var mainDiv = document.createElement("div");
     mainDiv.className = "row";
@@ -402,6 +411,7 @@ function processPreScreenData(returnedData) {
     var orderList = document.createElement("ol");
     orderList.className = "list-group";
     subDivTwo.appendChild(orderList);
+    propertyIdArray = [];
     if (returnedData != null) {
         var elementList = returnedData.elementList;
         elementList.forEach(function (rowData) {
@@ -409,6 +419,9 @@ function processPreScreenData(returnedData) {
             var url;
             var fn;
             if (rowData != null) {
+                if(rowData.isMatching == false) {
+                    propertyIdArray.push(rowData.propertyId);
+                }
                 if (rowData.propertyId == 0 && rowData.isMatching == false) {
                     var idProofId = [];
                     var jobPostElementList = rowData.jobPostElementList;
@@ -463,6 +476,14 @@ function processPreScreenData(returnedData) {
                     languageDetails.id = "language_details";
                     languageDetails.style = "padding:2%;text-align:center";
 
+                    // var langTable = document.createElement("table");
+                    // langTable.id = "langTable";
+                    // langTable.className = "";
+                    // var thead = document.createElement("thead");
+                    // var tbody = document.createElement("tbody");
+                    // langTable.appendChild(thead);
+                    // langTable.appendChild(tbody);
+                    // languageDetails.appendChild(langTable);
 
                     rowBox.appendChild(languageDetails);
                     secondProperty.appendChild(rowBox);
@@ -554,7 +575,7 @@ function processPreScreenData(returnedData) {
                     checkboxCurrentlyWorking.id=("currentlyWorking");
                     checkboxCurrentlyWorking.type = ("checkbox");
                     checkboxCurrentlyWorking.style = "margin:0 8%";
-                    checkboxCurrentlyWorking.onchange = disableCurrentCompanyOption;
+                    checkboxCurrentlyWorking.onclick = disableCurrentCompanyOption;
                     currentlyWorking.appendChild(checkboxCurrentlyWorking);
 
                     var allworkedCompanyDetails = document.createElement("p");
@@ -659,7 +680,7 @@ function processPreScreenData(returnedData) {
                     var radioExperience = document.createElement("input");
                     radioExperience.type = ("radio");
                     radioExperience.style = "margin:0 8%";
-                    radioExperience.id = ("candidateExper");
+                    radioExperience.id = ("candidateExp");
                     radioExperience.name = ("candidateExperience");
                     radioExperience.value = (1);
                     radioExperience.onchange = showExperienceCaptureDiv;
@@ -667,7 +688,7 @@ function processPreScreenData(returnedData) {
 
                     var labelExperience = document.createElement("label");
                     labelExperience.textContent = ("Experience");
-                    labelExperience.for = ("candidateExper");
+                    labelExperience.for = ("candidateExp");
                     colDetailsExperience.appendChild(labelExperience);
 
                     var titleExpYear = document.createElement("font");
@@ -766,8 +787,8 @@ function processPreScreenData(returnedData) {
                     successYes.type = ("radio");
                     successYes.style = "margin:0 4% 0 8%";
                     successYes.id = ("successYes");
-                    successYes.name = ("successConformationHEQ");
-                    successYes.value = (0);
+                    successYes.name = ("candidateEducationCompletionStatus");
+                    successYes.value = (1);
                     educationResponseSuccess.appendChild(successYes);
 
                     var  labelYesSuccess = document.createElement("label");
@@ -779,7 +800,7 @@ function processPreScreenData(returnedData) {
                     successNo.type = ("radio");
                     successNo.style = "margin:0 4% 0 8%";
                     successNo.id = ("successNo");
-                    successNo.name = ("successConformationHEQ");
+                    successNo.name = ("candidateEducationCompletionStatus");
                     successNo.value = (0);
                     educationResponseSuccess.appendChild(successNo);
 
@@ -830,7 +851,7 @@ function processPreScreenData(returnedData) {
 
                     var educationtextInstitute = document.createElement("input");
                     educationtextInstitute.className = "form-control";
-                    educationtextInstitute.type = ("number");
+                    educationtextInstitute.type = ("text");
                     educationtextInstitute.placeholder = ("School/Institute Name");
                     educationtextInstitute.id = ("candidateEducationInstitute");
                     educationResponseInstitute.appendChild(educationtextInstitute);
@@ -917,7 +938,7 @@ function processPreScreenData(returnedData) {
                     textSalary.className = "form-control";
                     textSalary.type = ("number");
                     textSalary.placeholder = ("Salary");
-                    textSalary.id = ("candidateSalary");
+                    textSalary.id = ("candidateLastWithdrawnSalary");
                     textSalary.onchange = invalidSalary;
                     salaryResponse.appendChild(textSalary);
 
@@ -996,7 +1017,6 @@ function processPreScreenData(returnedData) {
 
                     var shiftOption = document.createElement("select");
                     shiftOption.id = "candidateTimeShiftPref";
-                    shiftOption.setAttribute("multiple", "multiple");
                     shiftResponse.appendChild(shiftOption);
 
                     url = "/getAllShift";
@@ -1041,6 +1061,7 @@ function processPreScreenData(returnedData) {
 
     }
 }
+
 function interviewButtonCondition(jobPostId) {
     if (jobPostId != null) {
         var interview_api_url = "/support/api/shouldShowInterview/";
@@ -1068,18 +1089,30 @@ function interviewButtonCondition(jobPostId) {
         }
     }
 }
+
 function disableCurrentCompanyOption() {
-    if(!$("#currentlyWorking").attr("checked",true)){
-        $("#addCurrentlyWorking").prop("disabled",true);
+    if(!$("#currentlyWorking").is(":checked")){
+        var radios = document.getElementsByName('addCurrently_Working');
+        for (var i = 0; i< radios.length;  i++){
+            radios[i].disabled = true;
+        }
+        // document.getElementsByName("addCurrently_Working").disabled = true;
+        //$("#addCurrentlyWorking").prop("disabled",true);
         console.log("IM disable");
     }
-    else
-        if($("#currentlyWorking").attr("checked",true)){
-        $("#addCurrentlyWorking").prop("disabled",false);
+    else{
+        if($("#currentlyWorking").is(":checked")){
+            var radios = document.getElementsByName('addCurrently_Working');
+            for (var i = 0; i< radios.length;  i++){
+                radios[i].disabled = false;
+            }
+            // $("#addCurrentlyWorking").prop("disabled",false);
             console.log("IM non-disable");
+        }
     }
 }
 var companyCount=1;
+
 function addmoreCompany() {
     var url;
     var fn;
@@ -1129,7 +1162,7 @@ function addmoreCompany() {
         allworkedJobRoleCol.appendChild(addJobRole);
 
         var addCurrentlyWorking = document.createElement("input");
-        if(!$("#currentlyWorking").attr("checked",true)){
+        if(!$("#currentlyWorking").is(":checked")){
             addCurrentlyWorking.setAttribute("disabled",true);
             console.log("IM disable Add");
         }
@@ -1157,7 +1190,7 @@ function addmoreCompany() {
         }
     }
     else{
-        alert("Enought is Enough");
+        alert("Max 3 Addition Allowed");
     }
     if (url != null) {
         try {
@@ -1175,27 +1208,33 @@ function addmoreCompany() {
         }
     }
 }
+
 function hideExperienceCaptureDiv() {
-    if($("#candidateFresh").prop("checked",true)){
+    if($("#candidateFresh").is(":checked")){
         $("#experienceDuration").css("display","none");
+        $('#companyDetailsCapture').hide();
     }
 }
+
 function showExperienceCaptureDiv(){
-    if(!$("#candidateExper").prop("checked",true)){
+    if(!$("#candidateExp").is(":checked")){
         $("#experienceDuration").css("display","none");
     }
     else{
         $("#experienceDuration").css("display","block");
+        $('#companyDetailsCapture').show();
     }
 }
+
 function showExperienceBox() {
     var yearValue = $("#candidateTotalExperienceYear").val();
     if(!isNaN(yearValue) && parseInt(yearValue)>0){
         $("#").css("display","block");
     }
 }
+
 function invalidSalary() {
-    var salary = $('#candidateSalary').val();
+    var salary = $('#candidateLastWithdrawnSalary').val();
     console.log(parseInt(salary));
     if(!isNaN(salary) && parseInt(salary) >= 1000 && parseInt(salary) <= 50000){
         $("#invalidSalaryNotification").css("display","none");
@@ -1203,6 +1242,7 @@ function invalidSalary() {
         $("#invalidSalaryNotification").css("display","block");
     }
 }
+
 function processInterviewBtn(returnedData){
     if(returnedData !=null){
         if(returnedData == "INTERVIEW"){
@@ -1215,6 +1255,168 @@ function processInterviewBtn(returnedData){
         }
     }
 }
+
 function processInterviewSlotVew() {
     
 }
+
+function submitPreScreen() {
+    console.log("submit prescreen");
+}
+
+(function(){
+    $( "#preScreenInterviewSetBtn").click(function() {
+        var okToSubmit = true;
+        var dobCheck;
+        console.log( "Handler for .click() called." );
+        // all non-matching properId is available in propertyIdArray
+        var d = {};
+        // prep d
+        $.each(propertyIdArray, function( index, propId ) {
+
+            if(propId == 0) {
+                var documentList = [];
+                $('#document_details').each(function() {
+                    $(this).find('input[type=checkbox]').each(function () {
+                        var item = {};
+                        var id;
+                        console.log($(this).attr('id'));
+                        id = $(this).attr('id').split("_").slice(-1).pop();
+
+                        if($('input#idProofCheckbox_'+id).is(':checked')) {
+                            item["idProofId"] = parseInt(id);
+                            // if( $('input#idProofValue_'+id).val() == null ||  $('input#idProofValue_'+id).val().trim() == ""){
+                            //     okToSubmit = false;
+                            // }
+                            item["idNumber"] = $('input#idProofValue_'+id).val().trim();
+                        }
+
+                        if(!jQuery.isEmptyObject(item)){
+                            documentList.push(item);
+                        };
+                    });
+                });
+                // documents
+                d ["idProofWithIdNumberList"] = documentList;
+
+            } else if(propId == 1) {
+                var check;
+                var languageMap = [];
+                var languageKnown = $('#language_details input:checked').map(function () {
+                    check = 0;
+                    var id = this.id;
+                    var name = this.name;
+                    var item = {};
+                    var pos;
+
+                    for (var i in languageMap) {
+                        if (languageMap[i].id == id) {
+                            pos = i;
+                            check = 1;
+                            break;
+                        }
+                    }
+                    if (check == 0) {
+                        item["id"] = id;
+                        item["u"] = 0;
+                        item["rw"] = 0;
+                        item["s"] = 0;
+                        if (name == "u")
+                            item["u"] = 1;
+                        else if (name == "rw")
+                            item["rw"] = 1;
+                        else
+                            item["s"] = 1;
+                        languageMap.push(item);
+                    }
+                    else {
+                        if (name == "u")
+                            languageMap[pos].u = 1;
+                        else if (name == "rw")
+                            languageMap[pos].rw = 1;
+                        else
+                            languageMap[pos].s = 1;
+                    }
+                }).get();
+
+                d ["candidateKnownLanguageList"] = languageMap;
+
+            } else if(propId == 2) {
+                // asset
+                var assetArrayList = [];
+                $('#assets_details input:checked').each(function() {
+                    var id = parseInt($(this).attr('id').split("_").slice(-1).pop());
+                    assetArrayList.push(id);
+                });
+
+                d ["assetIdList"] = assetArrayList;
+
+            } else if(propId == 3) {
+                // age submission
+                var selectedDob = $('#candidateDob').val();
+                var c_dob = String(selectedDob);
+                var selectedDate = new Date(c_dob);
+                var toDate = new Date();
+                var pastDate= new Date(toDate.setFullYear(toDate.getFullYear() - 18));
+                var zombieYear = new Date(toDate.setFullYear(toDate.getFullYear() - 70));
+                if (selectedDate >= pastDate) {
+                    dobCheck = 0;
+                }
+                if(zombieYear <= selectedDate) {
+                    dobCheck = 0;
+                }
+                d ["candidateDob"] = c_dob;
+            } else if(propId == 4) {
+
+                /* calculate total experience in months */
+                var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
+                var expYear = parseInt($('#candidateTotalExperienceYear').val());
+                var totalExp = expMonth + (12 * expYear);
+
+                d ["candidateTotalExperience"] = totalExp;
+
+            } else if(propId == 5) {
+                d ["candidateEducationLevel"] =  $('#candidateHighestEducation').val();
+                d ["candidateDegree"] =  ($('#candidateHighestDegree').val());
+                d ["candidateEducationInstitute"] =  $('#candidateEducationInstitute').val();
+                d ["candidateEducationCompletionStatus"] =  parseInt($('input:radio[name="candidateEducationCompletionStatus"]:checked').val());
+
+            } else if(propId == 6) {
+
+                d ["candidateGender"] =  ($('input:radio[name="gender"]:checked').val());
+
+            } else if(propId == 7) {
+                var salary = $('#candidateLastWithdrawnSalary').val();
+                if(!isNaN(salary) && parseInt(salary) >= 1000 && parseInt(salary) <= 100000){
+                    d ["candidateLastWithdrawnSalary"] =  parseInt($('#candidateLastWithdrawnSalary').val());
+                } else {
+                    alert("Please enter a valid 'Last Withdrawn Salary' per month. (Min: 1000, Max: 1,00,000)", 'danger');
+                    okToSubmit = false;
+                }
+            } else if(propId == 8) {
+                d ["candidateHomeLocality"] =  parseInt($('#candidateHomeLocality').val());
+            } else if(propId == 9) {
+                d ["candidateTimeShiftPref"] = $('#candidateTimeShiftPref').val();
+            }
+        });
+
+        // ajax to submit d
+        console.log(d);
+        if(okToSubmit) {
+            try {
+                $.ajax({
+                    type: "POST",
+                    url: "/updateCandidateDetailsViaPreScreen/?propertyIdList="+propertyIdArray+"&candidateMobile="+localStorage.getItem("mobile"),
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
+                    success: function (returnedData) {
+                        console.log(returnedData);
+                    }
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+            return true;
+        }
+    });
+})();

@@ -101,6 +101,8 @@ POST        /loginSubmit                                                  contro
 POST        /signUp                                                       controllers.Application.signUp()
 POST        /submitAssessment                                             controllers.Application.submitAssessment()
 POST        /submitPreScreen                                              controllers.Application.submitPreScreen()
+POST        /updateCandidateDetailsViaPreScreen/                          controllers.Application.updateCandidateDetailsViaPreScreen(propertyIdList: String?= null, candidateMobile: String?= null)
+
 
 # partner routes
 #~~~~~~~~~~~~~~~~~~~~

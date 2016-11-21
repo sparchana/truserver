@@ -199,7 +199,7 @@ function processDataCheckJobs(returnedData) {
 function applyJobBtnAction() {
     /*$('#jobApplyConfirm').modal();*/
     var candidateMobile = localStorage.getItem("mobile");
-    openPreScreenModal(jobId,candidateMobile);
+    openCandidatePreScreenModal(jobId,candidateMobile);
     interviewButtonCondition(jobId);
     jobPostId = jobId;
     jobLocalityArray = [];

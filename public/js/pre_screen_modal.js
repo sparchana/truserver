@@ -1508,6 +1508,7 @@ function getPlaceholderArray(elementList){
     }
     return arr;
 }
+
 function getPlaceholderValue(element){
     if(element != null) {
         return element.placeHolder;
@@ -1753,6 +1754,7 @@ function pushToSnackbar(msg) {
     snackbarContainer.MaterialSnackbar.showSnackbar(data);
 
 }
+
 function notifyError(msg, type) {
     $.notify({
         message: msg,
