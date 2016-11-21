@@ -7,8 +7,6 @@
 
         <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css">
 
-        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5Fz6NhcQVP2c3kCIR5rs6bOrgGDwEiY0&libraries=places"></script>
-
         <script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>
         <link rel="stylesheet" href="/assets/common/css/token-input.css" type="text/css" />
         <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
@@ -34,6 +32,8 @@
         <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
         <script type="text/javascript" src="/assets/support/js/add_job_post.js"></script>
 
+        <script type="text/javascript" src='http://maps.google.com/maps/api/js?key=AIzaSyC5Fz6NhcQVP2c3kCIR5rs6bOrgGDwEiY0&sensor=false&libraries=places'></script>
+        <script src="/assets/recruiter/js/locationpicker.jquery.min.js"></script>
 
         <script type="text/javascript">
             $(function () {
@@ -368,6 +368,14 @@
                                     <div id="jobPostAddressVal" style="margin-top: 8px">Not Specified</div>
                                     <input id="jobPostAddress" placeholder="Interview location">
                                     <span id="interviewLocationUpdate" style="cursor: pointer; color: #0D47A1" onclick="interviewUpdate()"><b>Update</b></span>
+
+                                    <!-- map view -->
+                                    <div style="display: none">
+                                        <input type="text" id="jp_address_text" style="width: 400px"/>
+                                        <input type="text" id="jp_lat"/>
+                                        <input type="text" id="jp_lon"/>
+                                    </div>
+                                    <div id="map_parent"></div>
                                 </div>
                             </div>
                         </div>

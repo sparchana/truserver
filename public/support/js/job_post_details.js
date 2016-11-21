@@ -560,9 +560,40 @@ $(document).ready(function () {
             fullAddress = address;
             interviewLat = latitude;
             interviewLng = longitude;
+
             $("#jobPostAddressVal").show();
             $("#jobPostAddress").hide();
             $("#jobPostAddressVal").html(fullAddress);
+
+            $('#jp_lat').val(latitude);
+            $('#jp_lon').val(longitude);
+
+            //initializing map
+            var parent = $("#map_parent");
+
+            parent.html('');
+            var map = '<div id="jp_map" style="width: 500px; height: 240px"></div>';
+            parent.append(map);
+
+            $('#jp_map').locationpicker({
+                location: {
+                    latitude: latitude,
+                    longitude: longitude
+                },
+                radius: 100,
+                inputBinding: {
+                    latitudeInput: $('#jp_lat'),
+                    longitudeInput: $('#jp_lon'),
+                    radiusInput: $('#jp_address_text'),
+                    locationNameInput: $('#jp_address_text')
+                },
+                enableAutocomplete: true,
+                onchanged: function () {
+                    interviewLat = $('#jp_lat').val();
+                    interviewLng = $('#jp_lon').val();
+                    $("#jobPostAddressVal").html($('#jp_address_text').val());
+                }
+            });
         });
     });
 
@@ -810,6 +841,34 @@ function processDataForJobPost(returnedData) {
             interviewLat = returnedData.interviewDetailsList[0].lat;
             interviewLng = returnedData.interviewDetailsList[0].lng;
             if(returnedData.jobPostAddress != null){
+                //initializing map
+                var parent = $("#map_parent");
+
+                parent.html('');
+                var map = '<div id="jp_map" style="width: 500px; height: 240px"></div>';
+                parent.append(map);
+
+                $('#jp_map').locationpicker({
+                    location: {
+                        latitude: interviewLat,
+                        longitude: interviewLng
+                    },
+                    radius: 100,
+                    inputBinding: {
+                        latitudeInput: $('#jp_lat'),
+                        longitudeInput: $('#jp_lon'),
+                        radiusInput: $('#jp_address_text'),
+                        locationNameInput: $('#jp_address_text')
+                    },
+                    enableAutocomplete: true,
+                    onchanged: function () {
+                        interviewLat = $('#jp_lat').val();
+                        interviewLng = $('#jp_lon').val();
+                        $("#jobPostAddressVal").html($('#jp_address_text').val());
+                    }
+                });
+
+
                 fullAddress = returnedData.jobPostAddress;
                 $("#jobPostAddress").hide();
                 $("#jobPostAddressVal").html(returnedData.jobPostAddress);

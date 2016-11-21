@@ -1501,7 +1501,6 @@ public class JobPostWorkflowEngine {
 //        }
         Logger.info("after interaction query: " + new Timestamp(System.currentTimeMillis()));
 
-        Logger.info(candidateIdList.toString());
         List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
                 .eq("status.statusId", status)
                 .isNotNull("candidate")

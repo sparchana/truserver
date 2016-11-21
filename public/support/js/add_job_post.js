@@ -389,6 +389,10 @@ $(function() {
                 }
             }
 
+            fullAddress = $('#jp_address_text').val();
+            interviewLat = $("#jp_lat").val();
+            interviewLng = $("#jp_lon").val();
+
             try {
                 var d = {
                     jobPostId: $("#jobPostId").val(),

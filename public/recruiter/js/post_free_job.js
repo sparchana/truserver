@@ -131,6 +131,7 @@ function changeJobDescClass() {
 }
 
 function changeJobReqClass() {
+    renderMap();
     $("font#jobReqTabHead").addClass("activeTab");
     $("font#jobDescTabHead").removeClass("activeTab");
 }
@@ -149,9 +150,36 @@ function toJobDetail(){
     $('ul.tabs').tabs('select_tab', 'jobDetails');
     $('body').scrollTop(0);
 }
+
+
+function renderMap(){
+    if(interviewLat != undefined && interviewLat != null){
+        $('#jp_map').locationpicker({
+            location: {
+                latitude: interviewLat,
+                longitude: interviewLng
+            },
+            radius: 100,
+            inputBinding: {
+                latitudeInput: $('#jp_lat'),
+                longitudeInput: $('#jp_lon'),
+                radiusInput: $('#jp_address_text'),
+                locationNameInput: $('#jp_address_text')
+            },
+            enableAutocomplete: true,
+            onchanged: function () {
+                interviewLat = $('#jp_lat').val();
+                interviewLng = $('#jp_lon').val();
+                $("#jobPostInterviewLocationVal").html($('#jp_address_text').val());
+            }
+        });
+    }
+}
+
 function toJobRequirement(){
     var status = 1;
 
+    renderMap();
     var vacancies = $("#jobPostVacancies").val();
 
     var minSalary = $("#jobPostMinSalary").val();
@@ -274,7 +302,6 @@ function processDataRecruiterSession(returnedData) {
     }
 }
 
-
 $(document).ready(function () {
     checkRecruiterLogin();
     var pathname = window.location.pathname; // Returns path only
@@ -282,7 +309,6 @@ $(document).ready(function () {
     var jobPostId = jobPostIdUrl[(jobPostIdUrl.length)-1];
 
     $( "#check_applications" ).prop( "checked", true );
-
     if(jobPostId != 0){
         try {
             $.ajax({
@@ -472,7 +498,37 @@ $(document).ready(function () {
             interviewLng = longitude;
             $("#jobPostInterviewLocationVal").show();
             $("#jobPostInterviewLocation").hide();
+
+            $('#jp_lat').val(latitude);
+            $('#jp_lon').val(longitude);
             $("#jobPostInterviewLocationVal").html(fullAddress);
+
+            //initializing map
+            var parent = $("#map_parent");
+
+            parent.html('');
+            var map = '<div id="jp_map" style="width: 500px; height: 240px"></div>';
+            parent.append(map);
+
+            $('#jp_map').locationpicker({
+                location: {
+                    latitude: latitude,
+                    longitude: longitude
+                },
+                radius: 100,
+                inputBinding: {
+                    latitudeInput: $('#jp_lat'),
+                    longitudeInput: $('#jp_lon'),
+                    radiusInput: $('#jp_address_text'),
+                    locationNameInput: $('#jp_address_text')
+                },
+                enableAutocomplete: true,
+                onchanged: function () {
+                    interviewLat = $('#jp_lat').val();
+                    interviewLng = $('#jp_lon').val();
+                    $("#jobPostInterviewLocationVal").html($('#jp_address_text').val());
+                }
+            });
         });
     });
 });
@@ -697,6 +753,10 @@ function saveJob() {
             reviewApplication = 0;
         }
 
+        fullAddress = $('#jp_address_text').val();
+        interviewLat = $("#jp_lat").val();
+        interviewLng = $("#jp_lon").val();
+
         try {
             var d = {
                 jobPostId: jpId,
@@ -734,6 +794,7 @@ function saveJob() {
                 jobPostAddress: fullAddress,
                 reviewApplications: reviewApplication
             };
+
             $.ajax({
                 type: "POST",
                 url: "/recruiter/api/addJobPost",
@@ -808,6 +869,16 @@ function processDataForJobPost(returnedData) {
                     fullAddress = returnedData.jobPostAddress;
                     $("#jobPostInterviewLocation").hide();
                     $("#jobPostInterviewLocationVal").html(returnedData.jobPostAddress);
+
+                    $('#jp_lat').val(returnedData.interviewDetailsList[0].lat);
+                    $('#jp_lat').val(returnedData.interviewDetailsList[0].lng);
+
+                    //initializing map
+                    var parent = $("#map_parent");
+
+                    parent.html('');
+                    var map = '<div id="jp_map" style="width: 500px; height: 240px"></div>';
+                    parent.append(map);
                 } else {
                     $("#jobPostInterviewLocationVal").hide();
                     $("#jobPostInterviewLocationVal").show();
@@ -958,7 +1029,6 @@ function processDataForJobPost(returnedData) {
                 slotBtn.parent().addClass('active');
             });
         }
-
     } else{
         notifyError("Job details not available");
         setTimeout(function(){
