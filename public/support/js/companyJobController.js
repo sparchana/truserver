@@ -46,10 +46,10 @@ function renderDashboard() {
                             'company': '<a href="'+"/companyDetails/"+jobPost.company.companyId+'" id="'+jobPost.company.companyId+'" style="cursor:pointer;" target="_blank">'+jobPost.company.companyName+'</a>',
                             'jobTitle': jobPost.jobPostTitle,
                             'jobSalary' : function () {
-                                if(jobPost.jobPostMaxSalary == 0){
-                                    return ((jobPost.jobPostMinSalary != null) ? "₹" + jobPost.jobPostMinSalary : "0");
-                                } else{
+                                if(jobPost.jobPostMaxSalary != 0 && jobPost.jobPostMaxSalary != null){
                                     return ((jobPost.jobPostMinSalary != null) ? "₹" + jobPost.jobPostMinSalary : "0") + " - ₹" + ((jobPost.jobPostMaxSalary != null) ? jobPost.jobPostMaxSalary : "0");
+                                } else{
+                                    return ((jobPost.jobPostMinSalary != null) ? "₹" + jobPost.jobPostMinSalary : "0");
                                 }
                             },
                             'jobRecruiter': function () {

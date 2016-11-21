@@ -50,7 +50,7 @@
         <div class="col s12" style="padding: 0">
           <ul class="tabs" style="border-top-right-radius: 6px; border-top-left-radius: 6px">
             <li class="tab col s4"><a href="#jobDetails" onclick="changeJobDescClass()"><font id="jobDescTabHead" class="activeTab" size="2" style="font-weight: 600">Job Description</font></a></li>
-            <li class="tab col s4"><a href="#jobRequirement" onclick="changeJobReqClass()"><font id="jobReqTabHead" size="2" style="font-weight: 600">Job Requirements</font></a></li>
+            <li class="tab col s4"><a href="#jobRequirement" onclick="changeJobReqClass()"><font id="jobReqTabHead" size="2" style="font-weight: 600">Job Requirements & Interview Schedule</font></a></li>
           </ul>
         </div>
         <div id="jobDetails" class="col s12">
@@ -407,7 +407,7 @@
                     </div>
 
                     <br>
-                    <font size="3" style="font-weight: bold">Interview Details</font>
+                    <font size="3" style="font-weight: bold">Please mention when can candidates walk-in for interviews</font>
                     <div class="row" id="jobPostDetails" style="margin-bottom:20px;">
                       <div class="input-field col s3 l4" style="margin-top: 20px">
                         <label>Interview Days :</label>
@@ -442,11 +442,20 @@
 
                     <div class="row" id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 20px">
-                        <label>Interview Location:<font color="red">*</font></label>
+                      </div>
+                      <div class="input-field col s6 l4" style="padding: 0">
+                        <input type="checkbox" id="check_applications"/>
+                        <label for="check_applications">I would like to review applications and confirm interviews (uncheck this option in case you want all interested candidates to walk-in)</label>
+                      </div>
+                    </div>
+
+                    <div class="row" id="jobPostDetails">
+                      <div class="input-field col s6 l4" style="margin-top: 20px">
+                        <label>Interview address:<font color="red">*</font></label>
                       </div>
                       <div class="input-field col s6 l4">
-                        <div id="jobPostInterviewLocationVal" style="margin-top: 16px">Not Specified</div>
-                        <input id="jobPostInterviewLocation" style="display: none" placeholder="Interview location">
+                        <div id="jobPostInterviewLocationVal" style="display: none; margin-top: 16px">Not Specified</div>
+                        <input id="jobPostInterviewLocation" placeholder="Interview location">
                         <span id="interviewLocationUpdate" style="cursor: pointer; color: #2ec866" onclick="interviewUpdate()"><b>Update</b></span>
 
                         <div style="display: none">
@@ -455,15 +464,6 @@
                             <input type="text" id="jp_lon"/>
                         </div>
                         <div id="map_parent"></div>
-                      </div>
-                    </div>
-
-                    <div class="row" id="jobPostDetails">
-                      <div class="input-field col s6 l4" style="margin-top: 20px">
-                      </div>
-                      <div class="input-field col s6 l4" style="padding: 0">
-                        <input type="checkbox" id="check_applications"/>
-                        <label for="check_applications">I would like to check applications and confirm interview</label>
                       </div>
                     </div>
 

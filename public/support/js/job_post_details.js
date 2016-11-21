@@ -806,6 +806,12 @@ function processDataForJobPost(returnedData) {
         if(interviewDetailsList[0].interviewDays != null){
             var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
 
+            if(interviewDetailsList[0].reviewApplication == null || interviewDetailsList[0].reviewApplication == 1){
+                $( "#check_applications" ).prop( "checked", true);
+            } else{
+                $( "#check_applications" ).prop( "checked", false);
+            }
+
             /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
             if(interviewDays.length != 7){
                 x = 7 - interviewDays.length;

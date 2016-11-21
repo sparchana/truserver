@@ -82,7 +82,7 @@ function processDataGetAllTimeSlots(returnedData) {
         var item = {};
         item ["id"] = id;
         item ["name"] = name;
-        var option ='<input type="checkbox" id=\"interview_slot_' + id + '\" /><label for=\"interview_slot_' + id + '\">' + name + ' </label><span style="margin-left:10px"></span><br>';
+        var option ='<input type="checkbox" id=\"interview_slot_' + id + '\" /><label for=\"interview_slot_' + id + '\">' + name + ' </label><span style="margin-left:10px"></span>&nbsp;';
         $('#timeSlotSection').append(option);
     });
 }
@@ -869,6 +869,7 @@ function processDataForJobPost(returnedData) {
                     fullAddress = returnedData.jobPostAddress;
                     $("#jobPostInterviewLocation").hide();
                     $("#jobPostInterviewLocationVal").html(returnedData.jobPostAddress);
+                    $("#jobPostInterviewLocationVal").show();
 
                     $('#jp_lat').val(returnedData.interviewDetailsList[0].lat);
                     $('#jp_lat').val(returnedData.interviewDetailsList[0].lng);
@@ -881,7 +882,7 @@ function processDataForJobPost(returnedData) {
                     parent.append(map);
                 } else {
                     $("#jobPostInterviewLocationVal").hide();
-                    $("#jobPostInterviewLocationVal").show();
+                    $("#jobPostInterviewLocation").show();
                 }
             }
         }

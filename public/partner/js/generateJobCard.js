@@ -88,10 +88,10 @@ function getAllAppliedJobs() {
                     returnedData.forEach(function (jobApplication) {
                         var appliedDateInMillis = new Date(jobApplication.creationTimestamp);
                         var salary;
-                        if(jobApplication.jobPost.jobPostMaxSalary == null || jobApplication.jobPost.jobPostMaxSalary == 0){
-                            salary = "₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMinSalary);
-                        } else{
+                        if(jobApplication.jobPost.jobPostMaxSalary != null && jobApplication.jobPost.jobPostMaxSalary != 0){
                             salary = "₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMinSalary) + " - ₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMaxSalary);
+                        } else{
+                            salary = "₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMinSalary);
                         }
                         //getting interview details
                         var interviewDetails = "Not specified";

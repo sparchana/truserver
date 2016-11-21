@@ -232,12 +232,13 @@ function prePopulateJobSection(jobApplication) {
             salaryIconDiv.appendChild(salaryIcon);
 
 
+            console.log(jobPost);
             var salaryDiv = document.createElement("div");
             salaryDiv.style = "display: inline-block; font-size: 14px";
-            if (jobPost.jobPost.jobPostMaxSalary == "0") {
-                salaryDiv.textContent = jobPost.jobPost.jobPostMinSalary + " monthly";
-            } else {
+            if (jobPost.jobPost.jobPostMaxSalary != 0 && jobPost.jobPost.jobPostMaxSalary != null) {
                 salaryDiv.textContent = jobPost.jobPost.jobPostMinSalary + " - " + jobPost.jobPost.jobPostMaxSalary + " monthly";
+            } else {
+                salaryDiv.textContent = jobPost.jobPost.jobPostMinSalary + " monthly";
             }
 
             jobBodySubRowCol.appendChild(salaryDiv);

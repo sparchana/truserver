@@ -393,6 +393,13 @@ $(function() {
             interviewLat = $("#jp_lat").val();
             interviewLng = $("#jp_lon").val();
 
+            var reviewApplication;
+            if($('#check_applications').is(':checked')){
+                reviewApplication = 1;
+            } else{
+                reviewApplication = 0;
+            }
+
             try {
                 var d = {
                     jobPostId: $("#jobPostId").val(),
@@ -431,7 +438,8 @@ $(function() {
                     jobPostMaxAge: maxAge,
                     jobPostGender: jobPostGender,
                     jobPostInterviewLocationLat: interviewLat,
-                    jobPostInterviewLocationLng: interviewLng
+                    jobPostInterviewLocationLng: interviewLng,
+                    reviewApplications: reviewApplication
                 };
                 $.ajax({
                     type: "POST",
