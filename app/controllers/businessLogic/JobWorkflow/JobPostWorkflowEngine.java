@@ -1869,11 +1869,10 @@ public class JobPostWorkflowEngine {
             }
             jobPostWorkflowNew.update();
 
-            if(jwStatus == ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED){ //create an entry in Interview Confirm Schedule Update table (ISCU) if interview is confirmed
-                InterviewConfirmedStatusUpdate interviewConfirmedStatusUpdate = new InterviewConfirmedStatusUpdate();
-                interviewConfirmedStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
-                interviewConfirmedStatusUpdate.save();
-            }
+            InterviewScheduleStatusUpdate interviewScheduleStatusUpdate = new InterviewScheduleStatusUpdate();
+            interviewScheduleStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
+            interviewScheduleStatusUpdate.setStatus(JobPostWorkflowStatus.find.where().eq("status_id", jwStatus).findUnique());
+            interviewScheduleStatusUpdate.save();
 
             // save the interaction
             InteractionService.createWorkflowInteraction(
@@ -1929,12 +1928,6 @@ public class JobPostWorkflowEngine {
             jobPostWorkflowNew.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", jwStatus).findUnique());
         }
         jobPostWorkflowNew.update();
-
-        if(value == ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED){ //create an entry in Interview Confirm Schedule Update table (ISCU) if interview is confirmed
-            InterviewConfirmedStatusUpdate interviewConfirmedStatusUpdate = new InterviewConfirmedStatusUpdate();
-            interviewConfirmedStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
-            interviewConfirmedStatusUpdate.save();
-        }
 
         // save the interaction
         InteractionService.createWorkflowInteraction(

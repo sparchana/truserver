@@ -2,6 +2,7 @@ package models.entity.OM;
 
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import models.entity.Static.JobPostWorkflowStatus;
 import models.entity.Static.RejectReason;
 
 import javax.persistence.*;
@@ -37,6 +38,11 @@ public class InterviewScheduleStatusUpdate extends Model {
     @JsonManagedReference
     @JoinColumn(name = "ReasonId", referencedColumnName = "ReasonId")
     private RejectReason rejectReason;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "status_id", referencedColumnName = "status_id")
+    private JobPostWorkflowStatus status;
 
     @Column(name = "interview_confirmed_status_update_note", columnDefinition = "text null")
     private String interviewScheduleStatusUpdateNote;
@@ -102,5 +108,13 @@ public class InterviewScheduleStatusUpdate extends Model {
 
     public void setRejectReason(RejectReason rejectReason) {
         this.rejectReason = rejectReason;
+    }
+
+    public JobPostWorkflowStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(JobPostWorkflowStatus status) {
+        this.status = status;
     }
 }
