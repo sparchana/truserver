@@ -253,7 +253,13 @@ public class Application extends Controller {
             e.printStackTrace();
         }
 
-        return ok(toJson(JobService.applyJob(applyJobRequest, InteractionService.InteractionChannelType.SELF)));
+        if(session().get("sessionChannel") != null || !session().get("sessionChannel").isEmpty()){
+            Integer channelId = Integer.parseInt(session().get("sessionChannel"));
+            InteractionService.InteractionChannelType channelType = Util.getChannelType(channelId);
+            return ok(toJson(JobService.applyJob(applyJobRequest, channelType)));
+        } else {
+            return badRequest();
+        }
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -1615,16 +1621,22 @@ public class Application extends Controller {
         return ok(toJson(JobPostWorkflowEngine.getSelectedCandidates(jobPostId)));
     }
 
-    @Security.Authenticated(SecuredUser.class)
-    public static Result testMatchingCandidate(Long jpId) {
-       return ok(toJson(JobPostWorkflowEngine.getMatchingCandidate(jpId)));
-    }
-
-    public static Result getJobPostVsCandidate(Long candidateId, Long jobPostId, Boolean rePreScreen) {
-        if (candidateId == 0L || jobPostId == 0L) {
+    public static Result getJobPostVsCandidate(Long candidateId, Long jobPostId, Boolean rePreScreen, String candidateMobile) {
+        if(candidateId == null && jobPostId == null) {
+            return badRequest();
+        } else if (candidateId != null && candidateId == 0L && jobPostId != null && jobPostId == 0L) {
             return badRequest();
         }
+        if(candidateId == null && candidateMobile !=null){
+            candidateMobile = FormValidator.convertToIndianMobileFormat(candidateMobile);
 
+            Candidate candidate = Candidate.find.where().eq("candidateMobile", candidateMobile).findUnique();
+            if(candidate == null) {
+                return badRequest();
+            } else {
+                candidateId = candidate.getCandidateId();
+            }
+        }
         return ok(toJson(JobPostWorkflowEngine.getJobPostVsCandidate(jobPostId, candidateId, rePreScreen)));
     }
 
@@ -1853,9 +1865,10 @@ public class Application extends Controller {
             CandidateService.updateCandidateDOB(candidate, updateCandidateDob);
             return ok("ok");
         } else if (ServerConstants.PropertyType.EXPERIENCE.ordinal() == propertyId) {
-            UpdateCandidateTotalExperience updateCandidateTotalExperience = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateTotalExperience.class);
+            UpdateCandidateWorkExperience updateCandidateWorkExperience = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateWorkExperience.class);
 
-            CandidateService.updateCandidateTotalExperience(candidate, updateCandidateTotalExperience);
+            Logger.info(toJson(updateCandidateWorkExperience) + " ");
+            CandidateService.updateCandidateWorkExperience(candidate, updateCandidateWorkExperience);
             return ok("ok");
         } else if (ServerConstants.PropertyType.EDUCATION.ordinal() == propertyId) {
             UpdateCandidateEducation updateCandidateEducation= newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateEducation.class);
@@ -1896,7 +1909,7 @@ public class Application extends Controller {
         // TODO: if channel = partner -> put a check to find if the candidate belongs to the partner or not
         JsonNode updateCandidateDetailJSON = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + updateCandidateDetailJSON);
-        if(updateCandidateDetailJSON == null){
+        if(updateCandidateDetailJSON == null) {
             return badRequest();
         }
         ObjectMapper newMapper = new ObjectMapper();
@@ -1907,5 +1920,123 @@ public class Application extends Controller {
         AddCandidateInterviewSlotDetail interviewSlotDetail = newMapper.readValue(updateCandidateDetailJSON.toString(), AddCandidateInterviewSlotDetail.class);
 
         return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewDetail(candidateId, jobPostId, interviewSlotDetail)));
+    }
+
+    public static Result getAllIdProofs(String ids) {
+        List<String> idProofIdList = Arrays.asList(ids.split("\\s*,\\s*"));
+        if(ids == null) {
+            return ok(toJson(IdProof.find.all()));
+        } else {
+            return ok(toJson(IdProof.find.where().in("idProofId", idProofIdList).findList()));
+        }
+    }
+
+    public static Result shouldShowInterview(Long jobPostId) {
+        if (jobPostId == null) {
+            return badRequest();
+        }
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        return ok(JobPostWorkflowEngine.isInterviewRequired(jobPost));
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result updateCandidateDetailsViaPreScreen(String propertyIdList, String candidateMobile) throws IOException {
+        List<String> propertyIds = Arrays.asList(propertyIdList.split("\\s*,\\s*"));
+        if(propertyIdList == null || candidateMobile == null) {
+            badRequest("Empty Values!");
+        }
+        if(candidateMobile !=null){
+            Candidate candidate = CandidateService.isCandidateExists(candidateMobile);
+            if(candidate == null) {
+                Logger.info("Candidate not found");
+                return badRequest();
+            }
+            Logger.info("Candidate found");
+
+            JsonNode updateCandidateDetailJSON = request().body().asJson();
+            Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + updateCandidateDetailJSON);
+            if(updateCandidateDetailJSON == null){
+                return badRequest();
+            }
+            ObjectMapper newMapper = new ObjectMapper();
+            // since jsonReq has single/multiple values in array
+            newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+            UpdateCandidateDetail updateCandidateDetail = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateDetail.class);
+            String response = "";
+            for(String propId: propertyIds){
+                Integer propertyId = Integer.parseInt(propId);
+                if (ServerConstants.PropertyType.DOCUMENT.ordinal() == propertyId) {
+                    UpdateCandidateDocument updateCandidateDocument = new UpdateCandidateDocument();
+                    updateCandidateDocument.setIdProofWithIdNumberList(updateCandidateDetail.getIdProofWithIdNumberList());
+                    CandidateService.updateCandidateDocument(candidate, updateCandidateDocument);
+                    response = "ok";
+                } else if (ServerConstants.PropertyType.LANGUAGE.ordinal() == propertyId) {
+                    UpdateCandidateLanguageKnown updateCandidateLanguageKnown = new UpdateCandidateLanguageKnown();
+
+                    updateCandidateLanguageKnown.setCandidateKnownLanguageList(updateCandidateDetail.getCandidateKnownLanguageList());
+                    CandidateService.updateCandidateLanguageKnown(candidate, updateCandidateLanguageKnown);
+                    response = "ok";
+                } else if (ServerConstants.PropertyType.ASSET_OWNED.ordinal() == propertyId) {
+                    UpdateCandidateAsset updateCandidateAsset = new UpdateCandidateAsset();
+                    updateCandidateAsset.setAssetIdList(updateCandidateDetail.getAssetIdList());
+
+                    CandidateService.updateCandidateAssetOwned(candidate, updateCandidateAsset);
+                    response = "ok";
+                } else if (ServerConstants.PropertyType.MAX_AGE.ordinal() == propertyId) {
+                    UpdateCandidateDob updateCandidateDob = new UpdateCandidateDob();
+
+                    updateCandidateDob.setCandidateDob(updateCandidateDetail.getCandidateDob());
+                    CandidateService.updateCandidateDOB(candidate, updateCandidateDob);
+                    response = "ok";
+                } else if (ServerConstants.PropertyType.EXPERIENCE.ordinal() == propertyId) {
+                    UpdateCandidateWorkExperience updateCandidateWorkExperience = new UpdateCandidateWorkExperience();
+
+                    updateCandidateWorkExperience.setCandidateTotalExperience(updateCandidateDetail.getCandidateTotalExperience());
+                    updateCandidateWorkExperience.setCandidateIsEmployed(updateCandidateDetail.getCandidateIsEmployed());
+                    updateCandidateWorkExperience.setExtraDetailAvailable(updateCandidateDetail.getExtraDetailAvailable());
+                    updateCandidateWorkExperience.setPastCompanyList(updateCandidateDetail.getPastCompanyList());
+
+                    CandidateService.updateCandidateWorkExperience(candidate, updateCandidateWorkExperience);
+                    response = "ok";
+                } else if (ServerConstants.PropertyType.EDUCATION.ordinal() == propertyId) {
+                    UpdateCandidateEducation updateCandidateEducation= new UpdateCandidateEducation();
+
+                    updateCandidateEducation.setCandidateDegree(updateCandidateDetail.getCandidateDegree());
+                    updateCandidateEducation.setCandidateEducationCompletionStatus(updateCandidateDetail.getCandidateEducationCompletionStatus());
+                    updateCandidateEducation.setCandidateEducationInstitute(updateCandidateDetail.getCandidateEducationInstitute());
+                    updateCandidateEducation.setCandidateEducationLevel(updateCandidateDetail.getCandidateEducationLevel());
+
+                    CandidateService.updateCandidateEducation(candidate, updateCandidateEducation);
+                    response = "ok";
+                } else if (ServerConstants.PropertyType.GENDER.ordinal() == propertyId) {
+                    UpdateCandidateGender updateCandidateGender = new UpdateCandidateGender();
+
+                    updateCandidateGender.setCandidateGender(updateCandidateDetail.getCandidateGender());
+                    CandidateService.updateCandidateGender(candidate, updateCandidateGender);
+                    response = "ok";
+                } else if (ServerConstants.PropertyType.SALARY.ordinal() == propertyId) {
+                    UpdateCandidateLastWithdrawnSalary lastWithdrawnSalary = new UpdateCandidateLastWithdrawnSalary();
+
+                    lastWithdrawnSalary.setCandidateLastWithdrawnSalary(updateCandidateDetail.getCandidateLastWithdrawnSalary());
+                    CandidateService.updateCandidateLastWithdrawnSalary(candidate, lastWithdrawnSalary);
+                    response = "ok";
+                } else if (ServerConstants.PropertyType.LOCALITY.ordinal() == propertyId) {
+                    UpdateCandidateHomeLocality updateCandidateHomeLocality = new UpdateCandidateHomeLocality();
+
+                    updateCandidateHomeLocality.setCandidateHomeLocality(updateCandidateDetail.getCandidateHomeLocality());
+                    CandidateService.updateCandidateHomeLocality(candidate, updateCandidateHomeLocality);
+                    response = "ok";
+                } else if (ServerConstants.PropertyType.WORK_SHIFT.ordinal() == propertyId) {
+                    UpdateCandidateTimeShiftPreference timeShiftPreference= new UpdateCandidateTimeShiftPreference();
+
+                    timeShiftPreference.setCandidateTimeShiftPref(updateCandidateDetail.getCandidateTimeShiftPref());
+                    CandidateService.updateCandidateWorkshift(candidate, timeShiftPreference);
+                    response = "ok";
+                }
+            }
+            return ok(response);
+        }
+        return badRequest();
     }
 }

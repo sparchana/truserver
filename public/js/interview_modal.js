@@ -155,16 +155,15 @@ function initInterviewModal(candidateId, jobPostId) {
         '<img src="/assets/common/img/jobApply.png" width="48px">'+
         '</center>'+
         '<center>'+
-        '<h4>You are applying to <b><div style="display: inline-block" id="jobNameConfirmation"></div></b>'+
-        ' job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>'+
-        '<h5 style="margin-top: 16px">Please fill the form below to complete the application process</h5>'+
+        '<h6>For <b><div style="display: inline-block" id="jobNameConfirmation"></div></b>'+
+        'job at<b><div style="display: inline-block" id="companyNameConfirmation"></div></b>'+
+        '.</h6>'+
+        '<h6 style="margin-top: 16px">Please select the interview date and time</h6>'+
         '<div class="materialDash"></div>'+
         '<div class="interview_container" style="margin-top: 16px">'+
-        '<div class="row" style="margin-top: 4px" id="interViewSection">'+
-        '<div class="col-sm-6">'+
-        '<h5 style="text-align: right">Please select the interview date and time:</h5></div>'+
-        '<div class="col-sm-6">'+
-        '<select id="interViewSlot" class="selectDropdown" style="width: 184px; float: left; margin-top: 8px"></select>'+
+        '<div class="row" style="margin-top: 4px;text-align: center" id="interViewSection">'+
+        '<div class="col-md-12">'+
+        '<center><select id="interViewSlot" class="selectDropdown" style="width: 210px;padding:1%;margin-top: 8px"></select></center>'+
         '</div>'+
         '</div>'+
         '</div>'+

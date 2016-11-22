@@ -54,7 +54,8 @@ jsOrder = {
     jqueryUi: paths.supportJs+"jquery-ui.js",
     bsNotify: paths.supportJs+"bootstrap-notify.min.js",
     searchController: paths.supportJs+"searchController.js",
-    workFlowController: paths.supportJs+"workFlowController.js"
+    workFlowController: paths.supportJs+"workFlowController.js",
+    preScreenCandidate: paths.commonJs+"pre_screen_candidate.js"
 };
 
 cssOrder = {
@@ -153,10 +154,18 @@ gulp.task('workFlowControllerScript', function() {
         .pipe(gulpif(argv.prod, stripDebug()))
         .pipe(gulp.dest('./public/build/support/'));
 });
+// individual JS minify
+gulp.task('preScreenCandidateScript', function() {
+    gulp.src([jsOrder.preScreenCandidate])
+        .pipe(concat('pre_screen_candidate.min.js'))
+        .pipe(gulpif(argv.prod, uglify(), beautify()))
+        .pipe(gulpif(argv.prod, stripDebug()))
+        .pipe(gulp.dest('./public/build/support/'));
+});
 
 // default gulp task
 gulp.task('default', ['clean', 'scripts', 'styles', 'supportScripts', 'supportStyles', 'datatableBundleScript',
-    'datatableBundleStyle', 'searchControllerScript', 'workFlowControllerScript'], function() {
+    'datatableBundleStyle', 'searchControllerScript', 'workFlowControllerScript', 'preScreenCandidateScript'], function() {
     // watch for CSS changes
     gulp.watch(paths.css+'*.css', function() {
         gulp.run('styles');
@@ -188,6 +197,10 @@ gulp.task('default', ['clean', 'scripts', 'styles', 'supportScripts', 'supportSt
     // watch for workFlowControllerScript solo js changes
     gulp.watch(paths.supportJs+'*.js', function() {
         gulp.run('workFlowControllerScript');
+    });
+    // watch for preScreenCandidateScript solo js changes
+    gulp.watch(paths.supportJs+'*.js', function() {
+        gulp.run('preScreenCandidateScript');
     });
 });
 
