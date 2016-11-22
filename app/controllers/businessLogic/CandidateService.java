@@ -548,9 +548,9 @@ public class CandidateService
             candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(supportCandidateRequest.getPastCompanyList(), candidate));
         }
 
-        if(supportCandidateRequest.getCandidateIdProof() != null ){
-            candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(supportCandidateRequest.getCandidateIdProof(), candidate));
-        }
+//        if(supportCandidateRequest.getCandidateIdProofList() != null ){
+//            candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(supportCandidateRequest.getCandidateIdProofList(), candidate));
+//        }
 
         if(supportCandidateRequest.getExpList() != null ){
             candidate.setCandidateExpList(getCandidateExpListFromAddSupportCandidate(supportCandidateRequest.getExpList(), candidate));
@@ -802,6 +802,16 @@ public class CandidateService
             e.printStackTrace();
         }
 
+        try {
+            if(request.getCandidateIdProofList() != null ){
+                candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(request.getCandidateIdProofList(), candidate));
+            }        }
+        catch(Exception e) {
+            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
+            Logger.info("Exception while setting candidate idproof list");
+            e.printStackTrace();
+        }
+
         Logger.info("Added Basic Profile details");
 
         return candidateSignUpResponse;
@@ -835,15 +845,16 @@ public class CandidateService
         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
     }
 
-    private static List<IDProofReference> getCandidateIdProofListFromAddSupportCandidate(List<Integer> idProofList, Candidate candidate) {
+    private static List<IDProofReference> getCandidateIdProofListFromAddSupportCandidate(List<AddSupportCandidateRequest.IdProofWithValue> idProofList, Candidate candidate) {
         ArrayList<IDProofReference> response = new ArrayList<>();
-        for(Integer idProofId : idProofList) {
+        for(AddSupportCandidateRequest.IdProofWithValue idf : idProofList) {
             IDProofReference idProofReference = new IDProofReference();
-            IdProof idProof= IdProof.find.where().eq("idProofId", idProofId).findUnique();
+            IdProof idProof = IdProof.find.where().eq("idProofId", idf.getIdProofId()).findUnique();
             if(idProof == null) {
                 return null;
             }
             idProofReference.setIdProof(idProof);
+            idProofReference.setIdProofNumber(idf.getIdProofValue());
             idProofReference.setCandidate(candidate);
             response.add(idProofReference);
         }
@@ -1443,8 +1454,13 @@ public class CandidateService
         candidate.setCandidateDOB(updateCandidateDob.getCandidateDob());
         candidate.update();
     }
-    public static void updateCandidateTotalExperience(Candidate candidate, UpdateCandidateTotalExperience totalExperience){
-        candidate.setCandidateTotalExperience(totalExperience.getCandidateTotalExperience());
+    public static void updateCandidateWorkExperience(Candidate candidate, UpdateCandidateWorkExperience workExperience){
+        candidate.setCandidateTotalExperience(workExperience.getCandidateTotalExperience());
+        if(workExperience.getExtraDetailAvailable()!= null && workExperience.getExtraDetailAvailable()) {
+            if(workExperience.getPastCompanyList() != null ) {
+                candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(workExperience.getPastCompanyList(), candidate));
+            }
+        }
         candidate.update();
     }
     public static void updateCandidateEducation(Candidate candidate, UpdateCandidateEducation candidateEducation){

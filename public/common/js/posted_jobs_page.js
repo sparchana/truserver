@@ -350,9 +350,9 @@ function processDataCheckJobs(returnedData) {
         jobArray.push(item);
     });
 }
-
 function applyJobBtnAction() {
     $('#jobApplyConfirm').modal();
+    var candidateMobile = localStorage.getItem("mobile");
     jobPostId = jobId;
     jobLocalityArray = [];
     $('#applyButton').hide();

@@ -15,6 +15,8 @@ var scheduledInterviewDate;
 var globalJpId;
 var globalInterviewStatus;
 var rescheduledDate;
+var jobRoleName;
+var companyName;
 
 $(window).resize(function(){
     var w = window.innerWidth;
@@ -139,9 +141,11 @@ function getAllAppliedJobs() {
                                 }
                                 // jpId is jobPostId
                                 var jpId = jobApplication.jobPost.jobPostId;
-                                return '<input type="submit" value="Pre-Screen" style="width:150px" onclick="openPartnerPreScreenModal(' + jpId+ ', ' + candidateId + ');" id="' + candidateInfo.lead.leadId + '" class="btn btn-primary">'
+                                jobRoleName = jobApplication.jobPost.jobRole.jobName;
+                                companyName = jobApplication.jobPost.company.companyName;
+                                return '<input type="submit" value="Pre-Screen"  style="width:150px" onclick="openPartnerPreScreenModal(' + jpId+ ', ' + candidateId + ');" id="' + candidateInfo.lead.leadId + '" class="btn btn-primary">'
                             } else {
-                                return '<div class="mLabel" style="width:100%">Not Required</div>';
+                                return "Completed";
                             }
                         };
 
@@ -920,9 +924,18 @@ openPartnerPreScreenModal = function (jobPostId, candidateId) {
 
         // remove callConnected
         decorator.callYesNoRequired = false;
+        if(jobRoleName != null && companyName!= null){
+            decorator.preScreen.title = "Job Application Form: "+jobRoleName+" @ "+companyName;
+        } else {
+            decorator.preScreen.title = "Job Application Form"
+        }
+        decorator.table.mainTable.title = "Job Requirements : Please verify and update candidate's details ";
+        decorator.table.otherTable.title = "Job Details: ";
+        decorator.textContainers.minReqContainer.title = "Other Requirements";
+        decorator.edit.title = "Update Info";
 
         // footerMessage
-        decorator.modalFooter.footerMessage = "I have confirmed with the candidate about above requirements.";
+        decorator.modalFooter.footerMessage = " I confirm that the above details are accurate and accept the terms and conditions.";
 
         if( !decorator.callYesNoRequired) {
             getPreScreenContent(jobPostId, candidateId, false, decorator, false);

@@ -161,11 +161,13 @@ public class ServerConstants {
     public static Integer REC_SORT_SALARY_H_TO_L = 2;
     public static Integer REC_SORT_SALARY_L_TO_H = 3;
 
-    // session channel key, delta of any two has been kept different to avoid value manipulation at FE
-    public static final Integer SESSION_CHANNEL_CANDIDATE_WEBSITE = 1;
-    public static final Integer SESSION_CHANNEL_SUPPORT_WEBSITE = 33;
-    public static final Integer SESSION_CHANNEL_PARTNER_WEBSITE = 77;
-    public static final Integer SESSION_CHANNEL_RECRUITER_WEBSITE = 111;
+    // its in sync with InteractionService.InteractionChannelType
+    public static final int SESSION_CHANNEL_CANDIDATE_WEBSITE = 1;
+    public static final int SESSION_CHANNEL_CANDIDATE_ANDROID_APP = 2;
+    public static final int SESSION_CHANNEL_SUPPORT_WEBSITE = 3;
+    public static final int SESSION_CHANNEL_KNOWLARITY = 4;
+    public static final int SESSION_CHANNEL_PARTNER_WEBSITE = 5;
+    public static final int SESSION_CHANNEL_RECRUITER_WEBSITE = 6;
 
     // map is used to validate the incoming session Channel value
     public static Map<Integer, Integer> sessionChannelMap = new HashMap<Integer, Integer>(){{
