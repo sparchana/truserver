@@ -1642,6 +1642,7 @@ public class JobPostWorkflowEngine {
             if(interviewDate != null){
                 jobPostWorkflowOld.setScheduledInterviewDate(interviewDate);
             }
+            Logger.info("interview slot saved");
             jobPostWorkflowOld.save();
             return jobPostWorkflowOld;
         } else {
@@ -1724,11 +1725,14 @@ public class JobPostWorkflowEngine {
                 .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
 
         if(jobPostWorkflowOld == null) {
+            Logger.info("session channel not set");
+
             return null;
         }
 
         if( session().get("sessionChannel") == null ||
                 ServerConstants.sessionChannelMap.get(Integer.valueOf(session().get("sessionChannel"))) == null) {
+            Logger.info("session channel not set");
             return null;
         }
 

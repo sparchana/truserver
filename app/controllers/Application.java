@@ -1940,7 +1940,7 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(SecuredUser.class)
-    public static Result updateCandidateDetailsViaPreScreen(String propertyIdList, String candidateMobile) throws IOException {
+    public static Result updateCandidateDetailsViaPreScreen(String propertyIdList, String candidateMobile, Long jobPostId) throws IOException {
         List<String> propertyIds = Arrays.asList(propertyIdList.split("\\s*,\\s*"));
         if(propertyIdList == null || candidateMobile == null) {
             badRequest("Empty Values!");
@@ -2035,6 +2035,16 @@ public class Application extends Controller {
                     response = "ok";
                 }
             }
+
+            // saving preScreen Results
+            PreScreenRequest preScreenRequest= new PreScreenRequest();
+            preScreenRequest.setCandidateId(candidate.getCandidateId());
+            preScreenRequest.setJobPostId(jobPostId);
+            preScreenRequest.setPreScreenNote("Candidate Self PreScreen");
+            preScreenRequest.setPass(true);
+            preScreenRequest.setPreScreenIdList(new ArrayList<>());
+            JobPostWorkflowEngine.savePreScreenResult(preScreenRequest);
+
             return ok(response);
         }
         return badRequest();
