@@ -1,0 +1,167 @@
+@workflow{
+
+  <div id="preScreenCompletedPane">
+    <div id="preScreenCompletedError" style="text-align: center;
+      color: red"><h5 id="preScreenCompletedErrorMsg"></h5></div>
+
+    Select Date range:
+    <input type="text" id="rangePicker" class="form-control" style="display: inline-block; width: 240px">
+    <i class="glyphicon glyphicon-calendar fa fa-calendar" style="margin-left: -24px"></i>
+
+    <table id="candidateResultTable" class="mdl-data-table mdl-js-data-table" style="margin-top: 16px;display: none;table-layout: fixed;overflow-x: scroll;" cellspacing="0" width="100%">
+      <thead>
+        <tr>
+          <th>CLID</th>
+          <th>Candidate Name</th>
+          <th>Mobile</th>
+          <th>JobRole Pref</th>
+          <th>Locality Pref</th>
+          <th>Home Location</th>
+          <th>Matched Job Locality (Distance)</th>
+          <th>Age</th>
+          <th>Exp (Year)</th>
+          <th>isEmployed?</th>
+          <th>Current/Lastdrawn Salary</th>
+          <th>Language Known</th>
+          <th>Education</th>
+          <th>Degree</th>
+          <th>Has Completed?</th>
+          <th>Skills</th>
+          <th>Gender</th>
+          <th>Past Company</th>
+          <th>isAssessed?</th>
+          <th>Job Applied on</th>
+          <th>No. of JobApp?</th>
+          <th>Job Application Mode (Self/Partner)</th>
+          <th>Experience/Relieving Letter</th>
+          <th>ID-Proofs</th>
+          <th>TimeShift Pref</th>
+          <th>Last Active</th>
+          <th>Created On</th>
+          <th>MinProfile?</th>
+          <th>Exp Detail</th>
+          <th>Candidate Id</th>
+          <th>Interaction History</th>
+          <th></th>
+          <th></th>
+          <th>Interview Date and slot</th>
+          <th>Current Status</th>
+          <th>Interview Feedback</th>
+        </tr>
+      </thead>
+      <tfoot>
+        <tr>
+          <th>CLID</th>
+          <th>Candidate Name</th>
+          <th>Mobile</th>
+          <th>JobRole Pref</th>
+          <th>Locality Pref</th>
+          <th>Home Location</th>
+          <th>Matched Locality</th>
+          <th>Age</th>
+          <th>Exp (Year)</th>
+          <th>isEmployed?</th>
+          <th>Matched Job Locality (Distance)</th>
+          <th>Language Known</th>
+          <th>Education</th>
+          <th>Degree</th>
+          <th>Has Completed?</th>
+          <th>Skills</th>
+          <th>Gender</th>
+          <th>Past Company</th>
+          <th>isAssessed?</th>
+          <th>Job Applied on</th>
+          <th>No. of JobApp?</th>
+          <th>Job Application Mode (Self/Partner)</th>
+          <th>Experience/Relieving Letter</th>
+          <th>ID-Proofs</th>
+          <th>TimeShift Pref</th>
+          <th>Last Active</th>
+          <th>Created On</th>
+          <th>MinProfile?</th>
+          <th>Exp Detail</th>
+          <th>Candidate Id</th>
+          <th>Interaction History</th>
+          <th></th>
+          <th></th>
+          <th>Interview Date and slot</th>
+          <th>Candidate reported status</th>
+          <th>Interview Feedback</th>
+        </tr>
+      </tfoot>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+  
+  <dialog class="mdl-dialog" id="notGoingReason" style="width: 36%">
+    <center>
+      <h4 class="mdl-dialog__title">Reason for not Going for the Interview</h4>
+    </center>
+    <br>
+    <div class="mdl-dialog__content">
+      <center>
+        <img src="/assets/recruiter/img/icons/reschedule-color.svg" width="60px">
+        <br>
+        <h5>Please specify reason for rejection</h5>
+      </center>
+      <div class="row" style="margin-top: 4px" >
+        <div class="col-sm-6">
+          <h6 style="text-align: right; margin-top: 28px">Please select a reason for not going:</h6>
+        </div>
+        <div class="input-field col s12 l6">
+          <select id="notGoingReasonOption" style="margin-top: 30px" class="selectDropdown"></select>
+        </div>
+      </div>
+
+    </div>
+    <div class="mdl-dialog__actions">
+      <button type="button" class="mdl-button confirmNotGoing">Reschedule Interview</button>
+      <button type="button" class="mdl-button closeNotGoing">Cancel</button>
+    </div>
+  </dialog>
+
+  <!-- feedback dialog -->
+  <dialog class="mdl-dialog" id="feedbackDialog" style="width: 36%">
+    <center>
+      <h4 class="mdl-dialog__title">Interview Feedback</h4>
+    </center>
+    <br>
+    <div class="mdl-dialog__content">
+      <center>
+        <img src="/assets/recruiter/img/feedback.svg" width="60px">
+        <br>
+        <h5>Select Interview Result</h5>
+      </center>
+
+      <center>
+        <div class="row" style="margin-top: 4px" >
+          <div class="col-sm-6">
+            <h6 style="text-align: right; margin-top: 28px">Please select a interview feedback:</h6>
+          </div>
+          <div class="input-field col s12 l6">
+            <select id="feedbackOption" style="margin-top: 30px" class="selectDropdown">
+              <option value="0">Select a feedback</option>
+              <option value="1">Interview Complete - Selected</option>
+              <option value="2">Interview Complete - Rejected</option>
+              <option value="3">Candidate no show</option>
+              <option value="4">Candidate not qualified</option>
+            </select>
+          </div>
+        </div>
+      </center>
+
+      <center>
+        <textarea placeholder="Interview feedback" style="width: 92%" id="feedbackNote" ></textarea>
+      </center>
+
+    </div>
+    <div class="mdl-dialog__actions">
+      <button type="button" class="mdl-button confirmFeedback">Submit feedback</button>
+      <button type="button" class="mdl-button closeFeedback">Cancel</button>
+    </div>
+  </dialog>
+
+  <link rel="stylesheet" type="text/css" href="/assets/css/pre_screen_modal.css">
+  <link rel="stylesheet" type="text/css" href="/assets/support/css/daterangepicker.css">
+}

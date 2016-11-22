@@ -34,9 +34,11 @@ function processDataForUnlockedCandidates(returnedData) {
     if(Object.keys(returnedData).length > 0){
         var parent = $("#candidateContainer");
         if(returnedData != "0"){
+            returnedData.reverse();
             returnedData.forEach(function (value){
                 var candidateCard = document.createElement("div");
                 candidateCard.className = "card";
+                candidateCard.style = "border-radius: 6px";
                 parent.append(candidateCard);
 
                 var candidateCardContent = document.createElement("div");
@@ -426,15 +428,19 @@ function processDataForUnlockedCandidates(returnedData) {
                     var skillVal = "";
                     var allSkillVal = "";
                     var count = 0;
+                    var skillCount = 0;
                     skillList.forEach(function (skill){
                         count = count + 1;
                         if(count < 4){
-                            if(skill.candidateSkillResponse){
+                            if(skill.candidateSkillResponse == true){
                                 skillVal += skill.skill.skillName + ", ";
                                 allSkillVal += skill.skill.skillName + ", ";
+                                skillCount ++;
                             }
                         } else{
-                            allSkillVal += skill.skill.skillName + ", ";
+                            if(skill.candidateSkillResponse == true){
+                                allSkillVal += skill.skill.skillName + ", ";
+                            }
                         }
                     });
                     candidateSkillVal.textContent = skillVal.substring(0, skillVal.length - 2);
@@ -521,7 +527,7 @@ function processDataForUnlockedCandidates(returnedData) {
 
                 var unlockDivRow = document.createElement("div");
                 unlockDivRow.className = "row";
-                unlockDivRow.style = "margin: 6px; padding: 1%; text-align: right; color: #fff";
+                unlockDivRow.style = "padding: 6px 2% 16px 2%;margin: 0; text-align: right; color: #fff";
                 candidateCardContent.appendChild(unlockDivRow);
 
                 //unlock candidate div
@@ -545,87 +551,6 @@ function processDataForUnlockedCandidates(returnedData) {
     }
 }
 
-function unlockContact(candidateId){
-    if(candidateId != null || candidateId != undefined){
-        candidateIdVal = candidateId;
-        try {
-            $.ajax({
-                type: "POST",
-                url: "/recruiter/unlockCandidateContact/" + candidateId,
-                async: false,
-                contentType: false,
-                processData: false,
-                success: processDataUnlockCandidate
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception.stack);
-        }
-    } else{
-        notifyError("Something went wrong. Please try again later");
-    }
-}
-
-function processDataUnlockCandidate(returnedData) {
-    if(returnedData.status == 1){
-        notifySuccess("Contact successfully unlocked");
-        getRecruiterInfo();
-        $("#candidate_" + candidateIdVal).html(returnedData.candidateMobile);
-        $("#unlock_candidate_" + returnedData.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 btn").addClass("contactUnlocked right").removeAttr('onclick');
-    } else if(returnedData.status == 2){
-        notifySuccess("You have already unlocked the candidate");
-        getRecruiterInfo();
-        $("#unlock_candidate_" + returnedData.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 btn").addClass("contactUnlocked right").removeAttr('onclick');
-        $("#candidate_" + candidateIdVal).html(returnedData.candidateMobile);
-    } else if(returnedData.status == 3){
-        notifyError("Out of credits! Please recharge");
-        openCreditModal();
-    }
-}
-
-function getRecruiterInfo() {
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/getRecruiterProfileInfo",
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataRecruiterProfile
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-}
-
-function processDataRecruiterProfile(returnedData) {
-    var creditHistoryList = returnedData.recruiterCreditHistoryList;
-    creditHistoryList.reverse();
-    var contactCreditCount = 0;
-    var interviewCreditCount = 0;
-    creditHistoryList.forEach(function (creditHistory){
-        if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
-            if(contactCreditCount == 0){
-                $("#remainingContactCredits").html(creditHistory.recruiterCreditsAvailable);
-                $("#remainingContactCreditsMobile").html(creditHistory.recruiterCreditsAvailable);
-                contactCreditCount = 1;
-            }
-        } else{
-            if(interviewCreditCount == 0){
-                if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
-                    $("#remainingInterviewCredits").html(creditHistory.recruiterCreditsAvailable);
-                    $("#remainingInterviewCreditsMobile").html(creditHistory.recruiterCreditsAvailable);
-                    interviewCreditCount = 1;
-                }
-            }
-        }
-        if(contactCreditCount > 0 && interviewCreditCount > 0){
-            return false;
-        }
-    });
-}
-
-
 function checkRecruiterLogin() {
     try {
         $.ajax({
@@ -644,47 +569,6 @@ function checkRecruiterLogin() {
 function processDataRecruiterSession(returnedData) {
     if(returnedData == 0){
         logoutRecruiter();
-    }
-}
-
-function getMonthVal(month){
-    switch(month) {
-        case 1:
-            return "Jan";
-            break;
-        case 2:
-            return "Feb";
-            break;
-        case 3:
-            return "Mar";
-            break;
-        case 4:
-            return "Apr";
-            break;
-        case 5:
-            return "May";
-            break;
-        case 6:
-            return "Jun";
-            break;
-        case 7:
-            return "Jul";
-            break;
-        case 8:
-            return "Aug";
-            break;
-        case 9:
-            return "Sep";
-            break;
-        case 10:
-            return "Oct";
-            break;
-        case 11:
-            return "Nov";
-            break;
-        case 12:
-            return "Dec";
-            break;
     }
 }
 

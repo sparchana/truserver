@@ -419,7 +419,8 @@ a:hover{
 .jobApplyBtnModal{
     border: none;
     color: white;
-    background: #09ac58;
+    border-radius: 4px;
+    background: linear-gradient(to left, #00b638, #019b4b);
     padding: 2%;
     display: block;
     width: 176px;
@@ -512,7 +513,8 @@ hr{
 .jobApplyBtnV2{
     border: none;
     color: white;
-    background: #09ac58;
+    border-radius: 4px;
+    background: linear-gradient(to left, #00b638, #019b4b);
     padding: 6%;
     width: 120px;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
@@ -521,6 +523,7 @@ hr{
 .jobApplyPartner{
     border: none;
     color: white;
+    border-radius: 4px;
     background: #09ac58;
     padding: 6%;
     width: 120px;
@@ -599,8 +602,9 @@ hr{
         width:48%;
     }
     .jobApplyBtnV2{
+        border-radius: 4px;
         margin-top: 6%;
-        background: #09ac58;
+        background: linear-gradient(to left, #00b638, #019b4b);
         padding: 4%;
         box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
     }
@@ -907,10 +911,7 @@ li .dropdown-menu{
     margin-right: 18px;
 }
 .sectionFiveMain{
-    background: linear-gradient(
-            rgba(24, 26, 45, 0.7),
-            rgba(24, 26, 45, 0.7)
-    ), url(../img/back_design.png) repeat;
+    background: linear-gradient(to left, rgba(0, 50, 67, 0.22), 36%, rgba(0, 0, 0, 0.71)), url(../img/back_design.png) repeat;
     background-size: 100%;
 }
 .sectionFive {

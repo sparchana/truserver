@@ -78,19 +78,10 @@ public class JobApplication extends Model {
     @Transient
     private boolean isPreScreenRequired = true;
 
-
     public static Model.Finder<String, JobApplication> find = new Model.Finder(JobApplication.class);
 
     public JobApplication() {
         this.jobApplicationCreateTimeStamp = new Timestamp(System.currentTimeMillis());
-    }
-
-    public Locality getLocality() {
-        return locality;
-    }
-
-    public void setLocality(Locality locality) {
-        this.locality = locality;
     }
 
     public Integer getJobApplicationId() {
@@ -101,16 +92,28 @@ public class JobApplication extends Model {
         this.jobApplicationId = jobApplicationId;
     }
 
-    public JobPost getJobPost() {
-        return jobPost;
-    }
-
-    public void setJobPost(JobPost jobPost) {
-        this.jobPost = jobPost;
-    }
-
     public Timestamp getJobApplicationCreateTimeStamp() {
         return jobApplicationCreateTimeStamp;
+    }
+
+    public void setJobApplicationCreateTimeStamp(Timestamp jobApplicationCreateTimeStamp) {
+        this.jobApplicationCreateTimeStamp = jobApplicationCreateTimeStamp;
+    }
+
+    public Timestamp getJobApplicationUpdateTimestamp() {
+        return jobApplicationUpdateTimestamp;
+    }
+
+    public void setJobApplicationUpdateTimestamp(Timestamp jobApplicationUpdateTimestamp) {
+        this.jobApplicationUpdateTimestamp = jobApplicationUpdateTimestamp;
+    }
+
+    public String getScreeningComments() {
+        return screeningComments;
+    }
+
+    public void setScreeningComments(String screeningComments) {
+        this.screeningComments = screeningComments;
     }
 
     public Boolean getPreScreenSalary() {
@@ -129,16 +132,12 @@ public class JobApplication extends Model {
         this.preScreenTimings = preScreenTimings;
     }
 
-    public void setJobApplicationCreateTimeStamp(Timestamp jobApplicationCreateTimeStamp) {
-        this.jobApplicationCreateTimeStamp = jobApplicationCreateTimeStamp;
+    public JobPost getJobPost() {
+        return jobPost;
     }
 
-    public String getScreeningComments() {
-        return screeningComments;
-    }
-
-    public void setScreeningComments(String screeningComments) {
-        this.screeningComments = screeningComments;
+    public void setJobPost(JobPost jobPost) {
+        this.jobPost = jobPost;
     }
 
     public ScreeningStatus getScreeningStatus() {
@@ -157,8 +156,12 @@ public class JobApplication extends Model {
         this.candidate = candidate;
     }
 
-    public Timestamp getJobApplicationUpdateTimestamp() {
-        return jobApplicationUpdateTimestamp;
+    public Locality getLocality() {
+        return locality;
+    }
+
+    public void setLocality(Locality locality) {
+        this.locality = locality;
     }
 
     public Partner getPartner() {
@@ -169,20 +172,20 @@ public class JobApplication extends Model {
         this.partner = partner;
     }
 
-    public Date getScheduledInterviewDate() {
-        return scheduledInterviewDate;
-    }
-
-    public void setScheduledInterviewDate(Date scheduledInterviewDate) {
-        this.scheduledInterviewDate = scheduledInterviewDate;
-    }
-
     public InterviewTimeSlot getInterviewTimeSlot() {
         return interviewTimeSlot;
     }
 
     public void setInterviewTimeSlot(InterviewTimeSlot interviewTimeSlot) {
         this.interviewTimeSlot = interviewTimeSlot;
+    }
+
+    public Date getScheduledInterviewDate() {
+        return scheduledInterviewDate;
+    }
+
+    public void setScheduledInterviewDate(Date scheduledInterviewDate) {
+        this.scheduledInterviewDate = scheduledInterviewDate;
     }
 
     public boolean isPreScreenRequired() {

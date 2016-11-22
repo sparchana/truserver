@@ -4,6 +4,7 @@ import api.InteractionConstants;
 import api.ServerConstants;
 import controllers.businessLogic.InteractionService;
 import models.entity.Interaction;
+import play.Logger;
 
 import static api.InteractionConstants.*;
 import static api.InteractionConstants.INTERACTION_NOTE_BLANK;
@@ -132,4 +133,115 @@ public class RecruiterInteractionService {
         InteractionService.createInteraction(interaction);
     }
 
+    public static void createInteractionForRecruiterShortlistJobApplicationWithoutDate(String objAUUID, String objBUUID) {
+        Interaction interaction = new Interaction(
+                objAUUID,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                objBUUID,
+                ServerConstants.OBJECT_TYPE_RECRUTER,
+                INTERACTION_TYPE_RECRUITER_SHORTLIST_JOB_APPLICATION_INTERVIEW,
+                INTERACTION_NOTE_BLANK,
+                INTERACTION_RESULT_RECRUITER_SHORTLISTS_JOB_INTERVIEW_WITHOUT_DATE,
+                INTERACTION_CREATED_SELF,
+                INTERACTION_CHANNEL_RECRUITER_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
+    public static void createInteractionForRecruiterAcceptingInterviewDate(String objAUUID, String objBUUID) {
+        Interaction interaction = new Interaction(
+                objAUUID,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                objBUUID,
+                ServerConstants.OBJECT_TYPE_RECRUTER,
+                INTERACTION_TYPE_RECRUITER_ACCEPT_JOB_APPLICATION_INTERVIEW,
+                INTERACTION_NOTE_BLANK,
+                INTERACTION_RESULT_RECRUITER_ACCEPT_JOB_INTERVIEW_DATE,
+                INTERACTION_CREATED_SELF,
+                INTERACTION_CHANNEL_RECRUITER_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
+    public static void createInteractionForRecruiterRejectingInterviewDate(String objAUUID, String objBUUID) {
+        Interaction interaction = new Interaction(
+                objAUUID,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                objBUUID,
+                ServerConstants.OBJECT_TYPE_RECRUTER,
+                INTERACTION_TYPE_RECRUITER_REJECT_JOB_APPLICATION_INTERVIEW,
+                INTERACTION_NOTE_BLANK,
+                INTERACTION_RESULT_RECRUITER_REJECT_JOB_INTERVIEW_DATE,
+                INTERACTION_CREATED_SELF,
+                INTERACTION_CHANNEL_RECRUITER_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
+    public static void createInteractionForRecruiterReschedulingInterviewDate(String objAUUID, String objBUUID) {
+        Interaction interaction = new Interaction(
+                objAUUID,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                objBUUID,
+                ServerConstants.OBJECT_TYPE_RECRUTER,
+                INTERACTION_TYPE_RECRUITER_RESCHEDULE_JOB_APPLICATION_INTERVIEW,
+                INTERACTION_NOTE_BLANK,
+                INTERACTION_RESULT_RECRUITER_RESCHEDULE_JOB_INTERVIEW_DATE,
+                INTERACTION_CREATED_SELF,
+                INTERACTION_CHANNEL_RECRUITER_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
+    public static void createInteractionForCandidateAcceptingRescheduledInterviewViaWebsite(String objAUUID) {
+        Interaction interaction = new Interaction(
+                objAUUID,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                InteractionConstants.INTERACTION_TYPE_CANDIDATE_ACCEPTS_RESCHEDULED_INTERVIEW,
+                InteractionConstants.INTERACTION_NOTE_BLANK,
+                INTERACTION_RESULT_CANDIDATE_ACCEPTS_RESCHEDULED_INTERVIEW,
+                INTERACTION_CREATED_SELF,
+                INTERACTION_CHANNEL_CANDIDATE_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
+    public static void createInteractionForCandidateAcceptingRescheduledInterviewViaAndroid(String objAUUID) {
+        Interaction interaction = new Interaction(
+                objAUUID,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                InteractionConstants.INTERACTION_TYPE_CANDIDATE_ACCEPTS_RESCHEDULED_INTERVIEW,
+                InteractionConstants.INTERACTION_NOTE_BLANK,
+                INTERACTION_RESULT_CANDIDATE_ACCEPTS_RESCHEDULED_INTERVIEW,
+                INTERACTION_CREATED_SELF,
+                INTERACTION_CHANNEL_CANDIDATE_ANDROID
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
+    public static void createInteractionForCandidateRejectingRescheduledInterviewViaWebsite(String objAUUID) {
+        Interaction interaction = new Interaction(
+                objAUUID,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                InteractionConstants.INTERACTION_TYPE_CANDIDATE_REJECTS_RESCHEDULED_INTERVIEW,
+                InteractionConstants.INTERACTION_NOTE_BLANK,
+                INTERACTION_RESULT_CANDIDATE_REJECTS_RESCHEDULED_INTERVIEW,
+                INTERACTION_CREATED_SELF,
+                INTERACTION_CHANNEL_CANDIDATE_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
+    public static void createInteractionForCandidateRejectingRescheduledInterviewViaAndroid(String objAUUID) {
+        Interaction interaction = new Interaction(
+                objAUUID,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                InteractionConstants.INTERACTION_TYPE_CANDIDATE_REJECTS_RESCHEDULED_INTERVIEW,
+                InteractionConstants.INTERACTION_NOTE_BLANK,
+                INTERACTION_RESULT_CANDIDATE_REJECTS_RESCHEDULED_INTERVIEW,
+                INTERACTION_CREATED_SELF,
+                INTERACTION_CHANNEL_CANDIDATE_ANDROID
+        );
+        InteractionService.createInteraction(interaction);
+    }
 }

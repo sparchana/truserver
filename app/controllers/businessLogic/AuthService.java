@@ -171,6 +171,7 @@ public class AuthService {
         session().put("candidateMobile", String.valueOf(existingCandidate.getCandidateMobile()));
         session().put("leadId", String.valueOf(existingCandidate.getLead().getLeadId()));
         session().put("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
+        session().put("sessionUsername", String.valueOf(existingCandidate.getCandidateFullName() + "_candidate"));
         session().put("sessionChannel", String.valueOf(ServerConstants.SESSION_CHANNEL_CANDIDATE_WEBSITE));
         Logger.info("set-sessionId"+ session().get("candidateMobile"));
     }

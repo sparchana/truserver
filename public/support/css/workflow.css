@@ -103,3 +103,41 @@ input[type=checkbox], input[type=radio]{
 #eduCompletedNot{
     margin-left: 40px;
 }
+.accept{
+    cursor: pointer;
+    padding: 3px 6px 6px 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #c0c8b6;
+    transition: 0.2s;
+}
+.accept:hover{
+    background: #06c840;
+}
+.reject{
+    margin-left: 8px;
+    cursor: pointer;
+    padding: 3px 6px 6px 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #c0c8b6;
+    transition: 0.2s;
+}
+.reject:hover{
+    background: #f66624;
+}
+.reschedule{
+    margin-left: 8px;
+    cursor: pointer;
+    padding: 3px 6px 6px 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #c0c8b6;
+    transition: 0.2s;
+}
+.reschedule:hover{
+    background: #edc63a;
+}

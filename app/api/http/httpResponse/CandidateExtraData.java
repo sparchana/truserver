@@ -1,8 +1,11 @@
 package api.http.httpResponse;
 
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import models.entity.Static.InterviewTimeSlot;
+import models.entity.Static.JobPostWorkflowStatus;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * Created by zero on 10/10/16.
@@ -16,9 +19,14 @@ public class CandidateExtraData {
     public Timestamp preScreenSelectionTimeStamp;
     public String workflowUUId;
     public Long workflowId;
-    public String workflowStatus;
+    public JobPostWorkflowStatus workflowStatus;
     public String createdBy;
     public String interviewSchedule;
+    public Date interviewDate;
+    public InterviewTimeSlot interviewSlot;
+    public Double interviewLat;
+    public Double interviewLng;
+    public JobPostWorkflowStatus candidateInterviewStatus;
 
     public String getAppliedOn() {
         return appliedOn;
@@ -84,11 +92,11 @@ public class CandidateExtraData {
         this.workflowId = workflowId;
     }
 
-    public String getWorkflowStatus() {
+    public JobPostWorkflowStatus getWorkflowStatus() {
         return workflowStatus;
     }
 
-    public void setWorkflowStatus(String workflowStatus) {
+    public void setWorkflowStatus(JobPostWorkflowStatus workflowStatus) {
         this.workflowStatus = workflowStatus;
     }
 
@@ -106,5 +114,45 @@ public class CandidateExtraData {
 
     public void setInterviewSchedule(String interviewSchedule) {
         this.interviewSchedule = interviewSchedule;
+    }
+
+    public Double getInterviewLat() {
+        return interviewLat;
+    }
+
+    public void setInterviewLat(Double interviewLat) {
+        this.interviewLat = interviewLat;
+    }
+
+    public Double getInterviewLng() {
+        return interviewLng;
+    }
+
+    public void setInterviewLng(Double interviewLng) {
+        this.interviewLng = interviewLng;
+    }
+
+    public Date getInterviewDate() {
+        return interviewDate;
+    }
+
+    public void setInterviewDate(Date interviewDate) {
+        this.interviewDate = interviewDate;
+    }
+
+    public InterviewTimeSlot getInterviewSlot() {
+        return interviewSlot;
+    }
+
+    public void setInterviewSlot(InterviewTimeSlot interviewSlot) {
+        this.interviewSlot = interviewSlot;
+    }
+
+    public JobPostWorkflowStatus getCandidateInterviewStatus() {
+        return candidateInterviewStatus;
+    }
+
+    public void setCandidateInterviewStatus(JobPostWorkflowStatus candidateInterviewStatus) {
+        this.candidateInterviewStatus = candidateInterviewStatus;
     }
 }

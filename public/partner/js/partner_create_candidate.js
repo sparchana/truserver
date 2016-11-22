@@ -8,12 +8,17 @@ var educationArray = [];
 var languageMap = [];
 var localityArray = [];
 var jobArray = [];
+var assetArray = [];
+var idProofArray = [];
 
 var jobPrefArray = [];
 var localityPrefArray = [];
 var currentLocationArray = [];
 var candidateSkill = [];
 var currentJobRole = [];
+var candidateIdProofArray = [];
+var candidateAssetArray = [];
+
 
 var jobPrefString;
 
@@ -23,6 +28,10 @@ function getLocality(){
 
 function getJob() {
     return jobArray;
+}
+
+function getAssets(){
+    return assetArray;
 }
 
 $(document).ready(function() {
@@ -71,6 +80,20 @@ $(document).ready(function() {
             contentType: false,
             processData: false,
             success: processDataCheckShift
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllAsset",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckAssets
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
@@ -216,6 +239,20 @@ $(document).ready(function() {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    /* ajax commands to fetch all id proofs*/
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllIdProof",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckIdProofs
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 
 
 });
@@ -247,6 +284,16 @@ function processDataCheckLocality(returnedData) {
     });
 }
 
+function processDataCheckAssets(returnedData) {
+    returnedData.forEach(function (asset) {
+        var id = asset.assetId;
+        var name = asset.assetTitle;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        assetArray.push(item);
+    });
+}
 
 function processDataAndFillAllFields(returnedData) {
     if (returnedData == "0" || returnedData == "-1") {
@@ -290,6 +337,43 @@ function processDataAndFillAllFields(returnedData) {
             } catch (err) {
                 console.log("homeLocality" + err);
             }
+        }
+        /* get Candidate's idProofs */
+        console.log(returnedData.idProofReferenceList);
+        try {
+            var idProof = returnedData.idProofReferenceList;
+            var tempIdProofList = []
+            idProof.forEach(function (singleIdProof) {
+                tempIdProofList.push(singleIdProof.idProof);
+                var id = singleIdProof.idProof.idProofId;
+                var name = singleIdProof.idProof.idProofName;
+                var number = singleIdProof.idProofNumber;
+                var item = {};
+                item ["id"] = id;
+                item ["name"] = name;
+                item ["number"] = number;
+                candidateIdProofArray.push(item);
+            });
+            if(candidateIdProofArray != null && candidateIdProofArray.length > 0) {
+                generateIdProof(tempIdProofList);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+
+        /* get Candidate's assets */
+        try {
+            var assets = returnedData.candidateAssetList;
+            assets.forEach(function (singleAsset) {
+                var id = singleAsset.asset.assetId;
+                var name = singleAsset.asset.assetTitle;
+                var item = {};
+                item ["id"] = id;
+                item ["name"] = name;
+                candidateAssetArray.push(item);
+            });
+        } catch (err) {
+            console.log(err);
         }
 
         // populate past company and past sal fields
@@ -437,6 +521,112 @@ function processDataAndFillAllFields(returnedData) {
                 candidateSkill.push(obj);
             });
         }
+    }
+}
+function processDataCheckIdProofs(returnedData) {
+    returnedData.forEach(function (idProof) {
+        var id = idProof.idProofId;
+        var name = idProof.idProofName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        idProofArray.push(item);
+    });
+}
+function generateIdProof(idProofJson){
+    // create table
+    if(idProofJson == null) {
+        var selectedIdProofIds = $('#candidateIdProof').val();
+        console.log("generateIdproof input field: " + selectedIdProofIds);
+        if (selectedIdProofIds != null && selectedIdProofIds !== '') {
+            try {
+                $.ajax({
+                    type: "GET",
+                    url: "/getAllIdProofs/" + selectedIdProofIds,
+                    data: false,
+                    contentType: false,
+                    processData: false,
+                    success: processDocs
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+        }
+    } else {
+        console.log(idProofJson);
+        processDocs(idProofJson);
+    }
+
+}
+function processDocs(returnedData) {
+    var count = 0;
+    var table = document.getElementById("docTableTable");
+    $('#docTableTable').empty();
+    returnedData.forEach(function (idProof) {
+        console.log(JSON.stringify(idProof));
+        count++;
+        var row = table.insertRow(0);
+
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+
+        cell1.innerHTML = idProof.idProofName;
+        var ip = document.createElement("INPUT");
+        ip.setAttribute("type", "text");
+        ip.setAttribute("id", "idProofValue_"+idProof.idProofId);
+        ip.onchange = validateIp;
+        cell2.appendChild(ip);
+    });
+    prefillDocs(candidateIdProofArray);
+}
+function validateIp() {
+    var id = this.id.split("_")[1];
+    // aadhaar validation
+    if(id == 3) {
+        console.log(this.value);
+        if(!validateAadhar(this.value)){
+            // $('#saveBtn').prop('disabled', true);
+            console.log("errror");
+            notifyError("Invalid Aadhaar Card Number. (Example: 100120023003)", 'danger');
+        } else {
+            // $('#saveBtn').prop('disabled', false);
+        }
+    }
+    if(id == 1) {
+        console.log(this.value);
+        if (!validateDL(this.value)){
+            // $('#saveBtn').prop('disabled', true);
+            notifyError("Invalid Driving Licence Number. (Example: TN7520130008800 or TN-7520130008800)", 'danger');
+        } else {
+            // $('#saveBtn').prop('disabled', false);
+        }
+    }
+    if(id == 2) {
+        console.log(this.value);
+        if(!validatePASSPORT(this.value)){
+            // $('#saveBtn').prop('disabled', true);
+            notifyError("Invalid Pass Port Number. (Example: A12 34567)", 'danger');
+        } else {
+            // $('#saveBtn').prop('disabled', false);
+        }
+    }
+    if(id == 4){
+        console.log(this.value);
+        if(!validatePAN(this.value)){
+            // $('#saveBtn').prop('disabled', true);
+            notifyError("Invalid PAN Card Number. (Example: ABCDE1234Z)", 'danger');
+        } else {
+            // $('#saveBtn').prop('disabled', false);
+        }
+    }
+}
+function prefillDocs(data) {
+    if(data != null && data.length>0) {
+        data.forEach(function (iProof) {
+            if(iProof.number != null) {
+                $('#idProofValue_'+iProof.id).val(iProof.number);
+            }
+        });
     }
 }
 
@@ -738,6 +928,37 @@ $(function() {
         var candidateCurrentJobRole = $('#candidateCurrentJobRole').val();
         var candidateLastWithdrawnSalary = $('#candidateLastWithdrawnSalary').val();
 
+        // idproof document details
+
+        var candidateDocumentIdList = $('#candidateIdProof').val().split(",");
+        var candidatePreferredAsset = [];
+        var assetList = $('#candidateAsset').val().split(",");
+        /* Candidate asset list  */
+        for (i = 0; i < assetList.length; i++) {
+            candidatePreferredAsset.push(parseInt(assetList[i]));
+        }
+
+        var documentValues = [];
+        candidateDocumentIdList.forEach(function (id) {
+            console.log($('#idProofValue_'+ id).val());
+            var item = {};
+            item["idProofId"] = parseInt(id);
+            item["idProofValue"] = $('#idProofValue_'+ id).val();
+            documentValues.push(item);
+        });
+        console.log(JSON.stringify(documentValues));
+        //document value verification
+        documentValues.forEach(function(id){
+            if(id.idProofId == null){
+                notifyError("Please Select Document");
+                statusCheck=0;
+            }
+            else if(id.idProofValue == null){
+                notifyError("Please Enter Document Detail");
+                statusCheck=0;
+            }
+        });
+
         // language and skills
         try {
             var languageKnown = $('#languageTable input:checked').map(function () {
@@ -893,6 +1114,8 @@ $(function() {
                 candidateJobPref: candidatePreferredJob,
                 candidateHomeLocality: selectedHomeLocality,
                 candidateTimeShiftPref: selectedTimeShift,
+                candidateIdProofList: documentValues,
+                candidateAssetList: candidatePreferredAsset,
 
                 //experience
                 candidateDob: c_dob,
@@ -965,7 +1188,20 @@ function verifyCandidateOtp(){
 
     }
 }
-
+function getIdProofs(){
+    return idProofArray;
+}
+$(function () {
+    $('#candidateIdProof').change(function () {
+        generateIdProof(null);
+    });
+    $('#candidateJobPref').change(function () {
+        generateSkills();
+        // generateExperience($('#candidateJobPref').val());
+        // prefillCandidatePastJobExp(candidatePastJobExp);
+        // unlockcurrentJobRadio();
+    });
+}); // end of function
 function processDataVerifyCandidate(returnedData) {
     $("#verifyOtp").prop('disabled', false);
     if(returnedData.status == 1){
