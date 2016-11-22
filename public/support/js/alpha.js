@@ -137,25 +137,37 @@ function constructTableForProfileCompletionScores (rows) {
              tdata.addColumn('string', "Channel");
              tdata.addColumn('string', "Creation Date");
              tdata.addColumn('number', "Profile Completion Score");
+             tdata.addColumn('string', "Aadhaar Number");
+             tdata.addColumn('string', "Aadhaar Verification Status");
+             tdata.addColumn('string', "Aadhaar Verification - Name");
+             tdata.addColumn('string', "Aadhaar Verification - Mobile");
+             tdata.addColumn('string', "Aadhaar Verification - DOB");
+             tdata.addColumn('string', "Aadhaar Verification - Gender");
 
          var googleTableRows = [];
 
          $.each( rows, function(row, candidate) {
              var googleRowOneRow = [];
+             var verificationMap = getVerificationStatus(candidate);
+
              googleRowOneRow.push(candidate.lead.leadId);
              googleRowOneRow.push(candidate.candidateFirstName);
              googleRowOneRow.push(candidate.candidateMobile);
              googleRowOneRow.push(leadChannelToString.get(candidate.lead.leadChannel));
              googleRowOneRow.push(new Date(candidate.candidateCreateTimestamp).toLocaleDateString());
              googleRowOneRow.push(candidate.profileCompletionScore);
+             googleRowOneRow.push(getAadhaarNumber(candidate));
+             googleRowOneRow.push(verificationMap["isAadhaarVerified"]);
+             googleRowOneRow.push(verificationMap["Name"]);
+             googleRowOneRow.push(verificationMap["Phone"]);
+             googleRowOneRow.push(verificationMap["DOB"]);
+             googleRowOneRow.push(verificationMap["Gender"]);
              googleTableRows.push(googleRowOneRow);
          });
 
              tdata.addRows(googleTableRows);
 
              var csv = google.visualization.dataTableToCsv(tdata);
-             console.log(tdata);
-             console.log(csv);
              var csvString = csv;
              var a         = document.createElement('a');
              a.href        = 'data:attachment/csv,' +  encodeURIComponent(csvString);
@@ -570,6 +582,54 @@ function updateActivityScores() {
 
 }
 
+function getAadhaarNumber(candidate) {
+    try {
+        if (candidate.idProofReferenceList != null) {
+            candidate.idProofReferenceList.forEach(function (idProofRef) {
+                if (idProofRef.idProof.idProofId == 3) {
+                    if (idProofRef.idProofNumber != 'undefined') {
+                        return idProofRef.idProofNumber;
+                    }
+                }
+            });
+        }
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+    return "N/A"
+}
+
+function getVerificationStatus(candidate) {
+
+    var verificationList = candidate.candidateVerificationList;
+    var resultMap = new Object();
+    resultMap["isAadhaarVerified"] = "N/A";
+    resultMap["Name"] = "N/A";
+    resultMap["Phone"] = "N/A";
+    resultMap["DOB"] = "N/A";
+    resultMap["Gender"] = "N/A";
+
+
+    if (verificationList != null && verificationList.length > 0) {
+
+        verificationList.forEach(function (verificationResult) {
+            if (verificationResult.ongridFieldId.fieldId == 3) {
+                resultMap["Name"] = verificationResult.ongridVerificationStatusId.statusName;
+            }
+            if (verificationResult.ongridFieldId.fieldId == 4) {
+                resultMap["Phone"] = verificationResult.ongridVerificationStatusId.statusName;
+            }
+            if (verificationResult.ongridFieldId.fieldId == 5) {
+                resultMap["DOB"] = verificationResult.ongridVerificationStatusId.statusName;
+            }
+            if (verificationResult.ongridFieldId.fieldId == 9) {
+                resultMap["Gender"] = verificationResult.ongridVerificationStatusId.statusName;
+            }
+        });
+    }
+    return resultMap;
+}
+
 $(function(){
     $("#btnDeActiveToActive").click(function(){
         saveDeactivationChanges();
@@ -586,9 +646,7 @@ $(function(){
     $( "#updateRelevantJobRoles" ).click(function() {
         updateRelevantJobRoles();
     });
-    $( "#updateActivityScores" ).click(function() {
-        updateActivityScores();
-    });
+    
     $( "#jobRelevancyTab" ).click(function() {
         fetchAndDisplayRelevantJobs();
 
