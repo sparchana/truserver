@@ -8,14 +8,17 @@ var educationArray = [];
 var languageMap = [];
 var localityArray = [];
 var jobArray = [];
+var assetArray = [];
+var idProofArray = [];
 
 var jobPrefArray = [];
 var localityPrefArray = [];
 var currentLocationArray = [];
 var candidateSkill = [];
 var currentJobRole = [];
-var idProofArray = [];
 var candidateIdProofArray = [];
+var candidateAssetArray = [];
+
 
 var jobPrefString;
 
@@ -25,6 +28,10 @@ function getLocality(){
 
 function getJob() {
     return jobArray;
+}
+
+function getAssets(){
+    return assetArray;
 }
 
 $(document).ready(function() {
@@ -73,6 +80,20 @@ $(document).ready(function() {
             contentType: false,
             processData: false,
             success: processDataCheckShift
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllAsset",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckAssets
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
@@ -263,6 +284,16 @@ function processDataCheckLocality(returnedData) {
     });
 }
 
+function processDataCheckAssets(returnedData) {
+    returnedData.forEach(function (asset) {
+        var id = asset.assetId;
+        var name = asset.assetTitle;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        assetArray.push(item);
+    });
+}
 
 function processDataAndFillAllFields(returnedData) {
     if (returnedData == "0" || returnedData == "-1") {
@@ -326,6 +357,21 @@ function processDataAndFillAllFields(returnedData) {
             if(candidateIdProofArray != null && candidateIdProofArray.length > 0) {
                 generateIdProof(tempIdProofList);
             }
+        } catch (err) {
+            console.log(err);
+        }
+
+        /* get Candidate's assets */
+        try {
+            var assets = returnedData.candidateAssetList;
+            assets.forEach(function (singleAsset) {
+                var id = singleAsset.asset.assetId;
+                var name = singleAsset.asset.assetTitle;
+                var item = {};
+                item ["id"] = id;
+                item ["name"] = name;
+                candidateAssetArray.push(item);
+            });
         } catch (err) {
             console.log(err);
         }
@@ -885,12 +931,18 @@ $(function() {
         // idproof document details
 
         var candidateDocumentIdList = $('#candidateIdProof').val().split(",");
+        var candidatePreferredAsset = [];
+        var assetList = $('#candidateAsset').val().split(",");
+        /* Candidate asset list  */
+        for (i = 0; i < assetList.length; i++) {
+            candidatePreferredAsset.push(parseInt(assetList[i]));
+        }
 
         var documentValues = [];
         candidateDocumentIdList.forEach(function (id) {
             console.log($('#idProofValue_'+ id).val());
             var item = {};
-            item["idProofId"] = id;
+            item["idProofId"] = parseInt(id);
             item["idProofValue"] = $('#idProofValue_'+ id).val();
             documentValues.push(item);
         });
@@ -1062,7 +1114,8 @@ $(function() {
                 candidateJobPref: candidatePreferredJob,
                 candidateHomeLocality: selectedHomeLocality,
                 candidateTimeShiftPref: selectedTimeShift,
-                candidateIdProofList:documentValues,
+                candidateIdProofList: documentValues,
+                candidateAssetList: candidatePreferredAsset,
 
                 //experience
                 candidateDob: c_dob,
@@ -1144,9 +1197,9 @@ $(function () {
     });
     $('#candidateJobPref').change(function () {
         generateSkills();
-        generateExperience($('#candidateJobPref').val());
-        prefillCandidatePastJobExp(candidatePastJobExp);
-        unlockcurrentJobRadio();
+        // generateExperience($('#candidateJobPref').val());
+        // prefillCandidatePastJobExp(candidatePastJobExp);
+        // unlockcurrentJobRadio();
     });
 }); // end of function
 function processDataVerifyCandidate(returnedData) {
