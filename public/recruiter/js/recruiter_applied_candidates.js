@@ -159,17 +159,17 @@ function tabChange4() {
 function processDataForJobApplications(returnedData) {
     var pendingCount = 0;
     var confirmedCount = 0;
-    var rescheduledCount = 0;
+    var completedCount = 0;
     var rejectedCount = 0;
 
     var pendingParent = $("#pendingCandidateContainer");
     var confirmedParent = $("#confirmedCandidateContainer");
-    var rescheduledParent = $("#rescheduledCandidateContainer");
+    var completedParent = $("#completedCandidateContainer");
     var rejectedParent = $("#rejectedCandidateContainer");
 
     pendingParent.html('');
     confirmedParent.html('');
-    rescheduledParent.html('');
+    completedParent.html('');
     rejectedParent.html('');
 
     if(returnedData != "0"){
@@ -186,7 +186,7 @@ function processDataForJobApplications(returnedData) {
             candidateCard.className = "card";
             candidateCard.style = "border-radius: 6px";
 
-            if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 9 && value.extraData.workflowStatus.statusId < 14)){
+            if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 8 && value.extraData.workflowStatus.statusId < 14)){
                 confirmedParent.append(candidateCard);
                 confirmedCount++;
             } else if(value.extraData.workflowStatus.statusId == 7){
@@ -195,9 +195,9 @@ function processDataForJobApplications(returnedData) {
             } else if(value.extraData.workflowStatus.statusId == 8){
                 rejectedParent.append(candidateCard);
                 rejectedCount++;
-            } else if(value.extraData.workflowStatus.statusId == 9){
-                rescheduledParent.append(candidateCard);
-                rescheduledCount++;
+            } else if(value.extraData.workflowStatus.statusId > 13){
+                completedParent.append(candidateCard);
+                completedCount++;
             } else{
                 pendingParent.append(candidateCard);
                 pendingCount++;
@@ -361,8 +361,15 @@ function processDataForJobApplications(returnedData) {
                 } else if(value.extraData.workflowStatus.statusId == 9){
                     candidateInterviewStatusVal.textContent = "Interview Rescheduled. Awaiting candidate's response";
                     candidateInterviewStatusVal.style = "color: orange; font-weight: bold";
+                } else if(value.extraData.workflowStatus.statusId > 13){
+                    candidateInterviewStatusVal.textContent = value.extraData.workflowStatus.statusTitle;
+                    if(value.extraData.workflowStatus.statusId == 14){
+                        candidateInterviewStatusVal.style = "color: green; font-size: 14px; font-weight: 600";
+                    } else{
+                        candidateInterviewStatusVal.style = "color: red; font-size: 14px; font-weight: 600";
+                    }
                 } else{
-                    candidateInterviewStatusVal.textContent = "TODO! No Slots availabe.";
+                    candidateInterviewStatusVal.textContent = "";
                 }
             }
 
@@ -877,10 +884,10 @@ function processDataForJobApplications(returnedData) {
             $("#noRejectedApplication").hide();
         }
 
-        if(rescheduledCount == 0){
-            $("#noRescheduledApplication").show();
+        if(completedCount == 0){
+            $("#noCompletedApplication").show();
         } else{
-            $("#noRescheduledApplication").hide();
+            $("#noCompletedApplication").hide();
         }
 
         try {

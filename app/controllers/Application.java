@@ -1786,8 +1786,8 @@ public class Application extends Controller {
         return ok(toJson(JobPostWorkflowEngine.getPreScreenedPassFailCandidates(jobPostId, isPass, status)));
     }
 
-    public static Result getConfirmedInterviewCandidates(Long jobPostId) {
-        return ok(toJson(JobPostWorkflowEngine.getConfirmedInterviewCandidates(jobPostId)));
+    public static Result getConfirmedInterviewCandidates(Long jobPostId, String start, String end) {
+        return ok(toJson(JobPostWorkflowEngine.getConfirmedInterviewCandidates(jobPostId, start, end)));
     }
 
     public static Result confirmInterview(long jpId, long value) {

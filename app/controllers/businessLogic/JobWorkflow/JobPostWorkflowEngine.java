@@ -1279,13 +1279,25 @@ public class JobPostWorkflowEngine {
         return selectedCandidateMap;
     }
 
-    public static Map<Long, CandidateWorkflowData> getConfirmedInterviewCandidates(Long jobPostId) {
+    public static Map<Long, CandidateWorkflowData> getConfirmedInterviewCandidates(Long jobPostId, String start, String end) {
         Integer status = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
 
-        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
-                .eq("jobPost.jobPostId", jobPostId)
-                .eq("status_id", status)
-                .findList();
+        List<JobPostWorkflow> jobPostWorkflowList;
+
+        if(Objects.equals(start, "null")){ //checking if there is any date filter or not
+            jobPostWorkflowList = JobPostWorkflow.find.where()
+                    .eq("jobPost.jobPostId", jobPostId)
+                    .eq("status_id", status)
+                    .findList();
+
+        } else{
+            jobPostWorkflowList = JobPostWorkflow.find.where()
+                    .eq("jobPost.jobPostId", jobPostId)
+                    .eq("status_id", status)
+                    .ge("scheduled_interview_date", start)
+                    .le("scheduled_interview_date", end)
+                    .findList();
+        }
 
         List<Candidate> candidateList = new ArrayList<>();
 

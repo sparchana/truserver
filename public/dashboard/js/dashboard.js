@@ -539,7 +539,6 @@ function processDataAndFillAllFields(returnedData) {
     }
 
     /* get Candidate's idProofs */
-    console.log(returnedData.idProofReferenceList);
     try {
         var idProof = returnedData.idProofReferenceList;
         var tempIdProofList = [];

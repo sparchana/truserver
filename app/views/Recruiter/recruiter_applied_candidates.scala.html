@@ -47,8 +47,8 @@
             <div class="col s12">
                 <ul class="tabs tabs-fixed-width">
                     <li class="tab col s3" onclick="tabChange1()"><a href="#pendingConfirmation"><font id="tab1" class="activeTab">Pending confirmation</font></a></li>
-                    <li class="tab col s3" onclick="tabChange2()"><a href="#confirmed"><font id="tab2">Confirmed</font></a></li>
-                    <li class="tab col s3" onclick="tabChange3()"><a href="#rescheduled"><font id="tab3">Rescheduled</font></a></li>
+                    <li class="tab col s3" onclick="tabChange2()"><a href="#confirmed"><font id="tab2">Confirmed/Rescheduled</font></a></li>
+                    <li class="tab col s3" onclick="tabChange3()"><a href="#completed"><font id="tab3">Completed Interviews</font></a></li>
                     <li class="tab col s3" onclick="tabChange4()"><a href="#rejected"><font id="tab4">Rejected</font></a></li>
                 </ul>
             </div>
@@ -66,21 +66,21 @@
                 <div id="noConfirmedApplication" style="padding: 90px 6% 90px 6%; display: none">
                     <center>
                         <img src="/assets/recruiter/img/empty_box.svg" width="116px">
-                        <h5>No Confirmed applications yet!</h5>
+                        <h5>No Confirmed/awaiting reschedule applications yet!</h5>
                         <h6>You have not confirmed any applications!</h6>
                     </center>
                 </div>
                 <div id="confirmedCandidateContainer"></div>
             </div>
-            <div id="rescheduled" class="col s12">
-                <div id="noRescheduledApplication" style="padding: 90px 6% 90px 6%; display: none">
+            <div id="completed" class="col s12">
+                <div id="noCompletedApplication" style="padding: 90px 6% 90px 6%; display: none">
                     <center>
                         <img src="/assets/recruiter/img/empty_box.svg" width="116px">
-                        <h5>No Rescheduled applications yet!</h5>
-                        <h6>Looks clean. There are no applications which are awaiting for reschedule confirmation!</h6>
+                        <h5>No completed applications yet!</h5>
+                        <h6>You have not completed any of the interview!</h6>
                     </center>
                 </div>
-                <div id="rescheduledCandidateContainer"></div>
+                <div id="completedCandidateContainer"></div>
             </div>
             <div id="rejected" class="col s12">
                 <div id="noRejectedApplication" style="padding: 90px 6% 90px 6%; display: none">
