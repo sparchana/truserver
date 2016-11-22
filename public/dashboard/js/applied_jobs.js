@@ -92,12 +92,12 @@ function prePopulateJobSection(jobApplication) {
     var parentConfirmed = $('#myAppliedJobsConfirmed');
     var parentUnderReview = $('#myAppliedJobsUnderReview');
     var parentRejected = $('#myAppliedJobsRejected');
+    var parentCompleted = $('#myAppliedJobsCompleted');
 
     parentConfirmed.html('');
     parentUnderReview.html('');
     parentRejected.html('');
-
-    var centerDiv = document.createElement("center");
+    parentCompleted.html('');
 
     var count = 0;
     jobApplication.forEach(function (jobPost) {
@@ -140,8 +140,14 @@ function prePopulateJobSection(jobApplication) {
                 parentConfirmed.append(hotJobItem);
             } else if (jobPost.status.statusId == 7 || jobPost.status.statusId == 8){
                 parentRejected.append(hotJobItem);
+            } else if (jobPost.status.statusId > 13){
+                parentCompleted.append(hotJobItem);
             } else {
                 parentUnderReview.append(hotJobItem);
+            }
+
+            if (jobPost.status.statusId > 13){
+                parentCompleted.append(hotJobItem);
             }
 
             var centreTag = document.createElement("center");
@@ -231,8 +237,6 @@ function prePopulateJobSection(jobApplication) {
             salaryIcon.style = "margin-top: -4px";
             salaryIconDiv.appendChild(salaryIcon);
 
-
-            console.log(jobPost);
             var salaryDiv = document.createElement("div");
             salaryDiv.style = "display: inline-block; font-size: 14px";
             if (jobPost.jobPost.jobPostMaxSalary != 0 && jobPost.jobPost.jobPostMaxSalary != null) {
@@ -388,6 +392,13 @@ function prePopulateJobSection(jobApplication) {
                     iconImg.setAttribute('height', '16px');
                     iconImg.setAttribute('width', '14px');
                     candidateInterviewReject.appendChild(iconImg);
+                } else if(jobPost.status.statusId > 13){
+                    divInterviewStatus.textContent = jobPost.status.statusTitle;
+                    if(jobPost.status.statusId == 14){
+                        divInterviewStatus.style = "color: green; font-size: 14px; font-weight: 600";
+                    } else{
+                        divInterviewStatus.style = "color: red; font-size: 14px; font-weight: 600";
+                    }
                 }
             }
             titleRowThree.appendChild(divInterviewStatus);
@@ -579,9 +590,11 @@ function tabOne() {
     $("#tabOne").addClass("activeTab");
     $("#tabTwo").removeClass("activeTab");
     $("#tabThree").removeClass("activeTab");
+    $("#tabFour").removeClass("activeTab");
 
     $("#myAppliedJobsConfirmed").show();
     $("#myAppliedJobsUnderReview").hide();
+    $("#myAppliedJobsCompleted").hide();
     $("#myAppliedJobsRejected").hide();
 }
 
@@ -589,9 +602,11 @@ function tabTwo() {
     $("#tabOne").removeClass("activeTab");
     $("#tabTwo").addClass("activeTab");
     $("#tabThree").removeClass("activeTab");
+    $("#tabFour").removeClass("activeTab");
 
     $("#myAppliedJobsConfirmed").hide();
     $("#myAppliedJobsUnderReview").show();
+    $("#myAppliedJobsCompleted").hide();
     $("#myAppliedJobsRejected").hide();
 }
 
@@ -599,8 +614,21 @@ function tabThree() {
     $("#tabOne").removeClass("activeTab");
     $("#tabTwo").removeClass("activeTab");
     $("#tabThree").addClass("activeTab");
+    $("#tabFour").removeClass("activeTab");
 
     $("#myAppliedJobsConfirmed").hide();
     $("#myAppliedJobsUnderReview").hide();
+    $("#myAppliedJobsCompleted").show();
+    $("#myAppliedJobsRejected").hide();
+}
+function tabFour() {
+    $("#tabOne").removeClass("activeTab");
+    $("#tabTwo").removeClass("activeTab");
+    $("#tabThree").removeClass("activeTab");
+    $("#tabFour").addClass("activeTab");
+
+    $("#myAppliedJobsConfirmed").hide();
+    $("#myAppliedJobsUnderReview").hide();
+    $("#myAppliedJobsCompleted").hide();
     $("#myAppliedJobsRejected").show();
 }

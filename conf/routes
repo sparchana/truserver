@@ -71,7 +71,7 @@ POST        /support/api/getMatchingCandidate/                            contro
 POST        /support/api/saveSelectedCandidate/                           controllers.Application.saveSelectedCandidate()
 POST        /support/api/getSelectedCandidate/:jpId                       controllers.Application.getSelectedCandidate(jpId: Long)
 POST        /support/api/getPreScreenedCandidate/                         controllers.Application.getPreScreenedCandidate(jpId: java.lang.Long?= null, isPass: java.lang.Boolean?= null, status: java.lang.Long?= null)
-POST        /support/api/getConfirmedInterviewCandidates/                 controllers.Application.getConfirmedInterviewCandidates(jpId: java.lang.Long?= null)
+POST        /support/api/getConfirmedInterviewCandidates/                 controllers.Application.getConfirmedInterviewCandidates(jpId: java.lang.Long?= null, start: java.lang.String?= null, end: java.lang.String?= null)
 POST        /support/api/updateCandidateDetailsAtPreScreen/               controllers.Application.updateCandidateDetailsAtPreScreen(propertyId: Integer?= null, candidateId: java.lang.Long?= null)
 POST        /support/api/updateCandidateInterviewDetail/                  controllers.Application.updateCandidateInterviewDetail(candidateId: java.lang.Long?= null, jobPostId: java.lang.Long ?= null)
 POST        /confirmInterviewSupport/:cid/:jpId/:status                   controllers.Application.confirmInterviewSupport(cid: Long, jpId: Long, status: Long)
@@ -105,7 +105,8 @@ POST        /submitAssessment                                             contro
 POST        /submitPreScreen                                              controllers.Application.submitPreScreen()
 POST        /confirmInterview/:jpId/:value                                controllers.Application.confirmInterview(jpId : Long, value : Long)
 POST        /partnerConfirmInterview/:cId/:jpId/:value                    controllers.PartnerController.confirmInterview(cId : Long, jpId : Long, value : Long)
-POST        /updateCandidateDetailsViaPreScreen/                          controllers.Application.updateCandidateDetailsViaPreScreen(propertyIdList: String?= null, candidateMobile: String?= null)
+POST        /updateCandidateDetailsViaPreScreen/                          controllers.Application.updateCandidateDetailsViaPreScreen(propertyIdList: String?= null, candidateMobile: String?= null,  jobPostId: java.lang.Long ?= null)
+POST        /updateFeedback                                               controllers.Application.updateFeedback()
 
 # partner routes
 #~~~~~~~~~~~~~~~~~~~~

@@ -67,6 +67,14 @@
     color: #187b95;
 }
 
+.feedbackVal{
+    border-radius: 4px;
+    background: #ff853b;
+    color: white;
+    font-weight: bold;
+    padding: 6px;
+}
+
 @media screen and (max-width:1000px){
     #headerForData{
         margin: 0;

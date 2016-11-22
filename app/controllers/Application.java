@@ -4,6 +4,7 @@ import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
+import api.http.httpRequest.Recruiter.InterviewStatusRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlotDetail;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
@@ -1785,8 +1786,8 @@ public class Application extends Controller {
         return ok(toJson(JobPostWorkflowEngine.getPreScreenedPassFailCandidates(jobPostId, isPass, status)));
     }
 
-    public static Result getConfirmedInterviewCandidates(Long jobPostId) {
-        return ok(toJson(JobPostWorkflowEngine.getConfirmedInterviewCandidates(jobPostId)));
+    public static Result getConfirmedInterviewCandidates(Long jobPostId, String start, String end) {
+        return ok(toJson(JobPostWorkflowEngine.getConfirmedInterviewCandidates(jobPostId, start, end)));
     }
 
     public static Result confirmInterview(long jpId, long value) {
@@ -2002,7 +2003,7 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(SecuredUser.class)
-    public static Result updateCandidateDetailsViaPreScreen(String propertyIdList, String candidateMobile) throws IOException {
+    public static Result updateCandidateDetailsViaPreScreen(String propertyIdList, String candidateMobile, Long jobPostId) throws IOException {
         List<String> propertyIds = Arrays.asList(propertyIdList.split("\\s*,\\s*"));
         if(propertyIdList == null || candidateMobile == null) {
             badRequest("Empty Values!");
@@ -2097,8 +2098,33 @@ public class Application extends Controller {
                     response = "ok";
                 }
             }
+
+            // saving preScreen Results
+            PreScreenRequest preScreenRequest= new PreScreenRequest();
+            preScreenRequest.setCandidateId(candidate.getCandidateId());
+            preScreenRequest.setJobPostId(jobPostId);
+            preScreenRequest.setPreScreenNote("Candidate Self PreScreen");
+            preScreenRequest.setPass(true);
+            preScreenRequest.setPreScreenIdList(new ArrayList<>());
+            JobPostWorkflowEngine.savePreScreenResult(preScreenRequest);
+
             return ok(response);
         }
         return badRequest();
+    }
+
+    public static Result updateFeedback() {
+        JsonNode req = request().body().asJson();
+        Logger.info("Request Json: " + req);
+        AddFeedbackRequest addFeedbackRequest = new AddFeedbackRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addFeedbackRequest = newMapper.readValue(req.toString(), AddFeedbackRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ok(toJson(JobPostWorkflowEngine.updateFeedback(addFeedbackRequest)));
+
     }
 }

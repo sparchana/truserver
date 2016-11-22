@@ -190,13 +190,16 @@
 
                         <div id="customTab">
                             <div class="row" style="margin: 0;">
-                                <div class="col-lg-4 tabItem activeTab" id="tabOne" onclick="tabOne()">
+                                <div class="col-lg-3 tabItem activeTab" id="tabOne" onclick="tabOne()">
                                     Rescheduled/Confirmed Interviews
                                 </div>
-                                <div class="col-lg-4 tabItem" id="tabTwo" onclick="tabTwo()">
+                                <div class="col-lg-3 tabItem" id="tabTwo" onclick="tabTwo()">
                                     Under Review
                                 </div>
-                                <div class="col-lg-4 tabItem" id="tabThree" onclick="tabThree()">
+                                <div class="col-lg-3 tabItem" id="tabThree" onclick="tabThree()">
+                                    Completed
+                                </div>
+                                <div class="col-lg-3 tabItem" id="tabFour" onclick="tabFour()">
                                     Rejected
                                 </div>
                             </div>
@@ -217,6 +220,15 @@
                                 <img src="/assets/recruiter/img/empty_box.svg" width="116px">
                                 <h5>No under review applications!</h5>
                                 <h6>You have zero under review applications!</h6>
+                            </center>
+                        </div>
+
+                        <div id="myAppliedJobsCompleted" style="display: none"></div>
+                        <div id="noCompletedApplication" style="padding: 90px 6% 90px 6%; display: none">
+                            <center>
+                                <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                                <h5>No Completed Interviews!</h5>
+                                <h6>You have zero completed interviews!</h6>
                             </center>
                         </div>
 

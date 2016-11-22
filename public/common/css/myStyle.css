@@ -1455,7 +1455,10 @@ padding: 0px;
     text-decoration: none;
     color: #000000;
 }
-
+/* Important for multiselect plug*/
+.btn-group .multiselect{
+    width: 206px;
+}
 /* job loading spinner */
 
 #loadingSpinner {

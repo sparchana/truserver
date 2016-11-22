@@ -744,7 +744,7 @@ function processPreScreenData(returnedData) {
                     fourthproperty.appendChild(rowBoxDetails);
                     orderList.appendChild(fourthproperty);
                 }
-                else if (rowData.propertyId == 5 && rowData.isMatching == false) {
+                else if (rowData.propertyId == 5 && rowData.isMatching == false && rowData.candidateElement == null && rowData.candidateElementList == null) {
                     var fifthproperty = document.createElement("li");
                     fifthproperty.textContent = "Please provide your " + rowData.propertyTitle + " details";
                     fifthproperty.id = "property_" + rowData.propertyId;
@@ -1551,7 +1551,7 @@ function submitPreScreen() {
             try {
                 $.ajax({
                     type: "POST",
-                    url: "/updateCandidateDetailsViaPreScreen/?propertyIdList=" + propertyIdArray + "&candidateMobile=" + localStorage.getItem("mobile"),
+                    url: "/updateCandidateDetailsViaPreScreen/?propertyIdList=" + propertyIdArray + "&candidateMobile=" + localStorage.getItem("mobile") + "&jobPostId="+jobPostId,
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(d),
                     success: function (returnedData) {

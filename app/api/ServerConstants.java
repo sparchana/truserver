@@ -146,6 +146,11 @@ public class ServerConstants {
     public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED = 12;
     public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED = 13;
 
+    public static final int JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED = 14;
+    public static final int JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_REJECTED = 15;
+    public static final int JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW = 16;
+    public static final int JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED = 17;
+
     // Requirements Table
     public static final String PROFILE_REQUIREMENT_TABLE_AGE = "age";
     public static final String PROFILE_REQUIREMENT_TABLE_EXPERIENCE = "experience";
@@ -307,6 +312,12 @@ public class ServerConstants {
     public static final int CANDIDATE_INTERVIEW_STATUS_DELAYED = 2;
     public static final int CANDIDATE_INTERVIEW_STATUS_STARTED = 3;
     public static final int CANDIDATE_INTERVIEW_STATUS_REACHED = 4;
+
+    // candidate Interview feedback status
+    public static final int CANDIDATE_FEEDBACK_COMPLETE_SELECTED = 1;
+    public static final int CANDIDATE_FEEDBACK_COMPLETE_REJECTED = 2;
+    public static final int CANDIDATE_FEEDBACK_NO_SHOW = 3;
+    public static final int CANDIDATE_FEEDBACK_NOT_QUALIFIED = 4;
 
     //reason type
     public static final int INTERVIEW_REJECT_TYPE_REASON = 1;

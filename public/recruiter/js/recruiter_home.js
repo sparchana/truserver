@@ -2,6 +2,9 @@
  * Created by dodo on 10/10/16.
  */
 
+var globalCandidateId;
+var globalJpId;
+
 function logoutRecruiter() {
     try {
         $.ajax({
@@ -146,26 +149,28 @@ function processDataInterviewToday(returnedData) {
     var interviews = "";
     if(returnedData != null && Object.keys(returnedData).length > 0){
         returnedData.forEach(function (application) {
-            var status = '<td style="color: #5a5a5a">Not Available</td>';
+            var status = '<td style="color: #5a5a5a"><b>Not Available</b></td>';
             var homeLocality = "Not available";
             if(application.candidate.locality != null){
                 homeLocality = application.candidate.locality.localityName;
             }
 
             if(application.currentStatus.statusId > 9){
-                if(application.currentStatus.statusId == 10 || application.currentStatus.statusId == 11){ //not going or delayed
-                    status = '<td style="color: red">' + application.currentStatus.statusTitle + '</td>'
+                if(application.currentStatus.statusId == 10 || application.currentStatus.statusId == 11 || application.currentStatus.statusId > 14){ //not going or delayed
+                    status = '<td style="color: red"><b>' + application.currentStatus.statusTitle + '</b></td>'
+                } else if(application.currentStatus.statusId == 12 || application.currentStatus.statusId == 13 || application.currentStatus.statusId == 14) {
+                    status = '<td style="color: green"><b>' + application.currentStatus.statusTitle + '</b></td>'
                 } else { // started or reached
-                    status = '<td style="color: green">' + application.currentStatus.statusTitle + '</td>'
+                    status = '<td style="color: #5a5a5a"><b>' + application.currentStatus.statusTitle + '</b></td>'
                 }
             }
             interviews += '<tr>' +
-                '<td><a href="/recruiter/job/track/' + application.jobPostWorkflow.jobPost.jobPostId + '" target="_blank"><i class="material-icons prefix" style="font-size: 14px; margin-top: 6px; color: black" id="trackIcon">my_location</i></a></td>' +
                 '<td class="jobTitle"><a href="/recruiter/jobPost/' + application.jobPostWorkflow.jobPost.jobPostId + '" target="_blank"><b>' + application.jobPostWorkflow.jobPost.jobPostTitle + '</b></a></td>' +
                 '<td>' + application.candidate.candidateFullName + '</td>' +
                 '<td>' + application.jobPostWorkflow.scheduledInterviewTimeSlot.interviewTimeSlotName + '</td>' +
                 '<td>' + homeLocality + '</td>' +
                 status +
+                '<td><a class="waves-effect waves-light btn" onclick="openFeedbackModal(' + application.candidate.candidateId + ', ' + application.jobPostWorkflow.jobPost.jobPostId + ')">Add Feedback</a></td>' +
                 '</tr>';
         });
         $("#todayInterviewTable").show();
@@ -175,7 +180,49 @@ function processDataInterviewToday(returnedData) {
         $("#noInterviews").show();
         $("#todayInterviewTable").hide();
     }
+}
 
+function openFeedbackModal(candidateId, jpId) {
+    globalCandidateId = candidateId;
+    globalJpId = jpId;
+
+    $("#addFeedback").openModal();
+}
+
+function confirmAddFeedback() {
+    if($("#feedbackOption").val() > 0){
+        try {
+            var d = {
+                candidateId: globalCandidateId,
+                jobPostId : globalJpId,
+                feedbackStatus : $("#feedbackOption").val(),
+                feedbackComment : $("#feedbackNote").val()
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/updateFeedback",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processDataUpdateFeedBack
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    } else{
+        notifyError("Please select a feedback option");
+    }
+}
+
+function processDataUpdateFeedBack(returnedData) {
+    if(returnedData == 1){
+        notifySuccess("Feedback updated successfully. Refreshing the page..");
+        setTimeout(function () {
+            location.reload();
+        }, 2000);
+    } else{
+        notifyError("Something went wrong. Please try again later");
+    }
 }
 
 function checkRecruiterLogin() {
@@ -326,7 +373,20 @@ function closeCreditModal() {
     $("#modalBuyCredits").closeModal();
 }
 
+function closeFeedbackModal() {
+    $("#addFeedback").closeModal();
+}
+
 function openCreditModal(){
     $("#successMsg").hide();
     $("#modalBuyCredits").openModal();
 }
+
+function notifyError(msg){
+    Materialize.toastError(msg, 3000, 'rounded');
+}
+
+function notifySuccess(msg){
+    Materialize.toastSuccess(msg, 3000, 'rounded');
+}
+
