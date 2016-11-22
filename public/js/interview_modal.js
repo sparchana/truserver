@@ -1,13 +1,20 @@
 
+var jpTitle;
+var compName;
 function processJobPostInterviewSlot(returnedData) {
     if(returnedData.interviewDetailsList == null || returnedData.interviewDetailsList.length == 0) {
         $('body').removeClass('open-interview-selector-modal');
         bootbox.hideAll();
         return;
     }
+
     // document.getElementById("applyJobCandidateName").innerHTML = candidateInfo.candidateFirstName;
-    $("#jobNameConfirmation").html(returnedData.jobPostTitle);
-    $("#companyNameConfirmation").html(returnedData.company.companyName);
+    jpTitle = returnedData.jobPostTitle;
+    compName = returnedData.company.companyName;
+    console.log("title: " + jpTitle);
+    console.log("compName: " + compName);
+    $("#jobTitle").html(returnedData.jobPostTitle);
+    $("#companyName").html(returnedData.company.companyName);
     /*var i;
     $('#jobLocality').html('');
     var defaultOption = $('<option value="-1"></option>').text("Select Preferred Location");
@@ -155,8 +162,8 @@ function initInterviewModal(candidateId, jobPostId) {
         '<img src="/assets/common/img/jobApply.png" width="48px">'+
         '</center>'+
         '<center>'+
-        '<h6>For <b><div style="display: inline-block" id="jobNameConfirmation"></div></b>'+
-        'job at<b><div style="display: inline-block" id="companyNameConfirmation"></div></b>'+
+        '<h6> For <b><div style="display: inline-block" id="jobTitle"></div></b>'+
+        ' job at <b><div style="display: inline-block" id="companyName"></div></b>'+
         '.</h6>'+
         '<h6 style="margin-top: 16px">Please select the interview date and time</h6>'+
         '<div class="materialDash"></div>'+

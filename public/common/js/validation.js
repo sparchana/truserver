@@ -219,7 +219,7 @@ function validateDL(dlNumber) {
         return true;
     }
     dlNumber = dlNumber.replace(/\s+/g, '');
-    dlNumber = dlNumber.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
+    dlNumber = dlNumber.replace("-", '');
     if(dlNumber.length != 15){
         console.log("dlNumber length is not 15, its: "+dlNumber.length);
         return false;

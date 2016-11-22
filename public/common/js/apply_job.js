@@ -84,6 +84,9 @@ function applyJob(id, localityId, triggerModal){
             openCandidatePreScreenModal(id, localStorage.getItem("mobile"));
             interviewButtonCondition(id);
             /*getAssessmentQuestions(null, id);*/
+        };
+        if($('#applyButton')!=null){
+            $('#applyButton').attr('disabled', true);
         }
         applyJobSubmit(id, localStorage.getItem("candidateId"), phone, localityId, null, null, false);
     }

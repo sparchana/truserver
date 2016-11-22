@@ -233,7 +233,7 @@ function processIdProofsWithNumbers(returnedData, idProofId) {
                     var ip = document.createElement("INPUT");
                     ip.className = "form-control";
                     ip.setAttribute("type", "text");
-                    ip.onchange = validateInput;
+                    ip.oninput= validateInput;
                     ip.placeholder = idProof.idProofName + " Number";
                     ip.setAttribute("id", "idProofValue_" + idProof.idProofId);
                     idProofNumberTd.appendChild(ip);
@@ -249,6 +249,7 @@ function validateInput(idProofId, value) {
         value = this.value;
     };
     if(value == "") {
+        $("#Invalid_" + idProofId).css("display", "none");
         return true;
     }
     // aadhaar validation
@@ -562,13 +563,16 @@ function processPreScreenData(returnedData) {
                     textAge.className = "form-control";
                     textAge.id = "candidateDob";
                     textAge.type = ("date");
-                    textAge.setAttribute("data-date-inline-picker", "true");
+                    textAge.max = '1998-12-31';
                     textAge.placeholder = ("When is your Birthday?");
                     ageResponse.appendChild(textAge);
 
                     thirdproperty.appendChild(rowBox);
                     orderList.appendChild(thirdproperty);
-                    $("#candidateDob").datepicker({dateFormat: 'yy-mm-dd', changeYear: true});
+                    // $('#candidateDob').datetimepicker({
+                    //     format: 'DD/MM/YYYY'
+                    // });
+                    // $("#candidateDob").datepicker({dateFormat: 'yy-mm-dd', changeYear: true});
 
                 }
                 else if (rowData.propertyId == 4 && rowData.isMatching == false && rowData.candidateElement == null && rowData.candidateElementList == null) {
