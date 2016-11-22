@@ -3,6 +3,7 @@ package api.http.httpRequest;
 import api.ServerConstants;
 import java.util.List;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by batcoder1 on 25/5/16.
@@ -12,7 +13,10 @@ public class AddCandidateRequest extends CandidateSignUpRequest{
     public Integer candidateGender ;
     public String candidateTimeShiftPref;
     public List<Integer> candidateAssetList;
-    public List<AddSupportCandidateRequest.IdProofWithValue> candidateIdProofList;
+    public List<IdProofWithValue> candidateIdProofList;
+
+    public Integer leadSource = ServerConstants.LEAD_SOURCE_UNKNOWN;
+
 
     public static class IdProofWithValue {
         Integer idProofId;
@@ -40,8 +44,6 @@ public class AddCandidateRequest extends CandidateSignUpRequest{
             this.idProofValue = candidateIdProofValue;
         }
     }
-
-    public Integer leadSource = ServerConstants.LEAD_SOURCE_UNKNOWN;
 
     public Integer getLeadSource() {
         return leadSource;

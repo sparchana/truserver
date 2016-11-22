@@ -547,7 +547,7 @@ public class CandidateService
         if(supportCandidateRequest.getPastCompanyList() != null ){
             candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(supportCandidateRequest.getPastCompanyList(), candidate));
         }
-//
+
 //        if(supportCandidateRequest.getCandidateIdProofList() != null ){
 //            candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(supportCandidateRequest.getCandidateIdProofList(), candidate));
 //        }
@@ -813,6 +813,16 @@ public class CandidateService
 
         if(request.getCandidateIdProofList() != null ){
             candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(request.getCandidateIdProofList(), candidate));
+        }
+
+        try {
+            if(request.getCandidateIdProofList() != null ){
+                candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(request.getCandidateIdProofList(), candidate));
+            }        }
+        catch(Exception e) {
+            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
+            Logger.info("Exception while setting candidate idproof list");
+            e.printStackTrace();
         }
 
         Logger.info("Added Basic Profile details");
@@ -1478,8 +1488,13 @@ public class CandidateService
         candidate.setCandidateDOB(updateCandidateDob.getCandidateDob());
         candidate.update();
     }
-    public static void updateCandidateTotalExperience(Candidate candidate, UpdateCandidateTotalExperience totalExperience){
-        candidate.setCandidateTotalExperience(totalExperience.getCandidateTotalExperience());
+    public static void updateCandidateWorkExperience(Candidate candidate, UpdateCandidateWorkExperience workExperience){
+        candidate.setCandidateTotalExperience(workExperience.getCandidateTotalExperience());
+        if(workExperience.getExtraDetailAvailable()!= null && workExperience.getExtraDetailAvailable()) {
+            if(workExperience.getPastCompanyList() != null ) {
+                candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(workExperience.getPastCompanyList(), candidate));
+            }
+        }
         candidate.update();
     }
     public static void updateCandidateEducation(Candidate candidate, UpdateCandidateEducation candidateEducation){

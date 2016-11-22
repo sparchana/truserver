@@ -197,10 +197,8 @@ function processDataCheckJobs(returnedData) {
     });
 }
 function applyJobBtnAction() {
-    /*$('#jobApplyConfirm').modal();*/
+    $('#jobApplyConfirm').modal();
     var candidateMobile = localStorage.getItem("mobile");
-    openPreScreenModal(jobId,candidateMobile);
-    interviewButtonCondition(jobId);
     jobPostId = jobId;
     jobLocalityArray = [];
     $('#applyButton').hide();

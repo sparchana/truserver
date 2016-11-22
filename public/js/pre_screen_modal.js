@@ -682,7 +682,10 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
         var totalExp = expMonth + (12 * expYear);
 
         d = {
-            candidateTotalExperience: totalExp
+            candidateTotalExperience: totalExp,
+            pastCompanyList: [],
+            candidateIsEmployed: null,
+            extraDetailAvailable: false
         }
 
     } else if(propId == 5) {
@@ -1508,6 +1511,7 @@ function getPlaceholderArray(elementList){
     }
     return arr;
 }
+
 function getPlaceholderValue(element){
     if(element != null) {
         return element.placeHolder;
@@ -1753,6 +1757,7 @@ function pushToSnackbar(msg) {
     snackbarContainer.MaterialSnackbar.showSnackbar(data);
 
 }
+
 function notifyError(msg, type) {
     $.notify({
         message: msg,
