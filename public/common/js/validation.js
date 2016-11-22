@@ -187,6 +187,10 @@ function validateAadhar(array) {
     if(array == null) {
         return false;
     }
+
+    if(array == "") {
+        return true;
+    }
     if(isNaN(array)){
         return false;
     }
@@ -203,13 +207,16 @@ function validateAadhar(array) {
     return (c === 0);
 }
 
-// validate AADHAAR stop
+// validate AADHAAR end
 
 // validate Driving Licence
 function validateDL(dlNumber) {
     if (dlNumber == null) {
         console.log("its null");
         return false;
+    }
+    if(dlNumber == "") {
+        return true;
     }
     dlNumber = dlNumber.replace(/\s+/g, '');
     dlNumber = dlNumber.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
@@ -250,6 +257,11 @@ function validatePASSPORT(passPort) {
         console.log("passPort null");
         return false;
     }
+
+    if(passPort == "") {
+        return true;
+    }
+    passPort = passPort.replace(/\s+/g, '');
     passPort = passPort.replace(/[-&\/\\#,+()$~%.'":*?<>{}]/g, '');
     var validCount = 0;
     var letter =  passPort.substring(0,1);
@@ -273,6 +285,10 @@ function validatePAN(panNumber) {
     if (panNumber == null) {
         console.log("panNumber null");
         return false;
+    }
+
+    if(panNumber == "") {
+        return true;
     }
     var pancardPattern = /^([a-zA-Z]{5})(\d{4})([a-zA-Z]{1})$/;
     var patternArray = panNumber.match(pancardPattern);

@@ -126,7 +126,6 @@ public class CandidateServiceTest {
         supportCandidateRequest.setCandidateMaritalStatus(testCandidateMaritalStatus);
         supportCandidateRequest.setCandidateAppointmentLetter(testCandidateAppointmentLetter);
         supportCandidateRequest.setCandidateSalarySlip(testCandidateSalarySlip);
-        supportCandidateRequest.setCandidateIdProof(testCandidateIdProof);
         fakeApp = fakeApplication();
     }
 

@@ -12,7 +12,6 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
     public Integer candidateHomeLocality;
     public Integer candidateMaritalStatus ;
     public String candidateEmail;
-    public List<Integer> candidateIdProof;
     public Integer candidateSalarySlip ;
     public Integer candidateAppointmentLetter ;
     public Integer candidateExperienceLetter ;
@@ -20,6 +19,7 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
     public Boolean deactivationStatus;
     public Integer deactivationReason;
     public Date deactivationExpiryDate;
+
 
     public static class ExpList {
         Integer jobExpQuestionId;
@@ -114,10 +114,6 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
         return candidateTimeShiftPref;
     }
 
-    public List<Integer> getCandidateIdProof() {
-        return candidateIdProof;
-    }
-
     public Integer getCandidateSalarySlip() {
         return candidateSalarySlip;
     }
@@ -144,10 +140,6 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
 
     public void setCandidateEmail(String candidateEmail) {
         this.candidateEmail = candidateEmail;
-    }
-
-    public void setCandidateIdProof(List<Integer> candidateIdProof) {
-        this.candidateIdProof = candidateIdProof;
     }
 
     public void setCandidateSalarySlip(Integer candidateSalarySlip) {

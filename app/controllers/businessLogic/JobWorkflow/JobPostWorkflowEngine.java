@@ -18,6 +18,7 @@ import models.entity.Interaction;
 import models.entity.JobPost;
 import models.entity.OM.*;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.RecruiterCreditHistory;
 import models.entity.Static.*;
 import models.util.SmsUtil;
@@ -553,6 +554,7 @@ public class JobPostWorkflowEngine {
                 jobPostWorkflow.setJobPost(jobPost);
                 jobPostWorkflow.setCandidate(candidate);
                 jobPostWorkflow.setCreatedBy(session().get("sessionUsername"));
+                jobPostWorkflow.setChannel(Integer.valueOf(session().get("sessionChannel")));
                 jobPostWorkflow.setStatus(status);
                 jobPostWorkflow.save();
                 response.setStatus(WorkflowResponse.STATUS.SUCCESS);
@@ -1242,7 +1244,6 @@ public class JobPostWorkflowEngine {
         Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique());
 
         for ( Candidate candidate: candidateList) {
-            Logger.info("candidate id: "+candidate.getCandidateId());
             CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
             candidateWorkflowData.setCandidate(candidate);
             candidateWorkflowData.setExtraData(candidateExtraDataMap.get(candidate.getCandidateId()));
@@ -1467,7 +1468,8 @@ public class JobPostWorkflowEngine {
 
         List<Interaction> allPreScreenCallAttemptInteractions = Interaction.find
                 .where()
-                .eq("interactionType", InteractionConstants.INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_ATTEMPTED)
+                .ge("interactionType", InteractionConstants.INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_ATTEMPTED)
+                .le("interactionType", InteractionConstants.INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_PASSED)
                 .in("objectBUUId", candidateUUIdList)
                 .orderBy()
                 .desc("objectBUUId")
@@ -1597,6 +1599,7 @@ public class JobPostWorkflowEngine {
             jobPostWorkflowOld.setJobPost(jobPost);
             jobPostWorkflowOld.setCandidate(candidate);
             jobPostWorkflowOld.setCreatedBy(session().get("sessionUsername"));
+            jobPostWorkflowOld.setChannel(Integer.valueOf(session().get("sessionChannel")));
             jobPostWorkflowOld.setStatus(status);
             jobPostWorkflowOld.save();
             return jobPostWorkflowOld;
@@ -1743,7 +1746,7 @@ public class JobPostWorkflowEngine {
             if(jobPostWorkflowNew == null) {
                 return null;
             }
-            interactionResult += jobPostWorkflowNew.getJobPost().getJobPostId() + ": " + jobPostWorkflowNew.getJobPost().getJobRole().getJobName();
+            interactionResult += jobPostWorkflowNew.getJobPost().getJobPostId() + ": " + jobPostWorkflowNew.getJobPost().getJobRole().getJobName() + "@" + jobPostWorkflowNew.getJobPost().getCompany().getCompanyName();
         };
 
         // save the interaction
