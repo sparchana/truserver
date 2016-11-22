@@ -169,7 +169,7 @@ function initInterviewModal(candidateId, jobPostId) {
         '</div>'+
         '</center>'+
         '</div>';
-    var title = "Interview Slot Selector";
+    var title = "Last step! Select your interview time slot";
 
     generateInterviewSlotModal(title, htmlBodyContent, candidateId, jobPostId);
 
