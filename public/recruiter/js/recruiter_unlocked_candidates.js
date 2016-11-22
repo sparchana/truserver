@@ -428,15 +428,19 @@ function processDataForUnlockedCandidates(returnedData) {
                     var skillVal = "";
                     var allSkillVal = "";
                     var count = 0;
+                    var skillCount = 0;
                     skillList.forEach(function (skill){
                         count = count + 1;
                         if(count < 4){
-                            if(skill.candidateSkillResponse){
+                            if(skill.candidateSkillResponse == true){
                                 skillVal += skill.skill.skillName + ", ";
                                 allSkillVal += skill.skill.skillName + ", ";
+                                skillCount ++;
                             }
                         } else{
-                            allSkillVal += skill.skill.skillName + ", ";
+                            if(skill.candidateSkillResponse == true){
+                                allSkillVal += skill.skill.skillName + ", ";
+                            }
                         }
                     });
                     candidateSkillVal.textContent = skillVal.substring(0, skillVal.length - 2);

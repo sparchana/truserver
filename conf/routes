@@ -169,6 +169,7 @@ POST        /recruiter/api/updateInterviewStatus                          contro
 POST        /recruiter/api/requestCredits/                                controllers.RecruiterController.requestCredits()
 POST        /recruiter/api/addJobPost                                     controllers.RecruiterController.addJobPost()
 POST        /getRecruiterJobPostInfo/:id                                  controllers.RecruiterController.getRecruiterJobPostInfo(id : Long)
+POST        /getTodayInterviewDetails                                     controllers.RecruiterController.getTodayInterviewDetails()
 
 #new routes
 #~~~~~~~~~~~~~~~~~~~~

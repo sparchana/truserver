@@ -81,8 +81,10 @@ $(document).ready(function(){
 function processDataGetJobPostDetails(returnedData) {
     var interviews = "";
     var x, i;
+    var jpId = [];
     returnedData.forEach(function (jobPost) {
         var interviewDays;
+
         if (Object.keys(jobPost.interviewDetailsList).length > 0) {
             var interviewDetailsList = jobPost.interviewDetailsList;
             if (interviewDetailsList[0].interviewDays != null) {
@@ -103,6 +105,7 @@ function processDataGetJobPostDetails(returnedData) {
 
             var today = new Date();
             if(interviewDays.charAt(today.getDay() - 1) == 1){ // today's schedule
+                jpId.push(parseInt(jobPost.jobPostId));
                 var slotsToday = "";
                 interviewDetailsList.forEach(function (slots) {
                     slotsToday += slots.interviewTimeSlot.interviewTimeSlotName + ", ";
@@ -118,17 +121,59 @@ function processDataGetJobPostDetails(returnedData) {
         }
     });
 
-    if(interviews == ""){
-        interviews = '<center style="font-size: 18px">No Interviews Today</center>';
-        $("#today_interview").append(interviews);
+    if(jpId.length > 0){
 
+        var d = {
+            jpId: jpId
+        };
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/getTodayInterviewDetails",
+                async: false,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processDataInterviewToday
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
+
+function processDataInterviewToday(returnedData) {
+    var parent = $("#tableBody");
+    var interviews = "";
+    if(returnedData != null && Object.keys(returnedData).length > 0){
+        returnedData.forEach(function (application) {
+            var status = '<td style="color: #5a5a5a">Not Available</td>';
+            var homeLocality = "Not available";
+            if(application.candidate.locality != null){
+                homeLocality = application.candidate.locality.localityName;
+            }
+
+            if(application.currentStatus.statusId > 9){
+                if(application.currentStatus.statusId == 10 || application.currentStatus.statusId == 11){ //not going or delayed
+                    status = '<td style="color: red">' + application.currentStatus.statusTitle + '</td>'
+                } else { // started or reached
+                    status = '<td style="color: green">' + application.currentStatus.statusTitle + '</td>'
+                }
+            }
+            interviews += '<tr>' +
+                '<td><a href="/recruiter/job/track/' + application.jobPostWorkflow.jobPost.jobPostId + '" target="_blank"><i class="material-icons prefix" style="font-size: 14px; margin-top: 6px; color: black" id="trackIcon">my_location</i></a></td>' +
+                '<td class="jobTitle"><a href="/recruiter/jobPost/' + application.jobPostWorkflow.jobPost.jobPostId + '" target="_blank"><b>' + application.jobPostWorkflow.jobPost.jobPostTitle + '</b></a></td>' +
+                '<td>' + application.candidate.candidateFullName + '</td>' +
+                '<td>' + application.jobPostWorkflow.scheduledInterviewTimeSlot.interviewTimeSlotName + '</td>' +
+                '<td>' + homeLocality + '</td>' +
+                status +
+                '</tr>';
+        });
+        $("#todayInterviewTable").show();
+        $("#noInterviews").hide();
+        parent.append(interviews);
     } else{
-        var interviewBody = '<div class="row" style="padding: 0 24px 0 24px; color: #56B4D3">' +
-            '<div class="col s12 m5" style="font-size: 18px; font-weight: bold">Job Title</div>' +
-            '<div class="col s12 m4"  style="font-size: 18px; font-weight: bold">Today\'s Interview Slot(s)</div>' +
-            '<div class="col s12 m3"  style="font-size: 18px; font-weight: bold">Action</div></div><hr>' +
-            interviews;
-        $("#today_interview").append(interviewBody);
+        $("#noInterviews").show();
+        $("#todayInterviewTable").hide();
     }
 
 }

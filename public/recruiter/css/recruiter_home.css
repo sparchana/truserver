@@ -449,6 +449,29 @@ input[type=text]:disabled{
     margin-top:-46px;
     margin-bottom:10px
 }
+
+#jobTitle{
+    font-weight: bold;
+    color: #118bff;
+}
+
+#jobTitle:hover{
+    font-weight: bold;
+    color: #0d529a;
+    cursor: pointer;
+}
+
+a:hover{
+    cursor: pointer;
+    color: #0d529a;
+    text-decoration: none;
+}
+
+#trackIcon:hover{
+    color: #118bff;
+    cursor: pointer;
+}
+
 @media screen and (max-width: 600px) {
     #upperSpaceInputField{
         margin-top: 40px;

@@ -4,10 +4,7 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpRequest.LoginRequest;
-import api.http.httpRequest.Recruiter.AddCreditRequest;
-import api.http.httpRequest.Recruiter.InterviewStatusRequest;
-import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
-import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
+import api.http.httpRequest.Recruiter.*;
 import api.http.httpRequest.ResetPasswordResquest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.CandidateWorkflowData;
@@ -427,6 +424,20 @@ public class RecruiterController {
         }
 
         return JobPostWorkflowEngine.updateInterviewStatus(interviewStatusRequest);
+    }
+
+    public static Result getTodayInterviewDetails() {
+        JsonNode req = request().body().asJson();
+        Logger.info("Request Json: " + req);
+        InterviewTodayRequest interviewTodayRequest = new InterviewTodayRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            interviewTodayRequest = newMapper.readValue(req.toString(), InterviewTodayRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ok(toJson(JobPostWorkflowEngine.getTodaysInterviewDetails(interviewTodayRequest)));
     }
 
     // sorting helper methods

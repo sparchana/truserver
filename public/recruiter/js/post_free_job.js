@@ -717,7 +717,7 @@ function saveJob() {
     }
 
     var slotArray = [];
-    for(i=1; i<=3; i++){
+    for(i = 1; i <= 3; i ++){
         if($("#interview_slot_" + i).is(":checked")){
             slotArray.push(parseInt(i));
         }

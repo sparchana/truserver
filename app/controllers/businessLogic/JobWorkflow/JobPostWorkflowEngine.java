@@ -3,11 +3,13 @@ package controllers.businessLogic.JobWorkflow;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.httpRequest.Recruiter.InterviewStatusRequest;
+import api.http.httpRequest.Recruiter.InterviewTodayRequest;
 import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlotDetail;
 import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.SelectedCandidateRequest;
 import api.http.httpResponse.CandidateExtraData;
 import api.http.httpResponse.CandidateWorkflowData;
+import api.http.httpResponse.Recruiter.InterviewTodayResponse;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import api.http.httpResponse.Workflow.WorkflowResponse;
 import com.avaje.ebean.*;
@@ -1311,6 +1313,37 @@ public class JobPostWorkflowEngine {
         }
 
         return selectedCandidateMap;
+    }
+
+    public static List<InterviewTodayResponse> getTodaysInterviewDetails(InterviewTodayRequest interviewTodayRequest) {
+        Integer status = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
+        List<InterviewTodayResponse> responseList = new ArrayList<>();
+
+        Calendar now = Calendar.getInstance();
+        String todaysDate = now.get(Calendar.YEAR) + "-" + (now.get(Calendar.MONTH) + 1) + "-" + now.get(Calendar.DATE);
+
+        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
+                .in("job_post_id", interviewTodayRequest.getJpId())
+                .eq("status_id", status)
+                .eq("scheduled_interview_date", todaysDate)
+                .orderBy().asc("job_post_id")
+                .findList();
+
+        for(JobPostWorkflow jpWf : jobPostWorkflowList){
+            InterviewTodayResponse response = new InterviewTodayResponse();
+            response.setCandidate(jpWf.getCandidate());
+            response.setJobPostWorkflow(jpWf);
+            JobPostWorkflow jobPostWorkFlow = JobPostWorkflow.find.where()
+                    .eq("job_post_id", jpWf.getJobPost().getJobPostId())
+                    .eq("candidate_id", jpWf.getCandidate().getCandidateId())
+                    .orderBy().desc("creation_timestamp")
+                    .setMaxRows(1)
+                    .findUnique();
+            response.setCurrentStatus(jobPostWorkFlow.getStatus());
+
+            responseList.add(response);
+        }
+        return responseList;
     }
 
     public static class LastActiveValue{
