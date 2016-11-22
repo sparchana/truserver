@@ -248,10 +248,14 @@ function validateInput(idProofId, value) {
         idProofId = this.id.split("_")[1];
         value = this.value;
     };
-    if(value == "") {
-        $("#Invalid_" + idProofId).css("display", "none");
+    if( !$('input#idProofCheckbox_' + idProofId).is(':checked')) {
         return true;
     }
+
+    // if(value == "") {
+    //     $("#Invalid_" + idProofId).css("display", "none");
+    //     return true;
+    // }
     // aadhaar validation
     if (idProofId == 3) {
         if (!validateAadhar(value)) {
@@ -261,8 +265,7 @@ function validateInput(idProofId, value) {
             $("#Invalid_" + idProofId).css("display", "none");
             return true;
         }
-    }
-    if (idProofId == 1) {
+    } else if (idProofId == 1) {
         console.log(value);
         if (!validateDL(value)) {
             $("#Invalid_" + idProofId).css("display", "block");
@@ -271,8 +274,7 @@ function validateInput(idProofId, value) {
             $("#Invalid_" + idProofId).css("display", "none");
             return true;
         }
-    }
-    if (idProofId == 2) {
+    } else if (idProofId == 2) {
         console.log(value);
         if (!validatePASSPORT(value)) {
             $("#Invalid_" + idProofId).css("display", "block");
@@ -281,8 +283,7 @@ function validateInput(idProofId, value) {
             $("#Invalid_" + idProofId).css("display", "none");
             return true;
         }
-    }
-    if (idProofId == 4) {
+    } else if (idProofId == 4) {
         console.log(value);
         if (!validatePAN(value)) {
             $("#Invalid_" + idProofId).css("display", "block");
@@ -373,11 +374,9 @@ function openCandidatePreScreenModal(jobPostId, candidateMobile) {
         base_api_url += "&rePreScreen=" + true;
         if (modalOpenAttempt == 1) {
             $("#preScreenModal").modal();
-            $("body").removeClass("modal-open").addClass("modal-open");
         }
         if (modalOpenAttempt == 0) {
             modalOpenAttempt = 1;
-            $("body").removeClass("modal-open").addClass("modal-open");
             console.log(base_api_url);
             try {
                 $.ajax({
@@ -393,17 +392,16 @@ function openCandidatePreScreenModal(jobPostId, candidateMobile) {
                 console.log("exception occured!!" + exception.stack);
             }
         }
-        $("body").removeClass("modal-open").addClass("modal-open");
+        $("html").removeClass("modal-open").addClass("modal-open");
     }
 }
-
 function processPreScreenData(returnedData) {
     console.log(returnedData);
     if (returnedData == null || returnedData.status != "SUCCESS") {
         if (returnedData != null && returnedData.status == "INVALID") {
-            alert("Already Pre Screened");
+            $.notify("Already Pre Screened", 'error');
         } else {
-            alert("Request failed. Something went Wrong! Please Refresh");
+            $.notify("Request failed. Something went Wrong! Please Refresh", 'error');
         }
         return;
     }
@@ -1088,6 +1086,7 @@ function processPreScreenData(returnedData) {
         });
 
     }
+
 }
 
 function interviewButtonCondition(jobPostId) {
@@ -1188,7 +1187,6 @@ function addmoreCompany() {
         addCompanyName.type = ("text");
         addCompanyName.placeholder = ("Company Name");
         addCompanyName.id = ("companyName_" + companyCount);
-        addCompanyName.onchange = invalidSalary;
         allCompanyNameCol.appendChild(addCompanyName);
 
         var addJobRole = document.createElement("select");
@@ -1224,7 +1222,8 @@ function addmoreCompany() {
         }
     }
     else {
-        alert("Max 3 Addition Allowed");
+        $.notify("Max 3 Addition Allowed", 'error')
+        ;
     }
     if (url != null) {
         try {
@@ -1293,12 +1292,12 @@ function submitPreScreen() {
 }
 
 (function () {
+
     $("#preScreenInterviewSetBtn").click(function () {
         var okToSubmit = true;
         var okToSubmitList = [];
         var dobCheck;
         var prevCompanyList = [];
-        console.log("Handler for .click() called.");
         // all non-matching properId is available in propertyIdArray
         var d = {};
         var msg;
@@ -1315,12 +1314,14 @@ function submitPreScreen() {
                         console.log($(this).attr('id'));
                         id = $(this).attr('id').split("_").slice(-1).pop();
 
-                        if ($('input#idProofCheckbox_' + id).is(':checked') && validateInput(id, $('input#idProofValue_' + id).val().trim())) {
+                        var isChecked = $('input#idProofCheckbox_' + id).is(':checked');
+                        var isValid = validateInput(id, $('input#idProofValue_' + id).val().trim());
+                        if (  isValid && isChecked) {
                             item["idProofId"] = parseInt(id);
                             item["idNumber"] = $('input#idProofValue_' + id).val().trim();
-                        } else {
+                        } else if (isChecked && !isValid) {
                             okToSubmit = false;
-                            msg = "invalid idProof values: " + id;
+                            console.log("doc not valid for id: " + id);
                         }
 
                         if (!jQuery.isEmptyObject(item)) {
@@ -1328,8 +1329,15 @@ function submitPreScreen() {
                         };
                     });
                 });
+
                 // documents
                 d ["idProofWithIdNumberList"] = documentList;
+
+                if(documentList.length == 0) {
+                    // won't allow candidate to make submission without provide alteast one doc
+                    $.notify("Please provide your document details", 'danger');
+                    okToSubmit = false;
+                }
                 if(!okToSubmit){
                     var submit = {
                         propId : propId,
@@ -1338,7 +1346,6 @@ function submitPreScreen() {
                     };
                     okToSubmitList.push(submit);
                 }
-
             } else if (propId == 1) {
                 var check;
                 var languageMap = [];
@@ -1380,6 +1387,11 @@ function submitPreScreen() {
                 }).get();
 
                 d ["candidateKnownLanguageList"] = languageMap;
+
+                if(languageMap.length == 0) {
+                    okToSubmit = false;
+                    $.notify("Please provide all known languages", 'danger');
+                }
                 if(!okToSubmit){
                     var submit = {
                         propId : propId,
@@ -1408,6 +1420,9 @@ function submitPreScreen() {
             } else if (propId == 3) {
                 // age submission
                 var selectedDob = $('#candidateDob').val();
+                if(selectedDob == "") {
+                    okToSubmit = false;
+                }
                 var c_dob = String(selectedDob);
                 var selectedDate = new Date(c_dob);
                 var toDate = new Date();
@@ -1415,12 +1430,15 @@ function submitPreScreen() {
                 var zombieYear = new Date(toDate.setFullYear(toDate.getFullYear() - 70));
                 if (selectedDate >= pastDate) {
                     dobCheck = 0;
+                    okToSubmit = false;
                 }
-                if (zombieYear <= selectedDate) {
+                if (selectedDate <= zombieYear) {
                     dobCheck = 0;
+                    okToSubmit = false;
                 }
                 d ["candidateDob"] = c_dob;
                 if(!okToSubmit){
+                    $.notify("Please provide valid Date of birth", 'danger');
                     var submit = {
                         propId : propId,
                         message: msg,
@@ -1430,19 +1448,23 @@ function submitPreScreen() {
                 }
             } else if (propId == 4) {
                 /* calculate total experience in months */
+                if(($('input:radio[name="candidateExperience"]:checked').length == 0)){
+                    okToSubmit = false;
+                    $.notify("Please select Fresher/Experienced.", 'error');
+                }
                 var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
                 var expYear = parseInt($('#candidateTotalExperienceYear').val());
                 var totalExp = expMonth + (12 * expYear);
                 var isExpEmpty = ($('#candidateTotalExperienceMonth').val() == 0) && ($('#candidateTotalExperienceYear').val() == 0);
                 if ($('input[id=candidateExp]').is(":checked") && isExpEmpty) {
-                    alert("Please provide your total years of experience");
+                    $.notify("Please provide your total years of experience", 'error');
                     okToSubmit = false;
                 }
 
                 // are you currently working
                 if ($('input[id=candidateExp]').is(":checked") && $('#currentlyWorking').is(":checked")
                     && !$('input[name=addCurrently_Working]').is(":checked")) {
-                    alert("Please provide your current company details and mark appropriately.");
+                    $.notify("Please provide your current company details and mark appropriately.", 'error');
                     okToSubmit = false;
                 }
 
@@ -1452,13 +1474,13 @@ function submitPreScreen() {
                     var item = {};
                     if($('#companyName_'+i).val() == "" && $('#workedJobRole_'+i).val() > 0) {
                         msg = "please provide company name";
-                        alert("please provide company name");
+                        $.notify("please provide company name", 'error');
                         okToSubmit = false;
                     }
                     if($('#companyName_'+i).val() != "" && $('#workedJobRole_'+i).val() < 0) {
                         msg += " | please provide Job Role";
 
-                        alert("please provide Job Role");
+                        $.notify("please provide Job Role", 'error');
                         okToSubmit = false;
                     }
                     if($('#companyName_'+i).val() != "" && $('#workedJobRole_'+i).val() > 0) {
@@ -1492,6 +1514,15 @@ function submitPreScreen() {
                 d ["candidateDegree"] = ($('#candidateHighestDegree').val());
                 d ["candidateEducationInstitute"] = $('#candidateEducationInstitute').val();
                 d ["candidateEducationCompletionStatus"] = parseInt($('input:radio[name="candidateEducationCompletionStatus"]:checked').val());
+
+               if( $('#candidateHighestEducation').val() == "-1" ||
+                   ($('#candidateHighestDegree').val()) == "-1" ||
+                   $('#candidateEducationInstitute').val() == "" ||
+                   $('input:radio[name="candidateEducationCompletionStatus"]:checked').val() == null) {
+                   okToSubmit = false;
+                   $.notify("Please provide full education details", 'danger');
+
+               }
                 if(!okToSubmit){
                     var submit = {
                         propId : propId,
@@ -1502,6 +1533,10 @@ function submitPreScreen() {
                 }
             } else if (propId == 6) {
                 d ["candidateGender"] = ($('input:radio[name="gender"]:checked').val());
+                if(($('input:radio[name="gender"]:checked').length == 0)) {
+                    okToSubmit = false;
+                    $.notify("Please provide your gender details", 'danger');
+                }
                 if(!okToSubmit){
                     var submit = {
                         propId : propId,
@@ -1515,7 +1550,8 @@ function submitPreScreen() {
                 if (!isNaN(salary) && parseInt(salary) >= 1000 && parseInt(salary) <= 100000) {
                     d ["candidateLastWithdrawnSalary"] = parseInt($('#candidateLastWithdrawnSalary').val());
                 } else {
-                    alert("Please enter a valid 'Last Withdrawn Salary' per month. (Min: 1000, Max: 1,00,000)", 'danger');
+                    okToSubmit = false;
+                    $.notify("Please enter a valid 'Last Withdrawn Salary' per month. (Min: 1000, Max: 1,00,000)", 'danger');
                     if(!okToSubmit){
                         var submit = {
                             propId : propId,
@@ -1526,21 +1562,31 @@ function submitPreScreen() {
                     }
                 }
             } else if (propId == 8) {
-                d ["candidateHomeLocality"] = parseInt($('#candidateHomeLocality').val());
+                var lId = $('#candidateHomeLocality').val();
+                if(lId == null) {
+                    okToSubmit = false;
+                } else{
+                    d ["candidateHomeLocality"] = parseInt(lId);
+                }
                 if(!okToSubmit){
                     var submit = {
                         propId : propId,
-                        message: "Please enter a valid 'Last Withdrawn Salary' per month. (Min: 1000, Max: 1,00,000)",
+                        message: "Please enter a valid Home locality",
                         submissionStatus: okToSubmit
                     };
                     okToSubmitList.push(submit);
                 }
             } else if (propId == 9) {
-                d ["candidateTimeShiftPref"] = $('#candidateTimeShiftPref').val();
+                var timeShiftPrefId = $('#candidateTimeShiftPref').val();
+                if(timeShiftPrefId == null) {
+                    okToSubmit = false;
+                } else {
+                    d ["candidateTimeShiftPref"] = $('#candidateTimeShiftPref').val();
+                }
                 if(!okToSubmit){
                     var submit = {
                         propId : propId,
-                        message: "Please enter a valid 'Last Withdrawn Salary' per month. (Min: 1000, Max: 1,00,000)",
+                        message: "Please enter a valid time preference",
                         submissionStatus: okToSubmit
                     };
                     okToSubmitList.push(submit);

@@ -14,7 +14,7 @@ function processJobPostInterviewSlot(returnedData) {
     console.log("title: " + jpTitle);
     console.log("compName: " + compName);
     $("#jobTitle").html(returnedData.jobPostTitle);
-    $("#companyName").html(returnedData.company.companyName);
+    $("#compName").html(returnedData.company.companyName);
     /*var i;
     $('#jobLocality').html('');
     var defaultOption = $('<option value="-1"></option>').text("Select Preferred Location");
@@ -163,7 +163,7 @@ function initInterviewModal(candidateId, jobPostId) {
         '</center>'+
         '<center>'+
         '<h6> For <b><div style="display: inline-block" id="jobTitle"></div></b>'+
-        ' job at <b><div style="display: inline-block" id="companyName"></div></b>'+
+        ' job at <b><div style="display: inline-block" id="compName"></div></b>'+
         '.</h6>'+
         '<h6 style="margin-top: 16px">Please select the interview date and time</h6>'+
         '<div class="materialDash"></div>'+
