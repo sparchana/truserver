@@ -105,7 +105,8 @@ POST        /submitAssessment                                             contro
 POST        /submitPreScreen                                              controllers.Application.submitPreScreen()
 POST        /confirmInterview/:jpId/:value                                controllers.Application.confirmInterview(jpId : Long, value : Long)
 POST        /partnerConfirmInterview/:cId/:jpId/:value                    controllers.PartnerController.confirmInterview(cId : Long, jpId : Long, value : Long)
-POST        /updateCandidateDetailsViaPreScreen/                          controllers.Application.updateCandidateDetailsViaPreScreen(propertyIdList: String?= null, candidateMobile: String?= null)
+POST        /updateCandidateDetailsViaPreScreen/                          controllers.Application.updateCandidateDetailsViaPreScreen(propertyIdList: String?= null, candidateMobile: String?= null,  jobPostId: java.lang.Long ?= null)
+POST        /updateFeedback                                               controllers.Application.updateFeedback()
 
 # partner routes
 #~~~~~~~~~~~~~~~~~~~~

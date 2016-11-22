@@ -2,6 +2,7 @@ package controllers.businessLogic.JobWorkflow;
 
 import api.InteractionConstants;
 import api.ServerConstants;
+import api.http.httpRequest.AddFeedbackRequest;
 import api.http.httpRequest.Recruiter.InterviewStatusRequest;
 import api.http.httpRequest.Recruiter.InterviewTodayRequest;
 import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlotDetail;
@@ -1767,7 +1768,7 @@ public class JobPostWorkflowEngine {
             if(interviewDate != null){
                 jobPostWorkflowOld.setScheduledInterviewDate(interviewDate);
             }
-
+            Logger.info("interview slot saved");
             jobPostWorkflowOld.save();
             return jobPostWorkflowOld;
         } else {
@@ -2055,11 +2056,14 @@ public class JobPostWorkflowEngine {
                 .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
 
         if(jobPostWorkflowOld == null) {
+            Logger.info("session channel not set");
+
             return null;
         }
 
         if( session().get("sessionChannel") == null ||
                 ServerConstants.sessionChannelMap.get(Integer.valueOf(session().get("sessionChannel"))) == null) {
+            Logger.info("session channel not set");
             return null;
         }
 
@@ -2126,6 +2130,53 @@ public class JobPostWorkflowEngine {
                 .eq("candidate.candidateId", candidate.getCandidateId())
                 .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
     }
+
+    public static Integer updateFeedback(AddFeedbackRequest addFeedbackRequest) {
+        // fetch existing workflow old
+        JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
+                .eq("jobPost.jobPostId", addFeedbackRequest.getJobPostId())
+                .eq("candidate.candidateId", addFeedbackRequest.getCandidateId())
+                .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
+
+        if(jobPostWorkflowOld == null) {
+            return 0;
+        }
+
+        Integer jwStatus;
+        if(addFeedbackRequest.getFeedbackStatus() == ServerConstants.CANDIDATE_FEEDBACK_COMPLETE_SELECTED){
+            jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED;
+        } else if(addFeedbackRequest.getFeedbackStatus() == ServerConstants.CANDIDATE_FEEDBACK_COMPLETE_REJECTED){
+            jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_REJECTED;
+        } else if(addFeedbackRequest.getFeedbackStatus() == ServerConstants.CANDIDATE_FEEDBACK_NO_SHOW){
+            jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW;
+        } else {
+            jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED;
+        }
+
+        // Setting the existing jobpostworkflow status to confirmed
+        JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(addFeedbackRequest.getCandidateId(), addFeedbackRequest.getJobPostId(),
+                jobPostWorkflowOld, jobPostWorkflowOld.getStatus().getStatusId(), jwStatus,
+                jobPostWorkflowOld.getScheduledInterviewTimeSlot().getInterviewTimeSlotId(),
+                jobPostWorkflowOld.getScheduledInterviewDate());
+
+        if (jobPostWorkflowNew != null) {
+            jobPostWorkflowNew.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", jwStatus).findUnique());
+        }
+        jobPostWorkflowNew.update();
+
+/*
+        CandidateInterviewStatusUpdate candidateInterviewStatusUpdate = new CandidateInterviewStatusUpdate();
+        candidateInterviewStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
+        candidateInterviewStatusUpdate.setJobPost(jobPostWorkflowOld.getJobPost());
+        candidateInterviewStatusUpdate.setCandidate(candidate);
+        if(reason != null && reason > 0){
+            candidateInterviewStatusUpdate.setRejectReason(RejectReason.find.where().eq("reason_id", reason).findUnique());
+        }
+        candidateInterviewStatusUpdate.save();
+*/
+        return 1;
+  }
+
 
     public static Integer updateCandidateInterviewStatus(Candidate candidate, JobPost jobPost, Long val, Long reason) {
         // fetch existing workflow old

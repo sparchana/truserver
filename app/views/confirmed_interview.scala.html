@@ -41,8 +41,8 @@
           <th></th>
           <th></th>
           <th></th>
-          <th></th>
           <th>Current Status</th>
+          <th>Interview Feedback</th>
         </tr>
       </thead>
       <tfoot>
@@ -81,8 +81,8 @@
           <th></th>
           <th></th>
           <th></th>
-          <th></th>
           <th>Candidate reported status</th>
+          <th>Interview Feedback</th>
         </tr>
       </tfoot>
       <tbody>
@@ -114,6 +114,47 @@
     <div class="mdl-dialog__actions">
       <button type="button" class="mdl-button confirmNotGoing">Reschedule Interview</button>
       <button type="button" class="mdl-button closeNotGoing">Cancel</button>
+    </div>
+  </dialog>
+
+  <!-- feedback dialog -->
+  <dialog class="mdl-dialog" id="feedbackDialog" style="width: 36%">
+    <center>
+      <h4 class="mdl-dialog__title">Interview Feedback</h4>
+    </center>
+    <br>
+    <div class="mdl-dialog__content">
+      <center>
+        <img src="/assets/recruiter/img/feedback.svg" width="60px">
+        <br>
+        <h5>Select Interview Result</h5>
+      </center>
+
+      <center>
+        <div class="row" style="margin-top: 4px" >
+          <div class="col-sm-6">
+            <h6 style="text-align: right; margin-top: 28px">Please select a interview feedback:</h6>
+          </div>
+          <div class="input-field col s12 l6">
+            <select id="feedbackOption" style="margin-top: 30px" class="selectDropdown">
+              <option value="0">Select a feedback</option>
+              <option value="1">Interview Complete - Selected</option>
+              <option value="2">Interview Complete - Rejected</option>
+              <option value="3">Candidate no show</option>
+              <option value="4">Candidate not qualified</option>
+            </select>
+          </div>
+        </div>
+      </center>
+
+      <center>
+        <textarea placeholder="Interview feedback" style="width: 92%" id="feedbackNote" ></textarea>
+      </center>
+
+    </div>
+    <div class="mdl-dialog__actions">
+      <button type="button" class="mdl-button confirmFeedback">Submit feedback</button>
+      <button type="button" class="mdl-button closeFeedback">Cancel</button>
     </div>
   </dialog>
 

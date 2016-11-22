@@ -20,7 +20,6 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
     public Integer deactivationReason;
     public Date deactivationExpiryDate;
 
-
     public static class ExpList {
         Integer jobExpQuestionId;
         List<Integer> jobExpResponseIdArray;
