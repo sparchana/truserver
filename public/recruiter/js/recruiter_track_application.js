@@ -4,6 +4,7 @@
 
 var jobPostId;
 var todayDay;
+var globalCandidateId;
 
 $(document).scroll(function(){
     if ($(this).scrollTop() > 80) {
@@ -152,7 +153,8 @@ function processDataForJobApplications(returnedData) {
                 var interviewMonth = date.getMonth() + 1;
 
                 if((todayDay.getDate() == interviewDay) && ((todayDay.getMonth() + 1) == interviewMonth)){
-                    if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 9 && value.extraData.workflowStatus.statusId < 14)){
+                    if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 9)){
+                        console.log(value);
                         candidateCount ++;
 
                         var candidateCard = document.createElement("div");
@@ -171,7 +173,7 @@ function processDataForJobApplications(returnedData) {
                         candidateCardContent.appendChild(candidateCardRow);
 
                         var candidateCardRowColOne = document.createElement("div");
-                        candidateCardRowColOne.className = "col s12 l7";
+                        candidateCardRowColOne.className = "col s12 l4";
                         candidateCardRowColOne.style = "padding-top:2px";
                         candidateCardRow.appendChild(candidateCardRowColOne);
 
@@ -219,6 +221,34 @@ function processDataForJobApplications(returnedData) {
                         candidateInterviewStatusVal.style = "color: green; font-weight: bold";
 
                         inlineBlockDiv.appendChild(candidateInterviewStatusVal);
+
+                        //interview date/time slot
+                        var feedbackBtnDiv = document.createElement("div");
+                        feedbackBtnDiv.className = "col s12 l3";
+                        feedbackBtnDiv.style = "color: black; text-align: right; margin-top: 4px";
+                        candidateCardRow.appendChild(feedbackBtnDiv);
+
+                        if(value.extraData.workflowStatus.statusId > 13){
+                            var feedbackBtnStatus = document.createElement("span");
+                            feedbackBtnStatus.className = "feedbackVal";
+                            if(value.extraData.workflowStatus.statusId == 14){
+                                feedbackBtnStatus.style = "background: green";
+                            }
+                            feedbackBtnStatus.textContent = value.extraData.workflowStatus.statusTitle;
+                            feedbackBtnDiv.appendChild(feedbackBtnStatus);
+                            feedbackBtnDiv.style = "color: black; text-align: right; margin-top: 12px";
+                            candidateInterviewStatusVal.textContent = "Interview Completed";
+                            candidateInterviewStatusVal.style = "color: green; font-weight: bold";
+                        } else{
+                            var feedbackBtn = document.createElement("a");
+                            feedbackBtn.className = "waves-effect waves-light btn";
+                            feedbackBtn.style = "font-weight: bold";
+                            feedbackBtn.onclick = function () {
+                                openFeedbackModal(value.candidate.candidateId);
+                            };
+                            feedbackBtn.textContent = "Add feedback";
+                            feedbackBtnDiv.appendChild(feedbackBtn);
+                        }
 
                         var candidateCardDivider = document.createElement("div");
                         candidateCardDivider.className = "divider";
@@ -955,6 +985,49 @@ function checkRecruiterLogin() {
 function processDataRecruiterSession(returnedData) {
     if(returnedData == 0){
         logoutRecruiter();
+    }
+}
+
+function openFeedbackModal(candidateId) {
+    globalCandidateId = candidateId;
+
+    $("#addFeedback").openModal();
+}
+
+function confirmAddFeedback() {
+    if($("#feedbackOption").val() > 0){
+        try {
+            var d = {
+                candidateId: globalCandidateId,
+                jobPostId : jobPostId,
+                feedbackStatus : $("#feedbackOption").val(),
+                feedbackComment : $("#feedbackNote").val()
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/updateFeedback",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processDataUpdateFeedBack
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+
+    } else{
+        notifyError("Please select a feedback option");
+    }
+}
+
+function processDataUpdateFeedBack(returnedData) {
+    if(returnedData == 1){
+        notifySuccess("Feedback updated successfully. Refreshing the page..");
+        setTimeout(function () {
+            location.reload();
+        }, 2000);
+    } else{
+        notifyError("Something went wrong. Please try again later");
     }
 }
 

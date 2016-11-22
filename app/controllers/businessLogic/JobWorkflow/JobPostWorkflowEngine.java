@@ -2179,7 +2179,7 @@ public class JobPostWorkflowEngine {
         InterviewFeedbackUpdate interviewFeedbackUpdate = new InterviewFeedbackUpdate();
         interviewFeedbackUpdate.setJobPostWorkflow(jobPostWorkflowNew);
         interviewFeedbackUpdate.setJobPost(jobPostWorkflowOld.getJobPost());
-        interviewFeedbackUpdate.setCandidate(Candidate.find.where().eq("candidateId", addFeedbackRequest.getJobPostId()).findUnique());
+        interviewFeedbackUpdate.setCandidate(Candidate.find.where().eq("candidateId", addFeedbackRequest.getCandidateId()).findUnique());
         interviewFeedbackUpdate.setStatus(JobPostWorkflowStatus.find.where().eq("status_id", jwStatus).findUnique());
         interviewFeedbackUpdate.setCandidateInterviewStatusUpdateNote(addFeedbackRequest.getFeedbackComment());
 

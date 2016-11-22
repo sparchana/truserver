@@ -209,8 +209,6 @@ function confirmAddFeedback() {
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
-
-        console.log($("#feedbackOption").val() + " " + $("#feedbackNote").val())
     } else{
         notifyError("Please select a feedback option");
     }
