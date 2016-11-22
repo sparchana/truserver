@@ -14,7 +14,6 @@
         @*<script type="text/javascript" src="/assets/common/js/jquery.min_1_12_0.js"></script>*@
         <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
         <script type="text/javascript" src="/assets/dashboard/js/user_login.js"></script>
-        <script type="text/javascript" src="/assets/dashboard/js/dashboard.js"></script>
 
 
         <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
@@ -313,7 +312,19 @@
                                         <div class="col-sm-3"><h5>Assets<font color="red">*</font></h5></div>
                                         <div class="col-sm-5" style="margin-top: 4px">
                                             <div style="width: 100%; height: 34px;" class="btn-group" data-toggle="buttons">
-                                                <select id="jobPostAsset" style="width: 206px;" multiple="multiple" class="selectDropdown"></select>
+                                                <input type="text" id="candidateAsset" >
+                                                <script type="text/javascript">
+                                            $(document).ready(function() {
+                                                $("#candidateAsset").tokenInput(getAssets(), {
+                                                    theme: "facebook",
+                                                    placeholder: "What assets do you own?",
+                                                    hintText: "Start typing jobs (eg. Smartphone, Bike, Car)",
+                                                    minChars: 0,
+                                                    prePopulate: candidateAssetArray,
+                                                    preventDuplicates: true
+                                                });
+                                            });
+                                        </script>
                                             </div>
                                         </div>
                                     </div>
@@ -522,6 +533,7 @@
             <!-- Including Bootstrap -->
         <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+        <script type="text/javascript" src="/assets/dashboard/js/dashboard.js"></script>
         <script type="text/javascript" src="/assets/dashboard/js/dashboard_prefill.js"></script>
         <script type="text/javascript" src="/assets/common/js/all_job_role_footer.js"></script>
 

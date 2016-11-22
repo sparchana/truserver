@@ -9,6 +9,7 @@ var jobArray = [];
 var educationArray = [];
 var languageArray = [];
 var idProofArray = [];
+var assetArray = [];
 var check = 0;
 
 /* candidate Preference array */
@@ -16,6 +17,7 @@ var jobPrefArray = [];
 var localityPrefArray = [];
 var currentLocationArray = [];
 var candidateIdProofArray = [];
+var candidateAssetArray = [];
 
 /* candidate Data returned JSON */
 var candidateInformation;
@@ -45,13 +47,13 @@ $(document).ready(function(){
     /* ajx commands to fetch all assets*/
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllAsset",
             data: false,
             async: false,
             contentType: false,
             processData: false,
-            success: processDataGetAssets
+            success: processDataCheckAssets
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
@@ -521,17 +523,29 @@ function processDataAndFillAllFields(returnedData) {
     } catch(err){
         console.log("getCandidateLocalityPref error"+err);
     }
-    /*get candidate's assets*/
 
-
-
+    /* get Candidate's assets */
+    try {
+        var assets = returnedData.candidateAssetList;
+        assets.forEach(function (singleAsset) {
+            var id = singleAsset.asset.assetId;
+            var name = singleAsset.asset.assetTitle;
+            var item = {};
+            item ["id"] = id;
+            item ["name"] = name;
+            candidateAssetArray.push(item);
+        });
+    } catch (err) {
+        console.log(err);
+    }
 
     /* get Candidate's idProofs */
     console.log(returnedData.idProofReferenceList);
     try {
         var idProof = returnedData.idProofReferenceList;
-        var tempIdProofList = []
+        var tempIdProofList = [];
         idProof.forEach(function (singleIdProof) {
+            console.log(singleIdProof.idProof);
             tempIdProofList.push(singleIdProof.idProof);
             var id = singleIdProof.idProof.idProofId;
             var name = singleIdProof.idProof.idProofName;
@@ -546,7 +560,7 @@ function processDataAndFillAllFields(returnedData) {
             generateIdProof(tempIdProofList);
         }
     } catch (err) {
-        console.log(err);
+        console.log(err.stack);
     }
 }
 /* end prefill*/
@@ -653,24 +667,20 @@ function getLocality(){
 function getJob(){
     return jobArray;
 }
-function processDataGetAssets(returnedAssets) {
-    var data = [];
-    console.log("Assets : "+JSON.stringify(returnedAssets));
-    returnedAssets.forEach(function (asset) {
-        var opt = {
-            label: asset.assetTitle, value: parseInt(asset.assetId)
-        };
-        data.push(opt);
-    });
-
-    var selectList = $('#jobPostAsset');
-    selectList.multiselect({
-        includeSelectAllOption: true,
-        enableCaseInsensitiveFiltering: true,
-        maxHeight: 300
-    });
-    selectList.multiselect('dataprovider', data);
-    selectList.multiselect('rebuild');
+function getAssets(){
+    return assetArray;
+}
+function processDataCheckAssets(returnedAssets) {
+    if(returnedAssets != null) {
+        returnedAssets.forEach(function (asset) {
+            var id = asset.assetId;
+            var name = asset.assetTitle;
+            var item = {};
+            item ["id"] = id;
+            item ["name"] = name;
+            assetArray.push(item);
+        });
+    }
 }
 function processDataCheckIdProofs(returnedData) {
     returnedData.forEach(function (idProof) {

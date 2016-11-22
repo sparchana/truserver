@@ -6,6 +6,7 @@ var skillMap = [];
 var languageMap = [];
 var localityArray = [];
 var jobArray = [];
+var assetArray = [];
 var transportationArray = [];
 var educationArray = [];
 var leadSourceArray = [];
@@ -23,6 +24,7 @@ var currentJobRoleArray = [];
 var currentLocationArray = [];
 var pastJobRoleArray = [];
 var candidateIdProofArray = [];
+var candidateAssetArray = [];
 
 var candidateSkill = [];
 var candidateExps;
@@ -80,6 +82,21 @@ $(document).ready(function () {
             contentType: false,
             processData: false,
             success: processDataCheckJobs
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllAsset",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckAssets
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
@@ -244,6 +261,10 @@ function getLocality() {
     return localityArray;
 }
 
+function getAssets(){
+    return assetArray;
+}
+
 function getJob() {
     return jobArray;
 }
@@ -360,6 +381,20 @@ function processDataAndFillAllFields(returnedData) {
             if(candidateIdProofArray != null && candidateIdProofArray.length > 0) {
                 generateIdProof(tempIdProofList);
             }
+        } catch (err) {
+            console.log(err);
+        }
+        /* get Candidate's assets */
+        try {
+            var assets = returnedData.candidateAssetList;
+            assets.forEach(function (singleAsset) {
+                var id = singleAsset.asset.assetId;
+                var name = singleAsset.asset.assetTitle;
+                var item = {};
+                item ["id"] = id;
+                item ["name"] = name;
+                candidateAssetArray.push(item);
+            });
         } catch (err) {
             console.log(err);
         }
@@ -645,6 +680,16 @@ function processDataCheckJobs(returnedData) {
         item ["id"] = id;
         item ["name"] = name;
         jobArray.push(item);
+    });
+}
+function processDataCheckAssets(returnedData) {
+    returnedData.forEach(function (asset) {
+        var id = asset.assetId;
+        var name = asset.assetTitle;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        assetArray.push(item);
     });
 }
 
@@ -1732,13 +1777,19 @@ function saveProfileForm() {
             }
 
             var candidatePreferredJob = [];
+            var candidatePreferredAsset = [];
 
             var jobPref = $('#candidateJobPref').val().split(",");
+            var assetList = $('#candidateAsset').val().split(",");
             var i;
 
             /* Candidate job role preferences  */
             for (i = 0; i < jobPref.length; i++) {
                 candidatePreferredJob.push(parseInt(jobPref[i]));
+            }
+            /* Candidate asset list  */
+            for (i = 0; i < assetList.length; i++) {
+                candidatePreferredAsset.push(parseInt(assetList[i]));
             }
 
             // past job company names
@@ -1852,6 +1903,7 @@ function saveProfileForm() {
                 candidateSkills: skillMap,
 
                 candidateIdProofList: idProofList,
+                candidateAssetList: candidatePreferredAsset,
                 candidateExperienceLetter: parseInt($('input:radio[name="experienceLetter"]:checked').val()),
 
                 supportNote: ($('#supportNote').val()),

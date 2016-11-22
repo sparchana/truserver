@@ -418,7 +418,7 @@ function saveCandidateBasicProfile(){
     candidateDocumentIdList.forEach(function (id) {
         console.log($('#idProofValue_'+ id).val());
         var item = {};
-        item["idProofId"] = id;
+        item["idProofId"] = parseInt(id);
         item["idProofValue"] = $('#idProofValue_'+ id).val();
         documentValues.push(item);
     });
@@ -494,7 +494,12 @@ function saveCandidateBasicProfile(){
         for(i=0;i<jobPref.length; i++){
             candidatePreferredJob.push(parseInt(jobPref[i]));
         }
-
+        var candidatePreferredAsset = [];
+        var assetList = $('#candidateAsset').val().split(",");
+        /* Candidate asset list  */
+        for (i = 0; i < assetList.length; i++) {
+            candidatePreferredAsset.push(parseInt(assetList[i]));
+        }
         try {
             var d = {
                 //mandatory fields
@@ -502,12 +507,12 @@ function saveCandidateBasicProfile(){
                 candidateSecondName: $('#candidateSecondName').val(),
                 candidateMobile: candidateInformation.candidateMobile,
                 candidateJobPref: candidatePreferredJob,
-                idProofReferenceList: documentValues,
                 candidateHomeLocality: homeLocalitySelected,
 
                 //others
                 candidateDob: c_dob,
-                candidateAssetList: $('#jobPostAsset').val(),
+                candidateAssetList: candidatePreferredAsset,
+                candidateIdProofList: documentValues,
                 candidateTimeShiftPref: $('#candidateTimeShiftPref').val(),
                 candidateGender: ($('input:radio[name="gender"]:checked').val())
             };
