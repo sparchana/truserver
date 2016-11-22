@@ -16,6 +16,10 @@ var allReason = [];
 
 var oldDate = null;
 
+function openTrackInterview() {
+    window.location = "/recruiter/job/track/" + jobPostId;
+}
+
 $(document).scroll(function(){
     if ($(this).scrollTop() > 80) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});

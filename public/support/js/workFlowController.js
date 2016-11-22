@@ -960,18 +960,12 @@ $(function () {
                 }
 
                 var preScreenAttemptCount = function () {
-                    if (app.currentView == "pre_screen_view" || app.currentView == "pre_screen_completed_view") {
+                    if (app.currentView == "pre_screen_view" || app.currentView == "pre_screen_completed_view" || app.currentView == "confirmed_interview_view" ) {
                         if(newCandidate.extraData.preScreenCallAttemptCount == null) {
                             return "0";
                         } else {
                             return '<a href="'+"/workflowInteraction/"+newCandidate.extraData.workflowUUId+'" id="'+newCandidate.extraData.workflowId+'" style="cursor:pointer;" target="_blank">'+newCandidate.extraData.preScreenCallAttemptCount+'</a>';
                         }
-                    } else if (app.currentView == "confirmed_interview_view"){
-                        var interviewDetails = "Date and slot not available";
-                        if(newCandidate.extraData.interviewSchedule != null){
-                            interviewDetails = newCandidate.extraData.interviewSchedule;
-                        }
-                        return interviewDetails;
                     } else {
                         return "";
                     }
@@ -984,7 +978,13 @@ $(function () {
                         } else {
                             return '<input type="submit" value="Pre-Screen Again"  style="width:150px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-default">'
                         }
-                    } else {
+                    } else if (app.currentView == "confirmed_interview_view"){
+                        var interviewDetails = "Date and slot not available";
+                        if(newCandidate.extraData.interviewSchedule != null){
+                            interviewDetails = newCandidate.extraData.interviewSchedule;
+                        }
+                        return interviewDetails;
+                    }else {
                         return "";
                     }
                 };
@@ -1080,12 +1080,11 @@ $(function () {
                         if(newCandidate.extraData.workflowStatus.statusId != null && newCandidate.extraData.workflowStatus.statusId > 13){
                             candidateStatus = '<b>' + newCandidate.extraData.workflowStatus.statusTitle + '</b>';
                         }
-                        candidateStatus += '<input style="margin-left: 6px" type="button" value="Update" onclick="openFeedbackModal('+ newCandidate.candidate.candidateId + ')">';
                         var today = new Date();
                         var interviewDate = new Date(newCandidate.extraData.interviewDate);
                         if(interviewDate.getDate() <= today.getDate() && interviewDate.getMonth() <= today.getMonth() && interviewDate.getFullYear() <= today.getFullYear()) { // today's schedule
                             //interview for this job is scheduled today, hence allow to update status
-
+                            candidateStatus += '<input style="margin-left: 6px" type="button" value="Update" onclick="openFeedbackModal('+ newCandidate.candidate.candidateId + ')">';
                         }
                         return candidateStatus;
                     } else {

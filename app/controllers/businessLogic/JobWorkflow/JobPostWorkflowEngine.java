@@ -2164,16 +2164,14 @@ public class JobPostWorkflowEngine {
         }
         jobPostWorkflowNew.update();
 
-/*
-        CandidateInterviewStatusUpdate candidateInterviewStatusUpdate = new CandidateInterviewStatusUpdate();
-        candidateInterviewStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
-        candidateInterviewStatusUpdate.setJobPost(jobPostWorkflowOld.getJobPost());
-        candidateInterviewStatusUpdate.setCandidate(candidate);
-        if(reason != null && reason > 0){
-            candidateInterviewStatusUpdate.setRejectReason(RejectReason.find.where().eq("reason_id", reason).findUnique());
-        }
-        candidateInterviewStatusUpdate.save();
-*/
+        InterviewFeedbackUpdate interviewFeedbackUpdate = new InterviewFeedbackUpdate();
+        interviewFeedbackUpdate.setJobPostWorkflow(jobPostWorkflowNew);
+        interviewFeedbackUpdate.setJobPost(jobPostWorkflowOld.getJobPost());
+        interviewFeedbackUpdate.setCandidate(Candidate.find.where().eq("candidateId", addFeedbackRequest.getJobPostId()).findUnique());
+        interviewFeedbackUpdate.setStatus(JobPostWorkflowStatus.find.where().eq("status_id", jwStatus).findUnique());
+        interviewFeedbackUpdate.setCandidateInterviewStatusUpdateNote(addFeedbackRequest.getFeedbackComment());
+
+        interviewFeedbackUpdate.save();
         return 1;
   }
 
