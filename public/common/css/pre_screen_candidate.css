@@ -1,6 +1,16 @@
-#missingInfo li{
-    margin: 10px;
+#preScreenInterviewSetBtn{
+    background: #09ac58;
+    color:#fff;
 }
+#missingInfo li{
+    font-weight: bold;
+    margin: 10px;
+    color:#09ac58;
+}
+#missingInfo li > .row{
+    color:#000000;
+}
+
 #workedJobRole ul li{
     margin: 4px 0 0 0;
 }
@@ -25,21 +35,24 @@ li .open>.dropdown-menu{
 }
 #candidateDob{
     display: inline-block;
-    width: 82%;
+    width: 52%;
 }
 #candidateTotalExperienceYear{
     display: inline-block;
-    margin:0 20px;
+    margin:0 10px 0 0;
     width: 25%;
 }
 #candidateTotalExperienceMonth{
     display: inline-block;
-    margin:0 20px;
+    margin:0 10px 0 10px;
     width: 25%;
 }
 #candidateEducationInstitute{
     display: inline-block;
-    width: 82%;
+    width: 52%;
+}
+#candidateLastWithdrawnSalary{
+    width: 52%;
 }
 #preScreenModalBody{
     width: 66%;
@@ -56,11 +69,18 @@ li .open>.dropdown-menu{
     border: 1px solid #09ac58;
     color: #ffffff;
 }
+#companyDetailsCapture{
+    padding: 2%;
+    border-radius: 4px;
+    background: rgba(144, 151, 152, 0.15);
+}
+.dropdown-menu>.active>a, .dropdown-menu>.active>a:hover, .dropdown-menu>.active>a:focus{
+    background:#09ac58 ;
+}
 #preScreenModalBody{
     margin:40px auto;
 }
 #salary_details{
-    text-align: right;
     padding:2%;
 }
 @media screen and (max-width: 970px) {
@@ -71,6 +91,9 @@ li .open>.dropdown-menu{
 @media screen and (max-width: 768px) {
     .modal .modal-dialog{
         margin:20px 0;
+    }
+    #candidateLastWithdrawnSalary{
+        width: 100%;
     }
     #candidateEducationInstitute{
         width: 100%;
