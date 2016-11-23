@@ -132,6 +132,11 @@ function tabChange1() {
     $("#tab2").removeClass("activeTab");
     $("#tab3").removeClass("activeTab");
     $("#tab4").removeClass("activeTab");
+
+    $("#tab1Parent").addClass("activeParent");
+    $("#tab2Parent").removeClass("activeParent");
+    $("#tab3Parent").removeClass("activeParent");
+    $("#tab4Parent").removeClass("activeParent");
 }
 
 function tabChange2() {
@@ -139,6 +144,11 @@ function tabChange2() {
     $("#tab2").addClass("activeTab");
     $("#tab3").removeClass("activeTab");
     $("#tab4").removeClass("activeTab");
+
+    $("#tab1Parent").removeClass("activeParent");
+    $("#tab2Parent").addClass("activeParent");
+    $("#tab3Parent").removeClass("activeParent");
+    $("#tab4Parent").removeClass("activeParent");
 }
 
 function tabChange3() {
@@ -146,6 +156,11 @@ function tabChange3() {
     $("#tab2").removeClass("activeTab");
     $("#tab3").addClass("activeTab");
     $("#tab4").removeClass("activeTab");
+
+    $("#tab1Parent").removeClass("activeParent");
+    $("#tab2Parent").removeClass("activeParent");
+    $("#tab3Parent").addClass("activeParent");
+    $("#tab4Parent").removeClass("activeParent");
 }
 
 function tabChange4() {
@@ -153,6 +168,11 @@ function tabChange4() {
     $("#tab2").removeClass("activeTab");
     $("#tab3").removeClass("activeTab");
     $("#tab4").addClass("activeTab");
+
+    $("#tab1Parent").removeClass("activeParent");
+    $("#tab2Parent").removeClass("activeParent");
+    $("#tab3Parent").removeClass("activeParent");
+    $("#tab4Parent").addClass("activeParent");
 }
 
 
@@ -179,6 +199,7 @@ function processDataForJobApplications(returnedData) {
                 candidateList.push(value);
             }
         });
+        var actionNeeded = false;
 
         candidateList.reverse();
         candidateList.forEach(function (value){
@@ -186,9 +207,8 @@ function processDataForJobApplications(returnedData) {
             candidateCard.className = "card";
             candidateCard.style = "border-radius: 6px";
 
+            actionNeeded = false;
             if(value.extraData.workflowStatus != null){
-                console.log(value.extraData.workflowStatus.statusId);
-                console.log(value.candidate.candidateFirstName);
                 if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 8 && value.extraData.workflowStatus.statusId < 14)){
                     confirmedParent.append(candidateCard);
                     confirmedCount++;
@@ -204,6 +224,7 @@ function processDataForJobApplications(returnedData) {
                 } else{
                     pendingParent.append(candidateCard);
                     pendingCount++;
+                    actionNeeded = true;
                 }
             }
 
@@ -252,6 +273,11 @@ function processDataForJobApplications(returnedData) {
             innerInlineBlockDiv = document.createElement("div");
             innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px; margin-bottom: 6px";
             innerInlineBlockDiv.textContent = "Interview Details (Action Needed)";
+            if(actionNeeded){
+                innerInlineBlockDiv.style = "margin-left: 4px; color: red; font-size: 11px; font-weight: bold; margin-bottom: 6px";
+                innerInlineBlockDiv.textContent = "Interview Details (Action Needed)";
+
+            }
             inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
             var candidateInterviewDateVal = document.createElement("span");
@@ -350,7 +376,7 @@ function processDataForJobApplications(returnedData) {
                     candidateInterviewReschedule.appendChild(iconImg);
 
                     actionText = document.createElement("span");
-                    actionText.textContent = " Reject";
+                    actionText.textContent = " Reschedule";
                     candidateInterviewRescheduleParent.appendChild(actionText);
 
                 } else if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 9 && value.extraData.workflowStatus.statusId < 14)){

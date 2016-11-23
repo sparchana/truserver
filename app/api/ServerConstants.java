@@ -235,6 +235,7 @@ public class ServerConstants {
     public static final String SUPPORT_DEFAULT_UUID = "SUPPORT-DEFAULT-UUID";
 
     public static final String SELF_UNLOCKED_CANDIDATE_CONTACT = "Self unlocked contact";
+    public static final String SELF_UNLOCKED_INTEVIEW = "Self unlocked Interview";
 
     /************************
      *  Scrapped Data Source

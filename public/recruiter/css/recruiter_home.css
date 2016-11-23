@@ -472,6 +472,17 @@ a:hover{
     cursor: pointer;
 }
 
+#creditView{
+    z-index: 9999;
+    color: white;
+    position: fixed;
+    border-radius: 4px;
+    background: rgba(41, 36, 37, 0.85);
+    padding: 16px;
+    bottom: 24px;
+    right: 24px;
+}
+
 @media screen and (max-width: 600px) {
     #upperSpaceInputField{
         margin-top: 40px;

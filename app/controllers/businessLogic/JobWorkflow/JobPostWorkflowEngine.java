@@ -22,6 +22,7 @@ import models.entity.*;
 import models.entity.OM.*;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterProfile;
+import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
 import models.entity.Static.*;
 import models.util.SmsUtil;
@@ -1198,33 +1199,29 @@ public class JobPostWorkflowEngine {
         return "OK";
     }
 
-    public static Map<Long, CandidateWorkflowData> getPreScreenedPassFailCandidates(Long jobPostId, boolean isPass, Long status) {
+    public static Map<Long, CandidateWorkflowData> getPreScreenedPassFailCandidates(Long jobPostId, Long status) {
         String statusSql;
         Integer jpwfStatus;
-        if(isPass) {
-            if(status == 1){ //all
-                jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED;
-                statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED + ", "
-                        + ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED + ", " + ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE+ ", "
-                        + ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT + ", " + ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE + ")) ";
-            } else if(status == 2){
-                jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED;
-                statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED + ", "
-                        + ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED + ")) ";
-            } else if(status == 3){
-                jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE;
-                statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE + ")) ";
-            } else if(status == 4){
-                jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT;
-                statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT + ")) ";
-            } else{
-                jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE;
-                statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE + ")) ";
-            }
-        } else {
-            statusSql = " and (status_id = '" + ServerConstants.JWF_STATUS_PRESCREEN_FAILED + "' OR status_id = '" + ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE +"') ";
-            jpwfStatus = ServerConstants.JWF_STATUS_PRESCREEN_FAILED;
+        if(status == 1){ //all
+            jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED;
+            statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED + ", "
+                    + ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED + ", " + ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE+ ", "
+                    + ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT + ", " + ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE + ")) ";
+        } else if(status == 2){
+            jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED;
+            statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED + ", "
+                    + ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED + ")) ";
+        } else if(status == 3){
+            jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE;
+            statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE + ")) ";
+        } else if(status == 4){
+            jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT;
+            statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT + ")) ";
+        } else{
+            jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE;
+            statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE + ")) ";
         }
+
         StringBuilder workFlowQueryBuilder = new StringBuilder("select createdby, candidate_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
                 " where i.job_post_id " +
                 " = ('"+jobPostId+"') " +
@@ -2280,6 +2277,30 @@ public class JobPostWorkflowEngine {
         if(jobPostWorkflowOld == null) {
             return 0;
         }
+
+        RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
+                .eq("RecruiterProfileId", jobPostWorkflowOld.getJobPost().getRecruiterProfile().getRecruiterProfileId())
+                .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
+                .orderBy().desc("create_timestamp").setMaxRows(1).findUnique();
+
+        if(recruiterCreditHistoryLatest == null){
+            return -1;
+        }
+
+        if(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() == null || recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() < 1){
+            return -1;
+        }
+
+        RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
+        recruiterCreditHistory.setRecruiterProfile(jobPostWorkflowOld.getJobPost().getRecruiterProfile());
+        recruiterCreditHistory.setRecruiterCreditsAvailable(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() - 1);
+        recruiterCreditHistory.setRecruiterCreditsUsed(recruiterCreditHistoryLatest.getRecruiterCreditsUsed() + 1);
+        recruiterCreditHistory.setRecruiterCreditsAddedBy(ServerConstants.SELF_UNLOCKED_INTEVIEW);
+        recruiterCreditHistory.setUnits(-1);
+        recruiterCreditHistory.setRecruiterCreditCategory(RecruiterCreditCategory.find.where().eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK).findUnique());
+
+        //saving/updating all the rows
+        recruiterCreditHistory.save();
 
         Integer jwStatus;
         if(addFeedbackRequest.getFeedbackStatus() == ServerConstants.CANDIDATE_FEEDBACK_COMPLETE_SELECTED){

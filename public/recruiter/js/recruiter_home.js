@@ -155,6 +155,11 @@ function processDataInterviewToday(returnedData) {
                 homeLocality = application.candidate.locality.localityName;
             }
 
+            var feedback = '<td><a class="waves-effect waves-light btn" onclick="openFeedbackModal(' + application.candidate.candidateId + ', ' + application.jobPostWorkflow.jobPost.jobPostId + ')">Add Feedback</a></td>';
+            if(application.currentStatus.statusId > 13){
+                feedback = '<td>Interview Complete</td>';
+            }
+
             if(application.currentStatus.statusId > 9){
                 if(application.currentStatus.statusId == 10 || application.currentStatus.statusId == 11 || application.currentStatus.statusId > 14){ //not going or delayed
                     status = '<td style="color: red"><b>' + application.currentStatus.statusTitle + '</b></td>'
@@ -170,7 +175,7 @@ function processDataInterviewToday(returnedData) {
                 '<td>' + application.jobPostWorkflow.scheduledInterviewTimeSlot.interviewTimeSlotName + '</td>' +
                 '<td>' + homeLocality + '</td>' +
                 status +
-                '<td><a class="waves-effect waves-light btn" onclick="openFeedbackModal(' + application.candidate.candidateId + ', ' + application.jobPostWorkflow.jobPost.jobPostId + ')">Add Feedback</a></td>' +
+                feedback +
                 '</tr>';
         });
         $("#todayInterviewTable").show();
@@ -220,6 +225,9 @@ function processDataUpdateFeedBack(returnedData) {
         setTimeout(function () {
             location.reload();
         }, 2000);
+    } else if(returnedData == -1){
+        notifyError("You are out of interview credits. Please purchase interview credits!");
+        openCreditModal()
     } else{
         notifyError("Something went wrong. Please try again later");
     }
@@ -276,32 +284,27 @@ function processDataRecruiterProfile(returnedData) {
         var contactCreditCount = 0;
         var interviewCreditCount = 0;
         creditHistoryList.forEach(function (creditHistory){
-            if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
-                if(contactCreditCount == 0){
-                    remainingContactCredits = creditHistory.recruiterCreditsAvailable;
-                    contactCreditCount = 1;
-                }
-            } else{
-                if(interviewCreditCount == 0){
-                    if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
-                        remainingInterviewCredits = creditHistory.recruiterCreditsAvailable;
-                        interviewCreditCount = 1;
+            try{
+                if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
+                    if(contactCreditCount == 0){
+                        $("#remainingContactCredits").html(creditHistory.recruiterCreditsAvailable);
+                        $("#remainingContactCreditsMobile").html(creditHistory.recruiterCreditsAvailable);
+                        contactCreditCount = 1;
+                    }
+                } else{
+                    if(interviewCreditCount == 0){
+                        if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
+                            $("#remainingInterviewCredits").html(creditHistory.recruiterCreditsAvailable);
+                            $("#remainingInterviewCreditsMobile").html(creditHistory.recruiterCreditsAvailable);
+                            interviewCreditCount = 1;
+                        }
                     }
                 }
-            }
-            if(contactCreditCount > 0 && interviewCreditCount > 0){
-                return false;
-            }
+                if(contactCreditCount > 0 && interviewCreditCount > 0){
+                    return false;
+                }
+            } catch(err){}
         });
-
-        if(remainingContactCredits > 0){
-            $("#contactCreditCount").html(remainingContactCredits)
-            $("#hasCredit").show();
-            $("#hasNoCredit").hide();
-        } else{
-            $("#hasCredit").hide();
-            $("#hasNoCredit").show();
-        }
     }
 }
 

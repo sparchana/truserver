@@ -67,6 +67,10 @@
     color: #187b95;
 }
 
+.activeParent{
+    background: rgba(109, 130, 128, 0.22);
+}
+
 .feedbackVal{
     border-radius: 4px;
     background: #ff853b;
@@ -84,6 +88,10 @@
     cursor: pointer;
     font-weight: bold;
     padding: 6px;
+}
+
+#tab1, #tab2, #tab3, #tab4{
+    font-size: 12px;
 }
 
 @media screen and (max-width:1000px){

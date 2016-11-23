@@ -46,10 +46,10 @@
         <div class="row">
             <div class="col s12">
                 <ul class="tabs tabs-fixed-width">
-                    <li class="tab col s3" onclick="tabChange1()"><a href="#pendingConfirmation"><font id="tab1" class="activeTab">Pending confirmation</font></a></li>
-                    <li class="tab col s3" onclick="tabChange2()"><a href="#confirmed"><font id="tab2">Confirmed/Rescheduled</font></a></li>
-                    <li class="tab col s3" onclick="tabChange3()"><a href="#completed"><font id="tab3">Completed Interviews</font></a></li>
-                    <li class="tab col s3" onclick="tabChange4()"><a href="#rejected"><font id="tab4">Rejected</font></a></li>
+                    <li id="tab1Parent" class="tab col s3 activeParent" onclick="tabChange1()"><a href="#pendingConfirmation"><font id="tab1" class="activeTab">Pending confirmation</font></a></li>
+                    <li id="tab2Parent" class="tab col s3" onclick="tabChange2()"><a href="#confirmed"><font id="tab2">Confirmed/Rescheduled</font></a></li>
+                    <li id="tab3Parent" class="tab col s3" onclick="tabChange3()"><a href="#completed"><font id="tab3">Completed Interviews</font></a></li>
+                    <li id="tab4Parent" class="tab col s3" onclick="tabChange4()"><a href="#rejected"><font id="tab4">Rejected</font></a></li>
                 </ul>
             </div>
             <div id="pendingConfirmation" class="col s12">

@@ -70,7 +70,7 @@ POST        /getAllDeactivationReason                                     contro
 POST        /support/api/getMatchingCandidate/                            controllers.Application.getMatchingCandidate()
 POST        /support/api/saveSelectedCandidate/                           controllers.Application.saveSelectedCandidate()
 POST        /support/api/getSelectedCandidate/:jpId                       controllers.Application.getSelectedCandidate(jpId: Long)
-POST        /support/api/getPreScreenedCandidate/                         controllers.Application.getPreScreenedCandidate(jpId: java.lang.Long?= null, isPass: java.lang.Boolean?= null, status: java.lang.Long?= null)
+POST        /support/api/getPreScreenedCandidate/                         controllers.Application.getPreScreenedCandidate(jpId: java.lang.Long?= null, status: java.lang.Long?= null)
 POST        /support/api/getConfirmedInterviewCandidates/                 controllers.Application.getConfirmedInterviewCandidates(jpId: java.lang.Long?= null, start: java.lang.String?= null, end: java.lang.String?= null)
 POST        /support/api/getAllCompletedInterviews/                       controllers.Application.getAllCompletedInterviews(jpId: java.lang.Long ?= null)
 POST        /support/api/updateCandidateDetailsAtPreScreen/               controllers.Application.updateCandidateDetailsAtPreScreen(propertyId: Integer?= null, candidateId: java.lang.Long?= null)

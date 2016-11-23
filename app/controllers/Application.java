@@ -1785,8 +1785,8 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(SecuredUser.class)
-    public static Result getPreScreenedCandidate(Long jobPostId, Boolean isPass, Long status) {
-        return ok(toJson(JobPostWorkflowEngine.getPreScreenedPassFailCandidates(jobPostId, isPass, status)));
+    public static Result getPreScreenedCandidate(Long jobPostId, Long status) {
+        return ok(toJson(JobPostWorkflowEngine.getPreScreenedPassFailCandidates(jobPostId, status)));
     }
 
     public static Result getConfirmedInterviewCandidates(Long jobPostId, String start, String end) {
