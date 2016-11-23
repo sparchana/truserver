@@ -67,7 +67,6 @@ function getJobsForCandidate() {
 }
 
 function processDataAllJobPosts(returnedData) {
-    console.log(returnedData);
     var jobPostCount = Object.keys(returnedData).length;
     if(jobPostCount > 0){
         var count = 0;
@@ -285,10 +284,6 @@ function processDataAllJobPosts(returnedData) {
     } else {
         $("#jobLoaderDiv").hide();
     }
-}
-
-function confirmApply() {
-    applyJob(jobPostId, prefLocation, true);
 }
 
 $(function() {

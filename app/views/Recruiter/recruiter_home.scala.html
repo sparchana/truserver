@@ -113,6 +113,39 @@
             </div>
         </div>
 
+        <div class="container recruiterHomeMessgeBox" style="text-align: left; padding: 16px">
+            <center style="margin-bottom: 24px">
+                <h5>Interviews Today</h5>
+                <div class="materialDash"></div>
+            </center>
+
+            <div id="noInterviews" style="padding: 40px 6% 40px 6%; display: none">
+                <center>
+                    <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                    <h5>No Interview(s) today!</h5>
+                    <h6>Looks like there are no interviews lined up today!</h6>
+                </center>
+            </div>
+
+            <table class="responsive-table" style="display: none" id="todayInterviewTable">
+                <thead>
+                    <tr>
+                        <th><b>Job Title</b></th>
+                        <th><b>Candidate Name</b></th>
+                        <th><b>Interview Time slot</b></th>
+                        <th><b>Coming from</b></th>
+                        <th><b>Candidate Status</b></th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tableBody"></tbody>
+            </table>
+
+
+            <div id="today_interview"></div>
+        </div>
+
         <div class="container recruiterHomeNoBackBox"style="text-align: center;margin-bottom:12px">
             <h5>How it works</h5>
             <center><div class="materialDash"></div></center>
@@ -120,7 +153,7 @@
                 <div class="col s12 m4" style="margin-top: 28px;">
                     <img src="/assets/recruiter/img/green/profile.svg" width="34px">
                     <br>
-                    <center style="margin-top: 12px;">Signup and post your job for free!</center>
+                    <center style="margin-top: 12px;">Post your job for free!</center>
                 </div>
                 <div class="col s12 m4" style="margin-top: 28px;">
                     <img src="/assets/recruiter/img/green/search.svg" width="34px">
@@ -198,7 +231,64 @@
             </div>
         </div>
 
-            <!--Footer start-->
+            <!-- feedback credit Structure -->
+        <div id="addFeedback" class="modal" style="background: transparent; box-shadow: none">
+            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeFeedbackModal()"></div>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+                <center><font style="color: #fff"><h5>Interview Feedback!</h5></font></center>
+            </div>
+            <div style="background: #fff; padding: 12px">
+                <center>
+                    <div class="row">
+                        <div class="col s12 l12">
+                            <br>
+                            <img src="/assets/recruiter/img/feedback.svg" width="70px">
+                            <div class="row" style="margin-top: 4px" >
+                                <div class="col-sm-6">
+                                    <h6 style="text-align: right">Please select a feedback result:</h6>
+                                </div>
+                                <div class="input-field col s12 l6">
+                                    <select id="feedbackOption" class="selectDropdown">
+                                        <option value="0">Select a feedback</option>
+                                        <option value="1">Interview Complete - Selected</option>
+                                        <option value="2">Interview Complete - Rejected</option>
+                                        <option value="3">Candidate no show</option>
+                                        <option value="4">Candidate not qualified</option>
+                                    </select>
+                                    <style>
+                                    select{
+                                        display: inline-block;
+                                    }
+                                    </style>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </center>
+
+                <div class="row">
+                    <form class="col s12">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">mode_edit</i>
+                                <textarea id="feedbackNote" class="materialize-textarea"></textarea>
+                                <label for="feedbackNote">Interview Comments</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <center>
+                    <div id="rescheduleInterviewDateBtn" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="confirmAddFeedback()"><font style="color: #fff;
+                        font-weight: 400"><b>Submit Feedback!</b></font>
+                    </div>
+                </center>
+
+            </div>
+        </div>
+
+        <!--Footer start-->
         <footer class="page-footer" style="background-color: #424242;">
             <div class="container">
                 <div class="row" style="margin: 0">

@@ -218,7 +218,6 @@ function validateCompanyTypeVal(val, text) {
         $('#rec_company_type').tokenize().tokenRemove(val);
         notifyError("Please select a valid company type from the dropdown list");
     }
-
 }
 
 function validateCompanyLocationVal(val, text) {

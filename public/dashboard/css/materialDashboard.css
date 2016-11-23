@@ -163,7 +163,7 @@ div.assessmentAlertDiv.red{
     padding: 4px 12px;
     border-radius: 20px;
     cursor: pointer;
-    background-color: red;
+    background: linear-gradient(to right, rgb(199, 4, 4) 0%, rgb(222, 81, 0) 100%);
     font-weight: bold;
 }
 
@@ -190,11 +190,8 @@ div.assessmentAlertDiv.red{
 
 .img-src {
     position: absolute;
-    background:linear-gradient(
-            rgba(65, 69, 121, 0.3),
-            rgba(12, 12, 24, 0.3)
-    ), url(../img/dashboard_back.png) repeat;
-    background-size: 80%;
+    background: linear-gradient(to left, rgba(0, 50, 67, 0.22), rgba(0, 0, 0, 0.71)), url(../img/dashboard_back.png) repeat;
+    background-size: 100%;
     top: -10%;
     bottom: 10%;
     left: -10%;
@@ -293,6 +290,25 @@ div.inblockDiv{
     background: #ffffff;
 
     transition: all 0.7s cubic-bezier(.25,.8,.25,1);
+}
+
+#customTab{
+    box-shadow: 0 1px 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
+    margin: 8px 0 0 0;
+    background: #ffffff;
+    text-align: center;
+}
+
+.tabItem{
+    color: #39393b;
+    padding: 12px;
+    cursor: pointer;
+}
+
+.activeTab{
+    color: #359dff;
+    font-weight: bold;
+    border-bottom: 2px solid #008080;
 }
 
 #jobBody {
@@ -548,6 +564,57 @@ hr{
 
 .candidatePartner{
     margin: 6px;
+}
+
+.confirmInterview {
+    margin-left: 8px;
+    padding: 4px 8px 4px 8px;
+    font-weight: bold;
+    color: white;
+    background: rgba(11, 126, 22, 1);
+    border-radius: 16px;
+    cursor: pointer;
+}
+
+.accept{
+    margin-left: 8px;
+    cursor: pointer;
+    padding: 3px 6px 6px 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #c0c8b6;
+    transition: 0.2s;
+}
+.accept:hover{
+    background: #06c840;
+}
+
+.reject{
+    margin-left: 8px;
+    cursor: pointer;
+    padding: 3px 6px 6px 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #c0c8b6;
+    transition: 0.2s;
+}
+
+.reject:hover{
+    background: #f66624;
+}
+
+.navigationBtn{
+    padding: 8px;
+    background: #5467ff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    width: 100%;
+    text-align: center;
 }
 
 @media screen and (max-width: 800px) {

@@ -48,13 +48,13 @@ public class OngridVerificationResults extends Model {
 
     @JsonManagedReference
     @ManyToOne
-    @JoinColumn(name = "ongrid_field_id", referencedColumnName = "field_id")
-    private OnGridVerificationFields ongridFieldId;
+    @JoinColumn(name = "ongrid_field", referencedColumnName = "field_id")
+    private OnGridVerificationFields ongridField;
 
     @JsonManagedReference
     @ManyToOne
-    @JoinColumn(name = "ongrid_verification_status_id", referencedColumnName = "status_id")
-    private OnGridVerificationStatus ongridVerificationStatusId;
+    @JoinColumn(name = "ongrid_verification_status", referencedColumnName = "status_id")
+    private OnGridVerificationStatus ongridVerificationStatus;
 
     public OngridVerificationResults(Candidate candidate,
                                      OnGridVerificationFields field,
@@ -63,8 +63,8 @@ public class OngridVerificationResults extends Model {
                                      Long ongridId)
     {
         this.candidate = candidate;
-        this.ongridFieldId = field;
-        this.ongridVerificationStatusId = status;
+        this.ongridField = field;
+        this.ongridVerificationStatus = status;
         this.ongridCommunityId = communitId;
         this.ongridId = ongridId;
         this.updateTimestamp = new Timestamp(System.currentTimeMillis());
@@ -134,20 +134,20 @@ public class OngridVerificationResults extends Model {
         this.candidate = candidate;
     }
 
-    public OnGridVerificationFields getOngridFieldId() {
-        return ongridFieldId;
+    public OnGridVerificationFields getOngridField() {
+        return ongridField;
     }
 
-    public void setOngridFieldId(OnGridVerificationFields ongridFieldId) {
-        this.ongridFieldId = ongridFieldId;
+    public void setOngridField(OnGridVerificationFields ongridField) {
+        this.ongridField = ongridField;
     }
 
-    public OnGridVerificationStatus getOngridVerificationStatusId() {
-        return ongridVerificationStatusId;
+    public OnGridVerificationStatus getOngridVerificationStatus() {
+        return ongridVerificationStatus;
     }
 
-    public void setOngridVerificationStatusId(OnGridVerificationStatus ongridVerificationStatusId) {
-        this.ongridVerificationStatusId = ongridVerificationStatusId;
+    public void setOngridVerificationStatus(OnGridVerificationStatus ongridVerificationStatus) {
+        this.ongridVerificationStatus = ongridVerificationStatus;
     }
 
 }

@@ -18,6 +18,7 @@ import models.util.EmailUtil;
 import models.util.SmsUtil;
 import play.Logger;
 import play.api.Play;
+import play.mvc.Result;
 
 import java.io.*;
 import java.net.URLEncoder;
@@ -26,9 +27,9 @@ import java.util.*;
 
 import static controllers.businessLogic.InteractionService.createInteractionForNewJobPost;
 import static models.util.EmailUtil.sendRecruiterJobPostLiveEmail;
-import static models.util.SmsUtil.sendRecruiterFreeJobPostingSms;
-import static models.util.SmsUtil.sendRecruiterJobPostActivationSms;
+import static models.util.SmsUtil.*;
 import static play.mvc.Controller.session;
+import static play.mvc.Results.ok;
 
 /**
  * Created by batcoder1 on 17/6/16.
@@ -173,6 +174,8 @@ public class JobService {
     private static void createInterviewDetails(AddJobPostRequest addJobPostRequest, JobPost jobPost){
         List<Integer> interviewSlots = addJobPostRequest.getInterviewTimeSlot();
 
+        //setting lat lng of the address
+
         if(interviewSlots != null){
             Boolean flag = false;
             String interviewDays = addJobPostRequest.getJobPostInterviewDays();
@@ -180,6 +183,13 @@ public class JobService {
                 if(interviewDays.charAt(i) == '1'){
                     flag = true;
                     break;
+                }
+            }
+
+            if(jobPost != null){
+                List<InterviewDetails> interviewDetailsList = InterviewDetails.find.where().eq("JobPostId", jobPost.getJobPostId()).findList();
+                for(InterviewDetails interviewDetails: interviewDetailsList){
+                    interviewDetails.delete();
                 }
             }
             //create multiple entries in interview details table
@@ -196,6 +206,10 @@ public class JobService {
                     Byte interviewDaysByte = Byte.parseByte(addJobPostRequest.getJobPostInterviewDays(), 2);
                     interviewDetails.setInterviewDays(interviewDaysByte);
                 }
+                interviewDetails.setLat(addJobPostRequest.getJobPostInterviewLocationLat());
+                interviewDetails.setLng(addJobPostRequest.getJobPostInterviewLocationLng());
+
+                interviewDetails.setReviewApplication(addJobPostRequest.getReviewApplications());
 
                 interviewDetails.save();
             }
@@ -637,6 +651,17 @@ public class JobService {
                     jobApplication.setCandidate(existingCandidate);
                     jobApplication.setJobPost(existingJobPost);
 
+                    //setting time slot
+                    if(applyJobRequest.getTimeSlot() != null){
+                        InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", applyJobRequest.getTimeSlot()).findUnique();
+                        if(interviewTimeSlot != null){
+                            jobApplication.setInterviewTimeSlot(interviewTimeSlot);
+                        }
+                    }
+                    //setting scheduled interview date
+                    if(applyJobRequest.getScheduledInterviewDate() != null){
+                        jobApplication.setScheduledInterviewDate(applyJobRequest.getScheduledInterviewDate());
+                    }
                     Locality locality = Locality.find.where().eq("localityId", applyJobRequest.getLocalityId()).findUnique();
                     if(locality != null){
                         jobApplication.setLocality(locality);
@@ -647,20 +672,9 @@ public class JobService {
                     String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB;
                     Partner partner = null;
                     if(applyJobRequest.getPartner()){
-                        // this job is being applied by a partner for a candidate, hence we need to det partner Id in the job Application table
+                        // this job is being applied by a partner for a candidate, hence we need to get partner Id in the job Application table
                         partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
                         if(partner != null){
-                            //setting time slot
-                            if(applyJobRequest.getTimeSlot() != null){
-                                InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", applyJobRequest.getTimeSlot()).findUnique();
-                                if(interviewTimeSlot != null){
-                                    jobApplication.setInterviewTimeSlot(interviewTimeSlot);
-                                }
-                            }
-                            //setting scheduled interview date
-                            if(applyJobRequest.getScheduledInterviewDate() != null){
-                                jobApplication.setScheduledInterviewDate(applyJobRequest.getScheduledInterviewDate());
-                            }
                             //setting partner
                             jobApplication.setPartner(partner);
                             SmsUtil.sendJobApplicationSmsViaPartner(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName(), partner.getPartnerFirstName());
@@ -1039,4 +1053,5 @@ public class JobService {
         }
         return jobPostToLocalityList;
     }
+
 }

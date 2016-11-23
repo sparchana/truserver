@@ -188,9 +188,9 @@ function validateAadhar(array) {
         return false;
     }
 
-    if(array == "") {
-        return true;
-    }
+    // if(array == "") {
+    //     return true;
+    // }
     if(isNaN(array)){
         return false;
     }
@@ -215,11 +215,11 @@ function validateDL(dlNumber) {
         console.log("its null");
         return false;
     }
-    if(dlNumber == "") {
-        return true;
-    }
+    // if(dlNumber == "") {
+    //     return true;
+    // }
     dlNumber = dlNumber.replace(/\s+/g, '');
-    dlNumber = dlNumber.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
+    dlNumber = dlNumber.replace("-", '');
     if(dlNumber.length != 15){
         console.log("dlNumber length is not 15, its: "+dlNumber.length);
         return false;
@@ -258,9 +258,9 @@ function validatePASSPORT(passPort) {
         return false;
     }
 
-    if(passPort == "") {
-        return true;
-    }
+    // if(passPort == "") {
+    //     return true;
+    // }
     passPort = passPort.replace(/\s+/g, '');
     passPort = passPort.replace(/[-&\/\\#,+()$~%.'":*?<>{}]/g, '');
     var validCount = 0;
@@ -288,8 +288,11 @@ function validatePAN(panNumber) {
     }
 
     if(panNumber == "") {
-        return true;
+        return false;
     }
+    // if(panNumber == "") {
+    //     return true;
+    // }
     var pancardPattern = /^([a-zA-Z]{5})(\d{4})([a-zA-Z]{1})$/;
     var patternArray = panNumber.match(pancardPattern);
 

@@ -134,7 +134,22 @@ public class ServerConstants {
     public static final int JWF_STATUS_PRESCREEN_ATTEMPTED = 2;
     public static final int JWF_STATUS_PRESCREEN_FAILED = 3;
     public static final int JWF_STATUS_PRESCREEN_COMPLETED = 4;
+
     public static final int JWF_STATUS_INTERVIEW_SCHEDULED = 5;
+    public static final int JWF_STATUS_INTERVIEW_CONFIRMED = 6;
+    public static final int JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT = 7;
+    public static final int JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE = 8;
+    public static final int JWF_STATUS_INTERVIEW_RESCHEDULE = 9;
+
+    public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING = 10;
+    public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED = 11;
+    public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED = 12;
+    public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED = 13;
+
+    public static final int JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED = 14;
+    public static final int JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_REJECTED = 15;
+    public static final int JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW = 16;
+    public static final int JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED = 17;
 
     // Requirements Table
     public static final String PROFILE_REQUIREMENT_TABLE_AGE = "age";
@@ -282,6 +297,31 @@ public class ServerConstants {
 
     public static final String DEFAULT_COMPANY_LOGO = "https://s3.amazonaws.com/trujobs.in/companyLogos/default_company_logo.png";
 
+    // preScreening category
+    public static final int INTERVIEW_STATUS_ACCEPTED = 1;
+    public static final int INTERVIEW_STATUS_REJECTED_BY_RECRUITER = 2;
+    public static final int INTERVIEW_STATUS_RESCHEDULED = 3;
+    public static final int INTERVIEW_STATUS_REJECTED_BY_CANDIDATE = 4;
 
+    // rescheduled Interview status
+    public static final int RESCHEULED_INTERVIEW_STATUS_ACCEPTED = 1;
+    public static final int RESCHEULED_INTERVIEW_STATUS_REJECTED = 0;
 
+    // candidate Interview tracking status
+    public static final int CANDIDATE_INTERVIEW_STATUS_NOT_GOING = 1;
+    public static final int CANDIDATE_INTERVIEW_STATUS_DELAYED = 2;
+    public static final int CANDIDATE_INTERVIEW_STATUS_STARTED = 3;
+    public static final int CANDIDATE_INTERVIEW_STATUS_REACHED = 4;
+
+    // candidate Interview feedback status
+    public static final int CANDIDATE_FEEDBACK_COMPLETE_SELECTED = 1;
+    public static final int CANDIDATE_FEEDBACK_COMPLETE_REJECTED = 2;
+    public static final int CANDIDATE_FEEDBACK_NO_SHOW = 3;
+    public static final int CANDIDATE_FEEDBACK_NOT_QUALIFIED = 4;
+
+    //reason type
+    public static final int INTERVIEW_REJECT_TYPE_REASON = 1;
+    public static final int INTERVIEW_NOT_GOING_TYPE_REASON = 2;
+
+    public static final String CREATED_BY = "Candidate";
 }

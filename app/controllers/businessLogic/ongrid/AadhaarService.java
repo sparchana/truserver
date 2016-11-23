@@ -259,10 +259,10 @@ public class AadhaarService {
             if (existingResults != null && !existingResults.isEmpty()) {
                 OngridVerificationResults existingRecord = existingResults.get(field);
                 if (existingRecord != null) {
-                    OnGridVerificationStatus existingStatus = existingRecord.getOngridVerificationStatusId();
+                    OnGridVerificationStatus existingStatus = existingRecord.getOngridVerificationStatus();
 
                     if (!existingStatus.equals(status)) {
-                        existingRecord.setOngridVerificationStatusId(status);
+                        existingRecord.setOngridVerificationStatus(status);
                         existingRecord.update();
                     }
 

@@ -28,7 +28,6 @@ import models.util.EmailUtil;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
-import play.core.server.Server;
 import play.mvc.Result;
 
 import java.util.UUID;

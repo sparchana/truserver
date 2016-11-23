@@ -3,8 +3,12 @@ package models.util;
 import api.ServerConstants;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
 import controllers.businessLogic.InteractionService;
+import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.OM.JobApplication;
+import models.entity.OM.JobPostWorkflow;
 import models.entity.Recruiter.RecruiterProfile;
+import models.entity.Static.InterviewTimeSlot;
 import play.Logger;
 import play.Play;
 
@@ -14,6 +18,11 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import static api.ServerConstants.devTeamMobile;
 
@@ -318,4 +327,102 @@ public class SmsUtil {
                    " or login at www.trujobs.in to update your profile and apply to more jobs!!  Thank you.";
         sendSms(candidateMobile, msg);
     }
+
+    public static void sendInterviewConfirmationSms(JobPostWorkflow jobApplication, Candidate candidate) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(jobApplication.getScheduledInterviewDate());
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+
+        String interviewDate = day + "-" + (month + 1) + "-" + year;
+
+        Logger.info(year + " " + day + " " + month + " ");
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", your interview for " + jobApplication.getJobPost().getJobPostTitle() + " at " + jobApplication.getJobPost().getCompany().getCompanyName() +
+                " has been confirmed on " + interviewDate + " between " + jobApplication.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Please reach the office on time with your documents. All the best!";
+
+        if (jobApplication.getInterviewLocationLat() != null) {
+            msg += "\nInterview Location: http://maps.google.com/?q=" + jobApplication.getInterviewLocationLat() + "," + jobApplication.getInterviewLocationLng();
+        }
+        sendSms(candidate.getCandidateMobile(), msg);
+    }
+
+    public static void sendInterviewShortlistSms(JobPost jobPost, Candidate candidate) {
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", your job application for " + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName() +
+                " has been shortlisted for the interview. We will get in touch with you shortly to confirm interview date and time. Thank you!";
+        sendSms(candidate.getCandidateMobile(), msg);
+    }
+
+    public static void sendInterviewRejectionSms(JobPostWorkflow jobPost, Candidate candidate) {
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", your job application for " + jobPost.getJobPost().getJobPostTitle() + " at " + jobPost.getJobPost().getCompany().getCompanyName() +
+                " was not shortlisted for the interview. Please log on to www.trujobs.in and apply to other jobs. Thank you!";
+        sendSms(candidate.getCandidateMobile(), msg);
+    }
+
+    public static void sendInterviewReschedulingSms(JobPostWorkflow jobApplication, Candidate candidate, Date interviewDate, InterviewTimeSlot slot) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(interviewDate);
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+
+        String interviewDateString = day + "-" + (month + 1) + "-" + year;
+
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", your interview for " + jobApplication.getJobPost().getJobPostTitle() + " at " + jobApplication.getJobPost().getCompany().getCompanyName() +
+                " has been rescheduled on " + interviewDateString + " between " + slot.getInterviewTimeSlotName() + ". Log on to www.trujobs,in and confirm the new interview date " +
+                "and time in \"View Applied Jobs\" section. Thank you!";
+        sendSms(candidate.getCandidateMobile(), msg);
+    }
+
+    public static void sendInterviewCandidateConfirmation(JobPostWorkflow jobApplication, Candidate candidate) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(jobApplication.getScheduledInterviewDate());
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+
+        String interviewDate = day + "-" + (month + 1) + "-" + year;
+
+        String msg = "Hi " + jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileName() + ", candidate: " + candidate.getCandidateFirstName() + " has confirmed the interview for " + jobApplication.getJobPost().getJobPostTitle() +
+                " job which was re-scheduled on " + interviewDate + " between " + jobApplication.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Log on to www.trujobs.in/recruiter and manage your interviews. Thank you!";
+        sendSms(jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileMobile(), msg);
+    }
+
+    public static void sendInterviewCandidateInterviewReject(JobPostWorkflow jobApplication, Candidate candidate) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(jobApplication.getScheduledInterviewDate());
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+
+        String interviewDate = day + "-" + (month + 1) + "-" + year;
+
+        String msg = "Hi " + jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileName() + ", candidate: " + candidate.getCandidateFirstName() + " has rejected the interview for " + jobApplication.getJobPost().getJobPostTitle() +
+                " job which was re-scheduled on " + interviewDate + " between " + jobApplication.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Log on to www.trujobs.in/recruiter and manage your interviews. Thank you!";
+        sendSms(jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileMobile(), msg);
+    }
+
+    public static void updateRecruiterWithCandidateStatus(JobPostWorkflow jobApplication, Candidate candidate, Integer status) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(jobApplication.getScheduledInterviewDate());
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+
+        String currentStatus = "";
+        switch (status){
+            case ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING: currentStatus = "is not going "; break;
+            case ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED: currentStatus = "is delayed "; break;
+            case ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED: currentStatus = "has left "; break;
+            case ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED: currentStatus = "has reached the office "; break;
+        }
+
+        String interviewDate = day + "-" + (month + 1) + "-" + year;
+
+        String msg = "Hi " + jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileName() + ", candidate: " + candidate.getCandidateFirstName() + ", " + currentStatus
+                + " for the interview:  " + jobApplication.getJobPost().getJobPostTitle() +
+                " job which is on " + interviewDate + " between " + jobApplication.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Log on to www.trujobs.in/recruiter and manage your interviews. Thank you!";
+        sendSms(jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileMobile(), msg);
+    }
+
 }

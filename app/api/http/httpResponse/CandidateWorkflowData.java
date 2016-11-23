@@ -1,6 +1,7 @@
 package api.http.httpResponse;
 
 import models.entity.Candidate;
+import models.entity.OM.JobApplication;
 
 /**
  * Created by zero on 4/10/16.
