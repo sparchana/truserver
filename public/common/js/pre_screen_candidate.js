@@ -9,6 +9,8 @@ var jobRoleArray = [];
 var propertyIdArray = [];
 var candidateId;
 
+var shouldShowPSModal = true;
+
 function processTimeShift(returnedData) {
     if (returnedData != null) {
         var data = [{label: "None Selected", value: -1}];
@@ -252,6 +254,7 @@ function validateInput(idProofId, value) {
     if( !$('input#idProofCheckbox_' + idProofId).is(':checked')) {
         return true;
     }
+    console.log(idProofId + " " + value);
 
     // if(value == "") {
     //     $("#Invalid_" + idProofId).css("display", "none");
@@ -381,8 +384,13 @@ function openCandidatePreScreenModal(jobPostId, candidateMobile) {
             }
         }
         base_api_url += "&rePreScreen=" + true;
+        console.log("modalOpenAttempt: " + modalOpenAttempt);
         if (modalOpenAttempt == 1) {
-            $("#preScreenModal").modal();
+            if(shouldShowPSModal){
+                $("#preScreenModal").modal();
+            } else {
+                $("#preScreenModal").modal('hide');
+            }
         }
         if (modalOpenAttempt == 0) {
             modalOpenAttempt = 1;
@@ -401,18 +409,25 @@ function openCandidatePreScreenModal(jobPostId, candidateMobile) {
                 console.log("exception occured!!" + exception.stack);
             }
         }
-        $("html").removeClass("modal-open").addClass("modal-open");
     }
 }
 function processPreScreenData(returnedData) {
-    console.log(returnedData);
     if (returnedData == null || returnedData.status != "SUCCESS") {
         if (returnedData != null && returnedData.status == "INVALID") {
             $.notify("Already Pre Screened", 'error');
         } else {
             $.notify("Request failed. Something went Wrong! Please Refresh", 'error');
         }
+        shouldShowPSModal = false;
         return;
+    }
+    if(returnedData.elementList == null || returnedData.elementList.length == 0) {
+        shouldShowPSModal = false;
+        console.log("jobpostvscan elementlist is empty. dont open prescreen modal");
+        $("#preScreenModal").modal('hide');
+        return;
+    } else {
+        $("html").removeClass("modal-open").addClass("modal-open");
     }
 
     var parent = $('#missingInfo');
@@ -443,10 +458,9 @@ function processPreScreenData(returnedData) {
             var url;
             var fn;
             if (rowData != null) {
-                if (rowData.isMatching == false) {
-                    propertyIdArray.push(rowData.propertyId);
-                }
                 if (rowData.propertyId == 0 && rowData.isMatching == false) {
+                    propertyIdArray.push(rowData.propertyId);
+
                     var idProofId = [];
                     var jobPostElementList = rowData.jobPostElementList;
                     jobPostElementList.forEach(function (documentData) {
@@ -475,6 +489,7 @@ function processPreScreenData(returnedData) {
                     orderList.appendChild(firstproperty);
                 }
                 else if (rowData.propertyId == 1 && rowData.isMatching == false) {
+                    propertyIdArray.push(rowData.propertyId);
                     var idLanguageId = [];
                     var jobPostElementList = rowData.jobPostElementList;
                     jobPostElementList.forEach(function (languageData) {
@@ -512,6 +527,7 @@ function processPreScreenData(returnedData) {
                     orderList.appendChild(secondProperty);
                 }
                 else if (rowData.propertyId == 2 && rowData.isMatching == false) {
+                    propertyIdArray.push(rowData.propertyId);
                     var firstproperty = document.createElement("li");
                     firstproperty.textContent = "Do you own any of the following ?";
                     firstproperty.id = "property_" + rowData.propertyId;
@@ -536,6 +552,7 @@ function processPreScreenData(returnedData) {
                     orderList.appendChild(firstproperty);
                 }
                 else if (rowData.propertyId == 3 && rowData.isMatching == false) {
+                    propertyIdArray.push(rowData.propertyId);
                     var thirdproperty = document.createElement("li");
                     thirdproperty.textContent = "Please mention your Date of Birth";
                     thirdproperty.id = "property_" + rowData.propertyId;
@@ -575,6 +592,7 @@ function processPreScreenData(returnedData) {
                     // $("#candidateDob").datepicker({dateFormat: 'yy-mm-dd', changeYear: true});
                 }
                 else if (rowData.propertyId == 4 && rowData.isMatching == false && rowData.candidateElement == null && rowData.candidateElementList == null) {
+                    propertyIdArray.push(rowData.propertyId);
 
                     var fourthproperty = document.createElement("li");
                     fourthproperty.textContent = "Do you have work experience?";
@@ -774,6 +792,7 @@ function processPreScreenData(returnedData) {
                     orderList.appendChild(fourthproperty);
                 }
                 else if (rowData.propertyId == 5 && rowData.isMatching == false && rowData.candidateElement == null && rowData.candidateElementList == null) {
+                    propertyIdArray.push(rowData.propertyId);
                     var fifthproperty = document.createElement("li");
                     fifthproperty.textContent = "Please provide your " + rowData.propertyTitle + " details";
                     fifthproperty.id = "property_" + rowData.propertyId;
@@ -917,6 +936,7 @@ function processPreScreenData(returnedData) {
                     orderList.appendChild(fifthproperty);
                 }
                 else if (rowData.propertyId == 6 && rowData.isMatching == false) {
+                    propertyIdArray.push(rowData.propertyId);
                     var sixthproperty = document.createElement("li");
                     sixthproperty.textContent = "Please mention your gender ";
                     sixthproperty.id = "property_" + rowData.propertyId;
@@ -966,6 +986,7 @@ function processPreScreenData(returnedData) {
                     orderList.appendChild(sixthproperty);
                 }
                 else if (rowData.propertyId == 7 && rowData.isMatching == false) {
+                    propertyIdArray.push(rowData.propertyId);
                     var seventhproperty = document.createElement("li");
                     seventhproperty.textContent = "Please provide your " + rowData.propertyTitle + " details";
                     seventhproperty.id = "property_" + rowData.propertyId;
@@ -1013,6 +1034,7 @@ function processPreScreenData(returnedData) {
                     orderList.appendChild(seventhproperty);
                 }
                 else if (rowData.propertyId == 8 && rowData.isMatching == false) {
+                    propertyIdArray.push(rowData.propertyId);
                     var eigthproperty = document.createElement("li");
                     eigthproperty.textContent = "Which is your home locality? ";
                     eigthproperty.id = "property_" + rowData.propertyId;
@@ -1046,6 +1068,7 @@ function processPreScreenData(returnedData) {
                     orderList.appendChild(eigthproperty);
                 }
                 else if (rowData.propertyId == 9 && rowData.isMatching == false) {
+                    propertyIdArray.push(rowData.propertyId);
                     var tenthproperty = document.createElement("li");
                     tenthproperty.textContent = "Time shift preferred";
                     tenthproperty.id = "property_" + rowData.propertyId;
@@ -1151,6 +1174,7 @@ function disableCurrentCompanyOption() {
         var radios = document.getElementsByName('addCurrently_Working');
         for (var i = 0; i < radios.length; i++) {
             radios[i].disabled = true;
+            radios[i].checked = false;
         }
         // document.getElementsByName("addCurrently_Working").disabled = true;
         //$("#addCurrentlyWorking").prop("disabled",true);

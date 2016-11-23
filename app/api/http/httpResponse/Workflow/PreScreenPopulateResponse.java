@@ -189,4 +189,12 @@ public class PreScreenPopulateResponse {
     public void setJobPostMinReq(String jobPostMinReq) {
         this.jobPostMinReq = jobPostMinReq;
     }
+
+    public Long getCandidateId() {
+        return candidateId;
+    }
+
+    public void setCandidateId(Long candidateId) {
+        this.candidateId = candidateId;
+    }
 }

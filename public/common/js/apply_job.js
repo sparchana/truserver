@@ -11,7 +11,7 @@ var salary;
 var education;
 var homeLocality;
 
-function processDataApplyJob(returnedData, jobPostId, candidateId) {
+function processDataApplyJob(returnedData, jobPostId, candidateId, isPartner) {
     $("#jobApplyConfirm").modal("hide");
 
     // hiding below divs in partner page
@@ -36,8 +36,10 @@ function processDataApplyJob(returnedData, jobPostId, candidateId) {
             console.log(err);
         }
         // generate prescreen modal here
-        openCandidatePreScreenModal(jobId, localStorage.getItem("mobile"));
-        console.log("success: generate modal");
+        if(!isPartner){
+            openCandidatePreScreenModal(jobId, localStorage.getItem("mobile"));
+            console.log("success: generate modal");
+        }
     } else if(returnedData.status == 2){
         $("#messagePromptModal").modal("show");
         $('body').addClass('open-modal');
@@ -85,9 +87,8 @@ function applyJobSubmitViaCandidate(id, localityId, prefTimeSlot, scheduledInter
         console.log("shouldTriggerModal: "+triggerModal);
         if(triggerModal){
             console.log("opening prescreen modal for : " + id + " candidate: " + localStorage.getItem("mobile"));
-
-            openCandidatePreScreenModal(id, localStorage.getItem("mobile"));
-            interviewButtonCondition(id);
+                openCandidatePreScreenModal(id, localStorage.getItem("mobile"));
+                interviewButtonCondition(id);
             /*getAssessmentQuestions(null, id);*/
         };
         if($('#applyButton')!=null){
@@ -126,7 +127,7 @@ function applyJobSubmit(jobPostId, candidateId, phone, localityId, prefTimeSlot,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(d),
             success: function (returnedData) {
-                processDataApplyJob(returnedData, jobPostId, candidateId);
+                processDataApplyJob(returnedData, jobPostId, candidateId, isPartner);
             }
         });
 
