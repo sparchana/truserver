@@ -1151,6 +1151,7 @@ function disableCurrentCompanyOption() {
         var radios = document.getElementsByName('addCurrently_Working');
         for (var i = 0; i < radios.length; i++) {
             radios[i].disabled = true;
+            radios[i].checked = false;
         }
         // document.getElementsByName("addCurrently_Working").disabled = true;
         //$("#addCurrentlyWorking").prop("disabled",true);
