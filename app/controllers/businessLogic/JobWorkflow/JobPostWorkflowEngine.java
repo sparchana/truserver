@@ -9,6 +9,7 @@ import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlot
 import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.SelectedCandidateRequest;
 import api.http.httpResponse.CandidateExtraData;
+import api.http.httpResponse.CandidateScoreData;
 import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Recruiter.InterviewTodayResponse;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
@@ -2045,15 +2046,74 @@ public class JobPostWorkflowEngine {
         candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
         Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), status);
 
+        Map<Long, CandidateScoreData> candidateScoreDataMap = computeScoreData(candidateList, jobPostId);
+        if(candidateScoreDataMap == null) {
+            Logger.info("something went wrong while computing score data");
+        }
         for ( Candidate candidate: candidateList) {
             CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
             candidateWorkflowData.setCandidate(candidate);
             candidateWorkflowData.setExtraData(candidateExtraDataMap.get(candidate.getCandidateId()));
+            if(candidateScoreDataMap != null) candidateWorkflowData.setScoreData(candidateScoreDataMap.get(candidate.getCandidateId()));
             selectedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
         }
 
         return selectedCandidateMap;
     }
+
+    private static Map<Long, CandidateScoreData> computeScoreData(List<Candidate> candidateList, Long jobPostId) {
+        if(candidateList == null || candidateList.size() == 0) {
+            return null;
+        }
+
+        List<PreScreenPopulateResponse> populateResponseList = new ArrayList<>();
+        Map<Long, CandidateScoreData> candidateScoreDataMap = new HashMap<>();
+        for(Candidate candidate: candidateList) {
+            PreScreenPopulateResponse populateResponse = getJobPostVsCandidate(jobPostId, candidate.getCandidateId(), true);
+            if(populateResponse!= null){
+                populateResponseList.add(populateResponse);
+            }
+        }
+        double score;
+        int band;
+        int passed;
+        int total;
+        String reason;
+        for(PreScreenPopulateResponse response: populateResponseList) {
+            if(response.getElementList().size() == 0) {
+                continue;
+            } else {
+                passed = 0;
+                total = 0;
+                reason = "Candidate has matched for ";
+                for(PreScreenPopulateResponse.PreScreenElement pe: response.getElementList()){
+                    if(pe.isMatching()){
+                        if(pe.isSingleEntity()) {
+                            reason += pe.getCandidateElement().getPlaceHolder() + ", ";
+                        } else {
+                            for(PreScreenPopulateResponse.PreScreenCustomObject customObject: pe.getCandidateElementList()){
+                                reason += customObject.getPlaceHolder() + ", ";
+                            }
+                        }
+                        passed++;
+                    }
+                    total++;
+                }
+                score  = (double) passed/total;
+                if(score > 0.75) {
+                    band = 1;
+                } else if(score < 0.50){
+                    band = 3;
+                } else{
+                    band = 2;
+                }
+                candidateScoreDataMap.put(response.getCandidateId(),  new CandidateScoreData(score, band, reason));
+            }
+        }
+
+        return candidateScoreDataMap;
+    }
+
 
     public static String updateCandidateInterviewDetail(Long candidateId, Long jobPostId, AddCandidateInterviewSlotDetail interviewSlotDetail){
         Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
