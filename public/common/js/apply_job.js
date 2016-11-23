@@ -91,7 +91,8 @@ function applyJobSubmitViaCandidate(id, localityId, prefTimeSlot, scheduledInter
             /*getAssessmentQuestions(null, id);*/
         };
         if($('#applyButton')!=null){
-            $('#applyButton').attr('disabled', true);
+            $('#applyButton').attr('disabled', true).html("Applying...");
+
         }
         applyJobSubmit(id, localStorage.getItem("candidateId"), phone, localityId, null, null, false);
     }
