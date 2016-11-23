@@ -296,9 +296,9 @@ function validateInput(idProofId, value) {
     }
 }
 
-function processAllJobRole(returnedData) {
+function processAllJobRole(returnedData, id) {
     var locArray = [];
-    if (returnedData != null) {
+    if (returnedData != null && jobRoleArray.length == 0) {
         returnedData.forEach(function (jobRole) {
             var label = jobRole.jobName;
             var value = parseInt(jobRole.jobRoleId);
@@ -308,20 +308,18 @@ function processAllJobRole(returnedData) {
             jobRoleArray.push(item);
             locArray.push(item);
         });
-        /*for(var i = 0; i <= 3; i++) {*/
-            if (jobRoleArray != null) {
-                console.log("jobRoleArray: " + JSON.stringify(jobRoleArray));
-                console.log("jobRoleLocalArray: " + locArray.length);
-                $("#workedJobRole_1").tokenInput(jobRoleArray,{
-                    theme: "facebook",
-                    placeholder: "Job Role?",
-                    hintText: "Select job role",
-                    minChars: 0,
-                    tokenLimit: 1,
-                    zindex: 9999,
-                    preventDuplicates: true
-                });
-            }
+    }
+    if (jobRoleArray != null && jobRoleArray.length > 0) {
+        $("#workedJobRole_"+id).tokenInput(jobRoleArray, {
+            theme: "facebook",
+            placeholder: "Job Role?",
+            hintText: "Select job role",
+            minChars: 0,
+            tokenLimit: 1,
+            zindex: 9999,
+            preventDuplicates: true
+        });
+        disableCurrentCompanyOption;
     }
 }
 function getJobRoleArray() {
@@ -629,7 +627,7 @@ function processPreScreenData(returnedData) {
                     addCompanyName.id = ("companyName_1");
                     allCompanyNameCol.appendChild(addCompanyName);
 
-                    var addJobRole = document.createElement("select");
+                    var addJobRole = document.createElement("input");
                     addJobRole.id = "workedJobRole_1";
                     allworkedJobRoleCol.appendChild(addJobRole);
 
@@ -665,7 +663,7 @@ function processPreScreenData(returnedData) {
 
                     url = '/getAllJobs ';
                     fn = function (returnedData) {
-                        processAllJobRole(returnedData);
+                        processAllJobRole(returnedData, 1);
                         url = "";
                     };
 
@@ -1209,18 +1207,18 @@ function addmoreCompany() {
         addCompanyName.id = ("companyName_" + companyCount);
         allCompanyNameCol.appendChild(addCompanyName);
 
-        var addJobRole = document.createElement("select");
+        var addJobRole = document.createElement("input");
         addJobRole.id = "workedJobRole_" + companyCount;
         allworkedJobRoleCol.appendChild(addJobRole);
 
         var addCurrentlyWorking = document.createElement("input");
         if (!$("#currentlyWorking").is(":checked")) {
-            addCurrentlyWorking.setAttribute("disabled", true);
+            addCurrentlyWorking.disabled = true;
             console.log("IM disable Add");
         }
         else {
             console.log("IM non-disable Add");
-            addCurrentlyWorking.setAttribute("disabled", false);
+            addCurrentlyWorking.disabled = false;
         }
 
         var addMore = document.createElement("button");
@@ -1249,28 +1247,32 @@ function addmoreCompany() {
 
         url = '/getAllJobs ';
         fn = function (returnedData) {
-            processAllJobRole(returnedData);
+            processAllJobRole(returnedData, companyCount);
             url = "";
         }
     }
     else {
-        $.notify("Max 3 Addition Allowed", 'error')
-        ;
+        $.notify("Max 3 Addition Allowed", 'error');
     }
     if (url != null) {
-        try {
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: false,
-                async: false,
-                contentType: false,
-                processData: false,
-                success: fn
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
+        if(jobRoleArray == null || jobRoleArray.length == 0){
+            try {
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: false,
+                    async: false,
+                    contentType: false,
+                    processData: false,
+                    success: fn
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+        } else {
+            fn(null);
         }
+
     }
 }
 
@@ -1374,7 +1376,7 @@ function submitPreScreen() {
 
                 if(documentList.length == 0) {
                     // won't allow candidate to make submission without provide alteast one doc
-                    $.notify("Please provide your document details", 'danger');
+                    $.notify("Please provide your document details", 'error');
                     okToSubmit = false;
                 }
                 if(!okToSubmit){
@@ -1429,7 +1431,7 @@ function submitPreScreen() {
 
                 if(languageMap.length == 0) {
                     okToSubmit = false;
-                    $.notify("Please provide all known languages", 'danger');
+                    $.notify("Please provide all known languages", 'error');
                 }
                 if(!okToSubmit){
                     var submit = {
@@ -1477,7 +1479,7 @@ function submitPreScreen() {
                 }
                 d ["candidateDob"] = c_dob;
                 if(!okToSubmit){
-                    $.notify("Please provide valid Date of birth", 'danger');
+                    $.notify("Please provide valid Date of birth", 'error');
                     var submit = {
                         propId : propId,
                         message: msg,
@@ -1559,7 +1561,7 @@ function submitPreScreen() {
                    $('#candidateEducationInstitute').val() == "" ||
                    $('input:radio[name="candidateEducationCompletionStatus"]:checked').val() == null) {
                    okToSubmit = false;
-                   $.notify("Please provide full education details", 'danger');
+                   $.notify("Please provide full education details", 'error');
 
                }
                 if(!okToSubmit){
@@ -1574,7 +1576,7 @@ function submitPreScreen() {
                 d ["candidateGender"] = ($('input:radio[name="gender"]:checked').val());
                 if(($('input:radio[name="gender"]:checked').length == 0)) {
                     okToSubmit = false;
-                    $.notify("Please provide your gender details", 'danger');
+                    $.notify("Please provide your gender details", 'error');
                 }
                 if(!okToSubmit){
                     var submit = {
@@ -1590,7 +1592,7 @@ function submitPreScreen() {
                     d ["candidateLastWithdrawnSalary"] = parseInt($('#candidateLastWithdrawnSalary').val());
                 } else {
                     okToSubmit = false;
-                    $.notify("Please enter a valid 'Last Withdrawn Salary' per month. (Min: 1000, Max: 1,00,000)", 'danger');
+                    $.notify("Please enter a valid 'Last Withdrawn Salary' per month. (Min: 1000, Max: 1,00,000)", 'error');
                     if(!okToSubmit){
                         var submit = {
                             propId : propId,
@@ -1604,6 +1606,7 @@ function submitPreScreen() {
                 var lId = $('#candidateHomeLocality').val();
                 if(lId == null) {
                     okToSubmit = false;
+                    $.notify("Please enter a valid Locality", 'error');
                 } else{
                     d ["candidateHomeLocality"] = parseInt(lId);
                 }
@@ -1617,8 +1620,9 @@ function submitPreScreen() {
                 }
             } else if (propId == 9) {
                 var timeShiftPrefId = $('#candidateTimeShiftPref').val();
-                if(timeShiftPrefId == null) {
+                if(timeShiftPrefId == "-1") {
                     okToSubmit = false;
+                    $.notify("Please enter a valid time/shift preference (ex: Part time, Full time)", 'error');
                 } else {
                     d ["candidateTimeShiftPref"] = $('#candidateTimeShiftPref').val();
                 }
@@ -1648,7 +1652,7 @@ function submitPreScreen() {
                             $("#preScreenModal").modal('hide');
                             initInterviewModal(candidateId, jobPostId);
                         } else {
-                            $.notify("Something went wrong. Please try again", 'danger');
+                            $.notify("Something went wrong. Please try again", 'error');
                         }
                     }
                 });
