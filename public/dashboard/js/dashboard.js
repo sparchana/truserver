@@ -615,6 +615,7 @@ function validateIp() {
 function processDocs(returnedData) {
     var count = 0;
     var table = document.getElementById("docTableTable");
+    if(table == null) return;
     $('#docTableTable').empty();
     returnedData.forEach(function (idProof) {
         console.log(JSON.stringify(idProof));

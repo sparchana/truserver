@@ -1171,6 +1171,10 @@ public class JobPostWorkflowEngine {
             return "ERROR";
         }
         int validCount = 0;
+        if(jobPost.getRecruiterProfile() == null) {
+            // dont show interview modal if not recruiter is set for a jobpost
+            return "OK";
+        }
         Long recruiterId = jobPost.getRecruiterProfile().getRecruiterProfileId();
         RecruiterCreditHistory recruiterCreditHistory = RecruiterCreditHistory.find.where()
                 .eq("recruiterProfile.recruiterProfileId", recruiterId)
@@ -2297,13 +2301,16 @@ public class JobPostWorkflowEngine {
     }
 
     public static List<JobPostWorkflow> getPartnerAppliedJobsForCandidate(Candidate candidate, Partner partner) {
-        List<JobPostWorkflow> appliedJobsList;
+        List<JobPostWorkflow> appliedJobsList = new ArrayList<>();
 
         List<JobApplication> jobApplicationList = JobApplication.find.where()
                 .eq("CandidateId", candidate.getCandidateId())
                 .eq("partner_id", partner.getPartnerId())
                 .orderBy("jobApplicationCreateTimeStamp desc")
                 .findList();
+        if(jobApplicationList.size() == 0){
+            return appliedJobsList;
+        }
 
         String jobPostIdString = "";
         List<Long> jobPostIdList = new ArrayList<>();
