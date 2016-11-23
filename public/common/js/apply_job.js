@@ -38,11 +38,11 @@ function processDataApplyJob(returnedData, jobPostId, candidateId, isPartner) {
         // generate prescreen modal here
         if(!isPartner){
             $.notify("Please complete Job Application form", 'success');
-            openCandidatePreScreenModal(jobId, localStorage.getItem("mobile"));
+            openCandidatePreScreenModal(jobPostId, localStorage.getItem("mobile"));
             console.log("success: generate modal");
         } else {
             $.notify("Please complete Job Application form", 'success');
-            openPartnerPreScreenModal(jobId, candidateId);
+            openPartnerPreScreenModal(jobPostId, candidateId);
         }
     } else if(returnedData.status == 2){
         $("#messagePromptModal").modal("show");
