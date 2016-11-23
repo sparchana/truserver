@@ -1,3 +1,12 @@
+#missingInfo li{
+    margin: 10px;
+}
+#workedJobRole ul li{
+    margin: 4px 0 0 0;
+}
+#workedJobRole ul{
+    height:34px;
+}
 button {
 overflow: hidden;
 }
@@ -49,9 +58,6 @@ li .open>.dropdown-menu{
 }
 #preScreenModalBody{
     margin:40px auto;
-}
-#missingInfo li{
-    margin: 10px;
 }
 #salary_details{
     text-align: right;
