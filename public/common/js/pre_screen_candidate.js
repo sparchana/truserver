@@ -644,17 +644,19 @@ function processPreScreenData(returnedData) {
                     addCompanyName.className = "form-control";
                     addCompanyName.type = ("text");
                     addCompanyName.placeholder = ("Company Name");
-                    addCompanyName.id = ("companyName_1");
+                    addCompanyName.id = "companyName_1";
+                    addCompanyName.onchange = enableAddBtn;
                     allCompanyNameCol.appendChild(addCompanyName);
 
                     var addJobRole = document.createElement("input");
                     addJobRole.id = "workedJobRole_1";
+                    addJobRole.onchange = enableAddBtn;
                     allworkedJobRoleCol.appendChild(addJobRole);
 
                     var addCurrentlyWorking = document.createElement("input");
                     addCurrentlyWorking.type = ("radio");
                     addCurrentlyWorking.style = "margin:0 4%;";
-                    addCurrentlyWorking.id = ("addCurrentlyWorking_1");
+                    addCurrentlyWorking.id = "addCurrentlyWorking_1";
                     addCurrentlyWorking.name = ("addCurrently_Working");
                     addCurrentlyWorking.setAttribute("disabled", true);
                     addCurrentlyWorking.value = (0);
@@ -663,6 +665,8 @@ function processPreScreenData(returnedData) {
                     var addMore = document.createElement("button");
                     addMore.className = "form-control";
                     addMore.type = "button";
+                    addMore.setAttribute("disabled",true);
+                    addMore.id = "addCurrentlyWorkingBtn_1";
                     addMore.value = "Add";
                     addMore.name = "Add";
                     addMore.style = "background:#09ac58;color:#fff";
@@ -1192,8 +1196,16 @@ function disableCurrentCompanyOption() {
         }
     }
 }
+function enableAddBtn(){
+        var id = this.id.split("_")[1];
+        if($("#companyName_" + id).val() == "" || $("#workedJobRole_" + id).val() == "") {
+            $("#addCurrentlyWorkingBtn_" + id).prop("disabled",true);
+            }
+            else {
+                $("#addCurrentlyWorkingBtn_" + id).prop("disabled",false);
+            }
+    }
 var companyCount = 1;
-
 function addmoreCompany() {
     var url;
     var fn;
@@ -1234,21 +1246,22 @@ function addmoreCompany() {
 
         var addJobRole = document.createElement("input");
         addJobRole.id = "workedJobRole_" + companyCount;
+        addJobRole.onchange = enableAddBtn;
         allworkedJobRoleCol.appendChild(addJobRole);
 
         var addCurrentlyWorking = document.createElement("input");
         if (!$("#currentlyWorking").is(":checked")) {
             addCurrentlyWorking.disabled = true;
-            console.log("IM disable Add");
         }
         else {
-            console.log("IM non-disable Add");
             addCurrentlyWorking.disabled = false;
         }
 
         var addMore = document.createElement("button");
         addMore.className = "form-control";
         addMore.type = "button";
+        addMore.setAttribute("disabled",true);
+        addMore.id = "addCurrentlyWorkingBtn_"+companyCount;
         addMore.value = "Add";
         addMore.style = "background:#09ac58;color:#fff";
         addMore.name = "Add";
@@ -1267,9 +1280,9 @@ function addmoreCompany() {
         addCurrentlyWorkingLabel.for = ("addCurrentlyWorking_" + companyCount);
         allWorkedCurrentltyCol.appendChild(addCurrentlyWorkingLabel);
 
-
-        $('#companyDetailsCapture').append(allworkedCompanyDetailsDiv);
-
+        var previousButton = companyCount - 1;
+        $('#companyDetailsCapture').append(allworkedCompanyDetailsDiv)
+        $("#addCurrentlyWorkingBtn_"+previousButton).prop("disabled",true);
         url = '/getAllJobs ';
         fn = function (returnedData) {
             processAllJobRole(returnedData, companyCount);
