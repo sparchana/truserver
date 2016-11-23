@@ -251,7 +251,7 @@ function validateInput(idProofId, value) {
         idProofId = this.id.split("_")[1];
         value = this.value;
     };
-    if( !$('input#idProofCheckbox_' + idProofId).is(':checked')) {
+    if(!$('input#idProofCheckbox_' + idProofId).is(':checked')) {
         return true;
     }
     console.log(idProofId + " " + value);
@@ -1663,6 +1663,7 @@ function submitPreScreen() {
         // ajax to submit d
         console.log(d);
         console.log(okToSubmitList);
+        var isSupport = false;
         if (okToSubmitList.length == 0) {
             try {
                 $.ajax({
@@ -1673,7 +1674,7 @@ function submitPreScreen() {
                     success: function (returnedData) {
                         if(returnedData == "ok"){
                             $("#preScreenModal").modal('hide');
-                            initInterviewModal(candidateId, jobPostId);
+                            initInterviewModal(candidateId, jobPostId, isSupport);
                         } else {
                             $.notify("Something went wrong. Please try again", 'error');
                         }

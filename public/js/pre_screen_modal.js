@@ -525,7 +525,7 @@ function onCallNo(candidateId, jobPostId) {
     $('.btn.modal-submit').prop('disabled', true);
 }
 
-function triggerPreScreenResponseSubmission(candidateId, jobPostId) {
+function triggerPreScreenResponseSubmission(candidateId, jobPostId, isSupport) {
 
     var allSelectedValues = $("#pre_screen_body input[type='checkbox']:checked");
     var responseList = [];
@@ -565,7 +565,7 @@ function triggerPreScreenResponseSubmission(candidateId, jobPostId) {
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(d),
                 success: function (returnData) {
-                    processPostPreScreenResponse(returnData, candidateId, jobPostId);
+                    processPostPreScreenResponse(returnData, candidateId, jobPostId, isSupport);
                 }
             });
         } catch (exception) {
@@ -574,7 +574,7 @@ function triggerPreScreenResponseSubmission(candidateId, jobPostId) {
     }
 }
 
-function saveEditedResponses(candidateId, propId, jobPostId) {
+function saveEditedResponses(candidateId, propId, jobPostId, isSupport) {
     var d;
     var dobCheck = 1;
     var okToSubmit = true; // validation check before submit | { 1 = ok , 0 = not ok }
@@ -744,7 +744,7 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(d),
                 success: function (returnedData) {
-                    processFinalSubmitResponse(returnedData, jobPostId, candidateId, propId);
+                    processFinalSubmitResponse(returnedData, jobPostId, candidateId, propId, isSupport);
                 }
             });
         } catch (exception) {
@@ -766,10 +766,10 @@ function notifyModal(title, message){
     });
 }
 
-function processFinalSubmitResponse(returnedData, jobPostId, candidateId, propId) {
+function processFinalSubmitResponse(returnedData, jobPostId, candidateId, propId, isSupport) {
     console.log(returnedData);
     if(returnedData != "error" || returnedData.trim() != ""){
-        getPreScreenContent(jobPostId, candidateId, true, null, null);
+        getPreScreenContent(jobPostId, candidateId, true, null, null, isSupport);
         // get new jobPostVsCandidate data
         // construct new pre_screen_body
         // render it $('#pre_screen_body').html("test")
@@ -777,7 +777,7 @@ function processFinalSubmitResponse(returnedData, jobPostId, candidateId, propId
     }
 }
 
-function generateEditModalView(title, message, candidateId, propId, overflow, jobPostId) {
+function generateEditModalView(title, message, candidateId, propId, overflow, jobPostId, isSupport) {
     console.log("rendering modal");
     var editDialog = bootbox.dialog({
         className: "pre-screen-modal",
@@ -792,7 +792,7 @@ function generateEditModalView(title, message, candidateId, propId, overflow, jo
             "Save": {
                 className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent edit-modal-submit",
                 callback: function () {
-                    return saveEditedResponses(candidateId, propId, jobPostId);
+                    return saveEditedResponses(candidateId, propId, jobPostId, isSupport);
                 }
             }
         }
@@ -805,7 +805,7 @@ function generateEditModalView(title, message, candidateId, propId, overflow, jo
     $('body').removeClass('modal-open').removeClass('open-edit-modal').addClass('open-edit-modal');
 }
 
-function fetchEditModalContent(candidateId, propId, jobPostId, customD) {
+function fetchEditModalContent(candidateId, propId, jobPostId, customD, isSupport) {
 
     // api call and render child modal
     var base_api_url ="/support/api/getCandidateDetails/";
@@ -1092,7 +1092,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId, customD) {
     }
 
     // generates html container
-    generateEditModalView(modalTitle, htmlBodyContent, candidateId, propId, isOverFlowRequired, jobPostId);
+    generateEditModalView(modalTitle, htmlBodyContent, candidateId, propId, isOverFlowRequired, jobPostId, isSupport);
 
     if(url != null) {
         try {
@@ -1138,7 +1138,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId, customD) {
     }
 }
 
-function constructPreScreenBodyContainer(returnedData, customD) {
+function constructPreScreenBodyContainer(returnedData, customD, isSupport) {
     var candidateId = returnedData.candidateId;
     var jobPostId = returnedData.jobPostId;
     var container = $('<div class="'+customD.container.className+'" id="pre_screen_container_row"></div>');
@@ -1409,7 +1409,7 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                         a.appendChild(linkText);
                         a.style = "cursor: pointer";
                         a.onclick = function () {
-                            fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD);
+                            fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD, isSupport);
                         };
                     }
                     editLink.appendChild(a);
@@ -1487,7 +1487,7 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                         a.style = "cursor: pointer";
                         a.title = customD.edit.title;
                         a.onclick = function () {
-                            fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD);
+                            fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD, isSupport);
                         };
                     }
                     editLink.appendChild(a);
@@ -1523,7 +1523,7 @@ function getPlaceholderValue(element){
 
 
 // customD : custom Decorator object
-function processPreScreenContent(returnedData, customD) {
+function processPreScreenContent(returnedData, customD, isSupport) {
     if(returnedData == null || returnedData.status != "SUCCESS") {
         console.log(returnedData);
         if (returnedData != null && returnedData.status == "INVALID") {
@@ -1549,7 +1549,7 @@ function processPreScreenContent(returnedData, customD) {
         var jobPostId = returnedData.jobPostId;
 
         var preScreenBody = $('<div id="pre_screen_body" class="'+customD.container.className+'"></div>');
-        var container = constructPreScreenBodyContainer(returnedData, customD);
+        var container = constructPreScreenBodyContainer(returnedData, customD, isSupport);
 
         preScreenBody.append(container);
 
@@ -1582,11 +1582,11 @@ function processPreScreenContent(returnedData, customD) {
             titleMessage = customD.preScreen.title;
         }
 
-        renderParentModal(preScreenBody, titleMessage, jobPostId, candidateId, customD);
+        renderParentModal(preScreenBody, titleMessage, jobPostId, candidateId, customD, isSupport);
     }
 }
 
-function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, customD) {
+function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, customD, isSupport) {
     var bootbox_dialog = bootbox.dialog({
         className: customD.bootBoxMain.className,
         title: callYesNo,
@@ -1613,7 +1613,7 @@ function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, cus
                     } else {
                         $('body').removeClass('open-modal');
                         //if($("#pre_screen_body input[type='checkbox']:checked").size() > 0) {}
-                        triggerPreScreenResponseSubmission(candidateId, jobPostId);
+                        triggerPreScreenResponseSubmission(candidateId, jobPostId, isSupport);
                         console.log("final prescreen submission triggered");
                         return true;
                     }
@@ -1649,7 +1649,7 @@ function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, cus
     });
 }
 
-function processPostPreScreenResponse(response, candidateId, jobPostId) {
+function processPostPreScreenResponse(response, candidateId, jobPostId, isSupport) {
     console.log(response);
     if(response == "OK"){
         notifyError("Submitted successfully.", 'success');
@@ -1658,19 +1658,19 @@ function processPostPreScreenResponse(response, candidateId, jobPostId) {
         }, 2000);
     } else if(response == "INTERVIEW"){
         notifyError("Submitted successfully. Please select Interview Slot.", 'success');
-        initInterviewModal(candidateId, jobPostId);
+        initInterviewModal(candidateId, jobPostId, isSupport);
     } else {
         notifyError("Error! Something Went wrong please try again.", 'danger')
     }
 }
 
-function reProcessPreScreenContent(returnedData, customD){
+function reProcessPreScreenContent(returnedData, customD, isSupport){
     if(returnedData == null || returnedData.status != "SUCCESS") {
         console.log(returnedData);
         pushToSnackbar("Request failed. Something went Wrong! Please Refresh");
     }
     if(returnedData != null){
-        var container = constructPreScreenBodyContainer(returnedData, customD);
+        var container = constructPreScreenBodyContainer(returnedData, customD, isSupport);
         var allSelectedCheckboxIdArray = $("#pre_screen_body input[type='checkbox']:checked").parent();
         var tempList = [];
         var len = allSelectedCheckboxIdArray.size();
@@ -1690,8 +1690,9 @@ function reProcessPreScreenContent(returnedData, customD){
     }
 }
 
-function getPreScreenContent(jobPostId, candidateId, isRebound, customD, rePreScreen) {
+function getPreScreenContent(jobPostId, candidateId, isRebound, customD, rePreScreen, isSupport) {
     if(customD == null ) {
+        isSupport = true;
         if(decorator != null){
             customD = decorator;
         } else {
@@ -1722,11 +1723,11 @@ function getPreScreenContent(jobPostId, candidateId, isRebound, customD, rePreSc
     var processor;
     if(!isRebound) {
         processor = function (returnedData) {
-            processPreScreenContent(returnedData, customD);
+            processPreScreenContent(returnedData, customD, isSupport);
         }
     } else {
         processor = function (returnedData) {
-            reProcessPreScreenContent(returnedData, customD);
+            reProcessPreScreenContent(returnedData, customD, isSupport);
         }
     }
     console.log("jobPostVsCandidate_URL: " + base_api_url);
