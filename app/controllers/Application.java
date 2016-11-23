@@ -22,6 +22,7 @@ import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mysql.jdbc.log.Log;
 import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.*;
@@ -1996,9 +1997,14 @@ public class Application extends Controller {
 
     public static Result shouldShowInterview(Long jobPostId) {
         if (jobPostId == null) {
+            Logger.info("null jobPostId received in GET");
             return badRequest();
         }
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        if(jobPost == null) {
+            Logger.info("No JobPost Found for jobPostId: " + jobPostId);
+            return badRequest();
+        }
         return ok(JobPostWorkflowEngine.isInterviewRequired(jobPost));
     }
 
