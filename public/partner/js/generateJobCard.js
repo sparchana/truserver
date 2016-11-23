@@ -941,8 +941,9 @@ openPartnerPreScreenModal = function (jobPostId, candidateId) {
         // footerMessage
         decorator.modalFooter.footerMessage = " I confirm that the above details are accurate and accept the terms and conditions.";
 
+        var isSupport = false;
         if( !decorator.callYesNoRequired) {
-            getPreScreenContent(jobPostId, candidateId, false, decorator, false);
+            getPreScreenContent(jobPostId, candidateId, false, decorator, false, isSupport);
         }
     }, function (err) {
         console.log(err);

@@ -37,7 +37,6 @@ function processDataApplyJob(returnedData, jobPostId, candidateId, isPartner) {
         }
         // generate prescreen modal here
         if(!isPartner){
-            $.notify("Please complete Job Application form", 'success');
             openCandidatePreScreenModal(jobPostId, localStorage.getItem("mobile"));
             console.log("success: generate modal");
         } else {
@@ -96,7 +95,8 @@ function applyJobSubmitViaCandidate(id, localityId, prefTimeSlot, scheduledInter
             /*getAssessmentQuestions(null, id);*/
         };
         if($('#applyButton')!=null){
-            $('#applyButton').attr('disabled', true);
+            $('#applyButton').attr('disabled', true).html("Applying...");
+
         }
         applyJobSubmit(id, localStorage.getItem("candidateId"), phone, localityId, null, null, false);
     }

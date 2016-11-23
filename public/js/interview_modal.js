@@ -1,7 +1,7 @@
 
 var jpTitle;
 var compName;
-function processJobPostInterviewSlot(returnedData) {
+function processJobPostInterviewSlot(returnedData, isSupport) {
     if(returnedData.interviewDetailsList == null || returnedData.interviewDetailsList.length == 0) {
         $('body').removeClass('open-interview-selector-modal');
         bootbox.hideAll();
@@ -15,8 +15,8 @@ function processJobPostInterviewSlot(returnedData) {
     console.log("compName: " + compName);
     $("#jobTitle").html(returnedData.jobPostTitle);
     $("#compName").html(returnedData.company.companyName);
-    /*var i;
-    $('#jobLocality').html('');
+    var i;
+    /*$('#jobLocality').html('');
     var defaultOption = $('<option value="-1"></option>').text("Select Preferred Location");
     $('#jobLocality').append(defaultOption);
     var jobLocality = returnedData.jobPostToLocalityList;
@@ -52,7 +52,12 @@ function processJobPostInterviewSlot(returnedData) {
         }
         //slots
         var today = new Date();
-        for (i = 2; i < 9; i++) {
+        if(isSupport) {
+            i =1;
+        } else {
+            i =2;
+        }
+        for (; i < 9; i++) {
             // 0 - > sun 1 -> mon ...
             var x = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
             if (checkSlotAvailability(x, interviewDays)) {
@@ -155,7 +160,7 @@ function checkSlotAvailability(x, interviewDays) {
 }
 
 
-function initInterviewModal(candidateId, jobPostId) {
+function initInterviewModal(candidateId, jobPostId, isSupport) {
     var htmlBodyContent = ''+
         '<div id="confirmationMsg">'+
         '<center>'+
@@ -187,7 +192,9 @@ function initInterviewModal(candidateId, jobPostId) {
             data: false,
             contentType: false,
             processData: false,
-            success: processJobPostInterviewSlot
+            success: function (returnedData) {
+                processJobPostInterviewSlot(returnedData, isSupport);
+            }
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
