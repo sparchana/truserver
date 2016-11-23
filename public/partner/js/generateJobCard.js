@@ -88,84 +88,88 @@ function getAllAppliedJobs() {
                 "dataSrc": function (returnedData) {
                     var returned_data = new Array();
                     returnedData.forEach(function (jobApplication) {
-                        var appliedDateInMillis = new Date(jobApplication.creationTimestamp);
-                        var salary;
-                        if(jobApplication.jobPost.jobPostMaxSalary != null && jobApplication.jobPost.jobPostMaxSalary != 0){
-                            salary = "₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMinSalary) + " - ₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMaxSalary);
-                        } else{
-                            salary = "₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMinSalary);
-                        }
-                        //getting interview details
-                        var interviewDetails = "Not specified";
-                        if(jobApplication.scheduledInterviewDate != null){
-                            var interviewDate = new Date(jobApplication.scheduledInterviewDate);
-                            interviewDetails = ('0' + interviewDate.getDate()).slice(-2) + '-' + getMonthVal((interviewDate.getMonth()+1)) + " @" + jobApplication.scheduledInterviewTimeSlot.interviewTimeSlotName;
-                        }
-                        //partner Incentives
-                        var interviewIncentive = "Not Specified";
-                        var joiningIncentive = "Not Specified";
-                        if(jobApplication.jobPost.jobPostPartnerInterviewIncentive != null){
-                            interviewIncentive = "₹" + jobApplication.jobPost.jobPostPartnerInterviewIncentive;
-                        }
-
-                        if(jobApplication.jobPost.jobPostPartnerJoiningIncentive != null){
-                            joiningIncentive = "₹" + jobApplication.jobPost.jobPostPartnerJoiningIncentive;
-                        }
-
-                        var currentStatus = "Under Review";
-                        if(jobApplication.status.statusId > 5){
-                            if(jobApplication.status.statusId == 6 || (jobApplication.status.statusId > 9 && jobApplication.status.statusId < 14)) {
-                                currentStatus = "Interview confirmed";
-                                if (jobApplication.interviewLocationLat != null) {
-                                    currentStatus += '<div class="navigationBtn" onclick="navigateToLocation(' + jobApplication.interviewLocationLat + ', ' + jobApplication.interviewLocationLng + ')">Directions</div>'
-                                }
-                            } else if(jobApplication.status.statusId == 7){
-                                currentStatus = "Application rejected";
-                            } else if(jobApplication.status.statusId == 8){
-                                currentStatus = "Application rejected by the Candidate/Partner";
-                            } else if(jobApplication.status.statusId == 9){
-                                var jpId = jobApplication.jobPost.jobPostId;
-                                rescheduledDate = "Interview Rescheduled on " + new Date(jobApplication.scheduledInterviewDate).getDate() + "/" + (new Date(jobApplication.scheduledInterviewDate).getMonth() + 1) + "/" + new Date(jobApplication.scheduledInterviewDate).getFullYear() + " between " + jobApplication.scheduledInterviewTimeSlot.interviewTimeSlotName;
-                                currentStatus = rescheduledDate;
-                                currentStatus += '<span id="interview_status_option_' + jpId + '">' +
-                                    '<span class="accept" onclick="confirmInterview('+ jpId + ', 1);"><img src="/assets/recruiter/img/icons/accept.svg" height="16px" width="14px"></span>' +
-                                    '<span class="reject" onclick="confirmInterview('+ jpId + ', 0);"><img src="/assets/recruiter/img/icons/reject.svg" height="16px" width="14px"></span>' +
-                                    '</span>';
+                        if(jobApplication != '0'){
+                            var appliedDateInMillis = new Date(jobApplication.creationTimestamp);
+                            var salary;
+                            if(jobApplication.jobPost.jobPostMaxSalary != null && jobApplication.jobPost.jobPostMaxSalary != 0){
+                                salary = "₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMinSalary) + " - ₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMaxSalary);
+                            } else{
+                                salary = "₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMinSalary);
                             }
-                        }
-
-                        var varColumn = function () {
-                            if(jobApplication.preScreenRequired){
-                                if(candidateId == null ) {
-                                    scrapeCandidateIdFromUrl();
-                                }
-                                // jpId is jobPostId
-                                var jpId = jobApplication.jobPost.jobPostId;
-                                jobRoleName = jobApplication.jobPost.jobRole.jobName;
-                                companyName = jobApplication.jobPost.company.companyName;
-                                return '<input type="submit" value="Pre-Screen"  style="width:150px" onclick="openPartnerPreScreenModal(' + jpId+ ', ' + candidateId + ');" id="' + candidateInfo.lead.leadId + '" class="btn btn-primary">'
-                            } else {
-                                return "Completed";
+                            //getting interview details
+                            var interviewDetails = "Not specified";
+                            if(jobApplication.scheduledInterviewDate != null){
+                                var interviewDate = new Date(jobApplication.scheduledInterviewDate);
+                                interviewDetails = ('0' + interviewDate.getDate()).slice(-2) + '-' + getMonthVal((interviewDate.getMonth()+1)) + " @" + jobApplication.scheduledInterviewTimeSlot.interviewTimeSlotName;
                             }
-                        };
+                            //partner Incentives
+                            var interviewIncentive = "Not Specified";
+                            var joiningIncentive = "Not Specified";
+                            if(jobApplication.jobPost.jobPostPartnerInterviewIncentive != null){
+                                interviewIncentive = "₹" + jobApplication.jobPost.jobPostPartnerInterviewIncentive;
+                            }
+
+                            if(jobApplication.jobPost.jobPostPartnerJoiningIncentive != null){
+                                joiningIncentive = "₹" + jobApplication.jobPost.jobPostPartnerJoiningIncentive;
+                            }
+
+                            var currentStatus = "Under Review";
+                            if(jobApplication.status.statusId > 5){
+                                if(jobApplication.status.statusId == 6 || (jobApplication.status.statusId > 9 && jobApplication.status.statusId < 14)) {
+                                    currentStatus = "Interview confirmed";
+                                    if (jobApplication.interviewLocationLat != null) {
+                                        currentStatus += '<div class="navigationBtn" onclick="navigateToLocation(' + jobApplication.interviewLocationLat + ', ' + jobApplication.interviewLocationLng + ')">Directions</div>'
+                                    }
+                                } else if(jobApplication.status.statusId == 7){
+                                    currentStatus = "Application rejected";
+                                } else if(jobApplication.status.statusId == 8){
+                                    currentStatus = "Application rejected by the Candidate/Partner";
+                                } else if(jobApplication.status.statusId == 9){
+                                    var jpId = jobApplication.jobPost.jobPostId;
+                                    rescheduledDate = "Interview Rescheduled on " + new Date(jobApplication.scheduledInterviewDate).getDate() + "/" + (new Date(jobApplication.scheduledInterviewDate).getMonth() + 1) + "/" + new Date(jobApplication.scheduledInterviewDate).getFullYear() + " between " + jobApplication.scheduledInterviewTimeSlot.interviewTimeSlotName;
+                                    currentStatus = rescheduledDate;
+                                    currentStatus += '<span id="interview_status_option_' + jpId + '">' +
+                                        '<span class="accept" onclick="confirmInterview('+ jpId + ', 1);"><img src="/assets/recruiter/img/icons/accept.svg" height="16px" width="14px"></span>' +
+                                        '<span class="reject" onclick="confirmInterview('+ jpId + ', 0);"><img src="/assets/recruiter/img/icons/reject.svg" height="16px" width="14px"></span>' +
+                                        '</span>';
+                                } else if(jobApplication.status.statusId > 13){
+                                    currentStatus = jobApplication.status.statusTitle;
+                                }
+                            }
+
+                            var varColumn = function () {
+                                if(jobApplication.preScreenRequired){
+                                    if(candidateId == null ) {
+                                        scrapeCandidateIdFromUrl();
+                                    }
+                                    // jpId is jobPostId
+                                    var jpId = jobApplication.jobPost.jobPostId;
+                                    jobRoleName = jobApplication.jobPost.jobRole.jobName;
+                                    companyName = jobApplication.jobPost.company.companyName;
+                                    return '<input type="submit" value="Pre-Screen"  style="width:150px" onclick="openPartnerPreScreenModal(' + jpId+ ', ' + candidateId + ');" id="' + candidateInfo.lead.leadId + '" class="btn btn-primary">'
+                                } else {
+                                    return "Completed";
+                                }
+                            };
 
 
-                        returned_data.push({
-                            'jobPostName' : '<div class="mLabel" style="width:100%" >'+ jobApplication.jobPost.jobPostTitle + '</div>',
-                            'jobPostCompany' : '<div class="mLabel" style="width:100%" >'+ jobApplication.jobPost.company.companyName + '</div>',
-                            'jobPostSalary' : '<div class="mLabel" style="width:100%" >'+ salary + '</div>',
-                            'interviewIncentive' : '<div class="mLabel" style="width:100%" >'+ interviewIncentive + '</div>',
-                            'joiningIncentive' : '<div class="mLabel" style="width:100%" >'+ joiningIncentive + '</div>',
-                            'jobStatus' : '<div class="mLabel" id="status_' + jobApplication.jobPost.jobPostId + '" style="width:100%" >'+ currentStatus + '</div>',
-                            'interviewDetails' : '<div class="mLabel" style="width:100%" >'+ interviewDetails + '</div>',
-                            'jobAppliedOn' : '<div class="mLabel" style="width:100%" >'+ ('0' + appliedDateInMillis.getDate()).slice(-2) + '-' + getMonthVal((appliedDateInMillis.getMonth()+1)) + '-' + appliedDateInMillis.getFullYear() + '</div>',
-                            'preScreen' : varColumn
-                        });
-                        returnedData.forEach(function (jobApplication) {
-                            var appliedJob = $("#apply_btn_" + jobApplication.jobPost.jobPostId);
-                            appliedJob.addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
-                            appliedJob.attr('onclick','').unbind('click');
-                        });
+                            returned_data.push({
+                                'jobPostName' : '<div class="mLabel" style="width:100%" >'+ jobApplication.jobPost.jobPostTitle + '</div>',
+                                'jobPostCompany' : '<div class="mLabel" style="width:100%" >'+ jobApplication.jobPost.company.companyName + '</div>',
+                                'jobPostSalary' : '<div class="mLabel" style="width:100%" >'+ salary + '</div>',
+                                'interviewIncentive' : '<div class="mLabel" style="width:100%" >'+ interviewIncentive + '</div>',
+                                'joiningIncentive' : '<div class="mLabel" style="width:100%" >'+ joiningIncentive + '</div>',
+                                'jobStatus' : '<div class="mLabel" id="status_' + jobApplication.jobPost.jobPostId + '" style="width:100%" >'+ currentStatus + '</div>',
+                                'interviewDetails' : '<div class="mLabel" style="width:100%" >'+ interviewDetails + '</div>',
+                                'jobAppliedOn' : '<div class="mLabel" style="width:100%" >'+ ('0' + appliedDateInMillis.getDate()).slice(-2) + '-' + getMonthVal((appliedDateInMillis.getMonth()+1)) + '-' + appliedDateInMillis.getFullYear() + '</div>',
+                                'preScreen' : varColumn
+                            });
+                            returnedData.forEach(function (jobApplication) {
+                                var appliedJob = $("#apply_btn_" + jobApplication.jobPost.jobPostId);
+                                appliedJob.addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
+                                appliedJob.attr('onclick','').unbind('click');
+                            });
+                        }
                     });
                     return returned_data;
                 }

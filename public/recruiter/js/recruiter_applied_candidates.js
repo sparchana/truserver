@@ -186,21 +186,25 @@ function processDataForJobApplications(returnedData) {
             candidateCard.className = "card";
             candidateCard.style = "border-radius: 6px";
 
-            if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 8 && value.extraData.workflowStatus.statusId < 14)){
-                confirmedParent.append(candidateCard);
-                confirmedCount++;
-            } else if(value.extraData.workflowStatus.statusId == 7){
-                rejectedParent.append(candidateCard);
-                rejectedCount++;
-            } else if(value.extraData.workflowStatus.statusId == 8){
-                rejectedParent.append(candidateCard);
-                rejectedCount++;
-            } else if(value.extraData.workflowStatus.statusId > 13){
-                completedParent.append(candidateCard);
-                completedCount++;
-            } else{
-                pendingParent.append(candidateCard);
-                pendingCount++;
+            if(value.extraData.workflowStatus != null){
+                console.log(value.extraData.workflowStatus.statusId);
+                console.log(value.candidate.candidateFirstName);
+                if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 8 && value.extraData.workflowStatus.statusId < 14)){
+                    confirmedParent.append(candidateCard);
+                    confirmedCount++;
+                } else if(value.extraData.workflowStatus.statusId == 7){
+                    rejectedParent.append(candidateCard);
+                    rejectedCount++;
+                } else if(value.extraData.workflowStatus.statusId == 8){
+                    rejectedParent.append(candidateCard);
+                    rejectedCount++;
+                } else if(value.extraData.workflowStatus.statusId > 13){
+                    completedParent.append(candidateCard);
+                    completedCount++;
+                } else{
+                    pendingParent.append(candidateCard);
+                    pendingCount++;
+                }
             }
 
             var candidateCardContent = document.createElement("div");
@@ -226,7 +230,7 @@ function processDataForJobApplications(returnedData) {
 
             //interview date/time slot
             var scheduledInterviewDate = document.createElement("div");
-            scheduledInterviewDate.className = "col s12 l8";
+            scheduledInterviewDate.className = "col s12 l6";
             scheduledInterviewDate.style = "color: black; text-align: left; padding: 8px";
             candidateCardRow.appendChild(scheduledInterviewDate);
 
@@ -374,6 +378,31 @@ function processDataForJobApplications(returnedData) {
             }
 
             inlineBlockDiv.appendChild(candidateInterviewStatusVal);
+
+            var candidateCardScore = document.createElement("div");
+            candidateCardScore.className = "col s12 l2";
+            candidateCardScore.style = "padding: 8px; margin-top: 16px; text-align: right";
+            candidateCardRow.appendChild(candidateCardScore);
+
+            var matchVal = document.createElement("span");
+            if(value.scoreData != null){
+                matchVal.className = "tooltipped matchDiv";
+                matchVal.setAttribute("data-postiton", "top");
+                matchVal.setAttribute("data-delay", "50");
+                matchVal.setAttribute("data-tooltip", value.scoreData.reason);
+
+                if(value.scoreData.band == 1){
+                    matchVal.style = "background: #2ec866";
+                    matchVal.textContent = "Good Match";
+                } else if(value.scoreData.band == 2){
+                    matchVal.style = "background: orange";
+                    matchVal.textContent = "Moderate Match";
+                } else{
+                    matchVal.style = "background: red";
+                    matchVal.textContent = "Low Match";
+                }
+            }
+            candidateCardScore.appendChild(matchVal);
 
             //end of candidateCardRow
 

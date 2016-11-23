@@ -75,6 +75,17 @@
     padding: 6px;
 }
 
+.matchDiv{
+    border-radius: 4px;
+    background: #ff853b;
+    color: white;
+    width: auto;
+    text-decoration: none;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 6px;
+}
+
 @media screen and (max-width:1000px){
     #headerForData{
         margin: 0;
