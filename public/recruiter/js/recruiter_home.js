@@ -125,7 +125,6 @@ function processDataGetJobPostDetails(returnedData) {
     });
 
     if(jpId.length > 0){
-
         var d = {
             jpId: jpId
         };
@@ -141,9 +140,25 @@ function processDataGetJobPostDetails(returnedData) {
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
+
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/getPendingCandidateApproval",
+                async: true,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processDataPendingApproval
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
     }
 }
 
+function processDataPendingApproval(returnedData) {
+    $("#pendingApproval").addClass("newNotification").html(returnedData + " new");
+}
 function processDataInterviewToday(returnedData) {
     var parent = $("#tableBody");
     var interviews = "";

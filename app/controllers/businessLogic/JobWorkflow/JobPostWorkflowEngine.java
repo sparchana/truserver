@@ -1401,6 +1401,33 @@ public class JobPostWorkflowEngine {
         return responseList;
     }
 
+    public static Integer processDataPendingApproval(InterviewTodayRequest interviewTodayRequest) {
+        if(interviewTodayRequest.getJpId().size() == 0){
+            return 0;
+        }
+
+        Integer count = 0;
+
+        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
+                .in("job_post_id", interviewTodayRequest.getJpId())
+                .eq("status_id", ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED)
+                .findList();
+
+        for(JobPostWorkflow jpWf: jobPostWorkflowList){
+            JobPostWorkflow jobPostWorkFlow = JobPostWorkflow.find.where()
+                    .eq("job_post_id", jpWf.getJobPost().getJobPostId())
+                    .eq("candidate_id", jpWf.getCandidate().getCandidateId())
+                    .orderBy().desc("creation_timestamp")
+                    .setMaxRows(1)
+                    .findUnique();
+            if(jobPostWorkFlow.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
+                count++;
+            }
+        }
+
+        return count;
+    }
+
     public static class LastActiveValue{
         public Integer lastActiveValueId;
         public String lastActiveValueName;

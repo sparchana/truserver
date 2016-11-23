@@ -483,6 +483,13 @@ a:hover{
     right: 24px;
 }
 
+.newNotification{
+    padding: 4px;
+    color: white;
+    height: 20px;
+    margin-top: 9px;
+}
+
 @media screen and (max-width: 600px) {
     #upperSpaceInputField{
         margin-top: 40px;

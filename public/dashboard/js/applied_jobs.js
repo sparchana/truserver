@@ -16,6 +16,7 @@ var globalLat = null;
 var globalLng = null;
 var candidateLat = null;
 var candidateLng = null;
+var globalStatus = 0;
 
 $(window).load(function () {
     $('html, body').css({
@@ -76,6 +77,10 @@ $(document).ready(function () {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+
+    $("#notGoingModal").on('hidden.bs.modal', function () {
+        location.reload();
+    })
 
 });
 
@@ -523,21 +528,7 @@ function prePopulateJobSection(jobApplication) {
                         statusUpdateBtn.style = "margin: 4px";
                         statusUpdateBtn.onclick = function () {
                             globalJpId = jobPost.jobPost.jobPostId;
-                            if($("#candidate_interview_status_" + globalJpId).val() == 1){ //to capture reason for not going
-                                $('#notGoingReason').html('');
-                                var defaultOption = $('<option value="0"></option>').text("Select a reason");
-                                $('#notGoingReason').append(defaultOption);
-
-                                allReasons.forEach(function (reason) {
-                                    var id = reason.id;
-                                    var name = reason.name;
-                                    var option = $('<option value=' + id + '></option>').text(name);
-                                    $('#notGoingReason').append(option);
-                                });
-                                $("#notGoingModal").modal("show");
-                            } else{
-                                updateStatus();
-                            }
+                            updateStatus();
                         };
                         statusBody.appendChild(statusUpdateBtn);
                     }
@@ -579,6 +570,7 @@ function confirmUpdateStatusNotGoing(){
 function updateStatus() {
     if($("#candidate_interview_status_" + globalJpId).val() > 0){
 
+        globalStatus = $("#candidate_interview_status_" + globalJpId).val();
         var notGoingReason = 0;
         if($("#notGoingReason").val() != null && $("#notGoingReason").val() != 0){
             notGoingReason = $("#notGoingReason").val();
@@ -603,10 +595,25 @@ function updateStatus() {
 function processDataForUpdateStatus(returnedData) {
     $("#notGoingModal").modal("hide");
     if(returnedData == 1){
-        alert("Status updated successfully");
-        setTimeout(function () {
-            location.reload();
-        }, 2000);
+        if(globalStatus == 1){
+            $('#notGoingReason').html('');
+            var defaultOption = $('<option value="0"></option>').text("Select a reason");
+            $('#notGoingReason').append(defaultOption);
+
+            allReasons.forEach(function (reason) {
+                var id = reason.id;
+                var name = reason.name;
+                var option = $('<option value=' + id + '></option>').text(name);
+                $('#notGoingReason').append(option);
+            });
+            $("#notGoingModal").modal("show");
+            globalStatus = null;
+        } else{
+            alert("Status updated successfully");
+            setTimeout(function () {
+                location.reload();
+            }, 2000);
+        }
     } else{
         alert("Something went wrong. Please try again later");
     }

@@ -440,6 +440,19 @@ public class RecruiterController {
         return ok(toJson(JobPostWorkflowEngine.getTodaysInterviewDetails(interviewTodayRequest)));
     }
 
+    public static Result getPendingCandidateApproval() {
+        JsonNode req = request().body().asJson();
+        Logger.info("Request pending Json: " + req);
+        InterviewTodayRequest interviewTodayRequest = new InterviewTodayRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            interviewTodayRequest = newMapper.readValue(req.toString(), InterviewTodayRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(JobPostWorkflowEngine.processDataPendingApproval(interviewTodayRequest)));
+    }
+
     // sorting helper methods
     private static class LastActiveComparator implements Comparator<CandidateWorkflowData> {
 
