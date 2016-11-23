@@ -4,13 +4,10 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpRequest.LoginRequest;
-import api.http.httpRequest.Recruiter.AddCreditRequest;
-import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
-import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
+import api.http.httpRequest.Recruiter.*;
 import api.http.httpRequest.ResetPasswordResquest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.CandidateWorkflowData;
-import api.http.httpResponse.Recruiter.JobApplicationResponse;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +17,6 @@ import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import controllers.security.SecuredUser;
 import models.entity.JobPost;
-import models.entity.OM.JobApplication;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterProfile;
@@ -215,30 +211,11 @@ public class RecruiterController {
                 RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
                 if(recruiterProfile != null){
                     if(jobPost.getRecruiterProfile() != null){
-                        if(jobPost.getRecruiterProfile().getRecruiterProfileId() == recruiterProfile.getRecruiterProfileId()){
-                            List<JobApplication> jobApplicationList = JobApplication.find.where().eq("JobPostId", jobPostId).findList();
-                            List<JobApplicationResponse> jobApplicationResponseList = new ArrayList<>();
-                            for(JobApplication jobApplication: jobApplicationList){
-                                JobApplicationResponse jobApplicationResponse = new JobApplicationResponse();
-
-                                jobApplicationResponse.setCandidate(jobApplication.getCandidate());
-                                jobApplicationResponse.setJobApplicationId(jobApplication.getJobApplicationId());
-                                jobApplicationResponse.setJobApplicationCreatingTimeStamp(String.valueOf(jobApplication.getJobApplicationCreateTimeStamp()));
-                                jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
-                                jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
-                                jobApplicationResponse.setInterviewTimeSlot(jobApplication.getInterviewTimeSlot());
-                                jobApplicationResponse.setScheduledInterviewDate(jobApplication.getScheduledInterviewDate());
-
-                                jobApplicationResponseList.add(jobApplicationResponse);
-                            }
-
-                            return ok(toJson(jobApplicationResponseList));
-                        }
+                        return ok(toJson(JobPostWorkflowEngine.getRecruiterJobLinedUpCandidates(jobPostId)));
                     }
                 }
             }
         }
-
         return ok("0");
     }
 
@@ -315,13 +292,13 @@ public class RecruiterController {
 
                     // sort by last active
                     // TODO move 1,2,3 to server constant
-                    if (matchingCandidateRequest.getSortBy() == ServerConstants.REC_SORT_LASTEST_ACTIVE) {
+                    if (Objects.equals(matchingCandidateRequest.getSortBy(), ServerConstants.REC_SORT_LASTEST_ACTIVE)) {
                         // last active, latest on top
                         Collections.sort(listToBeReturned,  new LastActiveComparator());
-                    } else if (matchingCandidateRequest.getSortBy() == ServerConstants.REC_SORT_SALARY_H_TO_L) {
+                    } else if (Objects.equals(matchingCandidateRequest.getSortBy(), ServerConstants.REC_SORT_SALARY_H_TO_L)) {
                         // candidate lw salary H->L
                         Collections.sort(listToBeReturned,  new SalaryComparatorHtoL());
-                    } else if (matchingCandidateRequest.getSortBy() == ServerConstants.REC_SORT_SALARY_L_TO_H) {
+                    } else if (Objects.equals(matchingCandidateRequest.getSortBy(), ServerConstants.REC_SORT_SALARY_L_TO_H)) {
                         // candidate lw salary L->H
                         Collections.sort(listToBeReturned,  new SalaryComparatorLtoH());
                     }
@@ -388,7 +365,7 @@ public class RecruiterController {
                 RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
                 if(recruiterProfile != null){
                     if(jobPost.getRecruiterProfile() != null){
-                        if(jobPost.getRecruiterProfile().getRecruiterProfileId() == recruiterProfile.getRecruiterProfileId()){
+                        if(Objects.equals(jobPost.getRecruiterProfile().getRecruiterProfileId(), recruiterProfile.getRecruiterProfileId())){
                             return ok(toJson(jobPost));
                         }
                     }
@@ -433,6 +410,34 @@ public class RecruiterController {
 
         return ok(toJson(RecruiterService.findRecruiterAndSendOtp(FormValidator.convertToIndianMobileFormat(recruiterMobile))));
 
+    }
+
+    public static Result updateInterviewStatus() {
+        JsonNode req = request().body().asJson();
+        Logger.info("Request Json: " + req);
+        InterviewStatusRequest interviewStatusRequest = new InterviewStatusRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            interviewStatusRequest = newMapper.readValue(req.toString(), InterviewStatusRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return JobPostWorkflowEngine.updateInterviewStatus(interviewStatusRequest);
+    }
+
+    public static Result getTodayInterviewDetails() {
+        JsonNode req = request().body().asJson();
+        Logger.info("Request Json: " + req);
+        InterviewTodayRequest interviewTodayRequest = new InterviewTodayRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            interviewTodayRequest = newMapper.readValue(req.toString(), InterviewTodayRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ok(toJson(JobPostWorkflowEngine.getTodaysInterviewDetails(interviewTodayRequest)));
     }
 
     // sorting helper methods
@@ -483,6 +488,10 @@ public class RecruiterController {
 
     public static Result renderAllUnlockedCandidates() {
         return ok(views.html.Recruiter.recruiter_unlocked_candidate.render());
+    }
+
+    public static Result trackApplication(long id) {
+        return ok(views.html.Recruiter.recruiter_interviews.render());
     }
 
 }

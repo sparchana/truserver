@@ -20,6 +20,11 @@ function processDataApplyJob(returnedData, jobPostId, candidateId) {
         $("#verifyOtp").hide();
     } catch (e){}
 
+    // enabling apply btn in partner
+    try{
+        $("#applyButton").addClass("jobApplyBtnModal").removeClass("jobApplied").prop('disabled',false).html("Apply");
+    } catch (e){}
+
     if(returnedData.status == 1){
         //$('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
         //$("#customMsg").html("Your Job Application is Successful");
@@ -66,7 +71,7 @@ function processDataApplyJob(returnedData, jobPostId, candidateId) {
 }
 
 // apply_job ajax script
-function applyJob(id, localityId, triggerModal){
+function applyJobSubmitViaCandidate(id, localityId, prefTimeSlot, scheduledInterviewDate, triggerModal){
     applyJobFlag = 1;
     applyJobId = id;
     var phone = localStorage.getItem("mobile");
@@ -110,9 +115,9 @@ function applyJobSubmit(jobPostId, candidateId, phone, localityId, prefTimeSlot,
             jobId: jobPostId,
             candidateMobile: phone,
             localityId: localityId,
-            timeSlot: prefTimeSlotVal,
-            scheduledInterviewDate: scheduledInterviewDateVal,
-            isPartner: partner
+            timeSlot: prefTimeSlot,
+            scheduledInterviewDate: scheduledInterviewDate,
+            isPartner: isPartner
         };
         $.ajax({
             type: "POST",

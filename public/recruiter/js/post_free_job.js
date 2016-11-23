@@ -3,8 +3,12 @@
  */
 
 var jpId = 0;
-var jpCompanyId = 3;
-var jpRecruiterId = 46;
+var jpCompanyId;
+var jpRecruiterId;
+
+var fullAddress;
+var interviewLat;
+var interviewLng;
 
 function processDataCheckLocality(returnedData) {
     if (returnedData != null) {
@@ -69,6 +73,20 @@ function processDataGetAllLanguage(returnLanguage) {
         $('#jobPostLanguage').append(option);
     });
 }
+
+function processDataGetAllTimeSlots(returnedData) {
+    $('#timeSlotSection').html('');
+    returnedData.forEach(function(timeSlot) {
+        var id = timeSlot.interviewTimeSlotId;
+        var name = timeSlot.interviewTimeSlotName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        var option ='<input type="checkbox" id=\"interview_slot_' + id + '\" /><label for=\"interview_slot_' + id + '\">' + name + ' </label><span style="margin-left:10px"></span>&nbsp;';
+        $('#timeSlotSection').append(option);
+    });
+}
+
 function processDataGetIdProofs(returnedIdProofs) {
     $('#jobPostIdProof')
         .find('option')
@@ -113,6 +131,7 @@ function changeJobDescClass() {
 }
 
 function changeJobReqClass() {
+    renderMap();
     $("font#jobReqTabHead").addClass("activeTab");
     $("font#jobDescTabHead").removeClass("activeTab");
 }
@@ -131,9 +150,36 @@ function toJobDetail(){
     $('ul.tabs').tabs('select_tab', 'jobDetails');
     $('body').scrollTop(0);
 }
+
+
+function renderMap(){
+    if(interviewLat != undefined && interviewLat != null){
+        $('#jp_map').locationpicker({
+            location: {
+                latitude: interviewLat,
+                longitude: interviewLng
+            },
+            radius: 100,
+            inputBinding: {
+                latitudeInput: $('#jp_lat'),
+                longitudeInput: $('#jp_lon'),
+                radiusInput: $('#jp_address_text'),
+                locationNameInput: $('#jp_address_text')
+            },
+            enableAutocomplete: true,
+            onchanged: function () {
+                interviewLat = $('#jp_lat').val();
+                interviewLng = $('#jp_lon').val();
+                $("#jobPostInterviewLocationVal").html($('#jp_address_text').val());
+            }
+        });
+    }
+}
+
 function toJobRequirement(){
     var status = 1;
 
+    renderMap();
     var vacancies = $("#jobPostVacancies").val();
 
     var minSalary = $("#jobPostMinSalary").val();
@@ -208,8 +254,10 @@ function toJobRequirement(){
     } else if(startTime != null){
         if(endTime != null){
             if(parseInt(startTime) >= parseInt(endTime)){
-                notifyError("Start time cannot be more than end time");
-                status = 0;
+                if(jobPostWorkShift == 1 || jobPostWorkShift == 3 || jobPostWorkShift == null){
+                    notifyError("Start time cannot be more than end time. If night shift, please specify evening shift");
+                    status = 0;
+                } //else its a night shift job
             }
         } else{
             notifyError("Please select job end time");
@@ -254,12 +302,13 @@ function processDataRecruiterSession(returnedData) {
     }
 }
 
-
 $(document).ready(function () {
     checkRecruiterLogin();
     var pathname = window.location.pathname; // Returns path only
     var jobPostIdUrl = pathname.split('/');
     var jobPostId = jobPostIdUrl[(jobPostIdUrl.length)-1];
+
+    $( "#check_applications" ).prop( "checked", true );
     if(jobPostId != 0){
         try {
             $.ajax({
@@ -360,18 +409,58 @@ $(document).ready(function () {
         console.log("exception occured!!" + exception);
     }
 
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllTimeSlots",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetAllTimeSlots
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+
     var i;
 
-    for(i=0;i<=24;i++){
+    for(i=0; i<=24; i++){
         var option = document.createElement("option");
         option.value = i;
-        option.textContent = i + ":00 hrs";
+        if(i == 0){
+            option.textContent = "12 AM";
+        } else{
+            if(i >= 12){
+                if((i-12) == 0){
+                    option.textContent = "12 PM";
+                } else{
+                    option.textContent = (i - 12) + " PM";
+                }
+            } else{
+                option.textContent = i + " AM";
+            }
+        }
         $('#jobPostStartTime').append(option);
     }
-    for(i=0;i<=24;i++) {
+
+    for(i = 0; i <= 24; i++){
         option = document.createElement("option");
         option.value = i;
-        option.textContent = i + ":00 hrs";
+        if(i == 0){
+            option.textContent = "12 AM";
+        } else{
+            if(i >= 12){
+                if((i-12) == 0){
+                    option.textContent = "12 PM";
+                } else{
+                    option.textContent = (i - 12) + " PM";
+                }
+            } else{
+                option.textContent = i + " AM";
+            }
+        }
         $('#jobPostEndTime').append(option);
     }
 
@@ -387,7 +476,67 @@ $(document).ready(function () {
     $('#jobPostExperience').tokenize().tokenAdd(5, "Any");
     $('#jobPostEducation').tokenize().tokenAdd(6, "Any");
 
+    google.maps.event.addDomListener(window, 'load', function () {
+        var defaultBounds = new google.maps.LatLngBounds(
+            new google.maps.LatLng(12.97232, 77.59480),
+            new google.maps.LatLng(12.89201, 77.58905)
+        );
+
+        var options = {
+            bounds: defaultBounds,
+            componentRestrictions: {country: 'in'}
+        };
+
+        var places = new google.maps.places.Autocomplete(document.getElementById('jobPostInterviewLocation'), options);
+        google.maps.event.addListener(places, 'place_changed', function () {
+            var place = places.getPlace();
+            var address = place.formatted_address;
+            var latitude = place.geometry.location.lat();
+            var longitude = place.geometry.location.lng();
+            fullAddress = address;
+            interviewLat = latitude;
+            interviewLng = longitude;
+            $("#jobPostInterviewLocationVal").show();
+            $("#jobPostInterviewLocation").hide();
+
+            $('#jp_lat').val(latitude);
+            $('#jp_lon').val(longitude);
+            $("#jobPostInterviewLocationVal").html(fullAddress);
+
+            //initializing map
+            var parent = $("#map_parent");
+
+            parent.html('');
+            var map = '<div id="jp_map" style="width: 500px; height: 240px"></div>';
+            parent.append(map);
+
+            $('#jp_map').locationpicker({
+                location: {
+                    latitude: latitude,
+                    longitude: longitude
+                },
+                radius: 100,
+                inputBinding: {
+                    latitudeInput: $('#jp_lat'),
+                    longitudeInput: $('#jp_lon'),
+                    radiusInput: $('#jp_address_text'),
+                    locationNameInput: $('#jp_address_text')
+                },
+                enableAutocomplete: true,
+                onchanged: function () {
+                    interviewLat = $('#jp_lat').val();
+                    interviewLng = $('#jp_lon').val();
+                    $("#jobPostInterviewLocationVal").html($('#jp_address_text').val());
+                }
+            });
+        });
+    });
 });
+
+function interviewUpdate() {
+    $("#jobPostInterviewLocationVal").hide();
+    $("#jobPostInterviewLocation").show();
+}
 
 function saveJob() {
     var status;
@@ -496,8 +645,10 @@ function saveJob() {
     } else if(startTime != null){
         if(endTime != null){
             if(startTime >= endTime){
-                notifyError("Start time cannot be more than end time");
-                status = 0;
+                if(jobPostWorkShift == 1 || jobPostWorkShift == 3 || jobPostWorkShift == null){
+                    notifyError("Start time cannot be more than end time. If night shift, please specify evening shift");
+                    status = 0;
+                } //else its a night shift job
             }
         } else{
             notifyError("Please select job end time");
@@ -534,6 +685,53 @@ function saveJob() {
             notifyError("Please enter Job Post Gender Requirement");
             status = 0;
         }
+
+        var timeSlotCount = 0;
+        var interviewDayCount = 0;
+        for(i=1; i<=3; i++){
+            if($("#interview_slot_" + i).is(":checked")){
+                timeSlotCount = timeSlotCount + 1;
+            }
+        }
+        for(i=1;i<=7;i++) {
+            if ($("#interview_day_" + i).is(":checked")) {
+                interviewDayCount = interviewDayCount + 1;
+            }
+        }
+        if(interviewDayCount > 0 && timeSlotCount == 0){
+            notifyError("Please select interview time slot");
+            status = 0;
+        } else if(timeSlotCount > 0 && interviewDayCount == 0){
+            notifyError("Please select interview days");
+            status = 0;
+        }
+    }
+
+    var interviewDays = "";
+    for(i=1; i<=7; i++){
+        if($("#interview_day_" + i).is(":checked")){
+            interviewDays += "1";
+        } else{
+            interviewDays += "0";
+        }
+    }
+
+    var slotArray = [];
+    for(i = 1; i <= 3; i ++){
+        if($("#interview_slot_" + i).is(":checked")){
+            slotArray.push(parseInt(i));
+        }
+    }
+
+    if(interviewDays == "0000000"){
+        notifyError("Please specify interview days");
+        status = 0;
+    } else if(slotArray == []){
+        notifyError("Please specify interview slots");
+        status = 0;
+    } else if(interviewLat == null){
+        notifyError("Please enter interview address");
+        status = 0;
     }
 
     if(status == 1){
@@ -547,6 +745,17 @@ function saveJob() {
                 workingDays += "0";
             }
         }
+
+        var reviewApplication;
+        if($('#check_applications').is(':checked')){
+            reviewApplication = 1;
+        } else{
+            reviewApplication = 0;
+        }
+
+        fullAddress = $('#jp_address_text').val();
+        interviewLat = $("#jp_lat").val();
+        interviewLng = $("#jp_lon").val();
 
         try {
             var d = {
@@ -577,8 +786,15 @@ function saveJob() {
                 jobPostMaxAge: maxAge,
                 jobPostGender: jobPostGender,
                 jobPostDocument: jobPostDocument,
-                jobPostAsset: jobPostAsset
+                jobPostAsset: jobPostAsset,
+                jobPostInterviewDays: interviewDays,
+                interviewTimeSlot: slotArray,
+                jobPostInterviewLocationLat: interviewLat,
+                jobPostInterviewLocationLng: interviewLng,
+                jobPostAddress: fullAddress,
+                reviewApplications: reviewApplication
             };
+
             $.ajax({
                 type: "POST",
                 url: "/recruiter/api/addJobPost",
@@ -644,6 +860,33 @@ function processDataForJobPost(returnedData) {
             });
         }
 
+        $("#jobPostInterviewLocation").hide();
+        if(returnedData.interviewDetailsList != null && Object.keys(returnedData.interviewDetailsList).length){
+            if(returnedData.interviewDetailsList[0].lat != null){
+                interviewLat = returnedData.interviewDetailsList[0].lat;
+                interviewLng = returnedData.interviewDetailsList[0].lng;
+                if(returnedData.jobPostAddress != null){
+                    fullAddress = returnedData.jobPostAddress;
+                    $("#jobPostInterviewLocation").hide();
+                    $("#jobPostInterviewLocationVal").html(returnedData.jobPostAddress);
+                    $("#jobPostInterviewLocationVal").show();
+
+                    $('#jp_lat').val(returnedData.interviewDetailsList[0].lat);
+                    $('#jp_lat').val(returnedData.interviewDetailsList[0].lng);
+
+                    //initializing map
+                    var parent = $("#map_parent");
+
+                    parent.html('');
+                    var map = '<div id="jp_map" style="width: 500px; height: 240px"></div>';
+                    parent.append(map);
+                } else {
+                    $("#jobPostInterviewLocationVal").hide();
+                    $("#jobPostInterviewLocation").show();
+                }
+            }
+        }
+
         $("#jobPostMinSalary").val(returnedData.jobPostMinSalary);
         $("#jobPostMaxSalary").val(returnedData.jobPostMaxSalary);
 
@@ -661,12 +904,36 @@ function processDataForJobPost(returnedData) {
             });
         }
 
-        if(returnedData.jobPostStartTime != null ){
-            $('#jobPostStartTime').tokenize().tokenAdd(returnedData.jobPostStartTime, returnedData.jobPostStartTime + ":00 hrs");
+        if(returnedData.jobPostStartTime != null && returnedData.jobPostStartTime != -1){
+            if(returnedData.jobPostStartTime == 0){
+                $('#jobPostStartTime').tokenize().tokenAdd(returnedData.jobPostStartTime, "12 AM");
+            } else {
+                if(returnedData.jobPostStartTime >= 12){
+                    if((returnedData.jobPostStartTime - 12) == 0){
+                        $('#jobPostStartTime').tokenize().tokenAdd(returnedData.jobPostStartTime, "12 PM");
+                    } else{
+                        $('#jobPostStartTime').tokenize().tokenAdd(returnedData.jobPostStartTime, returnedData.jobPostStartTime - 12 + " PM");
+                    }
+                } else{
+                    $('#jobPostStartTime').tokenize().tokenAdd(returnedData.jobPostStartTime, returnedData.jobPostStartTime + " AM");
+                }
+            }
         }
 
-        if(returnedData.jobPostEndTime != null ){
-            $('#jobPostEndTime').tokenize().tokenAdd(returnedData.jobPostEndTime, returnedData.jobPostEndTime + ":00 hrs");
+        if(returnedData.jobPostEndTime != null && returnedData.jobPostEndTime!= -1){
+            if(returnedData.jobPostEndTime== 0){
+                $('#jobPostEndTime').tokenize().tokenAdd(returnedData.jobPostEndTime, "12 AM");
+            } else {
+                if(returnedData.jobPostEndTime>= 12){
+                    if((returnedData.jobPostEndTime- 12) == 0){
+                        $('#jobPostEndTime').tokenize().tokenAdd(returnedData.jobPostEndTime, "12 PM");
+                    } else{
+                        $('#jobPostEndTime').tokenize().tokenAdd(returnedData.jobPostEndTime, returnedData.jobPostEndTime- 12 + " PM");
+                    }
+                } else{
+                    $('#jobPostEndTime').tokenize().tokenAdd(returnedData.jobPostEndTime, returnedData.jobPostEndTime+ " AM");
+                }
+            }
         }
 
         if(returnedData.jobPostWorkingDays != null){
@@ -723,6 +990,46 @@ function processDataForJobPost(returnedData) {
             });
         }
 
+        if(Object.keys(returnedData.interviewDetailsList).length > 0){
+            var interviewDetailsList = returnedData.interviewDetailsList;
+            if(interviewDetailsList[0].interviewDays != null){
+                //interview details
+                var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
+
+                if(interviewDetailsList[0].reviewApplication == null || interviewDetailsList[0].reviewApplication == 1){
+                    $( "#check_applications" ).prop( "checked", true);
+                } else{
+                    $( "#check_applications" ).prop( "checked", false);
+                }
+
+                /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
+                if(interviewDays.length != 7){
+                    x = 7 - interviewDays.length;
+                    var modifiedInterviewDays = "";
+
+                    for(i=0;i<x;i++){
+                        modifiedInterviewDays += "0";
+                    }
+                    modifiedInterviewDays += interviewDays;
+                    interviewDays = modifiedInterviewDays;
+                }
+
+                for(i=1; i<=7; i++){
+                    if(interviewDays[i-1] == 1){
+                        $("#interview_day_" + i).prop('checked', true);
+                    } else{
+                        $("#interview_day_" + i).prop('checked', false);
+                    }
+                }
+            }
+
+            //prefilling time slots
+            interviewDetailsList.forEach(function (timeSlot){
+                var slotBtn = $("#interview_slot_" + timeSlot.interviewTimeSlot.interviewTimeSlotId);
+                slotBtn.prop('checked', true);
+                slotBtn.parent().addClass('active');
+            });
+        }
     } else{
         notifyError("Job details not available");
         setTimeout(function(){

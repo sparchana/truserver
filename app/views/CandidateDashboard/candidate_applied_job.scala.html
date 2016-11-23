@@ -67,6 +67,35 @@
                 </div>
             </div>
         </div>
+
+            <!-- not going modal -->
+        <div class="modal fade" id="notGoingModal" tabindex="-1" role="dialog" aria-labelledby="notGoingModal">
+            <div class="modal-dialog" role="document" id="customModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Reason for not Going</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="confirmationMsg">
+                            <center>
+                                <img src="/assets/common/img/jobApply.png" width="48px">
+                            </center>
+                            <center>
+                                <h4><b>Reason for not going for the interview</b></h4>
+                                <div class="materialDash"></div>
+                                <div class="custom_container" style="margin-top: 16px">
+                                    <select id="notGoingReason"></select>
+                                </div>
+                                <button type="submit" onclick="confirmUpdateStatusNotGoing()" id="applyButton" class="jobApplyBtnModal" style="margin: 6px">Apply</button>
+                            </center>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
             <div class="container">
                 <div class="navbar-header">
@@ -159,7 +188,59 @@
                   To know more about status of applications, call us at +91 8048039089.
                         </div>
 
-                        <div id="myAppliedJobs"></div>
+                        <div id="customTab">
+                            <div class="row" style="margin: 0;">
+                                <div class="col-lg-3 tabItem activeTab" id="tabOne" onclick="tabOne()">
+                                    Rescheduled/Confirmed Interviews
+                                </div>
+                                <div class="col-lg-3 tabItem" id="tabTwo" onclick="tabTwo()">
+                                    Under Review
+                                </div>
+                                <div class="col-lg-3 tabItem" id="tabThree" onclick="tabThree()">
+                                    Completed
+                                </div>
+                                <div class="col-lg-3 tabItem" id="tabFour" onclick="tabFour()">
+                                    Rejected
+                                </div>
+                            </div>
+
+                        </div>
+                        <div id="myAppliedJobsConfirmed"></div>
+                        <div id="noConfirmedApplication" style="padding: 90px 6% 90px 6%; display: none">
+                            <center>
+                                <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                                <h5>No Confirmed applications!</h5>
+                                <h6>You have zero confirmed applications!</h6>
+                            </center>
+                        </div>
+
+                        <div id="myAppliedJobsUnderReview" style="display: none"></div>
+                        <div id="noUnderReviewApplication" style="padding: 90px 6% 90px 6%; display: none">
+                            <center>
+                                <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                                <h5>No under review applications!</h5>
+                                <h6>You have zero under review applications!</h6>
+                            </center>
+                        </div>
+
+                        <div id="myAppliedJobsCompleted" style="display: none"></div>
+                        <div id="noCompletedApplication" style="padding: 90px 6% 90px 6%; display: none">
+                            <center>
+                                <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                                <h5>No Completed Interviews!</h5>
+                                <h6>You have zero completed interviews!</h6>
+                            </center>
+                        </div>
+
+                        <div id="myAppliedJobsRejected" style="display: none"></div>
+                        <div id="noRejectedApplication" style="padding: 90px 6% 90px 6%; display: none">
+                            <center>
+                                <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                                <h5>No rejected applications yet!</h5>
+                                <h6>Good job! You have zero rejected applications!</h6>
+                            </center>
+                        </div>
+
                     </div>
                 </div>
             </div>

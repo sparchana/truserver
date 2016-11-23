@@ -34,6 +34,47 @@
 #jobTable{
     padding-bottom: 4%;
 }
+
+.tabs{
+    border:4px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 2px 0 rgba(0, 0, 0, 0.12), 0 2px 2px -1px rgba(0, 0, 0, 0.2);
+}
+.tabs > li > a{
+    text-decoration: none;
+}
+.tabs .indicator {
+    position: absolute;
+    bottom: 0;
+    height: 2px;
+    background-color: #56B4D3;
+    will-change: left, right;
+}
+.tabs .tab a:hover {
+    color: #187b95;
+}
+.tabs .tab a {
+    color: #909090;
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    transition: color .28s ease;
+}
+
+.activeTab{
+    font-weight: bold;
+    color: #187b95;
+}
+
+.feedbackVal{
+    border-radius: 4px;
+    background: #ff853b;
+    color: white;
+    font-weight: bold;
+    padding: 6px;
+}
+
 @media screen and (max-width:1000px){
     #headerForData{
         margin: 0;

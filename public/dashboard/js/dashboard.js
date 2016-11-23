@@ -481,7 +481,6 @@ function checkInstitute() {
 /* Prefill the data */
 
 function processDataAndFillAllFields(returnedData) {
-    console.log(returnedData);
     candidateInformation = returnedData;
     $("#jobCount").html(Object.keys(candidateInformation.jobApplicationList).length);
 
@@ -540,7 +539,6 @@ function processDataAndFillAllFields(returnedData) {
     }
 
     /* get Candidate's idProofs */
-    console.log(returnedData.idProofReferenceList);
     try {
         var idProof = returnedData.idProofReferenceList;
         var tempIdProofList = [];

@@ -360,48 +360,16 @@ public class PartnerController {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result getAppliedJobsByPartnerForCandidate(long id) {
+        Logger.info(id + " candidateId");
         Candidate candidate = Candidate.find.where().eq("candidateId", id).findUnique();
         if(candidate != null){
             Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
             if(partner != null){
-                List<JobApplication> jobApplicationList = JobApplication.find.where()
-                        .eq("candidateId", candidate.getCandidateId())
-                        .eq("partner_id", partner.getPartnerId())
-                        .orderBy("jobApplicationCreateTimeStamp desc")
-                        .findList();
-                List<Long> jobPostIdList = new ArrayList<>();
-
-                for (JobApplication jobApplication : jobApplicationList) {
-                    jobPostIdList.add(jobApplication.getJobPost().getJobPostId());
-                }
-
-                List<PreScreenRequirement> preScreenRequirementList = PreScreenRequirement.find.where().in("job_post_id", jobPostIdList).findList();
-
-                Map<Long, PreScreenRequirement> preScreenRequirementMap = new HashMap<>();
-                for(PreScreenRequirement preScreenRequirement: preScreenRequirementList) {
-                    preScreenRequirementMap.putIfAbsent(preScreenRequirement.getJobPost().getJobPostId(), preScreenRequirement);
-                }
-
-                List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where().in("job_post_id", jobPostIdList).eq("candidate_id", id).ge("status.statusId", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED).findList();
-
-                Map<Long, JobPostWorkflow> jobPostWorkflowMap = new HashMap<>();
-                for(JobPostWorkflow jobPostWorkflow: jobPostWorkflowList) {
-                    jobPostWorkflowMap.putIfAbsent(jobPostWorkflow.getJobPost().getJobPostId(), jobPostWorkflow);
-                }
-                Logger.info("preScreenReqList: " + preScreenRequirementList.size());
-
-                for (JobApplication jobApplication : jobApplicationList) {
-                    if (preScreenRequirementMap.get(jobApplication.getJobPost().getJobPostId()) == null ) {
-                        jobApplication.setPreScreenRequired(false);
-                    } else if (jobPostWorkflowMap.get(jobApplication.getJobPost().getJobPostId()) != null) {
-                        jobApplication.setPreScreenRequired(false);
-                    }
-                }
-
-                return ok(toJson(jobApplicationList));
+                return ok(toJson(JobPostWorkflowEngine.getPartnerAppliedJobsForCandidate(candidate, partner)));
             }
         }
         return ok("0");
+
     }
 
     public static Result getCandidateMatchingJobs(long id) {
@@ -426,6 +394,26 @@ public class PartnerController {
                         interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName()
                 );
                 return ok(toJson(jobPost));
+            }
+        }
+        return ok("0");
+    }
+
+    public static Result confirmInterview(long cId, long jpId, long value){
+        if (session().get("partnerId") != null) {
+            Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+            if(partner != null){
+                Candidate candidate = Candidate.find.where().eq("candidateId", cId).findUnique();
+                if(candidate != null){
+                    PartnerToCandidate partnerToCandidate = PartnerToCandidate.find.where()
+                            .eq("partner_id", partner.getPartnerId())
+                            .eq("t0.candidate_CandidateId", candidate.getCandidateId())
+                            .findUnique();
+
+                    if(partnerToCandidate != null){
+                        return ok(toJson(JobPostWorkflowEngine.confirmCandidateInterview(jpId, value, candidate)));
+                    }
+                }
             }
         }
         return ok("0");

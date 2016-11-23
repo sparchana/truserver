@@ -4,6 +4,7 @@ import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
+import api.http.httpRequest.Recruiter.InterviewStatusRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlotDetail;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
@@ -11,9 +12,12 @@ import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.SelectedCandidateRequest;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
+import com.amazonaws.services.importexport.model.Job;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
+import com.avaje.ebean.RawSql;
+import com.avaje.ebean.RawSqlBuilder;
 import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -34,6 +38,7 @@ import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 import play.api.Play;
+import play.core.server.Server;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Http;
@@ -48,6 +53,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.avaje.ebean.Expr.eq;
+import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForCandidateAcceptingRescheduledInterviewViaAndroid;
+import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForCandidateAcceptingRescheduledInterviewViaWebsite;
+import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForCandidateRejectingRescheduledInterviewViaWebsite;
+import static models.util.SmsUtil.sendInterviewCandidateConfirmation;
+import static models.util.SmsUtil.sendInterviewCandidateInterviewReject;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
@@ -160,7 +170,6 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         InteractionService.InteractionChannelType channelType = InteractionService.InteractionChannelType.SELF;
         return ok(toJson(CandidateService.signUpCandidate(candidateSignUpRequest, channelType, ServerConstants.LEAD_SOURCE_UNKNOWN)));
@@ -583,30 +592,11 @@ public class Application extends Controller {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result getCandidateJobApplication() {
-        if(session().get("candidateId") != null){
-            Long candidateId = Long.parseLong(session().get("candidateId"));
-            List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", session().get("candidateId")).findList();
-            List<JobApplicationWithAssessmentStatusResponse> applicationWithAssessmentStatusResponseList = new ArrayList<>();
-            List<Long> jobRoleIds = new ArrayList<>();
-            if(jobApplicationList == null){
-                return ok("0");
-            }
-            for (JobApplication jobApplication: jobApplicationList) {
-                 applicationWithAssessmentStatusResponseList.add(new JobApplicationWithAssessmentStatusResponse(jobApplication));
-                if(!jobRoleIds.contains(jobApplication.getJobPost().getJobRole().getJobRoleId())) {
-                    jobRoleIds.add(jobApplication.getJobPost().getJobRole().getJobRoleId());
-                }
-            }
-            Map<Long, Boolean> jobRoleIdsWithAssessmentStatusMap = AssessmentService.getJobRoleIdsVsIsAssessedMap(candidateId, jobRoleIds);
-            for (JobApplicationWithAssessmentStatusResponse jobApplication: applicationWithAssessmentStatusResponseList) {
-                jobApplication.setAssessmentRequired(!jobRoleIdsWithAssessmentStatusMap.get(jobApplication.getJobPost().getJobRole().getJobRoleId()));
-            }
-            if(applicationWithAssessmentStatusResponseList == null) {
-                return ok("0");
-            }
-            return ok(toJson(applicationWithAssessmentStatusResponseList));
+        if(session().get("candidateId") != null) {
+            return ok(toJson(JobPostWorkflowEngine.getCandidateAppliedJobs()));
+        } else{
+            return ok("0");
         }
-        return ok("0");
     }
 
     public static Result getAllSkills(String ids) {
@@ -942,6 +932,16 @@ public class Application extends Controller {
     public static Result getAllAsset() {
         List<Asset> assets = Asset.find.setUseQueryCache(!isDevMode).orderBy("asset_title").findList();
         return ok(toJson(assets));
+    }
+
+    public static Result getAllInterviewRejectReasons() {
+        List<RejectReason> reason = RejectReason.find.where().eq("reason_type", ServerConstants.INTERVIEW_REJECT_TYPE_REASON).setUseQueryCache(!isDevMode).orderBy("reason_name").findList();
+        return ok(toJson(reason));
+    }
+
+    public static Result getAllInterviewNotGoingReasons() {
+        List<RejectReason> reason = RejectReason.find.where().eq("reason_type", ServerConstants.INTERVIEW_NOT_GOING_TYPE_REASON).setUseQueryCache(!isDevMode).orderBy("reason_name").findList();
+        return ok(toJson(reason));
     }
 
     @Security.Authenticated(RecSecured.class)
@@ -1584,6 +1584,8 @@ public class Application extends Controller {
                 return ok(views.html.pre_screen.render());
             case "pre_screen_completed_view":
                 return ok(views.html.pre_screen_completed.render());
+            case "confirmed_interview_view":
+                return ok(views.html.confirmed_interview.render());
         }
         return badRequest();
     }
@@ -1780,8 +1782,22 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(SecuredUser.class)
-    public static Result getPreScreenedCandidate(Long jobPostId, Boolean isPass) {
-        return ok(toJson(JobPostWorkflowEngine.getPreScreenedPassFailCandidates(jobPostId, isPass)));
+    public static Result getPreScreenedCandidate(Long jobPostId, Boolean isPass, Long status) {
+        return ok(toJson(JobPostWorkflowEngine.getPreScreenedPassFailCandidates(jobPostId, isPass, status)));
+    }
+
+    public static Result getConfirmedInterviewCandidates(Long jobPostId, String start, String end) {
+        return ok(toJson(JobPostWorkflowEngine.getConfirmedInterviewCandidates(jobPostId, start, end)));
+    }
+
+    public static Result confirmInterview(long jpId, long value) {
+        if (session().get("candidateId") != null) {
+            Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")).findUnique();
+            if(candidate != null){
+                return ok(toJson(JobPostWorkflowEngine.confirmCandidateInterview(jpId, value, candidate)));
+            }
+        }
+        return ok("0");
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -1922,6 +1938,53 @@ public class Application extends Controller {
         return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewDetail(candidateId, jobPostId, interviewSlotDetail)));
     }
 
+    public static Result renderStatusUpdate(long jpId, long cId) {
+        return ok(views.html.CandidateDashboard.update_status_view.render());
+    }
+
+    public static Result updateInterviewStatus(long cId, long jpId, long val, long reason) {
+        Candidate candidate = Candidate.find.where().eq("candidateId", cId).findUnique();
+        if(candidate != null){
+            JobPost jobPost = JobPost.find.where().eq("JobPostId", jpId).findUnique();
+            if(jobPost != null){
+                return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val, reason)));
+            }
+        }
+        return ok("0");
+    }
+
+    public static Result updateInterviewStatusViaCandidate(long jpId, long val, long reason) {
+        if(session().get("candidateId") != null){
+            Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")).findUnique();
+            if(candidate != null){
+                JobPost jobPost = JobPost.find.where().eq("JobPostId", jpId).findUnique();
+                if(jobPost != null){
+                    return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val, reason)));
+                }
+            }
+        }
+        return ok("0");
+    }
+
+    public static Result getJpWfStatus(long cId, long jpId) {
+        Candidate candidate = Candidate.find.where().eq("candidateId", cId).findUnique();
+        if(candidate != null){
+            JobPost jobPost = JobPost.find.where().eq("JobPostId", jpId).findUnique();
+            if(jobPost != null){
+                return ok(toJson(JobPostWorkflowEngine.getCandidateLatestStatus(candidate, jobPost)));
+            }
+        }
+        return ok("0");
+    }
+
+    public static Result confirmInterviewSupport(long cid, long jpId, long status) {
+        Candidate candidate = Candidate.find.where().eq("candidateId", cid).findUnique();
+        if (candidate != null) {
+            return ok(toJson(JobPostWorkflowEngine.confirmCandidateInterview(jpId, status, candidate)));
+        }
+        return ok("0");
+    }
+
     public static Result getAllIdProofs(String ids) {
         List<String> idProofIdList = Arrays.asList(ids.split("\\s*,\\s*"));
         if(ids == null) {
@@ -2048,5 +2111,20 @@ public class Application extends Controller {
             return ok(response);
         }
         return badRequest();
+    }
+
+    public static Result updateFeedback() {
+        JsonNode req = request().body().asJson();
+        Logger.info("Request Json: " + req);
+        AddFeedbackRequest addFeedbackRequest = new AddFeedbackRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addFeedbackRequest = newMapper.readValue(req.toString(), AddFeedbackRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ok(toJson(JobPostWorkflowEngine.updateFeedback(addFeedbackRequest)));
+
     }
 }
