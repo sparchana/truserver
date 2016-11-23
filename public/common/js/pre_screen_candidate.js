@@ -468,6 +468,7 @@ function processPreScreenData(returnedData) {
                     });
                     var firstproperty = document.createElement("li");
                     firstproperty.textContent = "Do you have the following document(s) ?";
+                    firstproperty.style = "color:#09ac58";
                     firstproperty.id = "property_" + rowData.propertyId;
 
                     var rowBox = document.createElement("div");
@@ -562,12 +563,12 @@ function processPreScreenData(returnedData) {
                     rowBox.className = "row";
 
                     var ageTitle = document.createElement("div");
-                    ageTitle.className = "col-xs-4 col-sm-4 col-sm-offset-2";
+                    ageTitle.className = "col-xs-12 col-sm-5 col-sm-offset-1";
                     ageTitle.style = "padding:2%;text-align:left";
                     rowBox.appendChild(ageTitle);
 
                     var ageResponse = document.createElement("div");
-                    ageResponse.className = "col-xs-8 col-sm-4";
+                    ageResponse.className = "col-xs-8 col-sm-6";
                     ageResponse.style = "padding:1%";
                     rowBox.appendChild(ageResponse);
 
@@ -629,7 +630,7 @@ function processPreScreenData(returnedData) {
                     allworkedCompanyDetailsDiv.appendChild(allworkedJobRoleCol);
 
                     var allWorkedCurrentltyCol = document.createElement("div");
-                    allWorkedCurrentltyCol.className = "col-sm-4";
+                    allWorkedCurrentltyCol.className = "col-sm-4"
                     allWorkedCurrentltyCol.id = "workedCurrently";
                     allWorkedCurrentltyCol.style = "padding-top:1%;text-align:center";
                     allworkedCompanyDetailsDiv.appendChild(allWorkedCurrentltyCol);
@@ -687,32 +688,31 @@ function processPreScreenData(returnedData) {
 
                     var experienceOption = document.createElement("div");
                     experienceOption.className = "col-xs-12 col-md-12";
-                    experienceOption.style = "padding:2%;text-align:center";
+                    experienceOption.style = "padding:2%;";
                     rowBox.appendChild(experienceOption);
 
                     var experienceQuestion= document.createElement("div");
-                    experienceQuestion.className = "col-xs-12 col-md-5";
+                    experienceQuestion.className = "col-xs-12 col-sm-5 col-sm-offset-1";
                     experienceQuestion.id = "experienceQuestion";
-                    experienceQuestion.style = "padding:1%;";
+                    experienceQuestion.style = "padding:2%;display:none";
                     rowBox.appendChild(experienceQuestion);
 
                     var experienceText = document.createElement("p");
                     experienceText.textContent = ("How many year(s) of work experience do you have?");
-                    experienceText.style = ("margin:0");
                     experienceQuestion.appendChild(experienceText);
 
                     var experienceDuration = document.createElement("div");
                     experienceDuration.className = "col-xs-12 col-md-6";
                     experienceDuration.id = "experienceDuration";
-                    experienceDuration.style = "display:none";
+                    experienceDuration.style = "display:none;padding:1%";
                     rowBox.appendChild(experienceDuration);
 
                     var colDetailsFresher = document.createElement("div");
-                    colDetailsFresher.className = "col-xs-12 col-sm-6";
+                    colDetailsFresher.className = "col-xs-12 col-sm-3 col-sm-offset-1";
                     experienceOption.appendChild(colDetailsFresher);
 
                     var colDetailsExperience = document.createElement("div");
-                    colDetailsExperience.className = "col-xs-12 col-sm-6";
+                    colDetailsExperience.className = "col-xs-12 col-sm-4";
                     experienceOption.appendChild(colDetailsExperience);
 
                     var radioFresher = document.createElement("input");
@@ -771,9 +771,9 @@ function processPreScreenData(returnedData) {
                     experienceDuration.appendChild(titleExpMonths);
 
                     var experienceCurrently = document.createElement("div");
-                    experienceCurrently.className = "col-xs-12 col-md-12";
+                    experienceCurrently.className = "col-xs-12 col-md-10 col-md-offset-1";
                     experienceCurrently.id = "experienceCurrently";
-                    experienceCurrently.style = "padding:1%;display:none";
+                    experienceCurrently.style = "padding:2%;display:none";
                     rowBox.appendChild(experienceCurrently);
 
                     var currentlyWorking = document.createElement("p");
@@ -816,13 +816,13 @@ function processPreScreenData(returnedData) {
                     //Highest Education Qualification
 
                     var educationDetailsHEQ = document.createElement("div");
-                    educationDetailsHEQ.className = "col-xs-12 col-sm-4 col-sm-offset-2";
+                    educationDetailsHEQ.className = "col-xs-12 col-sm-5 col-sm-offset-1";
                     educationDetailsHEQ.id = "education_details";
                     educationDetailsHEQ.style = "padding:2%;text-align:left";
                     rowBoxHEQ.appendChild(educationDetailsHEQ);
 
                     var educationResponseHEQ = document.createElement("div");
-                    educationResponseHEQ.className = "col-xs-12 col-sm-4";
+                    educationResponseHEQ.className = "col-xs-12 col-sm-6";
                     educationResponseHEQ.id = "education_details";
                     educationResponseHEQ.style = "padding:1%";
                     rowBoxHEQ.appendChild(educationResponseHEQ);
@@ -839,13 +839,13 @@ function processPreScreenData(returnedData) {
                     //Highest Education Successfully Complete
 
                     var educationDetailsSuccess = document.createElement("div");
-                    educationDetailsSuccess.className = "col-xs-12 col-sm-4 col-sm-offset-2";
+                    educationDetailsSuccess.className = "col-xs-12 col-sm-5 col-sm-offset-1";
                     educationDetailsSuccess.id = "education_details";
                     educationDetailsSuccess.style = "padding:2%;text-align:left";
                     rowBoxSuccess.appendChild(educationDetailsSuccess);
 
                     var educationResponseSuccess = document.createElement("div");
-                    educationResponseSuccess.className = "col-xs-12 col-sm-4";
+                    educationResponseSuccess.className = "col-xs-12 col-sm-6";
                     educationResponseSuccess.id = "education_details";
                     educationResponseSuccess.style = "padding-top:3%";
                     rowBoxSuccess.appendChild(educationResponseSuccess);
@@ -857,7 +857,7 @@ function processPreScreenData(returnedData) {
 
                     var successYes = document.createElement("input");
                     successYes.type = ("radio");
-                    successYes.style = "margin:0 4% 0 8%";
+                    successYes.style = "margin:0 4% 0 0";
                     successYes.id = ("successYes");
                     successYes.name = ("candidateEducationCompletionStatus");
                     successYes.value = (1);
@@ -884,13 +884,13 @@ function processPreScreenData(returnedData) {
                     //Highest Education Degree
 
                     var educationDetailsHED = document.createElement("div");
-                    educationDetailsHED.className = "col-xs-12 col-sm-4 col-sm-offset-2";
+                    educationDetailsHED.className = "col-xs-12 col-sm-5 col-sm-offset-1";
                     educationDetailsHED.id = "education_details";
                     educationDetailsHED.style = "padding:2%;text-align:left";
                     rowBoxHED.appendChild(educationDetailsHED);
 
                     var educationResponseHED = document.createElement("div");
-                    educationResponseHED.className = "col-xs-12 col-sm-4";
+                    educationResponseHED.className = "col-xs-12 col-sm-6";
                     educationResponseHED.id = "education_details";
                     educationResponseHED.style = "padding:1%";
                     rowBoxHED.appendChild(educationResponseHED);
@@ -907,12 +907,12 @@ function processPreScreenData(returnedData) {
                     //Last Attended Institute
 
                     var educationDetailsInstitute = document.createElement("div");
-                    educationDetailsInstitute.className = "col-xs-12 col-sm-4 col-sm-offset-2";
+                    educationDetailsInstitute.className = "col-xs-12 col-sm-5 col-sm-offset-1";
                     educationDetailsInstitute.style = "padding:2%;text-align:left";
                     rowBoxLastInstitute.appendChild(educationDetailsInstitute);
                     var educationResponseInstitute = document.createElement("div");
 
-                    educationResponseInstitute.className = "col-xs-12 col-sm-4";
+                    educationResponseInstitute.className = "col-xs-12 col-sm-6";
                     educationResponseInstitute.style = "padding:1%";
                     rowBoxLastInstitute.appendChild(educationResponseInstitute);
 
@@ -947,10 +947,10 @@ function processPreScreenData(returnedData) {
                     var genderDetails = document.createElement("div");
                     genderDetails.className = "col-sm-12 col-md-12";
                     genderDetails.id = "gender_details";
-                    genderDetails.style = "padding:2%;text-align:center";
+                    genderDetails.style = "padding:2%;";
 
                     var colGenderDetailsMale = document.createElement("div");
-                    colGenderDetailsMale.className = "col-xs-12 col-sm-3";
+                    colGenderDetailsMale.className = "col-xs-12 col-sm-3 col-sm-offset-1";
                     genderDetails.appendChild(colGenderDetailsMale);
 
                     var colGenderDetailsFemale = document.createElement("div");
@@ -999,7 +999,7 @@ function processPreScreenData(returnedData) {
                     salaryDetails.id = "salary_details";
 
                     var salaryResponse = document.createElement("div");
-                    salaryResponse.className = "col-xs-12 col-sm-4";
+                    salaryResponse.className = "col-xs-12 col-sm-6";
                     salaryResponse.id = "salary_response";
                     salaryResponse.style = "padding:1%";
 
@@ -1077,12 +1077,12 @@ function processPreScreenData(returnedData) {
                     rowBox.className = "row";
 
                     var shiftTitle = document.createElement("div");
-                    shiftTitle.className = "col-xs-4 col-sm-4 col-sm-offset-2";
+                    shiftTitle.className = "col-xs-12 col-sm-5 col-sm-offset-1";
                     shiftTitle.style = "padding:2%;text-align:left";
                     rowBox.appendChild(shiftTitle);
 
                     var shiftResponse = document.createElement("div");
-                    shiftResponse.className = "col-xs-8 col-sm-4";
+                    shiftResponse.className = "col-xs-12 col-sm-6";
                     shiftResponse.style = "padding:1%";
                     rowBox.appendChild(shiftResponse);
 
@@ -1304,16 +1304,14 @@ function hideExperienceCaptureDiv() {
     if ($("#candidateFresh").is(":checked")) {
         $("#experienceDuration").css("display", "none");
         $("#experienceQuestion").css("display", "none");
+        $("#experienceCurrently").css("display", "none");
         $('#companyDetailsCapture').hide();
     }
 }
-
 function showExperienceCaptureDiv() {
-    if (!$("#candidateExp").is(":checked")) {
-        $("#experienceDuration").css("display", "none");
-    }
-    else {
+    if ($("#candidateExp").is(":checked")) {
         $("#experienceDuration").css("display", "block");
+        $("#experienceQuestion").css("display", "block");
     }
 }
 
