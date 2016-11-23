@@ -409,6 +409,7 @@ function openCandidatePreScreenModal(jobPostId, candidateMobile) {
                 console.log("exception occured!!" + exception.stack);
             }
         }
+        $.notify("Please complete Job Application form", 'success');
     }
 }
 function processPreScreenData(returnedData) {
@@ -1395,12 +1396,12 @@ function submitPreScreen() {
 
                 // documents
                 d ["idProofWithIdNumberList"] = documentList;
-
-                if(documentList.length == 0) {
-                    // won't allow candidate to make submission without provide alteast one doc
-                    $.notify("Please provide your document details", 'error');
-                    okToSubmit = false;
-                }
+                //
+                // if(documentList.length == 0) {
+                //     // won't allow candidate to make submission without provide alteast one doc
+                //     $.notify("Please provide your document details", 'error');
+                //     okToSubmit = false;
+                // }
                 if(!okToSubmit){
                     var submit = {
                         propId : propId,

@@ -37,7 +37,6 @@ function processDataApplyJob(returnedData, jobPostId, candidateId, isPartner) {
         }
         // generate prescreen modal here
         if(!isPartner){
-            $.notify("Please complete Job Application form", 'success');
             openCandidatePreScreenModal(jobPostId, localStorage.getItem("mobile"));
             console.log("success: generate modal");
         } else {
