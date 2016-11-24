@@ -38,6 +38,7 @@ import java.util.*;
 
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
 import static models.util.SmsUtil.*;
+import static models.util.SmsUtil.sendInterviewConfirmationSms;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 import static play.mvc.Results.ok;
@@ -1997,6 +1998,11 @@ public class JobPostWorkflowEngine {
                 }
             }
 
+            JobApplication jobApplication = JobApplication.find.where()
+                    .eq("candidateId", candidate.getCandidateId())
+                    .eq("jobPostId", interviewStatusRequest.getJobPostId())
+                    .findUnique();
+
             // fetch existing workflow old
             JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
                     .eq("jobPost.jobPostId", interviewStatusRequest.getJobPostId())
@@ -2020,6 +2026,11 @@ public class JobPostWorkflowEngine {
 
                     // creating interaction
                     createInteractionForRecruiterAcceptingInterviewDate(candidate.getCandidateUUId(), jobPost.getRecruiterProfile().getRecruiterProfileUUId());
+
+                    if(jobApplication != null && jobApplication.getPartner() != null){
+                        sendInterviewConfirmationSmsToPartner(jobPostWorkflowOld, candidate, jobApplication.getPartner());
+                    }
+
                     jwType = InteractionConstants.INTERACTION_TYPE_RECRUITER_ACCEPT_JOB_APPLICATION_INTERVIEW;
                     interactionResult = " interview confirmed";
                 }
@@ -2031,6 +2042,10 @@ public class JobPostWorkflowEngine {
                 // creating interaction
                 createInteractionForRecruiterRejectingInterviewDate(candidate.getCandidateUUId(), jobPostWorkflowOld.getJobPost().getRecruiterProfile().getRecruiterProfileUUId());
 
+                if(jobApplication != null && jobApplication.getPartner() != null){
+                    sendInterviewRejectionSmsToPartner(jobPostWorkflowOld, candidate, jobApplication.getPartner());
+                }
+
                 jwStatus = ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT;
                 jwType = InteractionConstants.INTERACTION_TYPE_RECRUITER_REJECT_JOB_APPLICATION_INTERVIEW;
                 interactionResult = " interview rejected";
@@ -2040,9 +2055,12 @@ public class JobPostWorkflowEngine {
                 jwType = InteractionConstants.INTERACTION_TYPE_RECRUITER_RESCHEDULE_JOB_APPLICATION_INTERVIEW;
                 interactionResult = " interview rescheduled";
 
-
                 InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", interviewStatusRequest.getRescheduledSlot()).findUnique();
                 sendInterviewReschedulingSms(jobPostWorkflowOld, candidate, date, interviewTimeSlot);
+
+                if(jobApplication != null && jobApplication.getPartner() != null){
+                    sendInterviewReschedulingSmsToPartner(jobPostWorkflowOld, candidate, date, interviewTimeSlot, jobApplication.getPartner());
+                }
             }
 
             // Setting the existing jobpostworkflow status to confirmed
@@ -2097,6 +2115,7 @@ public class JobPostWorkflowEngine {
             sendInterviewCandidateConfirmation(jobPostWorkflowOld, candidate);
             //sms to candidate
             sendInterviewConfirmationSms(jobPostWorkflowOld, candidate);
+
         } else if(value == ServerConstants.RESCHEULED_INTERVIEW_STATUS_REJECTED){ // reject
             interactionResult = " interview rejected by candidate";
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_REJECTS_RESCHEDULED_INTERVIEW;
