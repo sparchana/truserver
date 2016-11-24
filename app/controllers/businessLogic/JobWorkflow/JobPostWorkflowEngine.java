@@ -2153,7 +2153,7 @@ public class JobPostWorkflowEngine {
                 .findList();
 
         List<Candidate> candidateList = new ArrayList<>();
-        Integer status = ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED;
+        Integer status = ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED;
 
         Map<Long, CandidateWorkflowData> selectedCandidateMap = new LinkedHashMap<>();
 

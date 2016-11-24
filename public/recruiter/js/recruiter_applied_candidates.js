@@ -416,7 +416,7 @@ function processDataForJobApplications(returnedData) {
                         candidateInterviewStatusVal.style = "color: red; font-size: 14px; font-weight: 600";
                     }
                 } else{
-                    candidateInterviewStatusVal.textContent = "";
+                    candidateInterviewStatusVal.textContent = "No credits!";
                 }
             }
 
