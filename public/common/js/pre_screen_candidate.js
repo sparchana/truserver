@@ -253,6 +253,11 @@ function validateInput(idProofId, value) {
     };
     if(!$('input#idProofCheckbox_' + idProofId).is(':checked')) {
         return true;
+    } else if($('input#idProofValue_'+idProofId).val().trim() == ""){
+        $("#Invalid_" + idProofId).css("display", "block");
+        return false;
+    } else {
+        $("#Invalid_" + idProofId).css("display", "none");
     }
     console.log(idProofId + " " + value);
 
@@ -1401,12 +1406,22 @@ function submitPreScreen() {
                             item["idNumber"] = $('input#idProofValue_' + id).val().trim();
                         } else if (isChecked && !isValid) {
                             okToSubmit = false;
+                            $.notify("Please provide valid document details.", 'error');
                             console.log("doc not valid for id: " + id);
                         }
 
                         if (!jQuery.isEmptyObject(item)) {
                             documentList.push(item);
                         };
+
+                        if(!okToSubmit){
+                            var submit = {
+                                propId : propId,
+                                message: msg,
+                                submissionStatus: okToSubmit
+                            };
+                            okToSubmitList.push(submit);
+                        }
                     });
                 });
 
@@ -1418,14 +1433,7 @@ function submitPreScreen() {
                 //     $.notify("Please provide your document details", 'error');
                 //     okToSubmit = false;
                 // }
-                if(!okToSubmit){
-                    var submit = {
-                        propId : propId,
-                        message: msg,
-                        submissionStatus: okToSubmit
-                    };
-                    okToSubmitList.push(submit);
-                }
+
             } else if (propId == 1) {
                 var check;
                 var languageMap = [];

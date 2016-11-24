@@ -199,7 +199,7 @@ gulp.task('default', ['clean', 'scripts', 'styles', 'supportScripts', 'supportSt
         gulp.run('workFlowControllerScript');
     });
     // watch for preScreenCandidateScript solo js changes
-    gulp.watch(paths.supportJs+'*.js', function() {
+    gulp.watch(paths.commonJs+'*.js', function() {
         gulp.run('preScreenCandidateScript');
     });
 });
