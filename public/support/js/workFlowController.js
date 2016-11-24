@@ -281,7 +281,7 @@ function getIdProof(idProofList) {
 
 openPreScreenModal = function (mobile, candidateId) {
     // pass null to have default modal decorator
-    getPreScreenContent(jobPostId, candidateId, false, null, null);
+    getPreScreenContent(jobPostId, candidateId, false, null, null, true);
 };
 
 function showRadiusValue(value){

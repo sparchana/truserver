@@ -577,6 +577,9 @@ public class Application extends Controller {
                 String objAUUID = "";
                 if(session().get("candidateId") != null){
                     Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")). findUnique();
+                    if(candidate == null) {
+                        return badRequest();
+                    }
                     objAUUID = candidate.getCandidateUUId();
                 }
                 InteractionService.createInteractionForJobApplicationAttemptViaWebsite(
