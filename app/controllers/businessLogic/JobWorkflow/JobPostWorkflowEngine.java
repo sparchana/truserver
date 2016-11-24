@@ -2366,7 +2366,12 @@ public class JobPostWorkflowEngine {
 
         interviewFeedbackUpdate.save();
 
-        sendFeedbackSmsTocandidate(jobPostWorkflowNew);
+        if(jwStatus == ServerConstants.CANDIDATE_FEEDBACK_COMPLETE_SELECTED){
+            sendSelectedSmsToCandidate(jobPostWorkflowNew);
+        } else{
+            sendRejectedSmsToCandidate(jobPostWorkflowNew);
+        }
+
         return 1;
   }
 
@@ -2414,7 +2419,9 @@ public class JobPostWorkflowEngine {
         }
         candidateInterviewStatusUpdate.save();
 
-        updateRecruiterWithCandidateStatus(jobPostWorkflowOld, candidate, jwStatus);
+        if(jwStatus == ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
+            updateRecruiterWithCandidateStatus(jobPostWorkflowOld, candidate);
+        }
 
         return 1;
     }
