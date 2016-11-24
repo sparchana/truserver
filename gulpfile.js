@@ -160,7 +160,7 @@ gulp.task('preScreenCandidateScript', function() {
         .pipe(concat('pre_screen_candidate.min.js'))
         .pipe(gulpif(argv.prod, uglify(), beautify()))
         .pipe(gulpif(argv.prod, stripDebug()))
-        .pipe(gulp.dest('./public/build/support/'));
+        .pipe(gulp.dest('./public/build/scripts/'));
 });
 
 // default gulp task
