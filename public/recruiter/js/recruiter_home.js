@@ -296,7 +296,7 @@ function processDataUpdateFeedBack(returnedData) {
         }, 2000);
     } else if(returnedData == -1){
         notifyError("You are out of interview credits. Please purchase interview credits!");
-        openCreditModal()
+        openCreditModal();
     } else{
         notifyError("Something went wrong. Please try again later");
     }

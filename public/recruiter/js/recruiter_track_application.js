@@ -182,7 +182,6 @@ function processDataForJobApplications(returnedData) {
 
                 if((todayDay.getDate() == interviewDay) && ((todayDay.getMonth() + 1) == interviewMonth)){
                     if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 9)){
-                        console.log(value);
                         candidateCount ++;
 
                         var candidateCard = document.createElement("div");
@@ -1084,6 +1083,9 @@ function processDataUpdateFeedBack(returnedData) {
         setTimeout(function () {
             location.reload();
         }, 2000);
+    } else if(returnedData == -1){
+        notifyError("You are out of interview credits. Please purchase interview credits!");
+        openCreditModal();
     } else{
         notifyError("Something went wrong. Please try again later");
     }

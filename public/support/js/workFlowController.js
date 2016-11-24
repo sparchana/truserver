@@ -1649,6 +1649,8 @@ $(function () {
 
         //initiating range picker
         $('#rangePicker').daterangepicker({
+            startDate: moment(),
+            endDate: moment().add(7, 'days')
         }, function(start, end) {
             app.reshuffleConfirmedView(start, end);
         });

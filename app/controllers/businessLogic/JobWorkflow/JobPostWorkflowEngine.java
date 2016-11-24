@@ -2396,7 +2396,6 @@ public class JobPostWorkflowEngine {
         if(jobPostWorkflowOld == null) {
             return 0;
         }
-
         RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
                 .eq("RecruiterProfileId", jobPostWorkflowOld.getJobPost().getRecruiterProfile().getRecruiterProfileId())
                 .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
@@ -2412,16 +2411,31 @@ public class JobPostWorkflowEngine {
 
         Boolean toDeductCredit = false;
         Integer jwStatus;
+        Integer interactionType;
+        String interactionResult;
+
         if(addFeedbackRequest.getFeedbackStatus() == ServerConstants.CANDIDATE_FEEDBACK_COMPLETE_SELECTED){
             jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED;
+            interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_FEEDBACK_SELECTED;
+            interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_SELECTED;
+
             toDeductCredit = true;
         } else if(addFeedbackRequest.getFeedbackStatus() == ServerConstants.CANDIDATE_FEEDBACK_COMPLETE_REJECTED){
             jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_REJECTED;
+            interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_FEEDBACK_REJECTED;
+            interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_REJECTED;
+
             toDeductCredit = true;
         } else if(addFeedbackRequest.getFeedbackStatus() == ServerConstants.CANDIDATE_FEEDBACK_NO_SHOW){
             jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW;
+            interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_FEEDBACK_NO_SHOW;
+            interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_NO_SHOW;
+
         } else {
             jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED;
+            interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_FEEDBACK_NOT_QUALIFIED;
+            interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_NOT_QUALIFIED;
+
         }
 
         if(toDeductCredit){
@@ -2464,6 +2478,18 @@ public class JobPostWorkflowEngine {
             sendRejectedSmsToCandidate(jobPostWorkflowNew);
         }
 
+        Candidate candidate = Candidate.find.where().eq("candidateId", addFeedbackRequest.getCandidateId()).findUnique();
+
+        // save the interaction
+        InteractionService.createWorkflowInteraction(
+                jobPostWorkflowOld.getJobPostWorkflowUUId(),
+                candidate.getCandidateUUId(),
+                interactionType,
+                null,
+                interactionResult,
+                null
+        );
+
         return 1;
   }
 
@@ -2480,15 +2506,25 @@ public class JobPostWorkflowEngine {
         }
 
         Integer jwStatus;
+        Integer interactionType;
+        String interactionResult;
 
         if(val == ServerConstants.CANDIDATE_INTERVIEW_STATUS_NOT_GOING){
             jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING;
+            interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_STATUS_NOT_GOING;
+            interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_NOT_GOING;
         } else if(val == ServerConstants.CANDIDATE_INTERVIEW_STATUS_DELAYED){
             jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED;
+            interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_STATUS_DELAYED;
+            interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_DELAYED;
         } else if(val == ServerConstants.CANDIDATE_INTERVIEW_STATUS_STARTED){
             jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED;
+            interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_STATUS_STARTED;
+            interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_STARTED;
         } else {
             jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED;
+            interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_STATUS_REACHED;
+            interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_REACHED;
         }
 
         // Setting the existing jobpostworkflow status to confirmed
@@ -2514,6 +2550,16 @@ public class JobPostWorkflowEngine {
         if(jwStatus == ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
             updateRecruiterWithCandidateStatus(jobPostWorkflowOld, candidate);
         }
+
+        // save the interaction
+        InteractionService.createWorkflowInteraction(
+                jobPostWorkflowOld.getJobPostWorkflowUUId(),
+                candidate.getCandidateUUId(),
+                interactionType,
+                null,
+                interactionResult,
+                null
+        );
 
         return 1;
     }
