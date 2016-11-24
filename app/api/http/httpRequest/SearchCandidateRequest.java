@@ -15,6 +15,7 @@ public class SearchCandidateRequest {
     public Date fromThisDate;
     public Date toThisDate;
     public List<Integer> languageKnown;
+    public List<Integer> idProofs;
 
     public Date getFromThisDate() {
         return fromThisDate;
@@ -80,5 +81,13 @@ public class SearchCandidateRequest {
 
     public void setLanguageKnown(List<Integer> languageKnown) {
         this.languageKnown = languageKnown;
+    }
+
+    public List<Integer> getIdProofs() {
+        return idProofs;
+    }
+
+    public void setIdProofs(List<Integer> idProofs) {
+        this.idProofs = idProofs;
     }
 }

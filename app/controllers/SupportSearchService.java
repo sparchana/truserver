@@ -95,19 +95,26 @@ public class SupportSearchService {
         // TODO:check searchCandidateRequest member variable for special char, null value
         List<Integer> jobInterestIdList = searchCandidateRequest.candidateJobInterest;
         List<Integer> localityPreferenceIdList = searchCandidateRequest.candidateLocality;
+        List<Integer> idProofList = searchCandidateRequest.getIdProofs();
 
         Query<Candidate> query = Candidate.find.query();
 
-        if (jobInterestIdList != null && jobInterestIdList.get(0) != null) {
+        if (jobInterestIdList != null && !jobInterestIdList.isEmpty()) {
             query = query.select("*").fetch("jobPreferencesList")
                     .where()
                     .in("jobPreferencesList.jobRole.jobRoleId", jobInterestIdList)
                     .query();
         }
-        if (localityPreferenceIdList != null && localityPreferenceIdList.get(0) != null) {
+        if (localityPreferenceIdList != null && !localityPreferenceIdList.isEmpty()) {
             query = query.select("*").fetch("localityPreferenceList")
                     .where()
                     .in("localityPreferenceList.locality.localityId", localityPreferenceIdList)
+                    .query();
+        }
+        if (idProofList != null && !idProofList.isEmpty()) {
+            query = query.select("*").fetch("idProofReferenceList")
+                    .where()
+                    .in("idProofReferenceList.idProof.idProofId", idProofList)
                     .query();
         }
         if (searchCandidateRequest.getCandidateFirstName() != null && !searchCandidateRequest.getCandidateFirstName().isEmpty()) {

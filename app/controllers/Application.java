@@ -56,11 +56,6 @@ import java.util.stream.Collectors;
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static api.InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
 import static com.avaje.ebean.Expr.eq;
-import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForCandidateAcceptingRescheduledInterviewViaAndroid;
-import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForCandidateAcceptingRescheduledInterviewViaWebsite;
-import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForCandidateRejectingRescheduledInterviewViaWebsite;
-import static models.util.SmsUtil.sendInterviewCandidateConfirmation;
-import static models.util.SmsUtil.sendInterviewCandidateInterviewReject;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {

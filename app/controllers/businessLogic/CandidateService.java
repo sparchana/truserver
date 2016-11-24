@@ -10,8 +10,12 @@ import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
 import api.http.httpResponse.ResetPasswordResponse;
+import api.http.httpResponse.ongrid.OngridAadhaarVerificationResponse;
 import com.avaje.ebean.Query;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
+import controllers.businessLogic.ongrid.AadhaarService;
+import controllers.businessLogic.ongrid.OnGridConstants;
+import dao.staticdao.IdProofDAO;
 import models.entity.Auth;
 import models.entity.Candidate;
 import models.entity.Lead;
@@ -1436,23 +1440,93 @@ public class CandidateService
 
     // individual update service for pre-screen-edit
     public static void updateCandidateDocument(Candidate candidate, UpdateCandidateDocument updateCandidateDocument) {
-        List<IDProofReference> candidateIdProofList = new ArrayList<>();
-        List<Integer> idProofIdList = new ArrayList<>();
-        if(updateCandidateDocument.getIdProofWithIdNumberList() != null && updateCandidateDocument.getIdProofWithIdNumberList().size() > 0) {
-            for(UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber : updateCandidateDocument.getIdProofWithIdNumberList()) {
-                if(idProofWithIdNumber.getIdProofId() != null) idProofIdList.add(idProofWithIdNumber.getIdProofId());
-            }
-            Map<?, IdProof> idProofMap = IdProof.find.where().in("idProofId", idProofIdList).setMapKey("idProofId").findMap();
 
-            for(UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber : updateCandidateDocument.getIdProofWithIdNumberList()) {
-                IDProofReference idProofReference = new IDProofReference();
-                idProofReference.setCandidate(candidate);
-                idProofReference.setIdProof(idProofMap.get(idProofWithIdNumber.getIdProofId()));
-                idProofReference.setIdProofNumber(idProofWithIdNumber.getIdNumber());
-                candidateIdProofList.add(idProofReference);
+        // get candidate's existing idproof list
+        List<IDProofReference> existingIdProofList = candidate.getIdProofReferenceList();
+        Map<Integer, IDProofReference> existingIdProofIdToReference = new HashMap<Integer, IDProofReference>();
+        boolean isVerifyAadhaar = false;
+
+        // create a map of existing idproofid to idproofnumber
+        if (existingIdProofList != null && !existingIdProofList.isEmpty()) {
+            for (IDProofReference idProof : existingIdProofList) {
+                existingIdProofIdToReference.put(idProof.getIdProof().getIdProofId(), idProof);
             }
-            candidate.setIdProofReferenceList(candidateIdProofList);
-            candidate.update();
+        }
+
+        List<IDProofReference> newCandidateIdProofList = new ArrayList<>();
+        List<Integer> idProofIdList = new ArrayList<>();
+
+        if (updateCandidateDocument.getIdProofWithIdNumberList() != null
+                && updateCandidateDocument.getIdProofWithIdNumberList().size() > 0)
+        {
+            // Get a list of all ids of idproofs that this candidate update request contains
+            for (UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber :
+                    updateCandidateDocument.getIdProofWithIdNumberList())
+            {
+                if (idProofWithIdNumber.getIdProofId() != null) idProofIdList.add(idProofWithIdNumber.getIdProofId());
+            }
+
+            Map<?, IdProof> staticIdProofMap = new IdProofDAO().getIdToRecordMap(idProofIdList);
+
+            for (UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber :
+                    updateCandidateDocument.getIdProofWithIdNumberList())
+            {
+                // if the candidate already had details pertaining to this idproof, then update the record
+                if (existingIdProofIdToReference.containsKey(idProofWithIdNumber.getIdProofId())) {
+                    IDProofReference existingIdProofRef = existingIdProofIdToReference.get(idProofWithIdNumber.getIdProofId());
+
+                    if (existingIdProofRef.getIdProofNumber() == null
+                            || !existingIdProofRef.getIdProofNumber().equals(idProofWithIdNumber.getIdNumber()))
+                    {
+                        existingIdProofRef.setIdProofNumber(idProofWithIdNumber.getIdNumber());
+                        //newCandidateIdProofList.add(existingIdProofRef);
+                        existingIdProofRef.update();
+
+                        // if aadhaar details changed (and the number was not removed during the update), then
+                        // enable verification flag
+                        if (idProofWithIdNumber.getIdProofId() == IdProofDAO.IDPROOF_AADHAAR_ID
+                                && (idProofWithIdNumber.getIdNumber() != null || !idProofWithIdNumber.getIdNumber().isEmpty()))
+                        {
+                            isVerifyAadhaar = true;
+                        }
+                    }
+                }
+                // if this is the first time we are getting this idproof details for candidate, then create new record
+                else {
+                    IDProofReference idProofReference = new IDProofReference();
+                    idProofReference.setCandidate(candidate);
+                    idProofReference.setIdProof(staticIdProofMap.get(idProofWithIdNumber.getIdProofId()));
+                    idProofReference.setIdProofNumber(idProofWithIdNumber.getIdNumber());
+                    //newCandidateIdProofList.add(idProofReference);
+                    idProofReference.save();
+
+                    if (idProofWithIdNumber.getIdProofId() == IdProofDAO.IDPROOF_AADHAAR_ID) {
+                        isVerifyAadhaar = true;
+                    }
+                }
+            }
+
+            // iterate on ids that were removed and delete them
+            for (Integer idProofId : existingIdProofIdToReference.keySet()) {
+                if (!idProofIdList.contains(idProofId)) {
+                    // delete this entry
+                    existingIdProofIdToReference.get(idProofId).delete();
+                }
+            }
+
+            //candidate.setIdProofReferenceList(newCandidateIdProofList);
+            //candidate.update();
+
+            // if Aadhaar details were inserted or updated then lets send aadhaar verification request
+            if (isVerifyAadhaar) {
+                new Thread(() -> {
+                    AadhaarService aadhaarService = new AadhaarService(OnGridConstants.AUTH_STRING,
+                            OnGridConstants.COMMUNITY_ID);
+
+                    OngridAadhaarVerificationResponse response =
+                            aadhaarService.sendAadharSyncVerificationRequest(candidate);
+                }).start();
+            }
         }
     }
 
