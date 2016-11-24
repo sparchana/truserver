@@ -23,14 +23,14 @@ public class PartnerInteractionService {
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForPartnerLogin(String objectAUUId, InteractionService.InteractionChannelType channelType) {
+    public static void createInteractionForPartnerLogin(String objectAUUId, int channelType) {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_PARTNER,
                 InteractionConstants.INTERACTION_TYPE_PARTNER_LOG_IN,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 InteractionConstants.INTERACTION_RESULT_PARTNER_SIGNEDIN,
-                channelType.toString(),
+                InteractionConstants.INTERACTION_TYPE_MAP.get(channelType),
                 InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE
         );
         InteractionService.createInteraction(interaction);
@@ -49,14 +49,14 @@ public class PartnerInteractionService {
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForPartnerTriedToResetPassword(String objectAUUId, String result, InteractionService.InteractionChannelType channelType){
+    public static void createInteractionForPartnerTriedToResetPassword(String objectAUUId, String result, int channelType){
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_PARTNER,
                 InteractionConstants.INTERACTION_TYPE_PARTNER_TRIED_PASSWORD_RESET,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
-                channelType.toString() + "(Partner)",
+                InteractionConstants.INTERACTION_TYPE_MAP.get(channelType),
                 InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE
         );
         InteractionService.createInteraction(interaction);

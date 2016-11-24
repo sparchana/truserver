@@ -166,22 +166,6 @@ public class ServerConstants {
     public static Integer REC_SORT_SALARY_H_TO_L = 2;
     public static Integer REC_SORT_SALARY_L_TO_H = 3;
 
-    // its in sync with InteractionService.InteractionChannelType
-    public static final int SESSION_CHANNEL_CANDIDATE_WEBSITE = 1;
-    public static final int SESSION_CHANNEL_CANDIDATE_ANDROID_APP = 2;
-    public static final int SESSION_CHANNEL_SUPPORT_WEBSITE = 3;
-    public static final int SESSION_CHANNEL_KNOWLARITY = 4;
-    public static final int SESSION_CHANNEL_PARTNER_WEBSITE = 5;
-    public static final int SESSION_CHANNEL_RECRUITER_WEBSITE = 6;
-
-    // map is used to validate the incoming session Channel value
-    public static Map<Integer, Integer> sessionChannelMap = new HashMap<Integer, Integer>(){{
-       put(SESSION_CHANNEL_CANDIDATE_WEBSITE, SESSION_CHANNEL_CANDIDATE_WEBSITE);
-       put(SESSION_CHANNEL_SUPPORT_WEBSITE, SESSION_CHANNEL_SUPPORT_WEBSITE);
-       put(SESSION_CHANNEL_PARTNER_WEBSITE, SESSION_CHANNEL_PARTNER_WEBSITE);
-       put(SESSION_CHANNEL_RECRUITER_WEBSITE, SESSION_CHANNEL_RECRUITER_WEBSITE);
-
-    }};
     static {
         devTeamMobile = new HashMap<String, String>();
         devTeamMobile.put("Archana", "+918197222248");

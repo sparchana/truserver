@@ -803,6 +803,7 @@ public class JobPostWorkflowEngine {
                                     ExperienceValue jobPostMinMaxExp = getDurationFromExperience(jobPost.getJobPostExperience().getExperienceId());
                                     preScreenElement.jobPostElement=(new PreScreenPopulateResponse.PreScreenCustomObject(null,
                                             jobPost.getJobPostExperience().getExperienceType(), false));
+
                                     if(candidate.getCandidateTotalExperience() != null && jobPostMinMaxExp != null) {
                                         double totalExpInYrs= ((double)candidate.getCandidateTotalExperience())/12;
                                         preScreenElement.candidateElement = (new PreScreenPopulateResponse.PreScreenCustomObject(jobPost.getJobPostExperience(),
@@ -816,7 +817,14 @@ public class JobPostWorkflowEngine {
                                                 preScreenElement.isMatching = false;
                                             }
                                         }
-                                    } else {
+                                    } else if(jobPostMinMaxExp == null && jobPost.getJobPostExperience().getExperienceType().equalsIgnoreCase("any")){
+                                        preScreenElement.isMatching = true;
+                                        if(candidate.getCandidateTotalExperience() != null ) {
+                                            double totalExpInYrs= ((double)candidate.getCandidateTotalExperience())/12;
+                                            preScreenElement.candidateElement = (new PreScreenPopulateResponse.PreScreenCustomObject(jobPost.getJobPostExperience(),
+                                                    (Util.RoundTo2Decimals(totalExpInYrs)+ " Yrs"), true));
+                                        }
+                                    } else{
                                         // candidate exp is not available hence not a match
                                         preScreenElement.isMatching = false;
                                     }
@@ -1166,7 +1174,7 @@ public class JobPostWorkflowEngine {
         return isInterviewRequired(jobPostWorkflowNew.getJobPost());
     }
 
-    public static String isInterviewRequired( JobPost jobPost){
+    public static String isInterviewRequired( JobPost jobPost) {
         if(jobPost == null) {
             return "ERROR";
         }
@@ -1180,21 +1188,22 @@ public class JobPostWorkflowEngine {
                 .eq("recruiterProfile.recruiterProfileId", recruiterId)
                 .eq("recruiterCreditCategory.recruiterCreditCategoryId", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
                 .orderBy().desc("createTimestamp").setMaxRows(1).findUnique();
-        if(recruiterCreditHistory != null) {
-            if(recruiterCreditHistory.getRecruiterCreditCategory().getRecruiterCreditCategoryId()
-                    == ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK
-                    && recruiterCreditHistory.getRecruiterCreditsAvailable() > 0){
-                // When recruiter credit available then show Interview UI
-                validCount++;
-            }
+        if (recruiterCreditHistory != null &&
+                recruiterCreditHistory.getRecruiterCreditCategory().getRecruiterCreditCategoryId()
+                        == ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK
+                && recruiterCreditHistory.getRecruiterCreditsAvailable() > 0) {
+            // When recruiter credit available then show Interview UI
+            validCount++;
         }
-        if(jobPost.getInterviewDetailsList() != null && jobPost.getInterviewDetailsList().size() > 0){
+        if (jobPost.getInterviewDetailsList() != null && jobPost.getInterviewDetailsList().size() > 0) {
             // When slot available then  show Interview UI
             validCount++;
         }
-        if(validCount == 2){
+        if (validCount == 2){
+            Logger.info("show interview slot");
             return "INTERVIEW";
         }
+        Logger.info("dont show interview slot");
         return "OK";
     }
 
@@ -1694,6 +1703,7 @@ public class JobPostWorkflowEngine {
         if(experienceId == null ){
             return null;
         } else if (experienceId == 1){
+            // fresher
             experienceValue.minExperienceValue = 0;
             experienceValue.maxExperienceValue = 0; // in months
         } else if(experienceId == 2) {
@@ -1706,6 +1716,7 @@ public class JobPostWorkflowEngine {
             experienceValue.minExperienceValue = 48;
             experienceValue.maxExperienceValue = 72; // in months
         } else {
+            // any
             return null;
         }
 
@@ -1772,7 +1783,7 @@ public class JobPostWorkflowEngine {
                 jobPostWorkflowOld.setChannel(Integer.valueOf(session().get("sessionChannel")));
             } else{
                 jobPostWorkflowOld.setCreatedBy(ServerConstants.CREATED_BY);
-                jobPostWorkflowOld.setChannel(ServerConstants.SESSION_CHANNEL_CANDIDATE_WEBSITE);
+                jobPostWorkflowOld.setChannel(InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE);
             }
 
             jobPostWorkflowOld.setStatus(status);
@@ -2139,7 +2150,7 @@ public class JobPostWorkflowEngine {
         }
 
         if( session().get("sessionChannel") == null ||
-                ServerConstants.sessionChannelMap.get(Integer.valueOf(session().get("sessionChannel"))) == null) {
+                InteractionConstants.INTERACTION_TYPE_MAP.get(Integer.valueOf(session().get("sessionChannel"))) == null) {
             Logger.info("session channel not set");
             return null;
         }

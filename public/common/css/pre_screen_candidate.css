@@ -1,3 +1,7 @@
+#education_details{
+    padding:2% 3%;
+
+}
 #preScreenInterviewSetBtn{
     background: #09ac58;
     color:#fff;
@@ -81,7 +85,7 @@ li .open>.dropdown-menu{
     margin:40px auto;
 }
 #salary_details{
-    padding:2%;
+    padding:2% 3%;
 }
 @media screen and (max-width: 970px) {
     #preScreenModalBody{

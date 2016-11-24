@@ -38,7 +38,6 @@ function processDataApplyJob(returnedData, jobPostId, candidateId, isPartner) {
         // generate prescreen modal here
         if(!isPartner){
             openCandidatePreScreenModal(jobPostId, localStorage.getItem("mobile"));
-            console.log("success: generate modal");
         } else {
             $.notify("Please complete Job Application form", 'success');
             openPartnerPreScreenModal(jobPostId, candidateId);
@@ -87,7 +86,6 @@ function applyJobSubmitViaCandidate(id, localityId, prefTimeSlot, scheduledInter
         $("#myLoginModal").modal("show");
         $("#signInPopup").html("Sign In to Apply");
     } else{
-        console.log("shouldTriggerModal: "+triggerModal);
         if(triggerModal){
             console.log("opening prescreen modal for : " + id + " candidate: " + localStorage.getItem("mobile"));
                 openCandidatePreScreenModal(id, localStorage.getItem("mobile"));

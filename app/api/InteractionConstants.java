@@ -162,6 +162,7 @@ public class InteractionConstants {
 
     public static final Map<Integer, String> INTERACTION_CHANNEL = new HashMap<>();
 
+    public static final int INTERACTION_CHANNEL_UNKNOWN = 0;
     public static final int INTERACTION_CHANNEL_CANDIDATE_WEBSITE = 1;
     public static final int INTERACTION_CHANNEL_CANDIDATE_ANDROID = 2;
     public static final int INTERACTION_CHANNEL_PARTNER_WEBSITE = 3;
@@ -225,5 +226,6 @@ public class InteractionConstants {
         INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_PARTNER_WEBSITE, "Partner via Website");
         INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_SUPPORT_WEBSITE, "Support via Website");
         INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_KNOWLARITY, "Knowlarity");
+        INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_RECRUITER_WEBSITE, "Recruiter via Website");
     }
 }

@@ -11,8 +11,6 @@ function processJobPostInterviewSlot(returnedData, isSupport) {
     // document.getElementById("applyJobCandidateName").innerHTML = candidateInfo.candidateFirstName;
     jpTitle = returnedData.jobPostTitle;
     compName = returnedData.company.companyName;
-    console.log("title: " + jpTitle);
-    console.log("compName: " + compName);
     $("#jobTitle").html(returnedData.jobPostTitle);
     $("#compName").html(returnedData.company.companyName);
     var i;
@@ -202,7 +200,6 @@ function initInterviewModal(candidateId, jobPostId, isSupport) {
 }
 
 function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
-    console.log("rendering modal");
     var interviewDialog = bootbox.dialog({
         className: "interview-slot-selector-modal",
         title: title,
@@ -254,7 +251,6 @@ function finalInterviewSlotSubmission(candidateId, jobPostId) {
         };
         var base_api_url ="/support/api/updateCandidateInterviewDetail/";
         if(base_api_url == null || jobPostId == null) {
-            console.log("please provide candidateId && jobPostId");
             return
         } else {
             base_api_url +="?";
@@ -277,7 +273,6 @@ function finalInterviewSlotSubmission(candidateId, jobPostId) {
 }
 
 function processInterviewSubmissionResponse(returnData) {
-    console.log(returnData);
     // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
     if(returnData == "OK"){
         nfy("Interview Submitted successfully. Refreshing ..", 'success');

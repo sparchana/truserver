@@ -53,6 +53,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
+import static api.InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
 import static com.avaje.ebean.Expr.eq;
 import static play.libs.Json.toJson;
 
@@ -151,7 +153,7 @@ public class Application extends Controller {
                 ServerConstants.LEAD_SOURCE_UNKNOWN
         );
         lead.setLeadType(addLeadRequest.getLeadType());
-        LeadService.createLead(lead, InteractionService.InteractionChannelType.SELF);
+        LeadService.createLead(lead, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE);
         addLeadResponse.setStatus(AddLeadResponse.STATUS_SUCCESS);
         return ok(toJson(addLeadResponse));
     }
@@ -167,7 +169,7 @@ public class Application extends Controller {
             e.printStackTrace();
         }
 
-        InteractionService.InteractionChannelType channelType = InteractionService.InteractionChannelType.SELF;
+        int channelType = INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
         return ok(toJson(CandidateService.signUpCandidate(candidateSignUpRequest, channelType, ServerConstants.LEAD_SOURCE_UNKNOWN)));
     }
     @Security.Authenticated(PartnerSecured.class)
@@ -185,7 +187,7 @@ public class Application extends Controller {
             e.printStackTrace();
         }
         return ok(toJson(CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                InteractionService.InteractionChannelType.SUPPORT,
+                INTERACTION_CHANNEL_SUPPORT_WEBSITE,
                 ServerConstants.UPDATE_ALL_BY_SUPPORT)));
     }
 
@@ -201,7 +203,7 @@ public class Application extends Controller {
             e.printStackTrace();
         }
 
-        return ok(toJson(CandidateService.createCandidateProfile(addCandidateRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_BASIC_PROFILE)));
+        return ok(toJson(CandidateService.createCandidateProfile(addCandidateRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE, ServerConstants.UPDATE_BASIC_PROFILE)));
     }
 
     public static Result candidateUpdateExperienceDetails() {
@@ -214,7 +216,7 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(CandidateService.createCandidateProfile(addCandidateExperienceRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_SKILLS_PROFILE)));
+        return ok(toJson(CandidateService.createCandidateProfile(addCandidateExperienceRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE, ServerConstants.UPDATE_SKILLS_PROFILE)));
     }
 
     public static Result candidateUpdateEducationDetails() {
@@ -227,7 +229,7 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(CandidateService.createCandidateProfile(addCandidateEducationRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_EDUCATION_PROFILE)));
+        return ok(toJson(CandidateService.createCandidateProfile(addCandidateEducationRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE, ServerConstants.UPDATE_EDUCATION_PROFILE)));
     }
 
     public static Result addPassword() {
@@ -244,7 +246,7 @@ public class Application extends Controller {
         String userMobile = candidateSignUpRequest.getCandidateAuthMobile();
         String userPassword = candidateSignUpRequest.getCandidatePassword();
 
-        return ok(toJson(AuthService.savePassword(userMobile, userPassword, InteractionService.InteractionChannelType.SELF)));
+        return ok(toJson(AuthService.savePassword(userMobile, userPassword, INTERACTION_CHANNEL_CANDIDATE_WEBSITE)));
     }
 
     public static Result applyJob() throws IOException, JSONException {
@@ -260,7 +262,7 @@ public class Application extends Controller {
 
         if(session().get("sessionChannel") != null || !session().get("sessionChannel").isEmpty()){
             Integer channelId = Integer.parseInt(session().get("sessionChannel"));
-            InteractionService.InteractionChannelType channelType = Util.getChannelType(channelId);
+            int channelType = channelId == null ? InteractionConstants.INTERACTION_CHANNEL_UNKNOWN : channelId;
             return ok(toJson(JobService.applyJob(applyJobRequest, channelType)));
         } else {
             return badRequest();
@@ -279,7 +281,7 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(JobService.addJobPost(addJobPostRequest, InteractionService.InteractionChannelType.SUPPORT)));
+        return ok(toJson(JobService.addJobPost(addJobPostRequest, InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE)));
     }
 
     public static Result addCompanyLogo() {
@@ -309,7 +311,7 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(RecruiterService.createRecruiterProfile(recruiterSignUpRequest, InteractionService.InteractionChannelType.SUPPORT)));
+        return ok(toJson(RecruiterService.createRecruiterProfile(recruiterSignUpRequest, InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE)));
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -338,7 +340,7 @@ public class Application extends Controller {
         }
         String loginMobile = loginRequest.getCandidateLoginMobile();
         String loginPassword = loginRequest.getCandidateLoginPassword();
-        return ok(toJson(CandidateService.login(loginMobile, loginPassword, InteractionService.InteractionChannelType.SELF)));
+        return ok(toJson(CandidateService.login(loginMobile, loginPassword, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE)));
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -368,7 +370,7 @@ public class Application extends Controller {
         }
         String candidateMobile = resetPasswordResquest.getResetPasswordMobile();
 
-        return ok(toJson(CandidateService.findUserAndSendOtp(candidateMobile, InteractionService.InteractionChannelType.SELF)));
+        return ok(toJson(CandidateService.findUserAndSendOtp(candidateMobile, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE)));
     }
 
     public static Result processcsv() {
@@ -673,7 +675,7 @@ public class Application extends Controller {
                 session("sessionUserId", "" + developer.getDeveloperId());
                 session("sessionExpiry", String.valueOf(developer.getDeveloperSessionIdExpiryMillis()));
                 session("sessionRDPK", String.valueOf(developer.getDeveloperAccessLevel()));
-                session("sessionChannel", String.valueOf(ServerConstants.SESSION_CHANNEL_SUPPORT_WEBSITE));
+                session("sessionChannel", String.valueOf(InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE));
 
                 if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN) {
                     return redirect("/support/administrator");
@@ -2030,32 +2032,27 @@ public class Application extends Controller {
             newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
             UpdateCandidateDetail updateCandidateDetail = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateDetail.class);
-            String response = "";
             for(String propId: propertyIds){
                 Integer propertyId = Integer.parseInt(propId);
                 if (ServerConstants.PropertyType.DOCUMENT.ordinal() == propertyId) {
                     UpdateCandidateDocument updateCandidateDocument = new UpdateCandidateDocument();
                     updateCandidateDocument.setIdProofWithIdNumberList(updateCandidateDetail.getIdProofWithIdNumberList());
                     CandidateService.updateCandidateDocument(candidate, updateCandidateDocument);
-                    response = "ok";
                 } else if (ServerConstants.PropertyType.LANGUAGE.ordinal() == propertyId) {
                     UpdateCandidateLanguageKnown updateCandidateLanguageKnown = new UpdateCandidateLanguageKnown();
 
                     updateCandidateLanguageKnown.setCandidateKnownLanguageList(updateCandidateDetail.getCandidateKnownLanguageList());
                     CandidateService.updateCandidateLanguageKnown(candidate, updateCandidateLanguageKnown);
-                    response = "ok";
                 } else if (ServerConstants.PropertyType.ASSET_OWNED.ordinal() == propertyId) {
                     UpdateCandidateAsset updateCandidateAsset = new UpdateCandidateAsset();
                     updateCandidateAsset.setAssetIdList(updateCandidateDetail.getAssetIdList());
 
                     CandidateService.updateCandidateAssetOwned(candidate, updateCandidateAsset);
-                    response = "ok";
                 } else if (ServerConstants.PropertyType.MAX_AGE.ordinal() == propertyId) {
                     UpdateCandidateDob updateCandidateDob = new UpdateCandidateDob();
 
                     updateCandidateDob.setCandidateDob(updateCandidateDetail.getCandidateDob());
                     CandidateService.updateCandidateDOB(candidate, updateCandidateDob);
-                    response = "ok";
                 } else if (ServerConstants.PropertyType.EXPERIENCE.ordinal() == propertyId) {
                     UpdateCandidateWorkExperience updateCandidateWorkExperience = new UpdateCandidateWorkExperience();
 
@@ -2065,7 +2062,6 @@ public class Application extends Controller {
                     updateCandidateWorkExperience.setPastCompanyList(updateCandidateDetail.getPastCompanyList());
 
                     CandidateService.updateCandidateWorkExperience(candidate, updateCandidateWorkExperience);
-                    response = "ok";
                 } else if (ServerConstants.PropertyType.EDUCATION.ordinal() == propertyId) {
                     UpdateCandidateEducation updateCandidateEducation= new UpdateCandidateEducation();
 
@@ -2075,31 +2071,26 @@ public class Application extends Controller {
                     updateCandidateEducation.setCandidateEducationLevel(updateCandidateDetail.getCandidateEducationLevel());
 
                     CandidateService.updateCandidateEducation(candidate, updateCandidateEducation);
-                    response = "ok";
                 } else if (ServerConstants.PropertyType.GENDER.ordinal() == propertyId) {
                     UpdateCandidateGender updateCandidateGender = new UpdateCandidateGender();
 
                     updateCandidateGender.setCandidateGender(updateCandidateDetail.getCandidateGender());
                     CandidateService.updateCandidateGender(candidate, updateCandidateGender);
-                    response = "ok";
                 } else if (ServerConstants.PropertyType.SALARY.ordinal() == propertyId) {
                     UpdateCandidateLastWithdrawnSalary lastWithdrawnSalary = new UpdateCandidateLastWithdrawnSalary();
 
                     lastWithdrawnSalary.setCandidateLastWithdrawnSalary(updateCandidateDetail.getCandidateLastWithdrawnSalary());
                     CandidateService.updateCandidateLastWithdrawnSalary(candidate, lastWithdrawnSalary);
-                    response = "ok";
                 } else if (ServerConstants.PropertyType.LOCALITY.ordinal() == propertyId) {
                     UpdateCandidateHomeLocality updateCandidateHomeLocality = new UpdateCandidateHomeLocality();
 
                     updateCandidateHomeLocality.setCandidateHomeLocality(updateCandidateDetail.getCandidateHomeLocality());
                     CandidateService.updateCandidateHomeLocality(candidate, updateCandidateHomeLocality);
-                    response = "ok";
                 } else if (ServerConstants.PropertyType.WORK_SHIFT.ordinal() == propertyId) {
                     UpdateCandidateTimeShiftPreference timeShiftPreference= new UpdateCandidateTimeShiftPreference();
 
                     timeShiftPreference.setCandidateTimeShiftPref(updateCandidateDetail.getCandidateTimeShiftPref());
                     CandidateService.updateCandidateWorkshift(candidate, timeShiftPreference);
-                    response = "ok";
                 }
             }
 
@@ -2111,8 +2102,9 @@ public class Application extends Controller {
             preScreenRequest.setPass(true);
             preScreenRequest.setPreScreenIdList(new ArrayList<>());
             JobPostWorkflowEngine.savePreScreenResult(preScreenRequest);
+            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
 
-            return ok(response);
+            return ok(JobPostWorkflowEngine.isInterviewRequired(jobPost));
         }
         return badRequest();
     }

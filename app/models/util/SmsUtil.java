@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static api.ServerConstants.devTeamMobile;
 
 /**
@@ -78,9 +79,9 @@ public class SmsUtil {
 
     }
 
-    public static void sendOTPSms(int otp, String mobile, InteractionService.InteractionChannelType channelType) {
+    public static void sendOTPSms(int otp, String mobile, int channelType) {
         String msg = "Use OTP " + otp + " to register and start your job search. Welcome to www.Trujobs.in!";
-        if(channelType == InteractionService.InteractionChannelType.SELF){
+        if(channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
             msg += " Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
         }
         sendSms(mobile, msg);
@@ -91,18 +92,18 @@ public class SmsUtil {
         sendSms(mobile, msg);
     }
 
-    public static void sendResetPasswordOTPSms(int otp, String mobile, InteractionService.InteractionChannelType channelType) {
+    public static void sendResetPasswordOTPSms(int otp, String mobile, int channelType) {
         String msg = "Use OTP " + otp + " to reset your password. Welcome to www.Trujobs.in!";
-        if(channelType == InteractionService.InteractionChannelType.SELF){
+        if(channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
             msg += " Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
         }
         sendSms(mobile, msg);
     }
 
-    public static void sendJobApplicationSms(String candidateName, String jobTitle, String company, String mobile, String prescreenLocation, InteractionService.InteractionChannelType channelType) {
+    public static void sendJobApplicationSms(String candidateName, String jobTitle, String company, String mobile, String prescreenLocation, int channelType) {
         String msg = "Hi " + candidateName + ", you have applied to " + jobTitle + " job at " + company + " @" + prescreenLocation + ".  Please complete the assessment to maximize your chances of getting an interview call." +
                 "Call us at +91 8048039089 to know about the status of your job application. All the best! www.trujobs.in.";
-        if(channelType == InteractionService.InteractionChannelType.SELF){
+        if(channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
             msg += " Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
         }
         sendSms(mobile, msg);
