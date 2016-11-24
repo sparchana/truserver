@@ -964,7 +964,7 @@ $(function () {
                 }
 
                 var preScreenAttemptCount = function () {
-                    if (app.currentView == "pre_screen_view" || app.currentView == "pre_screen_completed_view" || app.currentView == "confirmed_interview_view" || app.currentView == "completed_interview_view" ) {
+                    if (app.currentView == "pre_screen_view" || app.currentView == "pre_screen_completed_view" || app.currentView == "confirmed_interview_view" || app.currentView == "completed_interview_view" || app.currentView == "pending_interview_schedule" ) {
                         if(newCandidate.extraData.preScreenCallAttemptCount == null) {
                             return "0";
                         } else {
@@ -1072,6 +1072,37 @@ $(function () {
                                 '<input style="margin-left: 6px" type="button" value="Update" onclick="updateStatus('+ newCandidate.candidate.candidateId + ')">';
                         }
 
+                        return candidateStatus;
+                    } else if(app.currentView == "pending_interview_schedule"){
+                        var candidateStatus;
+                        var availableCredits = 0;
+                        var interviewCreditCount = 0;
+                        if(jobPostInfo.recruiterProfile != null){
+                            if(jobPostInfo.recruiterProfile.recruiterCreditHistoryList != null){
+                                var creditHistoryList = jobPostInfo.recruiterProfile.recruiterCreditHistoryList;
+                                creditHistoryList.reverse();
+                                creditHistoryList.forEach(function (creditHistory){
+                                    try{
+                                        if(interviewCreditCount == 0){
+                                            if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
+                                                availableCredits = parseInt(creditHistory.recruiterCreditsAvailable);
+                                                interviewCreditCount = 1;
+                                            }
+                                        }
+
+                                        if(interviewCreditCount > 0){
+                                            return false;
+                                        }
+                                    } catch(err){}
+                                });
+
+                                if(availableCredits > 0){
+                                    candidateStatus = '<input style="margin-left: 6px" type="button" class="btn btn-primary" value="Schedule" onclick="initInterviewModal('+ newCandidate.candidate.candidateId + ', ' + jobPostId + ', '+ true + ')">';
+                                } else{
+                                    candidateStatus = "No interview credits with the Recruiter";
+                                }
+                            }
+                        }
                         return candidateStatus;
                     } else {
                         return "";
@@ -1424,6 +1455,24 @@ $(function () {
         }
     };
 
+    app.fetchPendingInterviewCandidate = function () {
+        NProgress.start();
+
+        var base_url = "/support/api/getPendingInterviewScheduleCandidates/?jpId=" + app.jpId;
+        try {
+            $.ajax({
+                type: "POST",
+                url: base_url,
+                data: false,
+                contentType: false,
+                processData: false,
+                success: app.updatePreScreenTable
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception.stack);
+        }
+    };
+
     app.fetchConfirmedInterviewCandidates = function () {
         NProgress.start();
 
@@ -1576,6 +1625,11 @@ $(function () {
         $('#pre_screen_view_drawer').removeClass("mdl-navigation__link--current").addClass("mdl-navigation__link--current");
         app.initPreScreenView();
         app.initJobCard();
+    } else if (app.currentView == "pending_interview_schedule") {
+        app.fetchPendingInterviewCandidate();
+        app.initJobCard();
+
+        $('#header_view_title').text("Pending interview schedule");
     } else if (app.currentView == "pre_screen_completed_view") {
         app.fetchPreScreenedCandidate();
         app.initJobCard();

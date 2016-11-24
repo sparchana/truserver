@@ -1199,13 +1199,74 @@ public class JobPostWorkflowEngine {
         return "OK";
     }
 
-    public static Map<Long, CandidateWorkflowData> getPreScreenedPassFailCandidates(Long jobPostId, Long status) {
+
+    public static Map<Long, CandidateWorkflowData> getPendingInterviewScheduleCandidates(Long jobPostId) {
+        String statusSql;
+        Integer jpwfStatus;
+
+        jpwfStatus = ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED;
+        statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED + ")) ";
+
+        StringBuilder workFlowQueryBuilder = new StringBuilder("select createdby, candidate_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
+                " where i.job_post_id " +
+                " = ('"+jobPostId+"') " +
+                statusSql+
+                " and creation_timestamp = " +
+                " (select max(creation_timestamp) from job_post_workflow " +
+                "       where i.candidate_id = job_post_workflow.candidate_id " +
+                "       and i.job_post_id = job_post_workflow.job_post_id) " +
+                " order by creation_timestamp desc ");
+
+        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
+                .columnMapping("creation_timestamp", "creationTimestamp")
+                .columnMapping("job_post_id", "jobPost.jobPostId")
+                .columnMapping("status_id", "status.statusId")
+                .columnMapping("candidate_id", "candidate.candidateId")
+                .columnMapping("createdby", "createdBy")
+                .create();
+
+        List<JobPostWorkflow> jobPostWorkflowList = Ebean.find(JobPostWorkflow.class)
+                .setRawSql(rawSql)
+                .findList();
+
+        List<Candidate> candidateList = new ArrayList<>();
+
+        Map<Long, CandidateWorkflowData> selectedCandidateMap = new LinkedHashMap<>();
+        // until view is not available over this table, this loop get the distinct candidate who
+        // got selected for a job post recently
+
+        for( JobPostWorkflow jpwf: jobPostWorkflowList) {
+            candidateList.add(jpwf.getCandidate());
+        }
+        // prep params for a jobPost
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+
+        List<JobPostToLocality> jobPostToLocalityList = jobPost.getJobPostToLocalityList();
+        List<Long> localityIdList = new ArrayList<>();
+        for (JobPostToLocality jobPostToLocality: jobPostToLocalityList) {
+            localityIdList.add(jobPostToLocality.getLocality().getLocalityId());
+        }
+
+        candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
+        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), jpwfStatus);
+
+        for ( Candidate candidate: candidateList) {
+            CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
+            candidateWorkflowData.setCandidate(candidate);
+            candidateWorkflowData.setExtraData(candidateExtraDataMap.get(candidate.getCandidateId()));
+            selectedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
+        }
+
+        return selectedCandidateMap;
+    }
+
+
+    public static Map<Long, CandidateWorkflowData> getAllPendingInterviewAndRescheduleConfirmation(Long jobPostId, Long status) {
         String statusSql;
         Integer jpwfStatus;
         if(status == 1){ //all
             jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED;
-            statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED + ", "
-                    + ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED + ", " + ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE+ ", "
+            statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED + ", " + ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE+ ", "
                     + ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT + ", " + ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE + ")) ";
         } else if(status == 2){
             jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED;
@@ -2224,6 +2285,16 @@ public class JobPostWorkflowEngine {
             interactionResult += jobPostWorkflowNew.getJobPost().getJobPostId() + ": " + jobPostWorkflowNew.getJobPost().getJobRole().getJobName() + "@" + jobPostWorkflowNew.getJobPost().getCompany().getCompanyName();
         }
 
+        // save the interaction
+        InteractionService.createWorkflowInteraction(
+                jobPostWorkflowOld.getJobPostWorkflowUUId(),
+                candidate.getCandidateUUId(),
+                InteractionConstants.INTERACTION_TYPE_CANDIDATE_INTERVIEW_SCHEDULED,
+                null,
+                interactionResult,
+                null
+        );
+
         if(jobPostWorkflowOld.getJobPost().getInterviewDetailsList() != null && jobPostWorkflowOld.getJobPost().getInterviewDetailsList().size() > 0){
             if(jobPostWorkflowOld.getJobPost().getInterviewDetailsList().get(0).getReviewApplication() != null
                     && jobPostWorkflowOld.getJobPost().getInterviewDetailsList().get(0).getReviewApplication() == 0){ // dont review applications, confirm it directly
@@ -2241,21 +2312,22 @@ public class JobPostWorkflowEngine {
                     candidateInterviewStatusUpdate.setJobPost(jobPostWorkflowOld.getJobPost());
                     candidateInterviewStatusUpdate.setCandidate(candidate);
 
+                    // save the interaction
+                    InteractionService.createWorkflowInteraction(
+                            jobPostWorkflowOld.getJobPostWorkflowUUId(),
+                            candidate.getCandidateUUId(),
+                            InteractionConstants.INTERACTION_TYPE_RECRUITER_ACCEPT_JOB_APPLICATION_INTERVIEW,
+                            null,
+                            interactionResult,
+                            null
+                    );
+
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }
 
-        // save the interaction
-        InteractionService.createWorkflowInteraction(
-                jobPostWorkflowOld.getJobPostWorkflowUUId(),
-                candidate.getCandidateUUId(),
-                InteractionConstants.INTERACTION_TYPE_CANDIDATE_INTERVIEW_SCHEDULED,
-                null,
-                interactionResult,
-                null
-        );
         return "OK";
     }
 

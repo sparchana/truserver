@@ -289,7 +289,7 @@ function processDataForJobApplications(returnedData) {
 
             innerInlineBlockDiv = document.createElement("div");
             innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px; margin-bottom: 6px";
-            innerInlineBlockDiv.textContent = "Interview Details (Action Needed)";
+            innerInlineBlockDiv.textContent = "Interview Details";
             if(actionNeeded){
                 innerInlineBlockDiv.style = "margin-left: 4px; color: red; font-size: 11px; font-weight: bold; margin-bottom: 6px";
                 innerInlineBlockDiv.textContent = "Interview Details (Action Needed)";

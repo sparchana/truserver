@@ -4,7 +4,6 @@ import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
-import api.http.httpRequest.Recruiter.InterviewStatusRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlotDetail;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
@@ -12,17 +11,13 @@ import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.SelectedCandidateRequest;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
-import com.amazonaws.services.importexport.model.Job;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
-import com.avaje.ebean.RawSql;
-import com.avaje.ebean.RawSqlBuilder;
 import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mysql.jdbc.log.Log;
 import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.*;
@@ -39,7 +34,6 @@ import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 import play.api.Play;
-import play.core.server.Server;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Http;
@@ -54,11 +48,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.avaje.ebean.Expr.eq;
-import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForCandidateAcceptingRescheduledInterviewViaAndroid;
-import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForCandidateAcceptingRescheduledInterviewViaWebsite;
-import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForCandidateRejectingRescheduledInterviewViaWebsite;
-import static models.util.SmsUtil.sendInterviewCandidateConfirmation;
-import static models.util.SmsUtil.sendInterviewCandidateInterviewReject;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
@@ -1591,6 +1580,8 @@ public class Application extends Controller {
                 return ok(views.html.match_candidate.render());
             case "pre_screen_view":
                 return ok(views.html.pre_screen.render());
+            case "pending_interview_schedule":
+                return ok(views.html.pending_interview_schedule.render());
             case "pre_screen_completed_view":
                 return ok(views.html.pre_screen_completed.render());
             case "confirmed_interview_view":
@@ -1793,8 +1784,14 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(SecuredUser.class)
+    public static Result getPendingInterviewScheduleCandidates(Long jobPostId) {
+        return ok(toJson(JobPostWorkflowEngine.getPendingInterviewScheduleCandidates(jobPostId)));
+    }
+
+
+    @Security.Authenticated(SecuredUser.class)
     public static Result getPreScreenedCandidate(Long jobPostId, Long status) {
-        return ok(toJson(JobPostWorkflowEngine.getPreScreenedPassFailCandidates(jobPostId, status)));
+        return ok(toJson(JobPostWorkflowEngine.getAllPendingInterviewAndRescheduleConfirmation(jobPostId, status)));
     }
 
     public static Result getConfirmedInterviewCandidates(Long jobPostId, String start, String end) {
