@@ -10,9 +10,9 @@ public class OngridAadhaarVerificationResponse {
     public static final int STATUS_SUCCESS = 1;
     public static final int STATUS_ERROR = 2;
     public static final int STATUS_TIMEDOUT = 3;
-    private int responseStatus = 1;
-    private String responseMessage = "";
-    private OnGridAadharResponse ongridResponse;
+    public int responseStatus = 1;
+    public String responseMessage = "";
+    public OnGridAadharResponse ongridResponse;
 
     /*public static class OnGridAadharResponse {
 

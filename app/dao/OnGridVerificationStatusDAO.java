@@ -12,15 +12,15 @@ public class OnGridVerificationStatusDAO {
 
     public static final int STATUS_VERIFIED = 5;
 
-    public static OnGridVerificationStatus getStatus(String statusName) {
+    public OnGridVerificationStatus getByName(String statusName) {
         return OnGridVerificationStatus.find.where().eq("statusName", statusName).findUnique();
     }
 
-    public static OnGridVerificationStatus getStatus(Integer statusID) {
+    public OnGridVerificationStatus getById(Integer statusID) {
         return OnGridVerificationStatus.find.where().eq("statusId", statusID).findUnique();
     }
 
-    public static List<OnGridVerificationStatus> getAllStatus() {
+    public List<OnGridVerificationStatus> getAllStatus() {
         return OnGridVerificationStatus.find.all();
     }
 }

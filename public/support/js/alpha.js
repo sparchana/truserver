@@ -138,7 +138,6 @@ function constructTableForProfileCompletionScores (rows) {
              tdata.addColumn('string', "Creation Date");
              tdata.addColumn('number', "Profile Completion Score");
              tdata.addColumn('string', "Aadhaar Number");
-             tdata.addColumn('string', "Aadhaar Verification Status");
              tdata.addColumn('string', "Aadhaar Verification - Name");
              tdata.addColumn('string', "Aadhaar Verification - Mobile");
              tdata.addColumn('string', "Aadhaar Verification - DOB");
@@ -157,7 +156,6 @@ function constructTableForProfileCompletionScores (rows) {
              googleRowOneRow.push(new Date(candidate.candidateCreateTimestamp).toLocaleDateString());
              googleRowOneRow.push(candidate.profileCompletionScore);
              googleRowOneRow.push(getAadhaarNumber(candidate));
-             googleRowOneRow.push(verificationMap["isAadhaarVerified"]);
              googleRowOneRow.push(verificationMap["Name"]);
              googleRowOneRow.push(verificationMap["Phone"]);
              googleRowOneRow.push(verificationMap["DOB"]);
@@ -178,7 +176,7 @@ function constructTableForProfileCompletionScores (rows) {
              $('#csv_profile-completion-scoring_table_div').append(a);
 
              var table = new google.visualization.Table(document.getElementById(tableDivId ));
-             table.draw(tdata, {showRowNumber: true, width: '100%', height: '100%'});
+             table.draw(tdata, {showRowNumber: true, allowHtml: true, width: '100%', height: '100%'});
 
              $("#profile-tab-spinner").removeClass("is-active");
              pushToSnackbar("Profile completion scores fetched Successfully !!");
@@ -603,7 +601,6 @@ function getVerificationStatus(candidate) {
 
     var verificationList = candidate.candidateVerificationList;
     var resultMap = new Object();
-    resultMap["isAadhaarVerified"] = "N/A";
     resultMap["Name"] = "N/A";
     resultMap["Phone"] = "N/A";
     resultMap["DOB"] = "N/A";

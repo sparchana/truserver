@@ -14,6 +14,7 @@ import api.http.httpResponse.ongrid.OngridAadhaarVerificationResponse;
 import com.avaje.ebean.Query;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
 import controllers.businessLogic.ongrid.AadhaarService;
+import controllers.businessLogic.ongrid.OnGridConstants;
 import dao.staticdao.IdProofDAO;
 import models.entity.Auth;
 import models.entity.Candidate;
@@ -1465,7 +1466,7 @@ public class CandidateService
                 if (idProofWithIdNumber.getIdProofId() != null) idProofIdList.add(idProofWithIdNumber.getIdProofId());
             }
 
-            Map<?, IdProof> staticIdProofMap = IdProofDAO.getIdProofRecordList(idProofIdList);
+            Map<?, IdProof> staticIdProofMap = new IdProofDAO().getIdToRecordMap(idProofIdList);
 
             for (UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber :
                     updateCandidateDocument.getIdProofWithIdNumberList())
@@ -1519,7 +1520,11 @@ public class CandidateService
             // if Aadhaar details were inserted or updated then lets send aadhaar verification request
             if (isVerifyAadhaar) {
                 new Thread(() -> {
-                    OngridAadhaarVerificationResponse response = AadhaarService.sendAadharSyncVerificationRequest(candidate);
+                    AadhaarService aadhaarService = new AadhaarService(OnGridConstants.AUTH_STRING,
+                            OnGridConstants.COMMUNITY_ID);
+
+                    OngridAadhaarVerificationResponse response =
+                            aadhaarService.sendAadharSyncVerificationRequest(candidate);
                 }).start();
             }
         }

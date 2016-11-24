@@ -15,6 +15,7 @@ import models.entity.ongrid.transactional.OngridRequestStats;
 import models.entity.ongrid.transactional.OngridVerificationResults;
 import okhttp3.*;
 import play.Logger;
+import play.api.Play;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -27,8 +28,6 @@ import java.util.Map;
  */
 public class AadhaarService {
 
-    private static final int COMMUNITY_ID = 66095;
-    private static final String AUTH_STRING = "dHJ1am9iczo4RFI4TkdoTHh3cjBBWmZBd3BHaU0rTGwwM3JqRkhZVHQ2NU04aWdXVm1yM09PVyttamJLVFpmYUpXeHI1RnNW";
     private static final String VERIFICATION_TYPE = "AadhaarSync";
 
     private static final String SDF_FORMAT_YYYYMMDD = "yyyy-MM-dd";
@@ -55,10 +54,20 @@ public class AadhaarService {
     public static final String AA_ADDRESS_PIN = "\"pincod\"";
     public static final String AA_COMMUNITY_ID = "\"communityid\"";
 
-    private static Map<String, OnGridVerificationStatus> statusNameToStatusRecord =
+    private static Map<String, OnGridVerificationStatus> myStatusNameToStatusRecord =
             new HashMap<String, OnGridVerificationStatus>();
+    private OnGridVerificationStatusDAO myStatusDAO = new OnGridVerificationStatusDAO();
 
-    public static OngridAadhaarVerificationResponse sendAadharSyncVerificationRequest(Candidate candidate)
+    private String myAuthKey;
+    private Integer myCommunityId;
+
+    public AadhaarService(String authKey, Integer communityId)
+    {
+        myAuthKey = authKey;
+        myCommunityId = communityId;
+    }
+
+    public OngridAadhaarVerificationResponse sendAadharSyncVerificationRequest(Candidate candidate)
     {
         OngridAadhaarVerificationResponse response = new OngridAadhaarVerificationResponse();
 
@@ -100,7 +109,7 @@ public class AadhaarService {
         while (trialCount <= 3) {
             try {
                 trialCount++;
-                responseBody = sendRequest(reqParams, aadhaarUID);
+                responseBody = sendRequest(reqParams, aadhaarUID, myAuthKey);
                 //responseBody = onGridResponse.body().string();
                 break;
             } catch (IOException ioEx) {
@@ -122,7 +131,7 @@ public class AadhaarService {
         OnGridAadharResponse onGridAadharResponse = parseVerificationResponse(responseBody);
         response.setOngridResponse(onGridAadharResponse);
 
-        saveVerificationResponse(candidate, onGridAadharResponse);
+        saveVerificationResponse(candidate, onGridAadharResponse, myCommunityId);
 
         Logger.info("Parsed response: " + response.getOngridResponse().toString());
 
@@ -132,7 +141,7 @@ public class AadhaarService {
         return response;
     }
 
-    private static String constructRequestParams(Candidate candidate)
+    private String constructRequestParams(Candidate candidate)
     {
         Long professionId = null;
 
@@ -184,7 +193,7 @@ public class AadhaarService {
         return reqBuilder.toString();
     }
 
-    private static String sendRequest(String reqParams, String aadhaarUID) throws IOException
+    private String sendRequest(String reqParams, String aadhaarUID, String authKey) throws IOException
     {
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json");
@@ -198,7 +207,7 @@ public class AadhaarService {
                 .url(url)
                 .post(body)
                 .addHeader("content-type", "application/json")
-                .addHeader("authorization", "Basic " + AUTH_STRING)
+                .addHeader("authorization", "Basic " + authKey)
                 .build();
 
         Logger.info("Request: " + request.toString() + " \n Response Body: " + request.body().toString()
@@ -219,7 +228,7 @@ public class AadhaarService {
         return responseBody;
     }
 
-    private static OnGridAadharResponse parseVerificationResponse(String ongridVerificationResponse)
+    private OnGridAadharResponse parseVerificationResponse(String ongridVerificationResponse)
     {
         ObjectMapper newMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -237,12 +246,12 @@ public class AadhaarService {
         return parsedResponse;
     }
 
-    private static void saveVerificationResponse(Candidate candidate, OnGridAadharResponse ongridResponse)
+    private void saveVerificationResponse(Candidate candidate, OnGridAadharResponse ongridResponse, Integer communityId)
     {
         // check if the candidate already has verification results
         Map<OnGridVerificationFields, OngridVerificationResults> existingResults =
                 OngridVerificationResults.find.where().eq("candidate.candidateId",
-                        candidate.getCandidateId()).findMap("ongridFieldId", OnGridVerificationFields.class);
+                        candidate.getCandidateId()).findMap("ongridField", OnGridVerificationFields.class);
 
         // Get mapping of current verification status
         Map<OnGridVerificationFields, OnGridVerificationStatus> newResults = getFieldToResponseMap(ongridResponse);
@@ -277,7 +286,7 @@ public class AadhaarService {
                 OngridVerificationResults newResult = new OngridVerificationResults(candidate,
                         field,
                         status,
-                        Long.valueOf(COMMUNITY_ID),
+                        Long.valueOf(communityId),
                         Long.valueOf(ongridResponse.getIndividualId()));
 
                 newResult.save();
@@ -285,7 +294,7 @@ public class AadhaarService {
         }
     }
 
-    private static Map<OnGridVerificationFields, OnGridVerificationStatus>
+    private Map<OnGridVerificationFields, OnGridVerificationStatus>
     getFieldToResponseMap(OnGridAadharResponse ongridResponse)
     {
         Map<OnGridVerificationFields, OnGridVerificationStatus> fieldToVerificationStatus =
@@ -309,11 +318,11 @@ public class AadhaarService {
         return fieldToVerificationStatus;
     }
 
-    private static OnGridVerificationStatus getStatusRecord(String statusName) {
+    private OnGridVerificationStatus getStatusRecord(String statusName) {
 
-        OnGridVerificationStatus status = statusNameToStatusRecord.get(statusName);
+        OnGridVerificationStatus status = myStatusNameToStatusRecord.get(statusName);
         if (status == null) {
-            status = OnGridVerificationStatusDAO.getStatus(statusName);
+            status = myStatusDAO.getByName(statusName);
             if (status == null) {
                 Logger.error("Status not found on ongrid_verification_status table for value: " + statusName);
                 throw new RuntimeException("FATAL: Status not found on ongrid_verification_status table for value: " + statusName);

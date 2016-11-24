@@ -12,9 +12,8 @@ import java.util.Map;
  */
 public class OnGridAadharResponse {
 
-    /*@JsonIgnore
-    public Map<Method, OnGridVerificationFields> myResponseToFieldMap =
-            new HashMap<Method, OnGridVerificationFields>();*/
+    @JsonIgnore
+    private OnGridVerificationFieldsDAO myFieldsDao = new OnGridVerificationFieldsDAO();
 
     @JsonIgnore
     public Map<OnGridVerificationFields, String> myFieldToStatusMap =
@@ -222,42 +221,42 @@ public class OnGridAadharResponse {
     public Map<OnGridVerificationFields, String> getMyFieldToStatusMap() {
 
         myFieldToStatusMap.put(
-                OnGridVerificationFieldsDAO.getField(OnGridVerificationFieldsDAO.ONGRID_VERIFICATION_FIELD_NAME),
+                myFieldsDao.getById(OnGridVerificationFieldsDAO.ONGRID_VERIFICATION_FIELD_NAME),
                         getName()
         );
 
         myFieldToStatusMap.put(
-                OnGridVerificationFieldsDAO.getField(OnGridVerificationFieldsDAO.ONGRID_VERIFICATION_FIELD_AGE),
+                myFieldsDao.getById(OnGridVerificationFieldsDAO.ONGRID_VERIFICATION_FIELD_AGE),
                 getAge()
         );
 
         myFieldToStatusMap.put(
-                OnGridVerificationFieldsDAO.getField(OnGridVerificationFieldsDAO.ONGRID_VERIFICATION_FIELD_PHONE),
+                myFieldsDao.getById(OnGridVerificationFieldsDAO.ONGRID_VERIFICATION_FIELD_PHONE),
                 getPhone()
         );
 
         myFieldToStatusMap.put(
-                OnGridVerificationFieldsDAO.getField(OnGridVerificationFieldsDAO.ONGRID_VERIFICATION_FIELD_DOB),
+                myFieldsDao.getById(OnGridVerificationFieldsDAO.ONGRID_VERIFICATION_FIELD_DOB),
                 getDob()
         );
 
         myFieldToStatusMap.put(
-                OnGridVerificationFieldsDAO.getField(OnGridVerificationFieldsDAO.ONGRID_VERIFICATION_FIELD_AGE),
+                myFieldsDao.getById(OnGridVerificationFieldsDAO.ONGRID_VERIFICATION_FIELD_AGE),
                 getAge()
         );
 
         myFieldToStatusMap.put(
-                OnGridVerificationFieldsDAO.getField(OnGridVerificationFieldsDAO.ONGRID_VERIFICATION_FIELD_CITY),
+                myFieldsDao.getById(OnGridVerificationFieldsDAO.ONGRID_VERIFICATION_FIELD_CITY),
                 getVtc()
         );
 
         myFieldToStatusMap.put(
-                OnGridVerificationFieldsDAO.getField(OnGridVerificationFieldsDAO.ONGRID_VERIFICATION_FIELD_GENDER),
+                myFieldsDao.getById(OnGridVerificationFieldsDAO.ONGRID_VERIFICATION_FIELD_GENDER),
                 getGender()
         );
 
         myFieldToStatusMap.put(
-                OnGridVerificationFieldsDAO.getField(OnGridVerificationFieldsDAO.ONGRID_VERIFICATION_FIELD_EMAIL),
+                myFieldsDao.getById(OnGridVerificationFieldsDAO.ONGRID_VERIFICATION_FIELD_EMAIL),
                 getEmail()
         );
 

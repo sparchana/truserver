@@ -21,11 +21,11 @@ public class OnGridVerificationFieldsDAO {
     public static final int ONGRID_VERIFICATION_FIELD_GENDER = 9;
     public static final int ONGRID_VERIFICATION_FIELD_EMAIL = 10;
 
-    public static OnGridVerificationFields getField(int fieldId) {
+    public OnGridVerificationFields getById(int fieldId) {
         return OnGridVerificationFields.find.where().eq("fieldId", fieldId).findUnique();
     }
 
-    public static List<OnGridVerificationFields> getAllFields() {
+    public List<OnGridVerificationFields> getAll() {
         return OnGridVerificationFields.find.all();
     }
 }

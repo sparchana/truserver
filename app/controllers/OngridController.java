@@ -3,10 +3,13 @@ package controllers;
 import api.http.httpResponse.ongrid.OngridAadhaarVerificationResponse;
 import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.ongrid.AadhaarService;
+import controllers.businessLogic.ongrid.OnGridConstants;
 import models.entity.Candidate;
 import okhttp3.*;
 import play.Logger;
+import play.api.Play;
 import play.mvc.Result;
+import static play.libs.Json.toJson;
 
 import java.io.IOException;
 
@@ -16,16 +19,15 @@ import static play.mvc.Results.ok;
  * Created by archana on 11/16/16.
  */
 public class OngridController {
-    public static Result sendOnGridAadharRequest() {
 
-        Candidate candidate = CandidateService.isCandidateExists("+918197222248");
+    public static Result sendOnGridAadharRequest(String candidateMobile) {
 
-        OngridAadhaarVerificationResponse response = AadhaarService.sendAadharSyncVerificationRequest(candidate);
+        Candidate candidate = CandidateService.isCandidateExists(candidateMobile);
+        AadhaarService aadhaarService = new AadhaarService(OnGridConstants.AUTH_STRING, OnGridConstants.COMMUNITY_ID);
 
-        Logger.info("STATUS: " + response.getResponseStatus() + " MESSAGE: " + response.getResponseMessage());
+        OngridAadhaarVerificationResponse response = aadhaarService.sendAadharSyncVerificationRequest(candidate);
 
-        return ok("1");
-
+        return ok(toJson(response));
     }
 
     public static Result sendOnGridOnboardingRequest() {
