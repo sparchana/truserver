@@ -1685,11 +1685,15 @@ function submitPreScreen() {
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(d),
                     success: function (returnedData) {
-                        if(returnedData == "ok"){
+                        console.log(returnedData);
+                        if(returnedData == "INTERVIEW"){
                             $("#preScreenModal").modal('hide');
                             initInterviewModal(candidateId, jobPostId, isSupport);
+                        } else if(returnedData == "OK") {
+                            $("#preScreenModal").modal('hide');
+                            $.notify("Successfully Submitted Application form. Thanks !", 'success');
                         } else {
-                            $.notify("Something went wrong. Please try again", 'error');
+                            $.notify("Something went wrong. Please try again !", 'success');
                         }
                     }
                 });

@@ -1200,8 +1200,10 @@ public class JobPostWorkflowEngine {
             validCount++;
         }
         if (validCount == 2){
+            Logger.info("show interview slot");
             return "INTERVIEW";
         }
+        Logger.info("dont show interview slot");
         return "OK";
     }
 

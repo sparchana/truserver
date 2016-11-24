@@ -2037,32 +2037,27 @@ public class Application extends Controller {
             newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
             UpdateCandidateDetail updateCandidateDetail = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateDetail.class);
-            String response = "";
             for(String propId: propertyIds){
                 Integer propertyId = Integer.parseInt(propId);
                 if (ServerConstants.PropertyType.DOCUMENT.ordinal() == propertyId) {
                     UpdateCandidateDocument updateCandidateDocument = new UpdateCandidateDocument();
                     updateCandidateDocument.setIdProofWithIdNumberList(updateCandidateDetail.getIdProofWithIdNumberList());
                     CandidateService.updateCandidateDocument(candidate, updateCandidateDocument);
-                    response = "ok";
                 } else if (ServerConstants.PropertyType.LANGUAGE.ordinal() == propertyId) {
                     UpdateCandidateLanguageKnown updateCandidateLanguageKnown = new UpdateCandidateLanguageKnown();
 
                     updateCandidateLanguageKnown.setCandidateKnownLanguageList(updateCandidateDetail.getCandidateKnownLanguageList());
                     CandidateService.updateCandidateLanguageKnown(candidate, updateCandidateLanguageKnown);
-                    response = "ok";
                 } else if (ServerConstants.PropertyType.ASSET_OWNED.ordinal() == propertyId) {
                     UpdateCandidateAsset updateCandidateAsset = new UpdateCandidateAsset();
                     updateCandidateAsset.setAssetIdList(updateCandidateDetail.getAssetIdList());
 
                     CandidateService.updateCandidateAssetOwned(candidate, updateCandidateAsset);
-                    response = "ok";
                 } else if (ServerConstants.PropertyType.MAX_AGE.ordinal() == propertyId) {
                     UpdateCandidateDob updateCandidateDob = new UpdateCandidateDob();
 
                     updateCandidateDob.setCandidateDob(updateCandidateDetail.getCandidateDob());
                     CandidateService.updateCandidateDOB(candidate, updateCandidateDob);
-                    response = "ok";
                 } else if (ServerConstants.PropertyType.EXPERIENCE.ordinal() == propertyId) {
                     UpdateCandidateWorkExperience updateCandidateWorkExperience = new UpdateCandidateWorkExperience();
 
@@ -2072,7 +2067,6 @@ public class Application extends Controller {
                     updateCandidateWorkExperience.setPastCompanyList(updateCandidateDetail.getPastCompanyList());
 
                     CandidateService.updateCandidateWorkExperience(candidate, updateCandidateWorkExperience);
-                    response = "ok";
                 } else if (ServerConstants.PropertyType.EDUCATION.ordinal() == propertyId) {
                     UpdateCandidateEducation updateCandidateEducation= new UpdateCandidateEducation();
 
@@ -2082,31 +2076,26 @@ public class Application extends Controller {
                     updateCandidateEducation.setCandidateEducationLevel(updateCandidateDetail.getCandidateEducationLevel());
 
                     CandidateService.updateCandidateEducation(candidate, updateCandidateEducation);
-                    response = "ok";
                 } else if (ServerConstants.PropertyType.GENDER.ordinal() == propertyId) {
                     UpdateCandidateGender updateCandidateGender = new UpdateCandidateGender();
 
                     updateCandidateGender.setCandidateGender(updateCandidateDetail.getCandidateGender());
                     CandidateService.updateCandidateGender(candidate, updateCandidateGender);
-                    response = "ok";
                 } else if (ServerConstants.PropertyType.SALARY.ordinal() == propertyId) {
                     UpdateCandidateLastWithdrawnSalary lastWithdrawnSalary = new UpdateCandidateLastWithdrawnSalary();
 
                     lastWithdrawnSalary.setCandidateLastWithdrawnSalary(updateCandidateDetail.getCandidateLastWithdrawnSalary());
                     CandidateService.updateCandidateLastWithdrawnSalary(candidate, lastWithdrawnSalary);
-                    response = "ok";
                 } else if (ServerConstants.PropertyType.LOCALITY.ordinal() == propertyId) {
                     UpdateCandidateHomeLocality updateCandidateHomeLocality = new UpdateCandidateHomeLocality();
 
                     updateCandidateHomeLocality.setCandidateHomeLocality(updateCandidateDetail.getCandidateHomeLocality());
                     CandidateService.updateCandidateHomeLocality(candidate, updateCandidateHomeLocality);
-                    response = "ok";
                 } else if (ServerConstants.PropertyType.WORK_SHIFT.ordinal() == propertyId) {
                     UpdateCandidateTimeShiftPreference timeShiftPreference= new UpdateCandidateTimeShiftPreference();
 
                     timeShiftPreference.setCandidateTimeShiftPref(updateCandidateDetail.getCandidateTimeShiftPref());
                     CandidateService.updateCandidateWorkshift(candidate, timeShiftPreference);
-                    response = "ok";
                 }
             }
 
@@ -2118,8 +2107,9 @@ public class Application extends Controller {
             preScreenRequest.setPass(true);
             preScreenRequest.setPreScreenIdList(new ArrayList<>());
             JobPostWorkflowEngine.savePreScreenResult(preScreenRequest);
+            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
 
-            return ok(response);
+            return ok(JobPostWorkflowEngine.isInterviewRequired(jobPost));
         }
         return badRequest();
     }
