@@ -29,13 +29,13 @@ import javax.persistence.NonUniqueResultException;
 import java.sql.Timestamp;
 import java.util.*;
 
+import static api.InteractionConstants.*;
 import static controllers.businessLogic.InteractionService.*;
 import static controllers.businessLogic.LeadService.createOrUpdateConvertedLead;
 import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 
-import controllers.businessLogic.InteractionService.InteractionChannelType;
 
 /**
  * Created by batcoder1 on 3/5/16.
@@ -85,7 +85,7 @@ public class CandidateService
     }
 
     public static CandidateSignUpResponse signUpCandidate(CandidateSignUpRequest candidateSignUpRequest,
-                                                          InteractionChannelType channelType,
+                                                          int channelType,
                                                           int leadSourceId) {
         List<Integer> localityList = new ArrayList<>();
         localityList.add(candidateSignUpRequest.getCandidateHomeLocality());
@@ -133,7 +133,7 @@ public class CandidateService
                 candidateSignUpResponse = createNewCandidate(candidate, lead);
 
                 // triggers when candidate is self created
-                if(channelType == InteractionChannelType.SELF_ANDROID || channelType == InteractionChannelType.SELF){
+                if(channelType == INTERACTION_CHANNEL_CANDIDATE_ANDROID || channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
                     triggerOtp(candidate, candidateSignUpResponse, channelType);
                 }
 
@@ -157,7 +157,7 @@ public class CandidateService
                     }
 
                     // triggers when candidate is self created
-                    if(channelType == InteractionChannelType.SELF_ANDROID || channelType == InteractionChannelType.SELF){
+                    if(channelType == INTERACTION_CHANNEL_CANDIDATE_ANDROID || channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
                         triggerOtp(candidate, candidateSignUpResponse, channelType);
                     }
                     interactionTypeVal = InteractionConstants.INTERACTION_TYPE_EXISTING_CANDIDATE_TRIED_SIGNUP;
@@ -174,10 +174,10 @@ public class CandidateService
             }
 
             // Insert Interaction only for self sign up as interaction for sign up support will be handled in createCandidateProfile
-            if(channelType == InteractionChannelType.SELF){
+            if(channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
                 // candidate sign up via website
                 createInteractionForSignUpCandidateViaWebsite(objectAUUId, result, interactionTypeVal);
-            } else if(channelType == InteractionChannelType.SELF_ANDROID) {
+            } else if(channelType == INTERACTION_CHANNEL_CANDIDATE_ANDROID) {
                 // candidate sign up via partner
                 createInteractionForSignUpCandidateViaAndroid(objectAUUId, result, interactionTypeVal);
             }
@@ -202,7 +202,7 @@ public class CandidateService
      * @return
      */
     public static CandidateSignUpResponse createCandidateProfile(AddCandidateRequest request,
-                                                                 InteractionChannelType channelType,
+                                                                 int channelType,
                                                                  int profileUpdateFlag) {
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         // get candidateBasic obj from req
@@ -358,10 +358,10 @@ public class CandidateService
         // check if we have auth record for this candidate. if we dont have, create one with a temporary password
         Auth auth = AuthService.isAuthExists(candidate.getCandidateId());
         if (auth == null) {
-            if(channelType == InteractionChannelType.SUPPORT || channelType == InteractionChannelType.PARTNER){
+            if(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE || channelType == INTERACTION_CHANNEL_PARTNER_WEBSITE){
                 // TODO: differentiate between in/out call
                 Boolean isSupport = false;
-                if(channelType == InteractionChannelType.SUPPORT){
+                if(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE){
                     isSupport = true;
                 }
                 createAndSaveDummyAuthFor(candidate, isSupport);
@@ -378,12 +378,12 @@ public class CandidateService
          *  Finally creating respective interaction according to the case
          */
 
-        if(channelType == InteractionChannelType.SUPPORT || channelType == InteractionChannelType.PARTNER){
+        if(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE || channelType == INTERACTION_CHANNEL_PARTNER_WEBSITE){
             // update additional fields that are part of the support request
             updateOthersBySupport(candidate, request);
             AddSupportCandidateRequest supportCandidateRequest = (AddSupportCandidateRequest) request;
 
-            if(channelType == InteractionChannelType.SUPPORT){
+            if(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE){
                 createdBy = session().get("sessionUsername");
                 interactionNote = supportCandidateRequest.getSupportNote();
                 if(isNewCandidate) {
@@ -429,7 +429,7 @@ public class CandidateService
                 interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_PROFILE_UPDATE;
             }
 
-            if(channelType == InteractionChannelType.SELF_ANDROID){
+            if(channelType == INTERACTION_CHANNEL_CANDIDATE_ANDROID){
                 InteractionService.createInteractionForCreateCandidateProfileViaAndroidByCandidate(objAUUId, objBUUId, objBType,
                         interactionType, interactionNote, interactionResult);
             } else{
@@ -867,7 +867,7 @@ public class CandidateService
         return languageKnownList;
     }
 
-    private static void triggerOtp(Candidate candidate, CandidateSignUpResponse candidateSignUpResponse, InteractionService.InteractionChannelType channelType) {
+    private static void triggerOtp(Candidate candidate, CandidateSignUpResponse candidateSignUpResponse, int channelType) {
         int randomPIN = generateOtp();
         SmsUtil.sendOTPSms(randomPIN, candidate.getCandidateMobile(), channelType);
 
@@ -1037,7 +1037,7 @@ public class CandidateService
         return response;
     }
 */
-    public static LoginResponse login(String loginMobile, String loginPassword, InteractionChannelType channelType){
+    public static LoginResponse login(String loginMobile, String loginPassword, int channelType){
         LoginResponse loginResponse = new LoginResponse();
         Logger.info(" login mobile: " + loginMobile);
         Candidate existingCandidate = CandidateService.isCandidateExists(loginMobile);
@@ -1103,7 +1103,7 @@ public class CandidateService
                     /* adding session details */
                     AuthService.addSession(existingAuth,existingCandidate);
                     existingAuth.update();
-                    if(channelType == InteractionChannelType.SELF){
+                    if(channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
                         InteractionService.createInteractionForLoginCandidateViaWebsite(existingCandidate.getCandidateUUId());
                     } else{
                         InteractionService.createInteractionForLoginCandidateViaAndroid(existingCandidate.getCandidateUUId());
@@ -1123,7 +1123,7 @@ public class CandidateService
         return loginResponse;
     }
 
-    public static ResetPasswordResponse findUserAndSendOtp(String candidateMobile, InteractionChannelType channelType){
+    public static ResetPasswordResponse findUserAndSendOtp(String candidateMobile, int channelType){
         ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
         Candidate existingCandidate = isCandidateExists(candidateMobile);
         if(existingCandidate != null){
@@ -1140,7 +1140,7 @@ public class CandidateService
                 String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_RESET_PASSWORD;
                 String objAUUID = "";
                 objAUUID = existingCandidate.getCandidateUUId();
-                if (channelType == InteractionChannelType.SELF) {
+                if (channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE) {
                     InteractionService.createInteractionForResetPasswordAttemptViaWebsite(objAUUID, interactionResult);
                 } else{
                     InteractionService.createInteractionForResetPasswordAttemptViaAndroid(objAUUID, interactionResult);

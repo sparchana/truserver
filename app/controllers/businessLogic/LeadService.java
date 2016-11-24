@@ -12,6 +12,7 @@ import play.Logger;
 import javax.persistence.NonUniqueResultException;
 import java.util.List;
 
+import static api.InteractionConstants.*;
 import static play.mvc.Controller.session;
 
 /**
@@ -29,7 +30,7 @@ public class LeadService {
         }
     }
 
-    public static Lead createOrUpdateConvertedLead(String leadName, String leadMobile, int leadSourceId, InteractionService.InteractionChannelType channelType, LeadType leadType){
+    public static Lead createOrUpdateConvertedLead(String leadName, String leadMobile, int leadSourceId, int channelType, LeadType leadType){
         Lead existingLead = isLeadExists(leadMobile);
         int leadTypeVal = 0;
         if(leadType == LeadType.CANDIDATE){
@@ -65,22 +66,22 @@ public class LeadService {
         return existingLead;
     }
 
-    public static int getLeadChannel(InteractionService.InteractionChannelType channelType) {
+    public static int getLeadChannel(int channelType) {
         int response = ServerConstants.LEAD_CHANNEL_UNKNOWN;
         switch (channelType){
-            case SELF:
+            case INTERACTION_CHANNEL_CANDIDATE_WEBSITE:
                 response = ServerConstants.LEAD_CHANNEL_WEBSITE;
                 break;
-            case SELF_ANDROID:
+            case INTERACTION_CHANNEL_CANDIDATE_ANDROID:
                 response = ServerConstants.LEAD_CHANNEL_ANDROID;
                 break;
-            case SUPPORT:
+            case INTERACTION_CHANNEL_SUPPORT_WEBSITE:
                 response = ServerConstants.LEAD_CHANNEL_SUPPORT;
                 break;
-            case KNOWLARITY:
+            case INTERACTION_CHANNEL_KNOWLARITY:
                 response = ServerConstants.LEAD_CHANNEL_KNOWLARITY;
                 break;
-            case PARTNER:
+            case INTERACTION_CHANNEL_PARTNER_WEBSITE:
                 response = ServerConstants.LEAD_CHANNEL_PARTNER;
                 break;
             default:
@@ -108,7 +109,7 @@ public class LeadService {
         return null;
     }
 
-    public static void createLead(Lead lead, InteractionService.InteractionChannelType channelType){
+    public static void createLead(Lead lead, int channelType){
         Lead existingLead = isLeadExists(FormValidator.convertToIndianMobileFormat(lead.getLeadMobile()));
         String objectAUUId;
         String result;
@@ -117,22 +118,22 @@ public class LeadService {
         int interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_NEW_LEAD;
         int objectAType;
         String createdBy;
-        if(channelType == InteractionService.InteractionChannelType.SUPPORT) {
+        if(channelType == InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE) {
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_NEW_LEAD;
             createdBy = session().get("sessionUsername");
             channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
-        } else if(channelType == InteractionService.InteractionChannelType.PARTNER) {
+        } else if(channelType == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE) {
             interactionType = InteractionConstants.INTERACTION_TYPE_PARTNER_NEW_LEAD;
             createdBy = InteractionConstants.INTERACTION_CREATED_PARTNER;
             channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
-        } else if(channelType == InteractionService.InteractionChannelType.SELF_ANDROID){
-            createdBy = channelType.toString();
+        } else if(channelType == INTERACTION_CHANNEL_CANDIDATE_ANDROID){
+            createdBy = InteractionConstants.INTERACTION_TYPE_MAP.get(InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
             channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
-        } else if(channelType == InteractionService.InteractionChannelType.KNOWLARITY) {
-            createdBy = channelType.toString();
+        } else if(channelType == InteractionConstants.INTERACTION_CHANNEL_KNOWLARITY) {
+            createdBy = InteractionConstants.INTERACTION_TYPE_MAP.get(InteractionConstants.INTERACTION_CHANNEL_KNOWLARITY);
             channel = InteractionConstants.INTERACTION_CHANNEL_KNOWLARITY;
         } else {
-            createdBy = channelType.toString();
+            createdBy = InteractionConstants.INTERACTION_TYPE_MAP.get(InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE);
             channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
         }
         if(existingLead == null) {

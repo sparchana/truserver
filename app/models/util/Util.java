@@ -1,5 +1,6 @@
 package models.util;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import controllers.businessLogic.InteractionService;
 import play.Logger;
@@ -77,43 +78,5 @@ public class Util {
     public static Double RoundTo2Decimals(Double val) {
         DecimalFormat df2 = new DecimalFormat("##.##");
         return Double.valueOf(df2.format(val));
-    }
-
-    public static InteractionService.InteractionChannelType getChannelType(int channelId) {
-        InteractionService.InteractionChannelType channelType = InteractionService.InteractionChannelType.UNKNOWN;
-        switch (channelId) {
-            case ServerConstants.SESSION_CHANNEL_CANDIDATE_WEBSITE:
-                channelType = InteractionService.InteractionChannelType.SELF;
-                break;
-            case ServerConstants.SESSION_CHANNEL_CANDIDATE_ANDROID_APP:
-                channelType = InteractionService.InteractionChannelType.SELF_ANDROID;
-                break;
-            case ServerConstants.SESSION_CHANNEL_SUPPORT_WEBSITE:
-                channelType = InteractionService.InteractionChannelType.SUPPORT;
-                break;
-            case ServerConstants.SESSION_CHANNEL_KNOWLARITY:
-                channelType = InteractionService.InteractionChannelType.KNOWLARITY;
-                break;
-            case ServerConstants.SESSION_CHANNEL_PARTNER_WEBSITE:
-                channelType = InteractionService.InteractionChannelType.PARTNER;
-                break;
-            case ServerConstants.SESSION_CHANNEL_RECRUITER_WEBSITE:
-                channelType = InteractionService.InteractionChannelType.RECRUITER;
-                break;
-            case 33: // this takes care of old support session_channel values also update the current session
-                // TODO: remove this 33, 77, 111 after 30 days from deployment.
-                channelType = InteractionService.InteractionChannelType.SUPPORT;
-                session().put("sessionChannel", String.valueOf(ServerConstants.SESSION_CHANNEL_SUPPORT_WEBSITE));
-                break;
-            case 77: // this takes care of old partner session_channel values also update the current session
-                channelType = InteractionService.InteractionChannelType.PARTNER;
-                session().put("sessionChannel", String.valueOf(ServerConstants.SESSION_CHANNEL_PARTNER_WEBSITE));
-                break;
-            case 111: // this takes care of old recruiter session_channel values also update the current session
-                channelType = InteractionService.InteractionChannelType.RECRUITER;
-                session().put("sessionChannel", String.valueOf(ServerConstants.SESSION_CHANNEL_RECRUITER_WEBSITE));
-                break;
-        }
-        return channelType;
     }
 }

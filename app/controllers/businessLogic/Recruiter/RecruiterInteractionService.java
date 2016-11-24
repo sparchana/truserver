@@ -53,14 +53,14 @@ public class RecruiterInteractionService {
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForRecruiterProfileUpdate(String uuId, String result, InteractionService.InteractionChannelType channelType){
+    public static void createInteractionForRecruiterProfileUpdate(String uuId, String result, int channelType){
         Interaction interaction = new Interaction(
                 uuId,
                 ServerConstants.OBJECT_TYPE_RECRUTER,
                 InteractionConstants.INTERACTION_TYPE_RECRUITER_PROFILE_UPDATE,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
-                channelType.toString(),
+                InteractionConstants.INTERACTION_TYPE_MAP.get(channelType),
                 InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE
         );
         InteractionService.createInteraction(interaction);

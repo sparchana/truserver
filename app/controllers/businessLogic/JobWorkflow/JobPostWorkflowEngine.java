@@ -1772,7 +1772,7 @@ public class JobPostWorkflowEngine {
                 jobPostWorkflowOld.setChannel(Integer.valueOf(session().get("sessionChannel")));
             } else{
                 jobPostWorkflowOld.setCreatedBy(ServerConstants.CREATED_BY);
-                jobPostWorkflowOld.setChannel(ServerConstants.SESSION_CHANNEL_CANDIDATE_WEBSITE);
+                jobPostWorkflowOld.setChannel(InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE);
             }
 
             jobPostWorkflowOld.setStatus(status);
@@ -2139,7 +2139,7 @@ public class JobPostWorkflowEngine {
         }
 
         if( session().get("sessionChannel") == null ||
-                ServerConstants.sessionChannelMap.get(Integer.valueOf(session().get("sessionChannel"))) == null) {
+                InteractionConstants.INTERACTION_TYPE_MAP.get(Integer.valueOf(session().get("sessionChannel"))) == null) {
             Logger.info("session channel not set");
             return null;
         }

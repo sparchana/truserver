@@ -32,7 +32,7 @@ public class PartnerAuthService {
         session("sessionExpiry", String.valueOf(partnerAuth.getAuthSessionIdExpiryMillis()));
     }
 
-    public static PartnerSignUpResponse savePassword(String mobile, String password, InteractionService.InteractionChannelType channelType){
+    public static PartnerSignUpResponse savePassword(String mobile, String password, int channelType){
         PartnerSignUpResponse partnerSignUpResponse = new PartnerSignUpResponse();
 
         Logger.info("to check: " + mobile);
@@ -112,7 +112,7 @@ public class PartnerAuthService {
         session().put("partnerMobile", String.valueOf(partner.getPartnerMobile()));
         session().put("leadId", String.valueOf(partner.getLead().getLeadId()));
         session().put("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
-        session().put("sessionChannel", String.valueOf(ServerConstants.SESSION_CHANNEL_PARTNER_WEBSITE));
+        session().put("sessionChannel", String.valueOf(InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE));
         session().put("sessionUsername", partner.getPartnerFirstName());
         Logger.info("set-sessionId"+ session().get("sessionId"));
     }
