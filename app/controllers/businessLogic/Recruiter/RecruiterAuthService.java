@@ -1,5 +1,6 @@
 package controllers.businessLogic.Recruiter;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpResponse.CandidateSignUpResponse;
@@ -112,7 +113,7 @@ public class RecruiterAuthService {
         session().put("recruiterMobile", String.valueOf(recruiterProfile.getRecruiterProfileMobile()));
         session().put("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
         session().put("sessionUsername", String.valueOf(recruiterProfile.getRecruiterProfileName() + "_recruiter"));
-        session().put("sessionChannel", String.valueOf(ServerConstants.SESSION_CHANNEL_RECRUITER_WEBSITE));
+        session().put("sessionChannel", String.valueOf(InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE));
         Logger.info("set-sessionId"+ session().get("sessionId"));
     }
 }

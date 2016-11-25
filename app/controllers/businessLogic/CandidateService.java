@@ -10,8 +10,12 @@ import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
 import api.http.httpResponse.ResetPasswordResponse;
+import api.http.httpResponse.ongrid.OngridAadhaarVerificationResponse;
 import com.avaje.ebean.Query;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
+import controllers.businessLogic.ongrid.AadhaarService;
+import controllers.businessLogic.ongrid.OnGridConstants;
+import dao.staticdao.IdProofDAO;
 import models.entity.Auth;
 import models.entity.Candidate;
 import models.entity.Lead;
@@ -29,13 +33,13 @@ import javax.persistence.NonUniqueResultException;
 import java.sql.Timestamp;
 import java.util.*;
 
+import static api.InteractionConstants.*;
 import static controllers.businessLogic.InteractionService.*;
 import static controllers.businessLogic.LeadService.createOrUpdateConvertedLead;
 import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 
-import controllers.businessLogic.InteractionService.InteractionChannelType;
 
 /**
  * Created by batcoder1 on 3/5/16.
@@ -85,7 +89,7 @@ public class CandidateService
     }
 
     public static CandidateSignUpResponse signUpCandidate(CandidateSignUpRequest candidateSignUpRequest,
-                                                          InteractionChannelType channelType,
+                                                          int channelType,
                                                           int leadSourceId) {
         List<Integer> localityList = new ArrayList<>();
         localityList.add(candidateSignUpRequest.getCandidateHomeLocality());
@@ -133,7 +137,7 @@ public class CandidateService
                 candidateSignUpResponse = createNewCandidate(candidate, lead);
 
                 // triggers when candidate is self created
-                if(channelType == InteractionChannelType.SELF_ANDROID || channelType == InteractionChannelType.SELF){
+                if(channelType == INTERACTION_CHANNEL_CANDIDATE_ANDROID || channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
                     triggerOtp(candidate, candidateSignUpResponse, channelType);
                 }
 
@@ -157,7 +161,7 @@ public class CandidateService
                     }
 
                     // triggers when candidate is self created
-                    if(channelType == InteractionChannelType.SELF_ANDROID || channelType == InteractionChannelType.SELF){
+                    if(channelType == INTERACTION_CHANNEL_CANDIDATE_ANDROID || channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
                         triggerOtp(candidate, candidateSignUpResponse, channelType);
                     }
                     interactionTypeVal = InteractionConstants.INTERACTION_TYPE_EXISTING_CANDIDATE_TRIED_SIGNUP;
@@ -174,10 +178,10 @@ public class CandidateService
             }
 
             // Insert Interaction only for self sign up as interaction for sign up support will be handled in createCandidateProfile
-            if(channelType == InteractionChannelType.SELF){
+            if(channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
                 // candidate sign up via website
                 createInteractionForSignUpCandidateViaWebsite(objectAUUId, result, interactionTypeVal);
-            } else if(channelType == InteractionChannelType.SELF_ANDROID) {
+            } else if(channelType == INTERACTION_CHANNEL_CANDIDATE_ANDROID) {
                 // candidate sign up via partner
                 createInteractionForSignUpCandidateViaAndroid(objectAUUId, result, interactionTypeVal);
             }
@@ -202,7 +206,7 @@ public class CandidateService
      * @return
      */
     public static CandidateSignUpResponse createCandidateProfile(AddCandidateRequest request,
-                                                                 InteractionChannelType channelType,
+                                                                 int channelType,
                                                                  int profileUpdateFlag) {
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         // get candidateBasic obj from req
@@ -358,10 +362,10 @@ public class CandidateService
         // check if we have auth record for this candidate. if we dont have, create one with a temporary password
         Auth auth = AuthService.isAuthExists(candidate.getCandidateId());
         if (auth == null) {
-            if(channelType == InteractionChannelType.SUPPORT || channelType == InteractionChannelType.PARTNER){
+            if(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE || channelType == INTERACTION_CHANNEL_PARTNER_WEBSITE){
                 // TODO: differentiate between in/out call
                 Boolean isSupport = false;
-                if(channelType == InteractionChannelType.SUPPORT){
+                if(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE){
                     isSupport = true;
                 }
                 createAndSaveDummyAuthFor(candidate, isSupport);
@@ -378,12 +382,12 @@ public class CandidateService
          *  Finally creating respective interaction according to the case
          */
 
-        if(channelType == InteractionChannelType.SUPPORT || channelType == InteractionChannelType.PARTNER){
+        if(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE || channelType == INTERACTION_CHANNEL_PARTNER_WEBSITE){
             // update additional fields that are part of the support request
             updateOthersBySupport(candidate, request);
             AddSupportCandidateRequest supportCandidateRequest = (AddSupportCandidateRequest) request;
 
-            if(channelType == InteractionChannelType.SUPPORT){
+            if(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE){
                 createdBy = session().get("sessionUsername");
                 interactionNote = supportCandidateRequest.getSupportNote();
                 if(isNewCandidate) {
@@ -429,7 +433,7 @@ public class CandidateService
                 interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_PROFILE_UPDATE;
             }
 
-            if(channelType == InteractionChannelType.SELF_ANDROID){
+            if(channelType == INTERACTION_CHANNEL_CANDIDATE_ANDROID){
                 InteractionService.createInteractionForCreateCandidateProfileViaAndroidByCandidate(objAUUId, objBUUId, objBType,
                         interactionType, interactionNote, interactionResult);
             } else{
@@ -867,7 +871,7 @@ public class CandidateService
         return languageKnownList;
     }
 
-    private static void triggerOtp(Candidate candidate, CandidateSignUpResponse candidateSignUpResponse, InteractionService.InteractionChannelType channelType) {
+    private static void triggerOtp(Candidate candidate, CandidateSignUpResponse candidateSignUpResponse, int channelType) {
         int randomPIN = generateOtp();
         SmsUtil.sendOTPSms(randomPIN, candidate.getCandidateMobile(), channelType);
 
@@ -1037,7 +1041,7 @@ public class CandidateService
         return response;
     }
 */
-    public static LoginResponse login(String loginMobile, String loginPassword, InteractionChannelType channelType){
+    public static LoginResponse login(String loginMobile, String loginPassword, int channelType){
         LoginResponse loginResponse = new LoginResponse();
         Logger.info(" login mobile: " + loginMobile);
         Candidate existingCandidate = CandidateService.isCandidateExists(loginMobile);
@@ -1103,7 +1107,7 @@ public class CandidateService
                     /* adding session details */
                     AuthService.addSession(existingAuth,existingCandidate);
                     existingAuth.update();
-                    if(channelType == InteractionChannelType.SELF){
+                    if(channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
                         InteractionService.createInteractionForLoginCandidateViaWebsite(existingCandidate.getCandidateUUId());
                     } else{
                         InteractionService.createInteractionForLoginCandidateViaAndroid(existingCandidate.getCandidateUUId());
@@ -1123,7 +1127,7 @@ public class CandidateService
         return loginResponse;
     }
 
-    public static ResetPasswordResponse findUserAndSendOtp(String candidateMobile, InteractionChannelType channelType){
+    public static ResetPasswordResponse findUserAndSendOtp(String candidateMobile, int channelType){
         ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
         Candidate existingCandidate = isCandidateExists(candidateMobile);
         if(existingCandidate != null){
@@ -1140,7 +1144,7 @@ public class CandidateService
                 String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_RESET_PASSWORD;
                 String objAUUID = "";
                 objAUUID = existingCandidate.getCandidateUUId();
-                if (channelType == InteractionChannelType.SELF) {
+                if (channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE) {
                     InteractionService.createInteractionForResetPasswordAttemptViaWebsite(objAUUID, interactionResult);
                 } else{
                     InteractionService.createInteractionForResetPasswordAttemptViaAndroid(objAUUID, interactionResult);
@@ -1436,23 +1440,93 @@ public class CandidateService
 
     // individual update service for pre-screen-edit
     public static void updateCandidateDocument(Candidate candidate, UpdateCandidateDocument updateCandidateDocument) {
-        List<IDProofReference> candidateIdProofList = new ArrayList<>();
-        List<Integer> idProofIdList = new ArrayList<>();
-        if(updateCandidateDocument.getIdProofWithIdNumberList() != null && updateCandidateDocument.getIdProofWithIdNumberList().size() > 0) {
-            for(UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber : updateCandidateDocument.getIdProofWithIdNumberList()) {
-                if(idProofWithIdNumber.getIdProofId() != null) idProofIdList.add(idProofWithIdNumber.getIdProofId());
-            }
-            Map<?, IdProof> idProofMap = IdProof.find.where().in("idProofId", idProofIdList).setMapKey("idProofId").findMap();
 
-            for(UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber : updateCandidateDocument.getIdProofWithIdNumberList()) {
-                IDProofReference idProofReference = new IDProofReference();
-                idProofReference.setCandidate(candidate);
-                idProofReference.setIdProof(idProofMap.get(idProofWithIdNumber.getIdProofId()));
-                idProofReference.setIdProofNumber(idProofWithIdNumber.getIdNumber());
-                candidateIdProofList.add(idProofReference);
+        // get candidate's existing idproof list
+        List<IDProofReference> existingIdProofList = candidate.getIdProofReferenceList();
+        Map<Integer, IDProofReference> existingIdProofIdToReference = new HashMap<Integer, IDProofReference>();
+        boolean isVerifyAadhaar = false;
+
+        // create a map of existing idproofid to idproofnumber
+        if (existingIdProofList != null && !existingIdProofList.isEmpty()) {
+            for (IDProofReference idProof : existingIdProofList) {
+                existingIdProofIdToReference.put(idProof.getIdProof().getIdProofId(), idProof);
             }
-            candidate.setIdProofReferenceList(candidateIdProofList);
-            candidate.update();
+        }
+
+        List<IDProofReference> newCandidateIdProofList = new ArrayList<>();
+        List<Integer> idProofIdList = new ArrayList<>();
+
+        if (updateCandidateDocument.getIdProofWithIdNumberList() != null
+                && updateCandidateDocument.getIdProofWithIdNumberList().size() > 0)
+        {
+            // Get a list of all ids of idproofs that this candidate update request contains
+            for (UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber :
+                    updateCandidateDocument.getIdProofWithIdNumberList())
+            {
+                if (idProofWithIdNumber.getIdProofId() != null) idProofIdList.add(idProofWithIdNumber.getIdProofId());
+            }
+
+            Map<?, IdProof> staticIdProofMap = new IdProofDAO().getIdToRecordMap(idProofIdList);
+
+            for (UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber :
+                    updateCandidateDocument.getIdProofWithIdNumberList())
+            {
+                // if the candidate already had details pertaining to this idproof, then update the record
+                if (existingIdProofIdToReference.containsKey(idProofWithIdNumber.getIdProofId())) {
+                    IDProofReference existingIdProofRef = existingIdProofIdToReference.get(idProofWithIdNumber.getIdProofId());
+
+                    if (existingIdProofRef.getIdProofNumber() == null
+                            || !existingIdProofRef.getIdProofNumber().equals(idProofWithIdNumber.getIdNumber()))
+                    {
+                        existingIdProofRef.setIdProofNumber(idProofWithIdNumber.getIdNumber());
+                        //newCandidateIdProofList.add(existingIdProofRef);
+                        existingIdProofRef.update();
+
+                        // if aadhaar details changed (and the number was not removed during the update), then
+                        // enable verification flag
+                        if (idProofWithIdNumber.getIdProofId() == IdProofDAO.IDPROOF_AADHAAR_ID
+                                && (idProofWithIdNumber.getIdNumber() != null || !idProofWithIdNumber.getIdNumber().isEmpty()))
+                        {
+                            isVerifyAadhaar = true;
+                        }
+                    }
+                }
+                // if this is the first time we are getting this idproof details for candidate, then create new record
+                else {
+                    IDProofReference idProofReference = new IDProofReference();
+                    idProofReference.setCandidate(candidate);
+                    idProofReference.setIdProof(staticIdProofMap.get(idProofWithIdNumber.getIdProofId()));
+                    idProofReference.setIdProofNumber(idProofWithIdNumber.getIdNumber());
+                    //newCandidateIdProofList.add(idProofReference);
+                    idProofReference.save();
+
+                    if (idProofWithIdNumber.getIdProofId() == IdProofDAO.IDPROOF_AADHAAR_ID) {
+                        isVerifyAadhaar = true;
+                    }
+                }
+            }
+
+            // iterate on ids that were removed and delete them
+            for (Integer idProofId : existingIdProofIdToReference.keySet()) {
+                if (!idProofIdList.contains(idProofId)) {
+                    // delete this entry
+                    existingIdProofIdToReference.get(idProofId).delete();
+                }
+            }
+
+            //candidate.setIdProofReferenceList(newCandidateIdProofList);
+            //candidate.update();
+
+            // if Aadhaar details were inserted or updated then lets send aadhaar verification request
+            if (isVerifyAadhaar) {
+                new Thread(() -> {
+                    AadhaarService aadhaarService = new AadhaarService(OnGridConstants.AUTH_STRING,
+                            OnGridConstants.COMMUNITY_ID);
+
+                    OngridAadhaarVerificationResponse response =
+                            aadhaarService.sendAadharSyncVerificationRequest(candidate);
+                }).start();
+            }
         }
     }
 

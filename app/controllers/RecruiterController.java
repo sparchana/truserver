@@ -29,6 +29,7 @@ import play.mvc.Security;
 import java.io.IOException;
 import java.util.*;
 
+import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterSearchCandidate;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.request;
@@ -189,7 +190,7 @@ public class RecruiterController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(RecruiterService.createRecruiterProfile(recruiterSignUpRequest, InteractionService.InteractionChannelType.SELF)));
+        return ok(toJson(RecruiterService.createRecruiterProfile(recruiterSignUpRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE)));
     }
 
 
@@ -387,7 +388,7 @@ public class RecruiterController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(JobService.addJobPost(addJobPostRequest, InteractionService.InteractionChannelType.SELF)));
+        return ok(toJson(JobService.addJobPost(addJobPostRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE)));
     }
 
     public static Result renderAllRecruiterJobPosts() {

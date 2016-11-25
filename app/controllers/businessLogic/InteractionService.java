@@ -17,23 +17,6 @@ import static play.mvc.Controller.session;
  * Created by batcoder1 on 5/5/16.
  */
 public class InteractionService {
-     /**
-     * When Modified, keep it Sync with ServerConstant SESSION_CHANNEL_ and don't change current order
-     * (i.e don't insert in middle)
-     * */
-    public enum InteractionChannelType {
-        UNKNOWN,
-        SELF,
-        SELF_ANDROID,
-        SUPPORT,
-        KNOWLARITY,
-        PARTNER,
-        RECRUITER;
-
-        public String toString() {
-            return name().charAt(0) + name().substring(1).toLowerCase();
-        }
-    }
 
     public static void createInteractionForFollowUpRequest(String followUpMobile, Timestamp followUpSchedule){
         Candidate candidate = CandidateService.isCandidateExists(followUpMobile);

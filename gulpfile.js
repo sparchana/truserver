@@ -160,7 +160,7 @@ gulp.task('preScreenCandidateScript', function() {
         .pipe(concat('pre_screen_candidate.min.js'))
         .pipe(gulpif(argv.prod, uglify(), beautify()))
         .pipe(gulpif(argv.prod, stripDebug()))
-        .pipe(gulp.dest('./public/build/support/'));
+        .pipe(gulp.dest('./public/build/scripts/'));
 });
 
 // default gulp task
@@ -199,7 +199,7 @@ gulp.task('default', ['clean', 'scripts', 'styles', 'supportScripts', 'supportSt
         gulp.run('workFlowControllerScript');
     });
     // watch for preScreenCandidateScript solo js changes
-    gulp.watch(paths.supportJs+'*.js', function() {
+    gulp.watch(paths.commonJs+'*.js', function() {
         gulp.run('preScreenCandidateScript');
     });
 });

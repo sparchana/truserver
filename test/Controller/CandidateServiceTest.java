@@ -133,7 +133,7 @@ public class CandidateServiceTest {
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
         running(server, () -> {
             cleanDB();
-            CandidateService.createCandidateProfile(req, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_BASIC_PROFILE);
+            CandidateService.createCandidateProfile(req, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE, ServerConstants.UPDATE_BASIC_PROFILE);
             CandidateMandatoryCheck(false);
         });
     }
@@ -142,7 +142,7 @@ public class CandidateServiceTest {
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
         running(server, () -> {
             cleanDB();
-            CandidateService.createCandidateProfile(supportCandidateRequest, InteractionService.InteractionChannelType.SUPPORT, ServerConstants.UPDATE_ALL_BY_SUPPORT);
+            CandidateService.createCandidateProfile(supportCandidateRequest, InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE, ServerConstants.UPDATE_ALL_BY_SUPPORT);
             CandidateMandatoryCheck(true);
         });
     }
@@ -153,7 +153,7 @@ public class CandidateServiceTest {
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
         running(server, () -> {
             cleanDB();
-            CandidateService.createCandidateProfile(supportCandidateRequest, InteractionService.InteractionChannelType.SUPPORT, ServerConstants.UPDATE_ALL_BY_SUPPORT);
+            CandidateService.createCandidateProfile(supportCandidateRequest, InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE, ServerConstants.UPDATE_ALL_BY_SUPPORT);
             //CandidateMandatoryCheck(true);
             checkCandidateBasicProfile();
             checkCandidateSkillProfile();

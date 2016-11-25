@@ -253,6 +253,11 @@ function validateInput(idProofId, value) {
     };
     if(!$('input#idProofCheckbox_' + idProofId).is(':checked')) {
         return true;
+    } else if($('input#idProofValue_'+idProofId).val().trim() == ""){
+        $("#Invalid_" + idProofId).css("display", "block");
+        return false;
+    } else {
+        $("#Invalid_" + idProofId).css("display", "none");
     }
     console.log(idProofId + " " + value);
 
@@ -478,6 +483,7 @@ function processPreScreenData(returnedData) {
                     var documentDetails = document.createElement("div");
                     documentDetails.className = "col-sm-12 col-md-12";
                     documentDetails.id = "document_details";
+                    documentDetails.style = "padding:2%";
 
                     rowBox.appendChild(documentDetails);
                     firstproperty.appendChild(rowBox);
@@ -508,7 +514,7 @@ function processPreScreenData(returnedData) {
                     var languageDetails = document.createElement("div");
                     languageDetails.className = "col-sm-12";
                     languageDetails.id = "language_details";
-                    languageDetails.style = "padding:2%;text-align:center";
+                    languageDetails.style = "padding:1%;";
 
                     // var langTable = document.createElement("table");
                     // langTable.id = "langTable";
@@ -540,7 +546,7 @@ function processPreScreenData(returnedData) {
                     var assetsDetails = document.createElement("div");
                     assetsDetails.className = "col-md-12";
                     assetsDetails.id = "assets_details";
-                    assetsDetails.style = "padding:2%";
+                    assetsDetails.style = "padding:2% 0";
 
                     ajax_type = "GET";
                     url = "/support/api/getAssetReqForJobRole/?job_post_id=" + returnedData.jobPostId;
@@ -556,7 +562,7 @@ function processPreScreenData(returnedData) {
                 else if (rowData.propertyId == 3 && rowData.isMatching == false) {
                     propertyIdArray.push(rowData.propertyId);
                     var thirdproperty = document.createElement("li");
-                    thirdproperty.textContent = "Please mention your Date of Birth";
+                    thirdproperty.textContent = "Please mention your date of birth";
                     thirdproperty.id = "property_" + rowData.propertyId;
                     orderList.appendChild(thirdproperty);
 
@@ -564,8 +570,8 @@ function processPreScreenData(returnedData) {
                     rowBox.className = "row";
 
                     var ageTitle = document.createElement("div");
-                    ageTitle.className = "col-xs-12 col-sm-5 col-sm-offset-1";
-                    ageTitle.style = "padding:2%;text-align:left";
+                    ageTitle.className = "col-xs-12 col-sm-5";
+                    ageTitle.style = "padding:2% 3%";
                     rowBox.appendChild(ageTitle);
 
                     var ageResponse = document.createElement("div");
@@ -574,7 +580,7 @@ function processPreScreenData(returnedData) {
                     rowBox.appendChild(ageResponse);
 
                     var ageText = document.createElement("font");
-                    ageText.textContent = ("Date Of Birth");
+                    ageText.textContent = ("Date of birth");
                     ageText.style = "font-weight:bold";
                     ageTitle.appendChild(ageText);
 
@@ -611,6 +617,7 @@ function processPreScreenData(returnedData) {
 
                     var allworkedCompanyDetails = document.createElement("p");
                     allworkedCompanyDetails.textContent = ("Where all have you worked before? ");
+                    allworkedCompanyDetails.style = "margin-left:10px";
                     rowBoxDetails.appendChild(allworkedCompanyDetails);
 
                     var allworkedCompanyDetailsDiv = document.createElement("div");
@@ -670,7 +677,7 @@ function processPreScreenData(returnedData) {
                     addMore.value = "Add";
                     addMore.name = "Add";
                     addMore.style = "background:#09ac58;color:#fff";
-                    addMore.textContent = "Add More";
+                    addMore.textContent = "Add Company";
                     addMore.onclick = addmoreCompany;
 
                     allWorkedAddMoreCol.appendChild(addMore);
@@ -693,13 +700,13 @@ function processPreScreenData(returnedData) {
 
                     var experienceOption = document.createElement("div");
                     experienceOption.className = "col-xs-12 col-md-12";
-                    experienceOption.style = "padding:2%;";
+                    experienceOption.style = "padding:2% 0;";
                     rowBox.appendChild(experienceOption);
 
                     var experienceQuestion= document.createElement("div");
-                    experienceQuestion.className = "col-xs-12 col-sm-5 col-sm-offset-1";
+                    experienceQuestion.className = "col-xs-12 col-sm-5";
                     experienceQuestion.id = "experienceQuestion";
-                    experienceQuestion.style = "padding:2%;display:none";
+                    experienceQuestion.style = "padding:2% 3%;display:none";
                     rowBox.appendChild(experienceQuestion);
 
                     var experienceText = document.createElement("p");
@@ -713,7 +720,7 @@ function processPreScreenData(returnedData) {
                     rowBox.appendChild(experienceDuration);
 
                     var colDetailsFresher = document.createElement("div");
-                    colDetailsFresher.className = "col-xs-12 col-sm-3 col-sm-offset-1";
+                    colDetailsFresher.className = "col-xs-12 col-sm-3 ";
                     experienceOption.appendChild(colDetailsFresher);
 
                     var colDetailsExperience = document.createElement("div");
@@ -730,13 +737,13 @@ function processPreScreenData(returnedData) {
                     colDetailsFresher.appendChild(radioFresher);
 
                     var labelFresher = document.createElement("label");
-                    labelFresher.textContent = ("I'm a Fresher");
+                    labelFresher.textContent = ("I'm a fresher");
                     labelFresher.for = ("candidateFresh");
                     colDetailsFresher.appendChild(labelFresher);
 
                     var radioExperience = document.createElement("input");
                     radioExperience.type = ("radio");
-                    radioExperience.style = "margin:0 8%";
+                    radioExperience.style = "margin:0 8% 0 2%";
                     radioExperience.id = ("candidateExp");
                     radioExperience.name = ("candidateExperience");
                     radioExperience.value = (1);
@@ -776,9 +783,9 @@ function processPreScreenData(returnedData) {
                     experienceDuration.appendChild(titleExpMonths);
 
                     var experienceCurrently = document.createElement("div");
-                    experienceCurrently.className = "col-xs-12 col-md-10 col-md-offset-1";
+                    experienceCurrently.className = "col-xs-12 col-md-10";
                     experienceCurrently.id = "experienceCurrently";
-                    experienceCurrently.style = "padding:2%;display:none";
+                    experienceCurrently.style = "padding:2% 3%;display:none";
                     rowBox.appendChild(experienceCurrently);
 
                     var currentlyWorking = document.createElement("p");
@@ -788,9 +795,14 @@ function processPreScreenData(returnedData) {
                     var checkboxCurrentlyWorking = document.createElement("input");
                     checkboxCurrentlyWorking.id = ("currentlyWorking");
                     checkboxCurrentlyWorking.type = ("checkbox");
-                    checkboxCurrentlyWorking.style = "margin:0 8%";
+                    checkboxCurrentlyWorking.style = "margin:0 2% 0 4%";
                     checkboxCurrentlyWorking.onclick = disableCurrentCompanyOption;
                     currentlyWorking.appendChild(checkboxCurrentlyWorking);
+
+                    var labelYes = document.createElement("label");
+                    labelYes.textContent = ("Yes");
+                    labelYes.for = ("currentlyWorking");
+                    currentlyWorking.appendChild(labelYes);
 
                     fourthproperty.appendChild(rowBox);
                     fourthproperty.appendChild(rowBoxDetails);
@@ -799,7 +811,7 @@ function processPreScreenData(returnedData) {
                 else if (rowData.propertyId == 5 && rowData.isMatching == false && rowData.candidateElement == null && rowData.candidateElementList == null) {
                     propertyIdArray.push(rowData.propertyId);
                     var fifthproperty = document.createElement("li");
-                    fifthproperty.textContent = "Please provide your " + rowData.propertyTitle + " details";
+                    fifthproperty.textContent = "Please provide your education details";
                     fifthproperty.id = "property_" + rowData.propertyId;
 
                     var rowBoxHEQ = document.createElement("div");
@@ -821,9 +833,8 @@ function processPreScreenData(returnedData) {
                     //Highest Education Qualification
 
                     var educationDetailsHEQ = document.createElement("div");
-                    educationDetailsHEQ.className = "col-xs-12 col-sm-5 col-sm-offset-1";
+                    educationDetailsHEQ.className = "col-xs-12 col-sm-5";
                     educationDetailsHEQ.id = "education_details";
-                    educationDetailsHEQ.style = "padding:2%;text-align:left";
                     rowBoxHEQ.appendChild(educationDetailsHEQ);
 
                     var educationResponseHEQ = document.createElement("div");
@@ -833,7 +844,7 @@ function processPreScreenData(returnedData) {
                     rowBoxHEQ.appendChild(educationResponseHEQ);
 
                     var educationTitleHEQ = document.createElement("font");
-                    educationTitleHEQ.textContent = ("Highest Education Qualification? ");
+                    educationTitleHEQ.textContent = ("Highest education qualification? ");
                     educationTitleHEQ.style = "font-weight:bold;";
                     educationDetailsHEQ.appendChild(educationTitleHEQ);
 
@@ -844,9 +855,8 @@ function processPreScreenData(returnedData) {
                     //Highest Education Successfully Complete
 
                     var educationDetailsSuccess = document.createElement("div");
-                    educationDetailsSuccess.className = "col-xs-12 col-sm-5 col-sm-offset-1";
+                    educationDetailsSuccess.className = "col-xs-12 col-sm-5";
                     educationDetailsSuccess.id = "education_details";
-                    educationDetailsSuccess.style = "padding:2%;text-align:left";
                     rowBoxSuccess.appendChild(educationDetailsSuccess);
 
                     var educationResponseSuccess = document.createElement("div");
@@ -889,9 +899,8 @@ function processPreScreenData(returnedData) {
                     //Highest Education Degree
 
                     var educationDetailsHED = document.createElement("div");
-                    educationDetailsHED.className = "col-xs-12 col-sm-5 col-sm-offset-1";
+                    educationDetailsHED.className = "col-xs-12 col-sm-5";
                     educationDetailsHED.id = "education_details";
-                    educationDetailsHED.style = "padding:2%;text-align:left";
                     rowBoxHED.appendChild(educationDetailsHED);
 
                     var educationResponseHED = document.createElement("div");
@@ -901,7 +910,7 @@ function processPreScreenData(returnedData) {
                     rowBoxHED.appendChild(educationResponseHED);
 
                     var educationTitleHED = document.createElement("font");
-                    educationTitleHED.textContent = ("Highest Education Degree? ");
+                    educationTitleHED.textContent = ("Highest education degree? ");
                     educationTitleHED.style = "font-weight:bold;";
                     educationDetailsHED.appendChild(educationTitleHED);
 
@@ -912,8 +921,8 @@ function processPreScreenData(returnedData) {
                     //Last Attended Institute
 
                     var educationDetailsInstitute = document.createElement("div");
-                    educationDetailsInstitute.className = "col-xs-12 col-sm-5 col-sm-offset-1";
-                    educationDetailsInstitute.style = "padding:2%;text-align:left";
+                    educationDetailsInstitute.className = "col-xs-12 col-sm-5";
+                    educationDetailsInstitute.style = "padding:2% 3%";
                     rowBoxLastInstitute.appendChild(educationDetailsInstitute);
                     var educationResponseInstitute = document.createElement("div");
 
@@ -922,7 +931,7 @@ function processPreScreenData(returnedData) {
                     rowBoxLastInstitute.appendChild(educationResponseInstitute);
 
                     var educationtitleInstitute = document.createElement("font");
-                    educationtitleInstitute.textContent = ("Last attended Education Institute?");
+                    educationtitleInstitute.textContent = ("Last attended education institute?");
                     educationtitleInstitute.style = "margin-top:8px;font-weight:bold";
                     educationDetailsInstitute.appendChild(educationtitleInstitute);
 
@@ -952,10 +961,10 @@ function processPreScreenData(returnedData) {
                     var genderDetails = document.createElement("div");
                     genderDetails.className = "col-sm-12 col-md-12";
                     genderDetails.id = "gender_details";
-                    genderDetails.style = "padding:2%;";
+                    genderDetails.style = "padding:2% 0;";
 
                     var colGenderDetailsMale = document.createElement("div");
-                    colGenderDetailsMale.className = "col-xs-12 col-sm-3 col-sm-offset-1";
+                    colGenderDetailsMale.className = "col-xs-12 col-sm-3";
                     genderDetails.appendChild(colGenderDetailsMale);
 
                     var colGenderDetailsFemale = document.createElement("div");
@@ -993,14 +1002,14 @@ function processPreScreenData(returnedData) {
                 else if (rowData.propertyId == 7 && rowData.isMatching == false) {
                     propertyIdArray.push(rowData.propertyId);
                     var seventhproperty = document.createElement("li");
-                    seventhproperty.textContent = "Please provide your " + rowData.propertyTitle + " details";
+                    seventhproperty.textContent = "Please provide your salary details";
                     seventhproperty.id = "property_" + rowData.propertyId;
 
                     var rowBox = document.createElement("div");
                     rowBox.className = "row";
 
                     var salaryDetails = document.createElement("div");
-                    salaryDetails.className = "col-xs-12 col-sm-5 col-sm-offset-1";
+                    salaryDetails.className = "col-xs-12 col-sm-5";
                     salaryDetails.id = "salary_details";
 
                     var salaryResponse = document.createElement("div");
@@ -1009,7 +1018,7 @@ function processPreScreenData(returnedData) {
                     salaryResponse.style = "padding:1%";
 
                     var titleSalary = document.createElement("font");
-                    titleSalary.textContent = ("Current/Last Drawn Salary");
+                    titleSalary.textContent = ("Current/last drawn salary");
                     titleSalary.style = "margin-top:8px;font-weight:bold";
                     salaryDetails.appendChild(titleSalary);
 
@@ -1018,7 +1027,7 @@ function processPreScreenData(returnedData) {
                     textSalary.type = ("number");
                     textSalary.placeholder = ("Salary");
                     textSalary.id = ("candidateLastWithdrawnSalary");
-                    textSalary.onchange = invalidSalary;
+                    textSalary.oninput = invalidSalary;
                     salaryResponse.appendChild(textSalary);
 
                     var salaryInvalid = document.createElement("p");
@@ -1082,8 +1091,8 @@ function processPreScreenData(returnedData) {
                     rowBox.className = "row";
 
                     var shiftTitle = document.createElement("div");
-                    shiftTitle.className = "col-xs-12 col-sm-5 col-sm-offset-1";
-                    shiftTitle.style = "padding:2%;text-align:left";
+                    shiftTitle.className = "col-xs-12 col-sm-5";
+                    shiftTitle.style = "padding:2% 3%";
                     rowBox.appendChild(shiftTitle);
 
                     var shiftResponse = document.createElement("div");
@@ -1092,7 +1101,7 @@ function processPreScreenData(returnedData) {
                     rowBox.appendChild(shiftResponse);
 
                     var shiftText = document.createElement("font");
-                    shiftText.textContent = ("Time Shift");
+                    shiftText.textContent = ("Time shift");
                     shiftText.style = "font-weight:bold";
                     shiftTitle.appendChild(shiftText);
 
@@ -1347,7 +1356,6 @@ function invalidSalary() {
     console.log(parseInt(salary));
     if (!isNaN(salary) && parseInt(salary) >= 1000 && parseInt(salary) <= 50000) {
         $("#invalidSalaryNotification").css("display", "none");
-
     } else {
         $("#invalidSalaryNotification").css("display", "block");
     }
@@ -1398,12 +1406,22 @@ function submitPreScreen() {
                             item["idNumber"] = $('input#idProofValue_' + id).val().trim();
                         } else if (isChecked && !isValid) {
                             okToSubmit = false;
+                            $.notify("Please provide valid document details.", 'error');
                             console.log("doc not valid for id: " + id);
                         }
 
                         if (!jQuery.isEmptyObject(item)) {
                             documentList.push(item);
                         };
+
+                        if(!okToSubmit){
+                            var submit = {
+                                propId : propId,
+                                message: msg,
+                                submissionStatus: okToSubmit
+                            };
+                            okToSubmitList.push(submit);
+                        }
                     });
                 });
 
@@ -1415,14 +1433,7 @@ function submitPreScreen() {
                 //     $.notify("Please provide your document details", 'error');
                 //     okToSubmit = false;
                 // }
-                if(!okToSubmit){
-                    var submit = {
-                        propId : propId,
-                        message: msg,
-                        submissionStatus: okToSubmit
-                    };
-                    okToSubmitList.push(submit);
-                }
+
             } else if (propId == 1) {
                 var check;
                 var languageMap = [];
@@ -1685,11 +1696,15 @@ function submitPreScreen() {
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(d),
                     success: function (returnedData) {
-                        if(returnedData == "ok"){
+                        console.log(returnedData);
+                        if(returnedData == "INTERVIEW"){
                             $("#preScreenModal").modal('hide');
                             initInterviewModal(candidateId, jobPostId, isSupport);
+                        } else if(returnedData == "OK") {
+                            $("#preScreenModal").modal('hide');
+                            $.notify("Successfully Submitted Application form. Thanks !", 'success');
                         } else {
-                            $.notify("Something went wrong. Please try again", 'error');
+                            $.notify("Something went wrong. Please try again !", 'success');
                         }
                     }
                 });

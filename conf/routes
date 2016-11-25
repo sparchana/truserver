@@ -289,6 +289,7 @@ POST        /api/deactiveToActive                                         contro
 ## Compute API
 GET         /api/compute/updateAllRelevantJobCategories                    controllers.Application.updateAllRelevantJobCategories()
 POST        /api/compute/updateAllActivityScores                           controllers.Application.updateAllActivityScores()
+POST        /api/compute/verifyAadhar/:candidateMobile                     controllers.OngridController.sendOnGridAadharRequest(candidateMobile: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /robots.txt                                                   controllers.Assets.at(path="/public", file="robots.txt")

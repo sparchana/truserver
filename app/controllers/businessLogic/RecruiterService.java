@@ -32,6 +32,8 @@ import play.mvc.Result;
 
 import java.util.UUID;
 
+import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
+import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
 import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;
@@ -194,13 +196,13 @@ public class RecruiterService {
     }
 
     public static AddRecruiterResponse createRecruiterProfile(RecruiterSignUpRequest recruiterSignUpRequest,
-                                                              InteractionService.InteractionChannelType channelType)
+                                                              int channelType)
     {
         AddRecruiterResponse addRecruiterResponse = new AddRecruiterResponse();
         String result = "";
         Integer interactionType;
         Company existingCompany = Company.find.where().eq("companyId", recruiterSignUpRequest.getRecruiterCompany()).findUnique();
-        int leadChannel = (channelType == InteractionService.InteractionChannelType.SELF) ?
+        int leadChannel = (channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE) ?
                 ServerConstants.LEAD_CHANNEL_RECRUITER :
                 ServerConstants.LEAD_CHANNEL_SUPPORT;
 
@@ -280,7 +282,7 @@ public class RecruiterService {
                             recruiterSignUpRequest.getInterviewCredits());
                 }
 
-                if (channelType == InteractionService.InteractionChannelType.SELF) {
+                if (channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE) {
                     result = InteractionConstants.INTERACTION_RESULT_RECRUITER_INFO_UPDATED_SELF;
                 } else {
                     result = InteractionConstants.INTERACTION_RESULT_RECRUITER_INFO_UPDATED_SUPPORT;

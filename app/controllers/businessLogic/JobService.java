@@ -25,6 +25,9 @@ import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.*;
 
+import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
+import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
+import static api.InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
 import static controllers.businessLogic.InteractionService.createInteractionForNewJobPost;
 import static models.util.EmailUtil.sendRecruiterJobPostLiveEmail;
 import static models.util.SmsUtil.*;
@@ -36,7 +39,7 @@ import static play.mvc.Results.ok;
  */
 public class JobService {
     public static AddJobPostResponse addJobPost(AddJobPostRequest addJobPostRequest,
-                                                InteractionService.InteractionChannelType channelType)
+                                                int channelType)
     {
         AddJobPostResponse addJobPostResponse = new AddJobPostResponse();
         List<Integer> jobPostLocalityList = addJobPostRequest.getJobPostLocalities();
@@ -68,7 +71,7 @@ public class JobService {
             // if support creates a job post in new status, no alert is sent to recruiter
             if (existingJobPost.getJobPostStatus().getJobStatusId() == ServerConstants.JOB_STATUS_ACTIVE) {
                 isSendJobActivationAlert = true;
-            } else if (channelType == InteractionService.InteractionChannelType.SELF) {
+            } else if (channelType == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE) {
                 // These sms and mail alerts are sent only in case of self-job posts by recruiter
                 // in this case the default status is 'new'
                 // if support creates a job post in new status, no alert is sent to recruiter
@@ -137,11 +140,11 @@ public class JobService {
             sendRecruiterJobPostLiveEmail(finalExistingJobPost.getRecruiterProfile(), finalExistingJobPost);
         }
 
-        if(channelType == InteractionService.InteractionChannelType.SUPPORT){
+        if(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE){
             createdBy = session().get("sessionUsername");
             objAUuid = ServerConstants.SUPPORT_DEFAULT_UUID;
             objAType = ServerConstants.OBJECT_TYPE_SUPPORT;
-            channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
+            channel = INTERACTION_CHANNEL_SUPPORT_WEBSITE;
         } else {
             createdBy = InteractionConstants.INTERACTION_CREATED_SELF;
             objAType = ServerConstants.OBJECT_TYPE_RECRUTER;
@@ -632,7 +635,7 @@ public class JobService {
     }
 
     public static ApplyJobResponse applyJob(ApplyJobRequest applyJobRequest,
-                                            InteractionService.InteractionChannelType channelType)
+                                            int channelType)
             throws IOException, JSONException
     {
         Logger.info("checking user and jobId: " + applyJobRequest.getCandidateMobile() + " + " + applyJobRequest.getJobId());
@@ -688,7 +691,7 @@ public class JobService {
                     jobApplication.save();
                     writeJobApplicationToGoogleSheet(existingJobPost.getJobPostId(), applyJobRequest.getCandidateMobile(), channelType, applyJobRequest.getLocalityId(), partner, applyJobRequest);
 
-                    if (channelType == InteractionService.InteractionChannelType.SELF) {
+                    if (channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE) {
                         // job application coming from website
                         InteractionService.createInteractionForJobApplicationViaWebsite(
                                 existingCandidate.getCandidateUUId(),
@@ -724,9 +727,9 @@ public class JobService {
                     jobPostWorkflow.setJobPost(existingJobPost);
                     jobPostWorkflow.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_SELECTED).findUnique());
 
-                    if(channelType == InteractionService.InteractionChannelType.SELF ||
-                            channelType == InteractionService.InteractionChannelType.SELF_ANDROID ){
-                        jobPostWorkflow.setCreatedBy(channelType.toString());
+                    if(channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE ||
+                            channelType == INTERACTION_CHANNEL_CANDIDATE_ANDROID){
+                        jobPostWorkflow.setCreatedBy(InteractionConstants.INTERACTION_TYPE_MAP.get(channelType));
                         jobPostWorkflow.setChannel(Integer.valueOf(session().get("sessionChannel")));
                     } else {
                         // partner, support, recruiter
@@ -743,7 +746,7 @@ public class JobService {
         return applyJobResponse;
     }
 
-    public static void writeJobApplicationToGoogleSheet(Long jobPostId, String candidateMobile, InteractionService.InteractionChannelType channelType, Integer localityId, Partner partner, ApplyJobRequest applyJobRequest) throws UnsupportedEncodingException {
+    public static void writeJobApplicationToGoogleSheet(Long jobPostId, String candidateMobile, int channelType, Integer localityId, Partner partner, ApplyJobRequest applyJobRequest) throws UnsupportedEncodingException {
         String jobIdVal = "-";
         String companyNameVal = "-";
         String jobPostNameVal = "-";
@@ -776,9 +779,9 @@ public class JobService {
         String interviewTimeVal = "";
         int sheetId = ServerConstants.SHEET_MAIN;
 
-        if(channelType == InteractionService.InteractionChannelType.SELF_ANDROID){
+        if(channelType == INTERACTION_CHANNEL_CANDIDATE_ANDROID){
             jobApplicationChannelVal = "Android";
-        } else if(channelType == InteractionService.InteractionChannelType.SELF){
+        } else if(channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
             jobApplicationChannelVal = "Website";
         }
 
@@ -870,7 +873,7 @@ public class JobService {
                     candidateSkillsVal += skill.getSkill().getSkillName() + ", ";
                 }
             }
-            
+
             if(candidate.getLocality() != null){
                 candidateHomeLocalityVal = candidate.getLocality().getLocalityName();
             }
