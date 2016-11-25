@@ -11,6 +11,7 @@ import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.SelectedCandidateRequest;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
+import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
@@ -1643,6 +1644,7 @@ public class Application extends Controller {
                 candidateId = candidate.getCandidateId();
             }
         }
+
         return ok(toJson(JobPostWorkflowEngine.getJobPostVsCandidate(jobPostId, candidateId, rePreScreen)));
     }
 
@@ -2047,6 +2049,8 @@ public class Application extends Controller {
 
             UpdateCandidateDetail updateCandidateDetail = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateDetail.class);
             for(String propId: propertyIds){
+                if (propId == null || propId.isEmpty()) continue;
+
                 Integer propertyId = Integer.parseInt(propId);
                 if (ServerConstants.PropertyType.DOCUMENT.ordinal() == propertyId) {
                     UpdateCandidateDocument updateCandidateDocument = new UpdateCandidateDocument();
