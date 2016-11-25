@@ -432,7 +432,9 @@ function processPreScreenData(returnedData) {
         console.log("jobpostvscan elementlist is empty. dont open prescreen modal");
         $("#preScreenModal").modal('hide');
         return;
-    } else {
+    } else if(!returnedData.visible){
+        $("#preScreenModal").modal('hide');
+    } else{
         $("html").removeClass("modal-open").addClass("modal-open");
     }
 
@@ -949,7 +951,7 @@ function processPreScreenData(returnedData) {
                     };
                     orderList.appendChild(fifthproperty);
                 }
-                else if (rowData.propertyId == 6 && rowData.isMatching == false) {
+                else if (rowData.propertyId == 6 && rowData.isMatching == false && rowData.candidateElement == null ) {
                     propertyIdArray.push(rowData.propertyId);
                     var sixthproperty = document.createElement("li");
                     sixthproperty.textContent = "Please mention your gender ";
@@ -999,7 +1001,7 @@ function processPreScreenData(returnedData) {
                     sixthproperty.appendChild(rowBox);
                     orderList.appendChild(sixthproperty);
                 }
-                else if (rowData.propertyId == 7 && rowData.isMatching == false) {
+                else if (rowData.propertyId == 7 && rowData.isMatching == false && rowData.candidateElement == null ) {
                     propertyIdArray.push(rowData.propertyId);
                     var seventhproperty = document.createElement("li");
                     seventhproperty.textContent = "Please provide your salary details";
