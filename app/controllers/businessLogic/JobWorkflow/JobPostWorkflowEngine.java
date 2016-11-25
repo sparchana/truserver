@@ -2083,10 +2083,17 @@ public class JobPostWorkflowEngine {
 
         interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_INTERVIEW_SCHEDULED;
 
+        Integer jwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED;
+        if(jobPostWorkflowOld.getJobPost().getInterviewDetailsList() != null){
+            if(jobPostWorkflowOld.getJobPost().getInterviewDetailsList().get(0).getReviewApplication() == 0){ // dont review applications, confirm it directly
+                jwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
+            }
+        }
+
         if(jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED) {
             JobPostWorkflow jobPostWorkflowNew = JobPostWorkflowEngine.saveNewJobPostWorkflow(candidateId,
                     jobPostId, jobPostWorkflowOld, ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED,
-                    ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED, interviewSlotDetail.getTimeSlot(),
+                    jwfStatus, interviewSlotDetail.getTimeSlot(),
                     interviewSlotDetail.getScheduledInterviewDate());
 
             if(jobPostWorkflowNew == null) {
@@ -2237,7 +2244,7 @@ public class JobPostWorkflowEngine {
     }
 
     public static List<JobPostWorkflow> getPartnerAppliedJobsForCandidate(Candidate candidate, Partner partner) {
-        List<JobPostWorkflow> appliedJobsList;
+        List<JobPostWorkflow> appliedJobsList = new ArrayList<>();
 
         List<JobApplication> jobApplicationList = JobApplication.find.where()
                 .eq("CandidateId", candidate.getCandidateId())
@@ -2245,9 +2252,14 @@ public class JobPostWorkflowEngine {
                 .orderBy("jobApplicationCreateTimeStamp desc")
                 .findList();
 
+        if(jobApplicationList.size() == 0){
+            return appliedJobsList;
+        }
+
         String jobPostIdString = "";
         List<Long> jobPostIdList = new ArrayList<>();
         for(JobApplication jobApplication: jobApplicationList){
+            Logger.info(jobApplication.getJobPost().getJobPostTitle() + " -------------");
             jobPostIdList.add(jobApplication.getJobPost().getJobPostId());
             jobPostIdString += jobApplication.getJobPost().getJobPostId() + ", ";
         }
