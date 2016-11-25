@@ -6,6 +6,8 @@ var jobPostId;
 var todayDay;
 var globalCandidateId;
 
+var notSelectedReason = [];
+
 $(document).scroll(function(){
     if ($(this).scrollTop() > 80) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
@@ -36,7 +38,33 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllNotSelectedReasons",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataNotSelectedReason
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
 });
+
+function processDataNotSelectedReason(returnedData) {
+    returnedData.forEach(function(reason) {
+        var id = reason.reasonId;
+        var name = reason.reasonName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        notSelectedReason.push(item);
+    });
+}
 
 function processDataForJobPost(returnedData) {
     $("#job_title").html(returnedData.jobPostTitle);
@@ -88,7 +116,7 @@ function processDataForJobPost(returnedData) {
 
         $('#select_date').tokenize().tokenAdd(0, getDayVal(today.getDay()) + ", " + today.getDate() + " " + getMonthVal((today.getMonth() + 1)));
 
-        for (i = 0; i < 9; i++) {
+        for (i = -7; i < 9; i++) {
             // 0 - > sun 1 -> mon ...
             var x = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
             if (checkSlotAvailability(x, interviewDays)) {
@@ -154,7 +182,6 @@ function processDataForJobApplications(returnedData) {
 
                 if((todayDay.getDate() == interviewDay) && ((todayDay.getMonth() + 1) == interviewMonth)){
                     if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 9)){
-                        console.log(value);
                         candidateCount ++;
 
                         var candidateCard = document.createElement("div");
@@ -206,7 +233,7 @@ function processDataForJobApplications(returnedData) {
 
                         innerInlineBlockDiv = document.createElement("div");
                         innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
-                        innerInlineBlockDiv.textContent = "Interview status";
+                        innerInlineBlockDiv.textContent = "Interview Details";
                         inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
                         var candidateInterviewDateVal = document.createElement("span");
@@ -240,14 +267,20 @@ function processDataForJobApplications(returnedData) {
                             candidateInterviewStatusVal.textContent = "Interview Completed";
                             candidateInterviewStatusVal.style = "color: green; font-weight: bold";
                         } else{
-                            var feedbackBtn = document.createElement("a");
-                            feedbackBtn.className = "waves-effect waves-light btn";
-                            feedbackBtn.style = "font-weight: bold";
-                            feedbackBtn.onclick = function () {
-                                openFeedbackModal(value.candidate.candidateId);
-                            };
-                            feedbackBtn.textContent = "Add feedback";
-                            feedbackBtnDiv.appendChild(feedbackBtn);
+                            var today = new Date();
+                            var interviewDate = new Date(value.extraData.interviewDate);
+                            if(interviewDate.getDate() <= today.getDate() && interviewDate.getMonth() <= today.getMonth() && interviewDate.getFullYear() <= today.getFullYear()) { // today's schedule
+                                //interview for this job is scheduled today, hence allow to update status
+                                var feedbackBtn = document.createElement("a");
+                                feedbackBtn.className = "waves-effect waves-light btn";
+                                feedbackBtn.style = "font-weight: bold";
+                                feedbackBtn.onclick = function () {
+                                    openFeedbackModal(value.candidate.candidateId);
+                                };
+                                feedbackBtn.textContent = "Add feedback";
+                                feedbackBtnDiv.appendChild(feedbackBtn);
+
+                            }
                         }
 
                         var candidateCardDivider = document.createElement("div");
@@ -966,6 +999,10 @@ function processDataRecruiterProfile(returnedData) {
     });
 }
 
+function closeFeedbackModal() {
+    $("#addFeedback").closeModal();
+}
+
 
 function checkRecruiterLogin() {
     try {
@@ -990,31 +1027,51 @@ function processDataRecruiterSession(returnedData) {
 
 function openFeedbackModal(candidateId) {
     globalCandidateId = candidateId;
+    $("#reasonVal").html('');
+    var defaultOption = $('<option value="0" selected></option>').text("Select a reason");
+    $('#reasonVal').append(defaultOption);
+
+    notSelectedReason.forEach(function (reason) {
+        var option = $('<option value=' + reason.id + '></option>').text(reason.name);
+        $('#reasonVal').append(option);
+    });
 
     $("#addFeedback").openModal();
+
+    $("#feedbackOption").change(function (){
+        if($(this).val() == 2 || $(this).val() == 4){
+            $("#otherReason").show();
+        } else{
+            $("#otherReason").hide();
+        }
+    });
 }
 
 function confirmAddFeedback() {
     if($("#feedbackOption").val() > 0){
-        try {
-            var d = {
-                candidateId: globalCandidateId,
-                jobPostId : jobPostId,
-                feedbackStatus : $("#feedbackOption").val(),
-                feedbackComment : $("#feedbackNote").val()
-            };
+        if(($("#feedbackOption").val() == 2 || $("#feedbackOption").val() == 4) && $("#reasonVal").val() == 0){
+            notifyError("Please select a reason");
+        } else{
+            try {
+                var d = {
+                    candidateId: globalCandidateId,
+                    jobPostId : jobPostId,
+                    feedbackStatus : $("#feedbackOption").val(),
+                    feedbackComment : $("#feedbackNote").val(),
+                    rejectReason: $("#reasonVal").val()
+                };
 
-            $.ajax({
-                type: "POST",
-                url: "/updateFeedback",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(d),
-                success: processDataUpdateFeedBack
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
+                $.ajax({
+                    type: "POST",
+                    url: "/updateFeedback",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
+                    success: processDataUpdateFeedBack
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
         }
-
     } else{
         notifyError("Please select a feedback option");
     }
@@ -1026,6 +1083,9 @@ function processDataUpdateFeedBack(returnedData) {
         setTimeout(function () {
             location.reload();
         }, 2000);
+    } else if(returnedData == -1){
+        notifyError("You are out of interview credits. Please purchase interview credits!");
+        openCreditModal();
     } else{
         notifyError("Something went wrong. Please try again later");
     }

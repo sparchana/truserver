@@ -543,7 +543,6 @@ function processDataAndFillAllFields(returnedData) {
         var idProof = returnedData.idProofReferenceList;
         var tempIdProofList = [];
         idProof.forEach(function (singleIdProof) {
-            console.log(singleIdProof.idProof);
             tempIdProofList.push(singleIdProof.idProof);
             var id = singleIdProof.idProof.idProofId;
             var name = singleIdProof.idProof.idProofName;
@@ -575,17 +574,14 @@ function validateIp() {
     var id = this.id.split("_")[1];
     // aadhaar validation
     if(id == 3) {
-        console.log(this.value);
         if(!validateAadhar(this.value)){
             // $('#saveBtn').prop('disabled', true);
-            console.log("errror");
             notifyError("Invalid Aadhaar Card Number. (Example: 100120023003)", 'danger');
         } else {
             // $('#saveBtn').prop('disabled', false);
         }
     }
     if(id == 1) {
-        console.log(this.value);
         if (!validateDL(this.value)){
             // $('#saveBtn').prop('disabled', true);
             notifyError("Invalid Driving Licence Number. (Example: TN7520130008800 or TN-7520130008800)", 'danger');
@@ -594,7 +590,6 @@ function validateIp() {
         }
     }
     if(id == 2) {
-        console.log(this.value);
         if(!validatePASSPORT(this.value)){
             // $('#saveBtn').prop('disabled', true);
             notifyError("Invalid Pass Port Number. (Example: A12 34567)", 'danger');
@@ -603,7 +598,6 @@ function validateIp() {
         }
     }
     if(id == 4){
-        console.log(this.value);
         if(!validatePAN(this.value)){
             // $('#saveBtn').prop('disabled', true);
             notifyError("Invalid PAN Card Number. (Example: ABCDE1234Z)", 'danger');
@@ -618,7 +612,6 @@ function processDocs(returnedData) {
     if(table == null) return;
     $('#docTableTable').empty();
     returnedData.forEach(function (idProof) {
-        console.log(JSON.stringify(idProof));
         count++;
         var row = table.insertRow(0);
 
@@ -638,7 +631,6 @@ function generateIdProof(idProofJson){
     // create table
     if(idProofJson == null) {
         var selectedIdProofIds = $('#candidateIdProof').val();
-        console.log("generateIdproof input field: " + selectedIdProofIds);
         if (selectedIdProofIds != null && selectedIdProofIds !== '') {
             try {
                 $.ajax({
@@ -654,7 +646,6 @@ function generateIdProof(idProofJson){
             }
         }
     } else {
-        console.log(idProofJson);
         processDocs(idProofJson);
     }
 
