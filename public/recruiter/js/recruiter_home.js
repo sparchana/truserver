@@ -165,7 +165,7 @@ function processDataInterviewToday(returnedData) {
                 }
             }
             interviews += '<tr>' +
-                '<td class="jobTitle"><a href="/recruiter/jobPost/' + application.jobPostWorkflow.jobPost.jobPostId + '" target="_blank"><b>' + application.jobPostWorkflow.jobPost.jobPostTitle + '</b></a></td>' +
+                '<td class="jobTitle"><a href="/recruiter/job/track/' + application.jobPostWorkflow.jobPost.jobPostId + '" target="_blank"><b>' + application.jobPostWorkflow.jobPost.jobPostTitle + '</b></a></td>' +
                 '<td>' + application.candidate.candidateFullName + '</td>' +
                 '<td>' + application.jobPostWorkflow.scheduledInterviewTimeSlot.interviewTimeSlotName + '</td>' +
                 '<td>' + homeLocality + '</td>' +

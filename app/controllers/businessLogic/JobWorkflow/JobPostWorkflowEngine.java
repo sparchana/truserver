@@ -1335,6 +1335,44 @@ public class JobPostWorkflowEngine {
         return selectedCandidateMap;
     }
 
+    public static Map<Long, CandidateWorkflowData> getAllCompletedInterviews(Long jobPostId) {
+        Integer status = ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED;
+
+        List<JobPostWorkflow> jobPostWorkflowList;
+        jobPostWorkflowList = JobPostWorkflow.find.where()
+                .eq("jobPost.jobPostId", jobPostId)
+                .ge("status_id", status)
+                .findList();
+
+        List<Candidate> candidateList = new ArrayList<>();
+
+        Map<Long, CandidateWorkflowData> selectedCandidateMap = new LinkedHashMap<>();
+
+        for( JobPostWorkflow jpwf: jobPostWorkflowList) {
+            candidateList.add(jpwf.getCandidate());
+        }
+
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+
+        List<JobPostToLocality> jobPostToLocalityList = jobPost.getJobPostToLocalityList();
+        List<Long> localityIdList = new ArrayList<>();
+        for (JobPostToLocality jobPostToLocality: jobPostToLocalityList) {
+            localityIdList.add(jobPostToLocality.getLocality().getLocalityId());
+        }
+
+        candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
+        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), status);
+
+        for ( Candidate candidate: candidateList) {
+            CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
+            candidateWorkflowData.setCandidate(candidate);
+            candidateWorkflowData.setExtraData(candidateExtraDataMap.get(candidate.getCandidateId()));
+            selectedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
+        }
+
+        return selectedCandidateMap;
+    }
+
     public static List<InterviewTodayResponse> getTodaysInterviewDetails(InterviewTodayRequest interviewTodayRequest) {
         Integer status = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
         List<InterviewTodayResponse> responseList = new ArrayList<>();

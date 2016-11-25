@@ -1587,6 +1587,8 @@ public class Application extends Controller {
                 return ok(views.html.pre_screen_completed.render());
             case "confirmed_interview_view":
                 return ok(views.html.confirmed_interview.render());
+            case "completed_interview_view":
+                return ok(views.html.interview_complete_view.render());
         }
         return badRequest();
     }
@@ -1790,6 +1792,11 @@ public class Application extends Controller {
     public static Result getConfirmedInterviewCandidates(Long jobPostId, String start, String end) {
         return ok(toJson(JobPostWorkflowEngine.getConfirmedInterviewCandidates(jobPostId, start, end)));
     }
+
+    public static Result getAllCompletedInterviews(Long jpId) {
+        return ok(toJson(JobPostWorkflowEngine.getAllCompletedInterviews(jpId)));
+    }
+
 
     public static Result confirmInterview(long jpId, long value) {
         if (session().get("candidateId") != null) {

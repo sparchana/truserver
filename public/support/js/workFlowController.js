@@ -963,7 +963,7 @@ $(function () {
                 }
 
                 var preScreenAttemptCount = function () {
-                    if (app.currentView == "pre_screen_view" || app.currentView == "pre_screen_completed_view" || app.currentView == "confirmed_interview_view" ) {
+                    if (app.currentView == "pre_screen_view" || app.currentView == "pre_screen_completed_view" || app.currentView == "confirmed_interview_view" || app.currentView == "completed_interview_view" ) {
                         if(newCandidate.extraData.preScreenCallAttemptCount == null) {
                             return "0";
                         } else {
@@ -981,7 +981,7 @@ $(function () {
                         } else {
                             return '<input type="submit" value="Pre-Screen Again"  style="width:150px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-default">'
                         }
-                    } else if (app.currentView == "confirmed_interview_view"){
+                    } else if (app.currentView == "confirmed_interview_view" || app.currentView == "completed_interview_view"){
                         var interviewDetails = "Date and slot not available";
                         if(newCandidate.extraData.interviewSchedule != null){
                             interviewDetails = newCandidate.extraData.interviewSchedule;
@@ -1023,8 +1023,6 @@ $(function () {
                                 interviewAction = "Slots not available";
                             }
                         } else{
-                            console.log(newCandidate.extraData.workflowStatus.statusId);
-                            console.log(newCandidate.candidate.candidateFirstName);
                             if(newCandidate.extraData.workflowStatus.statusId == 5){
                                 var oldDate = new Date(newCandidate.extraData.interviewDate);
                                 rescheduledDate = oldDate.getFullYear() + "-" + (oldDate.getMonth() + 1) + "-" + oldDate.getDate();
@@ -1080,16 +1078,22 @@ $(function () {
                 };
 
                 var varColumn3 = function () {
-                    if (app.currentView == "confirmed_interview_view") {
+                    if (app.currentView == "confirmed_interview_view" || app.currentView == "completed_interview_view") {
                         var candidateStatus = '<b>' + "Feedback not available" + '</b>';
                         if(newCandidate.extraData.workflowStatus.statusId != null && newCandidate.extraData.workflowStatus.statusId > 13){
-                            candidateStatus = '<b>' + newCandidate.extraData.workflowStatus.statusTitle + '</b>';
+                            if(newCandidate.extraData.workflowStatus.statusId == 14){ //selected
+                                candidateStatus = '<b style="color: green;">' + newCandidate.extraData.workflowStatus.statusTitle + '</b>';
+                            } else{
+                                candidateStatus = '<b style="color: red;">' + newCandidate.extraData.workflowStatus.statusTitle + '</b>';
+                            }
                         }
-                        var today = new Date();
-                        var interviewDate = new Date(newCandidate.extraData.interviewDate);
-                        if(interviewDate.getDate() <= today.getDate() && interviewDate.getMonth() <= today.getMonth() && interviewDate.getFullYear() <= today.getFullYear()) { // today's schedule
-                            //interview for this job is scheduled today, hence allow to update status
-                            candidateStatus += '<input style="margin-left: 6px" type="button" value="Update" onclick="openFeedbackModal('+ newCandidate.candidate.candidateId + ')">';
+                        if(app.currentView == "confirmed_interview_view"){
+                            var today = new Date();
+                            var interviewDate = new Date(newCandidate.extraData.interviewDate);
+                            if(interviewDate.getDate() <= today.getDate() && interviewDate.getMonth() <= today.getMonth() && interviewDate.getFullYear() <= today.getFullYear()) { // today's schedule
+                                //interview for this job is scheduled today, hence allow to update status
+                                candidateStatus += '<input style="margin-left: 6px" type="button" value="Update" onclick="openFeedbackModal('+ newCandidate.candidate.candidateId + ')">';
+                            }
                         }
                         return candidateStatus;
                     } else {
@@ -1459,6 +1463,24 @@ $(function () {
         }
     };
 
+    app.fetchCompletedInterviews = function () {
+        var base_url = "/support/api/getAllCompletedInterviews/?jpId=" + app.jpId;
+        try {
+            $.ajax({
+                type: "POST",
+                url: base_url,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: app.updatePreScreenTable
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    };
+
+
     app.populateJobPostCardUI = function (returnedData) {
         jobPostInfo = returnedData;
         NProgress.start();
@@ -1570,6 +1592,13 @@ $(function () {
         }, function(start, end) {
             app.reshuffleConfirmedView(start, end);
         });
+    } else if (app.currentView == "completed_interview_view") {
+        app.fetchCompletedInterviews();
+        app.initJobCard();
+        $('#header_view_title').text("Completed Interviews");
+
+        NProgress.done();
+
     } else {
         $('#header_view_title').text("Future View");
     }
