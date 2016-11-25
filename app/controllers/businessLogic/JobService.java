@@ -730,7 +730,7 @@ public class JobService {
                     if(channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE ||
                             channelType == INTERACTION_CHANNEL_CANDIDATE_ANDROID){
                         jobPostWorkflow.setCreatedBy(InteractionConstants.INTERACTION_TYPE_MAP.get(channelType));
-                        jobPostWorkflow.setChannel(Integer.valueOf(session().get("sessionChannel")));
+                        jobPostWorkflow.setChannel(channelType);
                     } else {
                         // partner, support, recruiter
                         jobPostWorkflow.setCreatedBy(session().get("sessionUsername"));

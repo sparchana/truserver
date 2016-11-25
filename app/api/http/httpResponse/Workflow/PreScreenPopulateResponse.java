@@ -152,7 +152,6 @@ public class PreScreenPopulateResponse {
                 this.candidateElement = candidateElement;
             }
         }
-
     // min req
     public Long jobPostId;
     public Long candidateId;
