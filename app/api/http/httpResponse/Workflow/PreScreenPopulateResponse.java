@@ -50,7 +50,7 @@ public class PreScreenPopulateResponse {
         }
     }
 
-        public static class PreScreenElement {
+    public static class PreScreenElement {
             public String propertyTitle;
             public int propertyId;
 

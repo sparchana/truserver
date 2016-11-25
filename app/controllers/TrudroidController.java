@@ -13,6 +13,7 @@ import com.amazonaws.util.json.JSONException;
 import com.google.api.client.util.Base64;
 import com.google.protobuf.InvalidProtocolBufferException;
 import controllers.businessLogic.*;
+import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import in.trujobs.proto.*;
 import in.trujobs.proto.ApplyJobRequest;
 import models.entity.Candidate;
@@ -1515,9 +1516,18 @@ public class TrudroidController {
         Logger.info("candidateMobile: " + preScreenPopulateRequest.getCandidateMobile());
         Logger.info("jobPostId: " + preScreenPopulateRequest.getJobPostId());
 
-        if(preScreenPopulateRequest.getCandidateMobile() != null){
-
+        if(preScreenPopulateRequest.getCandidateMobile() == null
+                || preScreenPopulateRequest.getCandidateMobile().isEmpty()
+                || preScreenPopulateRequest.getJobPostId() == 0) {
+            response.setStatus(PreScreenPopulateProtoResponse.Status.FAILURE);
+            return ok(Base64.encodeBase64String(response.build().toByteArray()));
         }
+
+        Candidate candidate = CandidateService.isCandidateExists(preScreenPopulateRequest.getCandidateMobile());
+        PreScreenPopulateResponse populateResponse = JobPostWorkflowEngine.getJobPostVsCandidate(preScreenPopulateRequest.getJobPostId(),
+                candidate.getCandidateId(), false);
+
+
         return ok(Base64.encodeBase64String(response.build().toByteArray()));
     }
 }
