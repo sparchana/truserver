@@ -8,6 +8,7 @@ import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
+import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import com.amazonaws.util.json.JSONException;
 import com.google.api.client.util.Base64;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -1498,5 +1499,25 @@ public class TrudroidController {
             localityObjectResponse.setStatus(LocalityObjectResponse.Status.UNKNOWN);
         }
        return ok(Base64.encodeBase64String(localityObjectResponse.build().toByteArray()));
+    }
+
+    public static Result mGetJobPostVsCandidate() {
+        PreScreenPopulateProtoRequest preScreenPopulateRequest = null;
+        try {
+            String requestString = request().body().asText();
+            preScreenPopulateRequest = PreScreenPopulateProtoRequest.parseFrom(Base64.decodeBase64(requestString));
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+
+        PreScreenPopulateProtoResponse.Builder response = PreScreenPopulateProtoResponse.newBuilder();
+
+        Logger.info("candidateMobile: " + preScreenPopulateRequest.getCandidateMobile());
+        Logger.info("jobPostId: " + preScreenPopulateRequest.getJobPostId());
+
+        if(preScreenPopulateRequest.getCandidateMobile() != null){
+
+        }
+        return ok(Base64.encodeBase64String(response.build().toByteArray()));
     }
 }

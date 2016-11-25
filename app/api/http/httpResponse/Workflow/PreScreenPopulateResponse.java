@@ -50,7 +50,6 @@ public class PreScreenPopulateResponse {
         }
     }
 
-
         public static class PreScreenElement {
             public String propertyTitle;
             public int propertyId;
@@ -153,7 +152,6 @@ public class PreScreenPopulateResponse {
                 this.candidateElement = candidateElement;
             }
         }
-
     // min req
     public Long jobPostId;
     public Long candidateId;

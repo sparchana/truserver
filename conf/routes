@@ -245,6 +245,7 @@ POST        /mGetCandidateUpdateBasicProfileStatics                       contro
 POST        /mGetCandidateUpdateExperienceProfileStatics/:jobRoles        controllers.TrudroidController.mGetCandidateUpdateExperienceProfileStatics(jobRoles: String)
 POST        /mGetCandidateUpdateEducationProfileStatics                   controllers.TrudroidController.mGetCandidateUpdateEducationProfileStatics()
 POST        /mGetLocalityForLatLngOrPlaceId                               controllers.TrudroidController.mGetLocalityForLatLngOrPlaceId()
+POST        /mGetJobPostVsCandidate                                       controllers.TrudroidController.mGetJobPostVsCandidate()
 
 # Update interview status API
 # ~~~~~~~~~~~~
