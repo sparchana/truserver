@@ -52,7 +52,6 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-
 });
 
 function processDataNotSelectedReason(returnedData) {

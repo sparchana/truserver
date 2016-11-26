@@ -15,6 +15,7 @@ var allTimeSlots = [];
 var allReason = [];
 
 var oldDate = null;
+var notSelectedReason = [];
 
 function openTrackInterview() {
     window.location = "/recruiter/job/track/" + jobPostId;
@@ -45,6 +46,20 @@ $(document).ready(function(){
             contentType: false,
             processData: false,
             success: processDataForJobPost
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllNotSelectedReasons",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataNotSelectedReason
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
@@ -93,6 +108,17 @@ $(document).ready(function(){
         }
     });
 });
+
+function processDataNotSelectedReason(returnedData) {
+    returnedData.forEach(function(reason) {
+        var id = reason.reasonId;
+        var name = reason.reasonName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        notSelectedReason.push(item);
+    });
+}
 
 function processDataForJobPost(returnedData) {
     $("#jobPostTitle").html("Job Applications for " + returnedData.jobPostTitle);
@@ -198,6 +224,7 @@ function processDataForJobApplications(returnedData) {
     var confirmedCount = 0;
     var completedCount = 0;
     var rejectedCount = 0;
+    var approvalCount = 0;
 
     var pendingParent = $("#pendingCandidateContainer");
     var confirmedParent = $("#confirmedCandidateContainer");
@@ -241,9 +268,10 @@ function processDataForJobApplications(returnedData) {
                 } else if(value.extraData.workflowStatus.statusId == 4){
                     pendingParent.append(candidateCard);
                     pendingCount++;
-                } else{
+                } else {
                     pendingParent.append(candidateCard);
                     pendingCount++;
+                    approvalCount++;
                     actionNeeded = true;
                 }
             } else{
@@ -312,7 +340,7 @@ function processDataForJobApplications(returnedData) {
                 candidateInterviewDateVal.id = "interview_date_" + value.candidate.candidateId;
             } else{
                 candidateInterviewDateVal.style = "margin-left: 4px";
-                interviewDetails = "Schedule not available";
+                interviewDetails = "Schedule not available. Please contact candidate";
             }
 
             candidateInterviewDateVal.textContent = interviewDetails + ". ";
@@ -421,8 +449,6 @@ function processDataForJobApplications(returnedData) {
                     } else{
                         candidateInterviewStatusVal.style = "color: red; font-size: 14px; font-weight: 600";
                     }
-                } else if(value.extraData.workflowStatus.statusId == 4){
-                    candidateInterviewStatusVal.textContent = "No credits!";
                 } else{
                     candidateInterviewStatusVal.textContent = "";
                 }
@@ -435,25 +461,49 @@ function processDataForJobApplications(returnedData) {
             candidateCardScore.style = "padding: 8px; margin-top: 16px; text-align: right";
             candidateCardRow.appendChild(candidateCardScore);
 
+            var showMatch = true;
             var matchVal = document.createElement("span");
-            if(value.scoreData != null){
-                matchVal.className = "tooltipped matchDiv";
-                matchVal.setAttribute("data-postiton", "top");
-                matchVal.setAttribute("data-delay", "50");
-                matchVal.setAttribute("data-tooltip", value.scoreData.reason);
+            candidateCardScore.appendChild(matchVal);
+            if(value.extraData.workflowStatus != null) {
+                if(value.extraData.workflowStatus.statusId == 6){
+                    var todayDay = new Date();
+                    var interviewDate = new Date(value.extraData.interviewDate);
+                    var interviewDay = interviewDate.getDate();
+                    var interviewMonth = interviewDate.getMonth() + 1;
 
-                if(value.scoreData.band == 1){
-                    matchVal.style = "background: #2ec866";
-                    matchVal.textContent = "Good Match";
-                } else if(value.scoreData.band == 2){
-                    matchVal.style = "background: orange";
-                    matchVal.textContent = "Moderate Match";
-                } else{
-                    matchVal.style = "background: red";
-                    matchVal.textContent = "Low Match";
+                    if((todayDay.getDate() == interviewDay) && ((todayDay.getMonth() + 1) == interviewMonth)){
+                        showMatch = false;
+                        var feedbackBtn = document.createElement("a");
+                        feedbackBtn.className = "waves-effect waves-light btn";
+                        feedbackBtn.style = "font-weight: bold";
+                        feedbackBtn.onclick = function () {
+                            openFeedbackModal(value.candidate.candidateId);
+                        };
+                        feedbackBtn.textContent = "Add feedback";
+                        matchVal.appendChild(feedbackBtn);
+                    }
                 }
             }
-            candidateCardScore.appendChild(matchVal);
+            
+            if(showMatch){
+                if(value.scoreData != null){
+                    matchVal.className = "tooltipped matchDiv";
+                    matchVal.setAttribute("data-postiton", "top");
+                    matchVal.setAttribute("data-delay", "50");
+                    matchVal.setAttribute("data-tooltip", value.scoreData.reason);
+
+                    if(value.scoreData.band == 1){
+                        matchVal.style = "background: #2ec866";
+                        matchVal.textContent = "Good Match";
+                    } else if(value.scoreData.band == 2){
+                        matchVal.style = "background: orange";
+                        matchVal.textContent = "Moderate Match";
+                    } else{
+                        matchVal.style = "background: red";
+                        matchVal.textContent = "Low Match";
+                    }
+                }
+            }
 
             //end of candidateCardRow
 
@@ -946,6 +996,14 @@ function processDataForJobApplications(returnedData) {
         });
         $('.tooltipped').tooltip({delay: 50});
 
+        if(approvalCount == 0){
+            $(".badge").hide();
+        } else {
+            $(".badge").show();
+            $("#pendingApproval").addClass("newNotification").html(approvalCount + " new");
+        }
+
+
         if(pendingCount == 0){
             $("#noPendingApplication").show();
         } else{
@@ -1149,6 +1207,73 @@ function processDataInterviewStatus(returnedData) {
         }
         $("#interview_div_" + globalCandidateId).append(candidateInterviewStatusVal);
         getAllCandidates();
+    } else{
+        notifyError("Something went wrong. Please try again later");
+    }
+}
+
+//feedback
+function openFeedbackModal(candidateId) {
+    globalCandidateId = candidateId;
+    $("#reasonVal").html('');
+    var defaultOption = $('<option value="0" selected></option>').text("Select a reason");
+    $('#reasonVal').append(defaultOption);
+
+    notSelectedReason.forEach(function (reason) {
+        var option = $('<option value=' + reason.id + '></option>').text(reason.name);
+        $('#reasonVal').append(option);
+    });
+
+    $("#addFeedback").openModal();
+
+    $("#feedbackOption").change(function (){
+        if($(this).val() == 2 || $(this).val() == 4){
+            $("#otherReason").show();
+        } else{
+            $("#otherReason").hide();
+        }
+    });
+}
+
+function confirmAddFeedback() {
+    if($("#feedbackOption").val() > 0){
+        if(($("#feedbackOption").val() == 2 || $("#feedbackOption").val() == 4) && $("#reasonVal").val() == 0){
+            notifyError("Please select a reason");
+        } else{
+            try {
+                var d = {
+                    candidateId: globalCandidateId,
+                    jobPostId : jobPostId,
+                    feedbackStatus : $("#feedbackOption").val(),
+                    feedbackComment : $("#feedbackNote").val(),
+                    rejectReason: $("#reasonVal").val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/updateFeedback",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
+                    success: processDataUpdateFeedBack
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+        }
+    } else{
+        notifyError("Please select a feedback option");
+    }
+}
+
+function processDataUpdateFeedBack(returnedData) {
+    if(returnedData == 1){
+        notifySuccess("Feedback updated successfully. Refreshing the page..");
+        setTimeout(function () {
+            location.reload();
+        }, 2000);
+    } else if(returnedData == -1){
+        notifyError("You are out of interview credits. Please purchase interview credits!");
+        openCreditModal();
     } else{
         notifyError("Something went wrong. Please try again later");
     }

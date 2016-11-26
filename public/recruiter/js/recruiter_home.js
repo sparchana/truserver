@@ -184,8 +184,15 @@ function processDataGetJobPostDetails(returnedData) {
 }
 
 function processDataPendingApproval(returnedData) {
-    $("#pendingApproval").addClass("newNotification").html(returnedData + " new");
+    if(returnedData == 0){
+        $(".badge").hide();
+    } else{
+        $(".badge").show();
+        $("#pendingApproval").addClass("newNotification").html(returnedData + " new");
+    }
+
 }
+
 function processDataInterviewToday(returnedData) {
     var parent = $("#tableBody");
     var interviews = "";

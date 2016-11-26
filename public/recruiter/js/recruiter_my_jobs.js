@@ -44,7 +44,7 @@ function processDataGenerateJobPostView(returnedData) {
         logoutRecruiter();
     } else{
         var parent = $('.myJobsRecruiter');
-
+        returnedData = returnedData.reverse();
         if(Object.keys(returnedData).length){
             returnedData.forEach(function (jobPost) {
                 var mainDiv =  document.createElement("div");
@@ -150,7 +150,7 @@ function processDataGenerateJobPostView(returnedData) {
                 applicantBtn.style = "font-weight: bold; text-decoration:none";
                 colApplicant.appendChild(applicantBtn);
 
-                var newApplication = document.createElement('span');
+                var newApplication = document.createElement('div');
                 newApplication.style = "margin-top: 4px";
                 colApplicant.appendChild(newApplication);
 

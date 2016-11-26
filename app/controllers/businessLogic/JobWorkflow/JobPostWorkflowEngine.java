@@ -2255,10 +2255,10 @@ public class JobPostWorkflowEngine {
                 for(PreScreenPopulateResponse.PreScreenElement pe: response.getElementList()){
                     if(pe.isMatching()){
                         if(pe.isSingleEntity()) {
+                        } else {
                             if(pe.getCandidateElement() != null){
                                 reason += pe.getCandidateElement().getPlaceHolder() + ", ";
                             }
-                        } else {
                             for(PreScreenPopulateResponse.PreScreenCustomObject customObject: pe.getCandidateElementList()){
                                 reason += customObject.getPlaceHolder() + ", ";
                             }
