@@ -18,6 +18,9 @@ var rescheduledDate;
 var jobRoleName;
 var companyName;
 
+var allReasons = [];
+var globalStatus = 0;
+
 $(window).resize(function(){
     var w = window.innerWidth;
     if(w < 640){
@@ -42,6 +45,20 @@ $(document).ready(function(){
 
     try {
         $.ajax({
+            type: "POST",
+            url: "/getAllInterviewNotGoingReasons",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetAllReason
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+    try {
+        $.ajax({
             url: "/getCandidateMatchingJobs/" + localStorage.getItem("candidateId"),
             type: "POST",
             data: false,
@@ -59,6 +76,17 @@ $(document).ready(function(){
         localStorage.setItem("appliedJobs", "0");
     }
 });
+
+function processDataGetAllReason(returnedData) {
+    returnedData.forEach(function(reason) {
+        var id = reason.reasonId;
+        var name = reason.reasonName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        allReasons.push(item);
+    });
+}
 
 function toggleTabs(index) {
     if(index == 0){
@@ -116,10 +144,43 @@ function getAllAppliedJobs() {
                             var currentStatus = "Under Review";
                             if(jobApplication.status.statusId > 5){
                                 if(jobApplication.status.statusId == 6 || (jobApplication.status.statusId > 9 && jobApplication.status.statusId < 14)) {
-                                    currentStatus = "Interview confirmed";
+                                    currentStatus = '<div style="width:100%; color: green; text-align: center">Interview Confirmed</div>';
                                     if (jobApplication.interviewLocationLat != null) {
                                         currentStatus += '<div class="navigationBtn" onclick="navigateToLocation(' + jobApplication.interviewLocationLat + ', ' + jobApplication.interviewLocationLng + ')">Directions</div>'
                                     }
+                                    var candidateStatus ='<div class="mLabel" style="width:100%;">Status not available</div>';
+
+                                    // candidate status
+                                    if(jobApplication.status.statusId == 13){
+                                        candidateStatus = '<div class="mLabel" style="width:100%; color: green">Reached</div>';
+                                    } else{
+                                        if(jobApplication.status.statusId == 6 || (jobApplication.status.statusId > 9 && jobApplication.status.statusId < 13)){
+                                            candidateStatus = '<div style="width:100%; margin-top: 8px; text-align: center">' + jobApplication.status.statusTitle + '</div>';
+                                            if(jobApplication.status.statusId == 6){
+                                                candidateStatus = '<div style="width:100%; margin-top: 8px;  text-align: center">Status not available</div>';
+                                            }
+                                            candidateStatus += '<select id="candidate_interview_status_' + jobApplication.jobPost.jobPostId +'" style="width: 100%">' +
+                                            '<option value = 0>Select a Status</option>';
+
+                                            if(jobApplication.status.statusId == 6 || jobApplication.status.statusId == 10){
+                                                if(jobApplication.status.statusId == 6){
+                                                    candidateStatus += '<option value = 1>Not Going</option>';
+                                                }
+                                                candidateStatus += '<option value = 2>Delayed</option>' +
+                                                '<option value = 3>Started</option>' +
+                                                '<option value = 4>Reached</option>';
+                                            } else if(jobApplication.status.statusId == 11){
+                                                candidateStatus += '<option value = 3>Started</option>' +
+                                                    '<option value = 4>Reached</option>';
+                                            } else if(jobApplication.status.statusId == 12){
+                                                candidateStatus += '<option value = 2>Delayed</option>' +
+                                                    '<option value = 4>Reached</option>';
+                                            }
+                                            candidateStatus +='</select><div class="navigationBtn" style="margin-top: 4px" onclick="updateCandidateStatus(' + jobApplication.jobPost.jobPostId + ')">Update</div>';
+                                        }
+                                    }
+                                    currentStatus += candidateStatus;
+
                                 } else if(jobApplication.status.statusId == 7){
                                     currentStatus = "Application rejected";
                                 } else if(jobApplication.status.statusId == 8){
@@ -148,7 +209,7 @@ function getAllAppliedJobs() {
                                     companyName = jobApplication.jobPost.company.companyName;
                                     return '<input type="submit" value="Pre-Screen"  style="width:150px" onclick="openPartnerPreScreenModal(' + jpId+ ', ' + candidateId + ');" id="' + candidateInfo.lead.leadId + '" class="btn btn-primary">'
                                 } else {
-                                    return "Completed";
+                                    return '<div class="mLabel" style="width:100%" >Completed</div>';
                                 }
                             };
 
@@ -159,10 +220,10 @@ function getAllAppliedJobs() {
                                 'jobPostSalary' : '<div class="mLabel" style="width:100%" >'+ salary + '</div>',
                                 'interviewIncentive' : '<div class="mLabel" style="width:100%" >'+ interviewIncentive + '</div>',
                                 'joiningIncentive' : '<div class="mLabel" style="width:100%" >'+ joiningIncentive + '</div>',
-                                'jobStatus' : '<div class="mLabel" id="status_' + jobApplication.jobPost.jobPostId + '" style="width:100%" >'+ currentStatus + '</div>',
                                 'interviewDetails' : '<div class="mLabel" style="width:100%" >'+ interviewDetails + '</div>',
                                 'jobAppliedOn' : '<div class="mLabel" style="width:100%" >'+ ('0' + appliedDateInMillis.getDate()).slice(-2) + '-' + getMonthVal((appliedDateInMillis.getMonth()+1)) + '-' + appliedDateInMillis.getFullYear() + '</div>',
-                                'preScreen' : varColumn
+                                'preScreen' : varColumn,
+                                'jobStatus' : '<div class="mLabel" id="status_' + jobApplication.jobPost.jobPostId + '" style="width:100%" >'+ currentStatus + '</div>'
                             });
                             returnedData.forEach(function (jobApplication) {
                                 var appliedJob = $("#apply_btn_" + jobApplication.jobPost.jobPostId);
@@ -196,6 +257,72 @@ function getAllAppliedJobs() {
         });
     } catch (exception) {
         console.log("exception occured!!" + exception.stack);
+    }
+}
+
+function confirmUpdateStatusNotGoing(){
+    if($("#notGoingReason").val() > 0){
+        globalStatus = 0;
+        updateStatusAjax(localStorage.getItem("candidateId"), globalJpId, 1, $("#notGoingReason").val());
+    } else{
+        alert("Please select a reason for not going for interview");
+    }
+}
+
+function updateCandidateStatus(jpId) {
+    globalJpId = jpId;
+    if($("#candidate_interview_status_" + globalJpId).val() > 0){
+        globalStatus = $("#candidate_interview_status_" + globalJpId).val();
+        var notGoingReason = 0;
+            if($("#notGoingReason").val() != null && $("#notGoingReason").val() != 0){
+            notGoingReason = $("#notGoingReason").val();
+        }
+        updateStatusAjax(localStorage.getItem("candidateId"), globalJpId, $("#candidate_interview_status_" + globalJpId).val(), notGoingReason);
+    } else {
+        alert("Please select a status");
+    }
+}
+
+function updateStatusAjax(cid, jpId, val, reason) {
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/updateStatus/" + cid + "/" + jpId + "/" + val + "/" + reason,
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataForUpdateStatus
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+}
+
+function processDataForUpdateStatus(returnedData) {
+    $("#notGoingModal").modal("hide");
+    if(returnedData == 1){
+        if(globalStatus == 1){
+            $('#notGoingReason').html('');
+            var defaultOption = $('<option value="0"></option>').text("Select a reason");
+            $('#notGoingReason').append(defaultOption);
+
+            allReasons.forEach(function (reason) {
+                var id = reason.id;
+                var name = reason.name;
+                var option = $('<option value=' + id + '></option>').text(name);
+                $('#notGoingReason').append(option);
+            });
+            $("#notGoingModal").modal("show");
+            globalStatus = 0;
+        } else{
+            alert("Status updated successfully");
+            setTimeout(function () {
+                location.reload();
+            }, 2000);
+        }
+    } else{
+        alert("Something went wrong. Please try again later");
     }
 }
 

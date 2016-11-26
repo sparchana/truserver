@@ -484,7 +484,7 @@ function processDataForJobApplications(returnedData) {
                     }
                 }
             }
-            
+
             if(showMatch){
                 if(value.scoreData != null){
                     matchVal.className = "tooltipped matchDiv";
