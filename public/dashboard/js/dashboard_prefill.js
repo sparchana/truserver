@@ -416,7 +416,6 @@ function saveCandidateBasicProfile(){
 
     var documentValues = [];
     candidateDocumentIdList.forEach(function (id) {
-        console.log($('#idProofValue_'+ id).val());
         var item = {};
         item["idProofId"] = parseInt(id);
         item["idProofValue"] = $('#idProofValue_'+ id).val();
@@ -445,10 +444,12 @@ function saveCandidateBasicProfile(){
            notifyError("Please Select Document");
            statusCheck=0;
        }
-       else if(id.idProofValue == null){
-           notifyError("Please Enter Document Detail");
-           statusCheck=0;
-       }
+        var isChecked = id.idProofId;
+        var isValid = validateInput(isChecked, id.idProofValue.trim());
+        if (isChecked && !isValid) {
+            statusCheck = 0;
+            $.notify("Please provide valid document details.", 'error');
+        }
     });
     if(res == 0){
         notifyError("Enter a valid mobile number");
@@ -522,7 +523,6 @@ function saveCandidateBasicProfile(){
 
             localStorage.setItem("name", d.candidateFirstName);
             localStorage.setItem("lastName", d.candidateSecondName);
-        console.log("sending data : " + JSON.stringify(d));
             $.ajax({
                 type: "POST",
                 url: "/candidateUpdateBasicProfile",
@@ -535,9 +535,36 @@ function saveCandidateBasicProfile(){
         }
     }
 }
-
+function validateInput(idProofId, value) {
+    // aadhaar validation
+    if (idProofId == 3) {
+        if (!validateAadhar(value)) {
+            return false;
+        } else {
+            return true;
+        }
+    } else if (idProofId == 1) {
+        if (!validateDL(value)) {
+            return false;
+        } else {
+            return true;
+        }
+    } else if (idProofId == 2) {
+        if (!validatePASSPORT(value)) {
+            return false;
+        } else {
+            return true;
+        }
+    } else if (idProofId == 4) {
+        if (!validatePAN(value)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+}
 function saveCandidateExperienceDetails(){
-    console.log(candidateInformation);
+    /*console.log(candidateInformation);*/
     var experienceStatus = $('input:radio[name="workExperience"]:checked').val();
     var selectedSalary = $('#candidateLastWithdrawnSalary').val();
 

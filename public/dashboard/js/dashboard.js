@@ -45,19 +45,7 @@ $(document).ready(function(){
 
     checkUserLogin();
     /* ajx commands to fetch all assets*/
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getAllAsset",
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataCheckAssets
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
+    getAssetsForJobRole();
     /* ajax commands to fetch all id proofs*/
     try {
         $.ajax({
@@ -522,7 +510,6 @@ function processDataAndFillAllFields(returnedData) {
     } catch(err){
         console.log("getCandidateLocalityPref error"+err);
     }
-
     /* get Candidate's assets */
     try {
         var assets = returnedData.candidateAssetList;
@@ -618,7 +605,7 @@ function processDocs(returnedData) {
         var cell1 = row.insertCell(0);
         var cell2 = row.insertCell(1);
 
-        cell1.innerHTML = idProof.idProofName;
+        cell1.innerHTML = idProof.idProofName +" Number";
         var ip = document.createElement("INPUT");
         ip.setAttribute("type", "text");
         ip.setAttribute("id", "idProofValue_"+idProof.idProofId);
@@ -660,8 +647,28 @@ function getJob(){
 function getAssets(){
     return assetArray;
 }
-function processDataCheckAssets(returnedAssets) {
-    if(returnedAssets != null) {
+function getAssetsForJobRole(){
+    var jobRoleId = $('#candidateJobPref').val().split(",");
+    for(var i=0;i < jobRoleId.length;i++){
+        if(jobRoleId[i] != 0){
+            try {
+                $.ajax({
+                    type: "GET",
+                    url: "/support/api/getAssetReqForJobRole/?job_role_id="+jobRoleId[i],
+                    data: false,
+                    async: false,
+                    contentType: false,
+                    processData: false,
+                    success: processDataGetAssets
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+        };
+    }
+}
+function processDataGetAssets(returnedAssets) {;
+    if(returnedAssets != null){
         returnedAssets.forEach(function (asset) {
             var id = asset.assetId;
             var name = asset.assetTitle;
@@ -690,12 +697,32 @@ $(function () {
         generateIdProof(null);
     });
     $('#candidateJobPref').change(function () {
-        generateSkills();
+        getAssetsForJobRole();
+        /*generateSkills();
         generateExperience($('#candidateJobPref').val());
         prefillCandidatePastJobExp(candidatePastJobExp);
-        unlockcurrentJobRadio();
+        unlockcurrentJobRadio();*/
     });
 }); // end of function
+function generateExperience(jobPrefString) {
+    var selectedJobPref = jobPrefString;
+    //console.log("selectedJobPref : " + JSON.stringify(selectedJobPref));
+    if (selectedJobPref != null && selectedJobPref !== '') {
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/getJobExpQuestion/" + selectedJobPref,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataCheckExp
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
 function notifyError(msg, type) {
     $.notify({
         message: msg,

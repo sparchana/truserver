@@ -1714,14 +1714,20 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(SecuredUser.class)
-    public static Result getAssetReqForJobRole(Long jobPostId, Long jobRoleId) {
-        if(jobPostId == null && jobRoleId == null) {
+    public static Result getAssetReqForJobRole(Long jobPostId, Long jobRoleId, String jobRoleIds) {
+        if(jobPostId == null && jobRoleId == null && jobRoleIds == null ) {
             return badRequest();
         }
-
         if(jobRoleId == null && jobPostId !=null && jobPostId != 0) {
             JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
             jobRoleId = jobPost.getJobRole().getJobRoleId();
+        }
+
+        List<String> jobRoleIdList = new ArrayList();
+        if(jobRoleIds != null) {
+            jobRoleIdList = Arrays.asList(jobRoleIds.split("\\s*,\\s*"));
+        } else {
+            jobRoleIdList.add(String.valueOf(jobRoleId));
         }
 
         if ((jobPostId != null && jobPostId == 0 )|| jobRoleId == 0){
@@ -1735,7 +1741,7 @@ public class Application extends Controller {
                 .findList();
 
         List<JobRoleToAsset> jobRoleToAssetList= JobRoleToAsset.find.setUseQueryCache(!isDevMode)
-                .where().eq("jobRole.jobRoleId", jobRoleId).findList();
+                .where().in("jobRole.jobRoleId", jobRoleIdList).findList();
 
         for(JobRoleToAsset jobRoleToAsset: jobRoleToAssetList) {
             assetList.add(jobRoleToAsset.getAsset());

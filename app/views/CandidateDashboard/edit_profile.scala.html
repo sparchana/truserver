@@ -252,7 +252,7 @@
                                     <div class="row" style="margin-top: 8px">
                                         <div class="col-sm-3"><h5>Job Role Preference(s)(Max: 3)<font color="red">*</font></h5></div>
                                         <div class="col-sm-5">
-                                            <input type="text" id="candidateJobPref">
+                                            <input type="text" id="candidateJobPref" >
                                             <script type="text/javascript">
                                                 $(document).ready(function () {
                                                     $("#candidateJobPref").tokenInput(getJob(), {
@@ -309,27 +309,7 @@
                                         </div>
                                     </div>
                                     <div class="row" style="margin-top: 8px">
-                                        <div class="col-sm-3"><h5>Assets<font color="red">*</font></h5></div>
-                                        <div class="col-sm-5" style="margin-top: 4px">
-                                            <div style="width: 100%; height: 34px;" class="btn-group" data-toggle="buttons">
-                                                <input type="text" id="candidateAsset" >
-                                                <script type="text/javascript">
-                                            $(document).ready(function() {
-                                                $("#candidateAsset").tokenInput(getAssets(), {
-                                                    theme: "facebook",
-                                                    placeholder: "What assets do you own?",
-                                                    hintText: "Start typing jobs (eg. Smartphone, Bike, Car)",
-                                                    minChars: 0,
-                                                    prePopulate: candidateAssetArray,
-                                                    preventDuplicates: true
-                                                });
-                                            });
-                                        </script>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row" style="margin-top: 8px">
-                                        <div class="col-sm-3"><h5>Document<font color="red">*</font></h5></div>
+                                        <div class="col-sm-3"><h5>Mention atleast one ID proof<font color="red">*</font></h5></div>
                                         <div class="col-sm-5" style="margin-top: 4px">
                                             <div style="width: 100%; height: 56px;" class="btn-group" data-toggle="buttons">
                                                 <input type="text" id="candidateIdProof" >
@@ -356,6 +336,26 @@
                                                     <thead></thead>
                                                     <tbody></tbody>
                                                 </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top: 8px">
+                                        <div class="col-sm-3"><h5>Do you own any of the following?</h5></div>
+                                        <div class="col-sm-5" style="margin-top: 4px">
+                                            <div style="width: 100%; height: 34px;" class="btn-group" data-toggle="buttons">
+                                                <input type="text" id="candidateAsset" >
+                                                <script type="text/javascript">
+                                            $(document).ready(function() {
+                                                $("#candidateAsset").tokenInput(getAssets(), {
+                                                    theme: "facebook",
+                                                    placeholder: "What assets do you own?",
+                                                    hintText: "Start typing jobs (eg. Smartphone, Bike, Car)",
+                                                    minChars: 0,
+                                                    prePopulate: candidateAssetArray,
+                                                    preventDuplicates: true
+                                                });
+                                            });
+                                        </script>
                                             </div>
                                         </div>
                                     </div>

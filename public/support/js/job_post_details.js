@@ -255,11 +255,13 @@ function generateDocument() {
 }
 function generateAsset() {
     var jobRoleId = parseInt($('#jobPostJobRole').val());
+    var url = "/support/api/getAssetReqForJobRole/?job_role_id="+jobRoleId;
+    url += "&jobRoleIds=";
     if(jobRoleId != 0){
         try {
             $.ajax({
                 type: "GET",
-                url: "/support/api/getAssetReqForJobRole/?job_role_id="+jobRoleId,
+                url: url,
                 data: false,
                 async: false,
                 contentType: false,
@@ -467,6 +469,8 @@ $(document).ready(function () {
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
+        var url = "/support/api/getAssetReqForJobRole/?job_role_id="+jobRoleId;
+        url += "&jobRoleIds=";
         try {
             $.ajax({
                 type: "GET",
