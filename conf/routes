@@ -243,6 +243,7 @@ POST        /mGetJobPostInfo                                              contro
 POST        /mFetchCandidateAlert                                         controllers.TrudroidController.mFetchCandidateAlert()
 POST        /mSearchJobs                                                  controllers.TrudroidController.mSearchJobs()
 POST        /mGetCandidateJobApplication                                  controllers.TrudroidController.mGetCandidateJobApplication()
+POST        /mGetCandidateJobApplicationViaWorkFlow                       controllers.TrudroidController.mGetCandidateJobApplicationViaWorkFlow()
 POST        /mCandidateUpdateBasicProfile                                 controllers.TrudroidController.mCandidateUpdateBasicProfile()
 POST        /mCandidateUpdateExperienceProfile                            controllers.TrudroidController.mCandidateUpdateExperienceProfile()
 POST        /mCandidateUpdateEducationProfile                             controllers.TrudroidController.mCandidateUpdateEducationProfile()
@@ -250,6 +251,8 @@ POST        /mGetCandidateUpdateBasicProfileStatics                       contro
 POST        /mGetCandidateUpdateExperienceProfileStatics/:jobRoles        controllers.TrudroidController.mGetCandidateUpdateExperienceProfileStatics(jobRoles: String)
 POST        /mGetCandidateUpdateEducationProfileStatics                   controllers.TrudroidController.mGetCandidateUpdateEducationProfileStatics()
 POST        /mGetLocalityForLatLngOrPlaceId                               controllers.TrudroidController.mGetLocalityForLatLngOrPlaceId()
+POST        /mConfirmInterview                                            controllers.TrudroidController.mConfirmInterview()
+POST        /mUpdateCandidateStatus                                       controllers.TrudroidController.mUpdateCandidateStatus()
 
 # Update interview status API
 # ~~~~~~~~~~~~

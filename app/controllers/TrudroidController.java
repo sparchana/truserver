@@ -8,10 +8,15 @@ import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
+import com.amazonaws.services.importexport.model.Job;
 import com.amazonaws.util.json.JSONException;
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.RawSql;
+import com.avaje.ebean.RawSqlBuilder;
 import com.google.api.client.util.Base64;
 import com.google.protobuf.InvalidProtocolBufferException;
 import controllers.businessLogic.*;
+import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import in.trujobs.proto.*;
 import in.trujobs.proto.ApplyJobRequest;
 import models.entity.Candidate;
@@ -33,6 +38,7 @@ import static controllers.businessLogic.JobSearchService.*;
 import static models.util.Util.generateOtp;
 import static models.util.Validator.isValidLocalityName;
 import static play.libs.Json.toJson;
+import static play.mvc.Controller.session;
 import static play.mvc.Http.Context.Implicit.request;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
@@ -951,6 +957,123 @@ public class TrudroidController {
         return ok("0");
     }
 
+    public static Result mGetCandidateJobApplicationViaWorkFlow() {
+        CandidateAppliedJobsRequest candidateAppliedJobsRequest = null;
+        //Main jobApplication response builder
+        CandidateAppliedJobPostWorkFlowResponse.Builder candidateAppliedJobPostWorkFlowResponse = CandidateAppliedJobPostWorkFlowResponse.newBuilder();
+
+        try {
+            String requestString = request().body().asText();
+            candidateAppliedJobsRequest = CandidateAppliedJobsRequest.parseFrom(Base64.decodeBase64(requestString));
+            Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(candidateAppliedJobsRequest.getCandidateMobile()));
+            if (existingCandidate != null) {
+
+                //job Application list builder which will contain all the job application
+                List<JobPostWorkFlowObject> jobApplicationListToReturn = new ArrayList<JobPostWorkFlowObject>();
+
+                //Getting list of all the job applications applied by a user from model
+                List<JobPostWorkflow> appliedJobsList;
+
+                String candidateAppliedJobsSql = "select job_post_id, status_id, scheduled_interview_time_slot, scheduled_interview_date, interview_location_lat, interview_location_lng " +
+                        "from job_post_workflow jwf where jwf.creation_timestamp = (select max(creation_timestamp)\n" +
+                        " from job_post_workflow where jwf.job_post_id = job_post_workflow.job_post_id and job_post_workflow.candidate_id = " + existingCandidate.getCandidateId() + ")";
+
+                RawSql rawSql = RawSqlBuilder.parse(candidateAppliedJobsSql)
+                        .tableAliasMapping("jwf", "job_post_workflow")
+                        .columnMapping("job_post_id", "jobPost.jobPostId")
+                        .columnMapping("status_id", "status.statusId")
+                        .columnMapping("scheduled_interview_time_slot", "scheduledInterviewTimeSlot.interviewTimeSlotId")
+                        .columnMapping("scheduled_interview_date", "scheduledInterviewDate")
+                        .columnMapping("interview_location_lat", "interviewLocationLat")
+                        .columnMapping("interview_location_lng", "interviewLocationLng")
+                        .create();
+
+                appliedJobsList = Ebean.find(JobPostWorkflow.class)
+                        .setRawSql(rawSql)
+                        .findList();
+
+                //Job Application Object (Proto) to get all the job application applied by the candidate (list object)
+                JobPostWorkFlowObject.Builder jobPostWorkFlowObjBuilder = JobPostWorkFlowObject.newBuilder();
+
+                //iterating all the applied jobs
+                for (JobPostWorkflow jwpf: appliedJobsList) {
+
+                    //setting all the values form model object to proto object (builder)
+                    jobPostWorkFlowObjBuilder.setJobPostWorkflowId(jwpf.getJobPostWorkflowId());
+                    jobPostWorkFlowObjBuilder.setWorkflowUUId(jwpf.getJobPostWorkflowUUId());
+                    if(jwpf.getInterviewLocationLat() != null){
+                        jobPostWorkFlowObjBuilder.setInterviewLat(jwpf.getInterviewLocationLat());
+                        jobPostWorkFlowObjBuilder.setInterviewLng(jwpf.getInterviewLocationLng());
+                    }
+
+                    jobPostWorkFlowObjBuilder.setCreationTimeMillis(jwpf.getCreationTimestamp().getTime());
+
+                    if(jwpf.getScheduledInterviewDate() != null){
+                        jobPostWorkFlowObjBuilder.setInterviewDateMillis(jwpf.getScheduledInterviewDate().getTime());
+                    }
+
+                    if(jwpf.getScheduledInterviewTimeSlot() != null){
+                        InterviewTimeSlotObject.Builder interviewTimeSlotObjectBuilder = InterviewTimeSlotObject.newBuilder();
+                        interviewTimeSlotObjectBuilder.setSlotId(jwpf.getScheduledInterviewTimeSlot().getInterviewTimeSlotId());
+                        interviewTimeSlotObjectBuilder.setSlotName(jwpf.getScheduledInterviewTimeSlot().getInterviewTimeSlotName());
+
+                        jobPostWorkFlowObjBuilder.setInterviewTimeSlotObject(interviewTimeSlotObjectBuilder.build());
+                    }
+
+                    if(jwpf.getStatus() != null){
+                        JobPostWorkFlowStatus.Builder jobPostWorkFlowStatusBuilder = JobPostWorkFlowStatus.newBuilder();
+                        jobPostWorkFlowStatusBuilder.setStatusId(jwpf.getStatus().getStatusId());
+                        jobPostWorkFlowStatusBuilder.setStatusTitle(jwpf.getStatus().getStatusTitle());
+
+                        jobPostWorkFlowObjBuilder.setCandidateInterviewStatus(jobPostWorkFlowStatusBuilder.build());
+                    }
+
+                    if(jwpf.getJobPost() != null){
+                        JobPostObject.Builder jobPostObjectBuilder = JobPostObject.newBuilder();
+                        jobPostObjectBuilder.setJobPostTitle(jwpf.getJobPost().getJobPostTitle());
+                        jobPostObjectBuilder.setJobPostId(jwpf.getJobPost().getJobPostId());
+
+                        //company
+                        jobPostObjectBuilder.setJobPostCompanyName(jwpf.getJobPost().getCompany().getCompanyName());
+
+                        jobPostObjectBuilder.setJobPostMinSalary(jwpf.getJobPost().getJobPostMinSalary());
+                        if(jwpf.getJobPost().getJobPostMaxSalary() == 0 || jwpf.getJobPost().getJobPostMaxSalary() == null){
+                            jobPostObjectBuilder.setJobPostMinSalary(0);
+                        } else{
+                            jobPostObjectBuilder.setJobPostMinSalary(jwpf.getJobPost().getJobPostMaxSalary());
+                        }
+
+                        //experience
+                        ExperienceObject.Builder experienceObjectBuilder = ExperienceObject.newBuilder();
+                        experienceObjectBuilder.setExperienceId(jwpf.getJobPost().getJobPostExperience().getExperienceId());
+                        experienceObjectBuilder.setExperienceType(jwpf.getJobPost().getJobPostExperience().getExperienceType());
+
+                        jobPostObjectBuilder.setJobPostExperience(experienceObjectBuilder.build());
+
+                        //education
+                        EducationObject.Builder educationObjectBuilder = EducationObject.newBuilder();
+                        educationObjectBuilder.setEducationId(jwpf.getJobPost().getJobPostEducation().getEducationId());
+                        educationObjectBuilder.setEducationName(jwpf.getJobPost().getJobPostEducation().getEducationName());
+
+                        jobPostObjectBuilder.setEducation(educationObjectBuilder.build());
+
+                        jobPostWorkFlowObjBuilder.setJobPostObject(jobPostObjectBuilder.build());
+                    }
+
+                    jobApplicationListToReturn.add(jobPostWorkFlowObjBuilder.build());
+                }
+                //adding the list to the main response builder
+                candidateAppliedJobPostWorkFlowResponse.addAllJobPostWorkFlowObject(jobApplicationListToReturn);
+
+                candidateAppliedJobPostWorkFlowResponse.setStatus(CandidateAppliedJobPostWorkFlowResponse.Status.valueOf(1));
+                return ok(Base64.encodeBase64String(candidateAppliedJobPostWorkFlowResponse.build().toByteArray()));
+            }
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        return ok("0");
+    }
+
     public static Result mCandidateUpdateBasicProfile() {
         UpdateCandidateBasicProfileRequest updateCandidateBasicProfileRequest = null;
         UpdateCandidateBasicProfileResponse.Builder updateCandidateProfileResponse = UpdateCandidateBasicProfileResponse.newBuilder();
@@ -1498,5 +1621,52 @@ public class TrudroidController {
             localityObjectResponse.setStatus(LocalityObjectResponse.Status.UNKNOWN);
         }
        return ok(Base64.encodeBase64String(localityObjectResponse.build().toByteArray()));
+    }
+
+    public static Result mConfirmInterview() {
+        UpdateInterviewRequest updateInterviewRequest = null;
+        try {
+            String requestString = request().body().asText();
+            updateInterviewRequest = UpdateInterviewRequest.parseFrom(Base64.decodeBase64(requestString));
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+
+        UpdateInterviewResponse.Builder updateInterviewResponse = UpdateInterviewResponse.newBuilder();
+
+        Candidate candidate = Candidate.find.where().eq("CandidateMobile", FormValidator.convertToIndianMobileFormat(updateInterviewRequest.getCandidateMobile())).findUnique();
+        if (candidate != null) {
+            if(JobPostWorkflowEngine.confirmCandidateInterview(updateInterviewRequest.getJpId(), updateInterviewRequest.getVal(), candidate) == 1){
+                updateInterviewResponse.setStatus(UpdateInterviewResponse.Status.SUCCESS);
+            } else{
+                updateInterviewResponse.setStatus(UpdateInterviewResponse.Status.FAILURE);
+            }
+        }
+
+        return ok(Base64.encodeBase64String(updateInterviewResponse.build().toByteArray()));
+    }
+
+    public static Result mUpdateCandidateStatus() {
+        UpdateCandidateStatusRequest updateCandidateStatusRequest = null;
+        try {
+            String requestString = request().body().asText();
+            updateCandidateStatusRequest = UpdateCandidateStatusRequest.parseFrom(Base64.decodeBase64(requestString));
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+
+        UpdateCandidateStatusResponse.Builder updateCandidateStatusResponse = UpdateCandidateStatusResponse.newBuilder();
+
+        Candidate candidate = Candidate.find.where().eq("CandidateMobile", FormValidator.convertToIndianMobileFormat(updateCandidateStatusRequest.getCandidateMobile())).findUnique();
+        if (candidate != null) {
+            JobPost jobPost = JobPost.find.where().eq("JobPostId", updateCandidateStatusRequest.getJpId()).findUnique();
+            if(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, Long.valueOf(updateCandidateStatusRequest.getVal()), null) == 1){
+                updateCandidateStatusResponse.setStatus(UpdateCandidateStatusResponse.Status.SUCCESS);
+            } else{
+                updateCandidateStatusResponse.setStatus(UpdateCandidateStatusResponse.Status.FAILURE);
+            }
+        }
+
+        return ok(Base64.encodeBase64String(updateCandidateStatusResponse.build().toByteArray()));
     }
 }

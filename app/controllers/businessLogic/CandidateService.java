@@ -806,10 +806,12 @@ public class CandidateService
             e.printStackTrace();
         }
         try {
-            candidate.setCandidateAssetList(getAssetListFromAddSupportCandidate(request, candidate));
+            if(request.getCandidateAssetList() != null){
+                candidate.setCandidateAssetList(getAssetListFromAddSupportCandidate(request, candidate));
+            }
+
         }
         catch(Exception e) {
-            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
             Logger.info("Exception while setting candidate asset list");
             e.printStackTrace();
         }

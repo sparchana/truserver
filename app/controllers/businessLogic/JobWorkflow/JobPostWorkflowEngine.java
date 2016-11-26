@@ -2112,6 +2112,7 @@ public class JobPostWorkflowEngine {
         Integer jwStatus = null;
 
         // fetch existing workflow old
+
         JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
                 .eq("jobPost.jobPostId", jpId)
                 .eq("candidate.candidateId", candidate.getCandidateId())
@@ -2146,20 +2147,27 @@ public class JobPostWorkflowEngine {
         }
         jobPostWorkflowNew.update();
 
-        // save the interaction
+        Integer channel;
+        if(session().get("sessionChannel") == null){
+            channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
+        } else{
+            channel = Integer.valueOf(session().get("sessionChannel"));
+        }
+
+            // save the interaction
         InteractionService.createWorkflowInteraction(
                 jobPostWorkflowOld.getJobPostWorkflowUUId(),
                 candidate.getCandidateUUId(),
                 interactionType,
                 null,
                 jobPostWorkflowOld.getJobPost().getJobPostId() + ": " + jobPostWorkflowOld.getJobPost().getJobRole().getJobName() + interactionResult,
-                Integer.valueOf(session().get("sessionChannel"))
+                channel
         );
         return 1;
     }
 
     public static Map<Long, CandidateWorkflowData> getRecruiterJobLinedUpCandidates(Long jobPostId) {
-        String statusSql = " and (status_id > '" + ServerConstants.JWF_STATUS_PRESCREEN_FAILED + "') ";
+        String statusSql = " and (status_id NOT IN ( '" + ServerConstants.JWF_STATUS_PRESCREEN_FAILED + "')) ";
         StringBuilder workFlowQueryBuilder = new StringBuilder("select createdby, candidate_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
                 " where i.job_post_id " +
                 " = ('"+jobPostId+"') " +
@@ -2247,7 +2255,9 @@ public class JobPostWorkflowEngine {
                 for(PreScreenPopulateResponse.PreScreenElement pe: response.getElementList()){
                     if(pe.isMatching()){
                         if(pe.isSingleEntity()) {
-                            reason += pe.getCandidateElement().getPlaceHolder() + ", ";
+                            if(pe.getCandidateElement() != null){
+                                reason += pe.getCandidateElement().getPlaceHolder() + ", ";
+                            }
                         } else {
                             for(PreScreenPopulateResponse.PreScreenCustomObject customObject: pe.getCandidateElementList()){
                                 reason += customObject.getPlaceHolder() + ", ";

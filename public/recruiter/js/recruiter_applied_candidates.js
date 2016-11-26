@@ -238,11 +238,17 @@ function processDataForJobApplications(returnedData) {
                 } else if(value.extraData.workflowStatus.statusId > 13){
                     completedParent.append(candidateCard);
                     completedCount++;
+                } else if(value.extraData.workflowStatus.statusId == 4){
+                    pendingParent.append(candidateCard);
+                    pendingCount++;
                 } else{
                     pendingParent.append(candidateCard);
                     pendingCount++;
                     actionNeeded = true;
                 }
+            } else{
+                pendingParent.append(candidateCard);
+                pendingCount++;
             }
 
             var candidateCardContent = document.createElement("div");
@@ -415,8 +421,10 @@ function processDataForJobApplications(returnedData) {
                     } else{
                         candidateInterviewStatusVal.style = "color: red; font-size: 14px; font-weight: 600";
                     }
-                } else{
+                } else if(value.extraData.workflowStatus.statusId == 4){
                     candidateInterviewStatusVal.textContent = "No credits!";
+                } else{
+                    candidateInterviewStatusVal.textContent = "";
                 }
             }
 
@@ -1033,7 +1041,7 @@ function processDataForJobPostInfo(returnedData) {
                     var dateSlotSelectedId = x.getFullYear() + "-" + (x.getMonth() + 1) + "-" + x.getDate() + "_" + timeSlot.interviewTimeSlot.interviewTimeSlotId;
                     var option = $('<option value="' + dateSlotSelectedId + '"></option>').text(getDayVal(x.getDay()) + ", " + x.getDate() + " " + getMonthVal((x.getMonth() + 1)) + " (" + timeSlot.interviewTimeSlot.interviewTimeSlotName + ")");
 
-                    if((oldSelectedDate.getDate() == x.getDate()) && (oldSelectedDate.getMonth() == x.getMonth()) && (oldSlot == timeSlot.interviewTimeSlot.interviewTimeSlotId)){} else{
+                    if((oldSelectedDate.getDate() == x.getDate()) && (oldSelectedDate.getMonth() == x.getMonth()) && (globalInterviewSlot == timeSlot.interviewTimeSlot.interviewTimeSlotId)){} else{
                         $('#rescheduleDateAndSlot').append(option);
                     }
                 });
