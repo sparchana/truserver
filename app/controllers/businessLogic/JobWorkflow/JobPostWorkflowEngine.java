@@ -1152,7 +1152,7 @@ public class JobPostWorkflowEngine {
                 interactionType,
                 preScreenResult.getPreScreenResultNote(),
                 interactionResult,
-                null
+                Integer.valueOf(session().get("sessionChannel"))
         );
 
         // Now lets save all the individual responses for this current pre screen attempt
