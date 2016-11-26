@@ -35,6 +35,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static api.ServerConstants.*;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
 import static models.util.SmsUtil.*;
 import static play.libs.Json.toJson;
@@ -663,8 +664,8 @@ public class JobPostWorkflowEngine {
                         boolean isAvailable = false;
 
                         preScreenElement = new PreScreenPopulateResponse.PreScreenElement();
-                        preScreenElement.setPropertyTitle(ServerConstants.PropertyType.DOCUMENT.toString());
-                        preScreenElement.setPropertyId(ServerConstants.PropertyType.DOCUMENT.ordinal());
+                        preScreenElement.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_DOCUMENT));
+                        preScreenElement.setPropertyId(PROPERTY_TYPE_DOCUMENT);
 
                         preScreenElement.jobPostElementList = new ArrayList<>();
                         preScreenElement.candidateElementList = new ArrayList<>();
@@ -699,8 +700,8 @@ public class JobPostWorkflowEngine {
                     List<Language> jobPostLanguageList = new ArrayList<>();
 
                     preScreenElement = new PreScreenPopulateResponse.PreScreenElement();
-                    preScreenElement.setPropertyTitle(ServerConstants.PropertyType.LANGUAGE.toString());
-                    preScreenElement.setPropertyId(ServerConstants.PropertyType.LANGUAGE.ordinal());
+                    preScreenElement.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_LANGUAGE));
+                    preScreenElement.setPropertyId(PROPERTY_TYPE_LANGUAGE);
 
                     preScreenElement.jobPostElementList = new ArrayList<>();
                     preScreenElement.candidateElementList = new ArrayList<>();
@@ -736,8 +737,8 @@ public class JobPostWorkflowEngine {
                     List<Asset> jobPostAssetList = new ArrayList<>();
                     // we don't capture candidate asset detail into asset object
                     preScreenElement = new PreScreenPopulateResponse.PreScreenElement();
-                    preScreenElement.setPropertyTitle(ServerConstants.PropertyType.ASSET_OWNED.toString());
-                    preScreenElement.setPropertyId(ServerConstants.PropertyType.ASSET_OWNED.ordinal());
+                    preScreenElement.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_ASSET_OWNED));
+                    preScreenElement.setPropertyId(PROPERTY_TYPE_ASSET_OWNED);
 
                     preScreenElement.jobPostElementList = new ArrayList<>();
                     preScreenElement.candidateElementList = new ArrayList<>();
@@ -775,8 +776,8 @@ public class JobPostWorkflowEngine {
                                 if (jobPost.getJobPostMaxAge() != null && jobPost.getJobPostMaxAge() > 0) {
                                     preScreenElement = new PreScreenPopulateResponse.PreScreenElement();
 
-                                    preScreenElement.setPropertyTitle(ServerConstants.PropertyType.MAX_AGE.toString());
-                                    preScreenElement.setPropertyId(ServerConstants.PropertyType.MAX_AGE.ordinal());
+                                    preScreenElement.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_MAX_AGE));
+                                    preScreenElement.setPropertyId(PROPERTY_TYPE_MAX_AGE);
 
                                     preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
                                     preScreenElement.jobPostElement = (new PreScreenPopulateResponse.PreScreenCustomObject(null,
@@ -797,8 +798,8 @@ public class JobPostWorkflowEngine {
                             } else if(preScreenRequirement.getProfileRequirement().getProfileRequirementTitle().equalsIgnoreCase("experience")) {
                                 if (jobPost.getJobPostExperience() != null) {
                                     preScreenElement = new PreScreenPopulateResponse.PreScreenElement();
-                                    preScreenElement.setPropertyTitle(ServerConstants.PropertyType.EXPERIENCE.toString());
-                                    preScreenElement.setPropertyId(ServerConstants.PropertyType.EXPERIENCE.ordinal());
+                                    preScreenElement.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_EXPERIENCE));
+                                    preScreenElement.setPropertyId(PROPERTY_TYPE_EXPERIENCE);
 
                                     preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
                                     ExperienceValue jobPostMinMaxExp = getDurationFromExperience(jobPost.getJobPostExperience().getExperienceId());
@@ -834,8 +835,8 @@ public class JobPostWorkflowEngine {
                             } else if(preScreenRequirement.getProfileRequirement().getProfileRequirementTitle().equalsIgnoreCase("education")) {
                                 if (jobPost.getJobPostEducation() != null) {
                                     preScreenElement = new PreScreenPopulateResponse.PreScreenElement();
-                                    preScreenElement.setPropertyTitle(ServerConstants.PropertyType.EDUCATION.toString());
-                                    preScreenElement.setPropertyId(ServerConstants.PropertyType.EDUCATION.ordinal());
+                                    preScreenElement.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_EDUCATION));
+                                    preScreenElement.setPropertyId(PROPERTY_TYPE_EDUCATION);
 
                                     preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
                                     preScreenElement.jobPostElement = (new PreScreenPopulateResponse.PreScreenCustomObject(jobPost.getJobPostEducation(),
@@ -855,8 +856,8 @@ public class JobPostWorkflowEngine {
                             } else if(preScreenRequirement.getProfileRequirement().getProfileRequirementTitle().equalsIgnoreCase("gender")) {
                                 if (jobPost.getGender() != null) {
                                     preScreenElement = new PreScreenPopulateResponse.PreScreenElement();
-                                    preScreenElement.setPropertyTitle(ServerConstants.PropertyType.GENDER.toString());
-                                    preScreenElement.setPropertyId(ServerConstants.PropertyType.GENDER.ordinal());
+                                    preScreenElement.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_GENDER));
+                                    preScreenElement.setPropertyId(PROPERTY_TYPE_GENDER);
 
                                     preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
                                     preScreenElement.jobPostElement = new PreScreenPopulateResponse.PreScreenCustomObject(jobPost.getGender(),
@@ -877,8 +878,8 @@ public class JobPostWorkflowEngine {
                             } else if(preScreenRequirement.getProfileRequirement().getProfileRequirementTitle().equalsIgnoreCase("salary")) {
                                 if (jobPost.getJobPostMinSalary() != null && jobPost.getJobPostMinSalary() != 0) {
                                     preScreenElement = new PreScreenPopulateResponse.PreScreenElement();
-                                    preScreenElement.setPropertyTitle(ServerConstants.PropertyType.SALARY.toString());
-                                    preScreenElement.setPropertyId(ServerConstants.PropertyType.SALARY.ordinal());
+                                    preScreenElement.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_SALARY));
+                                    preScreenElement.setPropertyId(PROPERTY_TYPE_SALARY);
 
                                     preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
                                     String result = ("Rs."+jobPost.getJobPostMinSalary());
@@ -914,8 +915,8 @@ public class JobPostWorkflowEngine {
                                 if (jobPost.getJobPostToLocalityList() != null &&  jobPost.getJobPostToLocalityList().size() > 0) {
 
                                     preScreenElement = new PreScreenPopulateResponse.PreScreenElement();
-                                    preScreenElement.setPropertyTitle(ServerConstants.PropertyType.LOCALITY.toString());
-                                    preScreenElement.setPropertyId(ServerConstants.PropertyType.LOCALITY.ordinal());
+                                    preScreenElement.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_LOCALITY));
+                                    preScreenElement.setPropertyId(PROPERTY_TYPE_LOCALITY);
 
                                     preScreenElement.jobPostElementList = new ArrayList<>();
                                     preScreenElement.candidateElementList = new ArrayList<>();
@@ -949,8 +950,8 @@ public class JobPostWorkflowEngine {
                             } else if(preScreenRequirement.getProfileRequirement().getProfileRequirementTitle().equalsIgnoreCase("worktimings")) {
                                 if (jobPost.getJobPostShift() != null) {
                                     preScreenElement = new PreScreenPopulateResponse.PreScreenElement();
-                                    preScreenElement.setPropertyTitle(ServerConstants.PropertyType.WORK_SHIFT.toString());
-                                    preScreenElement.setPropertyId(ServerConstants.PropertyType.WORK_SHIFT.ordinal());
+                                    preScreenElement.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_WORK_SHIFT));
+                                    preScreenElement.setPropertyId(PROPERTY_TYPE_WORK_SHIFT);
 
                                     preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
                                     String timeShift = jobPost.getJobPostShift().getTimeShiftName();

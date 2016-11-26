@@ -31,6 +31,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static api.ServerConstants.*;
 import static controllers.businessLogic.JobSearchService.*;
 import static models.util.Util.generateOtp;
 import static models.util.Validator.isValidLocalityName;
@@ -972,7 +973,7 @@ public class TrudroidController {
             }
             addCandidateRequest.setCandidateJobPref(jobRoleIdList);
             addCandidateRequest.setCandidateGender(updateCandidateBasicProfileRequest.getCandidateGender());
-
+            addCandidateRequest.setCandidateAssetList(new ArrayList<>());
             //converting candidate DOB from string to Date
             String startDateString = updateCandidateBasicProfileRequest.getCandidateDOB();
             DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
@@ -1526,7 +1527,115 @@ public class TrudroidController {
         Candidate candidate = CandidateService.isCandidateExists(preScreenPopulateRequest.getCandidateMobile());
         PreScreenPopulateResponse populateResponse = JobPostWorkflowEngine.getJobPostVsCandidate(preScreenPopulateRequest.getJobPostId(),
                 candidate.getCandidateId(), false);
+        Logger.info(String.valueOf(toJson(populateResponse)));
 
+        response.setShouldShow(populateResponse.isVisible());
+        List<Integer> propertyIdList = new ArrayList<>();
+        for(PreScreenPopulateResponse.PreScreenElement pe : populateResponse.getElementList()) {
+            if(pe!= null && !pe.isMatching() &&  pe.getCandidateElement() == null) {
+                // show UI to collect candidate missing data
+                if ((pe.isSingleEntity() && pe.getCandidateElement() == null) ||
+                        (!pe.isSingleEntity() &&
+                                (pe.getCandidateElementList() == null || pe.getCandidateElementList().size() == 0))) {
+                    // add constructor object for only those object which are not filled by candidate
+                    response.setCandidateId(candidate.getCandidateId());
+                    response.setJobPostId(preScreenPopulateRequest.getJobPostId());
+                    response.addPropertyId(pe.getPropertyId());
+
+                    switch (pe.getPropertyId()) {
+                        case PROPERTY_TYPE_DOCUMENT:
+                            PreScreenDocumentObject.Builder preScreenDocument = PreScreenDocumentObject.newBuilder();
+                            List<IdProofObject> idProofObjectList = new ArrayList<>();
+                            for(Object object : pe.getJobPostElementList()) {
+                                PreScreenPopulateResponse.PreScreenCustomObject customObject = (PreScreenPopulateResponse.PreScreenCustomObject) object;
+
+                                IdProof idProof = (IdProof) customObject.getObject();
+                                IdProofObject.Builder idProofObject = IdProofObject.newBuilder();
+                                idProofObject.setIdProofId(idProof.getIdProofId());
+                                idProofObject.setIdProofName(idProof.getIdProofName());
+                                idProofObjectList.add(idProofObject.build());
+                            }
+                            preScreenDocument.setIsMatching(pe.isMatching());
+                            preScreenDocument.addAllJobPostIdProof(idProofObjectList);
+                            preScreenDocument.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_DOCUMENT));
+                            preScreenDocument.setPropertyId((PROPERTY_TYPE_DOCUMENT));
+                            response.setDocumentList(preScreenDocument.build());
+                            break;
+                        case PROPERTY_TYPE_LANGUAGE:
+                            PreScreenLanguageObject.Builder preScreenLanguage = PreScreenLanguageObject.newBuilder();
+                            List<LanguageObject> languageObjectList = new ArrayList<>();
+                            for(Object object : pe.getJobPostElementList()) {
+                                PreScreenPopulateResponse.PreScreenCustomObject customObject = (PreScreenPopulateResponse.PreScreenCustomObject) object;
+
+                                Language language = (Language) customObject.getObject();
+                                LanguageObject.Builder languageObject = LanguageObject.newBuilder();
+                                languageObject.setLanguageId(language.getLanguageId());
+                                languageObject.setLanguageName(language.getLanguageName());
+                                languageObjectList .add(languageObject.build());
+                            }
+                            preScreenLanguage.setIsMatching(pe.isMatching());
+                            preScreenLanguage.addAllJobPostLanguage(languageObjectList );
+                            preScreenLanguage.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_LANGUAGE));
+                            preScreenLanguage.setPropertyId((PROPERTY_TYPE_LANGUAGE));
+                            response.setLanguageList(preScreenLanguage.build());
+                            break;
+                        case PROPERTY_TYPE_ASSET_OWNED:
+                            PreScreenAssetObject.Builder preScreenAsset = PreScreenAssetObject.newBuilder();
+                            List<AssetObject> assetObjectList = new ArrayList<>();
+                            for(Object object : pe.getJobPostElementList()) {
+                                PreScreenPopulateResponse.PreScreenCustomObject customObject = (PreScreenPopulateResponse.PreScreenCustomObject) object;
+
+                                Asset asset = (Asset) customObject.getObject();
+                                AssetObject.Builder assetObject = AssetObject.newBuilder();
+                                assetObject.setAssetId(asset.getAssetId());
+                                assetObject.setAssetTitle(asset.getAssetTitle());
+                                assetObjectList.add(assetObject.build());
+                            }
+                            preScreenAsset.setIsMatching(pe.isMatching());
+                            preScreenAsset.addAllJobPostAsset(assetObjectList);
+                            preScreenAsset.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_ASSET_OWNED));
+                            preScreenAsset.setPropertyId((PROPERTY_TYPE_ASSET_OWNED));
+                            response.setAssetList(preScreenAsset.build());
+                            break;
+                        case PROPERTY_TYPE_MAX_AGE:
+                            PreScreenAgeObject.Builder preScreenAge = PreScreenAgeObject.newBuilder();
+                            preScreenAge.setIsMatching(pe.isMatching());
+                            preScreenAge.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_MAX_AGE));
+                            preScreenAge.setPropertyId((PROPERTY_TYPE_MAX_AGE));
+                            response.setAge(preScreenAge.build());
+                            break;
+                        case PROPERTY_TYPE_EXPERIENCE:
+                            PreScreenExperienceObject.Builder preScreenExperience = PreScreenExperienceObject.newBuilder();
+                            preScreenExperience.setIsMatching(pe.isMatching());
+                            preScreenExperience.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_EXPERIENCE));
+                            preScreenExperience.setPropertyId((PROPERTY_TYPE_EXPERIENCE));
+                            response.setExperience(preScreenExperience.build());
+                            break;
+                        case PROPERTY_TYPE_EDUCATION:
+                            PreScreenEducationObject.Builder preScreenEducation = PreScreenEducationObject.newBuilder();
+                            preScreenEducation.setIsMatching(pe.isMatching());
+                            preScreenEducation.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_EDUCATION));
+                            preScreenEducation.setPropertyId((PROPERTY_TYPE_EDUCATION));
+                            response.setEducation(preScreenEducation.build());
+                            break;
+                        case PROPERTY_TYPE_GENDER:
+                            PreScreenGenderObject.Builder preScreenGender = PreScreenGenderObject.newBuilder();
+                            preScreenGender.setIsMatching(pe.isMatching());
+                            preScreenGender.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_GENDER));
+                            preScreenGender.setPropertyId((PROPERTY_TYPE_GENDER));
+                            response.setGender(preScreenGender.build());
+                            break;
+                        case PROPERTY_TYPE_SALARY:
+                            PreScreenSalaryObject.Builder preScreenSalary = PreScreenSalaryObject.newBuilder();
+                            preScreenSalary.setIsMatching(pe.isMatching());
+                            preScreenSalary.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_SALARY));
+                            preScreenSalary.setPropertyId((PROPERTY_TYPE_SALARY));
+                            response.setSalary(preScreenSalary.build());
+                            break;
+                    }
+                }
+            }
+        }
 
         return ok(Base64.encodeBase64String(response.build().toByteArray()));
     }
