@@ -733,15 +733,12 @@ function ifMobileExists(returnedId) {
 }
 function getAssetsForJobRole(){
     var jobRoleId = $('#candidateJobPref').val();
-    console.log("Job role id for assets: " +jobRoleId);
-    var url = "/support/api/getAssetReqForJobRole/?job_role_id="+jobRoleId;
-    url += "&jobRoleIds=";
     if (jobRoleId != null && jobRoleId !== ''){
         if(jobRoleId != 0){
             try {
                 $.ajax({
                     type: "GET",
-                    url: url,
+                    url: "/support/api/getAssetReqForJobRole/?job_role_ids="+jobRoleId,
                     data: false,
                     async: false,
                     contentType: false,
@@ -757,7 +754,6 @@ function getAssetsForJobRole(){
 }
 function generateSkills(){
     var selectedJobPref = $('#candidateJobPref').val();
-    console.log("Job role id for skills: " +selectedJobPref);
     if (selectedJobPref != null && selectedJobPref !== '') {
         $("#skillQuestion").html('');
         $("#skillAnswer").html('');
@@ -786,7 +782,6 @@ function processDataGetAssets(returnedAssets){
             item ["id"] = id;
             item ["name"] = name;
             assetArray.push(item);
-            console.log("Array : "+ JSON.stringify(assetArray));
         });
     }
 }
@@ -1191,6 +1186,8 @@ function validateInput(idProofId, value) {
         } else {
             return true;
         }
+    } else{
+        return true;
     }
 }
 function processDataSignUpSupportSubmit(returnedData) {

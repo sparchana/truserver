@@ -605,6 +605,7 @@ public class JobPostWorkflowEngine {
     public static PreScreenPopulateResponse getJobPostVsCandidate(Long jobPostId, Long candidateId, Boolean rePreScreen) {
         PreScreenPopulateResponse populateResponse = new PreScreenPopulateResponse();
 
+        boolean isCandidateDataMissing = false;
         Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
         if (candidate == null){
             populateResponse.setStatus(PreScreenPopulateResponse.Status.FAILURE);
@@ -673,7 +674,7 @@ public class JobPostWorkflowEngine {
                             isAvailable = true;
                         }
                         Map<Integer, IDProofReference> idProofMap = new HashMap<>();
-                        for(IDProofReference idProofReference :  candidate.getIdProofReferenceList()){
+                        for(IDProofReference idProofReference :  candidate.getIdProofReferenceList()) {
                             idProofMap.put(idProofReference.getIdProof().getIdProofId(), idProofReference);
                         }
                         for (PreScreenRequirement preScreenRequirement : entry.getValue()) {
@@ -900,7 +901,10 @@ public class JobPostWorkflowEngine {
                                             }
                                         }
                                     } else {
-                                        preScreenElement.isMatching = false;
+                                        // if candidate is fresher then don't match for last withdrawn salary
+                                        if((candidate.getCandidateTotalExperience() != null && candidate.getCandidateTotalExperience() > 0)){
+                                            preScreenElement.isMatching = false;
+                                        }
                                     }
                                     preScreenElement.isMinReq = false;
 
@@ -990,7 +994,22 @@ public class JobPostWorkflowEngine {
                     break;
             }
         }
+        if(populateResponse.elementList != null && populateResponse.elementList.size() > 0) {
+            for(PreScreenPopulateResponse.PreScreenElement pe : populateResponse.elementList) {
+                if(pe!= null && !pe.isMatching() &&  pe.getCandidateElement() == null) {
+                    // show UI to collect candidate missing data
+                    if((pe.isSingleEntity() && pe.getCandidateElement() == null) ||
+                            (!pe.isSingleEntity() &&
+                                    (pe.getCandidateElementList() == null || pe.getCandidateElementList().size() == 0))){
+                        isCandidateDataMissing = true;
+                    }
+                }
+            }
+        } else {
+            isCandidateDataMissing = false;
+        }
         populateResponse.setStatus(PreScreenPopulateResponse.Status.SUCCESS);
+        populateResponse.setVisible(isCandidateDataMissing);
         return populateResponse;
     }
 

@@ -562,6 +562,9 @@ function validateInput(idProofId, value) {
             return true;
         }
     }
+    else{
+        return true;
+    }
 }
 function saveCandidateExperienceDetails(){
     /*console.log(candidateInformation);*/

@@ -648,13 +648,12 @@ function getAssets(){
     return assetArray;
 }
 function getAssetsForJobRole(){
-    var jobRoleId = $('#candidateJobPref').val().split(",");
-    for(var i=0;i < jobRoleId.length;i++){
-        if(jobRoleId[i] != 0){
+    var jobRoleId = $('#candidateJobPref').val();
+        if(jobRoleId != 0){
             try {
                 $.ajax({
                     type: "GET",
-                    url: "/support/api/getAssetReqForJobRole/?job_role_id="+jobRoleId[i],
+                    url: "/support/api/getAssetReqForJobRole/?job_role_ids="+jobRoleId,
                     data: false,
                     async: false,
                     contentType: false,
@@ -664,8 +663,8 @@ function getAssetsForJobRole(){
             } catch (exception) {
                 console.log("exception occured!!" + exception);
             }
-        };
-    }
+        }
+        getAssets();
 }
 function processDataGetAssets(returnedAssets) {;
     if(returnedAssets != null){

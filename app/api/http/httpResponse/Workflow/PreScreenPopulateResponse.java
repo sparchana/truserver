@@ -50,8 +50,7 @@ public class PreScreenPopulateResponse {
         }
     }
 
-
-        public static class PreScreenElement {
+    public static class PreScreenElement {
             public String propertyTitle;
             public int propertyId;
 
@@ -161,6 +160,7 @@ public class PreScreenPopulateResponse {
     public List<PreScreenElement> elementList;
     public Status status;
     public String jobPostMinReq;
+    public boolean visible;
 
     public PreScreenPopulateResponse(){
         this.elementList = new ArrayList<>();
@@ -196,5 +196,13 @@ public class PreScreenPopulateResponse {
 
     public void setCandidateId(Long candidateId) {
         this.candidateId = candidateId;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }
