@@ -774,6 +774,9 @@ function generateSkills(){
     prefillSkills(candidateSkill);
 }
 function processDataGetAssets(returnedAssets){
+    while(assetArray.length > 0){
+        assetArray.pop();
+    }
     if(returnedAssets != null){
         returnedAssets.forEach(function (asset) {
             var id = asset.assetId;
@@ -1237,6 +1240,15 @@ $(function () {
     $('#candidateJobPref').change(function () {
         generateSkills();
         getAssetsForJobRole();
+        $("#candidateAsset").tokenInput('destroy');
+        $("#candidateAsset").tokenInput(getAssets(), {
+            theme: "facebook",
+            placeholder: "What assets do you own?",
+            hintText: "Start typing (eg. Smartphone, Bike, Car)",
+            minChars: 0,
+            prePopulate: candidateAssetArray,
+            preventDuplicates: true
+        });
         // generateExperience($('#candidateJobPref').val());
         // prefillCandidatePastJobExp(candidatePastJobExp);
         // unlockcurrentJobRadio();

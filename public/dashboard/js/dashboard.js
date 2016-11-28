@@ -44,8 +44,6 @@ $(document).ready(function(){
     $("#isEmployedSelect").hide();
 
     checkUserLogin();
-    /* ajx commands to fetch all assets*/
-    getAssetsForJobRole();
     /* ajax commands to fetch all id proofs*/
     try {
         $.ajax({
@@ -645,7 +643,6 @@ function getJob(){
     return jobArray;
 }
 function getAssets(){
-    console.log("Data returned in function: "+JSON.stringify(assetArray));
     return assetArray;
 }
 function getAssetsForJobRole(){
@@ -665,9 +662,11 @@ function getAssetsForJobRole(){
                 console.log("exception occured!!" + exception);
             }
         }
-        getAssets();
 }
 function processDataGetAssets(returnedAssets) {
+    while(assetArray.length > 0){
+        assetArray.pop();
+    }
     if(returnedAssets != null){
         returnedAssets.forEach(function (asset) {
             var id = asset.assetId;
@@ -676,7 +675,6 @@ function processDataGetAssets(returnedAssets) {
             item ["id"] = id;
             item ["name"] = name;
             assetArray.push(item);
-            console.log("Data returned : "+JSON.stringify(assetArray));
         });
     }
 }
@@ -699,6 +697,15 @@ $(function () {
     });
     $('#candidateJobPref').change(function () {
         getAssetsForJobRole();
+        $("#candidateAsset").tokenInput('destroy');
+        $("#candidateAsset").tokenInput(getAssets(), {
+            theme: "facebook",
+            placeholder: "What assets do you own?",
+            hintText: "Start typing (eg. Smartphone, Bike, Car)",
+            minChars: 0,
+            prePopulate: candidateAssetArray,
+            preventDuplicates: true
+        });
         /*generateSkills();
         generateExperience($('#candidateJobPref').val());
         prefillCandidatePastJobExp(candidatePastJobExp);
