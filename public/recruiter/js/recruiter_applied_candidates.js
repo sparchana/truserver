@@ -1001,8 +1001,8 @@ function processDataForJobApplications(returnedData) {
         } else {
             $(".badge").show();
             $("#pendingApproval").addClass("newNotification").html(approvalCount + " new");
+            $("#pendingApprovalMobile").addClass("newNotification").html(approvalCount + " new");
         }
-
 
         if(pendingCount == 0){
             $("#noPendingApplication").show();
