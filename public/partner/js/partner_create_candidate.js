@@ -83,8 +83,6 @@ $(document).ready(function() {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-    //assets
-    /*getAssetsForJobRole();*/
 
     //date of birth
     var i;
@@ -514,7 +512,7 @@ function generateIdProof(idProofJson){
     if(idProofJson == null) {
         var selectedIdProofIds = $('#candidateIdProof').val();
         console.log("generateIdproof input field: " + selectedIdProofIds);
-        if (selectedIdProofIds != null && selectedIdProofIds !== '') {
+        if (selectedIdProofIds != null && selectedIdProofIds != "") {
             try {
                 $.ajax({
                     type: "GET",
@@ -527,12 +525,13 @@ function generateIdProof(idProofJson){
             } catch (exception) {
                 console.log("exception occured!!" + exception);
             }
+        }else{
+            $('#docTableTable').empty();
         }
-    } else {
+    }else{
         console.log(idProofJson);
         processDocs(idProofJson);
     }
-
 }
 function processDocs(returnedData) {
     var count = 0;
@@ -716,11 +715,6 @@ $(function () {
             notifyErrorWithPrompt($("#candidateMobile"), "Please enter a valid phone number");
         }
     });
-
-    /*$('#candidateJobPref').change(function () {
-        getAssetsForJobRole();
-        generateSkills();
-    });*/
 });
 
 function ifMobileExists(returnedId) {

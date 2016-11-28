@@ -616,7 +616,7 @@ function generateIdProof(idProofJson){
     // create table
     if(idProofJson == null) {
         var selectedIdProofIds = $('#candidateIdProof').val();
-        if (selectedIdProofIds != null && selectedIdProofIds !== '') {
+        if (selectedIdProofIds != null && selectedIdProofIds != "") {
             try {
                 $.ajax({
                     type: "GET",
@@ -629,6 +629,9 @@ function generateIdProof(idProofJson){
             } catch (exception) {
                 console.log("exception occured!!" + exception);
             }
+        }
+        else{
+            $('#docTableTable').empty();
         }
     } else {
         processDocs(idProofJson);
