@@ -152,6 +152,7 @@ function processDataGenerateJobPostView(returnedData) {
 
                 var newApplication = document.createElement('div');
                 newApplication.style = "margin-top: 4px";
+                newApplication.className = "newCounter";
                 colApplicant.appendChild(newApplication);
 
                 var colJobStatus = document.createElement("div");

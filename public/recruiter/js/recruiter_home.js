@@ -189,6 +189,7 @@ function processDataPendingApproval(returnedData) {
     } else{
         $(".badge").show();
         $("#pendingApproval").addClass("newNotification").html(returnedData + " new");
+        $("#pendingApprovalMobile").addClass("newNotification").html(returnedData + " new");
     }
 
 }
