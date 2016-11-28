@@ -180,7 +180,7 @@ function processDataForJobApplications(returnedData) {
                 var interviewMonth = date.getMonth() + 1;
 
                 if((todayDay.getDate() == interviewDay) && ((todayDay.getMonth() + 1) == interviewMonth)){
-                    if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 9)){
+                    if(value.extraData.workflowStatus.statusId > 8){
                         candidateCount ++;
 
                         var candidateCard = document.createElement("div");
@@ -459,7 +459,6 @@ function processDataForJobApplications(returnedData) {
                                 } else{
                                     candidateEducationVal.textContent = value.candidate.candidateEducation.education.educationName;
                                 }
-
                             }
                         }
                         inlineBlockDiv.appendChild(candidateEducationVal);

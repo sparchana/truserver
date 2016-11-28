@@ -235,6 +235,7 @@ POST        /mAddPassword                                                 contro
 POST        /mFindUserAndSendOtp                                          controllers.TrudroidController.mFindUserAndSendOtp()
 POST        /mGetAllJobRoles                                              controllers.TrudroidController.mGetAllJobRoles()
 POST        /mGetAllJobPosts                                              controllers.TrudroidController.mGetAllJobPosts()
+POST        /mGetAllNotGoingReason                                        controllers.TrudroidController.mGetAllNotGoingReason()
 POST        /mAddHomeLocality                                             controllers.TrudroidController.mAddHomeLocality()
 POST        /mApplyJob                                                    controllers.TrudroidController.mApplyJob()
 POST        /mAddJobPref                                                  controllers.TrudroidController.mAddJobPref()

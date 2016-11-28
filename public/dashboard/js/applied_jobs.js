@@ -50,19 +50,7 @@ $(document).ready(function () {
         console.log("exception occured!!" + exception);
     }
 
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/getCandidateJobApplication",
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataAndFetchAppliedJobs
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
+    getCandidateAppliedJobs();
 
     try {
         $.ajax({
@@ -83,6 +71,23 @@ $(document).ready(function () {
     })
 
 });
+
+function getCandidateAppliedJobs() {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/getCandidateJobApplication",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataAndFetchAppliedJobs
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+}
 
 function processDataAndFillMinProfile(returnedData) {
     if(returnedData.locality != null){
@@ -175,18 +180,15 @@ function prePopulateJobSection(jobApplication) {
             if(jobPost.status.statusId < 6) {
                 parentUnderReview.append(hotJobItem);
                 parentUnderReviewCount++;
-            } else if (jobPost.status.statusId == 6 || (jobPost.status.statusId > 9 && jobPost.status.statusId < 14)){
+            } else if (jobPost.status.statusId > 7 && jobPost.status.statusId < 14){
                 parentConfirmed.append(hotJobItem);
                 parentConfirmedCount++;
-            } else if (jobPost.status.statusId == 7 || jobPost.status.statusId == 8){
+            } else if (jobPost.status.statusId == 6 || jobPost.status.statusId == 7){
                 parentRejected.append(hotJobItem);
                 parentRejectedCount++;
             } else if (jobPost.status.statusId > 13){
                 parentCompleted.append(hotJobItem);
                 parentCompletedCount++;
-            } else if (jobPost.status.statusId == 9){
-                parentConfirmed.append(hotJobItem);
-                parentConfirmedCount++;
             } else {
                 parentUnderReview.append(hotJobItem);
                 parentUnderReviewCount++;
@@ -265,7 +267,7 @@ function prePopulateJobSection(jobApplication) {
                 divInterviewStatus.textContent = "Job application under review";
                 divInterviewStatus.style = "color: #eb9800; font-weight: 600";
             } else{
-                if(jobPost.status.statusId == 6 || (jobPost.status.statusId > 9 && jobPost.status.statusId < 14)){
+                if(jobPost.status.statusId > 8 && jobPost.status.statusId < 14){
                     if(jobPost.interviewLocationLat != null){
                         dir.className = "navigationBtn";
                         dir.textContent = "Directions";
@@ -281,13 +283,13 @@ function prePopulateJobSection(jobApplication) {
                         divInterviewStatus.style = "color: green; font-weight: 600";
                     }
 
-                } else if(jobPost.status.statusId == 7){
+                } else if(jobPost.status.statusId == 6){
                     divInterviewStatus.textContent = "Application rejected";
                     divInterviewStatus.style = "color: red; font-weight: 600";
-                } else if(jobPost.status.statusId == 8){
+                } else if(jobPost.status.statusId == 7){
                     divInterviewStatus.textContent = "Application rejected by the Candidate";
                     divInterviewStatus.style = "color: red; font-weight: 600";
-                } else if(jobPost.status.statusId == 9){
+                } else if(jobPost.status.statusId == 8){
                     divInterviewStatus.textContent = "Scheduled on " + new Date(jobPost.scheduledInterviewDate).getDate() + "/" + (new Date(jobPost.scheduledInterviewDate).getMonth() + 1) + "/" + new Date(jobPost.scheduledInterviewDate).getFullYear() + " between " + jobPost.scheduledInterviewTimeSlot.interviewTimeSlotName;
                     divInterviewStatus.style = "padding: 0; color: orange; font-weight: 600";
 
@@ -467,7 +469,7 @@ function prePopulateJobSection(jobApplication) {
             jobBodyCol.appendChild(titleRowStatus);
 
             if(jobPost.status != null){
-                if(jobPost.status.statusId == 6 || (jobPost.status.statusId > 9 && jobPost.status.statusId < 13)){
+                if(jobPost.status.statusId > 8 && jobPost.status.statusId < 13){
                     var today = new Date();
                     var interviewDate = new Date(jobPost.scheduledInterviewDate);
                     if(interviewDate.getDate() == today.getDate() && interviewDate.getMonth() == today.getMonth() && interviewDate.getFullYear() == today.getFullYear()){ // today's schedule
@@ -494,7 +496,8 @@ function prePopulateJobSection(jobApplication) {
                         statusBodySelect.id = "candidate_interview_status_" + jobPost.jobPost.jobPostId;
                         statusBody.appendChild(statusBodySelect);
 
-                        if(jobPost.status.statusId == 6 || jobPost.status.statusId == 10){
+                        console.log(jobPost.status.statusId);
+                        if(jobPost.status.statusId == 9 || jobPost.status.statusId == 10){
                             currentStatus.textContent = "Status not Specified";
                             currentStatus.style = "font-weight: bold; margin-right: 4px; color: grey";
                             $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(defaultOp);
@@ -610,9 +613,10 @@ function processDataForUpdateStatus(returnedData) {
             globalStatus = null;
         } else{
             alert("Status updated successfully");
-            setTimeout(function () {
+/*            setTimeout(function () {
                 location.reload();
-            }, 2000);
+            }, 2000);*/
+            getCandidateAppliedJobs();
         }
     } else{
         alert("Something went wrong. Please try again later");

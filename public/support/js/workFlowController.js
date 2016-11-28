@@ -1038,11 +1038,11 @@ $(function () {
                                     '<span class="reject" onclick="rejectInterview(' + newCandidate.candidate.candidateId + ', ' + newCandidate.extraData.interviewDate + ', ' + newCandidate.extraData.interviewSlot.interviewTimeSlotId + ');"><img src="/assets/recruiter/img/icons/reject.svg" height="16px" width="14px"></span>' +
                                     '<span class="reschedule" onclick="showReschedulePopup(' + newCandidate.candidate.candidateId + ', ' + newCandidate.extraData.interviewDate + ', ' + newCandidate.extraData.interviewSlot.interviewTimeSlotId + ');"><img src="/assets/recruiter/img/icons/reschedule.svg" height="18px" width="16px"></span>' +
                                     '</span>';
-                            } else if(newCandidate.extraData.workflowStatus.statusId == 7){
+                            } else if(newCandidate.extraData.workflowStatus.statusId == 6){
                                 interviewAction = "Rejected by recruiter/support";
-                            } else if(newCandidate.extraData.workflowStatus.statusId == 8){
+                            } else if(newCandidate.extraData.workflowStatus.statusId == 7){
                                 interviewAction = "Rejected by candidate";
-                            } else if(newCandidate.extraData.workflowStatus.statusId == 9){
+                            } else if(newCandidate.extraData.workflowStatus.statusId == 8){
                                 interviewAction = "Rescheduled to " + newCandidate.extraData.interviewSchedule + " ";
                                 interviewAction += '<span id="interview_status_val_' + newCandidate.candidate.candidateId + '">' +
                                     '<span class="accept" onclick="acceptRescheduledInterview(' + newCandidate.candidate.candidateId + ', 1);"><img src="/assets/recruiter/img/icons/accept.svg" height="16px" width="14px"></span>' +

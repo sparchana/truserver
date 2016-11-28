@@ -253,13 +253,13 @@ function processDataForJobApplications(returnedData) {
 
             actionNeeded = false;
             if(value.extraData.workflowStatus != null){
-                if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 8 && value.extraData.workflowStatus.statusId < 14)){
+                if(value.extraData.workflowStatus.statusId > 7 && value.extraData.workflowStatus.statusId < 14){
                     confirmedParent.append(candidateCard);
                     confirmedCount++;
-                } else if(value.extraData.workflowStatus.statusId == 7){
+                } else if(value.extraData.workflowStatus.statusId == 6){
                     rejectedParent.append(candidateCard);
                     rejectedCount++;
-                } else if(value.extraData.workflowStatus.statusId == 8){
+                } else if(value.extraData.workflowStatus.statusId == 7){
                     rejectedParent.append(candidateCard);
                     rejectedCount++;
                 } else if(value.extraData.workflowStatus.statusId > 13){
@@ -430,16 +430,16 @@ function processDataForJobApplications(returnedData) {
                     actionText.textContent = " Reschedule";
                     candidateInterviewRescheduleParent.appendChild(actionText);
 
-                } else if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 9 && value.extraData.workflowStatus.statusId < 14)){
+                } else if(value.extraData.workflowStatus.statusId > 8 && value.extraData.workflowStatus.statusId < 14){
                     candidateInterviewStatusVal.textContent = "Interview Confirmed";
                     candidateInterviewStatusVal.style = "color: green; font-weight: bold";
-                } else if(value.extraData.workflowStatus.statusId == 7){
+                } else if(value.extraData.workflowStatus.statusId == 6){
                     candidateInterviewStatusVal.textContent = "Interview Rejected";
                     candidateInterviewStatusVal.style = "color: red; font-weight: bold";
-                } else if(value.extraData.workflowStatus.statusId == 8){
+                } else if(value.extraData.workflowStatus.statusId == 7){
                     candidateInterviewStatusVal.textContent = "Interview Rejected by Candidate";
                     candidateInterviewStatusVal.style = "color: red; font-weight: bold";
-                } else if(value.extraData.workflowStatus.statusId == 9){
+                } else if(value.extraData.workflowStatus.statusId == 8){
                     candidateInterviewStatusVal.textContent = "Interview Rescheduled. Awaiting candidate's response";
                     candidateInterviewStatusVal.style = "color: orange; font-weight: bold";
                 } else if(value.extraData.workflowStatus.statusId > 13){
@@ -465,7 +465,7 @@ function processDataForJobApplications(returnedData) {
             var matchVal = document.createElement("span");
             candidateCardScore.appendChild(matchVal);
             if(value.extraData.workflowStatus != null) {
-                if(value.extraData.workflowStatus.statusId == 6){
+                if(value.extraData.workflowStatus.statusId == 9){
                     var todayDay = new Date();
                     var interviewDate = new Date(value.extraData.interviewDate);
                     var interviewDay = interviewDate.getDate();

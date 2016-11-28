@@ -143,49 +143,53 @@ function getAllAppliedJobs() {
 
                             var currentStatus = "Under Review";
                             if(jobApplication.status.statusId > 5){
-                                if(jobApplication.status.statusId == 6 || (jobApplication.status.statusId > 9 && jobApplication.status.statusId < 14)) {
+                                if(jobApplication.status.statusId > 8 && jobApplication.status.statusId < 14) {
                                     currentStatus = '<div style="width:100%; color: green; text-align: center">Interview Confirmed</div>';
                                     if (jobApplication.interviewLocationLat != null) {
                                         currentStatus += '<div class="navigationBtn" onclick="navigateToLocation(' + jobApplication.interviewLocationLat + ', ' + jobApplication.interviewLocationLng + ')">Directions</div>'
                                     }
-                                    var candidateStatus ='<div class="mLabel" style="width:100%;">Status not available</div>';
 
-                                    // candidate status
-                                    if(jobApplication.status.statusId == 13){
-                                        candidateStatus = '<div class="mLabel" style="width:100%; color: green">Reached</div>';
-                                    } else{
-                                        if(jobApplication.status.statusId == 6 || (jobApplication.status.statusId > 9 && jobApplication.status.statusId < 13)){
-                                            candidateStatus = '<div style="width:100%; margin-top: 8px; text-align: center">' + jobApplication.status.statusTitle + '</div>';
-                                            if(jobApplication.status.statusId == 6){
-                                                candidateStatus = '<div style="width:100%; margin-top: 8px;  text-align: center">Status not available</div>';
-                                            }
-                                            candidateStatus += '<select id="candidate_interview_status_' + jobApplication.jobPost.jobPostId +'" style="width: 100%">' +
-                                            '<option value = 0>Select a Status</option>';
+                                    var today = new Date();
+                                    var interviewDate = new Date(jobApplication.scheduledInterviewDate);
+                                    if(interviewDate.getDate() == today.getDate() && interviewDate.getMonth() == today.getMonth() && interviewDate.getFullYear() == today.getFullYear()) { // today's schedule
+                                        var candidateStatus ='<div class="mLabel" style="width:100%;">Status not available</div>';
 
-                                            if(jobApplication.status.statusId == 6 || jobApplication.status.statusId == 10){
-                                                if(jobApplication.status.statusId == 6){
-                                                    candidateStatus += '<option value = 1>Not Going</option>';
+                                        // candidate status
+                                        if(jobApplication.status.statusId == 13){
+                                            candidateStatus = '<div class="mLabel" style="width:100%; color: green">Reached</div>';
+                                        } else{
+                                            if(jobApplication.status.statusId > 8 && jobApplication.status.statusId < 13){
+                                                candidateStatus = '<div style="width:100%; margin-top: 8px; text-align: center">' + jobApplication.status.statusTitle + '</div>';
+                                                if(jobApplication.status.statusId == 9){ // interview confirmed
+                                                    candidateStatus = '<div style="width:100%; margin-top: 8px;  text-align: center">Status not available</div>';
                                                 }
-                                                candidateStatus += '<option value = 2>Delayed</option>' +
-                                                '<option value = 3>Started</option>' +
-                                                '<option value = 4>Reached</option>';
-                                            } else if(jobApplication.status.statusId == 11){
-                                                candidateStatus += '<option value = 3>Started</option>' +
-                                                    '<option value = 4>Reached</option>';
-                                            } else if(jobApplication.status.statusId == 12){
-                                                candidateStatus += '<option value = 2>Delayed</option>' +
-                                                    '<option value = 4>Reached</option>';
-                                            }
-                                            candidateStatus +='</select><div class="navigationBtn" style="margin-top: 4px" onclick="updateCandidateStatus(' + jobApplication.jobPost.jobPostId + ')">Update</div>';
-                                        }
-                                    }
-                                    currentStatus += candidateStatus;
+                                                candidateStatus += '<select id="candidate_interview_status_' + jobApplication.jobPost.jobPostId +'" style="width: 100%">' +
+                                                    '<option value = 0>Select a Status</option>';
 
-                                } else if(jobApplication.status.statusId == 7){
+                                                if(jobApplication.status.statusId == 9 || jobApplication.status.statusId == 10){
+                                                    if(jobApplication.status.statusId == 9){
+                                                        candidateStatus += '<option value = 1>Not Going</option>';
+                                                    }
+                                                    candidateStatus += '<option value = 2>Delayed</option>' +
+                                                        '<option value = 3>Started</option>' +
+                                                        '<option value = 4>Reached</option>';
+                                                } else if(jobApplication.status.statusId == 11){
+                                                    candidateStatus += '<option value = 3>Started</option>' +
+                                                        '<option value = 4>Reached</option>';
+                                                } else if(jobApplication.status.statusId == 12){
+                                                    candidateStatus += '<option value = 2>Delayed</option>' +
+                                                        '<option value = 4>Reached</option>';
+                                                }
+                                                candidateStatus +='</select><div class="navigationBtn" style="margin-top: 4px" onclick="updateCandidateStatus(' + jobApplication.jobPost.jobPostId + ')">Update</div>';
+                                            }
+                                        }
+                                        currentStatus += candidateStatus;
+                                    }
+                                } else if(jobApplication.status.statusId == 6){
                                     currentStatus = "Application rejected";
-                                } else if(jobApplication.status.statusId == 8){
+                                } else if(jobApplication.status.statusId == 7){
                                     currentStatus = "Application rejected by the Candidate/Partner";
-                                } else if(jobApplication.status.statusId == 9){
+                                } else if(jobApplication.status.statusId == 8){
                                     var jpId = jobApplication.jobPost.jobPostId;
                                     rescheduledDate = "Interview Rescheduled on " + new Date(jobApplication.scheduledInterviewDate).getDate() + "/" + (new Date(jobApplication.scheduledInterviewDate).getMonth() + 1) + "/" + new Date(jobApplication.scheduledInterviewDate).getFullYear() + " between " + jobApplication.scheduledInterviewTimeSlot.interviewTimeSlotName;
                                     currentStatus = rescheduledDate;
@@ -317,9 +321,7 @@ function processDataForUpdateStatus(returnedData) {
             globalStatus = 0;
         } else{
             alert("Status updated successfully");
-            setTimeout(function () {
-                location.reload();
-            }, 2000);
+            getAllAppliedJobs();
         }
     } else{
         alert("Something went wrong. Please try again later");

@@ -2154,7 +2154,12 @@ public class JobPostWorkflowEngine {
             channel = Integer.valueOf(session().get("sessionChannel"));
         }
 
-            // save the interaction
+        InterviewScheduleStatusUpdate interviewScheduleStatusUpdate = new InterviewScheduleStatusUpdate();
+        interviewScheduleStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
+        interviewScheduleStatusUpdate.setStatus(JobPostWorkflowStatus.find.where().eq("status_id", jwStatus).findUnique());
+
+        interviewScheduleStatusUpdate.save();
+        // save the interaction
         InteractionService.createWorkflowInteraction(
                 jobPostWorkflowOld.getJobPostWorkflowUUId(),
                 candidate.getCandidateUUId(),

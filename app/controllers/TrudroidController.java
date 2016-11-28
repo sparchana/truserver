@@ -1038,9 +1038,9 @@ public class TrudroidController {
 
                         jobPostObjectBuilder.setJobPostMinSalary(jwpf.getJobPost().getJobPostMinSalary());
                         if(jwpf.getJobPost().getJobPostMaxSalary() == 0 || jwpf.getJobPost().getJobPostMaxSalary() == null){
-                            jobPostObjectBuilder.setJobPostMinSalary(0);
+                            jobPostObjectBuilder.setJobPostMaxSalary(0);
                         } else{
-                            jobPostObjectBuilder.setJobPostMinSalary(jwpf.getJobPost().getJobPostMaxSalary());
+                            jobPostObjectBuilder.setJobPostMaxSalary(jwpf.getJobPost().getJobPostMaxSalary());
                         }
 
                         //experience
@@ -1660,7 +1660,7 @@ public class TrudroidController {
         Candidate candidate = Candidate.find.where().eq("CandidateMobile", FormValidator.convertToIndianMobileFormat(updateCandidateStatusRequest.getCandidateMobile())).findUnique();
         if (candidate != null) {
             JobPost jobPost = JobPost.find.where().eq("JobPostId", updateCandidateStatusRequest.getJpId()).findUnique();
-            if(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, Long.valueOf(updateCandidateStatusRequest.getVal()), null) == 1){
+            if(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, Long.valueOf(updateCandidateStatusRequest.getVal()), updateCandidateStatusRequest.getReasonval()) == 1){
                 updateCandidateStatusResponse.setStatus(UpdateCandidateStatusResponse.Status.SUCCESS);
             } else{
                 updateCandidateStatusResponse.setStatus(UpdateCandidateStatusResponse.Status.FAILURE);
@@ -1669,4 +1669,24 @@ public class TrudroidController {
 
         return ok(Base64.encodeBase64String(updateCandidateStatusResponse.build().toByteArray()));
     }
+
+    public static Result mGetAllNotGoingReason() {
+        NotGoingReasonResponse.Builder notGoingReasonResponse = NotGoingReasonResponse.newBuilder();
+        List<models.entity.Static.JobRole> jobRoleList =
+                models.entity.Static.JobRole.find.where().orderBy().asc("jobName").findList();
+
+        List<ReasonObject> reasonObjectList = new ArrayList<>();
+        List<RejectReason> reason = RejectReason.find.where().eq("reason_type", ServerConstants.INTERVIEW_NOT_GOING_TYPE_REASON).orderBy("reason_name").findList();
+
+        for(RejectReason rejectReason : reason){
+            ReasonObject.Builder rejectReasonBuilder = ReasonObject.newBuilder();
+            rejectReasonBuilder.setReasonId(rejectReason.getReasonId());
+            rejectReasonBuilder.setReasonTitle(rejectReason.getReasonName());
+            reasonObjectList.add(rejectReasonBuilder.build());
+        }
+
+        notGoingReasonResponse.addAllReasonObject(reasonObjectList);
+        return ok(Base64.encodeBase64String(notGoingReasonResponse.build().toByteArray()));
+    }
+
 }
