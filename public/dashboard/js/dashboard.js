@@ -645,6 +645,7 @@ function getJob(){
     return jobArray;
 }
 function getAssets(){
+    console.log("Data returned in function: "+JSON.stringify(assetArray));
     return assetArray;
 }
 function getAssetsForJobRole(){
@@ -666,7 +667,7 @@ function getAssetsForJobRole(){
         }
         getAssets();
 }
-function processDataGetAssets(returnedAssets) {;
+function processDataGetAssets(returnedAssets) {
     if(returnedAssets != null){
         returnedAssets.forEach(function (asset) {
             var id = asset.assetId;
@@ -675,6 +676,7 @@ function processDataGetAssets(returnedAssets) {;
             item ["id"] = id;
             item ["name"] = name;
             assetArray.push(item);
+            console.log("Data returned : "+JSON.stringify(assetArray));
         });
     }
 }
