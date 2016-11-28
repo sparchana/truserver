@@ -1570,7 +1570,6 @@ public class JobPostWorkflowEngine {
     private static List<Candidate> filterByLatLngOrHomeLocality(List<Candidate> candidateList, List<Long> jobPostLocalityIdList, Double distanceRadius, boolean shouldRemoveCandidate) {
         List<Candidate> filteredCandidateList = new ArrayList<>();
 
-        Logger.info("candidateList size before latlng filter: "+candidateList.size());
         if (jobPostLocalityIdList == null || jobPostLocalityIdList.isEmpty()) {
             return candidateList;
         }
@@ -1625,8 +1624,6 @@ public class JobPostWorkflowEngine {
                 candidate.setMatchedLocation(matchedLocation.toString());
             }
         }
-        Logger.info("candidateList size after latlng filter: "+filteredCandidateList.size());
-
         return filteredCandidateList;
     }
 
@@ -1696,20 +1693,9 @@ public class JobPostWorkflowEngine {
 
 
 //      TODO: Optimization: It takes 4+ sec for query to return map/list of this constraint
-        Logger.info("before interaction query: " + new Timestamp(System.currentTimeMillis()));
         Map<String, Interaction> lastActiveInteraction = Ebean.find(Interaction.class)
                 .setRawSql(rawSql)
                 .findMap("objectAUUId", String.class);
-
-//        List<Interaction> interactionList = Ebean.find(Interaction.class)
-//                .setRawSql(rawSql)
-//                .findList();
-//
-//        Map<String, Interaction> lastActiveInteraction = new HashMap<>();
-//        for (Interaction interaction: interactionList) {
-//            lastActiveInteraction.put(interaction.getObjectAUUId(), interaction);
-//        }
-        Logger.info("after interaction query: " + new Timestamp(System.currentTimeMillis()));
 
         List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
                 .eq("status.statusId", status)
@@ -2311,7 +2297,8 @@ public class JobPostWorkflowEngine {
         }
 
         if( session().get("sessionChannel") == null ||
-                InteractionConstants.INTERACTION_TYPE_MAP.get(Integer.valueOf(session().get("sessionChannel"))) == null) {
+                InteractionConstants.INTERACTION_TYPE_MAP.get(Integer.valueOf(session().get("sessionChannel"))) == null)
+        {
             Logger.info("session channel not set");
             return null;
         }
@@ -2341,7 +2328,7 @@ public class JobPostWorkflowEngine {
                 InteractionConstants.INTERACTION_TYPE_CANDIDATE_INTERVIEW_SCHEDULED,
                 null,
                 interactionResult,
-                null
+                Integer.valueOf(session().get("sessionChannel"))
         );
 
         if(jobPostWorkflowOld.getJobPost().getInterviewDetailsList() != null && jobPostWorkflowOld.getJobPost().getInterviewDetailsList().size() > 0){
@@ -2368,7 +2355,7 @@ public class JobPostWorkflowEngine {
                             InteractionConstants.INTERACTION_TYPE_RECRUITER_ACCEPT_JOB_APPLICATION_INTERVIEW,
                             null,
                             interactionResult,
-                            null
+                            Integer.valueOf(session().get("sessionChannel"))
                     );
 
                 } catch (InterruptedException e) {
@@ -2517,7 +2504,7 @@ public class JobPostWorkflowEngine {
                 interactionType,
                 null,
                 interactionResult,
-                null
+                Integer.valueOf(session().get("sessionChannel"))
         );
 
         return 1;
@@ -2588,7 +2575,7 @@ public class JobPostWorkflowEngine {
                 interactionType,
                 null,
                 interactionResult,
-                null
+                Integer.valueOf(session().get("sessionChannel"))
         );
 
         return 1;
