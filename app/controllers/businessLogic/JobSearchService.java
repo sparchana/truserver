@@ -246,11 +246,11 @@ public class JobSearchService {
                 }
             }
 
-            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, null, null, false, ServerConstants.SOURCE_INTERNAL);
+            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, null, null, true, ServerConstants.SOURCE_INTERNAL);
 
             List<Long> relevantJobRoleIds = JobRelevancyEngine.getRelatedJobRoleIds(jobRoleIds);
 
-            List<JobPost> relevantJobRoleJobs = queryAndReturnJobPosts(relevantJobRoleIds, null, null, false, ServerConstants.SOURCE_INTERNAL);
+            List<JobPost> relevantJobRoleJobs = queryAndReturnJobPosts(relevantJobRoleIds, null, null, true, ServerConstants.SOURCE_INTERNAL);
 
             List<Long> finalJobRoleIdList = new ArrayList<>();
             finalJobRoleIdList.addAll(jobRoleIds);
