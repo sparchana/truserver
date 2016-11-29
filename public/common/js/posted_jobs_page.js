@@ -352,9 +352,10 @@ function processDataCheckJobs(returnedData) {
 }
 function applyJobBtnAction() {
     $('#jobApplyConfirm').modal();
-    /*var candidateMobile = localStorage.getItem("mobile");*/
+    var candidateMobile = localStorage.getItem("mobile");
     jobPostId = jobId;
     jobLocalityArray = [];
+    //openCandidatePreScreenModal(jobPostId, localStorage.getItem("mobile"));
     $('#applyButton').hide();
     addLocalitiesToModal();
 }

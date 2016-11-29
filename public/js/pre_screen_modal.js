@@ -387,11 +387,9 @@ function processIdProofsWithNumbers(returnedData, customD) {
 }
 
 function validateInput() {
-    console.log(this.id);
     var id = this.id.split("_")[1];
     // aadhaar validation
     if(id == 3) {
-        console.log(this.value);
         if(!validateAadhar(this.value)){
             $('.btn.edit-modal-submit').prop('disabled', true);
             notifyModal("Invalid Input","Invalid Aadhaar Card Number. (Example: 100120023003)");
@@ -401,7 +399,6 @@ function validateInput() {
         $("#idProofCheckbox_"+id).prop('checked', true);
     }
     if(id == 1){
-        console.log(this.value);
         if(!validateDL(this.value)){
             $('.btn.edit-modal-submit').prop('disabled', true);
             notifyModal("Invalid Input","Invalid Driving Licence Number. (Example: TN7520130008800 or TN-7520130008800)");
@@ -411,7 +408,6 @@ function validateInput() {
         $("#idProofCheckbox_"+id).prop('checked', true);
     }
     if(id == 2){
-        console.log(this.value);
         if(!validatePASSPORT(this.value)){
             $('.btn.edit-modal-submit').prop('disabled', true);
             notifyModal("Invalid Input","Invalid Pass Port Number. (Example: A12 34567)");
@@ -421,7 +417,6 @@ function validateInput() {
         $("#idProofCheckbox_"+id).prop('checked', true);
     }
     if(id == 4){
-        console.log(this.value);
         if(!validatePAN(this.value)){
             $('.btn.edit-modal-submit').prop('disabled', true);
             notifyModal("Invalid Input","Invalid PAN Card Number. (Example: ABCDE1234Z)");
@@ -430,11 +425,8 @@ function validateInput() {
         }
         $("#idProofCheckbox_"+id).prop('checked', true);
     }
-    console.log(this.parentNode);
 }
 function processLocality(returnedData) {
-    console.log("fetched all locality. now rendering locality token input");
-
     localityArray = [];
     if (returnedData != null) {
         returnedData.forEach(function (locality) {
@@ -467,7 +459,6 @@ function getLocalityArray() {
 
 function updateCallAttempts(cId, jpId, status) {
     if(cId == null || jpId == null) {
-        console.log("invalid candidateId and jobPostId");
         return;
     }
     NProgress.start();
@@ -499,7 +490,6 @@ function saveAttempt(candidateId, jobPostId) {
 }
 
 function onCallYes(candidateId, jobPostId) {
-    console.log("connected: " + candidateId +" "+ jobPostId);
     $('#callNoClass').hide();
     $('#pre_screen_body').show();
     updateCallAttempts(candidateId, jobPostId, "CONNECTED");
@@ -767,7 +757,6 @@ function notifyModal(title, message){
 }
 
 function processFinalSubmitResponse(returnedData, jobPostId, candidateId, propId, isSupport) {
-    console.log(returnedData);
     if(returnedData != "error" || returnedData.trim() != ""){
         getPreScreenContent(jobPostId, candidateId, true, null, null, isSupport);
         // get new jobPostVsCandidate data
@@ -778,7 +767,6 @@ function processFinalSubmitResponse(returnedData, jobPostId, candidateId, propId
 }
 
 function generateEditModalView(title, message, candidateId, propId, overflow, jobPostId, isSupport) {
-    console.log("rendering modal");
     var editDialog = bootbox.dialog({
         className: "pre-screen-modal",
         title: title,
@@ -810,7 +798,6 @@ function fetchEditModalContent(candidateId, propId, jobPostId, customD, isSuppor
     // api call and render child modal
     var base_api_url ="/support/api/getCandidateDetails/";
     if(base_api_url == null || candidateId == null) {
-        console.log("please provide candidateId && propertyId");
         return
     } else {
         base_api_url +="?";
@@ -826,7 +813,6 @@ function fetchEditModalContent(candidateId, propId, jobPostId, customD, isSuppor
     var ajax_type = "POST";
     var fn; // options creator
     var setter = function(returnedData) {
-        console.log("candidate's info:" + JSON.stringify(returnedData));
     }; // this sets the values in the prev created options
     var htmlBodyContent = "test";
     var modalTitle="test";
@@ -1052,7 +1038,6 @@ function fetchEditModalContent(candidateId, propId, jobPostId, customD, isSuppor
 
         };
         setter = function (returnedData) {
-            console.log("setting candidate locality");
 
             if(returnedData!= null) {
                 try {
@@ -1298,7 +1283,6 @@ function constructPreScreenBodyContainer(returnedData, customD, isSupport) {
             rowHeadingPost.appendChild(label);
             minReqContainer.appendChild(minReqTextArea);
             splitDiv.append(minReqContainer);
-            console.log("added minreq text area to PS_Modal");
             // minReq end
         }
         if(customD.textContainers.noteContainer.visibility){
@@ -1325,7 +1309,6 @@ function constructPreScreenBodyContainer(returnedData, customD, isSupport) {
             rowHeadingNote.appendChild(label);
             noteContainer.appendChild(textarea);
             splitDiv.append(noteContainer);
-            console.log("added note text area to PS_Modal");
             // note end
         }
         container.append(splitDiv);
@@ -1525,7 +1508,6 @@ function getPlaceholderValue(element){
 // customD : custom Decorator object
 function processPreScreenContent(returnedData, customD, isSupport) {
     if(returnedData == null || returnedData.status != "SUCCESS") {
-        console.log(returnedData);
         if (returnedData != null && returnedData.status == "INVALID") {
             notifyModal("Pre Screen Status: Completed", "Pre Screen Already Completed");
         } else {
@@ -1614,7 +1596,6 @@ function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, cus
                         $('body').removeClass('open-modal');
                         //if($("#pre_screen_body input[type='checkbox']:checked").size() > 0) {}
                         triggerPreScreenResponseSubmission(candidateId, jobPostId, isSupport);
-                        console.log("final prescreen submission triggered");
                         return true;
                     }
                 }
@@ -1650,7 +1631,6 @@ function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, cus
 }
 
 function processPostPreScreenResponse(response, candidateId, jobPostId, isSupport) {
-    console.log(response);
     if(response == "OK"){
         notifyError("Submitted successfully.", 'success');
         setTimeout(function () {
@@ -1666,7 +1646,6 @@ function processPostPreScreenResponse(response, candidateId, jobPostId, isSuppor
 
 function reProcessPreScreenContent(returnedData, customD, isSupport){
     if(returnedData == null || returnedData.status != "SUCCESS") {
-        console.log(returnedData);
         pushToSnackbar("Request failed. Something went Wrong! Please Refresh");
     }
     if(returnedData != null){
@@ -1682,7 +1661,6 @@ function reProcessPreScreenContent(returnedData, customD, isSupport){
         $('#pre_screen_body').html(container);
         for (var j = 0; j < len; j++) {
             var id = tempList[j];
-            console.log("id-->"+id + " <-");
             $('#ready_checkbox_'+id).children().prop('checked', true);
         }
 
@@ -1701,7 +1679,6 @@ function getPreScreenContent(jobPostId, candidateId, isRebound, customD, rePreSc
     }
     var base_api_url ="/support/api/getJobPostVsCandidate/";
     if(base_api_url == null || jobPostId == null) {
-        console.log("please provide candidateId && jobPostId");
         return
     } else {
         base_api_url +="?";
@@ -1718,7 +1695,6 @@ function getPreScreenContent(jobPostId, candidateId, isRebound, customD, rePreSc
         base_api_url +="&rePreScreen="+true;
     }
     base_api_url +="&candidateMobile";
-    console.log(" url link : " + base_api_url);
 
     var processor;
     if(!isRebound) {
@@ -1730,7 +1706,6 @@ function getPreScreenContent(jobPostId, candidateId, isRebound, customD, rePreSc
             reProcessPreScreenContent(returnedData, customD, isSupport);
         }
     }
-    console.log("jobPostVsCandidate_URL: " + base_api_url);
     try {
         $.ajax({
             type: "GET",

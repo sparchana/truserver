@@ -235,6 +235,7 @@ POST        /mAddPassword                                                 contro
 POST        /mFindUserAndSendOtp                                          controllers.TrudroidController.mFindUserAndSendOtp()
 POST        /mGetAllJobRoles                                              controllers.TrudroidController.mGetAllJobRoles()
 POST        /mGetAllJobPosts                                              controllers.TrudroidController.mGetAllJobPosts()
+POST        /mGetAllNotGoingReason                                        controllers.TrudroidController.mGetAllNotGoingReason()
 POST        /mAddHomeLocality                                             controllers.TrudroidController.mAddHomeLocality()
 POST        /mApplyJob                                                    controllers.TrudroidController.mApplyJob()
 POST        /mAddJobPref                                                  controllers.TrudroidController.mAddJobPref()
@@ -243,6 +244,7 @@ POST        /mGetJobPostInfo                                              contro
 POST        /mFetchCandidateAlert                                         controllers.TrudroidController.mFetchCandidateAlert()
 POST        /mSearchJobs                                                  controllers.TrudroidController.mSearchJobs()
 POST        /mGetCandidateJobApplication                                  controllers.TrudroidController.mGetCandidateJobApplication()
+POST        /mGetCandidateJobApplicationViaWorkFlow                       controllers.TrudroidController.mGetCandidateJobApplicationViaWorkFlow()
 POST        /mCandidateUpdateBasicProfile                                 controllers.TrudroidController.mCandidateUpdateBasicProfile()
 POST        /mCandidateUpdateExperienceProfile                            controllers.TrudroidController.mCandidateUpdateExperienceProfile()
 POST        /mCandidateUpdateEducationProfile                             controllers.TrudroidController.mCandidateUpdateEducationProfile()
@@ -258,6 +260,8 @@ POST        /mUpdateCandidateExperience                                   contro
 POST        /mUpdateCandidateOther                                        controllers.TrudroidController.mUpdateCandidateOther()
 POST        /mUpdateCandidateInterviewDetail                              controllers.TrudroidController.mUpdateCandidateInterviewDetail()
 POST        /mGetInterviewSlots                                           controllers.TrudroidController.mGetInterviewSlot()
+POST        /mConfirmInterview                                            controllers.TrudroidController.mConfirmInterview()
+POST        /mUpdateCandidateStatus                                       controllers.TrudroidController.mUpdateCandidateStatus()
 
 # Update interview status API
 # ~~~~~~~~~~~~

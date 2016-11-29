@@ -15,6 +15,7 @@ var allTimeSlots = [];
 var allReason = [];
 
 var oldDate = null;
+var notSelectedReason = [];
 
 function openTrackInterview() {
     window.location = "/recruiter/job/track/" + jobPostId;
@@ -45,6 +46,20 @@ $(document).ready(function(){
             contentType: false,
             processData: false,
             success: processDataForJobPost
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllNotSelectedReasons",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataNotSelectedReason
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
@@ -93,6 +108,17 @@ $(document).ready(function(){
         }
     });
 });
+
+function processDataNotSelectedReason(returnedData) {
+    returnedData.forEach(function(reason) {
+        var id = reason.reasonId;
+        var name = reason.reasonName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        notSelectedReason.push(item);
+    });
+}
 
 function processDataForJobPost(returnedData) {
     $("#jobPostTitle").html("Job Applications for " + returnedData.jobPostTitle);
@@ -148,101 +174,106 @@ function tabChange1() {
     $("#tab1").addClass("activeTab");
     $("#tab2").removeClass("activeTab");
     $("#tab3").removeClass("activeTab");
-    $("#tab4").removeClass("activeTab");
 
     $("#tab1Parent").addClass("activeParent");
     $("#tab2Parent").removeClass("activeParent");
     $("#tab3Parent").removeClass("activeParent");
-    $("#tab4Parent").removeClass("activeParent");
 }
 
 function tabChange2() {
     $("#tab1").removeClass("activeTab");
     $("#tab2").addClass("activeTab");
     $("#tab3").removeClass("activeTab");
-    $("#tab4").removeClass("activeTab");
 
     $("#tab1Parent").removeClass("activeParent");
     $("#tab2Parent").addClass("activeParent");
     $("#tab3Parent").removeClass("activeParent");
-    $("#tab4Parent").removeClass("activeParent");
 }
 
 function tabChange3() {
     $("#tab1").removeClass("activeTab");
     $("#tab2").removeClass("activeTab");
     $("#tab3").addClass("activeTab");
-    $("#tab4").removeClass("activeTab");
 
     $("#tab1Parent").removeClass("activeParent");
     $("#tab2Parent").removeClass("activeParent");
     $("#tab3Parent").addClass("activeParent");
-    $("#tab4Parent").removeClass("activeParent");
 }
-
-function tabChange4() {
-    $("#tab1").removeClass("activeTab");
-    $("#tab2").removeClass("activeTab");
-    $("#tab3").removeClass("activeTab");
-    $("#tab4").addClass("activeTab");
-
-    $("#tab1Parent").removeClass("activeParent");
-    $("#tab2Parent").removeClass("activeParent");
-    $("#tab3Parent").removeClass("activeParent");
-    $("#tab4Parent").addClass("activeParent");
-}
-
 
 function processDataForJobApplications(returnedData) {
     var pendingCount = 0;
     var confirmedCount = 0;
     var completedCount = 0;
-    var rejectedCount = 0;
+    var approvalCount = 0;
 
     var pendingParent = $("#pendingCandidateContainer");
     var confirmedParent = $("#confirmedCandidateContainer");
     var completedParent = $("#completedCandidateContainer");
-    var rejectedParent = $("#rejectedCandidateContainer");
 
     pendingParent.html('');
     confirmedParent.html('');
     completedParent.html('');
-    rejectedParent.html('');
 
     if(returnedData != "0"){
         var candidateList = [];
+        var rejectedList = [];
+        var actionList = [];
         $.each(returnedData, function (key, value) {
             if (value != null) {
-                candidateList.push(value);
+                if(value.extraData.workflowStatus != null){
+                    if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
+                        rejectedList.push(value);
+                    } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED){
+                        actionList.push(value);
+                    } else{
+                        candidateList.push(value);
+                    }
+                } else{
+                    candidateList.push(value);
+                }
             }
         });
+
+        //other candidates int the middle
+        candidateList.forEach(function (val) {
+            actionList.push(val);
+        });
+
+        //rejected candidates at the end
+        rejectedList.forEach(function (val) {
+            actionList.push(val);
+        });
+
         var actionNeeded = false;
 
-        candidateList.reverse();
-        candidateList.forEach(function (value){
+        actionList.forEach(function (value){
             var candidateCard = document.createElement("div");
             candidateCard.className = "card";
             candidateCard.style = "border-radius: 6px";
 
             actionNeeded = false;
             if(value.extraData.workflowStatus != null){
-                if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 8 && value.extraData.workflowStatus.statusId < 14)){
+                if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
                     confirmedParent.append(candidateCard);
                     confirmedCount++;
-                } else if(value.extraData.workflowStatus.statusId == 7){
-                    rejectedParent.append(candidateCard);
-                    rejectedCount++;
-                } else if(value.extraData.workflowStatus.statusId == 8){
-                    rejectedParent.append(candidateCard);
-                    rejectedCount++;
-                } else if(value.extraData.workflowStatus.statusId > 13){
-                    completedParent.append(candidateCard);
-                    completedCount++;
-                } else{
+                } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
                     pendingParent.append(candidateCard);
                     pendingCount++;
+                } else if(value.extraData.workflowStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
+                    completedParent.append(candidateCard);
+                    completedCount++;
+                } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_PRESCREEN_COMPLETED){
+                    pendingParent.append(candidateCard);
+                    pendingCount++;
+                } else {
+                    pendingParent.append(candidateCard);
+                    pendingCount++;
+                    approvalCount++;
                     actionNeeded = true;
                 }
+            } else{
+                pendingParent.append(candidateCard);
+                pendingCount++;
             }
 
             var candidateCardContent = document.createElement("div");
@@ -306,7 +337,7 @@ function processDataForJobApplications(returnedData) {
                 candidateInterviewDateVal.id = "interview_date_" + value.candidate.candidateId;
             } else{
                 candidateInterviewDateVal.style = "margin-left: 4px";
-                interviewDetails = "Schedule not available";
+                interviewDetails = "Schedule not available. Please contact candidate";
             }
 
             candidateInterviewDateVal.textContent = interviewDetails + ". ";
@@ -314,7 +345,7 @@ function processDataForJobApplications(returnedData) {
 
             var candidateInterviewStatusVal = document.createElement("span");
             if(value.extraData.workflowStatus != null){
-                if(value.extraData.workflowStatus.statusId == 5) {
+                if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED) {
                     var interviewStatusDiv = document.createElement("span");
                     interviewStatusDiv.id = "interview_status_option_" + value.candidate.candidateId;
                     inlineBlockDiv.appendChild(interviewStatusDiv);
@@ -396,27 +427,27 @@ function processDataForJobApplications(returnedData) {
                     actionText.textContent = " Reschedule";
                     candidateInterviewRescheduleParent.appendChild(actionText);
 
-                } else if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 9 && value.extraData.workflowStatus.statusId < 14)){
+                } else if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
                     candidateInterviewStatusVal.textContent = "Interview Confirmed";
                     candidateInterviewStatusVal.style = "color: green; font-weight: bold";
-                } else if(value.extraData.workflowStatus.statusId == 7){
-                    candidateInterviewStatusVal.textContent = "Interview Rejected";
+                } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT){
+                    candidateInterviewStatusVal.textContent = "Application Not Shortlisted";
                     candidateInterviewStatusVal.style = "color: red; font-weight: bold";
-                } else if(value.extraData.workflowStatus.statusId == 8){
+                } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
                     candidateInterviewStatusVal.textContent = "Interview Rejected by Candidate";
                     candidateInterviewStatusVal.style = "color: red; font-weight: bold";
-                } else if(value.extraData.workflowStatus.statusId == 9){
+                } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE){
                     candidateInterviewStatusVal.textContent = "Interview Rescheduled. Awaiting candidate's response";
                     candidateInterviewStatusVal.style = "color: orange; font-weight: bold";
-                } else if(value.extraData.workflowStatus.statusId > 13){
+                } else if(value.extraData.workflowStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                     candidateInterviewStatusVal.textContent = value.extraData.workflowStatus.statusTitle;
-                    if(value.extraData.workflowStatus.statusId == 14){
+                    if(value.extraData.workflowStatus.statusId == JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
                         candidateInterviewStatusVal.style = "color: green; font-size: 14px; font-weight: 600";
                     } else{
                         candidateInterviewStatusVal.style = "color: red; font-size: 14px; font-weight: 600";
                     }
                 } else{
-                    candidateInterviewStatusVal.textContent = "No credits!";
+                    candidateInterviewStatusVal.textContent = "";
                 }
             }
 
@@ -427,7 +458,11 @@ function processDataForJobApplications(returnedData) {
             candidateCardScore.style = "padding: 8px; margin-top: 16px; text-align: right";
             candidateCardRow.appendChild(candidateCardScore);
 
+            var showMatch = true;
             var matchVal = document.createElement("span");
+
+            candidateCardScore.appendChild(matchVal);
+
             if(value.scoreData != null){
                 matchVal.className = "tooltipped matchDiv";
                 matchVal.setAttribute("data-postiton", "top");
@@ -446,7 +481,6 @@ function processDataForJobApplications(returnedData) {
                     matchVal.textContent = "Low Match";
                 }
             }
-            candidateCardScore.appendChild(matchVal);
 
             //end of candidateCardRow
 
@@ -627,7 +661,6 @@ function processDataForJobApplications(returnedData) {
                     } else{
                         candidateEducationVal.textContent = value.candidate.candidateEducation.education.educationName;
                     }
-
                 }
             }
             inlineBlockDiv.appendChild(candidateEducationVal);
@@ -906,7 +939,7 @@ function processDataForJobApplications(returnedData) {
             candidateCardContent.appendChild(unlockDivRow);
 
             var candidateCardRowColTwo = document.createElement("div");
-            candidateCardRowColTwo.className = "col s12 l8";
+            candidateCardRowColTwo.className = "col s12 l6";
             candidateCardRowColTwo.style = "text-align: left; color: black";
             unlockDivRow.appendChild(candidateCardRowColTwo);
 
@@ -918,8 +951,28 @@ function processDataForJobApplications(returnedData) {
             candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
 
             var unlockContactCol = document.createElement("div");
-            unlockContactCol.className = "col s12 l4";
+            unlockContactCol.className = "col s12 l6";
             unlockDivRow.appendChild(unlockContactCol);
+
+            if(value.extraData.workflowStatus != null) {
+                if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+                    var todayDay = new Date();
+                    var interviewDate = new Date(value.extraData.interviewDate);
+                    var interviewDay = interviewDate.getDate();
+                    var interviewMonth = interviewDate.getMonth() + 1;
+
+                    if((todayDay.getDate() == interviewDay) && ((todayDay.getMonth() + 1) == interviewMonth)){
+                        var feedbackBtn = document.createElement("a");
+                        feedbackBtn.className = "waves-effect waves-light btn";
+                        feedbackBtn.style = "font-weight: bold; margin-right: 8px";
+                        feedbackBtn.onclick = function () {
+                            openFeedbackModal(value.candidate.candidateId);
+                        };
+                        feedbackBtn.textContent = "Add feedback";
+                        unlockContactCol.appendChild(feedbackBtn);
+                    }
+                }
+            }
 
             //unlock candidate div
             var unlockCandidateBtn = document.createElement("div");
@@ -939,6 +992,14 @@ function processDataForJobApplications(returnedData) {
         });
         $('.tooltipped').tooltip({delay: 50});
 
+        if(approvalCount == 0){
+            $(".badge").hide();
+        } else {
+            $(".badge").show();
+            $("#pendingApproval").addClass("newNotification").html(approvalCount + " new");
+            $("#pendingApprovalMobile").addClass("newNotification").html(approvalCount + " new");
+        }
+
         if(pendingCount == 0){
             $("#noPendingApplication").show();
         } else{
@@ -949,12 +1010,6 @@ function processDataForJobApplications(returnedData) {
             $("#noConfirmedApplication").show();
         } else{
             $("#noConfirmedApplication").hide();
-        }
-
-        if(rejectedCount == 0){
-            $("#noRejectedApplication").show();
-        } else{
-            $("#noRejectedApplication").hide();
         }
 
         if(completedCount == 0){
@@ -1142,6 +1197,73 @@ function processDataInterviewStatus(returnedData) {
         }
         $("#interview_div_" + globalCandidateId).append(candidateInterviewStatusVal);
         getAllCandidates();
+    } else{
+        notifyError("Something went wrong. Please try again later");
+    }
+}
+
+//feedback
+function openFeedbackModal(candidateId) {
+    globalCandidateId = candidateId;
+    $("#reasonVal").html('');
+    var defaultOption = $('<option value="0" selected></option>').text("Select a reason");
+    $('#reasonVal').append(defaultOption);
+
+    notSelectedReason.forEach(function (reason) {
+        var option = $('<option value=' + reason.id + '></option>').text(reason.name);
+        $('#reasonVal').append(option);
+    });
+
+    $("#addFeedback").openModal();
+
+    $("#feedbackOption").change(function (){
+        if($(this).val() == 2 || $(this).val() == 4){
+            $("#otherReason").show();
+        } else{
+            $("#otherReason").hide();
+        }
+    });
+}
+
+function confirmAddFeedback() {
+    if($("#feedbackOption").val() > 0){
+        if(($("#feedbackOption").val() == 2 || $("#feedbackOption").val() == 4) && $("#reasonVal").val() == 0){
+            notifyError("Please select a reason");
+        } else{
+            try {
+                var d = {
+                    candidateId: globalCandidateId,
+                    jobPostId : jobPostId,
+                    feedbackStatus : $("#feedbackOption").val(),
+                    feedbackComment : $("#feedbackNote").val(),
+                    rejectReason: $("#reasonVal").val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/updateFeedback",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
+                    success: processDataUpdateFeedBack
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+        }
+    } else{
+        notifyError("Please select a feedback option");
+    }
+}
+
+function processDataUpdateFeedBack(returnedData) {
+    if(returnedData == 1){
+        notifySuccess("Feedback updated successfully. Refreshing the page..");
+        setTimeout(function () {
+            location.reload();
+        }, 2000);
+    } else if(returnedData == -1){
+        notifyError("You are out of interview credits. Please purchase interview credits!");
+        openCreditModal();
     } else{
         notifyError("Something went wrong. Please try again later");
     }

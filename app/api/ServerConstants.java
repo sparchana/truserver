@@ -136,10 +136,10 @@ public class ServerConstants {
     public static final int JWF_STATUS_PRESCREEN_COMPLETED = 4;
 
     public static final int JWF_STATUS_INTERVIEW_SCHEDULED = 5;
-    public static final int JWF_STATUS_INTERVIEW_CONFIRMED = 6;
-    public static final int JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT = 7;
-    public static final int JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE = 8;
-    public static final int JWF_STATUS_INTERVIEW_RESCHEDULE = 9;
+    public static final int JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT = 6;
+    public static final int JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE = 7;
+    public static final int JWF_STATUS_INTERVIEW_RESCHEDULE = 8;
+    public static final int JWF_STATUS_INTERVIEW_CONFIRMED = 9;
 
     public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING = 10;
     public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED = 11;

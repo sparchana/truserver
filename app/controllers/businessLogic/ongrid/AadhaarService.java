@@ -160,8 +160,6 @@ public class AadhaarService {
         Long professionId = null;
 
         if (candidate.getCandidateCurrentJobDetail() != null) {
-            Logger.info("current job roleid: " + candidate.getCandidateCurrentJobDetail().getJobRole().getJobName());
-
             OnGridProfessions profession =
                     OnGridProfessions.find.where().eq("jobRole",
                             candidate.getCandidateCurrentJobDetail().getJobRole()).findUnique();
@@ -218,7 +216,7 @@ public class AadhaarService {
     {
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json");
-        Logger.info("Req Params: " + reqParams);
+
         RequestBody body = RequestBody.create(mediaType, reqParams);
         String url = myBaseUrl + "/app/v1/aadhaar/" + aadhaarUID + "/verifysync";
 

@@ -1,3 +1,7 @@
+#interviewModalBtn{
+   background-color:#09ac58;
+    color:#fff;
+}
 #education_details{
     padding:2% 3%;
 
@@ -87,14 +91,29 @@ li .open>.dropdown-menu{
 #salary_details{
     padding:2% 3%;
 }
+#candidateFresh{
+    margin:0 8%;
+}
+#candidateExp{
+    margin:0 8% 0 2%;
+}
 @media screen and (max-width: 970px) {
     #preScreenModalBody{
         width: 100%;
     }
 }
 @media screen and (max-width: 768px) {
+    #candidateFresh{
+        margin:0 2%;
+    }
+    #candidateExp{
+        margin:0 2%;
+    }
     .modal .modal-dialog{
         margin:20px 0;
+    }
+    #language_details{
+        text-align: center;
     }
     #candidateLastWithdrawnSalary{
         width: 100%;
@@ -110,7 +129,13 @@ li .open>.dropdown-menu{
         width: 100%;
         margin-left: 0;
     }
+    .btn-group{
+        width: 100%;
+    }
     .btn-group button{
+        width: 100%;
+    }
+    .btn-group .multiselect{
         width: 100%;
     }
     #salary_details{
