@@ -644,7 +644,6 @@ public class JobPostWorkflowEngine {
         // constructor for this class make all default flag as true, we will mark it false wherever its not satisfied
         populateResponse.jobPostId = jobPostId;
         populateResponse.candidateId = candidateId;
-        Logger.info("minReq :" + jobPost.getJobPostMinRequirement());
         populateResponse.setJobPostMinReq(jobPost.getJobPostMinRequirement());
 
         PreScreenPopulateResponse.PreScreenElement preScreenElement;

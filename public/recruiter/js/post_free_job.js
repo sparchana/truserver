@@ -304,6 +304,9 @@ function processDataRecruiterSession(returnedData) {
 
 $(document).ready(function () {
     checkRecruiterLogin();
+    $(".postJobNav").addClass("active");
+    $(".postJobNavMobile").addClass("active");
+
     var pathname = window.location.pathname; // Returns path only
     var jobPostIdUrl = pathname.split('/');
     var jobPostId = jobPostIdUrl[(jobPostIdUrl.length)-1];
