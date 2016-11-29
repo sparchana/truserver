@@ -174,75 +174,64 @@ function tabChange1() {
     $("#tab1").addClass("activeTab");
     $("#tab2").removeClass("activeTab");
     $("#tab3").removeClass("activeTab");
-    $("#tab4").removeClass("activeTab");
 
     $("#tab1Parent").addClass("activeParent");
     $("#tab2Parent").removeClass("activeParent");
     $("#tab3Parent").removeClass("activeParent");
-    $("#tab4Parent").removeClass("activeParent");
 }
 
 function tabChange2() {
     $("#tab1").removeClass("activeTab");
     $("#tab2").addClass("activeTab");
     $("#tab3").removeClass("activeTab");
-    $("#tab4").removeClass("activeTab");
 
     $("#tab1Parent").removeClass("activeParent");
     $("#tab2Parent").addClass("activeParent");
     $("#tab3Parent").removeClass("activeParent");
-    $("#tab4Parent").removeClass("activeParent");
 }
 
 function tabChange3() {
     $("#tab1").removeClass("activeTab");
     $("#tab2").removeClass("activeTab");
     $("#tab3").addClass("activeTab");
-    $("#tab4").removeClass("activeTab");
 
     $("#tab1Parent").removeClass("activeParent");
     $("#tab2Parent").removeClass("activeParent");
     $("#tab3Parent").addClass("activeParent");
-    $("#tab4Parent").removeClass("activeParent");
 }
-
-function tabChange4() {
-    $("#tab1").removeClass("activeTab");
-    $("#tab2").removeClass("activeTab");
-    $("#tab3").removeClass("activeTab");
-    $("#tab4").addClass("activeTab");
-
-    $("#tab1Parent").removeClass("activeParent");
-    $("#tab2Parent").removeClass("activeParent");
-    $("#tab3Parent").removeClass("activeParent");
-    $("#tab4Parent").addClass("activeParent");
-}
-
 
 function processDataForJobApplications(returnedData) {
     var pendingCount = 0;
     var confirmedCount = 0;
     var completedCount = 0;
-    var rejectedCount = 0;
     var approvalCount = 0;
 
     var pendingParent = $("#pendingCandidateContainer");
     var confirmedParent = $("#confirmedCandidateContainer");
     var completedParent = $("#completedCandidateContainer");
-    var rejectedParent = $("#rejectedCandidateContainer");
 
     pendingParent.html('');
     confirmedParent.html('');
     completedParent.html('');
-    rejectedParent.html('');
 
     if(returnedData != "0"){
         var candidateList = [];
+        var rejectedList = [];
         $.each(returnedData, function (key, value) {
             if (value != null) {
-                candidateList.push(value);
+                if(value.extraData.workflowStatus == 6 || value.extraData.workflowStatus == 7){
+                    rejectedList.push(value);
+                } else{
+                    candidateList.push(value);
+                }
             }
         });
+
+        //rejected candidates at the end
+        rejectedList.forEach(function (val) {
+           candidateList.push(val);
+        });
+
         var actionNeeded = false;
 
         candidateList.reverse();
@@ -256,12 +245,9 @@ function processDataForJobApplications(returnedData) {
                 if(value.extraData.workflowStatus.statusId > 7 && value.extraData.workflowStatus.statusId < 14){
                     confirmedParent.append(candidateCard);
                     confirmedCount++;
-                } else if(value.extraData.workflowStatus.statusId == 6){
-                    rejectedParent.append(candidateCard);
-                    rejectedCount++;
-                } else if(value.extraData.workflowStatus.statusId == 7){
-                    rejectedParent.append(candidateCard);
-                    rejectedCount++;
+                } else if(value.extraData.workflowStatus.statusId == 6 || value.extraData.workflowStatus.statusId == 7){
+                    pendingParent.append(candidateCard);
+                    pendingCount++;
                 } else if(value.extraData.workflowStatus.statusId > 13){
                     completedParent.append(candidateCard);
                     completedCount++;
@@ -277,6 +263,7 @@ function processDataForJobApplications(returnedData) {
             } else{
                 pendingParent.append(candidateCard);
                 pendingCount++;
+                console.log("pending");
             }
 
             var candidateCardContent = document.createElement("div");
@@ -434,7 +421,7 @@ function processDataForJobApplications(returnedData) {
                     candidateInterviewStatusVal.textContent = "Interview Confirmed";
                     candidateInterviewStatusVal.style = "color: green; font-weight: bold";
                 } else if(value.extraData.workflowStatus.statusId == 6){
-                    candidateInterviewStatusVal.textContent = "Interview Rejected";
+                    candidateInterviewStatusVal.textContent = "Application Not Shortlisted";
                     candidateInterviewStatusVal.style = "color: red; font-weight: bold";
                 } else if(value.extraData.workflowStatus.statusId == 7){
                     candidateInterviewStatusVal.textContent = "Interview Rejected by Candidate";
@@ -1014,12 +1001,6 @@ function processDataForJobApplications(returnedData) {
             $("#noConfirmedApplication").show();
         } else{
             $("#noConfirmedApplication").hide();
-        }
-
-        if(rejectedCount == 0){
-            $("#noRejectedApplication").show();
-        } else{
-            $("#noRejectedApplication").hide();
         }
 
         if(completedCount == 0){
