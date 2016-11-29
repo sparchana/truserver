@@ -6,6 +6,8 @@ var jobPostId;
 var todayDay;
 var globalCandidateId;
 
+var notSelectedReason = [];
+
 $(document).scroll(function(){
     if ($(this).scrollTop() > 80) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
@@ -36,7 +38,33 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllNotSelectedReasons",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataNotSelectedReason
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
 });
+
+function processDataNotSelectedReason(returnedData) {
+    returnedData.forEach(function(reason) {
+        var id = reason.reasonId;
+        var name = reason.reasonName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        notSelectedReason.push(item);
+    });
+}
 
 function processDataForJobPost(returnedData) {
     $("#job_title").html(returnedData.jobPostTitle);
@@ -1000,31 +1028,51 @@ function processDataRecruiterSession(returnedData) {
 
 function openFeedbackModal(candidateId) {
     globalCandidateId = candidateId;
+    $("#reasonVal").html('');
+    var defaultOption = $('<option value="0" selected></option>').text("Select a reason");
+    $('#reasonVal').append(defaultOption);
+
+    notSelectedReason.forEach(function (reason) {
+        var option = $('<option value=' + reason.id + '></option>').text(reason.name);
+        $('#reasonVal').append(option);
+    });
 
     $("#addFeedback").openModal();
+
+    $("#feedbackOption").change(function (){
+        if($(this).val() == 2 || $(this).val() == 4){
+            $("#otherReason").show();
+        } else{
+            $("#otherReason").hide();
+        }
+    });
 }
 
 function confirmAddFeedback() {
     if($("#feedbackOption").val() > 0){
-        try {
-            var d = {
-                candidateId: globalCandidateId,
-                jobPostId : jobPostId,
-                feedbackStatus : $("#feedbackOption").val(),
-                feedbackComment : $("#feedbackNote").val()
-            };
+        if(($("#feedbackOption").val() == 2 || $("#feedbackOption").val() == 4) && $("#reasonVal").val() == 0){
+            notifyError("Please select a reason");
+        } else{
+            try {
+                var d = {
+                    candidateId: globalCandidateId,
+                    jobPostId : jobPostId,
+                    feedbackStatus : $("#feedbackOption").val(),
+                    feedbackComment : $("#feedbackNote").val(),
+                    rejectReason: $("#reasonVal").val()
+                };
 
-            $.ajax({
-                type: "POST",
-                url: "/updateFeedback",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(d),
-                success: processDataUpdateFeedBack
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
+                $.ajax({
+                    type: "POST",
+                    url: "/updateFeedback",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
+                    success: processDataUpdateFeedBack
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
         }
-
     } else{
         notifyError("Please select a feedback option");
     }

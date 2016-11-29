@@ -135,7 +135,7 @@
                         <th><b>Interview Time slot</b></th>
                         <th><b>Coming from</b></th>
                         <th><b>Candidate Status</b></th>
-                        <th>Action</th>
+                        <th>Feedback</th>
                     </tr>
                 </thead>
 
@@ -292,6 +292,19 @@
                                         <option value="3">Candidate no show</option>
                                         <option value="4">Candidate not qualified</option>
                                     </select>
+                                    <style>
+                                    select{
+                                        display: inline-block;
+                                    }
+                                    </style>
+                                </div>
+                            </div>
+                            <div class="row" id="otherReason" style="margin-top: 12px; margin-bottom: 0; display: none">
+                                <div class="col-sm-6">
+                                    <h6 style="text-align: right; margin-top: 28px">Please select a reason:</h6>
+                                </div>
+                                <div class="input-field col s12 l6">
+                                    <select id="reasonVal" class="selectDropdown"></select>
                                     <style>
                                     select{
                                         display: inline-block;

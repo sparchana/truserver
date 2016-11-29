@@ -215,6 +215,7 @@ POST        /getAllCompanyLogos                                           contro
 POST        /getAllAsset                                                  controllers.Application.getAllAsset()
 POST        /getAllInterviewRejectReasons                                 controllers.Application.getAllInterviewRejectReasons()
 POST        /getAllInterviewNotGoingReasons                               controllers.Application.getAllInterviewNotGoingReasons()
+POST        /getAllNotSelectedReasons                                     controllers.Application.getAllNotSelectedReasons()
 POST        /getJobPostInfo/:id/:isSupport                                controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
 
 # 3rd Party API

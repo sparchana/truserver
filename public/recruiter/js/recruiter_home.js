@@ -5,6 +5,8 @@
 var globalCandidateId;
 var globalJpId;
 
+var allReason = [];
+
 function logoutRecruiter() {
     try {
         $.ajax({
@@ -69,6 +71,20 @@ $(document).ready(function(){
     try {
         $.ajax({
             type: "POST",
+            url: "/getAllNotSelectedReasons",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataNotSelectedReason
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+    try {
+        $.ajax({
+            type: "POST",
             url: "/getAllRecruiterJobPosts",
             data: false,
             async: false,
@@ -80,6 +96,17 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 });
+
+function processDataNotSelectedReason(returnedData){
+    returnedData.forEach(function(reason) {
+        var id = reason.reasonId;
+        var name = reason.reasonName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        allReason.push(item);
+    });
+}
 
 function processDataGetJobPostDetails(returnedData) {
     var interviews = "";
@@ -170,20 +197,24 @@ function processDataInterviewToday(returnedData) {
                 homeLocality = application.candidate.locality.localityName;
             }
 
-            var feedback = '<td><a class="waves-effect waves-light btn" onclick="openFeedbackModal(' + application.candidate.candidateId + ', ' + application.jobPostWorkflow.jobPost.jobPostId + ')">Add Feedback</a></td>';
-            if(application.currentStatus.statusId > 13){
-                feedback = '<td>Interview Complete</td>';
-            }
-
             if(application.currentStatus.statusId > 9){
-                if(application.currentStatus.statusId == 10 || application.currentStatus.statusId == 11 || application.currentStatus.statusId > 14){ //not going or delayed
+                if(application.currentStatus.statusId == 10 || application.currentStatus.statusId == 11){ //not going or delayed
                     status = '<td style="color: red"><b>' + application.currentStatus.statusTitle + '</b></td>'
-                } else if(application.currentStatus.statusId == 12 || application.currentStatus.statusId == 13 || application.currentStatus.statusId == 14) {
+                } else if(application.currentStatus.statusId == 12 || application.currentStatus.statusId == 13) {
                     status = '<td style="color: green"><b>' + application.currentStatus.statusTitle + '</b></td>'
                 } else { // started or reached
-                    status = '<td style="color: #5a5a5a"><b>' + application.currentStatus.statusTitle + '</b></td>'
+                    status = '<td style="color: #5a5a5a"><b>-</b></td>'
                 }
             }
+
+            var feedback = '<td><a class="waves-effect waves-light btn" onclick="openFeedbackModal(' + application.candidate.candidateId + ', ' + application.jobPostWorkflow.jobPost.jobPostId + ')">Add Feedback</a></td>';
+            if(application.currentStatus.statusId > 13){
+                feedback = '<td style="color: red"><b> ' + application.currentStatus.statusTitle + '</b></td>';
+                if(application.currentStatus.statusId == 14){
+                    feedback = '<td style="color: green"><b> ' + application.currentStatus.statusTitle + '</b></td>';
+                }
+            }
+
             interviews += '<tr>' +
                 '<td class="jobTitle"><a href="/recruiter/job/track/' + application.jobPostWorkflow.jobPost.jobPostId + '" target="_blank"><b>' + application.jobPostWorkflow.jobPost.jobPostTitle + '</b></a></td>' +
                 '<td>' + application.candidate.candidateFullName + '</td>' +
@@ -206,28 +237,51 @@ function openFeedbackModal(candidateId, jpId) {
     globalCandidateId = candidateId;
     globalJpId = jpId;
 
+    $("#reasonVal").html('');
+    var defaultOption = $('<option value="0" selected></option>').text("Select a reason");
+    $('#reasonVal').append(defaultOption);
+
+    allReason.forEach(function (reason) {
+        var option = $('<option value=' + reason.id + '></option>').text(reason.name);
+        $('#reasonVal').append(option);
+    });
+
     $("#addFeedback").openModal();
+
+    $("#feedbackOption").change(function (){
+        if($(this).val() == 2 || $(this).val() == 4){
+            $("#otherReason").show();
+        } else{
+            $("#otherReason").hide();
+        }
+    });
+
 }
 
 function confirmAddFeedback() {
     if($("#feedbackOption").val() > 0){
-        try {
-            var d = {
-                candidateId: globalCandidateId,
-                jobPostId : globalJpId,
-                feedbackStatus : $("#feedbackOption").val(),
-                feedbackComment : $("#feedbackNote").val()
-            };
+        if(($("#feedbackOption").val() == 2 || $("#feedbackOption").val() == 4) && $("#reasonVal").val() == 0){
+            notifyError("Please select a reason");
+        } else{
+            try {
+                var d = {
+                    candidateId: globalCandidateId,
+                    jobPostId : globalJpId,
+                    feedbackStatus : $("#feedbackOption").val(),
+                    feedbackComment : $("#feedbackNote").val(),
+                    rejectReason: $("#reasonVal").val()
+                };
 
-            $.ajax({
-                type: "POST",
-                url: "/updateFeedback",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(d),
-                success: processDataUpdateFeedBack
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
+                $.ajax({
+                    type: "POST",
+                    url: "/updateFeedback",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
+                    success: processDataUpdateFeedBack
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
         }
     } else{
         notifyError("Please select a feedback option");

@@ -8,6 +8,7 @@ public class AddFeedbackRequest {
     Long jobPostId;
     Long feedbackStatus;
     String feedbackComment;
+    Long rejectReason;
 
     public Long getCandidateId() {
         return candidateId;
@@ -39,5 +40,14 @@ public class AddFeedbackRequest {
 
     public void setFeedbackComment(String feedbackComment) {
         this.feedbackComment = feedbackComment;
+    }
+
+
+    public Long getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(Long rejectReason) {
+        this.rejectReason = rejectReason;
     }
 }

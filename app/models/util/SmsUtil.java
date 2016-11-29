@@ -425,4 +425,11 @@ public class SmsUtil {
         sendSms(jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileMobile(), msg);
     }
 
+    public static void sendFeedbackSmsTocandidate(JobPostWorkflow jobApplication) {
+        String msg = "Hi " + jobApplication.getCandidate().getCandidateMobile() + ", you have been selected for the job: " + jobApplication.getJobPost().getJobPostTitle()
+                + " of " + jobApplication.getJobPost().getCompany().getCompanyName() + ". Thank you!";
+        sendSms(jobApplication.getCandidate().getCandidateMobile(), msg);
+    }
+
+
 }

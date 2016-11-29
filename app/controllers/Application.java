@@ -945,6 +945,11 @@ public class Application extends Controller {
         return ok(toJson(reason));
     }
 
+    public static Result getAllNotSelectedReasons() {
+        List<RejectReason> reason = RejectReason.find.where().eq("reason_type", ServerConstants.INTERVIEW_NOT_SELECED_TYPE_REASON).setUseQueryCache(!isDevMode).orderBy("reason_name").findList();
+        return ok(toJson(reason));
+    }
+
     @Security.Authenticated(RecSecured.class)
     public static Result getAllCompany() {
         List<Company> companyList = Company.find.where().orderBy("companyName").findList();

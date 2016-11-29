@@ -40,6 +40,19 @@ $(document).ready(function(){
     try {
         $.ajax({
             type: "POST",
+            url: "/getRecruiterJobPostInfo/" + jobPostId,
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataForJobPost
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+    try {
+        $.ajax({
+            type: "POST",
             url: "/getAllTimeSlots",
             data: false,
             async: false,
@@ -80,6 +93,10 @@ $(document).ready(function(){
         }
     });
 });
+
+function processDataForJobPost(returnedData) {
+    $("#jobPostTitle").html("Job Applications for " + returnedData.jobPostTitle);
+}
 
 function getAllCandidates() {
     try {

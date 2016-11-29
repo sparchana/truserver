@@ -22,6 +22,7 @@ var jobPostInfo;
 var allTimeSlots = [];
 var allReasons = [];
 var allNotGoingReasons = [];
+var allRejectReason = [];
 
 var startDate = null;
 var endDate = null;
@@ -1440,6 +1441,21 @@ $(function () {
             console.log("exception occured!!" + exception);
         }
 
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/getAllNotSelectedReasons",
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetAllNotSelectedReason
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+
+
         var base_url = "/support/api/getConfirmedInterviewCandidates/?jpId=" + app.jpId + "&start=" + startDate + "&end=" + endDate;
         try {
             $.ajax({
@@ -1641,6 +1657,23 @@ function openFeedbackModal(candidateId) {
         dialogPolyfill.registerDialog(dialog);
     }
 
+    $("#reasonVal").html('');
+    var defaultOption = $('<option value="0" selected></option>').text("Select a reason");
+    $('#reasonVal').append(defaultOption);
+
+    allRejectReason.forEach(function (reason) {
+        var option = $('<option value=' + reason.id + '></option>').text(reason.name);
+        $('#reasonVal').append(option);
+    });
+
+    $("#feedbackOption").change(function (){
+        if($(this).val() == 2 || $(this).val() == 4){
+            $("#otherReason").show();
+        } else{
+            $("#otherReason").hide();
+        }
+    });
+
     feedbackDialog.showModal();
     feedbackDialog.querySelector('.closeFeedback').addEventListener('click', function() {
         feedbackDialog.close();
@@ -1652,28 +1685,31 @@ function openFeedbackModal(candidateId) {
 
 function addFeedback() {
     if($("#feedbackOption").val() > 0){
-        NProgress.start();
-        try {
-            var d = {
-                candidateId: globalCandidateId,
-                jobPostId : jobPostId,
-                feedbackStatus : $("#feedbackOption").val(),
-                feedbackComment : $("#feedbackNote").val()
-            };
+        if(($("#feedbackOption").val() == 2 || $("#feedbackOption").val() == 4) && $("#reasonVal").val() == 0){
+            notifyError("Please select a reason");
+        } else{
+            NProgress.start();
+            try {
+                var d = {
+                    candidateId: globalCandidateId,
+                    jobPostId : jobPostId,
+                    feedbackStatus : $("#feedbackOption").val(),
+                    feedbackComment : $("#feedbackNote").val(),
+                    rejectReason: $("#reasonVal").val()
+                };
 
-            $.ajax({
-                type: "POST",
-                url: "/updateFeedback",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(d),
-                success: processDataUpdateFeedBack
-            });
-            NProgress.done();
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
+                $.ajax({
+                    type: "POST",
+                    url: "/updateFeedback",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
+                    success: processDataUpdateFeedBack
+                });
+                NProgress.done();
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
         }
-
-        console.log($("#feedbackOption").val() + " " + $("#feedbackNote").val())
     } else{
         notifyError("Please select a feedback option", "warning");
     }
@@ -1815,7 +1851,6 @@ function showReschedulePopup(candidateId, oldDate, oldSlot) {
     } else{
         alert("No Slots available!");
     }
-
 
 }
 
@@ -1962,6 +1997,17 @@ function processDataGetAllInterviewNotGoingReason(returnedData) {
         item ["id"] = id;
         item ["name"] = name;
         allNotGoingReasons.push(item);
+    });
+}
+
+function processDataGetAllNotSelectedReason(returnedData) {
+    returnedData.forEach(function(reason) {
+        var id = reason.reasonId;
+        var name = reason.reasonName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        allRejectReason.push(item);
     });
 }
 
