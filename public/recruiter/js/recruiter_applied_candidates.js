@@ -217,25 +217,36 @@ function processDataForJobApplications(returnedData) {
     if(returnedData != "0"){
         var candidateList = [];
         var rejectedList = [];
+        var actionList = [];
         $.each(returnedData, function (key, value) {
             if (value != null) {
-                if(value.extraData.workflowStatus == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
-                    rejectedList.push(value);
+                if(value.extraData.workflowStatus != null){
+                    if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
+                        rejectedList.push(value);
+                    } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED){
+                        actionList.push(value);
+                    } else{
+                        candidateList.push(value);
+                    }
                 } else{
                     candidateList.push(value);
                 }
             }
         });
 
+        //other candidates int the middle
+        candidateList.forEach(function (val) {
+            actionList.push(val);
+        });
+
         //rejected candidates at the end
         rejectedList.forEach(function (val) {
-           candidateList.push(val);
+            actionList.push(val);
         });
 
         var actionNeeded = false;
 
-        candidateList.reverse();
-        candidateList.forEach(function (value){
+        actionList.forEach(function (value){
             var candidateCard = document.createElement("div");
             candidateCard.className = "card";
             candidateCard.style = "border-radius: 6px";
@@ -451,44 +462,22 @@ function processDataForJobApplications(returnedData) {
             var matchVal = document.createElement("span");
 
             candidateCardScore.appendChild(matchVal);
-            if(value.extraData.workflowStatus != null) {
-                if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
-                    var todayDay = new Date();
-                    var interviewDate = new Date(value.extraData.interviewDate);
-                    var interviewDay = interviewDate.getDate();
-                    var interviewMonth = interviewDate.getMonth() + 1;
 
-                    if((todayDay.getDate() == interviewDay) && ((todayDay.getMonth() + 1) == interviewMonth)){
-                        showMatch = false;
-                        var feedbackBtn = document.createElement("a");
-                        feedbackBtn.className = "waves-effect waves-light btn";
-                        feedbackBtn.style = "font-weight: bold";
-                        feedbackBtn.onclick = function () {
-                            openFeedbackModal(value.candidate.candidateId);
-                        };
-                        feedbackBtn.textContent = "Add feedback";
-                        matchVal.appendChild(feedbackBtn);
-                    }
-                }
-            }
+            if(value.scoreData != null){
+                matchVal.className = "tooltipped matchDiv";
+                matchVal.setAttribute("data-postiton", "top");
+                matchVal.setAttribute("data-delay", "50");
+                matchVal.setAttribute("data-tooltip", value.scoreData.reason);
 
-            if(showMatch){
-                if(value.scoreData != null){
-                    matchVal.className = "tooltipped matchDiv";
-                    matchVal.setAttribute("data-postiton", "top");
-                    matchVal.setAttribute("data-delay", "50");
-                    matchVal.setAttribute("data-tooltip", value.scoreData.reason);
-
-                    if(value.scoreData.band == 1){
-                        matchVal.style = "background: #2ec866";
-                        matchVal.textContent = "Good Match";
-                    } else if(value.scoreData.band == 2){
-                        matchVal.style = "background: orange";
-                        matchVal.textContent = "Moderate Match";
-                    } else{
-                        matchVal.style = "background: red";
-                        matchVal.textContent = "Low Match";
-                    }
+                if(value.scoreData.band == 1){
+                    matchVal.style = "background: #2ec866";
+                    matchVal.textContent = "Good Match";
+                } else if(value.scoreData.band == 2){
+                    matchVal.style = "background: orange";
+                    matchVal.textContent = "Moderate Match";
+                } else{
+                    matchVal.style = "background: red";
+                    matchVal.textContent = "Low Match";
                 }
             }
 
@@ -671,7 +660,6 @@ function processDataForJobApplications(returnedData) {
                     } else{
                         candidateEducationVal.textContent = value.candidate.candidateEducation.education.educationName;
                     }
-
                 }
             }
             inlineBlockDiv.appendChild(candidateEducationVal);
@@ -950,7 +938,7 @@ function processDataForJobApplications(returnedData) {
             candidateCardContent.appendChild(unlockDivRow);
 
             var candidateCardRowColTwo = document.createElement("div");
-            candidateCardRowColTwo.className = "col s12 l8";
+            candidateCardRowColTwo.className = "col s12 l6";
             candidateCardRowColTwo.style = "text-align: left; color: black";
             unlockDivRow.appendChild(candidateCardRowColTwo);
 
@@ -962,8 +950,28 @@ function processDataForJobApplications(returnedData) {
             candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
 
             var unlockContactCol = document.createElement("div");
-            unlockContactCol.className = "col s12 l4";
+            unlockContactCol.className = "col s12 l6";
             unlockDivRow.appendChild(unlockContactCol);
+
+            if(value.extraData.workflowStatus != null) {
+                if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+                    var todayDay = new Date();
+                    var interviewDate = new Date(value.extraData.interviewDate);
+                    var interviewDay = interviewDate.getDate();
+                    var interviewMonth = interviewDate.getMonth() + 1;
+
+                    if((todayDay.getDate() == interviewDay) && ((todayDay.getMonth() + 1) == interviewMonth)){
+                        var feedbackBtn = document.createElement("a");
+                        feedbackBtn.className = "waves-effect waves-light btn";
+                        feedbackBtn.style = "font-weight: bold; margin-right: 8px";
+                        feedbackBtn.onclick = function () {
+                            openFeedbackModal(value.candidate.candidateId);
+                        };
+                        feedbackBtn.textContent = "Add feedback";
+                        unlockContactCol.appendChild(feedbackBtn);
+                    }
+                }
+            }
 
             //unlock candidate div
             var unlockCandidateBtn = document.createElement("div");

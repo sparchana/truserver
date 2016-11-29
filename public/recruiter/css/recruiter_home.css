@@ -490,6 +490,10 @@ a:hover{
     margin-top: 9px;
 }
 
+nav ul a span.badge{
+    background: #a42e35;
+}
+
 @media screen and (max-width: 600px) {
     #upperSpaceInputField{
         margin-top: 40px;

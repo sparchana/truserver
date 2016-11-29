@@ -2143,7 +2143,6 @@ public class Application extends Controller {
 
     public static Result updateFeedback() {
         JsonNode req = request().body().asJson();
-        Logger.info("Request Json: " + req);
         AddFeedbackRequest addFeedbackRequest = new AddFeedbackRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {

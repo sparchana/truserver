@@ -11,6 +11,9 @@ $(document).scroll(function(){
 });
 $(document).ready(function(){
     checkRecruiterLogin();
+    $(".unlockNav").addClass("active");
+    $(".unlockNavMobile").addClass("active");
+
     $('.button-collapse').sideNav({
         menuWidth: 240,
         edge: 'left',

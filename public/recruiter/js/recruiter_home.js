@@ -47,6 +47,9 @@ $(document).scroll(function(){
 
 $(document).ready(function(){
     checkRecruiterLogin();
+    $(".homeNav").addClass("active");
+    $(".homeNavMobile").addClass("active");
+
     var width = $(window).width();
     if(width < 780){
         $("#editBtn").removeClass("btn-large").addClass("btn-small");
