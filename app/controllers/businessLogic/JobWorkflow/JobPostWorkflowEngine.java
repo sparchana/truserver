@@ -2242,24 +2242,40 @@ public class JobPostWorkflowEngine {
         int band;
         int passed;
         int total;
-        String reason;
+        String matchingReason;
+        String nonMatchingReason;
         for(PreScreenPopulateResponse response: populateResponseList) {
             if(response.getElementList().size() == 0) {
                 continue;
             } else {
                 passed = 0;
                 total = 0;
-                reason = "Candidate has matched for ";
+                matchingReason = "";
+                nonMatchingReason = "";
                 for(PreScreenPopulateResponse.PreScreenElement pe: response.getElementList()){
                     if(pe.isMatching()){
-                        if(pe.isSingleEntity()) {
-                            reason += pe.getCandidateElement().getPlaceHolder() + ", ";
-                        } else {
-                            for(PreScreenPopulateResponse.PreScreenCustomObject customObject: pe.getCandidateElementList()){
-                                reason += customObject.getPlaceHolder() + ", ";
-                            }
-                        }
+                        matchingReason += pe.getPropertyTitle() + ", ";
+//                        if(pe.isSingleEntity()) {
+//                            matchingReason += pe.getCandidateElement().getPlaceHolder() + ", ";
+//                        } else {
+//                            for(PreScreenPopulateResponse.PreScreenCustomObject customObject: pe.getCandidateElementList()){
+//                                matchingReason += customObject.getPlaceHolder() +
+//                            }
+//                        }
                         passed++;
+                    } else {
+                        nonMatchingReason += pe.getPropertyTitle() + ", ";
+//                        if(pe.isSingleEntity()) {
+//                            if(pe.getCandidateElement() != null) {
+//                                nonMatchingReason += pe.getCandidateElement().getPlaceHolder() + ", ";
+//                            }
+//                        } else {
+//                            if(pe.getCandidateElementList()!=null && pe.getCandidateElementList().size() > 0) {
+//                                for(PreScreenPopulateResponse.PreScreenCustomObject customObject: pe.getCandidateElementList()){
+//                                    nonMatchingReason += customObject.getPlaceHolder() + ", ";
+//                                }
+//                            }
+//                        }
                     }
                     total++;
                 }
@@ -2271,7 +2287,17 @@ public class JobPostWorkflowEngine {
                 } else{
                     band = 2;
                 }
-                candidateScoreDataMap.put(response.getCandidateId(),  new CandidateScoreData(score, band, reason));
+                String finalReason = "";
+
+                if(!matchingReason.isEmpty()){
+                    matchingReason = matchingReason.trim();
+                    finalReason = "Matched for : " + matchingReason.trim().substring(0, matchingReason.length() - 1);
+                }
+                if(!nonMatchingReason.isEmpty()) {
+                    nonMatchingReason = nonMatchingReason.trim();
+                    finalReason += " <br/> Didn't Matched for : " + nonMatchingReason.trim().substring(0, nonMatchingReason.length() -1);
+                }
+                candidateScoreDataMap.put(response.getCandidateId(),  new CandidateScoreData(score, band, finalReason));
             }
         }
 
