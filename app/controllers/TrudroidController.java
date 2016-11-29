@@ -1896,21 +1896,10 @@ public class TrudroidController {
                 return ok(Base64.encodeBase64String(response.build().toByteArray()));
             }
 
-            Logger.info("interview details: " + interviewDetailRequest.getScheduledInterviewDate());
-            Logger.info("interview details in mills date: " + new Date(interviewDetailRequest.getScheduledInterviewDateInMills()));
-
             AddCandidateInterviewSlotDetail interviewSlotDetail = new AddCandidateInterviewSlotDetail();
 
-            //converting interviewDate from string to Date
-            String startDateString = interviewDetailRequest.getScheduledInterviewDate();
-            DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
-            Date startDate;
-            try {
-                startDate = df.parse(startDateString);
-                interviewSlotDetail.setScheduledInterviewDate(startDate);
-            } catch (ParseException e) {}
-
             interviewSlotDetail.setTimeSlot(interviewDetailRequest.getTimeSlotId());
+            interviewSlotDetail.setScheduledInterviewDate(new Date(interviewDetailRequest.getScheduledInterviewDateInMills()));
 
             JobPostWorkflowEngine.updateCandidateInterviewDetail(candidate.getCandidateId(), interviewDetailRequest.getJobPostId(), interviewSlotDetail, true);
 
