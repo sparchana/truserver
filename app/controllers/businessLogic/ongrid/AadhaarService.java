@@ -160,7 +160,7 @@ public class AadhaarService {
         StringBuilder reqBuilder  = new StringBuilder();
         String req = "{\n  \"name\": \"Archana\",\n  \"gender\": \"F\",\n  \"city\": \"Coimbatore\",\n  \"professionId\": \"69\",\n  \"otherProfession\": \"business\",\n  \"phone\": \"8197222248\",\n \"email\": \"sp.archana@gmail.com\",\n  \"dob\": \"1985-01-16\",\n  \"age\": \"31\",\n  \"aadhaarAddress\": {\n    \"co\": \"\",\n    \"line1\": \"\",\n    \"line2\": \"\",\n    \"locality\": \"\",\n    \"landmark\": \"\",\n    \"vtc\": \"\",\n    \"district\": \"\",\n    \"state\": \"\",\n    \"pincode\": \"\"\n  },\n “communityId” : “66095”\n}";
 
-        String gender = candidate.getCandidateGender() == 0 ? "M" : "F";
+        String gender = candidate.getCandidateGender() == null ? "": candidate.getCandidateGender() == 0 ? "M" : "F";
 
         reqBuilder.append("{\n");
         reqBuilder.append(AA_NAME + ":" + "\"" + candidate.getCandidateFirstName() + "\",\n");
