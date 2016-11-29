@@ -142,8 +142,8 @@ function getAllAppliedJobs() {
                             }
 
                             var currentStatus = "Under Review";
-                            if(jobApplication.status.statusId > 5){
-                                if(jobApplication.status.statusId > 8 && jobApplication.status.statusId < 14) {
+                            if(jobApplication.status.statusId > JWF_STATUS_INTERVIEW_SCHEDULED){
+                                if(jobApplication.status.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && jobApplication.status.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED) {
                                     currentStatus = '<div style="width:100%; color: green; text-align: center">Interview Confirmed</div>';
                                     if (jobApplication.interviewLocationLat != null) {
                                         currentStatus += '<div class="navigationBtn" onclick="navigateToLocation(' + jobApplication.interviewLocationLat + ', ' + jobApplication.interviewLocationLng + ')">Directions</div>'
@@ -155,28 +155,28 @@ function getAllAppliedJobs() {
                                         var candidateStatus ='<div class="mLabel" style="width:100%;">Status not available</div>';
 
                                         // candidate status
-                                        if(jobApplication.status.statusId == 13){
+                                        if(jobApplication.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                                             candidateStatus = '<div class="mLabel" style="width:100%; color: green">Reached</div>';
                                         } else{
-                                            if(jobApplication.status.statusId > 8 && jobApplication.status.statusId < 13){
+                                            if(jobApplication.status.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && jobApplication.status.statusId < JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                                                 candidateStatus = '<div style="width:100%; margin-top: 8px; text-align: center">' + jobApplication.status.statusTitle + '</div>';
-                                                if(jobApplication.status.statusId == 9){ // interview confirmed
+                                                if(jobApplication.status.statusId == JWF_STATUS_INTERVIEW_CONFIRMED){ // interview confirmed
                                                     candidateStatus = '<div style="width:100%; margin-top: 8px;  text-align: center">Status not available</div>';
                                                 }
                                                 candidateStatus += '<select id="candidate_interview_status_' + jobApplication.jobPost.jobPostId +'" style="width: 100%">' +
                                                     '<option value = 0>Select a Status</option>';
 
-                                                if(jobApplication.status.statusId == 9 || jobApplication.status.statusId == 10){
-                                                    if(jobApplication.status.statusId == 9){
+                                                if(jobApplication.status.statusId == JWF_STATUS_INTERVIEW_CONFIRMED || jobApplication.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING){
+                                                    if(jobApplication.status.statusId == JWF_STATUS_INTERVIEW_CONFIRMED){
                                                         candidateStatus += '<option value = 1>Not Going</option>';
                                                     }
                                                     candidateStatus += '<option value = 2>Delayed</option>' +
                                                         '<option value = 3>Started</option>' +
                                                         '<option value = 4>Reached</option>';
-                                                } else if(jobApplication.status.statusId == 11){
+                                                } else if(jobApplication.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){
                                                     candidateStatus += '<option value = 3>Started</option>' +
                                                         '<option value = 4>Reached</option>';
-                                                } else if(jobApplication.status.statusId == 12){
+                                                } else if(jobApplication.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED){
                                                     candidateStatus += '<option value = 2>Delayed</option>' +
                                                         '<option value = 4>Reached</option>';
                                                 }
@@ -185,11 +185,11 @@ function getAllAppliedJobs() {
                                         }
                                         currentStatus += candidateStatus;
                                     }
-                                } else if(jobApplication.status.statusId == 6){
+                                } else if(jobApplication.status.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT){
                                     currentStatus = "Application rejected";
-                                } else if(jobApplication.status.statusId == 7){
+                                } else if(jobApplication.status.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
                                     currentStatus = "Application rejected by the Candidate/Partner";
-                                } else if(jobApplication.status.statusId == 8){
+                                } else if(jobApplication.status.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE){
                                     var jpId = jobApplication.jobPost.jobPostId;
                                     rescheduledDate = "Interview Rescheduled on " + new Date(jobApplication.scheduledInterviewDate).getDate() + "/" + (new Date(jobApplication.scheduledInterviewDate).getMonth() + 1) + "/" + new Date(jobApplication.scheduledInterviewDate).getFullYear() + " between " + jobApplication.scheduledInterviewTimeSlot.interviewTimeSlotName;
                                     currentStatus = rescheduledDate;
@@ -197,7 +197,7 @@ function getAllAppliedJobs() {
                                         '<span class="accept" onclick="confirmInterview('+ jpId + ', 1);"><img src="/assets/recruiter/img/icons/accept.svg" height="16px" width="14px"></span>' +
                                         '<span class="reject" onclick="confirmInterview('+ jpId + ', 0);"><img src="/assets/recruiter/img/icons/reject.svg" height="16px" width="14px"></span>' +
                                         '</span>';
-                                } else if(jobApplication.status.statusId > 13){
+                                } else if(jobApplication.status.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                                     currentStatus = jobApplication.status.statusTitle;
                                 }
                             }

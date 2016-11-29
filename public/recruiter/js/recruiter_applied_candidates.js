@@ -219,7 +219,7 @@ function processDataForJobApplications(returnedData) {
         var rejectedList = [];
         $.each(returnedData, function (key, value) {
             if (value != null) {
-                if(value.extraData.workflowStatus == 6 || value.extraData.workflowStatus == 7){
+                if(value.extraData.workflowStatus == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
                     rejectedList.push(value);
                 } else{
                     candidateList.push(value);
@@ -242,16 +242,16 @@ function processDataForJobApplications(returnedData) {
 
             actionNeeded = false;
             if(value.extraData.workflowStatus != null){
-                if(value.extraData.workflowStatus.statusId > 7 && value.extraData.workflowStatus.statusId < 14){
+                if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
                     confirmedParent.append(candidateCard);
                     confirmedCount++;
-                } else if(value.extraData.workflowStatus.statusId == 6 || value.extraData.workflowStatus.statusId == 7){
+                } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
                     pendingParent.append(candidateCard);
                     pendingCount++;
-                } else if(value.extraData.workflowStatus.statusId > 13){
+                } else if(value.extraData.workflowStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                     completedParent.append(candidateCard);
                     completedCount++;
-                } else if(value.extraData.workflowStatus.statusId == 4){
+                } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_PRESCREEN_COMPLETED){
                     pendingParent.append(candidateCard);
                     pendingCount++;
                 } else {
@@ -263,7 +263,6 @@ function processDataForJobApplications(returnedData) {
             } else{
                 pendingParent.append(candidateCard);
                 pendingCount++;
-                console.log("pending");
             }
 
             var candidateCardContent = document.createElement("div");
@@ -335,7 +334,7 @@ function processDataForJobApplications(returnedData) {
 
             var candidateInterviewStatusVal = document.createElement("span");
             if(value.extraData.workflowStatus != null){
-                if(value.extraData.workflowStatus.statusId == 5) {
+                if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED) {
                     var interviewStatusDiv = document.createElement("span");
                     interviewStatusDiv.id = "interview_status_option_" + value.candidate.candidateId;
                     inlineBlockDiv.appendChild(interviewStatusDiv);
@@ -417,21 +416,21 @@ function processDataForJobApplications(returnedData) {
                     actionText.textContent = " Reschedule";
                     candidateInterviewRescheduleParent.appendChild(actionText);
 
-                } else if(value.extraData.workflowStatus.statusId > 8 && value.extraData.workflowStatus.statusId < 14){
+                } else if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
                     candidateInterviewStatusVal.textContent = "Interview Confirmed";
                     candidateInterviewStatusVal.style = "color: green; font-weight: bold";
-                } else if(value.extraData.workflowStatus.statusId == 6){
+                } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT){
                     candidateInterviewStatusVal.textContent = "Application Not Shortlisted";
                     candidateInterviewStatusVal.style = "color: red; font-weight: bold";
-                } else if(value.extraData.workflowStatus.statusId == 7){
+                } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
                     candidateInterviewStatusVal.textContent = "Interview Rejected by Candidate";
                     candidateInterviewStatusVal.style = "color: red; font-weight: bold";
-                } else if(value.extraData.workflowStatus.statusId == 8){
+                } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE){
                     candidateInterviewStatusVal.textContent = "Interview Rescheduled. Awaiting candidate's response";
                     candidateInterviewStatusVal.style = "color: orange; font-weight: bold";
-                } else if(value.extraData.workflowStatus.statusId > 13){
+                } else if(value.extraData.workflowStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                     candidateInterviewStatusVal.textContent = value.extraData.workflowStatus.statusTitle;
-                    if(value.extraData.workflowStatus.statusId == 14){
+                    if(value.extraData.workflowStatus.statusId == JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
                         candidateInterviewStatusVal.style = "color: green; font-size: 14px; font-weight: 600";
                     } else{
                         candidateInterviewStatusVal.style = "color: red; font-size: 14px; font-weight: 600";
@@ -452,7 +451,7 @@ function processDataForJobApplications(returnedData) {
             var matchVal = document.createElement("span");
             candidateCardScore.appendChild(matchVal);
             if(value.extraData.workflowStatus != null) {
-                if(value.extraData.workflowStatus.statusId > 8 && value.extraData.workflowStatus.statusId < 14){
+                if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
                     var todayDay = new Date();
                     var interviewDate = new Date(value.extraData.interviewDate);
                     var interviewDay = interviewDate.getDate();

@@ -8,15 +8,13 @@ import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
-import com.amazonaws.services.importexport.model.Job;
 import com.amazonaws.util.json.JSONException;
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.RawSql;
-import com.avaje.ebean.RawSqlBuilder;
 import com.google.api.client.util.Base64;
 import com.google.protobuf.InvalidProtocolBufferException;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import dao.JobPostWorkFlowDAO;
+import dao.staticdao.RejectReasonDAO;
 import in.trujobs.proto.*;
 import in.trujobs.proto.ApplyJobRequest;
 import models.entity.Candidate;
@@ -38,7 +36,6 @@ import static controllers.businessLogic.JobSearchService.*;
 import static models.util.Util.generateOtp;
 import static models.util.Validator.isValidLocalityName;
 import static play.libs.Json.toJson;
-import static play.mvc.Controller.session;
 import static play.mvc.Http.Context.Implicit.request;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
@@ -972,25 +969,7 @@ public class TrudroidController {
                 List<JobPostWorkFlowObject> jobApplicationListToReturn = new ArrayList<JobPostWorkFlowObject>();
 
                 //Getting list of all the job applications applied by a user from model
-                List<JobPostWorkflow> appliedJobsList;
-
-                String candidateAppliedJobsSql = "select job_post_id, status_id, scheduled_interview_time_slot, scheduled_interview_date, interview_location_lat, interview_location_lng " +
-                        "from job_post_workflow jwf where jwf.creation_timestamp = (select max(creation_timestamp)\n" +
-                        " from job_post_workflow where jwf.job_post_id = job_post_workflow.job_post_id and job_post_workflow.candidate_id = " + existingCandidate.getCandidateId() + ") order by creation_timestamp";
-
-                RawSql rawSql = RawSqlBuilder.parse(candidateAppliedJobsSql)
-                        .tableAliasMapping("jwf", "job_post_workflow")
-                        .columnMapping("job_post_id", "jobPost.jobPostId")
-                        .columnMapping("status_id", "status.statusId")
-                        .columnMapping("scheduled_interview_time_slot", "scheduledInterviewTimeSlot.interviewTimeSlotId")
-                        .columnMapping("scheduled_interview_date", "scheduledInterviewDate")
-                        .columnMapping("interview_location_lat", "interviewLocationLat")
-                        .columnMapping("interview_location_lng", "interviewLocationLng")
-                        .create();
-
-                appliedJobsList = Ebean.find(JobPostWorkflow.class)
-                        .setRawSql(rawSql)
-                        .findList();
+                List<JobPostWorkflow> appliedJobsList = new JobPostWorkFlowDAO().candidateAppliedJobs(existingCandidate.getCandidateId());
 
                 //Job Application Object (Proto) to get all the job application applied by the candidate (list object)
                 JobPostWorkFlowObject.Builder jobPostWorkFlowObjBuilder = JobPostWorkFlowObject.newBuilder();
@@ -1678,7 +1657,7 @@ public class TrudroidController {
                 models.entity.Static.JobRole.find.where().orderBy().asc("jobName").findList();
 
         List<ReasonObject> reasonObjectList = new ArrayList<>();
-        List<RejectReason> reason = RejectReason.find.where().eq("reason_type", ServerConstants.INTERVIEW_NOT_GOING_TYPE_REASON).orderBy("reason_name").findList();
+        List<RejectReason> reason = new RejectReasonDAO().getByType(ServerConstants.INTERVIEW_NOT_GOING_TYPE_REASON);
 
         for(RejectReason rejectReason : reason){
             ReasonObject.Builder rejectReasonBuilder = ReasonObject.newBuilder();

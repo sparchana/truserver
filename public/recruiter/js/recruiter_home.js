@@ -205,10 +205,10 @@ function processDataInterviewToday(returnedData) {
                 homeLocality = application.candidate.locality.localityName;
             }
 
-            if(application.currentStatus.statusId > 9){
-                if(application.currentStatus.statusId == 10 || application.currentStatus.statusId == 11){ //not going or delayed
+            if(application.currentStatus.statusId > JWF_STATUS_INTERVIEW_CONFIRMED){
+                if(application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING || application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){ //not going or delayed
                     status = '<td style="color: red"><b>' + application.currentStatus.statusTitle + '</b></td>'
-                } else if(application.currentStatus.statusId == 12 || application.currentStatus.statusId == 13) {
+                } else if(application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED || application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED) {
                     status = '<td style="color: green"><b>' + application.currentStatus.statusTitle + '</b></td>'
                 } else { // started or reached
                     status = '<td style="color: #5a5a5a"><b>-</b></td>'
@@ -216,9 +216,9 @@ function processDataInterviewToday(returnedData) {
             }
 
             var feedback = '<td><a class="waves-effect waves-light btn" onclick="openFeedbackModal(' + application.candidate.candidateId + ', ' + application.jobPostWorkflow.jobPost.jobPostId + ')">Add Feedback</a></td>';
-            if(application.currentStatus.statusId > 13){
+            if(application.currentStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                 feedback = '<td style="color: red"><b> ' + application.currentStatus.statusTitle + '</b></td>';
-                if(application.currentStatus.statusId == 14){
+                if(application.currentStatus.statusId == JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
                     feedback = '<td style="color: green"><b> ' + application.currentStatus.statusTitle + '</b></td>';
                 }
             }
@@ -358,34 +358,34 @@ function processDataRecruiterProfile(returnedData) {
 
         var creditHistoryList = returnedData.recruiterCreditHistoryList;
         creditHistoryList.reverse();
-        var contactCreditCount = 0;
-        var interviewCreditCount = 0;
+        var toCheckContactCreditCount = true;
+        var toCheckInterviewCreditCount = true;
         creditHistoryList.forEach(function (creditHistory){
             try{
                 if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
-                    if(contactCreditCount == 0){
+                    if(toCheckContactCreditCount){
                         $("#remainingContactCredits").html(creditHistory.recruiterCreditsAvailable);
                         $("#remainingContactCreditsMobile").html(creditHistory.recruiterCreditsAvailable);
                         remainingContactCredits = parseInt(creditHistory.recruiterCreditsAvailable);
-                        contactCreditCount = 1;
+                        toCheckContactCreditCount = false;
                     }
                 } else{
-                    if(interviewCreditCount == 0){
+                    if(toCheckInterviewCreditCount){
                         if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
                             $("#remainingInterviewCredits").html(creditHistory.recruiterCreditsAvailable);
                             $("#remainingInterviewCreditsMobile").html(creditHistory.recruiterCreditsAvailable);
-                            interviewCreditCount = 1;
+                            toCheckInterviewCreditCount = false;
                         }
                     }
                 }
-                if(contactCreditCount > 0 && interviewCreditCount > 0){
+                if((toCheckContactCreditCount == false) && (toCheckInterviewCreditCount ==false)){
                     return false;
                 }
             } catch(err){}
         });
 
         if(remainingContactCredits > 0){
-            $("#contactCreditCount").html(remainingContactCredits)
+            $("#contactCreditCount").html(remainingContactCredits);
             $("#hasCredit").show();
             $("#hasNoCredit").hide();
         } else{

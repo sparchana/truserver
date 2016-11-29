@@ -180,7 +180,7 @@ function processDataForJobApplications(returnedData) {
                 var interviewMonth = date.getMonth() + 1;
 
                 if((todayDay.getDate() == interviewDay) && ((todayDay.getMonth() + 1) == interviewMonth)){
-                    if(value.extraData.workflowStatus.statusId > 8){
+                    if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE){
                         candidateCount ++;
 
                         var candidateCard = document.createElement("div");
@@ -254,10 +254,10 @@ function processDataForJobApplications(returnedData) {
                         feedbackBtnDiv.style = "color: black; text-align: right; margin-top: 4px";
                         candidateCardRow.appendChild(feedbackBtnDiv);
 
-                        if(value.extraData.workflowStatus.statusId > 13){
+                        if(value.extraData.workflowStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                             var feedbackBtnStatus = document.createElement("span");
                             feedbackBtnStatus.className = "feedbackVal";
-                            if(value.extraData.workflowStatus.statusId == 14){
+                            if(value.extraData.workflowStatus.statusId == JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
                                 feedbackBtnStatus.style = "background: green";
                             }
                             feedbackBtnStatus.textContent = value.extraData.workflowStatus.statusTitle;
@@ -765,16 +765,16 @@ function processDataForJobApplications(returnedData) {
                         var candidateCurrentStatusVal = document.createElement("span");
                         candidateCurrentStatusVal.textContent = "Status not available";
                         if(value.extraData.candidateInterviewStatus != null){
-                            if(value.extraData.candidateInterviewStatus.statusId == 10){
+                            if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING){
                                 candidateCurrentStatusVal.textContent = "Not going for interview";
                                 candidateCurrentStatusVal.style = "margin-left: 4px; color: red; font-weight: bold";
-                            } else if(value.extraData.candidateInterviewStatus.statusId == 11){
+                            } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){
                                 candidateCurrentStatusVal.textContent = "Delayed for Interview";
                                 candidateCurrentStatusVal.style = "margin-left: 4px; color: orange; font-weight: bold";
-                            } else if(value.extraData.candidateInterviewStatus.statusId == 12){
+                            } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED){
                                 candidateCurrentStatusVal.textContent = "Started for Interview";
                                 candidateCurrentStatusVal.style = "margin-left: 4px; color: green; font-weight: bold";
-                            } else if(value.extraData.candidateInterviewStatus.statusId == 13){
+                            } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                                 candidateCurrentStatusVal.textContent = "Reached for Interview";
                                 candidateCurrentStatusVal.style = "margin-left: 4px; color: green; font-weight: bold";
                             }
