@@ -184,7 +184,7 @@ function generate(array){
 
 // validates checksum
 function validateAadhar(array) {
-    if(array == null) {
+    if(array == null || array =="") {
         return false;
     }
 
@@ -221,7 +221,6 @@ function validateDL(dlNumber) {
     dlNumber = dlNumber.replace(/\s+/g, '');
     dlNumber = dlNumber.replace("-", '');
     if(dlNumber.length != 15){
-        console.log("dlNumber length is not 15, its: "+dlNumber.length);
         return false;
     }
     var validCount = 0;

@@ -168,30 +168,8 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="row" style="margin-top: 8px">
-                            <div class="col-sm-3"><h5>Assets<font color="red">*</font></h5></div>
-                            <div class="col-sm-5" style="margin-top: 4px">
-                                <div style="width: 100%; height: 34px;" class="btn-group" data-toggle="buttons">
-                                    <input type="text" id="candidateAsset" >
-                                    <script type="text/javascript">
-                                            $(document).ready(function() {
-                                                $("#candidateAsset").tokenInput(getAssets(), {
-                                                    theme: "facebook",
-                                                    placeholder: "What assets do you own?",
-                                                    hintText: "Start typing jobs (eg. Smartphone, Bike, Car)",
-                                                    minChars: 0,
-                                                    prePopulate: candidateAssetArray,
-                                                    preventDuplicates: true
-                                                });
-                                            });
-                                        </script>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row" style="margin-top: 8px">
-                            <div class="col-sm-3"><h5>Document<font color="red">*</font></h5></div>
+                            <div class="col-sm-3"><h5>Mention atleast one ID proof<font color="red">*</font></h5></div>
                             <div class="col-sm-5" style="margin-top: 4px">
                                 <div style="width: 100%; height: 56px;" class="btn-group" data-toggle="buttons">
                                     <input type="text" id="candidateIdProof" >
@@ -200,7 +178,7 @@
                                                 $("#candidateIdProof").tokenInput(getIdProofs(), {
                                                     theme: "facebook",
                                                     placeholder: "What ID Proofs you have?",
-                                                    hintText: "Start typing jobs (eg. PAN, Driving Licence,..)",
+                                                    hintText: "Start typing (eg. PAN, Driving Licence,..)",
                                                     minChars: 0,
                                                     prePopulate: candidateIdProofArray,
                                                     preventDuplicates: true
@@ -220,6 +198,28 @@
                                     </table>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row" style="margin-top: 8px">
+                            <div class="col-sm-3"><h5>Do you own any of the following?</h5></div>
+                            <div class="col-sm-5" style="margin-top: 4px;margin-bottom:10px">route
+                                <div style="width: 100%; height: 34px;" class="btn-group" data-toggle="buttons">
+                                    <input type="text" id="candidateAsset" >
+                                    <script type="text/javascript">
+                                            $(document).ready(function() {
+                                                $("#candidateAsset").tokenInput(getAssets(), {
+                                                    theme: "facebook",
+                                                    placeholder: "What assets do you own?",
+                                                    hintText: "Start typing (eg. Smartphone, Bike, Car)",
+                                                    minChars: 0,
+                                                    prePopulate: candidateAssetArray,
+                                                    preventDuplicates: true
+                                                });
+                                                getAssetsForJobRole();
+                                            });
+                                        </script>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <br>
 
@@ -375,19 +375,17 @@
                     </div>
 
                 </div>
-                <br>
                     <!-- next/save btn -->
-                    <div style="text-align: right">
+                    <div style="text-align: right;padding:2%">
                         <font size = 2px> By registering on TruJobs, the candidate agrees to <a href='/privacy'>Terms & Conditions</a></font>
                             &nbsp;&nbsp;&nbsp;
-                <button type="submit" class="btn btn-primary" id="registerBtnSubmit" style="float: right">
+                <button type="submit" class="btn btn-primary" id="registerBtnSubmit" style="float:right;">
                     <div style="display: inline-block">Save</div>
                     <div style="margin-left: 8px;
                         display: inline-block">
                         <img src="/assets/dashboard/img/save.png" height="28px">
                     </div>
                 </button>
-                    </div>
                 </div>
             </form>
         </div>
