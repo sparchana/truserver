@@ -519,6 +519,7 @@ function processPreScreenData(returnedData) {
                     // langTable.appendChild(tbody);
                     // languageDetails.appendChild(langTable);
 
+
                     rowBox.appendChild(languageDetails);
                     secondProperty.appendChild(rowBox);
                     url = "/getAllLanguage";

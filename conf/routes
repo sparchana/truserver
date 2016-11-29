@@ -252,6 +252,13 @@ POST        /mGetCandidateUpdateEducationProfileStatics                   contro
 POST        /mGetLocalityForLatLngOrPlaceId                               controllers.TrudroidController.mGetLocalityForLatLngOrPlaceId()
 POST        /mGetJobPostVsCandidate                                       controllers.TrudroidController.mGetJobPostVsCandidate()
 
+POST        /mUpdateCandidateDocument                                     controllers.TrudroidController.mUpdateCandidateDocument()
+POST        /mUpdateCandidateLanguage                                     controllers.TrudroidController.mUpdateCandidateLanguage()
+POST        /mUpdateCandidateExperience                                   controllers.TrudroidController.mUpdateCandidateExperience()
+POST        /mUpdateCandidateOther                                        controllers.TrudroidController.mUpdateCandidateOther()
+POST        /mUpdateCandidateInterviewDetail                              controllers.TrudroidController.mUpdateCandidateInterviewDetail()
+POST        /mGetInterviewSlots                                           controllers.TrudroidController.mGetInterviewSlot()
+
 # Update interview status API
 # ~~~~~~~~~~~~
 

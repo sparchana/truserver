@@ -6,6 +6,9 @@ import api.http.CandidateKnownLanguage;
 import api.http.CandidateSkills;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
+import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlotDetail;
+import api.http.httpRequest.Workflow.PreScreenRequest;
+import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
@@ -21,6 +24,7 @@ import models.entity.Company;
 import models.entity.JobPost;
 import models.entity.OM.*;
 import models.entity.Static.*;
+import models.entity.Static.InterviewTimeSlot;
 import models.util.SmsUtil;
 import play.Logger;
 import play.mvc.Result;
@@ -31,6 +35,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static api.ServerConstants.*;
 import static controllers.businessLogic.JobSearchService.*;
 import static models.util.Util.generateOtp;
 import static models.util.Validator.isValidLocalityName;
@@ -972,7 +977,7 @@ public class TrudroidController {
             }
             addCandidateRequest.setCandidateJobPref(jobRoleIdList);
             addCandidateRequest.setCandidateGender(updateCandidateBasicProfileRequest.getCandidateGender());
-
+            addCandidateRequest.setCandidateAssetList(new ArrayList<>());
             //converting candidate DOB from string to Date
             String startDateString = updateCandidateBasicProfileRequest.getCandidateDOB();
             DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
@@ -1100,6 +1105,11 @@ public class TrudroidController {
             //setting status response
             updateCandidateProfileResponse.setStatus(UpdateCandidateBasicProfileResponse.Status.valueOf(candidateSignUpResponse.getStatus()));
             Logger.info("Status returned = " + updateCandidateProfileResponse.getStatus());
+
+            if(updateCandidateEducationProfileRequest.getIsFinalFragment()){
+                Candidate candidate = CandidateService.isCandidateExists(updateCandidateEducationProfileRequest.getCandidateMobile());
+                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), updateCandidateEducationProfileRequest.getJobPostId());
+            }
         } catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");
         }
@@ -1527,7 +1537,424 @@ public class TrudroidController {
         PreScreenPopulateResponse populateResponse = JobPostWorkflowEngine.getJobPostVsCandidate(preScreenPopulateRequest.getJobPostId(),
                 candidate.getCandidateId(), false);
 
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", preScreenPopulateRequest.getJobPostId()).findUnique();
+        if(jobPost ==null) {
+            return badRequest();
+        } else {
+            response.setPreScreenCompanyName(jobPost.getCompany().getCompanyName());
+            response.setPreScreenJobRoleTitle(jobPost.getJobRole().getJobName());
+            response.setPreScreenJobTitle(jobPost.getJobPostTitle());
+        }
+
+        response.setShouldShow(populateResponse.isVisible());
+        List<Integer> propertyIdList = new ArrayList<>();
+        for(PreScreenPopulateResponse.PreScreenElement pe : populateResponse.getElementList()) {
+            if(pe!= null && !pe.isMatching() &&  pe.getCandidateElement() == null) {
+                // show UI to collect candidate missing data
+                if ((pe.isSingleEntity() && pe.getCandidateElement() == null) ||
+                        (!pe.isSingleEntity() &&
+                                (pe.getCandidateElementList() == null || pe.getCandidateElementList().size() == 0))) {
+                    // add constructor object for only those object which are not filled by candidate
+                    response.setCandidateId(candidate.getCandidateId());
+                    response.setJobPostId(preScreenPopulateRequest.getJobPostId());
+                    response.addPropertyId(pe.getPropertyId());
+
+                    switch (pe.getPropertyId()) {
+                        case PROPERTY_TYPE_DOCUMENT:
+                            PreScreenDocumentObject.Builder preScreenDocument = PreScreenDocumentObject.newBuilder();
+                            List<IdProofObject> idProofObjectList = new ArrayList<>();
+                            for(Object object : pe.getJobPostElementList()) {
+                                PreScreenPopulateResponse.PreScreenCustomObject customObject = (PreScreenPopulateResponse.PreScreenCustomObject) object;
+
+                                IdProof idProof = (IdProof) customObject.getObject();
+                                IdProofObject.Builder idProofObject = IdProofObject.newBuilder();
+                                idProofObject.setIdProofId(idProof.getIdProofId());
+                                idProofObject.setIdProofName(idProof.getIdProofName());
+                                idProofObjectList.add(idProofObject.build());
+                            }
+                            preScreenDocument.setIsMatching(pe.isMatching());
+                            preScreenDocument.addAllJobPostIdProof(idProofObjectList);
+                            preScreenDocument.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_DOCUMENT));
+                            preScreenDocument.setPropertyId((PROPERTY_TYPE_DOCUMENT));
+                            response.setDocumentList(preScreenDocument.build());
+                            break;
+                        case PROPERTY_TYPE_LANGUAGE:
+                            PreScreenLanguageObject.Builder preScreenLanguage = PreScreenLanguageObject.newBuilder();
+                            List<LanguageObject> languageObjectList = new ArrayList<>();
+                            for(Object object : pe.getJobPostElementList()) {
+                                PreScreenPopulateResponse.PreScreenCustomObject customObject = (PreScreenPopulateResponse.PreScreenCustomObject) object;
+
+                                Language language = (Language) customObject.getObject();
+                                LanguageObject.Builder languageObject = LanguageObject.newBuilder();
+                                languageObject.setLanguageId(language.getLanguageId());
+                                languageObject.setLanguageName(language.getLanguageName());
+                                languageObjectList .add(languageObject.build());
+                            }
+                            preScreenLanguage.setIsMatching(pe.isMatching());
+                            preScreenLanguage.addAllJobPostLanguage(languageObjectList );
+                            preScreenLanguage.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_LANGUAGE));
+                            preScreenLanguage.setPropertyId((PROPERTY_TYPE_LANGUAGE));
+                            response.setLanguageList(preScreenLanguage.build());
+                            break;
+                        case PROPERTY_TYPE_ASSET_OWNED:
+                            PreScreenAssetObject.Builder preScreenAsset = PreScreenAssetObject.newBuilder();
+                            List<AssetObject> assetObjectList = new ArrayList<>();
+                            for(Object object : pe.getJobPostElementList()) {
+                                PreScreenPopulateResponse.PreScreenCustomObject customObject = (PreScreenPopulateResponse.PreScreenCustomObject) object;
+
+                                Asset asset = (Asset) customObject.getObject();
+                                AssetObject.Builder assetObject = AssetObject.newBuilder();
+                                assetObject.setAssetId(asset.getAssetId());
+                                assetObject.setAssetTitle(asset.getAssetTitle());
+                                assetObjectList.add(assetObject.build());
+                            }
+                            preScreenAsset.setIsMatching(pe.isMatching());
+                            preScreenAsset.addAllJobPostAsset(assetObjectList);
+                            preScreenAsset.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_ASSET_OWNED));
+                            preScreenAsset.setPropertyId((PROPERTY_TYPE_ASSET_OWNED));
+                            response.setAssetList(preScreenAsset.build());
+                            break;
+                        case PROPERTY_TYPE_MAX_AGE:
+                            PreScreenAgeObject.Builder preScreenAge = PreScreenAgeObject.newBuilder();
+                            preScreenAge.setIsMatching(pe.isMatching());
+                            preScreenAge.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_MAX_AGE));
+                            preScreenAge.setPropertyId((PROPERTY_TYPE_MAX_AGE));
+                            response.setAge(preScreenAge.build());
+                            break;
+                        case PROPERTY_TYPE_EXPERIENCE:
+                            PreScreenExperienceObject.Builder preScreenExperience = PreScreenExperienceObject.newBuilder();
+                            preScreenExperience.setIsMatching(pe.isMatching());
+                            preScreenExperience.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_EXPERIENCE));
+                            preScreenExperience.setPropertyId((PROPERTY_TYPE_EXPERIENCE));
+                            response.setExperience(preScreenExperience.build());
+                            break;
+                        case PROPERTY_TYPE_EDUCATION:
+                            PreScreenEducationObject.Builder preScreenEducation = PreScreenEducationObject.newBuilder();
+                            preScreenEducation.setIsMatching(pe.isMatching());
+                            preScreenEducation.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_EDUCATION));
+                            preScreenEducation.setPropertyId((PROPERTY_TYPE_EDUCATION));
+                            response.setEducation(preScreenEducation.build());
+                            break;
+                        case PROPERTY_TYPE_GENDER:
+                            PreScreenGenderObject.Builder preScreenGender = PreScreenGenderObject.newBuilder();
+                            preScreenGender.setIsMatching(pe.isMatching());
+                            preScreenGender.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_GENDER));
+                            preScreenGender.setPropertyId((PROPERTY_TYPE_GENDER));
+                            response.setGender(preScreenGender.build());
+                            break;
+                        case PROPERTY_TYPE_SALARY:
+                            PreScreenSalaryObject.Builder preScreenSalary = PreScreenSalaryObject.newBuilder();
+                            preScreenSalary.setIsMatching(pe.isMatching());
+                            preScreenSalary.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_SALARY));
+                            preScreenSalary.setPropertyId((PROPERTY_TYPE_SALARY));
+                            response.setSalary(preScreenSalary.build());
+                            break;
+                    }
+                }
+            }
+        }
 
         return ok(Base64.encodeBase64String(response.build().toByteArray()));
     }
+
+    public static Result mUpdateCandidateDocument() {
+        UpdateCandidateDocumentRequest updateCandidateDocumentRequest = null;
+        GenericResponse.Builder responseBuilder = GenericResponse.newBuilder();
+
+        try {
+            String requestString = request().body().asText();
+            updateCandidateDocumentRequest = UpdateCandidateDocumentRequest.parseFrom(Base64.decodeBase64(requestString));
+
+            if (updateCandidateDocumentRequest == null) {
+                Logger.info("Invalid message");
+                return badRequest();
+            }
+
+            Candidate candidate = CandidateService.isCandidateExists(updateCandidateDocumentRequest.getCandidateMobile());
+            if(candidate == null) {
+                // candidate not found
+                responseBuilder.setStatus(GenericResponse.Status.INVALID);
+                return ok(Base64.encodeBase64String(responseBuilder.build().toByteArray()));
+            }
+
+            if(updateCandidateDocumentRequest.getIdProofList().size() < 1){
+                // nothing to update
+                responseBuilder.setStatus(GenericResponse.Status.SUCCESS);
+                return ok(Base64.encodeBase64String(responseBuilder.build().toByteArray()));
+            }
+
+            UpdateCandidateDocument updateCandidateDocument = new UpdateCandidateDocument();
+
+            List<UpdateCandidateDocument.IdProofWithIdNumber> idNumberList =  new ArrayList<>();
+            for( IdProofObjectWithNumber idProofObjectWithNumber: updateCandidateDocumentRequest.getIdProofList()) {
+                UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber = new UpdateCandidateDocument.IdProofWithIdNumber();
+                idProofWithIdNumber.setIdProofId(idProofObjectWithNumber.getIdProof().getIdProofId());
+                idProofWithIdNumber.setIdNumber(idProofObjectWithNumber.getIdProofNumber());
+                idNumberList.add(idProofWithIdNumber);
+            }
+            updateCandidateDocument.setIdProofWithIdNumberList(idNumberList);
+
+            CandidateService.updateCandidateDocument(candidate, updateCandidateDocument);
+
+            responseBuilder.setStatus(GenericResponse.Status.SUCCESS);
+            if(updateCandidateDocumentRequest.getIsFinalFragment()) {
+                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), updateCandidateDocumentRequest.getJobPostId());
+            }
+        } catch (InvalidProtocolBufferException e) {
+            Logger.info("Unable to parse message");
+        }
+
+        return ok(Base64.encodeBase64String(responseBuilder.build().toByteArray()));
+    }
+
+    public static Result mUpdateCandidateLanguage() {
+        UpdateCandidateLanguageRequest languageRequest = null;
+        GenericResponse.Builder response = GenericResponse.newBuilder();
+
+        try {
+            String requestString = request().body().asText();
+            languageRequest = UpdateCandidateLanguageRequest.parseFrom(Base64.decodeBase64(requestString));
+
+            if (languageRequest == null) {
+                Logger.info("Invalid message");
+                return badRequest();
+            }
+
+            Candidate candidate = CandidateService.isCandidateExists(languageRequest.getCandidateMobile());
+            if (candidate == null) {
+                // candidate not found
+                response.setStatus(GenericResponse.Status.INVALID);
+                return ok(Base64.encodeBase64String(response.build().toByteArray()));
+            }
+
+            UpdateCandidateLanguageKnown updateCandidateLanguageKnown = new UpdateCandidateLanguageKnown();
+            List<CandidateKnownLanguage> candidateKnownLanguageList = new ArrayList<>();
+            for(LanguageKnownObject languageKnownObject : languageRequest.getLanguageKnownObjectList()){
+                CandidateKnownLanguage candidateKnownLanguage = new CandidateKnownLanguage();
+                candidateKnownLanguage.setId(String.valueOf(languageKnownObject.getLanguageKnownId()));
+                candidateKnownLanguage.setRw(languageKnownObject.getLanguageReadWrite());
+                candidateKnownLanguage.setS(languageKnownObject.getLanguageSpeak());
+                candidateKnownLanguage.setU(languageKnownObject.getLanguageUnderstand());
+                candidateKnownLanguageList.add(candidateKnownLanguage);
+            }
+
+            updateCandidateLanguageKnown.setCandidateKnownLanguageList(candidateKnownLanguageList);
+            CandidateService.updateCandidateLanguageKnown(candidate, updateCandidateLanguageKnown);
+
+            response.setStatus(GenericResponse.Status.SUCCESS);
+
+            if(languageRequest.getIsFinalFragment()) {
+                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), languageRequest.getJobPostId());
+            }
+        }
+        catch (InvalidProtocolBufferException e) {
+            Logger.info("Unable to parse message");
+        }
+
+        return ok(Base64.encodeBase64String(response.build().toByteArray()));
+    }
+
+    /* for candidate education, app uses the existing UpdateCandidateEducationProfile api and same class */
+
+    public static Result mUpdateCandidateExperience() {
+        UpdateCandidateExperienceRequest experienceRequest = null;
+        GenericResponse.Builder response = GenericResponse.newBuilder();
+
+        try {
+            String requestString = request().body().asText();
+            experienceRequest = UpdateCandidateExperienceRequest.parseFrom(Base64.decodeBase64(requestString));
+
+            if (experienceRequest == null) {
+                Logger.info("Invalid message");
+                return badRequest();
+            }
+
+            Candidate candidate = CandidateService.isCandidateExists(experienceRequest.getCandidateMobile());
+            if (candidate == null) {
+                // candidate not found
+                response.setStatus(GenericResponse.Status.INVALID);
+                return ok(Base64.encodeBase64String(response.build().toByteArray()));
+            }
+
+            UpdateCandidateWorkExperience updateCandidateWorkExperience = new UpdateCandidateWorkExperience();
+
+            updateCandidateWorkExperience.setCandidateTotalExperience(experienceRequest.getCandidateTotalExperience());
+
+            CandidateService.updateCandidateWorkExperience(candidate, updateCandidateWorkExperience);
+
+
+            response.setStatus(GenericResponse.Status.SUCCESS);
+
+            if(experienceRequest.getIsFinalFragment()) {
+                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), experienceRequest.getJobPostId());
+            }
+
+        }
+        catch (InvalidProtocolBufferException e) {
+            Logger.info("Unable to parse message");
+        }
+
+        return ok(Base64.encodeBase64String(response.build().toByteArray()));
+    }
+
+    public static Result mUpdateCandidateOther() {
+        UpdateCandidateOtherRequest otherRequest = null;
+        GenericResponse.Builder response = GenericResponse.newBuilder();
+
+        try {
+            String requestString = request().body().asText();
+            otherRequest = UpdateCandidateOtherRequest.parseFrom(Base64.decodeBase64(requestString));
+
+            if (otherRequest == null) {
+                Logger.info("Invalid message");
+                return badRequest();
+            }
+
+            Candidate candidate = CandidateService.isCandidateExists(otherRequest.getCandidateMobile());
+            if (candidate == null) {
+                // candidate not found
+                response.setStatus(GenericResponse.Status.INVALID);
+                Logger.info(" candidate not found , invalid status returned");
+                return ok(Base64.encodeBase64String(response.build().toByteArray()));
+            }
+            for(int propId: otherRequest.getPropertyIdList()){
+
+                switch (propId){
+                    case ServerConstants.PROPERTY_TYPE_ASSET_OWNED:
+                        UpdateCandidateAsset updateCandidateAsset = new UpdateCandidateAsset();
+                        updateCandidateAsset.setAssetIdList(otherRequest.getAssetIdList());
+
+                        CandidateService.updateCandidateAssetOwned(candidate, updateCandidateAsset);
+                        break;
+                    case ServerConstants.PROPERTY_TYPE_GENDER:
+                        UpdateCandidateGender updateCandidateGender = new UpdateCandidateGender();
+
+                        updateCandidateGender.setCandidateGender(otherRequest.getCandidateGender());
+                        CandidateService.updateCandidateGender(candidate, updateCandidateGender);
+                        break;
+                    case ServerConstants.PROPERTY_TYPE_SALARY:
+                        // this we collect with experience itself
+//                      UpdateCandidateLastWithdrawnSalary lastWithdrawnSalary = new UpdateCandidateLastWithdrawnSalary();
+//                      lastWithdrawnSalary.setCandidateLastWithdrawnSalary(otherRequest.getCandidateLastWithdrawnSalary());
+//                      CandidateService.updateCandidateLastWithdrawnSalary(candidate, lastWithdrawnSalary);
+                        break;
+                    case ServerConstants.PROPERTY_TYPE_MAX_AGE:
+                        UpdateCandidateDob updateCandidateDob = new UpdateCandidateDob();
+
+                        String startDateString = otherRequest.getCandidateDOB();
+                        DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+                        Date dobDate;
+                        try {
+                            dobDate = df.parse(startDateString);
+                            updateCandidateDob.setCandidateDob(dobDate);
+                        } catch (ParseException e) {
+
+                        }
+
+                        CandidateService.updateCandidateDOB(candidate, updateCandidateDob);
+                        break;
+                    case ServerConstants.PROPERTY_TYPE_WORK_SHIFT:
+                        UpdateCandidateTimeShiftPreference timeShiftPreference= new UpdateCandidateTimeShiftPreference();
+                        timeShiftPreference.setCandidateTimeShiftPref(String.valueOf(otherRequest.getCandidateTimeshiftPref()));
+                        CandidateService.updateCandidateWorkshift(candidate, timeShiftPreference);
+                        break;
+                }
+            }
+
+            if(otherRequest.getIsFinalFragment()) {
+                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), otherRequest.getJobPostId());
+            }
+
+            response.setStatus(GenericResponse.Status.SUCCESS);
+        }
+        catch (InvalidProtocolBufferException e) {
+            Logger.info("Unable to parse message");
+        }
+
+        return ok(Base64.encodeBase64String(response.build().toByteArray()));
+    }
+
+    public static Result mUpdateCandidateInterviewDetail() {
+        UpdateCandidateInterviewDetailRequest interviewDetailRequest = null;
+        GenericResponse.Builder response = GenericResponse.newBuilder();
+
+        String requestString = request().body().asText();
+        try {
+            interviewDetailRequest = UpdateCandidateInterviewDetailRequest.parseFrom(Base64.decodeBase64(requestString));
+
+            // validate conversion
+            if(interviewDetailRequest == null) {
+                return badRequest();
+            }
+
+            // check candidate existence
+            Candidate candidate = CandidateService.isCandidateExists(interviewDetailRequest.getCandidateMobile());
+            if (candidate == null) {
+                // candidate not found
+                response.setStatus(GenericResponse.Status.INVALID);
+                Logger.info(" candidate not found , invalid status returned");
+                return ok(Base64.encodeBase64String(response.build().toByteArray()));
+            }
+
+            AddCandidateInterviewSlotDetail interviewSlotDetail = new AddCandidateInterviewSlotDetail();
+
+            interviewSlotDetail.setTimeSlot(interviewDetailRequest.getTimeSlotId());
+            interviewSlotDetail.setScheduledInterviewDate(new Date(interviewDetailRequest.getScheduledInterviewDateInMills()));
+
+            JobPostWorkflowEngine.updateCandidateInterviewDetail(candidate.getCandidateId(), interviewDetailRequest.getJobPostId(), interviewSlotDetail, true);
+
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+
+        return ok(Base64.encodeBase64String(response.build().toByteArray()));
+    }
+
+    public static Result mGetInterviewSlot() {
+        GetInterviewSlotsRequest interviewSlotsRequest = null;
+        GetInterviewSlotsResponse.Builder response = GetInterviewSlotsResponse.newBuilder();
+
+        String requestString = request().body().asText();
+        try {
+            interviewSlotsRequest = GetInterviewSlotsRequest.parseFrom(Base64.decodeBase64(requestString));
+
+            // validate conversion
+            if(interviewSlotsRequest == null) {
+                return badRequest();
+            }
+
+            JobPost jobPost = JobPost.find.where().eq("jobPostId", interviewSlotsRequest.getJobPostId()).findUnique();
+
+            if(jobPost == null) {
+                return badRequest();
+            }
+
+            List<InterviewSlot> interviewSlots = new ArrayList<>();
+            for(InterviewDetails details : jobPost.getInterviewDetailsList()) {
+                details.getInterviewDays();
+                details.getInterviewTimeSlot();
+
+                // build slotobject
+                InterviewTimeSlotObject.Builder interviewTimeSlot = InterviewTimeSlotObject.newBuilder();
+                interviewTimeSlot.setSlotId(details.getInterviewTimeSlot().getInterviewTimeSlotId());
+                interviewTimeSlot.setSlotTitle(details.getInterviewTimeSlot().getInterviewTimeSlotName());
+
+                // build interview
+                InterviewSlot.Builder interviewSlot = InterviewSlot.newBuilder();
+                interviewSlot.setInterviewTimeSlotObject(interviewTimeSlot.build());
+                interviewSlot.setInterviewDays(Integer.toBinaryString(details.getInterviewDays()));
+
+                Logger.info("dayssssss: " + interviewSlot.getInterviewDays());
+                interviewSlots.add(interviewSlot.build());
+            }
+
+            response.addAllInterviewSlots(interviewSlots);
+
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+
+        return ok(Base64.encodeBase64String(response.build().toByteArray()));
+    }
+
 }

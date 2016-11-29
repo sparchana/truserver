@@ -34,7 +34,7 @@ function processJobPostInterviewSlot(returnedData, isSupport) {
 
         var interviewDetailsList = returnedData.interviewDetailsList;
         if (interviewDetailsList[0].interviewDays != null) {
-            var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
+            var interviewDays = interviewDetailsList[0].interviewDays.toString(2); // binary format
 
             /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
             if (interviewDays.length != 7) {
@@ -44,6 +44,7 @@ function processJobPostInterviewSlot(returnedData, isSupport) {
                 for (i = 0; i < x; i++) {
                     modifiedInterviewDays += "0";
                 }
+
                 modifiedInterviewDays += interviewDays;
                 interviewDays = modifiedInterviewDays;
             }
