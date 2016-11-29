@@ -353,7 +353,7 @@ function processDataRecruiterProfile(returnedData) {
         if(returnedData.recruiterProfileEmail != null && returnedData.recruiterProfileEmail != "")
             $("#recEmail").html(returnedData.recruiterProfileEmail);
 
-        var remainingContactCredits;
+        var remainingContactCredits = 0;
         var remainingInterviewCredits;
 
         var creditHistoryList = returnedData.recruiterCreditHistoryList;
@@ -366,6 +366,7 @@ function processDataRecruiterProfile(returnedData) {
                     if(contactCreditCount == 0){
                         $("#remainingContactCredits").html(creditHistory.recruiterCreditsAvailable);
                         $("#remainingContactCreditsMobile").html(creditHistory.recruiterCreditsAvailable);
+                        remainingContactCredits = parseInt(creditHistory.recruiterCreditsAvailable);
                         contactCreditCount = 1;
                     }
                 } else{
@@ -382,6 +383,15 @@ function processDataRecruiterProfile(returnedData) {
                 }
             } catch(err){}
         });
+
+        if(remainingContactCredits > 0){
+            $("#contactCreditCount").html(remainingContactCredits)
+            $("#hasCredit").show();
+            $("#hasNoCredit").hide();
+        } else{
+            $("#hasCredit").hide();
+            $("#hasNoCredit").show();
+        }
     }
 }
 
