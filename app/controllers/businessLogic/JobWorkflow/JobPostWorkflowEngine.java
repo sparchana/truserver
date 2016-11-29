@@ -49,7 +49,6 @@ import static play.mvc.Results.ok;
 public class JobPostWorkflowEngine {
 
     /**
-     *
      *  @param jobPostId  match candidates for this jobPost
      *  @param maxAge  max range criteria to be taken into consideration while matching
      *  @param gender  gender criteria to be taken into consideration while matching
@@ -57,8 +56,6 @@ public class JobPostWorkflowEngine {
      *  @param jobPostLocalityIdList  candidates to be matched within x Km of any of the provided locality
      *  @param languageIdList  candidate to be matched for any of this language. Output contains the
      *                       indication to show matching & non-matching language
-     *
-     *
     */
     public static Map<Long, CandidateWorkflowData> getMatchingCandidate(Long jobPostId,
                                                                         Integer maxAge,
@@ -643,7 +640,7 @@ public class JobPostWorkflowEngine {
         // constructor for this class make all default flag as true, we will mark it false wherever its not satisfied
         populateResponse.jobPostId = jobPostId;
         populateResponse.candidateId = candidateId;
-        Logger.info("minReq :" + jobPost.getJobPostMinRequirement());
+
         populateResponse.setJobPostMinReq(jobPost.getJobPostMinRequirement());
 
         PreScreenPopulateResponse.PreScreenElement preScreenElement;
@@ -2238,6 +2235,7 @@ public class JobPostWorkflowEngine {
                 populateResponseList.add(populateResponse);
             }
         }
+
         double score;
         int band;
         int passed;
