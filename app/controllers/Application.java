@@ -25,6 +25,8 @@ import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.*;
+import dao.JobPostWorkFlowDAO;
+import dao.staticdao.RejectReasonDAO;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.Intelligence.RelatedJobRole;
@@ -589,7 +591,8 @@ public class Application extends Controller {
     @Security.Authenticated(SecuredUser.class)
     public static Result getCandidateJobApplication() {
         if(session().get("candidateId") != null) {
-            return ok(toJson(JobPostWorkflowEngine.getCandidateAppliedJobs()));
+            Long candidateId = Long.parseLong(session().get("candidateId"));
+            return ok(toJson(new JobPostWorkFlowDAO().candidateAppliedJobs(candidateId)));
         } else{
             return ok("0");
         }
@@ -931,18 +934,15 @@ public class Application extends Controller {
     }
 
     public static Result getAllInterviewRejectReasons() {
-        List<RejectReason> reason = RejectReason.find.where().eq("reason_type", ServerConstants.INTERVIEW_REJECT_TYPE_REASON).setUseQueryCache(!isDevMode).orderBy("reason_name").findList();
-        return ok(toJson(reason));
+        return ok(toJson(new RejectReasonDAO().getByType(ServerConstants.INTERVIEW_REJECT_TYPE_REASON)));
     }
 
     public static Result getAllInterviewNotGoingReasons() {
-        List<RejectReason> reason = RejectReason.find.where().eq("reason_type", ServerConstants.INTERVIEW_NOT_GOING_TYPE_REASON).setUseQueryCache(!isDevMode).orderBy("reason_name").findList();
-        return ok(toJson(reason));
+        return ok(toJson(new RejectReasonDAO().getByType(ServerConstants.INTERVIEW_NOT_GOING_TYPE_REASON)));
     }
 
     public static Result getAllNotSelectedReasons() {
-        List<RejectReason> reason = RejectReason.find.where().eq("reason_type", ServerConstants.INTERVIEW_NOT_SELECED_TYPE_REASON).setUseQueryCache(!isDevMode).orderBy("reason_name").findList();
-        return ok(toJson(reason));
+        return ok(toJson(new RejectReasonDAO().getByType(ServerConstants.INTERVIEW_NOT_SELECED_TYPE_REASON)));
     }
 
     @Security.Authenticated(RecSecured.class)

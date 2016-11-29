@@ -18,6 +18,7 @@ import com.avaje.ebean.*;
 import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.InteractionService;
 import controllers.businessLogic.MatchingEngineService;
+import dao.staticdao.RejectReasonDAO;
 import models.entity.*;
 import models.entity.OM.*;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
@@ -1766,6 +1767,12 @@ public class JobPostWorkflowEngine {
                         candidateExtraData.setCreatedBy(jobPostWorkflow.getCreatedBy());
 
                         if(status >= ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED) {
+                            List<Interaction> interactionList = Interaction.find
+                                    .where().eq("objectAUUId", jobPostWorkflow.getJobPostWorkflowUUId())
+                                    .findList();
+
+                            candidateExtraData.setAllInteractionCount(interactionList.size());
+
                             String interviewDatetime = "";
                             if(jobPostWorkflow.getScheduledInterviewTimeSlot() != null) {
                                 interviewDatetime = jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + " ";
@@ -2089,7 +2096,7 @@ public class JobPostWorkflowEngine {
             interviewScheduleStatusUpdate.setStatus(JobPostWorkflowStatus.find.where().eq("status_id", jwStatus).findUnique());
 
             if(jwStatus == ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT){
-                interviewScheduleStatusUpdate.setRejectReason(RejectReason.find.where().eq("reason_id", interviewStatusRequest.getReason()).findUnique());
+                interviewScheduleStatusUpdate.setRejectReason(new RejectReasonDAO().getById(Long.valueOf(interviewStatusRequest.getReason())));
             }
             interviewScheduleStatusUpdate.save();
 
@@ -2115,6 +2122,7 @@ public class JobPostWorkflowEngine {
         Integer jwStatus = null;
 
         // fetch existing workflow old
+
         JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
                 .eq("jobPost.jobPostId", jpId)
                 .eq("candidate.candidateId", candidate.getCandidateId())
@@ -2149,6 +2157,18 @@ public class JobPostWorkflowEngine {
         }
         jobPostWorkflowNew.update();
 
+        Integer channel;
+        if(session().get("sessionChannel") == null){
+            channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
+        } else{
+            channel = Integer.valueOf(session().get("sessionChannel"));
+        }
+
+        InterviewScheduleStatusUpdate interviewScheduleStatusUpdate = new InterviewScheduleStatusUpdate();
+        interviewScheduleStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
+        interviewScheduleStatusUpdate.setStatus(JobPostWorkflowStatus.find.where().eq("status_id", jwStatus).findUnique());
+
+        interviewScheduleStatusUpdate.save();
         // save the interaction
         InteractionService.createWorkflowInteraction(
                 jobPostWorkflowOld.getJobPostWorkflowUUId(),
@@ -2156,13 +2176,13 @@ public class JobPostWorkflowEngine {
                 interactionType,
                 null,
                 jobPostWorkflowOld.getJobPost().getJobPostId() + ": " + jobPostWorkflowOld.getJobPost().getJobRole().getJobName() + interactionResult,
-                Integer.valueOf(session().get("sessionChannel"))
+                channel
         );
         return 1;
     }
 
     public static Map<Long, CandidateWorkflowData> getRecruiterJobLinedUpCandidates(Long jobPostId) {
-        String statusSql = " and (status_id > '" + ServerConstants.JWF_STATUS_PRESCREEN_FAILED + "') ";
+        String statusSql = " and (status_id NOT IN ( '" + ServerConstants.JWF_STATUS_PRESCREEN_FAILED + "')) ";
         StringBuilder workFlowQueryBuilder = new StringBuilder("select createdby, candidate_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
                 " where i.job_post_id " +
                 " = ('"+jobPostId+"') " +
@@ -2392,33 +2412,6 @@ public class JobPostWorkflowEngine {
         return "OK";
     }
 
-    public static List<JobPostWorkflow> getCandidateAppliedJobs() {
-        List<JobPostWorkflow> appliedJobsList = new ArrayList<>();
-        if(session().get("candidateId") != null) {
-            Long candidateId = Long.parseLong(session().get("candidateId"));
-
-            String candidateAppliedJobsSql = "select job_post_id, status_id, scheduled_interview_time_slot, scheduled_interview_date, interview_location_lat, interview_location_lng " +
-                    "from job_post_workflow jwf where jwf.creation_timestamp = (select max(creation_timestamp)\n" +
-                    " from job_post_workflow where jwf.job_post_id = job_post_workflow.job_post_id and job_post_workflow.candidate_id = " + candidateId + ")";
-
-            RawSql rawSql = RawSqlBuilder.parse(candidateAppliedJobsSql)
-                    .tableAliasMapping("jwf", "job_post_workflow")
-                    .columnMapping("job_post_id", "jobPost.jobPostId")
-                    .columnMapping("status_id", "status.statusId")
-                    .columnMapping("scheduled_interview_time_slot", "scheduledInterviewTimeSlot.interviewTimeSlotId")
-                    .columnMapping("scheduled_interview_date", "scheduledInterviewDate")
-                    .columnMapping("interview_location_lat", "interviewLocationLat")
-                    .columnMapping("interview_location_lng", "interviewLocationLng")
-                    .create();
-
-            appliedJobsList = Ebean.find(JobPostWorkflow.class)
-                    .setRawSql(rawSql)
-                    .findList();
-
-        }
-        return appliedJobsList;
-    }
-
     public static JobPostWorkflow getCandidateLatestStatus(Candidate candidate, JobPost jobPost) {
         // fetch existing workflow old
 
@@ -2510,7 +2503,7 @@ public class JobPostWorkflowEngine {
         interviewFeedbackUpdate.setCandidate(Candidate.find.where().eq("candidateId", addFeedbackRequest.getCandidateId()).findUnique());
         interviewFeedbackUpdate.setStatus(JobPostWorkflowStatus.find.where().eq("status_id", jwStatus).findUnique());
         interviewFeedbackUpdate.setCandidateInterviewStatusUpdateNote(addFeedbackRequest.getFeedbackComment());
-        interviewFeedbackUpdate.setRejectReason(RejectReason.find.where().eq("reason_id", addFeedbackRequest.getRejectReason()).findUnique());
+        interviewFeedbackUpdate.setRejectReason(new RejectReasonDAO().getById(addFeedbackRequest.getRejectReason()));
 
         interviewFeedbackUpdate.save();
 
@@ -2585,7 +2578,7 @@ public class JobPostWorkflowEngine {
         candidateInterviewStatusUpdate.setJobPost(jobPostWorkflowOld.getJobPost());
         candidateInterviewStatusUpdate.setCandidate(candidate);
         if(reason != null && reason > 0){
-            candidateInterviewStatusUpdate.setRejectReason(RejectReason.find.where().eq("reason_id", reason).findUnique());
+            candidateInterviewStatusUpdate.setRejectReason(new RejectReasonDAO().getById(reason));
         }
         candidateInterviewStatusUpdate.save();
 
