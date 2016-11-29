@@ -7,6 +7,7 @@ import api.http.CandidateSkills;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlotDetail;
+import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
@@ -1104,6 +1105,11 @@ public class TrudroidController {
             //setting status response
             updateCandidateProfileResponse.setStatus(UpdateCandidateBasicProfileResponse.Status.valueOf(candidateSignUpResponse.getStatus()));
             Logger.info("Status returned = " + updateCandidateProfileResponse.getStatus());
+
+            if(updateCandidateEducationProfileRequest.getIsFinalFragment()){
+                Candidate candidate = CandidateService.isCandidateExists(updateCandidateEducationProfileRequest.getCandidateMobile());
+                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), updateCandidateEducationProfileRequest.getJobPostId());
+            }
         } catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");
         }
@@ -1691,6 +1697,9 @@ public class TrudroidController {
             CandidateService.updateCandidateDocument(candidate, updateCandidateDocument);
 
             responseBuilder.setStatus(GenericResponse.Status.SUCCESS);
+            if(updateCandidateDocumentRequest.getIsFinalFragment()) {
+                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), updateCandidateDocumentRequest.getJobPostId());
+            }
         } catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");
         }
@@ -1733,6 +1742,10 @@ public class TrudroidController {
             CandidateService.updateCandidateLanguageKnown(candidate, updateCandidateLanguageKnown);
 
             response.setStatus(GenericResponse.Status.SUCCESS);
+
+            if(languageRequest.getIsFinalFragment()) {
+                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), languageRequest.getJobPostId());
+            }
         }
         catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");
@@ -1771,6 +1784,11 @@ public class TrudroidController {
 
 
             response.setStatus(GenericResponse.Status.SUCCESS);
+
+            if(experienceRequest.getIsFinalFragment()) {
+                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), experienceRequest.getJobPostId());
+            }
+
         }
         catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");
@@ -1800,6 +1818,7 @@ public class TrudroidController {
                 return ok(Base64.encodeBase64String(response.build().toByteArray()));
             }
             for(int propId: otherRequest.getPropertyIdList()){
+
                 switch (propId){
                     case ServerConstants.PROPERTY_TYPE_ASSET_OWNED:
                         UpdateCandidateAsset updateCandidateAsset = new UpdateCandidateAsset();
@@ -1841,7 +1860,11 @@ public class TrudroidController {
                         break;
                 }
             }
-            Logger.info("success: ");
+
+            if(otherRequest.getIsFinalFragment()) {
+                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), otherRequest.getJobPostId());
+            }
+
             response.setStatus(GenericResponse.Status.SUCCESS);
         }
         catch (InvalidProtocolBufferException e) {
@@ -1873,6 +1896,9 @@ public class TrudroidController {
                 return ok(Base64.encodeBase64String(response.build().toByteArray()));
             }
 
+            Logger.info("interview details: " + interviewDetailRequest.getScheduledInterviewDate());
+            Logger.info("interview details in mills date: " + new Date(interviewDetailRequest.getScheduledInterviewDateInMills()));
+
             AddCandidateInterviewSlotDetail interviewSlotDetail = new AddCandidateInterviewSlotDetail();
 
             //converting interviewDate from string to Date
@@ -1886,7 +1912,7 @@ public class TrudroidController {
 
             interviewSlotDetail.setTimeSlot(interviewDetailRequest.getTimeSlotId());
 
-            JobPostWorkflowEngine.updateCandidateInterviewDetail(candidate.getCandidateId(), interviewDetailRequest.getJobPostId(), interviewSlotDetail);
+            JobPostWorkflowEngine.updateCandidateInterviewDetail(candidate.getCandidateId(), interviewDetailRequest.getJobPostId(), interviewSlotDetail, true);
 
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
@@ -1924,13 +1950,16 @@ public class TrudroidController {
                 interviewTimeSlot.setSlotId(details.getInterviewTimeSlot().getInterviewTimeSlotId());
                 interviewTimeSlot.setSlotTitle(details.getInterviewTimeSlot().getInterviewTimeSlotName());
 
+                // build interview
                 InterviewSlot.Builder interviewSlot = InterviewSlot.newBuilder();
                 interviewSlot.setInterviewTimeSlotObject(interviewTimeSlot.build());
-                // build interview
+                interviewSlot.setInterviewDays(Integer.toBinaryString(details.getInterviewDays()));
 
+                Logger.info("dayssssss: " + interviewSlot.getInterviewDays());
+                interviewSlots.add(interviewSlot.build());
             }
 
-            // response.setInterviewSlots();
+            response.addAllInterviewSlots(interviewSlots);
 
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();

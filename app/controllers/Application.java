@@ -1936,7 +1936,7 @@ public class Application extends Controller {
 
         AddCandidateInterviewSlotDetail interviewSlotDetail = newMapper.readValue(updateCandidateDetailJSON.toString(), AddCandidateInterviewSlotDetail.class);
 
-        return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewDetail(candidateId, jobPostId, interviewSlotDetail)));
+        return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewDetail(candidateId, jobPostId, interviewSlotDetail, false)));
     }
 
     public static Result renderStatusUpdate(long jpId, long cId) {
@@ -2094,14 +2094,9 @@ public class Application extends Controller {
                 }
             }
 
-            // saving preScreen Results
-            PreScreenRequest preScreenRequest= new PreScreenRequest();
-            preScreenRequest.setCandidateId(candidate.getCandidateId());
-            preScreenRequest.setJobPostId(jobPostId);
-            preScreenRequest.setPreScreenNote("Candidate Self PreScreen");
-            preScreenRequest.setPass(true);
-            preScreenRequest.setPreScreenIdList(new ArrayList<>());
-            JobPostWorkflowEngine.savePreScreenResult(preScreenRequest);
+            // make entry into prescreen result/response table
+            JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), jobPostId);
+
             JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
 
             return ok(JobPostWorkflowEngine.isInterviewRequired(jobPost));

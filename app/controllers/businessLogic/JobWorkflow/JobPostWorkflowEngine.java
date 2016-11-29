@@ -1395,6 +1395,18 @@ public class JobPostWorkflowEngine {
         return responseList;
     }
 
+    public static void savePreScreenResultForCandidateUpdate(long candidateId, long jobPostId) {
+        // make entry into prescreen result/response table
+
+        PreScreenRequest preScreenRequest= new PreScreenRequest();
+        preScreenRequest.setCandidateId(candidateId);
+        preScreenRequest.setJobPostId(jobPostId);
+        preScreenRequest.setPreScreenNote("Candidate Self PreScreen");
+        preScreenRequest.setPass(true);
+        preScreenRequest.setPreScreenIdList(new ArrayList<>());
+        JobPostWorkflowEngine.savePreScreenResult(preScreenRequest);
+    }
+
     public static class LastActiveValue{
         public Integer lastActiveValueId;
         public String lastActiveValueName;
@@ -1759,8 +1771,8 @@ public class JobPostWorkflowEngine {
             jobPostWorkflowOld.setJobPostWorkflowUUId(toBePreservedUUId);
             jobPostWorkflowOld.setJobPost(jobPost);
             jobPostWorkflowOld.setCandidate(candidate);
-            jobPostWorkflowOld.setCreatedBy(session().get("sessionUsername"));
-            jobPostWorkflowOld.setChannel(Integer.valueOf(session().get("sessionChannel")));
+            jobPostWorkflowOld.setCreatedBy(session().get("sessionUsername") == null ? "Self" : session().get("sessionUsername"));
+            jobPostWorkflowOld.setChannel(session().get("sessionChannel") == null ? InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID : Integer.valueOf(session().get("sessionChannel")));
             jobPostWorkflowOld.setStatus(status);
             jobPostWorkflowOld.save();
             return jobPostWorkflowOld;
@@ -2125,7 +2137,7 @@ public class JobPostWorkflowEngine {
                 for(PreScreenPopulateResponse.PreScreenElement pe: response.getElementList()){
                     if(pe.isMatching()){
                         if(pe.isSingleEntity()) {
-                            reason += pe.getCandidateElement().getPlaceHolder() + ", ";
+                            reason += pe.getCandidateElement() == null ? "" : pe.getCandidateElement().getPlaceHolder() + ", ";
                         } else {
                             for(PreScreenPopulateResponse.PreScreenCustomObject customObject: pe.getCandidateElementList()){
                                 reason += customObject.getPlaceHolder() + ", ";
@@ -2151,7 +2163,7 @@ public class JobPostWorkflowEngine {
     }
 
 
-    public static String updateCandidateInterviewDetail(Long candidateId, Long jobPostId, AddCandidateInterviewSlotDetail interviewSlotDetail){
+    public static String updateCandidateInterviewDetail(Long candidateId, Long jobPostId, AddCandidateInterviewSlotDetail interviewSlotDetail, boolean isApp){
         Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
 
         if(candidate == null) {
@@ -2164,13 +2176,13 @@ public class JobPostWorkflowEngine {
                 .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
 
         if(jobPostWorkflowOld == null) {
-            Logger.info("session channel not set");
+            Logger.info("jobPostWorkflow old is null");
 
             return null;
         }
 
-        if( session().get("sessionChannel") == null ||
-                InteractionConstants.INTERACTION_TYPE_MAP.get(Integer.valueOf(session().get("sessionChannel"))) == null) {
+        if( !isApp && (session().get("sessionChannel") == null ||
+                InteractionConstants.INTERACTION_TYPE_MAP.get(Integer.valueOf(session().get("sessionChannel"))) == null)) {
             Logger.info("session channel not set");
             return null;
         }
