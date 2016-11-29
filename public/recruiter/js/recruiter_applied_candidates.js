@@ -449,6 +449,7 @@ function processDataForJobApplications(returnedData) {
 
             var showMatch = true;
             var matchVal = document.createElement("span");
+
             candidateCardScore.appendChild(matchVal);
             if(value.extraData.workflowStatus != null) {
                 if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){

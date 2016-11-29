@@ -1785,6 +1785,8 @@ function processDataUpdateFeedBack(returnedData) {
         setTimeout(function () {
             location.reload();
         }, 2000);
+    } else if(returnedData == -1){
+        notifyError("Recruiter doesn't have interview credits. Feedback not allowed", 'danger');
     } else{
         notifyError("Something went wrong", 'danger');
     }

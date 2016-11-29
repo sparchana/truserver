@@ -246,11 +246,13 @@ public class JobSearchService {
                 }
             }
 
-            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, null, null, true, ServerConstants.SOURCE_INTERNAL);
+            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, null, SORT_BY_DATE_POSTED,
+                    true, ServerConstants.SOURCE_INTERNAL);
 
             List<Long> relevantJobRoleIds = JobRelevancyEngine.getRelatedJobRoleIds(jobRoleIds);
 
-            List<JobPost> relevantJobRoleJobs = queryAndReturnJobPosts(relevantJobRoleIds, null, null, true, ServerConstants.SOURCE_INTERNAL);
+            List<JobPost> relevantJobRoleJobs = queryAndReturnJobPosts(relevantJobRoleIds, null, SORT_BY_DATE_POSTED,
+                    true, ServerConstants.SOURCE_INTERNAL);
 
             List<Long> finalJobRoleIdList = new ArrayList<>();
             finalJobRoleIdList.addAll(jobRoleIds);
@@ -264,7 +266,8 @@ public class JobSearchService {
             List<Long> otherJobRoleIdList = jobRoleList.stream().map(JobRole::getJobRoleId).collect(Collectors.toList());
 
             //getting all the internal jobs apart form candidate's job role pref & relevant job roles
-            List<JobPost> otherJobRoleJobs = queryAndReturnJobPosts(otherJobRoleIdList, null, null, false, ServerConstants.SOURCE_INTERNAL);
+            List<JobPost> otherJobRoleJobs = queryAndReturnJobPosts(otherJobRoleIdList, null, SORT_BY_DATE_POSTED,
+                    true, ServerConstants.SOURCE_INTERNAL);
 
             for(JobPost jobPost : relevantJobRoleJobs) {
                 if(!exactJobRoleJobs.contains(jobPost)) {

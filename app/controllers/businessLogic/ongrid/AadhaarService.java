@@ -3,6 +3,7 @@ package controllers.businessLogic.ongrid;
 import api.http.httpResponse.ongrid.OngridAadhaarVerificationResponse;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import controllers.businessLogic.CandidateService;
 import dao.staticdao.IdProofDAO;
 import dao.OnGridVerificationStatusDAO;
 import models.entity.Candidate;
@@ -60,16 +61,26 @@ public class AadhaarService {
 
     private String myAuthKey;
     private Integer myCommunityId;
+    private String myBaseUrl;
 
-    public AadhaarService(String authKey, Integer communityId)
+    public AadhaarService(String authKey, Integer communityId, String baseUrl)
     {
         myAuthKey = authKey;
         myCommunityId = communityId;
+        myBaseUrl = baseUrl;
     }
 
-    public OngridAadhaarVerificationResponse sendAadharSyncVerificationRequest(Candidate candidate)
+    public OngridAadhaarVerificationResponse sendAadharSyncVerificationRequest(String candidateMobile)
     {
+        Candidate candidate = CandidateService.isCandidateExists(candidateMobile);
         OngridAadhaarVerificationResponse response = new OngridAadhaarVerificationResponse();
+
+        if (candidate == null) {
+            response.setResponseStatus(OngridAadhaarVerificationResponse.STATUS_ERROR);
+            response.setResponseMessage("Candidate with mobile " + candidateMobile + " does not exist");
+            Logger.warn(response.getResponseMessage());
+            return response;
+        }
 
         IdProof aadhaarStaticRecord =
                 IdProof.find.where().eq("idProofId", IdProofDAO.IDPROOF_AADHAAR_ID).findUnique();
@@ -77,6 +88,7 @@ public class AadhaarService {
         if (aadhaarStaticRecord == null) {
             response.setResponseStatus(OngridAadhaarVerificationResponse.STATUS_ERROR);
             response.setResponseMessage("Static table idproof does not have entry for Aadhaar Card");
+            Logger.warn(response.getResponseMessage());
 
             return response;
         }
@@ -89,6 +101,8 @@ public class AadhaarService {
             response.setResponseMessage("No Aadhaar record found for candidate. "
                     + "Cannot proceed with Aadhaar verification for candidate with mobile number "
                     + candidate.getCandidateMobile());
+            Logger.warn(response.getResponseMessage());
+
             return response;
         }
         else if (candidateAadhaarRecord.getIdProofNumber() == null || candidateAadhaarRecord.getIdProofNumber().isEmpty()) {
@@ -96,6 +110,7 @@ public class AadhaarService {
             response.setResponseMessage("Do not have Aadhaar id number for candidate. "
                     + "Cannot proceed with Aadhaar verification for candidate with mobile number "
                     + candidate.getCandidateMobile());
+            Logger.warn(response.getResponseMessage());
             return response;
         }
 
@@ -107,16 +122,13 @@ public class AadhaarService {
         int trialCount = 0;
 
         while (trialCount <= 3) {
-            try {
-                trialCount++;
-                responseBody = sendRequest(reqParams, aadhaarUID, myAuthKey);
-                //responseBody = onGridResponse.body().string();
-                break;
-            } catch (IOException ioEx) {
-                Logger.error("Exception on Ongrid Aadhaar verification request for " + aadhaarUID
-                        + " Trial Count: " + trialCount + " => IOException " + ioEx.getMessage() + " Retyring..");
-                ioEx.printStackTrace();
-            }
+            trialCount++;
+            responseBody = sendRequest(reqParams, aadhaarUID, myAuthKey);
+
+            if (responseBody != null) break;
+
+            Logger.error("Exception on Ongrid Aadhaar verification request for " + aadhaarUID
+                    + " Trial Count: " + trialCount + ". Retyring..");
         }
 
         if (responseBody == null) {
@@ -133,10 +145,12 @@ public class AadhaarService {
 
         saveVerificationResponse(candidate, onGridAadharResponse, myCommunityId);
 
-        Logger.info("Parsed response: " + response.getOngridResponse().toString());
+        Logger.info("Parsed ongrid response: " + response.getOngridResponse().toString());
 
         response.setResponseStatus(OngridAadhaarVerificationResponse.STATUS_SUCCESS);
-        response.setResponseMessage("Aadhaar verification executed succesfully!");
+        response.setResponseMessage("Aadhaar verification executed succesfully for " + candidateMobile);
+
+        Logger.info(response.getResponseMessage());
 
         return response;
     }
@@ -146,8 +160,6 @@ public class AadhaarService {
         Long professionId = null;
 
         if (candidate.getCandidateCurrentJobDetail() != null) {
-            Logger.info("current job roleid: " + candidate.getCandidateCurrentJobDetail().getJobRole().getJobName());
-
             OnGridProfessions profession =
                     OnGridProfessions.find.where().eq("jobRole",
                             candidate.getCandidateCurrentJobDetail().getJobRole()).findUnique();
@@ -158,9 +170,12 @@ public class AadhaarService {
         }
 
         StringBuilder reqBuilder  = new StringBuilder();
-        String req = "{\n  \"name\": \"Archana\",\n  \"gender\": \"F\",\n  \"city\": \"Coimbatore\",\n  \"professionId\": \"69\",\n  \"otherProfession\": \"business\",\n  \"phone\": \"8197222248\",\n \"email\": \"sp.archana@gmail.com\",\n  \"dob\": \"1985-01-16\",\n  \"age\": \"31\",\n  \"aadhaarAddress\": {\n    \"co\": \"\",\n    \"line1\": \"\",\n    \"line2\": \"\",\n    \"locality\": \"\",\n    \"landmark\": \"\",\n    \"vtc\": \"\",\n    \"district\": \"\",\n    \"state\": \"\",\n    \"pincode\": \"\"\n  },\n “communityId” : “66095”\n}";
 
-        String gender = candidate.getCandidateGender() == 0 ? "M" : "F";
+        String gender = null;
+
+        if (candidate.getCandidateGender() != null) {
+            gender = candidate.getCandidateGender() == 0 ? "M" : "F";
+        }
 
         reqBuilder.append("{\n");
         reqBuilder.append(AA_NAME + ":" + "\"" + candidate.getCandidateFirstName() + "\",\n");
@@ -183,7 +198,11 @@ public class AadhaarService {
 
         if (candidate.getCandidateDOB() != null) {
             reqBuilder.append(AA_DOB + ":" + "\"" + sfd_yyyymmdd.format(candidate.getCandidateDOB()) + "\",\n");
-            reqBuilder.append(AA_AGE + ":" + "\"" + candidate.getCandidateAge() + "\"");
+            reqBuilder.append(AA_AGE + ":" + "\"" + candidate.getCandidateAge() + "\",");
+        }
+
+        if (reqBuilder.charAt(reqBuilder.length()-1) == ',') {
+            reqBuilder.deleteCharAt(reqBuilder.length()-1);
         }
 
         // we are not collecting aadhaar address at this point. Hence we will not pass these params
@@ -193,15 +212,13 @@ public class AadhaarService {
         return reqBuilder.toString();
     }
 
-    private String sendRequest(String reqParams, String aadhaarUID, String authKey) throws IOException
+    private String sendRequest(String reqParams, String aadhaarUID, String authKey)
     {
         OkHttpClient client = new OkHttpClient();
         MediaType mediaType = MediaType.parse("application/json");
-        Logger.info("Req Params: " + reqParams);
-        RequestBody body = RequestBody.create(mediaType, reqParams);
-        String url = "https://api-staging.ongrid.in/app/v1/aadhaar/" + aadhaarUID + "/verifysync";
 
-        // RequestBody.create(mediaType, "{\n  \"name\": \"Archana\",\n  \"gender\": \"F\",\n  \"city\": \"Coimbatore\",\n  \"professionId\": \"69\",\n  \"otherProfession\": \"business\",\n  \"phone\": \"8197222248\",\n \"email\": \"sp.archana@gmail.com\",\n  \"dob\": \"1985-01-16\",\n  \"age\": \"31\",\n  \"aadhaarAddress\": {\n    \"co\": \"\",\n    \"line1\": \"\",\n    \"line2\": \"\",\n    \"locality\": \"\",\n    \"landmark\": \"\",\n    \"vtc\": \"\",\n    \"district\": \"\",\n    \"state\": \"\",\n    \"pincode\": \"\"\n  }\n}");
+        RequestBody body = RequestBody.create(mediaType, reqParams);
+        String url = myBaseUrl + "/app/v1/aadhaar/" + aadhaarUID + "/verifysync";
 
         Request request = new Request.Builder()
                 .url(url)
@@ -213,9 +230,27 @@ public class AadhaarService {
         Logger.info("Request: " + request.toString() + " \n Response Body: " + request.body().toString()
                 + " \n Response Header: " + request.headers().toString());
 
-        Response onGridResponse = client.newCall(request).execute();
-        String responseBody = onGridResponse.body().string();
-        String responseMessage =  onGridResponse.message().toString();
+        Response onGridResponse = null;
+        String responseBody = null;
+        String responseMessage = null;
+
+        try {
+            onGridResponse = client.newCall(request).execute();
+            responseBody = onGridResponse.body().string();
+        }
+        catch (IOException ex) {
+            responseMessage = "FAILURE";
+            OngridRequestStats stats =
+                    new OngridRequestStats(VERIFICATION_TYPE, url, request.toString(), ex.getMessage(), responseMessage);
+            stats.save();
+
+            Logger.error("IOException on sending aadhaar request:" + ex.getMessage());
+            ex.printStackTrace();
+
+            return responseBody;
+        }
+
+        responseMessage =  onGridResponse.message().toString();
 
         Logger.info("Response: " + onGridResponse.toString() + " \n Response Headers: "
                 + onGridResponse.headers().toString() + "\n Response Body: " + responseBody
@@ -272,6 +307,7 @@ public class AadhaarService {
 
                     if (!existingStatus.equals(status)) {
                         existingRecord.setOngridVerificationStatus(status);
+                        Logger.info("Updating " + existingRecord.getOngridField().getFieldName() + " with status " + status.getStatusName());
                         existingRecord.update();
                     }
 
@@ -324,7 +360,6 @@ public class AadhaarService {
         if (status == null) {
             status = myStatusDAO.getByName(statusName);
             if (status == null) {
-                Logger.error("Status not found on ongrid_verification_status table for value: " + statusName);
                 throw new RuntimeException("FATAL: Status not found on ongrid_verification_status table for value: " + statusName);
             }
         }

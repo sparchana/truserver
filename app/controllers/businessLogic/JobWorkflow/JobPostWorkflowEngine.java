@@ -606,6 +606,7 @@ public class JobPostWorkflowEngine {
     public static PreScreenPopulateResponse getJobPostVsCandidate(Long jobPostId, Long candidateId, Boolean rePreScreen) {
         PreScreenPopulateResponse populateResponse = new PreScreenPopulateResponse();
 
+        boolean isCandidateDataMissing = false;
         Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
         if (candidate == null){
             populateResponse.setStatus(PreScreenPopulateResponse.Status.FAILURE);
@@ -674,7 +675,7 @@ public class JobPostWorkflowEngine {
                             isAvailable = true;
                         }
                         Map<Integer, IDProofReference> idProofMap = new HashMap<>();
-                        for(IDProofReference idProofReference :  candidate.getIdProofReferenceList()){
+                        for(IDProofReference idProofReference :  candidate.getIdProofReferenceList()) {
                             idProofMap.put(idProofReference.getIdProof().getIdProofId(), idProofReference);
                         }
                         for (PreScreenRequirement preScreenRequirement : entry.getValue()) {
@@ -901,7 +902,10 @@ public class JobPostWorkflowEngine {
                                             }
                                         }
                                     } else {
-                                        preScreenElement.isMatching = false;
+                                        // if candidate is fresher then don't match for last withdrawn salary
+                                        if((candidate.getCandidateTotalExperience() != null && candidate.getCandidateTotalExperience() > 0)){
+                                            preScreenElement.isMatching = false;
+                                        }
                                     }
                                     preScreenElement.isMinReq = false;
 
@@ -991,7 +995,22 @@ public class JobPostWorkflowEngine {
                     break;
             }
         }
+        if(populateResponse.elementList != null && populateResponse.elementList.size() > 0) {
+            for(PreScreenPopulateResponse.PreScreenElement pe : populateResponse.elementList) {
+                if(pe!= null && !pe.isMatching() &&  pe.getCandidateElement() == null) {
+                    // show UI to collect candidate missing data
+                    if((pe.isSingleEntity() && pe.getCandidateElement() == null) ||
+                            (!pe.isSingleEntity() &&
+                                    (pe.getCandidateElementList() == null || pe.getCandidateElementList().size() == 0))){
+                        isCandidateDataMissing = true;
+                    }
+                }
+            }
+        } else {
+            isCandidateDataMissing = false;
+        }
         populateResponse.setStatus(PreScreenPopulateResponse.Status.SUCCESS);
+        populateResponse.setVisible(isCandidateDataMissing);
         return populateResponse;
     }
 
@@ -1198,15 +1217,16 @@ public class JobPostWorkflowEngine {
             // When recruiter credit available then show Interview UI
             validCount++;
         }
+
         if (jobPost.getInterviewDetailsList() != null && jobPost.getInterviewDetailsList().size() > 0) {
             // When slot available then  show Interview UI
             validCount++;
         }
+
         if (validCount == 2){
-            Logger.info("show interview slot");
             return "INTERVIEW";
         }
-        Logger.info("dont show interview slot");
+
         return "OK";
     }
 
@@ -1552,7 +1572,6 @@ public class JobPostWorkflowEngine {
     private static List<Candidate> filterByLatLngOrHomeLocality(List<Candidate> candidateList, List<Long> jobPostLocalityIdList, Double distanceRadius, boolean shouldRemoveCandidate) {
         List<Candidate> filteredCandidateList = new ArrayList<>();
 
-        Logger.info("candidateList size before latlng filter: "+candidateList.size());
         if (jobPostLocalityIdList == null || jobPostLocalityIdList.isEmpty()) {
             return candidateList;
         }
@@ -1607,8 +1626,6 @@ public class JobPostWorkflowEngine {
                 candidate.setMatchedLocation(matchedLocation.toString());
             }
         }
-        Logger.info("candidateList size after latlng filter: "+filteredCandidateList.size());
-
         return filteredCandidateList;
     }
 
@@ -1678,20 +1695,9 @@ public class JobPostWorkflowEngine {
 
 
 //      TODO: Optimization: It takes 4+ sec for query to return map/list of this constraint
-        Logger.info("before interaction query: " + new Timestamp(System.currentTimeMillis()));
         Map<String, Interaction> lastActiveInteraction = Ebean.find(Interaction.class)
                 .setRawSql(rawSql)
                 .findMap("objectAUUId", String.class);
-
-//        List<Interaction> interactionList = Ebean.find(Interaction.class)
-//                .setRawSql(rawSql)
-//                .findList();
-//
-//        Map<String, Interaction> lastActiveInteraction = new HashMap<>();
-//        for (Interaction interaction: interactionList) {
-//            lastActiveInteraction.put(interaction.getObjectAUUId(), interaction);
-//        }
-        Logger.info("after interaction query: " + new Timestamp(System.currentTimeMillis()));
 
         List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
                 .eq("status.statusId", status)
@@ -2256,26 +2262,40 @@ public class JobPostWorkflowEngine {
         int band;
         int passed;
         int total;
-        String reason;
+        String matchingReason;
+        String nonMatchingReason;
         for(PreScreenPopulateResponse response: populateResponseList) {
             if(response.getElementList().size() == 0) {
                 continue;
             } else {
                 passed = 0;
                 total = 0;
-                reason = "Candidate has matched for ";
+                matchingReason = "";
+                nonMatchingReason = "";
                 for(PreScreenPopulateResponse.PreScreenElement pe: response.getElementList()){
                     if(pe.isMatching()){
-                        if(pe.isSingleEntity()) {
-                        } else {
-                            if(pe.getCandidateElement() != null){
-                                reason += pe.getCandidateElement().getPlaceHolder() + ", ";
-                            }
-                            for(PreScreenPopulateResponse.PreScreenCustomObject customObject: pe.getCandidateElementList()){
-                                reason += customObject.getPlaceHolder() + ", ";
-                            }
-                        }
+                        matchingReason += pe.getPropertyTitle() + ", ";
+//                        if(pe.isSingleEntity()) {
+//                            matchingReason += pe.getCandidateElement().getPlaceHolder() + ", ";
+//                        } else {
+//                            for(PreScreenPopulateResponse.PreScreenCustomObject customObject: pe.getCandidateElementList()){
+//                                matchingReason += customObject.getPlaceHolder() +
+//                            }
+//                        }
                         passed++;
+                    } else {
+                        nonMatchingReason += pe.getPropertyTitle() + ", ";
+//                        if(pe.isSingleEntity()) {
+//                            if(pe.getCandidateElement() != null) {
+//                                nonMatchingReason += pe.getCandidateElement().getPlaceHolder() + ", ";
+//                            }
+//                        } else {
+//                            if(pe.getCandidateElementList()!=null && pe.getCandidateElementList().size() > 0) {
+//                                for(PreScreenPopulateResponse.PreScreenCustomObject customObject: pe.getCandidateElementList()){
+//                                    nonMatchingReason += customObject.getPlaceHolder() + ", ";
+//                                }
+//                            }
+//                        }
                     }
                     total++;
                 }
@@ -2287,7 +2307,17 @@ public class JobPostWorkflowEngine {
                 } else{
                     band = 2;
                 }
-                candidateScoreDataMap.put(response.getCandidateId(),  new CandidateScoreData(score, band, reason));
+                String finalReason = "";
+
+                if(!matchingReason.isEmpty()){
+                    matchingReason = matchingReason.trim();
+                    finalReason = "Matched for : " + matchingReason.trim().substring(0, matchingReason.length() - 1);
+                }
+                if(!nonMatchingReason.isEmpty()) {
+                    nonMatchingReason = nonMatchingReason.trim();
+                    finalReason += " <br/> Didn't Matched for : " + nonMatchingReason.trim().substring(0, nonMatchingReason.length() -1);
+                }
+                candidateScoreDataMap.put(response.getCandidateId(),  new CandidateScoreData(score, band, finalReason));
             }
         }
 
@@ -2314,7 +2344,8 @@ public class JobPostWorkflowEngine {
         }
 
         if( session().get("sessionChannel") == null ||
-                InteractionConstants.INTERACTION_TYPE_MAP.get(Integer.valueOf(session().get("sessionChannel"))) == null) {
+                InteractionConstants.INTERACTION_TYPE_MAP.get(Integer.valueOf(session().get("sessionChannel"))) == null)
+        {
             Logger.info("session channel not set");
             return null;
         }
@@ -2344,7 +2375,7 @@ public class JobPostWorkflowEngine {
                 InteractionConstants.INTERACTION_TYPE_CANDIDATE_INTERVIEW_SCHEDULED,
                 null,
                 interactionResult,
-                null
+                Integer.valueOf(session().get("sessionChannel"))
         );
 
         if(jobPostWorkflowOld.getJobPost().getInterviewDetailsList() != null && jobPostWorkflowOld.getJobPost().getInterviewDetailsList().size() > 0){
@@ -2371,7 +2402,7 @@ public class JobPostWorkflowEngine {
                             InteractionConstants.INTERACTION_TYPE_RECRUITER_ACCEPT_JOB_APPLICATION_INTERVIEW,
                             null,
                             interactionResult,
-                            null
+                            Integer.valueOf(session().get("sessionChannel"))
                     );
 
                 } catch (InterruptedException e) {
@@ -2493,7 +2524,7 @@ public class JobPostWorkflowEngine {
                 interactionType,
                 null,
                 interactionResult,
-                null
+                Integer.valueOf(session().get("sessionChannel"))
         );
 
         return 1;
@@ -2564,7 +2595,7 @@ public class JobPostWorkflowEngine {
                 interactionType,
                 null,
                 interactionResult,
-                null
+                Integer.valueOf(session().get("sessionChannel"))
         );
 
         return 1;

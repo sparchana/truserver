@@ -1714,17 +1714,29 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(SecuredUser.class)
-    public static Result getAssetReqForJobRole(Long jobPostId, Long jobRoleId) {
-        if(jobPostId == null && jobRoleId == null) {
+    public static Result getAssetReqForJobRole(Long jobPostId, Long jobRoleId, String jobRoleIds) {
+
+        if(jobPostId == null && jobRoleId == null && jobRoleIds == null) {
             return badRequest();
         }
 
-        if(jobRoleId == null && jobPostId !=null && jobPostId != 0) {
-            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
-            jobRoleId = jobPost.getJobRole().getJobRoleId();
-        }
+        List<String> jobRoleIdList = new ArrayList<>();
 
-        if ((jobPostId != null && jobPostId == 0 )|| jobRoleId == 0){
+        if(jobRoleIds == null && jobRoleId == null && jobPostId !=null && jobPostId != 0) {
+            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+            if(jobPost == null) {
+                return badRequest();
+            }
+            jobRoleId = jobPost.getJobRole().getJobRoleId();
+
+            jobRoleIdList.add(String.valueOf(jobRoleId));
+        } else if(jobRoleIds != null) {
+            jobRoleIdList = Arrays.asList(jobRoleIds.split("\\s*,\\s*"));
+        } else if(jobRoleId != null &&  jobRoleId  != 0){
+            jobRoleIdList = new ArrayList<>();
+            jobRoleIdList.add(String.valueOf(jobRoleId));
+        }
+        if ((jobPostId != null && jobPostId == 0 )|| (jobRoleId != null && jobRoleId == 0)){
             return badRequest();
         }
         List<Asset> assetList = new ArrayList<>();
@@ -1735,12 +1747,14 @@ public class Application extends Controller {
                 .findList();
 
         List<JobRoleToAsset> jobRoleToAssetList= JobRoleToAsset.find.setUseQueryCache(!isDevMode)
-                .where().eq("jobRole.jobRoleId", jobRoleId).findList();
+                .where().in("jobRole.jobRoleId", jobRoleIdList).findList();
 
         for(JobRoleToAsset jobRoleToAsset: jobRoleToAssetList) {
-            assetList.add(jobRoleToAsset.getAsset());
+            if(!assetList.contains(jobRoleToAsset.getAsset())){
+                assetList.add(jobRoleToAsset.getAsset());
+            }
 
-            // remove duplicates form common list
+            // remove duplicates from common list
             if (commonAssetList.contains(jobRoleToAsset.getAsset())) {
                 commonAssetList.remove(jobRoleToAsset.getAsset());
             }

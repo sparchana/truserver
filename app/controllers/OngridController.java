@@ -22,10 +22,10 @@ public class OngridController {
 
     public static Result sendOnGridAadharRequest(String candidateMobile) {
 
-        Candidate candidate = CandidateService.isCandidateExists(candidateMobile);
-        AadhaarService aadhaarService = new AadhaarService(OnGridConstants.AUTH_STRING, OnGridConstants.COMMUNITY_ID);
+        AadhaarService aadhaarService = new AadhaarService(OnGridConstants.AUTH_STRING,
+                OnGridConstants.COMMUNITY_ID, OnGridConstants.BASE_URL);
 
-        OngridAadhaarVerificationResponse response = aadhaarService.sendAadharSyncVerificationRequest(candidate);
+        OngridAadhaarVerificationResponse response = aadhaarService.sendAadharSyncVerificationRequest(candidateMobile);
 
         return ok(toJson(response));
     }

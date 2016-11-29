@@ -44,20 +44,6 @@ $(document).ready(function(){
     $("#isEmployedSelect").hide();
 
     checkUserLogin();
-    /* ajx commands to fetch all assets*/
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getAllAsset",
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataCheckAssets
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
     /* ajax commands to fetch all id proofs*/
     try {
         $.ajax({
@@ -522,7 +508,6 @@ function processDataAndFillAllFields(returnedData) {
     } catch(err){
         console.log("getCandidateLocalityPref error"+err);
     }
-
     /* get Candidate's assets */
     try {
         var assets = returnedData.candidateAssetList;
@@ -618,7 +603,7 @@ function processDocs(returnedData) {
         var cell1 = row.insertCell(0);
         var cell2 = row.insertCell(1);
 
-        cell1.innerHTML = idProof.idProofName;
+        cell1.innerHTML = idProof.idProofName +" Number";
         var ip = document.createElement("INPUT");
         ip.setAttribute("type", "text");
         ip.setAttribute("id", "idProofValue_"+idProof.idProofId);
@@ -631,7 +616,7 @@ function generateIdProof(idProofJson){
     // create table
     if(idProofJson == null) {
         var selectedIdProofIds = $('#candidateIdProof').val();
-        if (selectedIdProofIds != null && selectedIdProofIds !== '') {
+        if (selectedIdProofIds != null && selectedIdProofIds != "") {
             try {
                 $.ajax({
                     type: "GET",
@@ -644,6 +629,9 @@ function generateIdProof(idProofJson){
             } catch (exception) {
                 console.log("exception occured!!" + exception);
             }
+        }
+        else{
+            $('#docTableTable').empty();
         }
     } else {
         processDocs(idProofJson);
@@ -660,8 +648,29 @@ function getJob(){
 function getAssets(){
     return assetArray;
 }
-function processDataCheckAssets(returnedAssets) {
-    if(returnedAssets != null) {
+function getAssetsForJobRole(){
+    var jobRoleId = $('#candidateJobPref').val();
+        if(jobRoleId != 0){
+            try {
+                $.ajax({
+                    type: "GET",
+                    url: "/support/api/getAssetReqForJobRole/?job_role_ids="+jobRoleId,
+                    data: false,
+                    async: false,
+                    contentType: false,
+                    processData: false,
+                    success: processDataGetAssets
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+        }
+}
+function processDataGetAssets(returnedAssets) {
+    while(assetArray.length > 0){
+        assetArray.pop();
+    }
+    if(returnedAssets != null){
         returnedAssets.forEach(function (asset) {
             var id = asset.assetId;
             var name = asset.assetTitle;
@@ -690,12 +699,40 @@ $(function () {
         generateIdProof(null);
     });
     $('#candidateJobPref').change(function () {
-        generateSkills();
+        getAssetsForJobRole();
+        $("#candidateAsset").tokenInput('destroy');
+        $("#candidateAsset").tokenInput(getAssets(), {
+            theme: "facebook",
+            placeholder: "What assets do you own?",
+            hintText: "Start typing (eg. Smartphone, Bike, Car)",
+            minChars: 0,
+            prePopulate: candidateAssetArray,
+            preventDuplicates: true
+        });
+        /*generateSkills();
         generateExperience($('#candidateJobPref').val());
         prefillCandidatePastJobExp(candidatePastJobExp);
-        unlockcurrentJobRadio();
+        unlockcurrentJobRadio();*/
     });
 }); // end of function
+function generateExperience(jobPrefString) {
+    var selectedJobPref = jobPrefString;
+    if (selectedJobPref != null && selectedJobPref !== '') {
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/getJobExpQuestion/" + selectedJobPref,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataCheckExp
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
 function notifyError(msg, type) {
     $.notify({
         message: msg,

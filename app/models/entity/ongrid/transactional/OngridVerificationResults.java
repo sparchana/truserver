@@ -72,12 +72,7 @@ public class OngridVerificationResults extends Model {
     }
 
     public static Model.Finder<String, OngridVerificationResults> find = new Model.Finder(OngridVerificationResults.class);
-
-    public void update() {
-        this.updateTimestamp = new Timestamp(System.currentTimeMillis());
-        this.update();
-    }
-
+    
     public long getResultId() {
         return resultId;
     }
