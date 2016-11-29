@@ -919,7 +919,6 @@ openPartnerPreScreenModal = function (jobPostId, candidateId) {
                 resolve(initDecorator(globalPalette));
         });
     decoratorPromise.then(function (decorator) {
-        console.log("Promise fulfiled");
         decorator.columnVisible = [1,2,3,4,6];
 
         // display only Min Requirement

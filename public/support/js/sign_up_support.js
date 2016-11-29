@@ -281,7 +281,6 @@ function getLocality() {
 }
 
 function getAssets(){
-    console.log("Data inside function" + JSON.stringify(assetArray));
     return assetArray;
 }
 
@@ -330,7 +329,6 @@ function processDataAndFillAllFields(returnedData) {
                 jobPrefString +=id + ",";
             });
             jobPrefString = jobPrefString.substring(0, jobPrefString.length - 1);
-            //console.log("constructed jobPrefString : " + jobPrefString);
         } catch (err) {
             console.log(err);
         }
@@ -1049,7 +1047,6 @@ function validateExpDuration(){
     $('#expDurationTable tr').each(function () {
         totalSelectedExpValue += parseInt(getMinMonthDuration($(this).find('select').val()));
     });
-    console.log("totalSelectedExpValue: " + totalSelectedExpValue + " totalExpInMonths:" + totalExpInMonths);
     if (totalSelectedExpValue > totalExpInMonths) {
         $.notify({
             title: "Invalid Input: ",
@@ -1206,7 +1203,6 @@ function processDataCheckExp(returnedData) {
 
 function generateExperience(jobPrefString) {
     var selectedJobPref = jobPrefString;
-    //console.log("selectedJobPref : " + JSON.stringify(selectedJobPref));
     if (selectedJobPref != null && selectedJobPref !== '') {
         try {
             $.ajax({
@@ -1723,7 +1719,7 @@ function saveProfileForm() {
     }
     if(statusCheck != 0){
         statusCheck = validateExpDuration();
-        console.log("statusCheck for statusCheck: " + statusCheck);
+        /*console.log("statusCheck for statusCheck: " + statusCheck);*/
     }
     if(Offline.state == "down"){
         $.notify({
@@ -2009,17 +2005,14 @@ function validateIp() {
     var id = this.id.split("_")[1];
     // aadhaar validation
     if(id == 3) {
-        console.log(this.value);
         if(!validateAadhar(this.value)){
             $('#saveBtn').prop('disabled', true);
-            console.log("errror");
             notifyError("Invalid Aadhaar Card Number. (Example: 100120023003)", 'danger');
         } else {
             $('#saveBtn').prop('disabled', false);
         }
     }
     if(id == 1) {
-        console.log(this.value);
         if (!validateDL(this.value)){
             $('#saveBtn').prop('disabled', true);
             notifyError("Invalid Driving Licence Number. (Example: TN7520130008800 or TN-7520130008800)", 'danger');
@@ -2028,7 +2021,6 @@ function validateIp() {
         }
     }
     if(id == 2) {
-        console.log(this.value);
         if(!validatePASSPORT(this.value)){
             $('#saveBtn').prop('disabled', true);
             notifyError("Invalid Pass Port Number. (Example: A12 34567)", 'danger');
@@ -2037,7 +2029,6 @@ function validateIp() {
         }
     }
     if(id == 4){
-        console.log(this.value);
         if(!validatePAN(this.value)){
            $('#saveBtn').prop('disabled', true);
             notifyError("Invalid PAN Card Number. (Example: ABCDE1234Z)", 'danger');
@@ -2062,7 +2053,6 @@ function processDocs(returnedData) {
     var table = document.getElementById("docTableTable");
     $('#docTableTable').empty();
     returnedData.forEach(function (idProof) {
-        console.log(JSON.stringify(idProof));
         count++;
         var row = table.insertRow(0);
 
@@ -2084,7 +2074,6 @@ function generateIdProof(idProofJson){
 
     if(idProofJson == null) {
         var selectedIdProofIds = $('#candidateIdProof').val();
-        console.log("generateIdproof input field: " + selectedIdProofIds);
         if (selectedIdProofIds != null && selectedIdProofIds !='') {
             try {
                 $.ajax({
@@ -2103,7 +2092,6 @@ function generateIdProof(idProofJson){
             $('#docTableTable').empty();
         }
     } else {
-        console.log(idProofJson);
         processDocs(idProofJson);
     }
 

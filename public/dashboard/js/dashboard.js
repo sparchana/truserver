@@ -717,7 +717,6 @@ $(function () {
 }); // end of function
 function generateExperience(jobPrefString) {
     var selectedJobPref = jobPrefString;
-    //console.log("selectedJobPref : " + JSON.stringify(selectedJobPref));
     if (selectedJobPref != null && selectedJobPref !== '') {
         try {
             $.ajax({
