@@ -1617,7 +1617,7 @@ public class TrudroidController {
 
         Candidate candidate = Candidate.find.where().eq("CandidateMobile", FormValidator.convertToIndianMobileFormat(updateInterviewRequest.getCandidateMobile())).findUnique();
         if (candidate != null) {
-            if(JobPostWorkflowEngine.confirmCandidateInterview(updateInterviewRequest.getJpId(), updateInterviewRequest.getVal(), candidate) == 1){
+            if(JobPostWorkflowEngine.confirmCandidateInterview(updateInterviewRequest.getJpId(), updateInterviewRequest.getInterviewStatus(), candidate) == 1){
                 updateInterviewResponse.setStatus(UpdateInterviewResponse.Status.SUCCESS);
             } else{
                 updateInterviewResponse.setStatus(UpdateInterviewResponse.Status.FAILURE);
@@ -1641,7 +1641,7 @@ public class TrudroidController {
         Candidate candidate = Candidate.find.where().eq("CandidateMobile", FormValidator.convertToIndianMobileFormat(updateCandidateStatusRequest.getCandidateMobile())).findUnique();
         if (candidate != null) {
             JobPost jobPost = JobPost.find.where().eq("JobPostId", updateCandidateStatusRequest.getJpId()).findUnique();
-            if(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, Long.valueOf(updateCandidateStatusRequest.getVal()), updateCandidateStatusRequest.getReasonval()) == 1){
+            if(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, Long.valueOf(updateCandidateStatusRequest.getCandidateStatus()), updateCandidateStatusRequest.getNotGoingReason()) == 1){
                 updateCandidateStatusResponse.setStatus(UpdateCandidateStatusResponse.Status.SUCCESS);
             } else{
                 updateCandidateStatusResponse.setStatus(UpdateCandidateStatusResponse.Status.FAILURE);
