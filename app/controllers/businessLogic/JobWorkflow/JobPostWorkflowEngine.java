@@ -1197,15 +1197,16 @@ public class JobPostWorkflowEngine {
             // When recruiter credit available then show Interview UI
             validCount++;
         }
+
         if (jobPost.getInterviewDetailsList() != null && jobPost.getInterviewDetailsList().size() > 0) {
             // When slot available then  show Interview UI
             validCount++;
         }
+
         if (validCount == 2){
-            Logger.info("show interview slot");
             return "INTERVIEW";
         }
-        Logger.info("dont show interview slot");
+
         return "OK";
     }
 
