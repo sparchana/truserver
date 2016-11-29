@@ -102,8 +102,8 @@ public class SmsUtil {
     }
 
     public static void sendJobApplicationSms(String candidateName, String jobTitle, String company, String mobile, String prescreenLocation, int channelType) {
-        String msg = "Hi " + candidateName + ", you have applied to " + jobTitle + " job at " + company + " @" + prescreenLocation + ".  Please complete the assessment to maximize your chances of getting an interview call." +
-                "Call us at +91 8048039089 to know about the status of your job application. All the best! www.trujobs.in.";
+        String msg = "Hi " + candidateName + ", you have applied to " + jobTitle + " job at " + company + " @" + prescreenLocation + ". Your application is under review " +
+                "and you will get a notification once the recruiter shortlists you for interview. All the best! www.trujobs.in.";
         if(channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
             msg += " Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
         }
@@ -494,9 +494,7 @@ public class SmsUtil {
         int month = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
 
-        String interviewDate = day + "-" + (month + 1) + "-" + year;
-
-        String msg = "Hi " + jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileName() + ", candidate: " + candidate.getCandidateFirstName() + " has reached the venue for" +
+        String msg = "Hi " + jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileName() + ", candidate: " + candidate.getCandidateFirstName() + " has reached the venue " +
                 " for " + jobApplication.getJobPost().getJobPostTitle() +
                 " job which is scheduled today between " + jobApplication.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Log on to www.trujobs.in/recruiter to view status of all scheduled interviews. Thank you!";
         sendSms(jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileMobile(), msg);

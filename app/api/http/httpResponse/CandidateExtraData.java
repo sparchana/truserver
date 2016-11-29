@@ -15,6 +15,7 @@ public class CandidateExtraData {
     public JobPostWorkflowEngine.LastActiveValue lastActive;
     public Integer assessmentAttemptId;
     public Integer preScreenCallAttemptCount;
+    public Integer allInteractionCount;
     public String jobApplicationMode;
     public Timestamp preScreenSelectionTimeStamp;
     public String workflowUUId;
@@ -154,5 +155,13 @@ public class CandidateExtraData {
 
     public void setCandidateInterviewStatus(JobPostWorkflowStatus candidateInterviewStatus) {
         this.candidateInterviewStatus = candidateInterviewStatus;
+    }
+
+    public Integer getAllInteractionCount() {
+        return allInteractionCount;
+    }
+
+    public void setAllInteractionCount(Integer allInteractionCount) {
+        this.allInteractionCount = allInteractionCount;
     }
 }
