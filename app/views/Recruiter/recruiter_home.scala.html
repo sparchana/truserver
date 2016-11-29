@@ -135,7 +135,7 @@
                         <th><b>Interview Time slot</b></th>
                         <th><b>Coming from</b></th>
                         <th><b>Candidate Status</b></th>
-                        <th>Action</th>
+                        <th>Feedback</th>
                     </tr>
                 </thead>
 
@@ -168,6 +168,7 @@
             </div>
         </div>
 
+
         <div class="container recruiterHomeHighlightCard" >
                 <div class="row" style="text-align: center;margin: 0">
                     <h5 style="padding:1%">Highlights</h5>
@@ -198,7 +199,43 @@
                 </div>
             </div>
 
-            <!-- Modal buy credit Structure -->
+        <div class="row hide-on-med-and-up" id="creditViewMobile">
+            <div class="col s12 ">
+                <div class="row" style="margin: 0;">
+                    <span style="font-size: 18px; font-weight: bold">Credits Balance</span>
+                </div>
+                <div class="row" style="margin: 0;">
+                    <div class="col s4" style="padding: 0;">
+                        <img src="/assets/recruiter/img/coin.svg" width="12px" style="margin-top: -4px">
+                        <span>Contact: <b><div style="display: inline-block" id="remainingContactCredits">0</div></b></span>
+                    </div>
+                    <div class="col s4" style="padding: 0;">
+                        <img src="/assets/recruiter/img/coin.svg" width="12px" style="margin-top: -4px">
+                        <span>Interview: <b><div style="display: inline-block" id="remainingInterviewCredits">0</div></b></span>
+                    </div>
+                    <div class="col s4 right-align" id="creditModalBtn">
+                        <a class="waves-effect waves-light orange lighten-1 btn right" data-toggle="collapse" onclick="openCreditModal()"><font size="1" style="color: #fff;font-weight: 400"><b>Buy Credits</b></font></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="creditView" class="col s12 hide-on-small-only">
+            <span style="font-size: 18px; font-weight: bold">Credits Balance</span>
+            <div style="margin: 4px">
+                <img src="/assets/recruiter/img/coin.svg" width="24px">
+                <span>Contact Unlock: <b><div style="display: inline-block" id="remainingContactCreditsMobile">0</div></b></span>
+            </div>
+            <div style="margin: 4px">
+                <img src="/assets/recruiter/img/coin.svg" width="24px">
+                <span>Interview Unlock: <b><div style="display: inline-block" id="remainingInterviewCreditsMobile">0</div></b></span>
+            </div>
+            <a class="waves-effect waves-light orange lighten-1 btn right" data-toggle="collapse" onclick="openCreditModal()"><font style="color: #fff;
+                font-weight: 400"><b>Buy Credits</b></font></a>
+        </div>
+
+
+        <!-- Modal buy credit Structure -->
         <div id="modalBuyCredits" class="modal" style="background: transparent; box-shadow: none">
             <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeCreditModal()"></div>
             <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
@@ -243,9 +280,9 @@
                         <div class="col s12 l12">
                             <br>
                             <img src="/assets/recruiter/img/feedback.svg" width="70px">
-                            <div class="row" style="margin-top: 12px" >
+                            <div class="row" style="margin-top: 12px; margin-bottom: 0">
                                 <div class="col-sm-6">
-                                    <h6 style="text-align: right;">Please select a feedback result:</h6>
+                                    <h6 style="text-align: right; margin-top: 28px">Please select a feedback result:</h6>
                                 </div>
                                 <div class="input-field col s12 l6">
                                     <select id="feedbackOption" class="selectDropdown">
@@ -262,11 +299,22 @@
                                     </style>
                                 </div>
                             </div>
+                            <div class="row" id="otherReason" style="margin-top: 12px; margin-bottom: 0; display: none">
+                                <div class="col-sm-6">
+                                    <h6 style="text-align: right; margin-top: 28px">Please select a reason:</h6>
+                                </div>
+                                <div class="input-field col s12 l6">
+                                    <select id="reasonVal" class="selectDropdown"></select>
+                                    <style>
+                                    select{
+                                        display: inline-block;
+                                    }
+                                    </style>
+                                </div>
+                            </div>
                         </div>
-
                     </div>
                 </center>
-
                 <div class="row">
                     <form class="col s12">
                         <div class="row">
@@ -284,7 +332,6 @@
                         font-weight: 400"><b>Submit Feedback!</b></font>
                     </div>
                 </center>
-
             </div>
         </div>
 

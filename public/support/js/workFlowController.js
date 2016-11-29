@@ -22,6 +22,7 @@ var jobPostInfo;
 var allTimeSlots = [];
 var allReasons = [];
 var allNotGoingReasons = [];
+var allRejectReason = [];
 
 var startDate = null;
 var endDate = null;
@@ -963,7 +964,7 @@ $(function () {
                 }
 
                 var preScreenAttemptCount = function () {
-                    if (app.currentView == "pre_screen_view" || app.currentView == "pre_screen_completed_view" || app.currentView == "confirmed_interview_view" ) {
+                    if (app.currentView == "pre_screen_view" || app.currentView == "pre_screen_completed_view" || app.currentView == "confirmed_interview_view" || app.currentView == "completed_interview_view" || app.currentView == "pending_interview_schedule" ) {
                         if(newCandidate.extraData.preScreenCallAttemptCount == null) {
                             return "0";
                         } else {
@@ -981,7 +982,7 @@ $(function () {
                         } else {
                             return '<input type="submit" value="Pre-Screen Again"  style="width:150px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-default">'
                         }
-                    } else if (app.currentView == "confirmed_interview_view"){
+                    } else if (app.currentView == "confirmed_interview_view" || app.currentView == "completed_interview_view"){
                         var interviewDetails = "Date and slot not available";
                         if(newCandidate.extraData.interviewSchedule != null){
                             interviewDetails = newCandidate.extraData.interviewSchedule;
@@ -1023,8 +1024,6 @@ $(function () {
                                 interviewAction = "Slots not available";
                             }
                         } else{
-                            console.log(newCandidate.extraData.workflowStatus.statusId);
-                            console.log(newCandidate.candidate.candidateFirstName);
                             if(newCandidate.extraData.workflowStatus.statusId == 5){
                                 var oldDate = new Date(newCandidate.extraData.interviewDate);
                                 rescheduledDate = oldDate.getFullYear() + "-" + (oldDate.getMonth() + 1) + "-" + oldDate.getDate();
@@ -1074,22 +1073,59 @@ $(function () {
                         }
 
                         return candidateStatus;
+                    } else if(app.currentView == "pending_interview_schedule"){
+                        var candidateStatus;
+                        var availableCredits = 0;
+                        var interviewCreditCount = 0;
+                        if(jobPostInfo.recruiterProfile != null){
+                            if(jobPostInfo.recruiterProfile.recruiterCreditHistoryList != null){
+                                var creditHistoryList = jobPostInfo.recruiterProfile.recruiterCreditHistoryList;
+                                creditHistoryList.reverse();
+                                creditHistoryList.forEach(function (creditHistory){
+                                    try{
+                                        if(interviewCreditCount == 0){
+                                            if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
+                                                availableCredits = parseInt(creditHistory.recruiterCreditsAvailable);
+                                                interviewCreditCount = 1;
+                                            }
+                                        }
+
+                                        if(interviewCreditCount > 0){
+                                            return false;
+                                        }
+                                    } catch(err){}
+                                });
+
+                                if(availableCredits > 0){
+                                    candidateStatus = '<input style="margin-left: 6px" type="button" class="btn btn-primary" value="Schedule" onclick="initInterviewModal('+ newCandidate.candidate.candidateId + ', ' + jobPostId + ', '+ true + ')">';
+                                } else{
+                                    candidateStatus = "No interview credits with the Recruiter";
+                                }
+                            }
+                        }
+                        return candidateStatus;
                     } else {
                         return "";
                     }
                 };
 
                 var varColumn3 = function () {
-                    if (app.currentView == "confirmed_interview_view") {
+                    if (app.currentView == "confirmed_interview_view" || app.currentView == "completed_interview_view") {
                         var candidateStatus = '<b>' + "Feedback not available" + '</b>';
                         if(newCandidate.extraData.workflowStatus.statusId != null && newCandidate.extraData.workflowStatus.statusId > 13){
-                            candidateStatus = '<b>' + newCandidate.extraData.workflowStatus.statusTitle + '</b>';
+                            if(newCandidate.extraData.workflowStatus.statusId == 14){ //selected
+                                candidateStatus = '<b style="color: green;">' + newCandidate.extraData.workflowStatus.statusTitle + '</b>';
+                            } else{
+                                candidateStatus = '<b style="color: red;">' + newCandidate.extraData.workflowStatus.statusTitle + '</b>';
+                            }
                         }
-                        var today = new Date();
-                        var interviewDate = new Date(newCandidate.extraData.interviewDate);
-                        if(interviewDate.getDate() <= today.getDate() && interviewDate.getMonth() <= today.getMonth() && interviewDate.getFullYear() <= today.getFullYear()) { // today's schedule
-                            //interview for this job is scheduled today, hence allow to update status
-                            candidateStatus += '<input style="margin-left: 6px" type="button" value="Update" onclick="openFeedbackModal('+ newCandidate.candidate.candidateId + ')">';
+                        if(app.currentView == "confirmed_interview_view"){
+                            var today = new Date();
+                            var interviewDate = new Date(newCandidate.extraData.interviewDate);
+                            if(interviewDate.getDate() <= today.getDate() && interviewDate.getMonth() <= today.getMonth() && interviewDate.getFullYear() <= today.getFullYear()) { // today's schedule
+                                //interview for this job is scheduled today, hence allow to update status
+                                candidateStatus += '<input style="margin-left: 6px" type="button" value="Update" onclick="openFeedbackModal('+ newCandidate.candidate.candidateId + ')">';
+                            }
                         }
                         return candidateStatus;
                     } else {
@@ -1391,28 +1427,38 @@ $(function () {
         }
 
         var base_url = "/support/api/getPreScreenedCandidate/?jpId=" + app.jpId;
-        var showOnlyPass;
-        if ($("input[id='is_pass']:checked").val() == "on") {
-            if($("#statusVal").val() == 1){
-                app.notify("Fetching all candidate: 'pre-screened-completed'. Please wait..", "warning");
-            } else if($("#statusVal").val() == 2){
-                app.notify("Fetching all candidate: 'pre-screened-completed with scheduled interview'. Please wait..", "warning");
-            } else if($("#statusVal").val() == 3){
-                app.notify("Fetching all candidate: 'pre-screened-completed which are rescheduled'. Please wait..", "warning");
-            } else if($("#statusVal").val() == 4){
-                app.notify("Fetching all candidates: 'pre-screened-completed which are rejected by support/recruiter'. Please wait..", "warning");
-            } else {
-                app.notify("Fetching all candidates: 'pre-screened-completed which are rejected by candidate'. Please wait..", "warning");
-            }
-
-            showOnlyPass = true;
+        if($("#statusVal").val() == 1){
+            app.notify("Fetching all candidate: 'pre-screened-completed'. Please wait..", "warning");
+        } else if($("#statusVal").val() == 2){
+            app.notify("Fetching all candidate: 'pre-screened-completed with scheduled interview'. Please wait..", "warning");
+        } else if($("#statusVal").val() == 3){
+            app.notify("Fetching all candidate: 'pre-screened-completed which are rescheduled'. Please wait..", "warning");
+        } else if($("#statusVal").val() == 4){
+            app.notify("Fetching all candidates: 'pre-screened-completed which are rejected by support/recruiter'. Please wait..", "warning");
         } else {
-            app.notify("Fetching all 'pre-screened-failed' candidate list. Please wait..", "warning");
-            showOnlyPass= false;
+            app.notify("Fetching all candidates: 'pre-screened-completed which are rejected by candidate'. Please wait..", "warning");
         }
-        base_url += "&isPass="+showOnlyPass;
+
         base_url += "&status="+ $("#statusVal").val();
 
+        try {
+            $.ajax({
+                type: "POST",
+                url: base_url,
+                data: false,
+                contentType: false,
+                processData: false,
+                success: app.updatePreScreenTable
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception.stack);
+        }
+    };
+
+    app.fetchPendingInterviewCandidate = function () {
+        NProgress.start();
+
+        var base_url = "/support/api/getPendingInterviewScheduleCandidates/?jpId=" + app.jpId;
         try {
             $.ajax({
                 type: "POST",
@@ -1444,6 +1490,21 @@ $(function () {
             console.log("exception occured!!" + exception);
         }
 
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/getAllNotSelectedReasons",
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetAllNotSelectedReason
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+
+
         var base_url = "/support/api/getConfirmedInterviewCandidates/?jpId=" + app.jpId + "&start=" + startDate + "&end=" + endDate;
         try {
             $.ajax({
@@ -1458,6 +1519,24 @@ $(function () {
             console.log("exception occured!!" + exception.stack);
         }
     };
+
+    app.fetchCompletedInterviews = function () {
+        var base_url = "/support/api/getAllCompletedInterviews/?jpId=" + app.jpId;
+        try {
+            $.ajax({
+                type: "POST",
+                url: base_url,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: app.updatePreScreenTable
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    };
+
 
     app.populateJobPostCardUI = function (returnedData) {
         jobPostInfo = returnedData;
@@ -1546,12 +1625,15 @@ $(function () {
         $('#pre_screen_view_drawer').removeClass("mdl-navigation__link--current").addClass("mdl-navigation__link--current");
         app.initPreScreenView();
         app.initJobCard();
+    } else if (app.currentView == "pending_interview_schedule") {
+        app.fetchPendingInterviewCandidate();
+        app.initJobCard();
+
+        $('#header_view_title').text("Pending interview schedule");
     } else if (app.currentView == "pre_screen_completed_view") {
         app.fetchPreScreenedCandidate();
         app.initJobCard();
-        document.getElementById('is_pass').addEventListener("click", function () {
-            app.fetchPreScreenedCandidate();
-        });
+
         $("#statusVal").change(function (){
             app.fetchPreScreenedCandidate();
         });
@@ -1567,9 +1649,18 @@ $(function () {
 
         //initiating range picker
         $('#rangePicker').daterangepicker({
+            startDate: moment(),
+            endDate: moment().add(7, 'days')
         }, function(start, end) {
             app.reshuffleConfirmedView(start, end);
         });
+    } else if (app.currentView == "completed_interview_view") {
+        app.fetchCompletedInterviews();
+        app.initJobCard();
+        $('#header_view_title').text("Completed Interviews");
+
+        NProgress.done();
+
     } else {
         $('#header_view_title').text("Future View");
     }
@@ -1622,6 +1713,23 @@ function openFeedbackModal(candidateId) {
         dialogPolyfill.registerDialog(dialog);
     }
 
+    $("#reasonVal").html('');
+    var defaultOption = $('<option value="0" selected></option>').text("Select a reason");
+    $('#reasonVal').append(defaultOption);
+
+    allRejectReason.forEach(function (reason) {
+        var option = $('<option value=' + reason.id + '></option>').text(reason.name);
+        $('#reasonVal').append(option);
+    });
+
+    $("#feedbackOption").change(function (){
+        if($(this).val() == 2 || $(this).val() == 4){
+            $("#otherReason").show();
+        } else{
+            $("#otherReason").hide();
+        }
+    });
+
     feedbackDialog.showModal();
     feedbackDialog.querySelector('.closeFeedback').addEventListener('click', function() {
         feedbackDialog.close();
@@ -1633,28 +1741,31 @@ function openFeedbackModal(candidateId) {
 
 function addFeedback() {
     if($("#feedbackOption").val() > 0){
-        NProgress.start();
-        try {
-            var d = {
-                candidateId: globalCandidateId,
-                jobPostId : jobPostId,
-                feedbackStatus : $("#feedbackOption").val(),
-                feedbackComment : $("#feedbackNote").val()
-            };
+        if(($("#feedbackOption").val() == 2 || $("#feedbackOption").val() == 4) && $("#reasonVal").val() == 0){
+            notifyError("Please select a reason");
+        } else{
+            NProgress.start();
+            try {
+                var d = {
+                    candidateId: globalCandidateId,
+                    jobPostId : jobPostId,
+                    feedbackStatus : $("#feedbackOption").val(),
+                    feedbackComment : $("#feedbackNote").val(),
+                    rejectReason: $("#reasonVal").val()
+                };
 
-            $.ajax({
-                type: "POST",
-                url: "/updateFeedback",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(d),
-                success: processDataUpdateFeedBack
-            });
-            NProgress.done();
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
+                $.ajax({
+                    type: "POST",
+                    url: "/updateFeedback",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
+                    success: processDataUpdateFeedBack
+                });
+                NProgress.done();
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
         }
-
-        console.log($("#feedbackOption").val() + " " + $("#feedbackNote").val())
     } else{
         notifyError("Please select a feedback option", "warning");
     }
@@ -1796,7 +1907,6 @@ function showReschedulePopup(candidateId, oldDate, oldSlot) {
     } else{
         alert("No Slots available!");
     }
-
 
 }
 
@@ -1943,6 +2053,17 @@ function processDataGetAllInterviewNotGoingReason(returnedData) {
         item ["id"] = id;
         item ["name"] = name;
         allNotGoingReasons.push(item);
+    });
+}
+
+function processDataGetAllNotSelectedReason(returnedData) {
+    returnedData.forEach(function(reason) {
+        var id = reason.reasonId;
+        var name = reason.reasonName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        allRejectReason.push(item);
     });
 }
 

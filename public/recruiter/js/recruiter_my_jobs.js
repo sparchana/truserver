@@ -147,8 +147,12 @@ function processDataGenerateJobPostView(returnedData) {
                 colApplicant.appendChild(spanApplications);
 
                 var applicantBtn = document.createElement('a');
-                applicantBtn.style = "font-weight:600;text-decoration:none";
+                applicantBtn.style = "font-weight: bold; text-decoration:none";
                 colApplicant.appendChild(applicantBtn);
+
+                var newApplication = document.createElement('span');
+                newApplication.style = "margin-top: 4px";
+                colApplicant.appendChild(newApplication);
 
                 var colJobStatus = document.createElement("div");
                 colJobStatus.className = 'col s12 m1 l1';
@@ -202,7 +206,22 @@ function processDataGenerateJobPostView(returnedData) {
                         contentType: false,
                         processData: false,
                         success: function(data) {
+                            var candidateList = [];
+                            $.each(data, function (key, value) {
+                                if (value != null) {
+                                    candidateList.push(value);
+                                }
+                            });
+                            var count = 0;
+                            candidateList.forEach(function (jobApplication) {
+                                try{
+                                    if(jobApplication.extraData.workflowStatus.statusId == 5){
+                                        count++;
+                                    }
+                                } catch (err){}
+                            });
                             applicantBtn.textContent = Object.keys(data).length;
+                            newApplication.textContent = " (" + count + " new)";
                             applicantBtn.style = 'text-align:center';
                             if(Object.keys(data).length > 0){
                                 applicantBtn.className = 'btn-floating btn-small waves-effect waves-light green accent-3';

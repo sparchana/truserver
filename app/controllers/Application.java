@@ -4,7 +4,6 @@ import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
-import api.http.httpRequest.Recruiter.InterviewStatusRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlotDetail;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
@@ -12,17 +11,14 @@ import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.SelectedCandidateRequest;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
-import com.amazonaws.services.importexport.model.Job;
+import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
-import com.avaje.ebean.RawSql;
-import com.avaje.ebean.RawSqlBuilder;
 import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mysql.jdbc.log.Log;
 import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.*;
@@ -39,7 +35,6 @@ import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 import play.api.Play;
-import play.core.server.Server;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Http;
@@ -945,6 +940,11 @@ public class Application extends Controller {
         return ok(toJson(reason));
     }
 
+    public static Result getAllNotSelectedReasons() {
+        List<RejectReason> reason = RejectReason.find.where().eq("reason_type", ServerConstants.INTERVIEW_NOT_SELECED_TYPE_REASON).setUseQueryCache(!isDevMode).orderBy("reason_name").findList();
+        return ok(toJson(reason));
+    }
+
     @Security.Authenticated(RecSecured.class)
     public static Result getAllCompany() {
         List<Company> companyList = Company.find.where().orderBy("companyName").findList();
@@ -1583,10 +1583,14 @@ public class Application extends Controller {
                 return ok(views.html.match_candidate.render());
             case "pre_screen_view":
                 return ok(views.html.pre_screen.render());
+            case "pending_interview_schedule":
+                return ok(views.html.pending_interview_schedule.render());
             case "pre_screen_completed_view":
                 return ok(views.html.pre_screen_completed.render());
             case "confirmed_interview_view":
                 return ok(views.html.confirmed_interview.render());
+            case "completed_interview_view":
+                return ok(views.html.interview_complete_view.render());
         }
         return badRequest();
     }
@@ -1640,6 +1644,7 @@ public class Application extends Controller {
                 candidateId = candidate.getCandidateId();
             }
         }
+
         return ok(toJson(JobPostWorkflowEngine.getJobPostVsCandidate(jobPostId, candidateId, rePreScreen)));
     }
 
@@ -1795,13 +1800,24 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(SecuredUser.class)
-    public static Result getPreScreenedCandidate(Long jobPostId, Boolean isPass, Long status) {
-        return ok(toJson(JobPostWorkflowEngine.getPreScreenedPassFailCandidates(jobPostId, isPass, status)));
+    public static Result getPendingInterviewScheduleCandidates(Long jobPostId) {
+        return ok(toJson(JobPostWorkflowEngine.getPendingInterviewScheduleCandidates(jobPostId)));
+    }
+
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getPreScreenedCandidate(Long jobPostId, Long status) {
+        return ok(toJson(JobPostWorkflowEngine.getAllPendingInterviewAndRescheduleConfirmation(jobPostId, status)));
     }
 
     public static Result getConfirmedInterviewCandidates(Long jobPostId, String start, String end) {
         return ok(toJson(JobPostWorkflowEngine.getConfirmedInterviewCandidates(jobPostId, start, end)));
     }
+
+    public static Result getAllCompletedInterviews(Long jpId) {
+        return ok(toJson(JobPostWorkflowEngine.getAllCompletedInterviews(jpId)));
+    }
+
 
     public static Result confirmInterview(long jpId, long value) {
         if (session().get("candidateId") != null) {
@@ -2045,6 +2061,8 @@ public class Application extends Controller {
 
             UpdateCandidateDetail updateCandidateDetail = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateDetail.class);
             for(String propId: propertyIds){
+                if (propId == null || propId.isEmpty()) continue;
+
                 Integer propertyId = Integer.parseInt(propId);
                 if (ServerConstants.PropertyType.DOCUMENT.ordinal() == propertyId) {
                     UpdateCandidateDocument updateCandidateDocument = new UpdateCandidateDocument();

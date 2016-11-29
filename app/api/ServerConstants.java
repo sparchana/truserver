@@ -219,6 +219,7 @@ public class ServerConstants {
     public static final String SUPPORT_DEFAULT_UUID = "SUPPORT-DEFAULT-UUID";
 
     public static final String SELF_UNLOCKED_CANDIDATE_CONTACT = "Self unlocked contact";
+    public static final String SELF_UNLOCKED_INTEVIEW = "Self unlocked Interview";
 
     /************************
      *  Scrapped Data Source
@@ -306,6 +307,7 @@ public class ServerConstants {
     //reason type
     public static final int INTERVIEW_REJECT_TYPE_REASON = 1;
     public static final int INTERVIEW_NOT_GOING_TYPE_REASON = 2;
+    public static final int INTERVIEW_NOT_SELECED_TYPE_REASON = 3;
 
     public static final String CREATED_BY = "Candidate";
 }
