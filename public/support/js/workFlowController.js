@@ -964,11 +964,17 @@ $(function () {
                 }
 
                 var preScreenAttemptCount = function () {
-                    if (app.currentView == "pre_screen_view" || app.currentView == "pre_screen_completed_view" || app.currentView == "confirmed_interview_view" || app.currentView == "completed_interview_view" || app.currentView == "pending_interview_schedule" ) {
+                    if (app.currentView == "pre_screen_view") {
                         if(newCandidate.extraData.preScreenCallAttemptCount == null) {
                             return "0";
                         } else {
                             return '<a href="'+"/workflowInteraction/"+newCandidate.extraData.workflowUUId+'" id="'+newCandidate.extraData.workflowId+'" style="cursor:pointer;" target="_blank">'+newCandidate.extraData.preScreenCallAttemptCount+'</a>';
+                        }
+                    } else if(app.currentView == "pre_screen_completed_view" || app.currentView == "confirmed_interview_view" || app.currentView == "completed_interview_view" || app.currentView == "pending_interview_schedule"){
+                        if(newCandidate.extraData.allInteractionCount == null) {
+                            return "0";
+                        } else {
+                            return '<a href="'+"/workflowInteraction/"+newCandidate.extraData.workflowUUId+'" id="'+newCandidate.extraData.workflowId+'" style="cursor:pointer;" target="_blank">'+newCandidate.extraData.allInteractionCount+'</a>';
                         }
                     } else {
                         return "";
@@ -1602,7 +1608,7 @@ $(function () {
     app.setCurrentView();
 
     if (app.currentView == "match_view") {
-        $('#header_view_title').text("Match View");
+        $('#header_view_title').text("Match Candidates");
         $('.navigation__link').removeClass("mdl-navigation__link--current");
         $('#match_view_drawer').removeClass("mdl-navigation__link--current").addClass("mdl-navigation__link--current");
 
@@ -1620,7 +1626,7 @@ $(function () {
             }
         });
     } else if (app.currentView == "pre_screen_view") {
-        $('#header_view_title').text("Pre Screen View");
+        $('#header_view_title').text("Pre-screen Candidates");
         $('.navigation__link').removeClass("mdl-navigation__link--current");
         $('#pre_screen_view_drawer').removeClass("mdl-navigation__link--current").addClass("mdl-navigation__link--current");
         app.initPreScreenView();
@@ -1629,7 +1635,7 @@ $(function () {
         app.fetchPendingInterviewCandidate();
         app.initJobCard();
 
-        $('#header_view_title').text("Pending interview schedule");
+        $('#header_view_title').text("Schedule Interviews");
     } else if (app.currentView == "pre_screen_completed_view") {
         app.fetchPreScreenedCandidate();
         app.initJobCard();
@@ -1638,14 +1644,14 @@ $(function () {
             app.fetchPreScreenedCandidate();
         });
 
-        $('#header_view_title').text("Confirm/Reject Interviews View");
+        $('#header_view_title').text("Confirm/Reject Interviews");
     } else if (app.currentView == "confirmed_interview_view") {
         startDate = null;
         endDate = null;
 
         app.fetchConfirmedInterviewCandidates();
         app.initJobCard();
-        $('#header_view_title').text("Confirmed Interview View");
+        $('#header_view_title').text("Confirmed Interviews");
 
         //initiating range picker
         $('#rangePicker').daterangepicker({

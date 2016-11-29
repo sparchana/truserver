@@ -1763,6 +1763,12 @@ public class JobPostWorkflowEngine {
                         candidateExtraData.setCreatedBy(jobPostWorkflow.getCreatedBy());
 
                         if(status >= ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED) {
+                            List<Interaction> interactionList = Interaction.find
+                                    .where().eq("objectAUUId", jobPostWorkflow.getJobPostWorkflowUUId())
+                                    .findList();
+
+                            candidateExtraData.setAllInteractionCount(interactionList.size());
+
                             String interviewDatetime = "";
                             if(jobPostWorkflow.getScheduledInterviewTimeSlot() != null) {
                                 interviewDatetime = jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + " ";

@@ -976,7 +976,7 @@ public class TrudroidController {
 
                 String candidateAppliedJobsSql = "select job_post_id, status_id, scheduled_interview_time_slot, scheduled_interview_date, interview_location_lat, interview_location_lng " +
                         "from job_post_workflow jwf where jwf.creation_timestamp = (select max(creation_timestamp)\n" +
-                        " from job_post_workflow where jwf.job_post_id = job_post_workflow.job_post_id and job_post_workflow.candidate_id = " + existingCandidate.getCandidateId() + ")";
+                        " from job_post_workflow where jwf.job_post_id = job_post_workflow.job_post_id and job_post_workflow.candidate_id = " + existingCandidate.getCandidateId() + ") order by creation_timestamp";
 
                 RawSql rawSql = RawSqlBuilder.parse(candidateAppliedJobsSql)
                         .tableAliasMapping("jwf", "job_post_workflow")
@@ -1052,8 +1052,10 @@ public class TrudroidController {
 
                         //education
                         EducationObject.Builder educationObjectBuilder = EducationObject.newBuilder();
-                        educationObjectBuilder.setEducationId(jwpf.getJobPost().getJobPostEducation().getEducationId());
-                        educationObjectBuilder.setEducationName(jwpf.getJobPost().getJobPostEducation().getEducationName());
+                        if(jwpf.getJobPost().getJobPostEducation() != null){
+                            educationObjectBuilder.setEducationId(jwpf.getJobPost().getJobPostEducation().getEducationId());
+                            educationObjectBuilder.setEducationName(jwpf.getJobPost().getJobPostEducation().getEducationName());
+                        }
 
                         jobPostObjectBuilder.setEducation(educationObjectBuilder.build());
 

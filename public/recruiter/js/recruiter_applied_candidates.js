@@ -465,7 +465,7 @@ function processDataForJobApplications(returnedData) {
             var matchVal = document.createElement("span");
             candidateCardScore.appendChild(matchVal);
             if(value.extraData.workflowStatus != null) {
-                if(value.extraData.workflowStatus.statusId == 9){
+                if(value.extraData.workflowStatus.statusId > 8 && value.extraData.workflowStatus.statusId < 14){
                     var todayDay = new Date();
                     var interviewDate = new Date(value.extraData.interviewDate);
                     var interviewDay = interviewDate.getDate();
