@@ -2587,6 +2587,12 @@ public class JobPostWorkflowEngine {
             updateRecruiterWithCandidateStatus(jobPostWorkflowOld, candidate);
         }
 
+        Integer channel;
+        if(session().get("sessionChannel") == null){
+            channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
+        } else{
+            channel = Integer.valueOf(session().get("sessionChannel"));
+        }
         // save the interaction
         InteractionService.createWorkflowInteraction(
                 jobPostWorkflowOld.getJobPostWorkflowUUId(),
@@ -2594,7 +2600,7 @@ public class JobPostWorkflowEngine {
                 interactionType,
                 null,
                 interactionResult,
-                Integer.valueOf(session().get("sessionChannel"))
+                channel
         );
 
         return 1;
