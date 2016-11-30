@@ -9,7 +9,6 @@ create table ongrid_professions (
   profession_id                 bigint signed auto_increment not null,
   profession_name               varchar(255) null,
   job_role_id                   bigint signed,
-  constraint uq_ongrid_professions_job_role_id unique (job_role_id),
   constraint pk_ongrid_professions primary key (profession_id)
 );
 

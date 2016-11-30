@@ -72,7 +72,7 @@ public class OngridVerificationResults extends Model {
     }
 
     public static Model.Finder<String, OngridVerificationResults> find = new Model.Finder(OngridVerificationResults.class);
-    
+
     public long getResultId() {
         return resultId;
     }
@@ -144,5 +144,4 @@ public class OngridVerificationResults extends Model {
     public void setOngridVerificationStatus(OnGridVerificationStatus ongridVerificationStatus) {
         this.ongridVerificationStatus = ongridVerificationStatus;
     }
-
 }

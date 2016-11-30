@@ -22,7 +22,7 @@ public class OnGridProfessions extends Model {
     @Column(name = "profession_name", columnDefinition = "varchar(255) null")
     private String professionName;
 
-    @OneToOne
+    @OneToMany
     @JsonManagedReference
     @JoinColumn(name = "job_role_id", referencedColumnName = "JobRoleId")
     private JobRole jobRole;

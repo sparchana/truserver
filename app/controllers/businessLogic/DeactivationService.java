@@ -16,18 +16,22 @@ import java.util.List;
  * Created by zero on 19/7/16.
  */
 public class DeactivationService {
-    public static List<Candidate> getDeactivatedCandidates(DeactivatedCandidateRequest deactivatedCandidateRequest) {
+    public static List<Candidate> getDeactivatedCandidates(DeactivatedCandidateRequest deactivatedCandidateRequest)
+    {
         Query<Candidate> query = Candidate.find.query();
+
         query = query.select("*").fetch("candidateprofilestatus")
                 .where()
                 .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_DEACTIVE)
                 .query();
+
         if(deactivatedCandidateRequest.getFromThisDate() != null) {
             query = query.select("*").fetch("candidateStatusDetail")
                     .where()
                     .ge("candidateStatusDetail.statusExpiryDate", deactivatedCandidateRequest.getFromThisDate())
                     .query();
         }
+
         if(deactivatedCandidateRequest.getToThisDate() != null) {
             query = query.select("*").fetch("candidateStatusDetail")
                     .where()
@@ -36,15 +40,19 @@ public class DeactivationService {
         }
 
         List<Candidate> deactivatedCandidateList = query.findList();
+
         if(deactivatedCandidateList.size() < 1) {
             Logger.info("deactivatedCandidateList empty for specified period");
         }
+
         return deactivatedCandidateList;
     }
 
     public static DeactiveToActiveResponse deactivateToActive(DeactiveToActiveRequest deactiveToActiveRequest) {
         DeactiveToActiveResponse response = new DeactiveToActiveResponse();
-        if(deactiveToActiveRequest.getDeactiveToActiveList()!= null && !deactiveToActiveRequest.getDeactiveToActiveList().isEmpty()){
+
+        if (deactiveToActiveRequest.getDeactiveToActiveList()!= null && !deactiveToActiveRequest.getDeactiveToActiveList().isEmpty())
+        {
             Query<Candidate> query = Candidate.find.query();
             List<Long> leadList = deactiveToActiveRequest.getDeactiveToActiveList();
             query = query.select("*").fetch("lead")
@@ -52,9 +60,11 @@ public class DeactivationService {
                         .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_DEACTIVE)
                         .in("lead.leadId", leadList)
                         .query();
+
             List<Candidate> candidateList = query.findList();
             CandidateProfileStatus active = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique();
-            for(Candidate candidate: candidateList){
+
+            for (Candidate candidate: candidateList) {
                 candidate.setCandidateprofilestatus(active);
                 Integer candidateStatusDetailId = candidate.getCandidateStatusDetail().getCandidateStatusDetailId();
                 candidate.setCandidateStatusDetail(null);
@@ -65,7 +75,7 @@ public class DeactivationService {
             }
             response.setCandidateList(candidateList);
             response.setStatus(DeactiveToActiveResponse.STATUS_SUCCESS);
-        }else {
+        } else {
             response.setStatus(DeactiveToActiveResponse.STATUS_FAILURE);
         }
 

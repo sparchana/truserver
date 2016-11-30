@@ -2228,6 +2228,7 @@ public class JobPostWorkflowEngine {
         Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), status);
 
         Map<Long, CandidateScoreData> candidateScoreDataMap = computeScoreData(candidateList, jobPostId);
+
         if(candidateScoreDataMap == null) {
             Logger.info("something went wrong while computing score data");
         }
@@ -2243,6 +2244,7 @@ public class JobPostWorkflowEngine {
     }
 
     private static Map<Long, CandidateScoreData> computeScoreData(List<Candidate> candidateList, Long jobPostId) {
+
         if(candidateList == null || candidateList.size() == 0) {
             return null;
         }
@@ -2313,7 +2315,7 @@ public class JobPostWorkflowEngine {
                 }
                 if(!nonMatchingReason.isEmpty()) {
                     nonMatchingReason = nonMatchingReason.trim();
-                    finalReason += " <br/> Didn't Matched for : " + nonMatchingReason.trim().substring(0, nonMatchingReason.length() -1);
+                    finalReason += " <br/> Didn't Match   for : " + nonMatchingReason.trim().substring(0, nonMatchingReason.length() -1);
                 }
                 candidateScoreDataMap.put(response.getCandidateId(),  new CandidateScoreData(score, band, finalReason));
             }
@@ -2329,6 +2331,7 @@ public class JobPostWorkflowEngine {
         if(candidate == null) {
             return "Candidate doesn't exists";
         }
+
         // fetch existing workflow old
         JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
                 .eq("jobPost.jobPostId", jobPostId)

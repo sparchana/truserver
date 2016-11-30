@@ -415,7 +415,7 @@ public class RecruiterController {
 
     public static Result updateInterviewStatus() {
         JsonNode req = request().body().asJson();
-        Logger.info("Request Json: " + req);
+
         InterviewStatusRequest interviewStatusRequest = new InterviewStatusRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -429,7 +429,7 @@ public class RecruiterController {
 
     public static Result getTodayInterviewDetails() {
         JsonNode req = request().body().asJson();
-        Logger.info("Request Json: " + req);
+
         InterviewTodayRequest interviewTodayRequest = new InterviewTodayRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -443,7 +443,7 @@ public class RecruiterController {
 
     public static Result getPendingCandidateApproval() {
         JsonNode req = request().body().asJson();
-        Logger.info("Request pending Json: " + req);
+
         InterviewTodayRequest interviewTodayRequest = new InterviewTodayRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -451,6 +451,7 @@ public class RecruiterController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return ok(toJson(JobPostWorkflowEngine.processDataPendingApproval(interviewTodayRequest)));
     }
 

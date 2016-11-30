@@ -477,6 +477,7 @@ function processDataForJobApplications(returnedData) {
                     matchVal.className = "tooltipped matchDiv";
                     matchVal.setAttribute("data-postiton", "top");
                     matchVal.setAttribute("data-delay", "50");
+                    matchVal.setAttribute("data-html", true);
                     matchVal.setAttribute("data-tooltip", value.scoreData.reason);
 
                     if(value.scoreData.band == 1){
