@@ -30,7 +30,7 @@ public class PartnerInteractionService {
                 InteractionConstants.INTERACTION_TYPE_PARTNER_LOG_IN,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 InteractionConstants.INTERACTION_RESULT_PARTNER_SIGNEDIN,
-                InteractionConstants.INTERACTION_TYPE_MAP.get(channelType),
+                InteractionConstants.INTERACTION_CHANNEL_MAP.get(channelType),
                 InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE
         );
         InteractionService.createInteraction(interaction);
@@ -56,7 +56,7 @@ public class PartnerInteractionService {
                 InteractionConstants.INTERACTION_TYPE_PARTNER_TRIED_PASSWORD_RESET,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
-                InteractionConstants.INTERACTION_TYPE_MAP.get(channelType),
+                InteractionConstants.INTERACTION_CHANNEL_MAP.get(channelType),
                 InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE
         );
         InteractionService.createInteraction(interaction);

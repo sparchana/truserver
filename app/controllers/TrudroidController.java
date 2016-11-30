@@ -1226,7 +1226,7 @@ public class TrudroidController {
 
             if (updateCandidateEducationProfileRequest.getIsFinalFragment()) {
                 Candidate candidate = CandidateService.isCandidateExists(updateCandidateEducationProfileRequest.getCandidateMobile());
-                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), updateCandidateEducationProfileRequest.getJobPostId());
+                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), updateCandidateEducationProfileRequest.getJobPostId(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
             }
         } catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");
@@ -1814,7 +1814,9 @@ public class TrudroidController {
 
             responseBuilder.setStatus(GenericResponse.Status.SUCCESS);
             if (updateCandidateDocumentRequest.getIsFinalFragment()) {
-                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), updateCandidateDocumentRequest.getJobPostId());
+                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(),
+                        updateCandidateDocumentRequest.getJobPostId(),
+                        InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
             }
         } catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");
@@ -1860,7 +1862,9 @@ public class TrudroidController {
             response.setStatus(GenericResponse.Status.SUCCESS);
 
             if (languageRequest.getIsFinalFragment()) {
-                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), languageRequest.getJobPostId());
+                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(
+                        candidate.getCandidateId(), languageRequest.getJobPostId(),
+                        InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
             }
         } catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");
@@ -1901,7 +1905,8 @@ public class TrudroidController {
             response.setStatus(GenericResponse.Status.SUCCESS);
 
             if (experienceRequest.getIsFinalFragment()) {
-                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), experienceRequest.getJobPostId());
+                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), experienceRequest.getJobPostId(),
+                        InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
             }
 
         } catch (InvalidProtocolBufferException e) {
@@ -1976,7 +1981,7 @@ public class TrudroidController {
             }
 
             if (otherRequest.getIsFinalFragment()) {
-                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), otherRequest.getJobPostId());
+                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), otherRequest.getJobPostId(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
             }
 
             response.setStatus(GenericResponse.Status.SUCCESS);
@@ -2014,7 +2019,7 @@ public class TrudroidController {
             interviewSlotDetail.setTimeSlot(interviewDetailRequest.getTimeSlotId());
             interviewSlotDetail.setScheduledInterviewDate(new Date(interviewDetailRequest.getScheduledInterviewDateInMills()));
 
-            JobPostWorkflowEngine.updateCandidateInterviewDetail(candidate.getCandidateId(), interviewDetailRequest.getJobPostId(), interviewSlotDetail, true);
+            JobPostWorkflowEngine.updateCandidateInterviewDetail(candidate.getCandidateId(), interviewDetailRequest.getJobPostId(), interviewSlotDetail, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
 
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
@@ -2083,7 +2088,7 @@ public class TrudroidController {
 
         Candidate candidate = Candidate.find.where().eq("CandidateMobile", FormValidator.convertToIndianMobileFormat(updateInterviewRequest.getCandidateMobile())).findUnique();
         if (candidate != null) {
-            if (JobPostWorkflowEngine.confirmCandidateInterview(updateInterviewRequest.getJpId(), updateInterviewRequest.getInterviewStatus(), candidate) == 1) {
+            if (JobPostWorkflowEngine.confirmCandidateInterview(updateInterviewRequest.getJpId(), updateInterviewRequest.getInterviewStatus(), candidate, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID) == 1) {
                 updateInterviewResponse.setStatus(UpdateInterviewResponse.Status.SUCCESS);
             } else {
                 updateInterviewResponse.setStatus(UpdateInterviewResponse.Status.FAILURE);
@@ -2108,7 +2113,9 @@ public class TrudroidController {
         Candidate candidate = Candidate.find.where().eq("CandidateMobile", FormValidator.convertToIndianMobileFormat(updateCandidateStatusRequest.getCandidateMobile())).findUnique();
         if (candidate != null) {
             JobPost jobPost = JobPost.find.where().eq("JobPostId", updateCandidateStatusRequest.getJpId()).findUnique();
-            if (JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, Long.valueOf(updateCandidateStatusRequest.getCandidateStatus()), updateCandidateStatusRequest.getNotGoingReason()) == 1) {
+            if (JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost,
+                    Long.valueOf(updateCandidateStatusRequest.getCandidateStatus()),
+                    updateCandidateStatusRequest.getNotGoingReason(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID) == 1) {
                 updateCandidateStatusResponse.setStatus(UpdateCandidateStatusResponse.Status.SUCCESS);
             } else {
                 updateCandidateStatusResponse.setStatus(UpdateCandidateStatusResponse.Status.FAILURE);
@@ -2137,4 +2144,32 @@ public class TrudroidController {
         return ok(Base64.encodeBase64String(notGoingReasonResponse.build().toByteArray()));
     }
 
+    public static Result mCheckInterviewSlotAvailability() {
+        CheckInterviewSlotRequest checkInterviewSlotRequest = null;
+
+        try {
+            String requestString = request().body().asText();
+            checkInterviewSlotRequest  = CheckInterviewSlotRequest.parseFrom(Base64.decodeBase64(requestString));
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        CheckInterviewSlotResponse.Builder checkInterviewSlotResponse = CheckInterviewSlotResponse.newBuilder();
+        checkInterviewSlotResponse.setStatus(CheckInterviewSlotResponse.Status.SUCCESS);
+
+        if(checkInterviewSlotRequest.getJobPostId() > 0) {
+            JobPost jobPost = JobPost.find.where().eq("jobPostId", checkInterviewSlotRequest.getJobPostId()).findUnique();
+            if(jobPost == null) {
+                checkInterviewSlotResponse.setStatus(CheckInterviewSlotResponse.Status.FAILURE);
+            }
+            if(JobPostWorkflowEngine.isInterviewRequired(jobPost).equalsIgnoreCase("interview")){
+                checkInterviewSlotResponse.setShouldShowInterview(true);
+            } else {
+                checkInterviewSlotResponse.setShouldShowInterview(false);
+            }
+        } else {
+            checkInterviewSlotResponse.setStatus(CheckInterviewSlotResponse.Status.INVALID);
+        }
+
+        return ok(Base64.encodeBase64String(checkInterviewSlotResponse.build().toByteArray()));
+    }
 }

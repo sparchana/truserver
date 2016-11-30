@@ -4,11 +4,9 @@ import api.InteractionConstants;
 import api.ServerConstants;
 import controllers.businessLogic.InteractionService;
 import models.entity.Interaction;
-import play.Logger;
 
 import static api.InteractionConstants.*;
 import static api.InteractionConstants.INTERACTION_NOTE_BLANK;
-import static api.InteractionConstants.INTERACTION_RESULT_CANDIDATE_VERIFICATION_SUCCESS;
 
 /**
  * Created by dodo on 19/10/16.
@@ -60,7 +58,7 @@ public class RecruiterInteractionService {
                 InteractionConstants.INTERACTION_TYPE_RECRUITER_PROFILE_UPDATE,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
-                InteractionConstants.INTERACTION_TYPE_MAP.get(channelType),
+                InteractionConstants.INTERACTION_CHANNEL_MAP.get(channelType),
                 InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE
         );
         InteractionService.createInteraction(interaction);

@@ -18,7 +18,6 @@ import models.util.EmailUtil;
 import models.util.SmsUtil;
 import play.Logger;
 import play.api.Play;
-import play.mvc.Result;
 
 import java.io.*;
 import java.net.URLEncoder;
@@ -729,7 +728,7 @@ public class JobService {
 
                     if(channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE ||
                             channelType == INTERACTION_CHANNEL_CANDIDATE_ANDROID){
-                        jobPostWorkflow.setCreatedBy(InteractionConstants.INTERACTION_TYPE_MAP.get(channelType));
+                        jobPostWorkflow.setCreatedBy(InteractionConstants.INTERACTION_CHANNEL_MAP.get(channelType));
 
                         if(channelType == INTERACTION_CHANNEL_CANDIDATE_ANDROID){
                             jobPostWorkflow.setChannel(InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);

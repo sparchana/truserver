@@ -423,8 +423,13 @@ public class RecruiterController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if(session().get("sessionChannel") == null){
+            Logger.warn("SessionChannel null, hence recruiter logged out");
+            logoutRecruiter();
+            return badRequest();
+        }
 
-        return JobPostWorkflowEngine.updateInterviewStatus(interviewStatusRequest);
+        return JobPostWorkflowEngine.updateInterviewStatus(interviewStatusRequest, Integer.valueOf(session().get("sessionChannel")));
     }
 
     public static Result getTodayInterviewDetails() {

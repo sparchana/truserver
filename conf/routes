@@ -262,6 +262,7 @@ POST        /mUpdateCandidateInterviewDetail                              contro
 POST        /mGetInterviewSlots                                           controllers.TrudroidController.mGetInterviewSlot()
 POST        /mConfirmInterview                                            controllers.TrudroidController.mConfirmInterview()
 POST        /mUpdateCandidateStatus                                       controllers.TrudroidController.mUpdateCandidateStatus()
+POST        /mCheckInterviewSlotAvailability                              controllers.TrudroidController.mCheckInterviewSlotAvailability()
 
 # Update interview status API
 # ~~~~~~~~~~~~

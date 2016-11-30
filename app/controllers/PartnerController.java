@@ -42,6 +42,7 @@ import static play.libs.Json.toJson;
 
 import static play.mvc.Controller.request;
 import static play.mvc.Controller.session;
+import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 import static play.mvc.Results.redirect;
 
@@ -400,6 +401,11 @@ public class PartnerController {
     }
 
     public static Result confirmInterview(long cId, long jpId, long value){
+        if(session().get("sessionChannel") == null){
+            Logger.warn("Partner session channel not set, logged out partner");
+            logoutPartner();
+            return badRequest();
+        }
         if (session().get("partnerId") != null) {
             Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
             if(partner != null){
@@ -411,7 +417,7 @@ public class PartnerController {
                             .findUnique();
 
                     if(partnerToCandidate != null){
-                        return ok(toJson(JobPostWorkflowEngine.confirmCandidateInterview(jpId, value, candidate)));
+                        return ok(toJson(JobPostWorkflowEngine.confirmCandidateInterview(jpId, value, candidate, Integer.valueOf(session().get("sessionChannel")))));
                     }
                 }
             }
