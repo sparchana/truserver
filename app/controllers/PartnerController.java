@@ -399,6 +399,7 @@ public class PartnerController {
         return ok("0");
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result confirmInterview(long cId, long jpId, long value){
         if (session().get("partnerId") != null) {
             Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
@@ -411,7 +412,7 @@ public class PartnerController {
                             .findUnique();
 
                     if(partnerToCandidate != null){
-                        return ok(toJson(JobPostWorkflowEngine.confirmCandidateInterview(jpId, value, candidate)));
+                        return ok(toJson(JobPostWorkflowEngine.confirmCandidateInterview(jpId, value, candidate, Integer.valueOf(session().get("sessionChannel")))));
                     }
                 }
             }
