@@ -2,13 +2,16 @@
  * Created by hawk on 21/10/16.
  */
 
-$(document).ready(function(){
-    checkRecruiterLogin();
-    $(".jobNav").addClass("active");
-    $(".jobNavMobile").addClass("active");
+$(window).load(function() {
     $(".homeNav").removeClass("active");
     $(".homeNavMobile").removeClass("active");
+    $(".jobNav").addClass("active");
+    $(".jobNavMobile").addClass("active");
 
+});
+
+$(document).ready(function(){
+    checkRecruiterLogin();
     try {
         $.ajax({
             type: "POST",
