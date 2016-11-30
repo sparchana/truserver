@@ -63,7 +63,7 @@ public class Interaction extends Model {
         this.interactionType = interactionType;
         this.note = (createdBy == null) ? InteractionConstants.INTERACTION_NOTE_CREATED_BY_ERROR : note;
         this.result = result;
-        this.createdBy = (createdBy == null) ? InteractionConstants.INTERACTION_CREATED_ERROR : createdBy;
+        this.createdBy = (createdBy == null) ? InteractionConstants.INTERACTION_CHANNEL_MAP.get(channel) : createdBy;
         this.creationTimestamp = new Timestamp(System.currentTimeMillis());
         this.interactionChannel = channel;
     }
@@ -78,7 +78,7 @@ public class Interaction extends Model {
         this.note = InteractionConstants.INTERACTION_NOTE_BLANK;
         this.interactionType = interactionType;
         this.result = result;
-        this.createdBy = (createdBy == null) ? InteractionConstants.INTERACTION_CREATED_ERROR : createdBy;
+        this.createdBy = (createdBy == null) ? InteractionConstants.INTERACTION_CHANNEL_MAP.get(channel) : createdBy;
         this.creationTimestamp = new Timestamp(System.currentTimeMillis());
         this.interactionChannel = channel;
     }
@@ -93,7 +93,7 @@ public class Interaction extends Model {
         this.note = interactionNote;
         this.interactionType = interactionType;
         this.result = result;
-        this.createdBy = (createdBy == null) ? InteractionConstants.INTERACTION_CREATED_ERROR : createdBy;
+        this.createdBy = (createdBy == null) ?InteractionConstants.INTERACTION_CHANNEL_MAP.get(channel)  : createdBy;
         this.creationTimestamp = new Timestamp(System.currentTimeMillis());
         this.interactionChannel = channel;
     }

@@ -2347,12 +2347,6 @@ public class JobPostWorkflowEngine {
             return null;
         }
 
-        if((session().get("sessionChannel") == null ||
-                InteractionConstants.INTERACTION_CHANNEL_MAP.get(channel) == null)) {
-            Logger.info("session channel not set");
-            return null;
-        }
-
         String interactionResult = "";
 
         interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_INTERVIEW_SCHEDULED;
