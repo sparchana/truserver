@@ -7,6 +7,11 @@ var globalJpId;
 
 var allReason = [];
 
+$(window).load(function() {
+    $(".homeNav").addClass("active");
+    $(".homeNavMobile").addClass("active");
+});
+
 function logoutRecruiter() {
     try {
         $.ajax({
@@ -47,8 +52,6 @@ $(document).scroll(function(){
 
 $(document).ready(function(){
     checkRecruiterLogin();
-    $(".homeNav").addClass("active");
-    $(".homeNavMobile").addClass("active");
 
     var width = $(window).width();
     if(width < 780){

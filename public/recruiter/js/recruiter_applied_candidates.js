@@ -218,20 +218,47 @@ function processDataForJobApplications(returnedData) {
         var candidateList = [];
         var rejectedList = [];
         var actionList = [];
+        var interviewTodayList = [];
+
         $.each(returnedData, function (key, value) {
             if (value != null) {
                 if(value.extraData.workflowStatus != null){
                     if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
+
+                        //pushing all the rejected applications in rejected list which will come at last
                         rejectedList.push(value);
                     } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED){
+
+                        //pushing all the action needed applications which will come on top
                         actionList.push(value);
+                    } else if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+                        var todayDay = new Date();
+                        var interviewDate = new Date(value.extraData.interviewDate);
+                        var interviewDay = interviewDate.getDate();
+                        var interviewMonth = interviewDate.getMonth() + 1;
+
+                        //checking today's interview, if yes, it should be on top
+                        if((todayDay.getDate() == interviewDay) && ((todayDay.getMonth() + 1) == interviewMonth)){
+                            interviewTodayList.push(value);
+                        } else{
+
+                            //else push in the common list
+                            candidateList.push(value);
+                        }
                     } else{
+                        //pushing in the common list
                         candidateList.push(value);
                     }
                 } else{
+                    //applications with null status goes in the common list
                     candidateList.push(value);
                 }
             }
+        });
+
+        //today's interview first
+        interviewTodayList.forEach(function (val) {
+            actionList.push(val);
         });
 
         //other candidates int the middle
@@ -960,7 +987,7 @@ function processDataForJobApplications(returnedData) {
                     var interviewDay = interviewDate.getDate();
                     var interviewMonth = interviewDate.getMonth() + 1;
 
-                    if((todayDay.getDate() == interviewDay) && ((todayDay.getMonth() + 1) == interviewMonth)){
+                    if((todayDay.getDate() >= interviewDay) && ((todayDay.getMonth() + 1) >= interviewMonth)){
                         var feedbackBtn = document.createElement("a");
                         feedbackBtn.className = "waves-effect waves-light btn";
                         feedbackBtn.style = "font-weight: bold; margin-right: 8px";
