@@ -2567,7 +2567,6 @@ public class JobPostWorkflowEngine {
             updateRecruiterWithCandidateStatus(jobPostWorkflowOld, candidate);
         }
 
-        Integer channel;
         if(session().get("sessionChannel") == null){
             channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
         } else{
