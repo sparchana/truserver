@@ -127,13 +127,13 @@ public class LeadService {
             createdBy = InteractionConstants.INTERACTION_CREATED_PARTNER;
             channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
         } else if(channelType == INTERACTION_CHANNEL_CANDIDATE_ANDROID){
-            createdBy = InteractionConstants.INTERACTION_TYPE_MAP.get(InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
+            createdBy = InteractionConstants.INTERACTION_CHANNEL_MAP.get(InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
             channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
         } else if(channelType == InteractionConstants.INTERACTION_CHANNEL_KNOWLARITY) {
-            createdBy = InteractionConstants.INTERACTION_TYPE_MAP.get(InteractionConstants.INTERACTION_CHANNEL_KNOWLARITY);
+            createdBy = InteractionConstants.INTERACTION_CHANNEL_MAP.get(InteractionConstants.INTERACTION_CHANNEL_KNOWLARITY);
             channel = InteractionConstants.INTERACTION_CHANNEL_KNOWLARITY;
         } else {
-            createdBy = InteractionConstants.INTERACTION_TYPE_MAP.get(InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE);
+            createdBy = InteractionConstants.INTERACTION_CHANNEL_MAP.get(InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE);
             channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
         }
         if(existingLead == null) {
