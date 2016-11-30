@@ -7,6 +7,11 @@ var globalJpId;
 
 var allReason = [];
 
+$(window).load(function() {
+    $(".homeNav").addClass("active");
+    $(".homeNavMobile").addClass("active");
+});
+
 function logoutRecruiter() {
     try {
         $.ajax({
@@ -47,6 +52,7 @@ $(document).scroll(function(){
 
 $(document).ready(function(){
     checkRecruiterLogin();
+
     var width = $(window).width();
     if(width < 780){
         $("#editBtn").removeClass("btn-large").addClass("btn-small");

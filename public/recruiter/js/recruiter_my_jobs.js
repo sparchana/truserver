@@ -1,6 +1,15 @@
 /**
  * Created by hawk on 21/10/16.
  */
+
+$(window).load(function() {
+    $(".homeNav").removeClass("active");
+    $(".homeNavMobile").removeClass("active");
+    $(".jobNav").addClass("active");
+    $(".jobNavMobile").addClass("active");
+
+});
+
 $(document).ready(function(){
     checkRecruiterLogin();
     try {
@@ -222,7 +231,9 @@ function processDataGenerateJobPostView(returnedData) {
                                 } catch (err){}
                             });
                             applicantBtn.textContent = Object.keys(data).length;
-                            newApplication.textContent = " (" + count + " new)";
+                            if(count > 0){
+                                newApplication.textContent = " (" + count + " new)";
+                            }
                             applicantBtn.style = 'text-align:center';
                             if(Object.keys(data).length > 0){
                                 applicantBtn.className = 'btn-floating btn-small waves-effect waves-light green accent-3';

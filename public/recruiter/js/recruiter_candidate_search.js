@@ -92,6 +92,9 @@ function scrollToTop() {
 $(document).ready(function(){
     checkRecruiterLogin();
     getRecruiterInfo();
+
+    $(".searchNav").addClass("active");
+    $(".searchNavMobile").addClass("active");
     try {
         $.ajax({
             type: "POST",

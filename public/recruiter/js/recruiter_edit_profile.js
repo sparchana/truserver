@@ -13,10 +13,14 @@ $(document).scroll(function(){
         $('nav').css({"background": "transparent"});
     }
 });
+
 $(document).ready(function(){
     $(".button-collapse").sideNav();
     $(".dropdown-button").dropdown();
     checkRecruiterLogin();
+    $(".profileNav").addClass("active");
+    $(".profileNavMobile").addClass("active");
+
     try {
         $.ajax({
             type: "POST",
