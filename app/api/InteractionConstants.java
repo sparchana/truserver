@@ -180,7 +180,7 @@ public class InteractionConstants {
     public static final int INTERACTION_TYPE_CANDIDATE_FEEDBACK_NO_SHOW = 67;
     public static final int INTERACTION_TYPE_CANDIDATE_FEEDBACK_NOT_QUALIFIED = 68;
 
-    public static final Map<Integer, String> INTERACTION_CHANNEL = new HashMap<>();
+    public static final Map<Integer, String> INTERACTION_CHANNEL_MAP = new HashMap<>();
 
     public static final int INTERACTION_CHANNEL_UNKNOWN = 0;
     public static final int INTERACTION_CHANNEL_CANDIDATE_WEBSITE = 1;
@@ -251,11 +251,11 @@ public class InteractionConstants {
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED, "Existing Partner tried Sign Up. Already a Partner");
 
         //channel map
-        INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_CANDIDATE_WEBSITE, "Candidate via Website");
-        INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_CANDIDATE_ANDROID, "Candidate via Android");
-        INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_PARTNER_WEBSITE, "Partner via Website");
-        INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_SUPPORT_WEBSITE, "Support via Website");
-        INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_KNOWLARITY, "Knowlarity");
-        INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_RECRUITER_WEBSITE, "Recruiter via Website");
+        INTERACTION_CHANNEL_MAP.put(INTERACTION_CHANNEL_CANDIDATE_WEBSITE, "Candidate via Website");
+        INTERACTION_CHANNEL_MAP.put(INTERACTION_CHANNEL_CANDIDATE_ANDROID, "Candidate via Android");
+        INTERACTION_CHANNEL_MAP.put(INTERACTION_CHANNEL_PARTNER_WEBSITE, "Partner via Website");
+        INTERACTION_CHANNEL_MAP.put(INTERACTION_CHANNEL_SUPPORT_WEBSITE, "Support via Website");
+        INTERACTION_CHANNEL_MAP.put(INTERACTION_CHANNEL_KNOWLARITY, "Knowlarity");
+        INTERACTION_CHANNEL_MAP.put(INTERACTION_CHANNEL_RECRUITER_WEBSITE, "Recruiter via Website");
     }
 }

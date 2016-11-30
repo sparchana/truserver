@@ -1,5 +1,6 @@
 package controllers;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.AddJobPostRequest;
@@ -424,7 +425,7 @@ public class RecruiterController {
             e.printStackTrace();
         }
 
-        return JobPostWorkflowEngine.updateInterviewStatus(interviewStatusRequest);
+        return JobPostWorkflowEngine.updateInterviewStatus(interviewStatusRequest, InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE);
     }
 
     public static Result getTodayInterviewDetails() {
