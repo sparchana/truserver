@@ -24,6 +24,7 @@ import models.entity.OM.*;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
 import models.entity.Static.*;
+import models.util.NotificationUtil;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
@@ -2488,9 +2489,16 @@ public class JobPostWorkflowEngine {
 
         interviewFeedbackUpdate.save();
 
-        if(jwStatus == ServerConstants.CANDIDATE_FEEDBACK_COMPLETE_SELECTED){
+        if(jwStatus == ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+            String msg = "Hi Adarsh! you have been selected got the job: " + jobPostWorkflowNew.getJobPost().getJobPostTitle() + " at " + jobPostWorkflowNew.getJobPost().getCompany().getCompanyName() +
+                    ". Congratulations!";
+            new NotificationUtil().SendNotification(msg, "Interview Selected");
+
             sendSelectedSmsToCandidate(jobPostWorkflowNew);
         } else{
+            String msg = "Hi Adarsh! you were not selected for the job: " + jobPostWorkflowNew.getJobPost().getJobPostTitle() + " at " + jobPostWorkflowNew.getJobPost().getCompany().getCompanyName();
+            new NotificationUtil().SendNotification(msg, "Interview Rejected");
+
             sendRejectedSmsToCandidate(jobPostWorkflowNew);
         }
 
