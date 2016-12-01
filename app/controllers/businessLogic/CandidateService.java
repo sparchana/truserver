@@ -1305,7 +1305,7 @@ public class CandidateService
         ArrayList<CandidateAsset> response = new ArrayList<>();
         List<Asset> assetList = Asset.find.where().in("assetId", candidateAssetList).findList();
 
-        if(assetList == null || !assetList.isEmpty()) {
+        if(assetList == null || assetList.isEmpty()) {
             return response;
         }
 
