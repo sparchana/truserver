@@ -2488,7 +2488,7 @@ public class JobPostWorkflowEngine {
 
         interviewFeedbackUpdate.save();
 
-        if(jwStatus == ServerConstants.CANDIDATE_FEEDBACK_COMPLETE_SELECTED){
+        if(jwStatus == ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
             sendSelectedSmsToCandidate(jobPostWorkflowNew);
         } else{
             sendRejectedSmsToCandidate(jobPostWorkflowNew);
