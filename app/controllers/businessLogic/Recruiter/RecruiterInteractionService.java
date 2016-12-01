@@ -60,7 +60,7 @@ public class RecruiterInteractionService {
                 InteractionConstants.INTERACTION_TYPE_RECRUITER_PROFILE_UPDATE,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
-                InteractionConstants.INTERACTION_TYPE_MAP.get(channelType),
+                InteractionConstants.INTERACTION_CHANNEL_MAP.get(channelType),
                 InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE
         );
         InteractionService.createInteraction(interaction);
