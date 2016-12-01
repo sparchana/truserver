@@ -1053,7 +1053,7 @@ public class JobPostWorkflowEngine {
                 }
 
                 // Setting the existing jobpostworkflow status to attempted
-                JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(candidate.getCandidateId(), jobPostId, jobPostWorkflowOld, channel);
+                JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(candidate.getCandidateId(), jobPostId, jobPostWorkflowOld, channel, ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED);
 
                 JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED).findUnique();
                 jobPostWorkflowNew.setStatus(status);
@@ -1073,7 +1073,7 @@ public class JobPostWorkflowEngine {
         return "NA";
     }
 
-    public static String savePreScreenResult(PreScreenRequest preScreenRequest, int channel) {
+    public static String savePreScreenResult(PreScreenRequest preScreenRequest, int channel, int statusId) {
         // fetch existing workflow old
         JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
                 .eq("jobPost.jobPostId", preScreenRequest.getJobPostId())
@@ -1081,7 +1081,7 @@ public class JobPostWorkflowEngine {
                 .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
 
         // save PreScreen candidate
-        JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(preScreenRequest.getCandidateId(), preScreenRequest.getJobPostId(), jobPostWorkflowOld, channel);
+        JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(preScreenRequest.getCandidateId(), preScreenRequest.getJobPostId(), jobPostWorkflowOld, channel, statusId);
 
         if (jobPostWorkflowNew == null) {
             return "Error";
@@ -1524,7 +1524,7 @@ public class JobPostWorkflowEngine {
         preScreenRequest.setPreScreenNote("Candidate Self PreScreen");
         preScreenRequest.setPass(true);
         preScreenRequest.setPreScreenIdList(new ArrayList<>());
-        JobPostWorkflowEngine.savePreScreenResult(preScreenRequest, channel);
+        JobPostWorkflowEngine.savePreScreenResult(preScreenRequest, channel, ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED);
     }
 
     public static class LastActiveValue{
@@ -1868,8 +1868,12 @@ public class JobPostWorkflowEngine {
     }
 
     // this methods take the old jobpost uuid and set the new jobpost uuid to old jobpost uuid.
-    private static JobPostWorkflow saveNewJobPostWorkflow(Long candidateId, Long jobPostId, JobPostWorkflow jobPostWorkflowOld, int channel) {
-        JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED).findUnique();
+    private static JobPostWorkflow saveNewJobPostWorkflow(Long candidateId, Long jobPostId, JobPostWorkflow jobPostWorkflowOld, int channel, int statusId) {
+        if(statusId > ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED){
+            Logger.warn("saNewJobPostWorkflow called with unacceptable statusId:");
+            return null;
+        }
+        JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", statusId).findUnique();
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         Candidate candidate = Candidate.find.where().in("candidateId", candidateId).findUnique();
         String toBePreservedUUId = jobPostWorkflowOld.getJobPostWorkflowUUId();

@@ -1671,7 +1671,7 @@ public class Application extends Controller {
             e.printStackTrace();
         }
         Logger.info(String.valueOf(toJson(preScreenRequest)));
-        return ok(toJson(JobPostWorkflowEngine.savePreScreenResult(preScreenRequest, Integer.valueOf(session().get("sessionChannel")))));
+        return ok(toJson(JobPostWorkflowEngine.savePreScreenResult(preScreenRequest, Integer.valueOf(session().get("sessionChannel")), ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED)));
     }
 
     @Security.Authenticated(SecuredUser.class)
