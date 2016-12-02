@@ -63,4 +63,20 @@ public class InterviewUtil {
             return  false;
         }
     }
+
+    /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
+    public static String fixPrecedingZero(String interviewDays){
+        if (interviewDays.length() != 7) {
+            int x = 7 - interviewDays.length();
+            String modifiedInterviewDays = "";
+
+            for (int i = 0; i < x; i++) {
+                modifiedInterviewDays += "0";
+            }
+
+            modifiedInterviewDays += interviewDays;
+            interviewDays = modifiedInterviewDays;
+        }
+        return interviewDays;
+    }
 }

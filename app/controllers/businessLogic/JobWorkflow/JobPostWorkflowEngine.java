@@ -14,6 +14,7 @@ import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Recruiter.InterviewTodayResponse;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import api.http.httpResponse.Workflow.WorkflowResponse;
+import api.http.httpResponse.interview.InterviewResponse;
 import com.avaje.ebean.*;
 import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.InteractionService;
@@ -1010,10 +1011,10 @@ public class JobPostWorkflowEngine {
         return populateResponse;
     }
 
-    public static String updatePreScreenAttempt(Long jobPostId, Long candidateId, String callStatus, int channel) {
+    public static boolean updatePreScreenAttempt(Long jobPostId, Long candidateId, String callStatus, int channel) {
         // Interaction for PreScreen Call Attempt
         String interactionResult;
-        String responseMsg;
+        boolean responseMsg = false;
 
             Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
 
@@ -1028,13 +1029,12 @@ public class JobPostWorkflowEngine {
 
                 if(jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED) {
                     Logger.info("PreScreen Already Completed");
-                    responseMsg = "ok";
+                    responseMsg = true;
                     return responseMsg;
                 }
                 // If call was connected just set the right interaction result
                 if (callStatus.equals("CONNECTED")) {
                     interactionResult = "Pre Screen Out Bound Call Successfully got connected";
-                    responseMsg = "call_success";
                 }
                 else {
                     // if call was not connected, set the interaction result and send an sms
@@ -1049,7 +1049,7 @@ public class JobPostWorkflowEngine {
 
                         SmsUtil.sendTryingToCallSms(candidate.getCandidateMobile());
                     }
-                    responseMsg = "OK";
+                    responseMsg = true;
                 }
 
                 // Setting the existing jobpostworkflow status to attempted
@@ -1070,10 +1070,12 @@ public class JobPostWorkflowEngine {
                 );
                 return responseMsg;
             }
-        return "NA";
+        return false;
     }
 
-    public static String savePreScreenResult(PreScreenRequest preScreenRequest, int channel, int statusId) {
+    public static InterviewResponse savePreScreenResult(PreScreenRequest preScreenRequest, int channel, int statusId) {
+        InterviewResponse interviewResponse =  new InterviewResponse();
+
         // fetch existing workflow old
         JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
                 .eq("jobPost.jobPostId", preScreenRequest.getJobPostId())
@@ -1084,7 +1086,8 @@ public class JobPostWorkflowEngine {
         JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(preScreenRequest.getCandidateId(), preScreenRequest.getJobPostId(), jobPostWorkflowOld, channel, statusId);
 
         if (jobPostWorkflowNew == null) {
-            return "Error";
+            interviewResponse.setStatus(ServerConstants.ERROR);
+            return interviewResponse;
         }
 
         // fetch the last attempted pre-screen result for this jobpost workflow
@@ -1116,7 +1119,8 @@ public class JobPostWorkflowEngine {
 
         if(preScreenRequirementList == null || preScreenRequirementList.size() == 0) {
             Logger.error("PreScreen Requirement empty for jobPostId:" +preScreenRequest.getJobPostId());
-            return "Error";
+            interviewResponse.setStatus(ServerConstants.ERROR);
+            return interviewResponse;
         }
 
         if(preScreenRequest.getPreScreenNote() != null && !preScreenRequest.getPreScreenNote().trim().isEmpty()){
@@ -1187,19 +1191,23 @@ public class JobPostWorkflowEngine {
         }
         if(preScreenRequest.isPass() != null  && !(preScreenRequest.isPass())) {
             // candidate failed prescren, then don't show interview
-            return "OK";
+            interviewResponse.setStatus(ServerConstants.ERROR);
+            return interviewResponse;
         }
         return isInterviewRequired(jobPostWorkflowNew.getJobPost());
     }
 
-    public static String isInterviewRequired( JobPost jobPost) {
+    public static InterviewResponse isInterviewRequired( JobPost jobPost) {
+        InterviewResponse interviewResponse =  new InterviewResponse();
         if(jobPost == null) {
-            return "ERROR";
+            interviewResponse.setStatus(ServerConstants.ERROR);
+            return interviewResponse;
         }
         int validCount = 0;
         if(jobPost.getRecruiterProfile() == null) {
-            // don't show interview modal if not recruiter is set for a jobpost
-            return "OK";
+            // don't show interview modal if no recruiter is set for a jobpost
+            interviewResponse.setStatus(ServerConstants.INTERVIEW_NOT_REQUIRED);
+            return interviewResponse;
         }
         Long recruiterId = jobPost.getRecruiterProfile().getRecruiterProfileId();
         RecruiterCreditHistory recruiterCreditHistory = RecruiterCreditHistory.find.where()
@@ -1220,10 +1228,12 @@ public class JobPostWorkflowEngine {
         }
 
         if (validCount == 2){
-            return "INTERVIEW";
+            interviewResponse.setStatus(ServerConstants.INTERVIEW_REQUIRED);
+            return interviewResponse;
         }
 
-        return "OK";
+        interviewResponse.setStatus(ServerConstants.INTERVIEW_NOT_REQUIRED);
+        return interviewResponse;
     }
 
 
@@ -1870,7 +1880,7 @@ public class JobPostWorkflowEngine {
     // this methods take the old jobpost uuid and set the new jobpost uuid to old jobpost uuid.
     private static JobPostWorkflow saveNewJobPostWorkflow(Long candidateId, Long jobPostId, JobPostWorkflow jobPostWorkflowOld, int channel, int statusId) {
         if(statusId > ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED){
-            Logger.warn("saNewJobPostWorkflow called with unacceptable statusId:");
+            Logger.warn("saveNewJobPostWorkflow called with unacceptable statusId:");
             return null;
         }
         JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", statusId).findUnique();

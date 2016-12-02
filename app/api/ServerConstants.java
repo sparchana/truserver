@@ -313,6 +313,11 @@ public class ServerConstants {
     public static final int INTERVIEW_STATUS_RESCHEDULED = 3;
     public static final int INTERVIEW_STATUS_REJECTED_BY_CANDIDATE = 4;
 
+    // is_interview_required response
+    public static final int ERROR = 0;
+    public static final int INTERVIEW_NOT_REQUIRED = 1; // "OK"
+    public static final int INTERVIEW_REQUIRED = 2;     // "INTERVIEW"
+
     // rescheduled Interview status
     public static final int RESCHEULED_INTERVIEW_STATUS_ACCEPTED = 1;
     public static final int RESCHEULED_INTERVIEW_STATUS_REJECTED = 0;
@@ -335,4 +340,5 @@ public class ServerConstants {
     public static final int INTERVIEW_NOT_SELECED_TYPE_REASON = 3;
 
     public static final String CREATED_BY = "Candidate";
+
 }

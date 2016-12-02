@@ -1670,7 +1670,6 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.info(String.valueOf(toJson(preScreenRequest)));
         return ok(toJson(JobPostWorkflowEngine.savePreScreenResult(preScreenRequest, Integer.valueOf(session().get("sessionChannel")), ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED)));
     }
 
@@ -2046,7 +2045,7 @@ public class Application extends Controller {
             Logger.info("No JobPost Found for jobPostId: " + jobPostId);
             return badRequest();
         }
-        return ok(JobPostWorkflowEngine.isInterviewRequired(jobPost));
+        return ok(toJson(JobPostWorkflowEngine.isInterviewRequired(jobPost)));
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -2141,7 +2140,7 @@ public class Application extends Controller {
 
             JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
 
-            return ok(JobPostWorkflowEngine.isInterviewRequired(jobPost));
+            return ok(toJson(JobPostWorkflowEngine.isInterviewRequired(jobPost)));
         }
         return badRequest();
     }

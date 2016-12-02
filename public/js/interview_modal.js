@@ -1,3 +1,7 @@
+/* Global Constant */
+var INTERVIEW_ERROR = 0;
+var INTERVIEW_NOT_REQUIRED = 1; // "OK"
+var INTERVIEW_REQUIRED = 2;     // "INTERVIEW"
 
 var jpTitle;
 var compName;
@@ -276,7 +280,7 @@ function finalInterviewSlotSubmission(candidateId, jobPostId) {
 
 function processInterviewSubmissionResponse(returnData) {
     // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
-    if(returnData == "OK"){
+    if(returnData.status == INTERVIEW_NOT_REQUIRED){
         nfy("Interview Submitted successfully. Refreshing ..", 'success');
         setTimeout(function () {
             location.reload();

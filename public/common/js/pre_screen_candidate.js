@@ -1407,7 +1407,7 @@ function invalidSalary() {
 
 function processInterviewBtn(returnedData, jobPostId) {
     if (returnedData != null) {
-        if (returnedData == "INTERVIEW") {
+        if (returnedData.status == INTERVIEW_REQUIRED) {
             $("#preScreenInterviewSetBtn").html("Schedule Interview");
         }
         else {
@@ -1738,10 +1738,10 @@ function submitPreScreen() {
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(d),
                     success: function (returnedData) {
-                        if(returnedData == "INTERVIEW"){
+                        if(returnedData.status == INTERVIEW_REQUIRED){
                             $("#preScreenModal").modal('hide');
                             initInterviewModal(candidateId, jobPostId, isSupport);
-                        } else if(returnedData == "OK") {
+                        } else if(returnedData.status == INTERVIEW_NOT_REQUIRED) {
                             $("#preScreenModal").modal('hide');
                             $.notify("Successfully Submitted Application form. Thanks !", 'success');
                         } else {

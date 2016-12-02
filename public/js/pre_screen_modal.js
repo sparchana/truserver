@@ -468,14 +468,14 @@ function updateCallAttempts(cId, jpId, status) {
         url: base_url +"?candidateId="+cId+"&jobPostId="+jpId+"&callStatus="+status,
         processData: false,
         success: function (returnedData) {
-            if(returnedData == "OK"){
+            if(returnedData == true){
                 // notifyModal("Call response saved successfully.");
                 // setTimeout(function () {
                 //     location.reload();
                 //     // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
                 // }, 2000);
                 bootbox.hideAll();
-            } else if(returnedData == "NA") {
+            } else if(returnedData == false) {
                 // notifyModal("Error while saving call response.");
             }
         }
@@ -1631,12 +1631,12 @@ function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, cus
 }
 
 function processPostPreScreenResponse(response, candidateId, jobPostId, isSupport) {
-    if(response == "OK"){
+    if(response.status == INTERVIEW_NOT_REQUIRED){
         notifyError("Submitted successfully.", 'success');
         setTimeout(function () {
             location.reload();
         }, 2000);
-    } else if(response == "INTERVIEW"){
+    } else if(response.status == INTERVIEW_REQUIRED){
         notifyError("Submitted successfully. Please select Interview Slot.", 'success');
         initInterviewModal(candidateId, jobPostId, isSupport);
     } else {

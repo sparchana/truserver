@@ -12,6 +12,7 @@ import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
+import api.http.httpResponse.interview.InterviewResponse;
 import com.amazonaws.util.json.JSONException;
 import com.google.api.client.util.Base64;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -27,6 +28,7 @@ import models.entity.JobPost;
 import models.entity.OM.*;
 import models.entity.Static.*;
 import models.entity.Static.InterviewTimeSlot;
+import models.util.InterviewUtil;
 import models.util.SmsUtil;
 import play.Logger;
 import play.mvc.Result;
@@ -2069,21 +2071,10 @@ public class TrudroidController {
 
 
                 /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
-                String interviewDays = Integer.toBinaryString(details.getInterviewDays());
-                if (interviewDays.length() != 7) {
-                    int x = 7 - interviewDays.length();
-                    String modifiedInterviewDays = "";
+                String interviewDays = InterviewUtil.fixPrecedingZero(Integer.toBinaryString(details.getInterviewDays()));
 
-                    for (int i = 0; i < x; i++) {
-                        modifiedInterviewDays += "0";
-                    }
-
-                    modifiedInterviewDays += interviewDays;
-                    interviewDays = modifiedInterviewDays;
-                }
                 interviewSlot.setInterviewDays(interviewDays);
                 interviewSlots.add(interviewSlot.build());
-
             }
 
             response.addAllInterviewSlots(interviewSlots);
@@ -2181,7 +2172,7 @@ public class TrudroidController {
             if(jobPost == null) {
                 checkInterviewSlotResponse.setStatus(CheckInterviewSlotResponse.Status.FAILURE);
             }
-            if(JobPostWorkflowEngine.isInterviewRequired(jobPost).equalsIgnoreCase("interview")){
+            if(JobPostWorkflowEngine.isInterviewRequired(jobPost).getStatus() == ServerConstants.INTERVIEW_REQUIRED){
                 checkInterviewSlotResponse.setShouldShowInterview(true);
             } else {
                 checkInterviewSlotResponse.setShouldShowInterview(false);
