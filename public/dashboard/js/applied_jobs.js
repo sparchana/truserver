@@ -464,8 +464,19 @@ function prePopulateJobSection(jobApplication) {
             titleRowStatus.style = "margin-top: 8px; padding: 0 12px 6px 12px; font-size: 12px";
             jobBodyCol.appendChild(titleRowStatus);
 
+            if(jobPost.status.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && jobPost.status.statusId < JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
+                var addressBody = document.createElement("div");
+                if(jobPost.jobPost.jobPostAddress != null || jobPost.jobPost.jobPostAddress != ""){
+                    addressBody.textContent = "Interview Address : " + jobPost.jobPost.jobPostAddress;
+                } else {
+                    addressBody.textContent = "Interview Address : Not available";
+                }
+                addressBody.style = "margin-top: 8px; margin-right: 12px";
+                titleRowStatus.appendChild(addressBody);
+            }
+
             if(jobPost.status != null){
-                if(jobPost.status.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && jobPost.status.statusId < JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
+                if(jobPost.status.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE){
                     var today = new Date();
                     var interviewDate = new Date(jobPost.scheduledInterviewDate);
                     if(interviewDate.getDate() == today.getDate() && interviewDate.getMonth() == today.getMonth() && interviewDate.getFullYear() == today.getFullYear()){ // today's schedule

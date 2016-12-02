@@ -2488,7 +2488,7 @@ public class JobPostWorkflowEngine {
 
         interviewFeedbackUpdate.save();
 
-        if(jwStatus == ServerConstants.CANDIDATE_FEEDBACK_COMPLETE_SELECTED){
+        if(jwStatus == ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
             sendSelectedSmsToCandidate(jobPostWorkflowNew);
         } else{
             sendRejectedSmsToCandidate(jobPostWorkflowNew);
@@ -2567,6 +2567,11 @@ public class JobPostWorkflowEngine {
             updateRecruiterWithCandidateStatus(jobPostWorkflowOld, candidate);
         }
 
+        if(session().get("sessionChannel") == null){
+            channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
+        } else{
+            channel = Integer.valueOf(session().get("sessionChannel"));
+        }
         // save the interaction
         InteractionService.createWorkflowInteraction(
                 jobPostWorkflowOld.getJobPostWorkflowUUId(),

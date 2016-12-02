@@ -1014,6 +1014,10 @@ public class TrudroidController {
 
                         //company
                         jobPostObjectBuilder.setJobPostCompanyName(jwpf.getJobPost().getCompany().getCompanyName());
+                        jobPostObjectBuilder.setJobPostCompanyLogo(jwpf.getJobPost().getCompany().getCompanyLogo());
+
+                        jobPostObjectBuilder.setJobPostAddress(jwpf.getJobPost().getJobPostAddress());
+                        jobPostObjectBuilder.setRecruiterName(jwpf.getJobPost().getRecruiterProfile().getRecruiterProfileName());
 
                         jobPostObjectBuilder.setJobPostMinSalary(jwpf.getJobPost().getJobPostMinSalary());
                         if(jwpf.getJobPost().getJobPostMaxSalary() == 0 || jwpf.getJobPost().getJobPostMaxSalary() == null){

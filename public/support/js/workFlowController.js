@@ -1130,7 +1130,7 @@ $(function () {
                         if(app.currentView == "confirmed_interview_view"){
                             var today = new Date();
                             var interviewDate = new Date(newCandidate.extraData.interviewDate);
-                            if(interviewDate.getDate() <= today.getDate() && interviewDate.getMonth() <= today.getMonth() && interviewDate.getFullYear() <= today.getFullYear()) { // today's schedule
+                            if(interviewDate.getTime() <= today.getTime()) { // today's schedule
                                 //interview for this job is scheduled today, hence allow to update status
                                 candidateStatus += '<input style="margin-left: 6px" type="button" value="Update" onclick="openFeedbackModal('+ newCandidate.candidate.candidateId + ')">';
                             }
