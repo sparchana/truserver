@@ -985,10 +985,8 @@ function processDataForJobApplications(returnedData) {
                 if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
                     var todayDay = new Date();
                     var interviewDate = new Date(value.extraData.interviewDate);
-                    var interviewDay = interviewDate.getDate();
-                    var interviewMonth = interviewDate.getMonth() + 1;
 
-                    if((todayDay.getDate() >= interviewDay) && ((todayDay.getMonth() + 1) >= interviewMonth)){
+                    if(todayDay.getTime() >= interviewDate.getTime()){
                         var feedbackBtn = document.createElement("a");
                         feedbackBtn.className = "waves-effect waves-light btn";
                         feedbackBtn.style = "font-weight: bold; margin-right: 8px";

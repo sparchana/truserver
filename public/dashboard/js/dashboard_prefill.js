@@ -440,16 +440,25 @@ function saveCandidateBasicProfile(){
     }
     //document value verification
     documentValues.forEach(function(id){
-       if(id.idProofId == null){
+       if(id.idProofId == ""){
            notifyError("Please Select Document");
            statusCheck=0;
        }
-        var isChecked = id.idProofId;
-        var isValid = validateInput(isChecked, id.idProofValue.trim());
-        if (isChecked && !isValid) {
-            statusCheck = 0;
-            $.notify("Please provide valid document details.", 'error');
-        }
+       else{
+           if(id.idProofValue == ""){
+               notifyError("Please provide document details");
+               statusCheck=0;
+           }
+           else{
+               var isChecked = id.idProofId;
+               var isValid = validateInput(isChecked, id.idProofValue.trim());
+               if (isChecked && !isValid) {
+                statusCheck = 0;
+                $.notify("Please provide valid document details.", 'error');
+                }
+
+           }
+       }
     });
     if(res == 0){
         notifyError("Enter a valid mobile number");

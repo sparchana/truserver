@@ -9,6 +9,8 @@ import play.mvc.Http.Context;
 import play.mvc.Result;
 import play.mvc.Security;
 
+import static play.mvc.Controller.session;
+
 public class SecuredUser extends Security.Authenticator {
 
     @Override

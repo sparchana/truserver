@@ -729,20 +729,9 @@ public class JobService {
                     jobPostWorkflow.setJobPost(existingJobPost);
                     jobPostWorkflow.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_SELECTED).findUnique());
 
-                    if(channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE ||
-                            channelType == INTERACTION_CHANNEL_CANDIDATE_ANDROID){
-                        jobPostWorkflow.setCreatedBy(InteractionConstants.INTERACTION_CHANNEL_MAP.get(channelType));
 
-                        if(channelType == INTERACTION_CHANNEL_CANDIDATE_ANDROID){
-                            jobPostWorkflow.setChannel(InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
-                        } else{
-                            jobPostWorkflow.setChannel(Integer.valueOf(session().get("sessionChannel")));
-                        }
-                    } else {
-                        // partner, support, recruiter
-                        jobPostWorkflow.setCreatedBy(session().get("sessionUsername"));
-                        jobPostWorkflow.setChannel(Integer.valueOf(session().get("sessionChannel")));
-                    }
+                    jobPostWorkflow.setCreatedBy(session().get("sessionUsername") == null ?InteractionConstants.INTERACTION_CHANNEL_MAP.get(channelType) : session().get("sessionUsername") );
+                    jobPostWorkflow.setChannel(channelType);
                     jobPostWorkflow.save();
                 }
             }

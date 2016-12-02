@@ -1040,6 +1040,10 @@ public class TrudroidController {
 
                         //company
                         jobPostObjectBuilder.setJobPostCompanyName(jwpf.getJobPost().getCompany().getCompanyName());
+                        jobPostObjectBuilder.setJobPostCompanyLogo(jwpf.getJobPost().getCompany().getCompanyLogo());
+
+                        jobPostObjectBuilder.setJobPostAddress(jwpf.getJobPost().getJobPostAddress());
+                        jobPostObjectBuilder.setRecruiterName(jwpf.getJobPost().getRecruiterProfile().getRecruiterProfileName());
 
                         jobPostObjectBuilder.setJobPostMinSalary(jwpf.getJobPost().getJobPostMinSalary());
                         if (jwpf.getJobPost().getJobPostMaxSalary() == 0 || jwpf.getJobPost().getJobPostMaxSalary() == null) {
@@ -2132,6 +2136,7 @@ public class TrudroidController {
             if (JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost,
                     Long.valueOf(updateCandidateStatusRequest.getCandidateStatus()),
                     updateCandidateStatusRequest.getNotGoingReason(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID) == 1) {
+
                 updateCandidateStatusResponse.setStatus(UpdateCandidateStatusResponse.Status.SUCCESS);
             } else {
                 updateCandidateStatusResponse.setStatus(UpdateCandidateStatusResponse.Status.FAILURE);

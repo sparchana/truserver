@@ -33,8 +33,22 @@ var jobPrefString = "";
 var check = 0;
 var agentAcLvl;
 
-function getAssetsForJobRole(jobRoleIds){
+function getLocality() {
+    return localityArray;
+}
+function getAssets(){
+    return assetArray;
+}
 
+function getJob() {
+    return jobArray;
+}
+
+function getIdProofs() {
+    return idProofArray;
+}
+
+function getAssetsForJobRole(){
     var jobRoleId = $('#candidateJobPref').val();
     if(jobRoleIds != null) {
         jobRoleId = jobRoleIds;
@@ -53,11 +67,13 @@ function getAssetsForJobRole(jobRoleIds){
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
+    }else{
+        $("#assetContainer").hide();
     }
 }
 function processDataGetAssets(returnedAssets) {
     assetArray = [];
-    if(returnedAssets != null){
+    if(returnedAssets != null || returnedAssets !=""){
         returnedAssets.forEach(function (asset) {
             var id = asset.assetId;
             var name = asset.assetTitle;
@@ -66,6 +82,11 @@ function processDataGetAssets(returnedAssets) {
             item ["name"] = name;
             assetArray.push(item);
         });
+        if(assetArray.length > 0) {
+            $("#assetContainer").show();
+        }else{
+            $("#assetContainer").hide();
+        }
     }
 }
 $(document).ready(function () {
@@ -78,7 +99,6 @@ $(document).ready(function () {
 
     $("#candidateSignUpSupportForm *").prop("disabled", true);
 
-    
     /* ajax commands to fetch leads Info */
     try {
         $.ajax({
@@ -248,7 +268,6 @@ $(document).ready(function () {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-
 });
 function processSupportAgentData(supportAgentData) {
     agentAcLvl = supportAgentData.agentAccessLevel;
@@ -278,21 +297,6 @@ function processDataCheckDeactivationReason(reasonList) {
     });
 }
 
-function getLocality() {
-    return localityArray;
-}
-
-function getAssets(){
-    return assetArray;
-}
-
-function getJob() {
-    return jobArray;
-}
-
-function getIdProofs() {
-    return idProofArray;
-}
 
 function processDataCheckUserMobile(returnedData) {
     $("#candidateMobile").val(returnedData.substring(3, 13));
@@ -1418,6 +1422,69 @@ function saveProfileForm() {
     var expYear = parseInt($('#candidateTotalExperienceYear').val());
     var totalExp = expMonth + (12 * expYear);
 
+
+    /* document details*/
+    var candidateDocumentIdList = $('#candidateIdProof').val().split(",");
+
+    var documentValues = [];
+    candidateDocumentIdList.forEach(function (id) {
+        var item = {};
+        item["idProofId"] = parseInt(id);
+        item["idProofValue"] = $('#idProofValue_'+ id).val();
+        documentValues.push(item);
+    });
+
+    //document value verification
+    documentValues.forEach(function(id){
+        if(id.idProofId == ""){
+            $.notify({
+                title: "Invalid Input: ",
+                message: "Please select document",
+                animate: {
+                    enter: 'animated lightSpeedIn',
+                    exit: 'animated lightSpeedOut'
+                }
+            },{
+                type: 'danger'
+            });
+            statusCheck=0;
+        }
+        else{
+            if(id.idProofValue == ""){
+                $.notify({
+                    title: "Invalid Input: ",
+                    message: "Please provide document details",
+                    animate: {
+                        enter: 'animated lightSpeedIn',
+                        exit: 'animated lightSpeedOut'
+                    }
+                },{
+                    type: 'danger'
+                });
+                statusCheck=0;
+            }
+            else{
+                var isChecked = id.idProofId;
+                var isValid = validateInput(isChecked, id.idProofValue.trim());
+                if (isChecked && !isValid) {
+                    statusCheck = 0;
+                    $.notify({
+                        title: "Invalid Input: ",
+                        message: "Please provide valid document details.",
+                        animate: {
+                            enter: 'animated lightSpeedIn',
+                            exit: 'animated lightSpeedOut'
+                        }
+                    },{
+                        type: 'danger'
+                    });
+                }
+
+            }
+        }
+    });
+
+
     /* deactivation requirements */
     if($('#deactivationStatus').is(':checked')){
         var expiryDate = $("#deactivationExpiryDate").val();
@@ -2222,6 +2289,38 @@ function disableOrEnableOnCallPanel() {
     }
     else {
         $('h4#callConfirmation').show();
+    }
+}
+
+function validateInput(idProofId, value) {
+    // aadhaar validation
+    if (idProofId == 3) {
+        if (!validateAadhar(value)) {
+            return false;
+        } else {
+            return true;
+        }
+    } else if (idProofId == 1) {
+        if (!validateDL(value)) {
+            return false;
+        } else {
+            return true;
+        }
+    } else if (idProofId == 2) {
+        if (!validatePASSPORT(value)) {
+            return false;
+        } else {
+            return true;
+        }
+    } else if (idProofId == 4) {
+        if (!validatePAN(value)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    else{
+        return true;
     }
 }
 

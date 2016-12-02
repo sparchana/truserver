@@ -1,5 +1,6 @@
 package controllers;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.AddJobPostRequest;
@@ -415,7 +416,7 @@ public class RecruiterController {
 
     public static Result updateInterviewStatus() {
         JsonNode req = request().body().asJson();
-        Logger.info("Request Json: " + req);
+
         InterviewStatusRequest interviewStatusRequest = new InterviewStatusRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -429,11 +430,12 @@ public class RecruiterController {
             return badRequest();
         }
 
-        return JobPostWorkflowEngine.updateInterviewStatus(interviewStatusRequest, Integer.valueOf(session().get("sessionChannel")));
+        return JobPostWorkflowEngine.updateInterviewStatus(interviewStatusRequest, InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE);
     }
 
     public static Result getTodayInterviewDetails() {
         JsonNode req = request().body().asJson();
+
         InterviewTodayRequest interviewTodayRequest = new InterviewTodayRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -447,6 +449,7 @@ public class RecruiterController {
 
     public static Result getPendingCandidateApproval() {
         JsonNode req = request().body().asJson();
+
         InterviewTodayRequest interviewTodayRequest = new InterviewTodayRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -454,6 +457,7 @@ public class RecruiterController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return ok(toJson(JobPostWorkflowEngine.processDataPendingApproval(interviewTodayRequest)));
     }
 

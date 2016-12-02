@@ -224,6 +224,7 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
             "Submit": {
                 id:"interviewModalBtn",
                 className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent interview-selector-submit",
+                style: "background-color:#09ac58;color:#ffffff",
                 callback: function () {
                     finalInterviewSlotSubmission(candidateId, jobPostId);
                 }

@@ -400,6 +400,7 @@ public class PartnerController {
         return ok("0");
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result confirmInterview(long cId, long jpId, long value){
         if(session().get("sessionChannel") == null){
             Logger.warn("Partner session channel not set, logged out partner");

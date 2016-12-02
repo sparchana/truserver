@@ -48,7 +48,6 @@ import static play.mvc.Results.ok;
 public class JobPostWorkflowEngine {
 
     /**
-     *
      *  @param jobPostId  match candidates for this jobPost
      *  @param maxAge  max range criteria to be taken into consideration while matching
      *  @param gender  gender criteria to be taken into consideration while matching
@@ -56,8 +55,6 @@ public class JobPostWorkflowEngine {
      *  @param jobPostLocalityIdList  candidates to be matched within x Km of any of the provided locality
      *  @param languageIdList  candidate to be matched for any of this language. Output contains the
      *                       indication to show matching & non-matching language
-     *
-     *
     */
     public static Map<Long, CandidateWorkflowData> getMatchingCandidate(Long jobPostId,
                                                                         Integer maxAge,
@@ -642,6 +639,7 @@ public class JobPostWorkflowEngine {
         // constructor for this class make all default flag as true, we will mark it false wherever its not satisfied
         populateResponse.jobPostId = jobPostId;
         populateResponse.candidateId = candidateId;
+
         populateResponse.setJobPostMinReq(jobPost.getJobPostMinRequirement());
 
         PreScreenPopulateResponse.PreScreenElement preScreenElement;
@@ -1012,6 +1010,7 @@ public class JobPostWorkflowEngine {
     }
 
     public static boolean updatePreScreenAttempt(Long jobPostId, Long candidateId, String callStatus, int channel) {
+
         // Interaction for PreScreen Call Attempt
         String interactionResult;
         boolean responseMsg = false;
@@ -1066,7 +1065,7 @@ public class JobPostWorkflowEngine {
                         InteractionConstants.INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_ATTEMPTED,
                         null,
                         interactionResult,
-                        null
+                        channel
                 );
                 return responseMsg;
             }
@@ -1884,6 +1883,7 @@ public class JobPostWorkflowEngine {
             return null;
         }
         JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", statusId).findUnique();
+
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         Candidate candidate = Candidate.find.where().in("candidateId", candidateId).findUnique();
         String toBePreservedUUId = jobPostWorkflowOld.getJobPostWorkflowUUId();
@@ -1911,6 +1911,7 @@ public class JobPostWorkflowEngine {
     // this methods take the old jobpost uuid and set the new jobpost uuid to old jobpost uuid.
     public static JobPostWorkflow saveNewJobPostWorkflow(Long candidateId, Long jobPostId, JobPostWorkflow jobPostWorkflowOld,
                                                           Integer oldStatus, Integer newStatus, Integer interviewSlot, Date interviewDate, int channel) {
+
         JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", newStatus).findUnique();
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         Candidate candidate = Candidate.find.where().in("candidateId", candidateId).findUnique();
@@ -1930,18 +1931,19 @@ public class JobPostWorkflowEngine {
             jobPostWorkflowOld.setJobPost(jobPost);
             jobPostWorkflowOld.setInterviewLocationLat(null);
             jobPostWorkflowOld.setInterviewLocationLng(null);
-            if(jobPost.getInterviewDetailsList() != null){
+            if(jobPost.getInterviewDetailsList() != null) {
                 jobPostWorkflowOld.setInterviewLocationLat(jobPost.getInterviewDetailsList().get(0).getLat());
                 jobPostWorkflowOld.setInterviewLocationLng(jobPost.getInterviewDetailsList().get(0).getLng());
             }
             jobPostWorkflowOld.setCandidate(candidate);
 
             jobPostWorkflowOld.setCreatedBy(session().get("sessionUsername") == null ? InteractionConstants.INTERACTION_CHANNEL_MAP.get(channel): session().get("sessionUsername"));
+
             jobPostWorkflowOld.setChannel(channel);
 
             jobPostWorkflowOld.setStatus(status);
 
-            if(interviewSlot != null){
+            if(interviewSlot != null) {
                 InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", interviewSlot).findUnique();
                 if(interviewTimeSlot != null){
                     jobPostWorkflowOld.setScheduledInterviewTimeSlot(interviewTimeSlot);
@@ -2108,6 +2110,7 @@ public class JobPostWorkflowEngine {
                     Long.valueOf(interviewStatusRequest.getJobPostId()),
                     jobPostWorkflowOld, jobPostWorkflowOld.getStatus().getStatusId(),
                     jwStatus, interviewStatusRequest.getRescheduledSlot(), date, channel);
+
             if (jobPostWorkflowNew != null) {
                 jobPostWorkflowNew.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", jwStatus).findUnique());
             }
@@ -2249,6 +2252,7 @@ public class JobPostWorkflowEngine {
         Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), status);
 
         Map<Long, CandidateScoreData> candidateScoreDataMap = computeScoreData(candidateList, jobPostId);
+
         if(candidateScoreDataMap == null) {
             Logger.info("something went wrong while computing score data");
         }
@@ -2264,6 +2268,7 @@ public class JobPostWorkflowEngine {
     }
 
     private static Map<Long, CandidateScoreData> computeScoreData(List<Candidate> candidateList, Long jobPostId) {
+
         if(candidateList == null || candidateList.size() == 0) {
             return null;
         }
@@ -2276,6 +2281,7 @@ public class JobPostWorkflowEngine {
                 populateResponseList.add(populateResponse);
             }
         }
+
         double score;
         int band;
         int passed;
@@ -2333,7 +2339,7 @@ public class JobPostWorkflowEngine {
                 }
                 if(!nonMatchingReason.isEmpty()) {
                     nonMatchingReason = nonMatchingReason.trim();
-                    finalReason += " <br/> Didn't Matched for : " + nonMatchingReason.trim().substring(0, nonMatchingReason.length() -1);
+                    finalReason += " <br/> Didn't Match   for : " + nonMatchingReason.trim().substring(0, nonMatchingReason.length() -1);
                 }
                 candidateScoreDataMap.put(response.getCandidateId(),  new CandidateScoreData(score, band, finalReason));
             }
@@ -2349,6 +2355,7 @@ public class JobPostWorkflowEngine {
         if(candidate == null) {
             return "Candidate doesn't exists";
         }
+
         // fetch existing workflow old
         JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
                 .eq("jobPost.jobPostId", jobPostId)
@@ -2520,7 +2527,7 @@ public class JobPostWorkflowEngine {
 
         interviewFeedbackUpdate.save();
 
-        if(jwStatus == ServerConstants.CANDIDATE_FEEDBACK_COMPLETE_SELECTED){
+        if(jwStatus == ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
             sendSelectedSmsToCandidate(jobPostWorkflowNew);
         } else{
             sendRejectedSmsToCandidate(jobPostWorkflowNew);
@@ -2599,6 +2606,11 @@ public class JobPostWorkflowEngine {
             updateRecruiterWithCandidateStatus(jobPostWorkflowOld, candidate);
         }
 
+        if(session().get("sessionChannel") == null){
+            channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
+        } else{
+            channel = Integer.valueOf(session().get("sessionChannel"));
+        }
         // save the interaction
         InteractionService.createWorkflowInteraction(
                 jobPostWorkflowOld.getJobPostWorkflowUUId(),

@@ -414,7 +414,7 @@ public class InteractionService {
                 interactionType,
                 notes,
                 interactionResult,
-                session().get("sessionUsername"),
+                session().get("sessionUsername") == null ? InteractionConstants.INTERACTION_CHANNEL_MAP.get(channel) : session().get("sessionUsername"),
                 channel == null ? INTERACTION_CHANNEL_SUPPORT_WEBSITE: channel
         );
         InteractionService.createInteraction(interaction);

@@ -245,6 +245,7 @@ public class Application extends Controller {
         return ok(toJson(AuthService.savePassword(userMobile, userPassword, INTERACTION_CHANNEL_CANDIDATE_WEBSITE)));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result applyJob() throws IOException, JSONException {
         JsonNode req = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
@@ -1819,6 +1820,7 @@ public class Application extends Controller {
     }
 
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result confirmInterview(long jpId, long value) {
         if (session().get("candidateId") != null) {
             if(session().get("sessionChannel") == null) {
@@ -2013,6 +2015,7 @@ public class Application extends Controller {
         return ok("0");
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result confirmInterviewSupport(long cid, long jpId, long status) {
         Candidate candidate = Candidate.find.where().eq("candidateId", cid).findUnique();
         if(session().get("sessionChannel") == null) {
@@ -2137,14 +2140,12 @@ public class Application extends Controller {
 
             // make entry into prescreen result/response table
             JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), jobPostId, Integer.valueOf(session().get("sessionChannel")));
-
             JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
 
             return ok(toJson(JobPostWorkflowEngine.isInterviewRequired(jobPost)));
         }
         return badRequest();
     }
-
 
     @Security.Authenticated(SecuredUser.class)
     public static Result updateFeedback() {
