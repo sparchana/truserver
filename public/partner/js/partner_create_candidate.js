@@ -41,6 +41,8 @@ $(document).ready(function() {
     $("#isEmployedSelect").hide();
     checkPartnerLogin();
 
+    getAssetsForJobRole();
+
     $("#registerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled', true).html("Save");
 
     //getting all partner types
@@ -718,23 +720,23 @@ function ifMobileExists(returnedId) {
 }
 function getAssetsForJobRole(){
     var jobRoleId = $('#candidateJobPref').val();
-    if (jobRoleId != null && jobRoleId !== ''){
-        if(jobRoleId != 0){
-            try {
-                $.ajax({
-                    type: "GET",
-                    url: "/support/api/getAssetReqForJobRole/?job_role_ids="+jobRoleId,
-                    data: false,
-                    async: false,
-                    contentType: false,
-                    processData: false,
-                    success: processDataGetAssets
-                });
-            } catch (exception) {
-                console.log("exception occured!!" + exception);
-            }
+    if(jobRoleId != 0){
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getAssetReqForJobRole/?job_role_ids="+jobRoleId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetAssets
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
         }
+    }else{
         getAssets();
+        $("#assetContainer").hide();
     }
 }
 function generateSkills(){
@@ -771,6 +773,11 @@ function processDataGetAssets(returnedAssets){
             item ["name"] = name;
             assetArray.push(item);
         });
+        if(assetArray.length > 0) {
+            $("#assetContainer").show();
+        }else{
+            $("#assetContainer").hide();
+        }
     }
 }
 function processDataCheckSkills(returnedData) {
@@ -943,15 +950,24 @@ $(function() {
         });
         //document value verification
         documentValues.forEach(function(id){
-            if(id.idProofId == null){
+            if(id.idProofId == ""){
                 notifyError("Please Select Document");
                 statusCheck=0;
             }
-            var isChecked = id.idProofId;
-            var isValid = validateInput(isChecked, id.idProofValue.trim());
-            if (isChecked && !isValid) {
-                statusCheck = 0;
-                $.notify("Please provide valid document details.", 'error');
+            else{
+                if(id.idProofValue == ""){
+                    notifyError("Please provide document details");
+                    statusCheck=0;
+                }
+                else{
+                    var isChecked = id.idProofId;
+                    var isValid = validateInput(isChecked, id.idProofValue.trim());
+                    if (isChecked && !isValid) {
+                        statusCheck = 0;
+                        $.notify("Please provide valid document details.", 'error');
+                    }
+
+                }
             }
         });
 

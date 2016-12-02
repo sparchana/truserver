@@ -454,7 +454,7 @@
                             <!-- Asset details -->
                         <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Asset Details</h4>
                         <div id="asset_details">
-                            <div class="row" style="margin-top: 4px">
+                            <div class="row" style="margin-top: 4px" id="assetContainer">
                                 <div class="col-sm-3"><h5>Assets Ownership?:</h5></div>
                                 <div class="col-sm-9" style="margin-top: 6px;">
                                     <input type="text" id="candidateAsset" >
@@ -468,6 +468,8 @@
                                                     prePopulate: candidateAssetArray,
                                                     preventDuplicates: true
                                                 });
+                                                getAssetsForJobRole();
+                                                getAssets();
                                             });
                                     </script>
                                 </div>
