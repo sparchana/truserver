@@ -69,9 +69,7 @@ function getAssetsForJobRole(){
     }
 }
 function processDataGetAssets(returnedAssets) {
-    while(assetArray.length > 0){
-        assetArray.pop();
-    }
+    assetArray = [];
     if(returnedAssets != null || returnedAssets !=""){
         returnedAssets.forEach(function (asset) {
             var id = asset.assetId;
@@ -707,9 +705,7 @@ function processDataCheckJobs(returnedData) {
     });
 }
 function processDataCheckAssets(returnedData) {
-    while(assetArray.length > 0){
-        assetArray.pop();
-    }
+    assetArray = [];
     returnedData.forEach(function (asset) {
         var id = asset.assetId;
         var name = asset.assetTitle;
@@ -2168,7 +2164,6 @@ function generateIdProof(idProofJson){
 
 // form_candidate ajax script
 $(function () {
-
     /* offline check init */
     var run = function(){
         if (Offline.state === 'up')
