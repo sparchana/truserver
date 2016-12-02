@@ -253,12 +253,12 @@ function validateInput(idProofId, value) {
     };
     if(!$('input#idProofCheckbox_' + idProofId).is(':checked')) {
         return true;
-    } else if($('input#idProofValue_'+idProofId).val().trim() == ""){
+    } /*else if($('input#idProofValue_'+idProofId).val().trim() == ""){
         $("#Invalid_" + idProofId).css("display", "block");
         return false;
     } else {
         $("#Invalid_" + idProofId).css("display", "none");
-    }
+    }*/
     // if(value == "") {
     //     $("#Invalid_" + idProofId).css("display", "none");
     //     return true;
@@ -296,6 +296,8 @@ function validateInput(idProofId, value) {
             $("#Invalid_" + idProofId).css("display", "none");
             return true;
         }
+    }else{
+        return true;
     }
 }
 
@@ -640,7 +642,7 @@ function processPreScreenData(returnedData) {
                     yearOption.textContent="Year";
                     yearCandidate.appendChild(yearOption);
 
-                    for(i = new Date().getFullYear() - 18;i>=new Date().getFullYear() - 80;i--){
+                    for(i = new Date().getFullYear() - 19;i>=new Date().getFullYear() - 80;i--){
                         option = document.createElement("option");
                         option.value = i;
                         option.textContent = i;
@@ -1318,7 +1320,7 @@ function addmoreCompany() {
         addMore.value = "Add";
         addMore.style = "background:#09ac58;color:#fff;font-size:12px";
         addMore.name = "Add";
-        addMore.textContent = "Add More";
+        addMore.textContent = "Add Company";
         addMore.onclick = addmoreCompany;
 
         allWorkedAddMoreCol.appendChild(addMore);
@@ -1420,7 +1422,6 @@ function submitPreScreen() {
 }
 
 (function () {
-
     $("#preScreenInterviewSetBtn").click(function () {
         var okToSubmit = true;
         var okToSubmitList = [];
@@ -1443,7 +1444,7 @@ function submitPreScreen() {
 
                         var isChecked = $('input#idProofCheckbox_' + id).is(':checked');
                         var isValid = validateInput(id, $('input#idProofValue_' + id).val().trim());
-                        if (  isValid && isChecked) {
+                        if ( isValid && isChecked) {
                             item["idProofId"] = parseInt(id);
                             item["idNumber"] = $('input#idProofValue_' + id).val().trim();
                         } else if (isChecked && !isValid) {
@@ -1517,10 +1518,10 @@ function submitPreScreen() {
 
                 d ["candidateKnownLanguageList"] = languageMap;
 
-                if(languageMap.length == 0) {
+                /*if(languageMap.length == 0) {
                     okToSubmit = false;
                     $.notify("Please provide all known languages", 'error');
-                }
+                }*/
                 if(!okToSubmit){
                     var submit = {
                         propId : propId,
@@ -1646,14 +1647,16 @@ function submitPreScreen() {
                 d ["candidateEducationInstitute"] = $('#candidateEducationInstitute').val();
                 d ["candidateEducationCompletionStatus"] = parseInt($('input:radio[name="candidateEducationCompletionStatus"]:checked').val());
 
-               if( $('#candidateHighestEducation').val() == "-1" ||
-                   ($('#candidateHighestDegree').val()) == "-1" ||
-                   $('#candidateEducationInstitute').val() == "" ||
-                   $('input:radio[name="candidateEducationCompletionStatus"]:checked').val() == null) {
-                   okToSubmit = false;
-                   $.notify("Please provide full education details", 'error');
+                if($('#candidateHighestEducation').val() == "-1" || $('#candidateHighestEducation').val() > 3 ||
+                    $('input:radio[name="candidateEducationCompletionStatus"]:checked').val() == null){
+                    if(($('#candidateHighestDegree').val()) == "-1" ||
+                        $('#candidateEducationInstitute').val() == "") {
+                        okToSubmit = false;
+                        $.notify("Please provide full education details", 'error');
 
-               }
+                    }
+                }
+
                 if(!okToSubmit){
                     var submit = {
                         propId : propId,

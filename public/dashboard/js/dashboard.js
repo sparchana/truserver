@@ -38,10 +38,13 @@ $(document).ready(function(){
     $("#skillProfileSection").hide();
     $("#educationProfileSection").hide();
 
+    $("#assetContainer").hide();
     $("#totalWorkExperience").hide();
     $("#educationalInstitute").hide();
     $("#isEmployedForm").hide();
     $("#isEmployedSelect").hide();
+
+    getAssetsForJobRole();
 
     checkUserLogin();
     /* ajax commands to fetch all id proofs*/
@@ -519,6 +522,11 @@ function processDataAndFillAllFields(returnedData) {
             item ["name"] = name;
             candidateAssetArray.push(item);
         });
+        if(candidateAssetArray.length > 0) {
+            $("#assetContainer").show();
+        }else{
+            $("#assetContainer").hide();
+        }
     } catch (err) {
         console.log(err);
     }
@@ -664,13 +672,16 @@ function getAssetsForJobRole(){
             } catch (exception) {
                 console.log("exception occured!!" + exception);
             }
+        }else{
+            getAssets();
+            $("#assetContainer").hide();
         }
 }
 function processDataGetAssets(returnedAssets) {
     while(assetArray.length > 0){
         assetArray.pop();
     }
-    if(returnedAssets != null){
+    if(returnedAssets != null || returnedAssets !="") {
         returnedAssets.forEach(function (asset) {
             var id = asset.assetId;
             var name = asset.assetTitle;
@@ -679,6 +690,11 @@ function processDataGetAssets(returnedAssets) {
             item ["name"] = name;
             assetArray.push(item);
         });
+        if(assetArray.length > 0) {
+            $("#assetContainer").show();
+        }else{
+            $("#assetContainer").hide();
+        }
     }
 }
 function processDataCheckIdProofs(returnedData) {
