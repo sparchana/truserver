@@ -254,6 +254,7 @@ POST        /mGetCandidateUpdateEducationProfileStatics                   contro
 POST        /mGetLocalityForLatLngOrPlaceId                               controllers.TrudroidController.mGetLocalityForLatLngOrPlaceId()
 POST        /mConfirmInterview                                            controllers.TrudroidController.mConfirmInterview()
 POST        /mUpdateCandidateStatus                                       controllers.TrudroidController.mUpdateCandidateStatus()
+POST        /mUpdateCandidateToken                                        controllers.TrudroidController.mUpdateCandidateToken()
 
 # Update interview status API
 # ~~~~~~~~~~~~

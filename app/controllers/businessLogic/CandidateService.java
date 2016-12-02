@@ -1524,4 +1524,16 @@ public class CandidateService
                     aadhaarService.sendAadharSyncVerificationRequest(candidateMobile);
         }).start();
     }
+
+    public static Integer updateAndroidToken(String token, String candidateId) {
+        Logger.info("Updating token for " + candidateId);
+        Candidate candidate = Candidate.find.where().eq("CandidateId", candidateId).findUnique();
+        if(candidate != null){
+            candidate.setCandidateAndroidToken(token);
+            candidate.update();
+            return 1;
+        }
+        return 0;
+    }
+
 }

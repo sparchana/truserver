@@ -2163,7 +2163,8 @@ public class Application extends Controller {
     }
 
     public static Result testnotification(){
-        new NotificationUtil().SendNotification("Hi", "Interview Selected");
+        Candidate candidate = Candidate.find.where().eq("CandidateMobile", "+918971739586").findUnique();
+        new NotificationUtil().SendNotification("Hi", "Interview Selected", candidate.getCandidateAndroidToken());
         return ok("0");
 
     }

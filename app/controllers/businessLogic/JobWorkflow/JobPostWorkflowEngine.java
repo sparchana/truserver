@@ -2489,20 +2489,29 @@ public class JobPostWorkflowEngine {
 
         interviewFeedbackUpdate.save();
 
+        Candidate candidate = Candidate.find.where().eq("candidateId", addFeedbackRequest.getCandidateId()).findUnique();
+
         if(jwStatus == ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
             String msg = "Hi Adarsh! you have been selected got the job: " + jobPostWorkflowNew.getJobPost().getJobPostTitle() + " at " + jobPostWorkflowNew.getJobPost().getCompany().getCompanyName() +
                     ". Congratulations!";
-            new NotificationUtil().SendNotification(msg, "Interview Selected");
+            if(candidate.getCandidateAndroidToken() != null){
+                new NotificationUtil().SendNotification(msg, "Interview Selected", candidate.getCandidateAndroidToken());
+            } else{
+                Logger.info("Token not available");
+            }
 
             sendSelectedSmsToCandidate(jobPostWorkflowNew);
         } else{
             String msg = "Hi Adarsh! you were not selected for the job: " + jobPostWorkflowNew.getJobPost().getJobPostTitle() + " at " + jobPostWorkflowNew.getJobPost().getCompany().getCompanyName();
-            new NotificationUtil().SendNotification(msg, "Interview Rejected");
+
+            if(candidate.getCandidateAndroidToken() != null){
+                new NotificationUtil().SendNotification(msg, "Interview Rejected", candidate.getCandidateAndroidToken());
+            } else{
+                Logger.info("Token not available");
+            }
 
             sendRejectedSmsToCandidate(jobPostWorkflowNew);
         }
-
-        Candidate candidate = Candidate.find.where().eq("candidateId", addFeedbackRequest.getCandidateId()).findUnique();
 
         // save the interaction
         InteractionService.createWorkflowInteraction(
