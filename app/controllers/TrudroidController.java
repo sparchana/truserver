@@ -383,7 +383,11 @@ public class TrudroidController {
             //setting status response
             applyJobResponseBuilder.setStatus(ApplyJobResponse.Status.valueOf(applyJobResponse.getStatus()));
             applyJobResponseBuilder.setIsPreScreenAvailable(applyJobResponse.isPreScreenAvailable());
-
+            applyJobResponseBuilder.setIsInterviewAvailable(applyJobResponse.isInterviewAvailable());
+            applyJobResponseBuilder.setCompanyName(applyJobResponse.getCompanyName());
+            applyJobResponseBuilder.setJobRoleTitle(applyJobResponse.getJobRoleTitle());
+            applyJobResponseBuilder.setJobTitle(applyJobResponse.getJobTitle());
+            applyJobResponseBuilder.setJobPostId(applyJobResponse.getJobPostId());
             Logger.info("Status returned = " + applyJobResponseBuilder.getStatus());
         } catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");
@@ -1943,10 +1947,12 @@ public class TrudroidController {
 
                 switch (propId) {
                     case ServerConstants.PROPERTY_TYPE_ASSET_OWNED:
-                        UpdateCandidateAsset updateCandidateAsset = new UpdateCandidateAsset();
-                        updateCandidateAsset.setAssetIdList(otherRequest.getAssetIdList());
+                        if(otherRequest.getAssetIdCount()>0){
+                            UpdateCandidateAsset updateCandidateAsset = new UpdateCandidateAsset();
+                            updateCandidateAsset.setAssetIdList(otherRequest.getAssetIdList());
 
-                        CandidateService.updateCandidateAssetOwned(candidate, updateCandidateAsset);
+                            CandidateService.updateCandidateAssetOwned(candidate, updateCandidateAsset);
+                        }
                         break;
                     case ServerConstants.PROPERTY_TYPE_GENDER:
                         UpdateCandidateGender updateCandidateGender = new UpdateCandidateGender();
