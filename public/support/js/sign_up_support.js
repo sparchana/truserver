@@ -33,9 +33,13 @@ var jobPrefString = "";
 var check = 0;
 var agentAcLvl;
 
-function getAssetsForJobRole(){
+function getAssetsForJobRole(jobRoleIds){
+
     var jobRoleId = $('#candidateJobPref').val();
-    if(jobRoleId != 0){
+    if(jobRoleIds != null) {
+        jobRoleId = jobRoleIds;
+    }
+    if(jobRoleId != "" && jobRoleId != 0){
         try {
             $.ajax({
                 type: "GET",
@@ -52,9 +56,7 @@ function getAssetsForJobRole(){
     }
 }
 function processDataGetAssets(returnedAssets) {
-    while(assetArray.length > 0){
-        assetArray.pop();
-    }
+    assetArray = [];
     if(returnedAssets != null){
         returnedAssets.forEach(function (asset) {
             var id = asset.assetId;
@@ -75,6 +77,7 @@ $(document).ready(function () {
     }
 
     $("#candidateSignUpSupportForm *").prop("disabled", true);
+
     
     /* ajax commands to fetch leads Info */
     try {
@@ -119,7 +122,6 @@ $(document).ready(function () {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-
 
     try {
         $.ajax({
@@ -329,6 +331,7 @@ function processDataAndFillAllFields(returnedData) {
                 jobPrefString +=id + ",";
             });
             jobPrefString = jobPrefString.substring(0, jobPrefString.length - 1);
+            getAssetsForJobRole(jobPrefString);
         } catch (err) {
             console.log(err);
         }
@@ -698,19 +701,6 @@ function processDataCheckJobs(returnedData) {
         item ["id"] = id;
         item ["name"] = name;
         jobArray.push(item);
-    });
-}
-function processDataCheckAssets(returnedData) {
-    while(assetArray.length > 0){
-        assetArray.pop();
-    }
-    returnedData.forEach(function (asset) {
-        var id = asset.assetId;
-        var name = asset.assetTitle;
-        var item = {};
-        item ["id"] = id;
-        item ["name"] = name;
-        assetArray.push(item);
     });
 }
 
@@ -2145,7 +2135,9 @@ $(function () {
         generateExperience($('#candidateJobPref').val());
         prefillCandidatePastJobExp(candidatePastJobExp);
         unlockcurrentJobRadio();
-        getAssetsForJobRole();
+        if(assetArray.length == 0){
+            getAssetsForJobRole(null);
+        }
         $("#candidateAsset").tokenInput('destroy');
         $("#candidateAsset").tokenInput(getAssets(), {
             theme: "facebook",

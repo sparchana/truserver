@@ -8,8 +8,10 @@ import api.http.httpRequest.ApplyJobRequest;
 import api.GoogleSheetHttpRequest;
 import api.http.httpResponse.AddJobPostResponse;
 import api.http.httpResponse.ApplyJobResponse;
+import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Model;
+import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.OM.*;
@@ -743,10 +745,18 @@ public class JobService {
                     jobPostWorkflow.save();
                 }
             }
+            PreScreenPopulateResponse populateResponse = JobPostWorkflowEngine.getJobPostVsCandidate(Long.valueOf(applyJobRequest.getJobId()),
+                    existingCandidate.getCandidateId(), false);
+            if(populateResponse.isVisible()){
+                applyJobResponse.setPreScreenAvailable(true);
+            } else {
+                applyJobResponse.setPreScreenAvailable(false);
+            }
         } else{
             applyJobResponse.setStatus(ApplyJobResponse.STATUS_NO_CANDIDATE);
             Logger.info("Candidate Does not exists");
         }
+
         return applyJobResponse;
     }
 

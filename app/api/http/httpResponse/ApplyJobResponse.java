@@ -11,6 +11,7 @@ public class ApplyJobResponse {
     public static final int STATUS_NO_JOB = 5;
 
     public int status;
+    public boolean isPreScreenAvailable;
 
     public int getStatus() {
         return status;
@@ -18,5 +19,13 @@ public class ApplyJobResponse {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public boolean isPreScreenAvailable() {
+        return isPreScreenAvailable;
+    }
+
+    public void setPreScreenAvailable(boolean preScreenAvailable) {
+        isPreScreenAvailable = preScreenAvailable;
     }
 }

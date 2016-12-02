@@ -380,6 +380,7 @@ public class TrudroidController {
 
             //setting status response
             applyJobResponseBuilder.setStatus(ApplyJobResponse.Status.valueOf(applyJobResponse.getStatus()));
+            applyJobResponseBuilder.setIsPreScreenAvailable(applyJobResponse.isPreScreenAvailable());
 
             Logger.info("Status returned = " + applyJobResponseBuilder.getStatus());
         } catch (InvalidProtocolBufferException e) {
@@ -2019,8 +2020,13 @@ public class TrudroidController {
             interviewSlotDetail.setTimeSlot(interviewDetailRequest.getTimeSlotId());
             interviewSlotDetail.setScheduledInterviewDate(new Date(interviewDetailRequest.getScheduledInterviewDateInMills()));
 
-            JobPostWorkflowEngine.updateCandidateInterviewDetail(candidate.getCandidateId(), interviewDetailRequest.getJobPostId(), interviewSlotDetail, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
+            String resp = JobPostWorkflowEngine.updateCandidateInterviewDetail(candidate.getCandidateId(), interviewDetailRequest.getJobPostId(), interviewSlotDetail, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
 
+            if(resp == null) {
+                response.setStatus(GenericResponse.Status.FAILURE);
+            } else if(resp == "OK"){
+                response.setStatus(GenericResponse.Status.SUCCESS);
+            }
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
         }
@@ -2060,10 +2066,24 @@ public class TrudroidController {
                 // build interview
                 InterviewSlot.Builder interviewSlot = InterviewSlot.newBuilder();
                 interviewSlot.setInterviewTimeSlotObject(interviewTimeSlot.build());
-                interviewSlot.setInterviewDays(Integer.toBinaryString(details.getInterviewDays()));
 
-                Logger.info("dayssssss: " + interviewSlot.getInterviewDays());
+
+                /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
+                String interviewDays = Integer.toBinaryString(details.getInterviewDays());
+                if (interviewDays.length() != 7) {
+                    int x = 7 - interviewDays.length();
+                    String modifiedInterviewDays = "";
+
+                    for (int i = 0; i < x; i++) {
+                        modifiedInterviewDays += "0";
+                    }
+
+                    modifiedInterviewDays += interviewDays;
+                    interviewDays = modifiedInterviewDays;
+                }
+                interviewSlot.setInterviewDays(interviewDays);
                 interviewSlots.add(interviewSlot.build());
+
             }
 
             response.addAllInterviewSlots(interviewSlots);

@@ -36,6 +36,7 @@ import static api.InteractionConstants.*;
 import static controllers.businessLogic.InteractionService.*;
 import static controllers.businessLogic.LeadService.createOrUpdateConvertedLead;
 import static models.util.Util.generateOtp;
+import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 
 
@@ -557,7 +558,6 @@ public class CandidateService
         }
 
         candidate.update();
-        Logger.info("Candidate with mobile " +  candidate.getCandidateMobile() + " created/updated successfully");
 
         // Trigger aadhaar verification
         verifyAadhaar(candidate.getCandidateMobile());
@@ -1290,7 +1290,7 @@ public class CandidateService
             candidate.setTimeShiftPreference(getTimeShiftPref(request.getCandidateTimeShiftPref(), candidate));
         }
 
-        if (request.getCandidateAssetList() != null) {
+        if (request.getCandidateAssetList() != null  && request.getCandidateAssetList().size() > 0) {
             candidate.setCandidateAssetList(getAssetList(request.getCandidateAssetList() , candidate));
         }
 
@@ -1305,7 +1305,7 @@ public class CandidateService
         ArrayList<CandidateAsset> response = new ArrayList<>();
         List<Asset> assetList = Asset.find.where().in("assetId", candidateAssetList).findList();
 
-        if(assetList == null || !assetList.isEmpty()) {
+        if(assetList == null || assetList.isEmpty()) {
             return response;
         }
 
