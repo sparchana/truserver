@@ -388,7 +388,6 @@ public class TrudroidController {
             applyJobResponseBuilder.setJobRoleTitle(applyJobResponse.getJobRoleTitle());
             applyJobResponseBuilder.setJobTitle(applyJobResponse.getJobTitle());
             applyJobResponseBuilder.setJobPostId(applyJobResponse.getJobPostId());
-            Logger.info("Status returned = " + applyJobResponseBuilder.getStatus());
         } catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");
         }
