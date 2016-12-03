@@ -445,18 +445,14 @@ function saveCandidateBasicProfile(){
            statusCheck=0;
        }
        else{
-           if(id.idProofValue == ""){
+           if(id.idProofValue == "" || id.idProofValue == undefined || id.idProofValue.trim().length == 0){
                notifyError("Please provide document details");
                statusCheck=0;
            }
            else{
                var isChecked = id.idProofId;
-               var isValid = false;
+               var isValid = validateInput(isChecked, id.idProofValue.trim());
 
-               if (id.idProofValue != undefined) {
-                   isValid = validateInput(isChecked, id.idProofValue.trim());
-               }
-               
                if (isChecked && !isValid) {
                 statusCheck = 0;
                 $.notify("Please provide valid document details.", 'error');
