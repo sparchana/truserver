@@ -16,7 +16,7 @@ function postLogin(returnedData) {
 
     if(applyJobFlag == 1){
         $("#myLoginModal").modal("hide");
-        applyJobSubmitViaCandidate(applyJobId, prefLocation, prefTimeSlot, scheduledInterviewDate, true);
+        applyJobSubmitViaCandidate(applyJobId, prefLocation, prefTimeSlot, scheduledInterviewDate, false);
         //applyJob(applyJobId, prefLocation, false);
         $("#customSubMsg").html("Logging in ...");
         $('#customSubMsg').modal({backdrop: 'static', keyboard: false});
