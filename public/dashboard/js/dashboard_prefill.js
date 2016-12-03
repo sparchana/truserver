@@ -451,7 +451,12 @@ function saveCandidateBasicProfile(){
            }
            else{
                var isChecked = id.idProofId;
-               var isValid = validateInput(isChecked, id.idProofValue.trim());
+               var isValid = false;
+
+               if (id.idProofValue != undefined) {
+                   isValid = validateInput(isChecked, id.idProofValue.trim());
+               }
+               
                if (isChecked && !isValid) {
                 statusCheck = 0;
                 $.notify("Please provide valid document details.", 'error');
