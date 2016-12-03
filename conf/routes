@@ -263,6 +263,10 @@ POST        /getJpWfStatus/:cId/:jpId                                     contro
 POST        /updateStatus/:cId/:jpId/:value/:reason                       controllers.Application.updateInterviewStatus(cId : Long, jpId : Long, value : Long, reason : Long)
 POST        /updateStatusCandidate/:jpId/:value/:reason                   controllers.Application.updateInterviewStatusViaCandidate(jpId : Long, value : Long, reason : Long)
 
+
+# notification test
+GET         /testNitification                                             controllers.Application.testnotification()
+
 # Test API
 # ~~~~~~~~~~~~~
 GET         /resolveLatLng/:latlng                                        controllers.TrudroidController.mResolveLatLng(latlng: String)

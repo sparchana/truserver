@@ -18,6 +18,8 @@ import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.gcm.server.Message;
+import com.google.android.gcm.server.Sender;
 import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.*;
@@ -31,6 +33,7 @@ import models.entity.*;
 import models.entity.Intelligence.RelatedJobRole;
 import models.entity.OM.*;
 import models.entity.Static.*;
+import models.util.NotificationUtil;
 import models.util.ParseCSV;
 import models.util.SmsUtil;
 import models.util.Util;
@@ -2157,6 +2160,11 @@ public class Application extends Controller {
         }
 
         return ok(toJson(JobPostWorkflowEngine.updateFeedback(addFeedbackRequest, Integer.valueOf(session().get("sessionChannel")))));
+    }
+
+    public static Result testnotification(){
+        new NotificationUtil().SendNotification("Hi", "Interview Selected");
+        return ok("0");
 
     }
 }
