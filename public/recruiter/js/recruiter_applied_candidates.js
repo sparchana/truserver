@@ -303,6 +303,14 @@ function processDataForJobApplications(returnedData) {
             candidateList.push(val);
         });
 
+        var acceptInterviewFlag = false;
+        var contactCandidatesFlag = false;
+        var pendingConfirmationFlag = false;
+        var rejectedListFlag = false;
+        var interviewTodayListFlag = false;
+        var upcomingInterviewsFlag = false;
+        var pastInterviewsFlag = false;
+        var completedInterviewsFlag = false;
 
         var actionNeeded = false;
 
@@ -313,25 +321,132 @@ function processDataForJobApplications(returnedData) {
 
             actionNeeded = false;
             if(value.extraData.workflowStatus != null){
-                if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+                if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED){
+                    if(!acceptInterviewFlag){
+                        var actionNeededHeader = document.createElement("div");
+                        actionNeededHeader.textContent = "Please accept/reject/rescheduled application(s)";
+                        actionNeededHeader.className = "headerRibbon";
+                        actionNeededHeader.style = "padding: 8px; text-align: center";
+                        pendingParent.append(actionNeededHeader);
+                        acceptInterviewFlag = true;
+                    }
+                    pendingParent.append(candidateCard);
+                    pendingCount++;
+                    approvalCount++;
+                    actionNeeded = true;
+                } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE) {
+                    if(!pendingConfirmationFlag){
+                        var pendingConfirmationHeader = document.createElement("div");
+                        pendingConfirmationHeader.textContent = "Awaiting candidate's response";
+                        pendingConfirmationHeader.className = "headerRibbon";
+                        pendingConfirmationHeader.style = "padding: 8px; text-align: center";
+                        pendingParent.append(pendingConfirmationHeader);
+                        pendingConfirmationFlag = true;
+                    }
+
+                } else if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+                    var todayDay = new Date();
+                    var interviewDate = new Date(value.extraData.interviewDate);
+                    var interviewDay = interviewDate.getDate();
+                    var interviewMonth = interviewDate.getMonth() + 1;
+
+                    //checking today's interview, if yes, it should be on top
+                    if((todayDay.getDate() == interviewDay) && ((todayDay.getMonth() + 1) == interviewMonth)){
+
+                        if(!interviewTodayListFlag){
+                            var interviewTodayHeader = document.createElement("div");
+                            interviewTodayHeader.textContent = "Today's interview(s)";
+                            interviewTodayHeader.className = "headerRibbon";
+                            interviewTodayHeader.style = "padding: 8px; text-align: center";
+                            confirmedParent.append(interviewTodayHeader);
+                            interviewTodayListFlag = true;
+                        }
+                        confirmedParent.append(candidateCard);
+                        confirmedCount++;
+                    } else if(todayDay.getTime() < interviewDate.getTime()){
+
+                        if(!upcomingInterviewsFlag){
+                            var upcomingInterviewHeader = document.createElement("div");
+                            upcomingInterviewHeader.textContent = "Upcoming interview(s)";
+                            upcomingInterviewHeader.className = "headerRibbon";;
+                            upcomingInterviewHeader.style = "padding: 8px; text-align: center";
+                            confirmedParent.append(upcomingInterviewHeader);
+                            upcomingInterviewsFlag = true;
+                        }
+                        confirmedParent.append(candidateCard);
+                        confirmedCount++;
+                    } else{
+                        if(!pastInterviewsFlag){
+                            var pastInterviewHeader = document.createElement("div");
+                            pastInterviewHeader.textContent = "Past interview(s)";
+                            pastInterviewHeader.className = "headerRibbon";
+                            pastInterviewHeader.style = "padding: 8px; text-align: center";
+                            confirmedParent.append(pastInterviewHeader);
+                            pastInterviewsFlag = true;
+                        }
+                        confirmedParent.append(candidateCard);
+                        confirmedCount++;
+
+                    }
                     confirmedParent.append(candidateCard);
                     confirmedCount++;
                 } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
+                    if(!rejectedListFlag){
+                        var rejectedHeader = document.createElement("div");
+                        rejectedHeader.textContent = "Not selected for interview";
+                        rejectedHeader.className = "headerRibbon";
+                        rejectedHeader.style = "padding: 8px; text-align: center";
+                        pendingParent.append(rejectedHeader);
+                        rejectedListFlag = true;
+                    }
+
                     pendingParent.append(candidateCard);
                     pendingCount++;
                 } else if(value.extraData.workflowStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
+                    if(!completedInterviewsFlag){
+                        var completedHeader = document.createElement("div");
+                        completedHeader.textContent = "Completed Interview(s)";
+                        completedHeader.className = "headerRibbon";
+                        completedHeader.style = "padding: 8px; text-align: center";
+                        completedParent.append(completedHeader);
+                        completedInterviewsFlag = true;
+                    }
                     completedParent.append(candidateCard);
                     completedCount++;
                 } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_PRESCREEN_COMPLETED){
+                    if(!contactCandidatesFlag){
+                        contactCandidateHeader = document.createElement("div");
+                        contactCandidateHeader.textContent = "Contact Candidate(s)";
+                        contactCandidateHeader.className = "headerRibbon";
+                        contactCandidateHeader.style = "padding: 8px; text-align: center";
+                        pendingParent.append(contactCandidateHeader);
+                        contactCandidatesFlag = true;
+                    }
                     pendingParent.append(candidateCard);
                     pendingCount++;
                 } else {
-                    pendingParent.append(candidateCard);
+                    if(!contactCandidatesFlag){
+                        contactCandidateHeader = document.createElement("div");
+                        contactCandidateHeader.textContent = "Contact Candidate(s)";
+                        contactCandidateHeader.className = "headerRibbon";
+                        contactCandidateHeader.style = "padding: 8px; text-align: center";
+                        pendingParent.append(contactCandidateHeader);
+                        contactCandidatesFlag = true;
+                    }
+
                     pendingCount++;
                     approvalCount++;
                     actionNeeded = true;
                 }
             } else{
+                if(!contactCandidatesFlag){
+                    var contactCandidateHeader = document.createElement("div");
+                    contactCandidateHeader.textContent = "Contact Candidate(s)";
+                    contactCandidateHeader.className = "headerRibbon";
+                    contactCandidateHeader.style = "padding: 8px; text-align: center";
+                    pendingParent.append(contactCandidateHeader);
+                    contactCandidatesFlag = true;
+                }
                 pendingParent.append(candidateCard);
                 pendingCount++;
             }
