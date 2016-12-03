@@ -292,7 +292,7 @@
                         var jp_id = jpElement.split("=")[1] ;
                         var jpElementLocality = pathElement[(pathElement.length) - 1];
 
-                        if (jpElementLocality.split("=")[0] == "prefLoc") {
+                        if (jpElementLocality.split("=")[0] == "pref_loc") {
 
                             var jp_locality = jpElementLocality.split("=")[1];
                             applyJobSubmitViaCandidate(jp_id, jp_locality, null, null, true);
