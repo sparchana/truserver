@@ -1524,14 +1524,11 @@ function processPreScreenContent(returnedData, customD, isSupport) {
     }
 
     if(returnedData != null){
-
         if(returnedData.elementList.length == 0){
-            notifyError("Job Application Successfully applied", 'success');
             bootbox.hideAll();
+            initInterviewModal(returnedData.candidateId, returnedData.jobPostId, false);
             return;
         }
-        notifyError("Please complete Job Application form", 'success');
-
         // if(returnedData == "OK" || returnedData == "NA" ) {
         //     processPostPreScreenResponse(returnedData);
         //     return returnedData;

@@ -159,6 +159,7 @@ function checkSlotAvailability(x, interviewDays) {
 
 
 function initInterviewModal(candidateId, jobPostId, isSupport) {
+    console.log("interview Modal init");
     var htmlBodyContent = ''+
         '<div id="confirmationMsg">'+
         '<center>'+

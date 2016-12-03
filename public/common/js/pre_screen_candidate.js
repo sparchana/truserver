@@ -422,8 +422,9 @@ function processPreScreenData(returnedData) {
     if(!returnedData.visible) {
         shouldShowPSModal = false;
         console.log("modal visible false, hide modal");
-        $("#preScreenModal").modal('hide');
         $.notify("Job Application Successfully Completed ", 'success');
+        $("#preScreenModal").modal('hide');
+        initInterviewModal(returnedData.candidateId, returnedData.jobPostId, false);
         return;
     } else{
         console.log("adding modal-open to html");

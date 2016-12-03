@@ -28,7 +28,7 @@ function processDataApplyJob(returnedData, jobPostId, candidateId, isPartner) {
     if(returnedData.status == 1) {
         //$('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
         //$("#customMsg").html("Your Job Application is Successful");
-        // $.notify("Job Application successfully applied.", 'success');
+        $.notify("Job Application successfully applied.", 'success');
         try{
             $(".jobApplyBtnV2").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
             $('.jobApplyBtnV2').attr('onclick','').unbind('click');
