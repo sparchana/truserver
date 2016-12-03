@@ -216,22 +216,32 @@ function processDataForJobApplications(returnedData) {
 
     if(returnedData != "0"){
         var candidateList = [];
+
+        var acceptInterview = [];
+        var contactCandidates = [];
+        var pendingConfirmation = [];
         var rejectedList = [];
-        var actionList = [];
         var interviewTodayList = [];
+        var upcomingInterviews = [];
+        var pastInterviews = [];
+        var completedInterviews = [];
 
         $.each(returnedData, function (key, value) {
             if (value != null) {
                 if(value.extraData.workflowStatus != null){
-                    if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
+                    if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE){
+
+                        //awaiting confirmation from recruiter
+                        pendingConfirmation.push(value);
+                    } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
 
                         //pushing all the rejected applications in rejected list which will come at last
                         rejectedList.push(value);
                     } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED){
 
                         //pushing all the action needed applications which will come on top
-                        actionList.push(value);
-                    } else if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+                        acceptInterview.push(value);
+                    } else if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
                         var todayDay = new Date();
                         var interviewDate = new Date(value.extraData.interviewDate);
                         var interviewDay = interviewDate.getDate();
@@ -239,48 +249,71 @@ function processDataForJobApplications(returnedData) {
 
                         //checking today's interview, if yes, it should be on top
                         if((todayDay.getDate() == interviewDay) && ((todayDay.getMonth() + 1) == interviewMonth)){
+
+                            //push in todays interview list
                             interviewTodayList.push(value);
-                        } else{
+                        } else if(todayDay.getTime() < interviewDate.getTime()){
 
                             //else push in the common list
-                            candidateList.push(value);
+                            upcomingInterviews.push(value);
+                        } else{
+                            //else push in the common list
+                            pastInterviews.push(value);
                         }
                     } else{
                         //pushing in the common list
-                        candidateList.push(value);
+                        completedInterviews.push(value);
                     }
                 } else{
                     //applications with null status goes in the common list
-                    candidateList.push(value);
+                    contactCandidates.push(value);
                 }
             }
         });
 
-        //today's interview first
-        interviewTodayList.forEach(function (val) {
-            actionList.push(val);
+        acceptInterview.forEach(function (val) {
+            candidateList.push(val);
         });
 
-        //other candidates int the middle
-        candidateList.forEach(function (val) {
-            actionList.push(val);
+        contactCandidates.forEach(function (val) {
+            candidateList.push(val);
         });
 
-        //rejected candidates at the end
+        pendingConfirmation.forEach(function (val) {
+            candidateList.push(val);
+        });
+
         rejectedList.forEach(function (val) {
-            actionList.push(val);
+            candidateList.push(val);
         });
+
+        interviewTodayList.forEach(function (val) {
+            candidateList.push(val);
+        });
+
+        upcomingInterviews.forEach(function (val) {
+            candidateList.push(val);
+        });
+
+        pastInterviews.forEach(function (val) {
+            candidateList.push(val);
+        });
+
+        completedInterviews.forEach(function (val) {
+            candidateList.push(val);
+        });
+
 
         var actionNeeded = false;
 
-        actionList.forEach(function (value){
+        candidateList.forEach(function (value){
             var candidateCard = document.createElement("div");
             candidateCard.className = "card";
             candidateCard.style = "border-radius: 6px";
 
             actionNeeded = false;
             if(value.extraData.workflowStatus != null){
-                if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+                if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
                     confirmedParent.append(candidateCard);
                     confirmedCount++;
                 } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
