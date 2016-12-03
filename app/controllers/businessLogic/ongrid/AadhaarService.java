@@ -204,15 +204,15 @@ public class AadhaarService {
             reqBuilder.append(AA_OTHER_PROFESSIONID + ":" + "\"" + "unknown" + "\",\n");
         }
 
-        reqBuilder.append(AA_PHONE + ":" +  "\"" + candidate.getCandidateMobile()  + "\",\n");
+        reqBuilder.append(AA_PHONE + ":" +  "\"" + candidate.getCandidateMobile() + "\"");
 
         if (candidate.getCandidateEmail() != null) {
-            reqBuilder.append(AA_EMAIL + ":" + "\"" + candidate.getCandidateEmail() + "\",\n");
+            reqBuilder.append(",\n" + AA_EMAIL + ":" + "\"" + candidate.getCandidateEmail() + "\"");
         }
 
         if (candidate.getCandidateDOB() != null) {
-            reqBuilder.append(AA_DOB + ":" + "\"" + sfd_yyyymmdd.format(candidate.getCandidateDOB()) + "\",\n");
-            reqBuilder.append(AA_AGE + ":" + "\"" + candidate.getCandidateAge() + "\",");
+            reqBuilder.append(",\n" + AA_DOB + ":" + "\"" + sfd_yyyymmdd.format(candidate.getCandidateDOB())+ "\"");
+            reqBuilder.append(",\n" + AA_AGE + ":" + "\"" + candidate.getCandidateAge() + "\"");
         }
 
         if (reqBuilder.charAt(reqBuilder.length()-1) == ',') {
@@ -241,8 +241,8 @@ public class AadhaarService {
                 .addHeader("authorization", "Basic " + authKey)
                 .build();
 
-        Logger.info("Request: " + request.toString() + " \n Response Body: " + request.body().toString()
-                + " \n Response Header: " + request.headers().toString());
+        Logger.info("Request: " + request.toString() + " \n Request Params: " + reqParams
+                + " \n Request Header: " + request.headers().toString());
 
         Response onGridResponse = null;
         String responseBody = null;

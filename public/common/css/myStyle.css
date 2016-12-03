@@ -633,6 +633,9 @@ hr{
 
 }
 
+.owl-item{
+    text-align: center;
+}
 
 #jobRoleName:hover{
     cursor:pointer;

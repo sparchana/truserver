@@ -1289,9 +1289,15 @@ public class Application extends Controller {
 
     public static Result getAllCompanyLogos() {
         List<Company> companyList = Company.find.where()
+                .ne("CompanyLogo", "https://s3.amazonaws.com/trujobs.in/companyLogos/default_company_logo.png")
                 .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
                 .orderBy("companyName").findList();
-        return ok(toJson(companyList));
+
+        List<String> logoList = new ArrayList<>();
+        for(Company company: companyList){
+            logoList.add(company.getCompanyLogo());
+        }
+        return ok(toJson(logoList));
     }
 
     @Security.Authenticated(SuperAdminSecured.class)
@@ -1895,7 +1901,12 @@ public class Application extends Controller {
 
         if (ServerConstants.PropertyType.DOCUMENT.ordinal() == propertyId) {
             UpdateCandidateDocument updateCandidateDocument = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateDocument.class);
-            CandidateService.updateCandidateDocument(candidate, updateCandidateDocument);
+            boolean isVerifyAadhaar = CandidateService.updateCandidateDocument(candidate, updateCandidateDocument);
+
+            if (isVerifyAadhaar) {
+                CandidateService.verifyAadhaar(candidate.getCandidateMobile());
+            }
+
             return ok("ok");
         } else if (ServerConstants.PropertyType.LANGUAGE.ordinal() == propertyId) {
             UpdateCandidateLanguageKnown updateCandidateLanguageKnown = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateLanguageKnown.class);
@@ -2066,14 +2077,18 @@ public class Application extends Controller {
             newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
             UpdateCandidateDetail updateCandidateDetail = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateDetail.class);
+
+            boolean isVerifyAadhaar = false;
+
             for(String propId: propertyIds){
                 if (propId == null || propId.isEmpty()) continue;
 
                 Integer propertyId = Integer.parseInt(propId);
+
                 if (ServerConstants.PropertyType.DOCUMENT.ordinal() == propertyId) {
                     UpdateCandidateDocument updateCandidateDocument = new UpdateCandidateDocument();
                     updateCandidateDocument.setIdProofWithIdNumberList(updateCandidateDetail.getIdProofWithIdNumberList());
-                    CandidateService.updateCandidateDocument(candidate, updateCandidateDocument);
+                    isVerifyAadhaar = CandidateService.updateCandidateDocument(candidate, updateCandidateDocument);
                 } else if (ServerConstants.PropertyType.LANGUAGE.ordinal() == propertyId) {
                     UpdateCandidateLanguageKnown updateCandidateLanguageKnown = new UpdateCandidateLanguageKnown();
 
@@ -2128,6 +2143,10 @@ public class Application extends Controller {
                     timeShiftPreference.setCandidateTimeShiftPref(updateCandidateDetail.getCandidateTimeShiftPref());
                     CandidateService.updateCandidateWorkshift(candidate, timeShiftPreference);
                 }
+            }
+
+            if (isVerifyAadhaar) {
+                CandidateService.verifyAadhaar(candidateMobile);
             }
 
             // saving preScreen Results
