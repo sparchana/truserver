@@ -24,6 +24,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static api.ServerConstants.devTeamMobile;
@@ -224,7 +225,7 @@ public class SmsUtil {
     }
 
     public static void sendJobApplicationSmsToPartner(String candidateFirstName, String jobPostTitle, String companyName, String partnerMobile, String localityName, String partnerFirstName) {
-        String msg = "Hi " + partnerFirstName + ", you have applied to " + jobPostTitle + " job at " + companyName + " @" + localityName + " for your candidate - " + candidateFirstName +". To know more about status of Applications, call us at +91 8048039089. www.trujobs.in";
+        String msg = "Hi " + partnerFirstName + ", you have applied to " + jobPostTitle + " job at " + companyName + " @" + localityName + " for your candidate - " + candidateFirstName +". To know more about status of Applications, call us at +91 8880007799. www.trujobs.in";
         sendSms(partnerMobile, msg);
     }
 
@@ -269,7 +270,8 @@ public class SmsUtil {
 
     public static void sendRecruiterJobPostActivationSms(RecruiterProfile recruiterProfile, JobPost jobPost) {
         String msg = "Hi " + recruiterProfile.getRecruiterProfileName() + ", your job post: " + jobPost.getJobPostTitle()
-                + " has been verified and successfully posted on www.trujobs.in.!" +
+                + " has been verified and successfully posted on www.trujobs.in.! Please view your job post at www.trujobs.in/recruiter/jobPost/" +
+                jobPost.getJobPostId() + " and update details if needed." +
                 " Log in at www.trujobs.in/recruiter to track job applications";
         sendSms(recruiterProfile.getRecruiterProfileMobile(), msg);
     }
@@ -342,9 +344,12 @@ public class SmsUtil {
         Logger.info(year + " " + day + " " + month + " ");
         String msg = "Hi " + candidate.getCandidateFirstName() + ", your interview for " + jobApplication.getJobPost().getJobPostTitle() + " at " + jobApplication.getJobPost().getCompany().getCompanyName() +
                 " has been confirmed on " + interviewDate + " between " + jobApplication.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Please reach the office on time with your documents. All the best!";
+        if(jobApplication.getJobPost().getJobPostAddress() != null || !Objects.equals(jobApplication.getJobPost().getJobPostAddress(), "")){
+            msg += "\n\nAddress: " + jobApplication.getJobPost().getJobPostAddress();
+        }
 
         if (jobApplication.getInterviewLocationLat() != null) {
-            msg += "\nInterview Location: http://maps.google.com/?q=" + jobApplication.getInterviewLocationLat() + "," + jobApplication.getInterviewLocationLng();
+            msg += "\nDirections: http://maps.google.com/?q=" + jobApplication.getInterviewLocationLat() + "," + jobApplication.getInterviewLocationLng();
         }
         sendSms(candidate.getCandidateMobile(), msg);
     }

@@ -325,6 +325,10 @@ $(document).ready(function () {
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
+    } else{
+        $('#jobPostExperience').tokenize().tokenAdd(5, "Any");
+        $('#jobPostEducation').tokenize().tokenAdd(6, "Any");
+
     }
 
     /* ajax commands to fetch all localities and jobs*/
@@ -476,9 +480,6 @@ $(document).ready(function () {
         }
     });
 
-    $('#jobPostExperience').tokenize().tokenAdd(5, "Any");
-    $('#jobPostEducation').tokenize().tokenAdd(6, "Any");
-
     google.maps.event.addDomListener(window, 'load', function () {
         var defaultBounds = new google.maps.LatLngBounds(
             new google.maps.LatLng(12.97232, 77.59480),
@@ -533,6 +534,15 @@ $(document).ready(function () {
                 }
             });
         });
+    });
+
+    //checkbox change action
+    $('#check_applications').change(function() {
+        if($(this).is(":checked")) {
+            $("#reviewApplicationLabel").html('Confirm interviews for all applications (uncheck this option if you want to review applications before confirming interviews)');
+        } else{
+            $("#reviewApplicationLabel").html('Confirm interviews for all applications');
+        }
     });
 });
 
@@ -844,7 +854,10 @@ function processDataForJobPost(returnedData) {
         // gender, language, age
         if (returnedData.jobPostMaxAge != null) {
             $("#jobPostMaxAge").val(returnedData.jobPostMaxAge);
+            $("#jobPostMaxAge").show();
+            $("#yes").prop('checked', true);
         }
+
         if (returnedData.gender !=null) {
             if(returnedData.gender == 0){
                 $("#male").attr('checked', true);
@@ -854,8 +867,8 @@ function processDataForJobPost(returnedData) {
                 $("#any").attr('checked', true);
             }
         }
-        if (returnedData.jobPostLanguageRequirement != null) {
-            var req = returnedData.jobPostLanguageRequirement;
+        if (returnedData.jobPostLanguageRequirements != null) {
+            var req = returnedData.jobPostLanguageRequirements;
             req.forEach(function (languageRequirement) {
                 if(languageRequirement != null){
                     $('#jobPostLanguage').tokenize().tokenAdd(languageRequirement.language.languageId, languageRequirement.language.languageName);
@@ -969,6 +982,8 @@ function processDataForJobPost(returnedData) {
 
         if(returnedData.jobPostExperience != null ){
             $('#jobPostExperience').tokenize().tokenAdd(returnedData.jobPostExperience.experienceId, returnedData.jobPostExperience.experienceType);
+        } else{
+            $('#jobPostExperience').tokenize().tokenAdd(5, "Any");
         }
 
         if(returnedData.jobPostShift != null ){
@@ -977,7 +992,10 @@ function processDataForJobPost(returnedData) {
 
         if(returnedData.jobPostEducation != null ){
             $('#jobPostEducation').tokenize().tokenAdd(returnedData.jobPostEducation.educationId, returnedData.jobPostEducation.educationName);
+        } else{
+            $('#jobPostEducation').tokenize().tokenAdd(6, "Any");
         }
+
         if(returnedData.jobPostAssetRequirements != null){
             returnedData.jobPostAssetRequirements.forEach(function (assets) {
                 var id = assets.asset.assetId;
@@ -1000,9 +1018,11 @@ function processDataForJobPost(returnedData) {
                 var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
 
                 if(interviewDetailsList[0].reviewApplication == null || interviewDetailsList[0].reviewApplication == 1){
-                    $( "#check_applications" ).prop( "checked", true);
+                    $("#check_applications" ).prop( "checked", true);
+                    $("#reviewApplicationLabel").html('Confirm interviews for all applications (uncheck this option if you want to review applications before confirming interviews)');
                 } else{
-                    $( "#check_applications" ).prop( "checked", false);
+                    $("#check_applications" ).prop( "checked", false);
+                    $("#reviewApplicationLabel").html('Confirm interviews for all applications');
                 }
 
                 /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/

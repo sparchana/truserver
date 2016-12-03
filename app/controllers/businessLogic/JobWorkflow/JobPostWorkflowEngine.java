@@ -26,6 +26,7 @@ import models.entity.RecruiterCreditHistory;
 import models.entity.Static.*;
 import models.util.SmsUtil;
 import models.util.Util;
+import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 import play.mvc.Result;
 
@@ -654,10 +655,12 @@ public class JobPostWorkflowEngine {
         }
 
         for (Map.Entry<Integer, List<PreScreenRequirement>> entry: preScreenMap.entrySet()) {
+            List<String> jobPostPlaceHolderList = new ArrayList<>();
+            List<String> candidatePlaceHolderList = new ArrayList<>();
+
             switch (entry.getKey()) {
                 case ServerConstants.CATEGORY_DOCUMENT:
                         boolean isAvailable = false;
-
                         preScreenElement = new PreScreenPopulateResponse.PreScreenElement();
                         preScreenElement.setPropertyTitle(ServerConstants.PropertyType.DOCUMENT.toString());
                         preScreenElement.setPropertyId(ServerConstants.PropertyType.DOCUMENT.ordinal());
@@ -671,27 +674,46 @@ public class JobPostWorkflowEngine {
                         for(IDProofReference idProofReference :  candidate.getIdProofReferenceList()) {
                             idProofMap.put(idProofReference.getIdProof().getIdProofId(), idProofReference);
                         }
+
                         for (PreScreenRequirement preScreenRequirement : entry.getValue()) {
-                            preScreenElement.jobPostElementList.add(
-                                    new PreScreenPopulateResponse.PreScreenCustomObject(preScreenRequirement.getIdProof(),
-                                            preScreenRequirement.getIdProof().getIdProofName(), true));
+                            // property ID
                             preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
+
+                            // candidateElement list
                             IDProofReference idProofReference = idProofMap.get(preScreenRequirement.getIdProof().getIdProofId());
+
                             if (isAvailable && idProofReference != null) {
+                                // candidate placeholder
+                                candidatePlaceHolderList.add(idProofReference.getIdProof().getIdProofName());
+
                                 if((idProofReference.getIdProofNumber() == null || idProofReference.getIdProofNumber().trim().isEmpty())){
                                     preScreenElement.isMatching = false;
                                 }
-                                preScreenElement.candidateElementList.add(new PreScreenPopulateResponse.PreScreenCustomObject(preScreenRequirement.getIdProof(),
+                                preScreenElement.candidateElementList.add(new PreScreenPopulateResponse.PreScreenCustomObject(idProofReference,
                                         preScreenRequirement.getIdProof().getIdProofName(), true));
                             } else {
                                 preScreenElement.isMatching = false;
                             }
+
+
+                            // jobpost placeholder, contains all idProofName required by jobpost
+                            jobPostPlaceHolderList.add(preScreenRequirement.getIdProof().getIdProofName());
+
+                            // jobPostElement list
+                            if(!preScreenElement.isMatching) {
+
+                                preScreenElement.jobPostElementList.add(
+                                        new PreScreenPopulateResponse.PreScreenCustomObject(preScreenRequirement.getIdProof(),
+                                                preScreenRequirement.getIdProof().getIdProofName(), true));
+                            }
                         }
+                        preScreenElement.jobPostPlaceHolder = StringUtils.join(jobPostPlaceHolderList, ", ");
+                        preScreenElement.candidatePlaceHolder = StringUtils.join(candidatePlaceHolderList, ", ");
                         preScreenElement.isSingleEntity = false;
                         populateResponse.elementList.add(preScreenElement);
                     break;
                 case ServerConstants.CATEGORY_LANGUAGE:
-                    List<Language> candidateLanguageList = new ArrayList<>();
+                    Map<Integer, Language> candidateLanguageMap = new HashMap<>();
                     List<Language> jobPostLanguageList = new ArrayList<>();
 
                     preScreenElement = new PreScreenPopulateResponse.PreScreenElement();
@@ -701,34 +723,51 @@ public class JobPostWorkflowEngine {
                     preScreenElement.jobPostElementList = new ArrayList<>();
                     preScreenElement.candidateElementList = new ArrayList<>();
 
-                    for (PreScreenRequirement preScreenRequirement : entry.getValue()) {
-                        preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
-
-                        preScreenElement.jobPostElementList.add(new PreScreenPopulateResponse.PreScreenCustomObject(preScreenRequirement.getLanguage(),
-                                preScreenRequirement.getLanguage().getLanguageName(), true));
-                        jobPostLanguageList.add(preScreenRequirement.getLanguage());
-                    }
                     if (candidate.getLanguageKnownList() != null && candidate.getLanguageKnownList().size()>0) {
                         for (LanguageKnown lk : candidate.getLanguageKnownList()){
-                            candidateLanguageList.add(lk.getLanguage());
-                        }
-                        for (Language language: jobPostLanguageList) {
-                            if (candidateLanguageList.contains(language)) {
-                                preScreenElement.candidateElementList.add(new PreScreenPopulateResponse.PreScreenCustomObject(language,
-                                        language.getLanguageName(), true));
-                            } else {
-                                preScreenElement.isMatching = false;
-                            }
+                            candidateLanguageMap.put(lk.getLanguage().getLanguageId(), lk.getLanguage());
                         }
                     } else {
                         preScreenElement.isMatching = false;
                     }
+                    for (PreScreenRequirement preScreenRequirement : entry.getValue()) {
+                        preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
+
+                        // jobpost placeholder
+                        jobPostPlaceHolderList.add(preScreenRequirement.getLanguage().getLanguageName());
+
+                        // add language object which are not provided by candidate
+                        if(candidateLanguageMap.get(preScreenRequirement.getLanguage().getLanguageId()) == null){
+                            preScreenElement.jobPostElementList.add(new PreScreenPopulateResponse.PreScreenCustomObject(preScreenRequirement.getLanguage(),
+                                    preScreenRequirement.getLanguage().getLanguageName(), true));
+                        }
+
+                         jobPostLanguageList.add(preScreenRequirement.getLanguage());
+                    }
+
+                    if(jobPostLanguageList.size()>0){
+                        for (Language language: jobPostLanguageList) {
+                            if (candidateLanguageMap.get(language.getLanguageId()) != null) {
+                                preScreenElement.candidateElementList.add(new PreScreenPopulateResponse.PreScreenCustomObject(language,
+                                        language.getLanguageName(), true));
+
+                                // candidate placeholder
+                                candidatePlaceHolderList.add(language.getLanguageName());
+
+                            } else {
+                                preScreenElement.isMatching = false;
+                            }
+                        }
+                    }
+
+                    preScreenElement.jobPostPlaceHolder = StringUtils.join(jobPostPlaceHolderList, ", ");
+                    preScreenElement.candidatePlaceHolder = StringUtils.join(candidatePlaceHolderList, ", ");
                     preScreenElement.isSingleEntity = false;
                     populateResponse.elementList.add(preScreenElement);
                     break;
                 case ServerConstants.CATEGORY_ASSET:
 
-                    List<Asset> candidateAssetList = new ArrayList<>();
+                    Map<Integer, Asset> candidateAssetMap = new HashMap<>();
                     List<Asset> jobPostAssetList = new ArrayList<>();
                     // we don't capture candidate asset detail into asset object
                     preScreenElement = new PreScreenPopulateResponse.PreScreenElement();
@@ -738,27 +777,49 @@ public class JobPostWorkflowEngine {
                     preScreenElement.jobPostElementList = new ArrayList<>();
                     preScreenElement.candidateElementList = new ArrayList<>();
 
-                    for (PreScreenRequirement preScreenRequirement : entry.getValue()) {
-                        preScreenElement.jobPostElementList.add(new PreScreenPopulateResponse.PreScreenCustomObject(preScreenRequirement.getAsset(),
-                                preScreenRequirement.getAsset().getAssetTitle(), true));
-                        preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
-                        jobPostAssetList.add(preScreenRequirement.getAsset());
-                    }
                     if (candidate.getCandidateAssetList() != null && candidate.getCandidateAssetList().size()>0) {
                         for (CandidateAsset ca : candidate.getCandidateAssetList()){
-                            candidateAssetList.add(ca.getAsset());
-                        }
-                        for (Asset asset: jobPostAssetList) {
-                            if (candidateAssetList.contains(asset)) {
-                                preScreenElement.candidateElementList.add(new PreScreenPopulateResponse.PreScreenCustomObject(asset,
-                                        asset.getAssetTitle(), true));
-                            } else {
-                                preScreenElement.isMatching = false;
-                            }
+                            candidateAssetMap.put(ca.getAsset().getAssetId(), ca.getAsset());
                         }
                     } else {
                         preScreenElement.isMatching = false;
                     }
+
+                    for (PreScreenRequirement preScreenRequirement : entry.getValue()) {
+                        // jobpost placeholder
+                        jobPostPlaceHolderList.add(preScreenRequirement.getAsset().getAssetTitle());
+
+
+                        // add only those asset which are not provided by candidate
+                        if(candidateAssetMap.get(preScreenRequirement.getAsset().getAssetId()) == null){
+                            preScreenElement.jobPostElementList.add(new PreScreenPopulateResponse.PreScreenCustomObject(preScreenRequirement.getAsset(),
+                                    preScreenRequirement.getAsset().getAssetTitle(), true));
+                        }
+
+                        // TODO rename everywhere propertyIdList to requirementIdList
+                        preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
+
+                        jobPostAssetList.add(preScreenRequirement.getAsset());
+
+                    }
+
+
+                    for (Asset asset: jobPostAssetList) {
+                        if (candidateAssetMap.get(asset.getAssetId()) != null) {
+                            preScreenElement.candidateElementList.add(new PreScreenPopulateResponse.PreScreenCustomObject(asset,
+                                    asset.getAssetTitle(), true));
+
+                            // candidate placeholder
+                            candidatePlaceHolderList.add(asset.getAssetTitle());
+                        } else {
+                            preScreenElement.isMatching = false;
+                        }
+                    }
+
+                    // set final placeholders here
+                    preScreenElement.jobPostPlaceHolder = StringUtils.join(jobPostPlaceHolderList, ", ");
+                    preScreenElement.candidatePlaceHolder = StringUtils.join(candidatePlaceHolderList, ", ");
+
                     preScreenElement.isSingleEntity = false;
                     preScreenElement.isMinReq = true;
 
@@ -777,9 +838,16 @@ public class JobPostWorkflowEngine {
                                     preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
                                     preScreenElement.jobPostElement = (new PreScreenPopulateResponse.PreScreenCustomObject(null,
                                             jobPost.getJobPostMaxAge(), false));
+
+                                    // set final jobPost placeholders here
+                                    preScreenElement.jobPostPlaceHolder = jobPost.getJobPostMaxAge();
+
                                     if(candidate.getCandidateAge() != null &&  candidate.getCandidateAge() > 0) {
                                         preScreenElement.candidateElement = (new PreScreenPopulateResponse.PreScreenCustomObject(null,
                                                 candidate.getCandidateAge(), false));
+
+                                        // set final candidate placeholders here
+                                        preScreenElement.candidatePlaceHolder = candidate.getCandidateAge();
 
                                         if(!(jobPost.getJobPostMaxAge() >= candidate.getCandidateAge())) {
                                             preScreenElement.isMatching = false;
@@ -801,10 +869,18 @@ public class JobPostWorkflowEngine {
                                     preScreenElement.jobPostElement=(new PreScreenPopulateResponse.PreScreenCustomObject(null,
                                             jobPost.getJobPostExperience().getExperienceType(), false));
 
+
+                                    // set final jobPost placeholders here
+                                    preScreenElement.jobPostPlaceHolder = jobPost.getJobPostExperience().getExperienceType();
+
                                     if(candidate.getCandidateTotalExperience() != null && jobPostMinMaxExp != null) {
                                         double totalExpInYrs= ((double)candidate.getCandidateTotalExperience())/12;
                                         preScreenElement.candidateElement = (new PreScreenPopulateResponse.PreScreenCustomObject(jobPost.getJobPostExperience(),
                                                 (Util.RoundTo2Decimals(totalExpInYrs)+ " Yrs"), true));
+
+                                        // set final candidate placeholders here
+                                        preScreenElement.candidatePlaceHolder = (Util.RoundTo2Decimals(totalExpInYrs)+ " Yrs");
+
 
                                         if(!(jobPostMinMaxExp.minExperienceValue > 0 && candidate.getCandidateTotalExperience() > 0
                                                 && jobPostMinMaxExp.minExperienceValue <= candidate.getCandidateTotalExperience())) {
@@ -820,6 +896,10 @@ public class JobPostWorkflowEngine {
                                             double totalExpInYrs= ((double)candidate.getCandidateTotalExperience())/12;
                                             preScreenElement.candidateElement = (new PreScreenPopulateResponse.PreScreenCustomObject(jobPost.getJobPostExperience(),
                                                     (Util.RoundTo2Decimals(totalExpInYrs)+ " Yrs"), true));
+
+                                            // set final candidate placeholders here
+                                            preScreenElement.candidatePlaceHolder = (Util.RoundTo2Decimals(totalExpInYrs)+ " Yrs");
+
                                         }
                                     } else{
                                         // candidate exp is not available hence not a match
@@ -836,9 +916,17 @@ public class JobPostWorkflowEngine {
                                     preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
                                     preScreenElement.jobPostElement = (new PreScreenPopulateResponse.PreScreenCustomObject(jobPost.getJobPostEducation(),
                                             jobPost.getJobPostEducation().getEducationName(), true));
+
+                                    // set final jobPost placeholders here
+                                    preScreenElement.jobPostPlaceHolder = jobPost.getJobPostEducation().getEducationName();
+
                                     if(candidate.getCandidateEducation() != null && candidate.getCandidateEducation().getEducation() != null) {
                                         preScreenElement.candidateElement = (new PreScreenPopulateResponse.PreScreenCustomObject(candidate.getCandidateEducation().getEducation(),
                                                 candidate.getCandidateEducation().getEducation().getEducationName(), true));
+
+                                        // set final candidate placeholders here
+                                        preScreenElement.candidatePlaceHolder =  candidate.getCandidateEducation().getEducation().getEducationName();
+
                                         if(!(jobPost.getJobPostEducation().getEducationName().trim().equalsIgnoreCase("any")) && !((candidate.getCandidateEducation().getEducation().getEducationId() - jobPost.getJobPostEducation().getEducationId()) >=0)) {
                                             preScreenElement.isMatching = false;
                                         }
@@ -857,9 +945,19 @@ public class JobPostWorkflowEngine {
                                     preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
                                     preScreenElement.jobPostElement = new PreScreenPopulateResponse.PreScreenCustomObject(jobPost.getGender(),
                                             jobPost.getGender() == ServerConstants.GENDER_ANY ? "Any" : jobPost.getGender() == ServerConstants.GENDER_MALE ? "Male": "Female", true);
+
+                                    // set final jobPost placeholders here
+                                    preScreenElement.jobPostPlaceHolder =  jobPost.getGender() == ServerConstants.GENDER_ANY ? "Any" : jobPost.getGender() == ServerConstants.GENDER_MALE ? "Male": "Female";
+
+
                                     if(candidate.getCandidateGender() != null) {
                                         preScreenElement.candidateElement = new PreScreenPopulateResponse.PreScreenCustomObject(candidate.getCandidateGender(),
                                                 candidate.getCandidateGender() == ServerConstants.GENDER_MALE ? "Male" : "Female", true);
+
+                                        // set final candidate placeholders here
+                                        preScreenElement.candidatePlaceHolder =  candidate.getCandidateGender() == ServerConstants.GENDER_MALE ? "Male" : "Female";
+
+
                                         if (candidate.getCandidateGender() != jobPost.getGender() && jobPost.getGender() != ServerConstants.GENDER_ANY) {
                                             preScreenElement.isMatching = false;
                                         }
@@ -884,9 +982,17 @@ public class JobPostWorkflowEngine {
                                     }
                                     preScreenElement.jobPostElement = new PreScreenPopulateResponse.PreScreenCustomObject(jobPost.getJobPostMinSalary(),
                                             result, true);
+
+                                    // set final jobPost placeholders here
+                                    preScreenElement.jobPostPlaceHolder =  result;
+
                                     if (candidate.getCandidateLastWithdrawnSalary() != null) {
                                         preScreenElement.candidateElement = new PreScreenPopulateResponse.PreScreenCustomObject((candidate.getCandidateLastWithdrawnSalary()),
                                                 (candidate.getCandidateLastWithdrawnSalary()), true);
+
+                                        // set final candidate placeholders here
+                                        preScreenElement.candidatePlaceHolder =  (candidate.getCandidateLastWithdrawnSalary());
+
                                         if (candidate.getCandidateLastWithdrawnSalary() > jobPost.getJobPostMinSalary()) {
                                             if (jobPost.getJobPostMaxSalary() != null
                                                     && jobPost.getJobPostMaxSalary() != 0
@@ -916,6 +1022,8 @@ public class JobPostWorkflowEngine {
                                     preScreenElement.jobPostElementList = new ArrayList<>();
                                     preScreenElement.candidateElementList = new ArrayList<>();
 
+                                    preScreenElement.isMatching = true;
+
                                     preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
                                     List<Long> localityIdList = new ArrayList<>();
                                     Iterator<JobPostToLocality> iterator = jobPost.getJobPostToLocalityList().iterator();
@@ -931,13 +1039,28 @@ public class JobPostWorkflowEngine {
                                                 (jobPostToLocality.getLocality().getLocalityName()), true));
                                     }
 
+                                    // set final candidate placeholders here
+                                    preScreenElement.jobPostPlaceHolder =  jobPostLocalityString;
+
                                     List<Candidate> candidateList = filterByLatLngOrHomeLocality(new ArrayList<>(Arrays.asList(candidate)), localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
                                     if(candidateList.size()>0) {
-                                        preScreenElement.candidateElementList.add(new PreScreenPopulateResponse.PreScreenCustomObject((null),
-                                                (candidateList.get(0).getMatchedLocation()), false));
+                                        preScreenElement.candidateElementList.add(new PreScreenPopulateResponse.PreScreenCustomObject((candidateList.get(0).getLocality()),
+                                                (candidateList.get(0).getMatchedLocation()), true));
+
+                                        if(candidateList.get(0).getLocality() == null && candidateList.get(0).getCandidateLocalityLat() == null){
+                                            preScreenElement.isMatching = false;
+                                            preScreenElement.candidateElementList = new ArrayList<>();
+                                        }
+                                        if(candidateList.get(0).getMatchedLocation().isEmpty()){
+                                            preScreenElement.isMatching = false;
+                                        }
+
+
+                                        // set final candidate placeholders here
+                                        preScreenElement.candidatePlaceHolder =  (candidateList.get(0).getMatchedLocation());
+
                                     }
                                     preScreenElement.isMinReq = false;
-                                    preScreenElement.isMatching = true;
                                     preScreenElement.isSingleEntity = false;
 
                                     populateResponse.elementList.add(preScreenElement);
@@ -968,9 +1091,18 @@ public class JobPostWorkflowEngine {
                                     preScreenElement.jobPostElement = new PreScreenPopulateResponse.PreScreenCustomObject((jobPost.getJobPostShift()),
                                             (timeShift), true);
 
+                                    // set final jobpost placeholders here
+                                    preScreenElement.jobPostPlaceHolder = (timeShift);
+
+
                                     if (candidate.getTimeShiftPreference() != null) {
                                         preScreenElement.candidateElement = new PreScreenPopulateResponse.PreScreenCustomObject((candidate.getTimeShiftPreference().getTimeShift()),
                                                 (candidate.getTimeShiftPreference().getTimeShift().getTimeShiftName()), true);
+
+                                        // set final candidate placeholders here
+                                        preScreenElement.candidatePlaceHolder = (candidate.getTimeShiftPreference().getTimeShift().getTimeShiftName());
+
+
                                         if (jobPost.getJobPostShift().getTimeShiftId() != candidate.getTimeShiftPreference().getTimeShift().getTimeShiftId()
                                                 && !candidate.getTimeShiftPreference().getTimeShift().getTimeShiftName().trim().equalsIgnoreCase("any")) {
                                             preScreenElement.isMatching = false;
@@ -990,12 +1122,13 @@ public class JobPostWorkflowEngine {
         }
         if(populateResponse.elementList != null && populateResponse.elementList.size() > 0) {
             for(PreScreenPopulateResponse.PreScreenElement pe : populateResponse.elementList) {
-                if(pe!= null && !pe.isMatching() &&  pe.getCandidateElement() == null) {
-                    // show UI to collect candidate missing data
-                    if((pe.isSingleEntity() && pe.getCandidateElement() == null) ||
-                            (!pe.isSingleEntity() &&
-                                    (pe.getCandidateElementList() == null || pe.getCandidateElementList().size() == 0))){
+                if(pe!= null && !pe.isMatching()){
+                    if((pe.isSingleEntity() && pe.getCandidateElement() == null)){
                         isCandidateDataMissing = true;
+                        break;
+                    } else if(!pe.isSingleEntity()) {
+                        isCandidateDataMissing = true;
+                        break;
                     }
                 }
             }
@@ -2359,7 +2492,7 @@ public class JobPostWorkflowEngine {
 
         if(jobPostWorkflowOld.getJobPost().getInterviewDetailsList() != null && jobPostWorkflowOld.getJobPost().getInterviewDetailsList().size() > 0){
             if(jobPostWorkflowOld.getJobPost().getInterviewDetailsList().get(0).getReviewApplication() != null
-                    && jobPostWorkflowOld.getJobPost().getInterviewDetailsList().get(0).getReviewApplication() == 0){ // dont review applications, confirm it directly
+                    && jobPostWorkflowOld.getJobPost().getInterviewDetailsList().get(0).getReviewApplication() == 1){ // dont review applications, confirm it directly
                 jwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
                 try {
 
@@ -2373,6 +2506,10 @@ public class JobPostWorkflowEngine {
                     candidateInterviewStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
                     candidateInterviewStatusUpdate.setJobPost(jobPostWorkflowOld.getJobPost());
                     candidateInterviewStatusUpdate.setCandidate(candidate);
+
+                    sendInterviewConfirmationSms(jobPostWorkflowNew, candidate);
+
+                    interactionResult = InteractionConstants.INTERACTION_RESULT_RECRUITER_AUTO_ACCEPT_JOB_INTERVIEW_DATE;
 
                     // save the interaction
                     InteractionService.createWorkflowInteraction(
@@ -2488,7 +2625,7 @@ public class JobPostWorkflowEngine {
 
         interviewFeedbackUpdate.save();
 
-        if(jwStatus == ServerConstants.CANDIDATE_FEEDBACK_COMPLETE_SELECTED){
+        if(jwStatus == ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
             sendSelectedSmsToCandidate(jobPostWorkflowNew);
         } else{
             sendRejectedSmsToCandidate(jobPostWorkflowNew);
@@ -2567,6 +2704,11 @@ public class JobPostWorkflowEngine {
             updateRecruiterWithCandidateStatus(jobPostWorkflowOld, candidate);
         }
 
+        if(session().get("sessionChannel") == null){
+            channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
+        } else{
+            channel = Integer.valueOf(session().get("sessionChannel"));
+        }
         // save the interaction
         InteractionService.createWorkflowInteraction(
                 jobPostWorkflowOld.getJobPostWorkflowUUId(),

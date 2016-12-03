@@ -268,7 +268,7 @@ function processDataForJobApplications(returnedData) {
                         } else{
                             var today = new Date();
                             var interviewDate = new Date(value.extraData.interviewDate);
-                            if(interviewDate.getDate() <= today.getDate() && interviewDate.getMonth() <= today.getMonth() && interviewDate.getFullYear() <= today.getFullYear()) { // today's schedule
+                            if(interviewDate.getTime() <= today.getTime()) { // today's schedule
                                 //interview for this job is scheduled today, hence allow to update status
                                 var feedbackBtn = document.createElement("a");
                                 feedbackBtn.className = "waves-effect waves-light btn";

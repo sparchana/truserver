@@ -1334,22 +1334,25 @@ function constructPreScreenBodyContainer(returnedData, customD, isSupport) {
                     bodyContentData2.id = "jobPostValue_"+rowData.propertyId;
                     bodyContentBox.appendChild(bodyContentData2);
 
-                    if(rowData.isSingleEntity){
-                        bodyContentData2.textContent = getPlaceholderValue(rowData.jobPostElement);
-                    } else {
-                        bodyContentData2.textContent = getPlaceholderArray(rowData.jobPostElementList);
-                    }
+                    bodyContentData2.textContent = rowData.jobPostPlaceHolder;
+                    // if(rowData.isSingleEntity){
+                    //     bodyContentData2.textContent = getPlaceholderValue(rowData.jobPostElement);
+                    // } else {
+                    //     bodyContentData2.textContent = getPlaceholderArray(rowData.jobPostElementList);
+                    // }
                 }
                 if ($.inArray(3, customD.columnVisible) > -1) {
                     var bodyContentData3 = document.createElement("td");
                     bodyContentData3.id = "candidateValue_"+rowData.propertyId;
                     bodyContentBox.appendChild(bodyContentData3);
 
-                    if(rowData.isSingleEntity){
-                        bodyContentData3.textContent = getPlaceholderValue(rowData.candidateElement);
-                    } else {
-                        bodyContentData3.textContent = getPlaceholderArray(rowData.candidateElementList);
-                    }
+                    bodyContentData3.textContent = rowData.candidatePlaceHolder;
+
+                    // if(rowData.isSingleEntity){
+                    //     bodyContentData3.textContent = getPlaceholderValue(rowData.candidateElement);
+                    // } else {
+                    //     bodyContentData3.textContent = getPlaceholderArray(rowData.candidateElementList);
+                    // }
                 }
                 if ($.inArray(4, customD.columnVisible) > -1) {
                     var spanTd = document.createElement("td");
@@ -1415,22 +1418,26 @@ function constructPreScreenBodyContainer(returnedData, customD, isSupport) {
                     bodyContentData2.id = "jobPostValue_"+rowData.propertyId;
                     bodyContentBox.appendChild(bodyContentData2);
 
-                    if(rowData.isSingleEntity){
-                        bodyContentData2.textContent = getPlaceholderValue(rowData.jobPostElement);
-                    } else {
-                        bodyContentData2.textContent = getPlaceholderArray(rowData.jobPostElementList);
-                    }
+                    bodyContentData2.textContent = rowData.jobPostPlaceHolder;
+
+                    // if(rowData.isSingleEntity){
+                    //     bodyContentData2.textContent = getPlaceholderValue(rowData.jobPostElement);
+                    // } else {
+                    //     bodyContentData2.textContent = getPlaceholderArray(rowData.jobPostElementList);
+                    // }
                 }
                 if ($.inArray(3, customD.columnVisible) > -1) {
                     var bodyContentData3 = document.createElement("td");
                     bodyContentData3.id = "candidateValue_"+rowData.propertyId;
                     bodyContentBox.appendChild(bodyContentData3);
 
-                    if(rowData.isSingleEntity){
-                        bodyContentData3.textContent = getPlaceholderValue(rowData.candidateElement);
-                    } else {
-                        bodyContentData3.textContent = getPlaceholderArray(rowData.candidateElementList);
-                    }
+                    bodyContentData3.textContent = rowData.candidatePlaceHolder;
+
+                    // if(rowData.isSingleEntity){
+                    //     bodyContentData3.textContent = getPlaceholderValue(rowData.candidateElement);
+                    // } else {
+                    //     bodyContentData3.textContent = getPlaceholderArray(rowData.candidateElementList);
+                    // }
                 }
                 if ($.inArray(4, customD.columnVisible) > -1) {
                     var spanTd = document.createElement("td");
@@ -1482,18 +1489,18 @@ function constructPreScreenBodyContainer(returnedData, customD, isSupport) {
 
     return container;
 }
-
-function getPlaceholderArray(elementList){
-    var arr = [];
-    if(elementList != null) {
-        elementList.forEach(function (customObject) {
-            if(customObject != null){
-                arr.push(customObject.placeHolder);
-            }
-        })
-    }
-    return arr;
-}
+//
+// function getPlaceholderArray(elementList){
+//     var arr = [];
+//     if(elementList != null) {
+//         elementList.forEach(function (customObject) {
+//             if(customObject != null){
+//                 arr.push(customObject.placeHolder);
+//             }
+//         })
+//     }
+//     return arr;
+// }
 
 function getPlaceholderValue(element){
     if(element != null) {
@@ -1515,11 +1522,16 @@ function processPreScreenContent(returnedData, customD, isSupport) {
         }
         return;
     }
+
     if(returnedData != null){
+
         if(returnedData.elementList.length == 0){
+            notifyError("Job Application Successfully applied", 'success');
             bootbox.hideAll();
             return;
         }
+        notifyError("Please complete Job Application form", 'success');
+
         // if(returnedData == "OK" || returnedData == "NA" ) {
         //     processPostPreScreenResponse(returnedData);
         //     return returnedData;

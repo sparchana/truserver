@@ -216,22 +216,32 @@ function processDataForJobApplications(returnedData) {
 
     if(returnedData != "0"){
         var candidateList = [];
+
+        var acceptInterview = [];
+        var contactCandidates = [];
+        var pendingConfirmation = [];
         var rejectedList = [];
-        var actionList = [];
         var interviewTodayList = [];
+        var upcomingInterviews = [];
+        var pastInterviews = [];
+        var completedInterviews = [];
 
         $.each(returnedData, function (key, value) {
             if (value != null) {
                 if(value.extraData.workflowStatus != null){
-                    if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
+                    if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE){
+
+                        //awaiting confirmation from recruiter
+                        pendingConfirmation.push(value);
+                    } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
 
                         //pushing all the rejected applications in rejected list which will come at last
                         rejectedList.push(value);
                     } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED){
 
                         //pushing all the action needed applications which will come on top
-                        actionList.push(value);
-                    } else if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+                        acceptInterview.push(value);
+                    } else if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
                         var todayDay = new Date();
                         var interviewDate = new Date(value.extraData.interviewDate);
                         var interviewDay = interviewDate.getDate();
@@ -239,66 +249,204 @@ function processDataForJobApplications(returnedData) {
 
                         //checking today's interview, if yes, it should be on top
                         if((todayDay.getDate() == interviewDay) && ((todayDay.getMonth() + 1) == interviewMonth)){
+
+                            //push in todays interview list
                             interviewTodayList.push(value);
-                        } else{
+                        } else if(todayDay.getTime() < interviewDate.getTime()){
 
                             //else push in the common list
-                            candidateList.push(value);
+                            upcomingInterviews.push(value);
+                        } else{
+                            //else push in the common list
+                            pastInterviews.push(value);
                         }
                     } else{
                         //pushing in the common list
-                        candidateList.push(value);
+                        completedInterviews.push(value);
                     }
                 } else{
                     //applications with null status goes in the common list
-                    candidateList.push(value);
+                    contactCandidates.push(value);
                 }
             }
         });
 
-        //today's interview first
-        interviewTodayList.forEach(function (val) {
-            actionList.push(val);
+        acceptInterview.forEach(function (val) {
+            candidateList.push(val);
         });
 
-        //other candidates int the middle
-        candidateList.forEach(function (val) {
-            actionList.push(val);
+        contactCandidates.forEach(function (val) {
+            candidateList.push(val);
         });
 
-        //rejected candidates at the end
+        pendingConfirmation.forEach(function (val) {
+            candidateList.push(val);
+        });
+
         rejectedList.forEach(function (val) {
-            actionList.push(val);
+            candidateList.push(val);
         });
+
+        interviewTodayList.forEach(function (val) {
+            candidateList.push(val);
+        });
+
+        upcomingInterviews.forEach(function (val) {
+            candidateList.push(val);
+        });
+
+        pastInterviews.forEach(function (val) {
+            candidateList.push(val);
+        });
+
+        completedInterviews.forEach(function (val) {
+            candidateList.push(val);
+        });
+
+        var acceptInterviewFlag = false;
+        var contactCandidatesFlag = false;
+        var pendingConfirmationFlag = false;
+        var rejectedListFlag = false;
+        var interviewTodayListFlag = false;
+        var upcomingInterviewsFlag = false;
+        var pastInterviewsFlag = false;
+        var completedInterviewsFlag = false;
 
         var actionNeeded = false;
 
-        actionList.forEach(function (value){
+        candidateList.forEach(function (value){
             var candidateCard = document.createElement("div");
             candidateCard.className = "card";
             candidateCard.style = "border-radius: 6px";
 
             actionNeeded = false;
             if(value.extraData.workflowStatus != null){
-                if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+                if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED){
+                    if(!acceptInterviewFlag){
+                        var actionNeededHeader = document.createElement("div");
+                        actionNeededHeader.textContent = "Application(s) awaiting your confirmation : Please confirm below application(s)";
+                        actionNeededHeader.className = "headerRibbon";
+                        actionNeededHeader.style = "padding: 8px; text-align: center";
+                        pendingParent.append(actionNeededHeader);
+                        acceptInterviewFlag = true;
+                    }
+                    pendingParent.append(candidateCard);
+                    pendingCount++;
+                    approvalCount++;
+                    actionNeeded = true;
+                } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE) {
+                    if(!pendingConfirmationFlag){
+                        var pendingConfirmationHeader = document.createElement("div");
+                        pendingConfirmationHeader.textContent = "You have rescheduled below application(s) : Awaiting candidate's response";
+                        pendingConfirmationHeader.className = "headerRibbon";
+                        pendingConfirmationHeader.style = "padding: 8px; text-align: center";
+                        pendingParent.append(pendingConfirmationHeader);
+                        pendingConfirmationFlag = true;
+                    }
+
+                } else if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+                    var todayDay = new Date();
+                    var interviewDate = new Date(value.extraData.interviewDate);
+                    var interviewDay = interviewDate.getDate();
+                    var interviewMonth = interviewDate.getMonth() + 1;
+
+                    //checking today's interview, if yes, it should be on top
+                    if((todayDay.getDate() == interviewDay) && ((todayDay.getMonth() + 1) == interviewMonth)){
+
+                        if(!interviewTodayListFlag){
+                            var interviewTodayHeader = document.createElement("div");
+                            interviewTodayHeader.textContent = "Today's interview(s)";
+                            interviewTodayHeader.className = "headerRibbon";
+                            interviewTodayHeader.style = "padding: 8px; text-align: center";
+                            confirmedParent.append(interviewTodayHeader);
+                            interviewTodayListFlag = true;
+                        }
+                        confirmedParent.append(candidateCard);
+                        confirmedCount++;
+                    } else if(todayDay.getTime() < interviewDate.getTime()){
+
+                        if(!upcomingInterviewsFlag){
+                            var upcomingInterviewHeader = document.createElement("div");
+                            upcomingInterviewHeader.textContent = "Upcoming interview(s)";
+                            upcomingInterviewHeader.className = "headerRibbon";;
+                            upcomingInterviewHeader.style = "padding: 8px; text-align: center";
+                            confirmedParent.append(upcomingInterviewHeader);
+                            upcomingInterviewsFlag = true;
+                        }
+                        confirmedParent.append(candidateCard);
+                        confirmedCount++;
+                    } else{
+                        if(!pastInterviewsFlag){
+                            var pastInterviewHeader = document.createElement("div");
+                            pastInterviewHeader.textContent = "Past interview(s) : Please update your feedback";
+                            pastInterviewHeader.className = "headerRibbon";
+                            pastInterviewHeader.style = "padding: 8px; text-align: center";
+                            confirmedParent.append(pastInterviewHeader);
+                            pastInterviewsFlag = true;
+                        }
+                        confirmedParent.append(candidateCard);
+                        confirmedCount++;
+
+                    }
                     confirmedParent.append(candidateCard);
                     confirmedCount++;
                 } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
+                    if(!rejectedListFlag){
+                        var rejectedHeader = document.createElement("div");
+                        rejectedHeader.textContent = "You have not shortlisted the below candidates for interview";
+                        rejectedHeader.className = "headerRibbon";
+                        rejectedHeader.style = "padding: 8px; text-align: center";
+                        pendingParent.append(rejectedHeader);
+                        rejectedListFlag = true;
+                    }
+
                     pendingParent.append(candidateCard);
                     pendingCount++;
                 } else if(value.extraData.workflowStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
+                    if(!completedInterviewsFlag){
+                        var completedHeader = document.createElement("div");
+                        completedHeader.textContent = "Completed Interview(s)";
+                        completedHeader.className = "headerRibbon";
+                        completedHeader.style = "padding: 8px; text-align: center";
+                        completedParent.append(completedHeader);
+                        completedInterviewsFlag = true;
+                    }
                     completedParent.append(candidateCard);
                     completedCount++;
                 } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_PRESCREEN_COMPLETED){
+                    if(!contactCandidatesFlag){
+                        contactCandidateHeader = document.createElement("div");
+                        contactCandidateHeader.textContent = "Candidate has not scheduled interview for below applications: Unlock contact to talk to the candidate(s)";
+                        contactCandidateHeader.className = "headerRibbon";
+                        contactCandidateHeader.style = "padding: 8px; text-align: center";
+                        pendingParent.append(contactCandidateHeader);
+                        contactCandidatesFlag = true;
+                    }
                     pendingParent.append(candidateCard);
                     pendingCount++;
                 } else {
-                    pendingParent.append(candidateCard);
+                    if(!contactCandidatesFlag){
+                        contactCandidateHeader = document.createElement("div");
+                        contactCandidateHeader.textContent = "Candidate has not scheduled interview for below applications: Unlock contact to talk to the candidate(s)";
+                        contactCandidateHeader.className = "headerRibbon";
+                        contactCandidateHeader.style = "padding: 8px; text-align: center";
+                        pendingParent.append(contactCandidateHeader);
+                        contactCandidatesFlag = true;
+                    }
+
                     pendingCount++;
                     approvalCount++;
                     actionNeeded = true;
                 }
             } else{
+                if(!contactCandidatesFlag){
+                    var contactCandidateHeader = document.createElement("div");
+                    contactCandidateHeader.textContent = "Candidate has not scheduled interview for below applications: Unlock contact to talk to the candidate(s)";
+                    contactCandidateHeader.className = "headerRibbon";
+                    contactCandidateHeader.style = "padding: 8px; text-align: center";
+                    pendingParent.append(contactCandidateHeader);
+                    contactCandidatesFlag = true;
+                }
                 pendingParent.append(candidateCard);
                 pendingCount++;
             }
@@ -364,7 +512,7 @@ function processDataForJobApplications(returnedData) {
                 candidateInterviewDateVal.id = "interview_date_" + value.candidate.candidateId;
             } else{
                 candidateInterviewDateVal.style = "margin-left: 4px";
-                interviewDetails = "Schedule not available. Please contact candidate";
+                interviewDetails = "Interview not scheduled. 'Unlock Contact' to talk to candidate";
             }
 
             candidateInterviewDateVal.textContent = interviewDetails + ". ";
@@ -494,6 +642,7 @@ function processDataForJobApplications(returnedData) {
                 matchVal.className = "tooltipped matchDiv";
                 matchVal.setAttribute("data-postiton", "top");
                 matchVal.setAttribute("data-delay", "50");
+                matchVal.setAttribute("data-html", true);
                 matchVal.setAttribute("data-tooltip", value.scoreData.reason);
 
                 if(value.scoreData.band == 1){
@@ -504,7 +653,7 @@ function processDataForJobApplications(returnedData) {
                     matchVal.textContent = "Moderate Match";
                 } else{
                     matchVal.style = "background: red";
-                    matchVal.textContent = "Low Match";
+                    matchVal.textContent = "Poor Match";
                 }
             }
 
@@ -984,10 +1133,8 @@ function processDataForJobApplications(returnedData) {
                 if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
                     var todayDay = new Date();
                     var interviewDate = new Date(value.extraData.interviewDate);
-                    var interviewDay = interviewDate.getDate();
-                    var interviewMonth = interviewDate.getMonth() + 1;
 
-                    if((todayDay.getDate() >= interviewDay) && ((todayDay.getMonth() + 1) >= interviewMonth)){
+                    if(todayDay.getTime() >= interviewDate.getTime()){
                         var feedbackBtn = document.createElement("a");
                         feedbackBtn.className = "waves-effect waves-light btn";
                         feedbackBtn.style = "font-weight: bold; margin-right: 8px";
