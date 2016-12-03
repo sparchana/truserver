@@ -317,8 +317,7 @@ div.inblockDiv{
     font-size: 16px;
     color: white;
     margin-top: 8px;
-    background: rgb(56, 79, 146);
-    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    background: rgba(162, 156, 139, 0.88);
 }
 
 
