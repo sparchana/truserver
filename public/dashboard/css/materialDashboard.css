@@ -516,6 +516,7 @@ hr{
     color: #fff;
     border-color: #f4e3a4;
     background-color: #f4cb6c;
+    background: #f4cb6c;
 }
 .appliedBtn:hover{
     cursor: not-allowed;

@@ -994,7 +994,7 @@ public class TrudroidController {
                     if(jwpf.getScheduledInterviewTimeSlot() != null){
                         InterviewTimeSlotObject.Builder interviewTimeSlotObjectBuilder = InterviewTimeSlotObject.newBuilder();
                         interviewTimeSlotObjectBuilder.setSlotId(jwpf.getScheduledInterviewTimeSlot().getInterviewTimeSlotId());
-                        interviewTimeSlotObjectBuilder.setSlotTitle(jwpf.getScheduledInterviewTimeSlot().getInterviewTimeSlotName());
+                        interviewTimeSlotObjectBuilder.setSlotName(jwpf.getScheduledInterviewTimeSlot().getInterviewTimeSlotName());
 
                         jobPostWorkFlowObjBuilder.setInterviewTimeSlotObject(interviewTimeSlotObjectBuilder.build());
                     }
@@ -1017,7 +1017,9 @@ public class TrudroidController {
                         jobPostObjectBuilder.setJobPostCompanyLogo(jwpf.getJobPost().getCompany().getCompanyLogo());
 
                         jobPostObjectBuilder.setJobPostAddress(jwpf.getJobPost().getJobPostAddress());
-                        jobPostObjectBuilder.setRecruiterName(jwpf.getJobPost().getRecruiterProfile().getRecruiterProfileName());
+                        if(jwpf.getJobPost().getRecruiterProfile() != null){
+                            jobPostObjectBuilder.setRecruiterName(jwpf.getJobPost().getRecruiterProfile().getRecruiterProfileName());
+                        }
 
                         jobPostObjectBuilder.setJobPostMinSalary(jwpf.getJobPost().getJobPostMinSalary());
                         if(jwpf.getJobPost().getJobPostMaxSalary() == 0 || jwpf.getJobPost().getJobPostMaxSalary() == null){
@@ -1027,20 +1029,22 @@ public class TrudroidController {
                         }
 
                         //experience
-                        ExperienceObject.Builder experienceObjectBuilder = ExperienceObject.newBuilder();
-                        experienceObjectBuilder.setExperienceId(jwpf.getJobPost().getJobPostExperience().getExperienceId());
-                        experienceObjectBuilder.setExperienceType(jwpf.getJobPost().getJobPostExperience().getExperienceType());
-
-                        jobPostObjectBuilder.setJobPostExperience(experienceObjectBuilder.build());
-
-                        //education
-                        EducationObject.Builder educationObjectBuilder = EducationObject.newBuilder();
-                        if(jwpf.getJobPost().getJobPostEducation() != null){
-                            educationObjectBuilder.setEducationId(jwpf.getJobPost().getJobPostEducation().getEducationId());
-                            educationObjectBuilder.setEducationName(jwpf.getJobPost().getJobPostEducation().getEducationName());
+                        if(jwpf.getJobPost().getJobPostExperience() != null){
+                            ExperienceObject.Builder experienceObjectBuilder = ExperienceObject.newBuilder();
+                            experienceObjectBuilder.setExperienceId(jwpf.getJobPost().getJobPostExperience().getExperienceId());
+                            experienceObjectBuilder.setExperienceType(jwpf.getJobPost().getJobPostExperience().getExperienceType());
+                            jobPostObjectBuilder.setJobPostExperience(experienceObjectBuilder.build());
                         }
 
-                        jobPostObjectBuilder.setEducation(educationObjectBuilder.build());
+                        if(jwpf.getJobPost().getJobPostEducation() != null){
+                            //education
+                            EducationObject.Builder educationObjectBuilder = EducationObject.newBuilder();
+                            if(jwpf.getJobPost().getJobPostEducation() != null){
+                                educationObjectBuilder.setEducationId(jwpf.getJobPost().getJobPostEducation().getEducationId());
+                                educationObjectBuilder.setEducationName(jwpf.getJobPost().getJobPostEducation().getEducationName());
+                            }
+                            jobPostObjectBuilder.setEducation(educationObjectBuilder.build());
+                        }
 
                         jobPostWorkFlowObjBuilder.setJobPostObject(jobPostObjectBuilder.build());
                     }

@@ -468,7 +468,6 @@ public class JobPostWorkflowEngine {
                 "     and i.job_post_id = job_post_workflow.job_post_id)  " +
                 " order by creation_timestamp desc ");
 
-        Logger.info("rawSql"+workFlowQueryBuilder.toString());
 
         RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
                 .columnMapping("creation_timestamp", "creationTimestamp")
