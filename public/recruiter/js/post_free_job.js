@@ -535,6 +535,15 @@ $(document).ready(function () {
             });
         });
     });
+
+    //checkbox change action
+    $('#check_applications').change(function() {
+        if($(this).is(":checked")) {
+            $("#reviewApplicationLabel").html('Confirm interviews for all applications (uncheck this option if you want to review applications before confirming interviews)');
+        } else{
+            $("#reviewApplicationLabel").html('Confirm interviews for all applications');
+        }
+    });
 });
 
 function interviewUpdate() {
@@ -1009,9 +1018,11 @@ function processDataForJobPost(returnedData) {
                 var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
 
                 if(interviewDetailsList[0].reviewApplication == null || interviewDetailsList[0].reviewApplication == 1){
-                    $( "#check_applications" ).prop( "checked", true);
+                    $("#check_applications" ).prop( "checked", true);
+                    $("#reviewApplicationLabel").html('Confirm interviews for all applications (uncheck this option if you want to review applications before confirming interviews)');
                 } else{
-                    $( "#check_applications" ).prop( "checked", false);
+                    $("#check_applications" ).prop( "checked", false);
+                    $("#reviewApplicationLabel").html('Confirm interviews for all applications');
                 }
 
                 /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
