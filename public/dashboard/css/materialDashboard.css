@@ -306,9 +306,9 @@ div.inblockDiv{
 }
 
 .activeTab{
-    color: rgb(56, 79, 146);
+    color: rgba(8, 65, 99, 0.67);
     font-weight: bold;
-    border-bottom: 2px solid rgb(56, 79, 146);
+    border-bottom: 2px solid rgba(8, 65, 99, 0.67);
 }
 
 .headerRibbon{
@@ -317,9 +317,16 @@ div.inblockDiv{
     font-size: 16px;
     color: white;
     margin-top: 8px;
-    background: rgba(162, 156, 139, 0.88);
+    background: rgba(8, 65, 99, 0.67);
 }
 
+.statusOption{
+    display: none;
+    display: inline-block;
+    margin-right: 8px;
+    text-align: center;
+    cursor: pointer;
+}
 
 #jobBody {
     margin-top: -8px;
@@ -589,30 +596,19 @@ hr{
 .accept{
     margin-left: 8px;
     cursor: pointer;
-    padding: 3px 6px 6px 6px;
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
-    background: #c0c8b6;
-    transition: 0.2s;
-}
-.accept:hover{
-    background: #06c840;
+    background: white;
 }
 
 .reject{
     margin-left: 8px;
     cursor: pointer;
-    padding: 3px 6px 6px 6px;
-    width: 28px;
-    height: 28px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
-    background: #c0c8b6;
-    transition: 0.2s;
-}
-
-.reject:hover{
-    background: #f66624;
+    background: white;
 }
 
 .navigationBtn{
