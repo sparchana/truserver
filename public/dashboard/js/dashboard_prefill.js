@@ -553,7 +553,7 @@ function validateInput(idProofId, value) {
         } else {
             return true;
         }
-    } else if (idProofId == 1) {
+    } else if (idProofId == 1 || idProofId == 7) {
         if (!validateDL(value)) {
             return false;
         } else {
