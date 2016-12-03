@@ -397,7 +397,7 @@ function processDataForJobApplications(returnedData) {
                 candidateInterviewDateVal.id = "interview_date_" + value.candidate.candidateId;
             } else{
                 candidateInterviewDateVal.style = "margin-left: 4px";
-                interviewDetails = "Schedule not available. Please contact candidate";
+                interviewDetails = "Interview not scheduled. 'Unlock Contact' to talk to candidate";
             }
 
             candidateInterviewDateVal.textContent = interviewDetails + ". ";
@@ -538,7 +538,7 @@ function processDataForJobApplications(returnedData) {
                     matchVal.textContent = "Moderate Match";
                 } else{
                     matchVal.style = "background: red";
-                    matchVal.textContent = "Low Match";
+                    matchVal.textContent = "Poor Match";
                 }
             }
 
