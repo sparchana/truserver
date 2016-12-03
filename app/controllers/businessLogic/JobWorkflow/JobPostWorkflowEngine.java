@@ -2492,7 +2492,7 @@ public class JobPostWorkflowEngine {
 
         if(jobPostWorkflowOld.getJobPost().getInterviewDetailsList() != null && jobPostWorkflowOld.getJobPost().getInterviewDetailsList().size() > 0){
             if(jobPostWorkflowOld.getJobPost().getInterviewDetailsList().get(0).getReviewApplication() != null
-                    && jobPostWorkflowOld.getJobPost().getInterviewDetailsList().get(0).getReviewApplication() == 0){ // dont review applications, confirm it directly
+                    && jobPostWorkflowOld.getJobPost().getInterviewDetailsList().get(0).getReviewApplication() == 1){ // dont review applications, confirm it directly
                 jwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
                 try {
 
@@ -2506,6 +2506,10 @@ public class JobPostWorkflowEngine {
                     candidateInterviewStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
                     candidateInterviewStatusUpdate.setJobPost(jobPostWorkflowOld.getJobPost());
                     candidateInterviewStatusUpdate.setCandidate(candidate);
+
+                    sendInterviewConfirmationSms(jobPostWorkflowNew, candidate);
+
+                    interactionResult = InteractionConstants.INTERACTION_RESULT_RECRUITER_AUTO_ACCEPT_JOB_INTERVIEW_DATE;
 
                     // save the interaction
                     InteractionService.createWorkflowInteraction(

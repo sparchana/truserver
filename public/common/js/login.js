@@ -16,7 +16,7 @@ function postLogin(returnedData) {
 
     if(applyJobFlag == 1){
         $("#myLoginModal").modal("hide");
-        applyJobSubmitViaCandidate(applyJobId, prefLocation, prefTimeSlot, scheduledInterviewDate, true);
+        /*applyJobSubmitViaCandidate(applyJobId, prefLocation, prefTimeSlot, scheduledInterviewDate, true);*/
         //applyJob(applyJobId, prefLocation, false);
         $("#customSubMsg").html("Logging in ...");
         $('#customSubMsg').modal({backdrop: 'static', keyboard: false});
@@ -24,7 +24,7 @@ function postLogin(returnedData) {
         applyJobFlag = 0;
         applyJobId = 0;
         setTimeout(function(){
-            window.location = "/dashboard/appliedJobs/?assessment=true&jp_id="+jp_id;
+            window.location = "/dashboard/appliedJobs/?ps=true&jp_id="+jp_id+"&prefLoc="+prefLocation;
         }, 3000);
     } else{
         window.location = "/dashboard";

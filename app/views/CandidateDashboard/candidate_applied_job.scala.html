@@ -12,23 +12,34 @@
 
         <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
             <!-- Bootstrap Core CSS -->
-        <link href="/assets/dashboard/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css"/>
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
+        <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/materialDashboard.css">
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/pre_screen_candidate.css"/>
+        <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
+        <link rel="stylesheet" href="/assets/support/css/bootstrap-multiselect.css" type="text/css" />
+
         <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
         @*<script type="text/javascript" src="/assets/common/js/jquery.min_1_12_0.js"></script>*@
         <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/assets/dashboard/js/dashboard.js"></script>
+        <script type="text/javascript" src="/assets/common/js/jobpost_workflow_constants.js"></script>
+        <script type="text/javascript" src="/assets/dashboard/js/user_login.js"></script>
+        <script type="text/javascript" src="/assets/dashboard/js/materialDashboard.js"></script>
+        <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
+        <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
 
             <!-- dashboard CSS and JS -->
 
         <meta name="theme-color" content="#286ab6">
 
-        <script type="text/javascript" src="/assets/dashboard/js/dashboard.js"></script>
-        <script type="text/javascript" src="/assets/common/js/jobpost_workflow_constants.js"></script>
-        <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
-        <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/materialDashboard.css">
-        <script type="text/javascript" src="/assets/dashboard/js/user_login.js"></script>
-        <script type="text/javascript" src="/assets/dashboard/js/materialDashboard.js"></script>
-        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+
+
         <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+
+
+
 
         <script type="text/javascript">
       $('html, body').css({
@@ -96,6 +107,28 @@
             </div>
         </div>
 
+        <div class="modal fade" id="preScreenModal" role="dialog" aria-labelledby="preScreenModal">
+            <div class="modal-dialog" role="document" id="preScreenModalBody">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="">
+                            You are applying for <b><div style="display: inline-block" id="jobNameConfirmation"></div></b>
+                            job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b></h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="missingInfo">
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <font style="float:left;text-align:left">TruJobs does not take money from candidates for job applications.<br>
+                            Please report to us on<span style="color:#09ac58;font-weight:bold"> 888-000-7799 </span>if you are asked to pay for job applications on TruJobs platform</font>
+                        <button type="button" id="preScreenInterviewSetBtn" class="btn">Apply</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
             <div class="container">
@@ -159,15 +192,6 @@
                     </div>Profile Status
                 </div>
             </div>
-@*            <div class="col-sm-6" style="display: flex;
-                justify-content: center;
-                align-items: flex-end;
-                padding-top: 30px;">
-                <div >
-                    <div id="assessmentDiv" class="inblockDiv" style="margin-left: 16px;"><div class="assessmentHeader">Assessment Status</div></div>
-                </div>
-
-            </div>*@
         </div>
         <div id="editProfileBody">
             <div class="container">
@@ -186,41 +210,38 @@
                             margin-top: 16px;
                             padding: 16px;
                             border-radius: 6px">
-                  To know more about status of applications, call us at +91 8048039089.
+                  To know more about status of applications, call us at +91 8880007799.
                         </div>
 
-                        <div id="customTab">
+                        <div id="customTab" style="margin-bottom: 8px">
                             <div class="row" style="margin: 0;">
-                                <div class="col-lg-3 tabItem activeTab" id="tabOne" onclick="tabOne()">
-                                    Rescheduled/Confirmed Interviews
+                                <div class="col-lg-4 tabItem activeTab" id="tabOne" onclick="tabOne()">
+                                    Pending Confirmation
                                 </div>
-                                <div class="col-lg-3 tabItem" id="tabTwo" onclick="tabTwo()">
-                                    Under Review
+                                <div class="col-lg-4 tabItem" id="tabTwo" onclick="tabTwo()">
+                                    Confirmed
                                 </div>
-                                <div class="col-lg-3 tabItem" id="tabThree" onclick="tabThree()">
+                                <div class="col-lg-4 tabItem" id="tabThree" onclick="tabThree()">
                                     Completed
-                                </div>
-                                <div class="col-lg-3 tabItem" id="tabFour" onclick="tabFour()">
-                                    Rejected
                                 </div>
                             </div>
 
                         </div>
-                        <div id="myAppliedJobsConfirmed"></div>
+
+                        <div id="myAppliedJobsPendingConfirmation" style="display: none"></div>
+                        <div id="noPendingConfirmationApplication" style="padding: 60px 6% 60px 6%">
+                            <center>
+                                <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                                <h5>No pending confirmation applications!</h5>
+                                <h6>You have zero under pending applications!</h6>
+                            </center>
+                        </div>
+                        <div id="myAppliedJobsConfirmed" style="display: none"></div>
                         <div id="noConfirmedApplication" style="padding: 60px 6% 60px 6%; display: none">
                             <center>
                                 <img src="/assets/recruiter/img/empty_box.svg" width="116px">
                                 <h5>No Confirmed applications!</h5>
                                 <h6>You have zero confirmed applications!</h6>
-                            </center>
-                        </div>
-
-                        <div id="myAppliedJobsUnderReview" style="display: none"></div>
-                        <div id="noUnderReviewApplication" style="padding: 60px 6% 60px 6%; display: none">
-                            <center>
-                                <img src="/assets/recruiter/img/empty_box.svg" width="116px">
-                                <h5>No under review applications!</h5>
-                                <h6>You have zero under review applications!</h6>
                             </center>
                         </div>
 
@@ -230,15 +251,6 @@
                                 <img src="/assets/recruiter/img/empty_box.svg" width="116px">
                                 <h5>No Completed Interviews!</h5>
                                 <h6>You have zero completed interviews!</h6>
-                            </center>
-                        </div>
-
-                        <div id="myAppliedJobsRejected" style="display: none"></div>
-                        <div id="noRejectedApplication" style="padding: 60px 6% 60px 6%; display: none">
-                            <center>
-                                <img src="/assets/recruiter/img/empty_box.svg" width="116px">
-                                <h5>No rejected applications yet!</h5>
-                                <h6>Good job! You have zero rejected applications!</h6>
                             </center>
                         </div>
 
@@ -255,27 +267,37 @@
         });
     </script>
             <!-- Including Bootstrap -->
-        <script src="/assets/dashboard/js/bootstrap.min.js"></script>
+
         <script type="text/javascript" src="/assets/dashboard/js/applied_jobs.js"></script>
         <script type="text/javascript" src="/assets/common/js/all_job_role_footer.js"></script>
 
-        <link rel="stylesheet" type="text/css" href="/assets/css/assessment_modal.css">
         <script type="text/javascript" src="/assets/js/bootbox.min.js"></script>
-        <script type="text/javascript" src="/assets/js/assessment_modal.js"></script>
-        <script type="text/javascript" src="/assets/js/assessment_indicator.js"></script>
+        <script type="text/javascript" src="/assets/partner/js/notify.min.js"></script>
+        <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+        <script type="text/javascript" src="/assets/common/js/apply_job.js"></script>
+        <script type="text/javascript" src="/assets/build/scripts/pre_screen_candidate.min.js"></script>
+        <script type="text/javascript" src="/assets/js/interview_modal.js"></script>
 
             <!-- Menu Toggle Script -->
         <script>
             $(document).ready(function () {
                 $('[data-toggle="tooltip"]').tooltip();
                 var pathElement = window.location.search.split('&');
-                var assessmentElement = pathElement[(pathElement.length) - 2];
+                var prescreenElement = pathElement[(pathElement.length) - 3];
 
-                if (assessmentElement != null && assessmentElement.split("=")[(pathElement.length) - 2] == "?assessment" && assessmentElement.split("=")[(pathElement.length) - 1] == "true") {
-                    var jpElement = pathElement[(pathElement.length) - 1];
-                    if (jpElement.split("=")[(pathElement.length) - 2] == "jp_id") {
-                        var jp_id = jpElement.split("=")[(pathElement.length) - 1];
-                        getAssessmentQuestions(null, jp_id);
+                if (prescreenElement != null && prescreenElement.split("=")[(pathElement.length) - 3] == "?ps" && prescreenElement.split("=")[(pathElement.length) - 2] == "true") {
+                    var jpElement = pathElement[(pathElement.length) - 2];
+
+                    if (jpElement.split("=")[0] == "jp_id") {
+                        var jp_id = jpElement.split("=")[1] ;
+                        var jpElementLocality = pathElement[(pathElement.length) - 1];
+
+                        if (jpElementLocality.split("=")[0] == "prefLoc") {
+
+                            var jp_locality = jpElementLocality.split("=")[1];
+                            applyJobSubmitViaCandidate(jp_id, jp_locality, null, null, true);
+                            /*getAssessmentQuestions(null, jp_id);*/ }
+
                     }
                 }
             });

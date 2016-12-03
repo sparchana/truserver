@@ -270,6 +270,8 @@ public class ServerConstants {
     public static int RECRUITER_CATEGORY_CONTACT_UNLOCK = 1;
     public static int RECRUITER_CATEGORY_INTERVIEW_UNLOCK = 2;
 
+    public static int RECRUITER_FREE_CONTACT_CREDITS = 3;
+
     // pre screen front end ui ids
 
     public static final String ACTIVE_WITHIN_24_HOURS = "Within 24 hrs";

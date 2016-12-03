@@ -76,15 +76,19 @@ public class MatchingEngineService {
         if (lat != null && lng != null) {
             List<JobPost> jobPostsResponseList = new ArrayList<>();
             for (JobPost jobPost : jobPostList) {
+
+
                 boolean shouldAdd = false;
                 List<JobPostToLocality> jobPostToLocalityList = new ArrayList<>();
+
                 JobPost tempJobPost = new JobPost(jobPost);
                 if (jobPost.getJobPostToLocalityList() != null) {
                     for (JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()) {
 
                         //finds distance of this jobPost location from candidate's home location
                         Double distance = getDistanceFromCenter(lat, lng,
-                                jobPostToLocality.getLatitude(), jobPostToLocality.getLongitude());
+                                jobPostToLocality.getLocality().getLat(), jobPostToLocality.getLocality().getLng());
+
                         if (distance != null && distance <= radius) {
                             shouldAdd = true;
                             // creates distance wise ordered list for this jobPost
@@ -92,6 +96,7 @@ public class MatchingEngineService {
                             jobPostToLocalityList.add(jobPostToLocality);
                         }
                     }
+
                     Collections.sort(jobPostToLocalityList, (a, b) -> a.getDistance().compareTo(b.getDistance()));
                     //add ordered jobPostToLocalityList to temp jobPost
                     tempJobPost.setJobPostToLocalityList(jobPostToLocalityList);

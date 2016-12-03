@@ -75,14 +75,13 @@ public class JobSearchService {
 
         for (Integer source : jobPostSources) {
 
-            // We are collecting results for job posts mathcing the exact jobrole ids and other relevant job role ids
+            // We are collecting results for job posts matching the exact jobrole ids and other relevant job role ids
             // in different lists so that we can maintain sort order within these groups
             // Eg. For a telecaller job search, we want to first show all telecaller jobs sorted in the given order
             // followed by by all BPO jobs
 
             List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, filterParams, sortBy, isHot, source);
 
-            // TODO: This should be changed to a fetch from DB. Sbould not be computed upon every run.
             List<Long> relatedJobRoleIds = JobRelevancyEngine.getRelatedJobRoleIds(jobRoleIds);
 
             List<JobPost> relatedJobRoleJobs = queryAndReturnJobPosts(relatedJobRoleIds, filterParams, sortBy, isHot, source);

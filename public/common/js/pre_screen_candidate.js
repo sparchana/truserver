@@ -8,6 +8,7 @@ var localityArray = [];
 var jobRoleArray = [];
 var propertyIdArray = [];
 var candidateId;
+var jpId;
 
 var shouldShowPSModal = true;
 
@@ -455,6 +456,7 @@ function processPreScreenData(returnedData) {
     if (returnedData != null) {
         var elementList = returnedData.elementList;
         candidateId = returnedData.candidateId;
+        jpId = returnedData.jobPostId;
 
         elementList.forEach(function (rowData) {
             var ajax_type = "POST";
@@ -1768,7 +1770,7 @@ function submitPreScreen() {
             try {
                 $.ajax({
                     type: "POST",
-                    url: "/updateCandidateDetailsViaPreScreen/?propertyIdList=" + propertyIdArray + "&candidateMobile=" + localStorage.getItem("mobile") + "&jobPostId="+jobPostId,
+                    url: "/updateCandidateDetailsViaPreScreen/?propertyIdList=" + propertyIdArray + "&candidateMobile=" + localStorage.getItem("mobile") + "&jobPostId="+jpId,
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(d),
                     success: function (returnedData) {

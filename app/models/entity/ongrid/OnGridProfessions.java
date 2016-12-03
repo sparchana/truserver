@@ -22,9 +22,9 @@ public class OnGridProfessions extends Model {
     @Column(name = "profession_name", columnDefinition = "varchar(255) null")
     private String professionName;
 
-    @OneToMany
+    @ManyToOne
     @JsonManagedReference
-    @JoinColumn(name = "job_role_id", referencedColumnName = "JobRoleId")
+    @JoinColumn(name = "job_role_id")
     private JobRole jobRole;
 
     public static Finder<String, OnGridProfessions> find = new Finder(OnGridProfessions.class);
