@@ -124,10 +124,9 @@ $(document).ready(function(){
 
 function customDataSuccess(data){
     var content = "";
-    data.forEach(function (company) {
-        var img = company.companyLogo;
-        var alt = company.companyName;
-        content += "<img width='228px' height='76px' src=\"" +img+ "\" alt=\"" +alt+ "\">"
+    data.forEach(function (logo) {
+        var img = logo;
+        content += "<img width='228px' height='76px' src=\"" +img+ "\">"
     });
     $("#hiringCompanyLogo").html(content);
 

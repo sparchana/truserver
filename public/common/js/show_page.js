@@ -139,10 +139,9 @@ $(document).ready(function(){
 
 function customDataSuccess(data){
     var content = "";
-    data.forEach(function (company) {
-        var img = company.companyLogo;
-        var alt = company.companyName;
-        content += "<img width='228px' height='76px' src=\"" +img+ "\" alt=\"" +alt+ "\">"
+    data.forEach(function (logo) {
+        var img = logo;
+        content += "<img width='228px' height='76px' src=\"" +img+ "\">"
     });
     $("#hiringCompanyLogo").html(content);
 }
@@ -507,6 +506,7 @@ function processDataForSelectedJobPost(returnedData) {
                 }
             }
     } else{
+            $("#jobLoaderDiv").hide();
             var parent = $("#hotJobs");
             var hotJobItem = document.createElement("div");
             hotJobItem.id = "hotJobItem";
@@ -535,7 +535,7 @@ function processDataForSelectedJobPost(returnedData) {
             var jobMsgLine1 = document.createElement("div");
             jobMsgLine1.id = "jobMsgLine1";
             col.appendChild(jobMsgLine1);
-            $("#jobMsgLine1").html("Oops!! No relevant jobs found at this movement");
+            $("#jobMsgLine1").html("Oops!! No relevant jobs found at this moment");
 
             var jobMsgLine2 = document.createElement("div");
             jobMsgLine2.id = "jobMsgLine2";

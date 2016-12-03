@@ -994,7 +994,7 @@ public class TrudroidController {
                     if(jwpf.getScheduledInterviewTimeSlot() != null){
                         InterviewTimeSlotObject.Builder interviewTimeSlotObjectBuilder = InterviewTimeSlotObject.newBuilder();
                         interviewTimeSlotObjectBuilder.setSlotId(jwpf.getScheduledInterviewTimeSlot().getInterviewTimeSlotId());
-                        interviewTimeSlotObjectBuilder.setSlotTitle(jwpf.getScheduledInterviewTimeSlot().getInterviewTimeSlotName());
+                        interviewTimeSlotObjectBuilder.setSlotName(jwpf.getScheduledInterviewTimeSlot().getInterviewTimeSlotName());
 
                         jobPostWorkFlowObjBuilder.setInterviewTimeSlotObject(interviewTimeSlotObjectBuilder.build());
                     }
