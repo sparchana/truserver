@@ -22,6 +22,9 @@
         <meta name="theme-color" content="#286ab6">
             <!-- Bootstrap Core CSS -->
         <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/assets/owl-carousel/owl.carousel.css">
+        <link rel="stylesheet" type="text/css" href="/assets/owl-carousel/owl.transitions.css">
+
         <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
         <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/materialDashboard.css">
         <link rel="stylesheet" type="text/css" href="/assets/common/css/selected_jobroles.css">
@@ -255,25 +258,16 @@
                 $('#job_cards_inc').load('/jobPostCardView');
             });
         </script>
+
         <div class="container">
-            <div class="company_class">
-                Companies Hiring From Us                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      </Us>
-            </div>
+            <center>
+                <div class="company_class">Companies Hiring From Us</div>
+                <div class="materialDash"></div>
+                <div id="hiringCompanyLogo" class="owl-carousel" style="margin: 36px 0 48px 0"></div>
+            </center>
         </div>
-        <center id="hiringCompanyContent">
-            <div class="materialDash"></div>
-            <div class="container" id="company_box">
-                <div class="row">
-                    <div class="col-sm-12" id="slider_logo">
-                        <div id="myCarousel" class="carousel slide" data-ride="carousel">
-                                <!-- Wrapper for slides -->
-                            <div class="carousel-inner" id="hiringCompanies" role="listbox"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </center>
-            <!--  Start Job Icons Box -->
+
+        <!--  Start Job Icons Box -->
         <div class="sectionTwo" style="display: table;
             width: 100%" id="jobs">
             <h3 id="jobVacancyHead">Click on Job Roles to View Jobs</h3>
@@ -295,6 +289,8 @@
         </script>
 
             <!-- Including Bootstrap -->
+        <script type="text/javascript" src="/assets/owl-carousel/owl.carousel.min.js"></script>
+        <script type="text/javascript" src="/assets/common/js/all_job_role_with_jobs.js"></script>
         <script type="text/javascript" src="/assets/common/js/validation.js"></script>
         <script type="text/javascript" src="/assets/common/js/show_page.js"></script>
         <script type="text/javascript" src="/assets/common/js/all_job_role_with_jobs.js"></script>

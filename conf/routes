@@ -212,7 +212,7 @@ POST        /getAllLanguage                                               contro
 POST        /getAllLocality                                               controllers.Application.getAllLocality()
 POST        /getAllShift                                                  controllers.Application.getAllShift()
 POST        /getAllTransportation                                         controllers.Application.getAllTransportation()
-POST        /getAllCompanyLogos                                           controllers.Application.getAllCompanyLogos()
+GET        /getAllCompanyLogos                                           controllers.Application.getAllCompanyLogos()
 POST        /getAllAsset                                                  controllers.Application.getAllAsset()
 POST        /getAllInterviewRejectReasons                                 controllers.Application.getAllInterviewRejectReasons()
 POST        /getAllInterviewNotGoingReasons                               controllers.Application.getAllInterviewNotGoingReasons()
