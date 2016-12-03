@@ -90,7 +90,7 @@ function applyJobSubmitViaCandidate(id, localityId, prefTimeSlot, scheduledInter
                 openCandidatePreScreenModal(id, localStorage.getItem("mobile"));
                 interviewButtonCondition(id);
             /*getAssessmentQuestions(null, id);*/
-        };
+        }
         if($('#applyButton')!=null){
             $('#applyButton').attr('disabled', true).html("Applying...");
 

@@ -8,6 +8,7 @@ var localityArray = [];
 var jobRoleArray = [];
 var propertyIdArray = [];
 var candidateId;
+var jpId;
 
 var shouldShowPSModal = true;
 
@@ -404,7 +405,6 @@ function openCandidatePreScreenModal(jobPostId, candidateMobile) {
                 console.log("exception occured!!" + exception.stack);
             }
         }
-        $.notify("Please complete Job Application form", 'success');
     }
 }
 
@@ -450,6 +450,7 @@ function processPreScreenData(returnedData) {
     if (returnedData != null) {
         var elementList = returnedData.elementList;
         candidateId = returnedData.candidateId;
+        jpId = returnedData.jobPostId;
 
         elementList.forEach(function (rowData) {
             var ajax_type = "POST";
@@ -1731,12 +1732,13 @@ function submitPreScreen() {
         });
 
         // ajax to submit d
+        console.log("just submitting");
         var isSupport = false;
         if (okToSubmitList.length == 0) {
             try {
                 $.ajax({
                     type: "POST",
-                    url: "/updateCandidateDetailsViaPreScreen/?propertyIdList=" + propertyIdArray + "&candidateMobile=" + localStorage.getItem("mobile") + "&jobPostId="+jobPostId,
+                    url: "/updateCandidateDetailsViaPreScreen/?propertyIdList=" + propertyIdArray + "&candidateMobile=" + localStorage.getItem("mobile") + "&jobPostId="+jpId,
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(d),
                     success: function (returnedData) {
