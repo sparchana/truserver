@@ -655,6 +655,7 @@ hr{
 .showPageAllJobs{
     margin-top: 24px;
 }
+
 @media screen and (max-width: 768px) {
     .showPageAllJobs{
         margin-top: 4px;
