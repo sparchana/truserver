@@ -324,7 +324,7 @@ function processDataForJobApplications(returnedData) {
                 if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED){
                     if(!acceptInterviewFlag){
                         var actionNeededHeader = document.createElement("div");
-                        actionNeededHeader.textContent = "Please accept/reject/rescheduled application(s)";
+                        actionNeededHeader.textContent = "Application(s) awaiting your confirmation : Please confirm below application(s)";
                         actionNeededHeader.className = "headerRibbon";
                         actionNeededHeader.style = "padding: 8px; text-align: center";
                         pendingParent.append(actionNeededHeader);
@@ -337,7 +337,7 @@ function processDataForJobApplications(returnedData) {
                 } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE) {
                     if(!pendingConfirmationFlag){
                         var pendingConfirmationHeader = document.createElement("div");
-                        pendingConfirmationHeader.textContent = "Awaiting candidate's response";
+                        pendingConfirmationHeader.textContent = "You have rescheduled below application(s) : Awaiting candidate's response";
                         pendingConfirmationHeader.className = "headerRibbon";
                         pendingConfirmationHeader.style = "padding: 8px; text-align: center";
                         pendingParent.append(pendingConfirmationHeader);
@@ -378,7 +378,7 @@ function processDataForJobApplications(returnedData) {
                     } else{
                         if(!pastInterviewsFlag){
                             var pastInterviewHeader = document.createElement("div");
-                            pastInterviewHeader.textContent = "Past interview(s)";
+                            pastInterviewHeader.textContent = "Past interview(s) : Please update your feedback";
                             pastInterviewHeader.className = "headerRibbon";
                             pastInterviewHeader.style = "padding: 8px; text-align: center";
                             confirmedParent.append(pastInterviewHeader);
@@ -393,7 +393,7 @@ function processDataForJobApplications(returnedData) {
                 } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
                     if(!rejectedListFlag){
                         var rejectedHeader = document.createElement("div");
-                        rejectedHeader.textContent = "Not selected for interview";
+                        rejectedHeader.textContent = "You have not shortlisted the below candidates for interview";
                         rejectedHeader.className = "headerRibbon";
                         rejectedHeader.style = "padding: 8px; text-align: center";
                         pendingParent.append(rejectedHeader);
@@ -416,7 +416,7 @@ function processDataForJobApplications(returnedData) {
                 } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_PRESCREEN_COMPLETED){
                     if(!contactCandidatesFlag){
                         contactCandidateHeader = document.createElement("div");
-                        contactCandidateHeader.textContent = "Contact Candidate(s)";
+                        contactCandidateHeader.textContent = "Candidate has not scheduled interview for below applications: Unlock contact to talk to the candidate(s)";
                         contactCandidateHeader.className = "headerRibbon";
                         contactCandidateHeader.style = "padding: 8px; text-align: center";
                         pendingParent.append(contactCandidateHeader);
@@ -427,7 +427,7 @@ function processDataForJobApplications(returnedData) {
                 } else {
                     if(!contactCandidatesFlag){
                         contactCandidateHeader = document.createElement("div");
-                        contactCandidateHeader.textContent = "Contact Candidate(s)";
+                        contactCandidateHeader.textContent = "Candidate has not scheduled interview for below applications: Unlock contact to talk to the candidate(s)";
                         contactCandidateHeader.className = "headerRibbon";
                         contactCandidateHeader.style = "padding: 8px; text-align: center";
                         pendingParent.append(contactCandidateHeader);
@@ -441,7 +441,7 @@ function processDataForJobApplications(returnedData) {
             } else{
                 if(!contactCandidatesFlag){
                     var contactCandidateHeader = document.createElement("div");
-                    contactCandidateHeader.textContent = "Contact Candidate(s)";
+                    contactCandidateHeader.textContent = "Candidate has not scheduled interview for below applications: Unlock contact to talk to the candidate(s)";
                     contactCandidateHeader.className = "headerRibbon";
                     contactCandidateHeader.style = "padding: 8px; text-align: center";
                     pendingParent.append(contactCandidateHeader);

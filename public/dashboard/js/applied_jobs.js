@@ -248,7 +248,7 @@ function prePopulateJobSection(jobApplication) {
             if(jobPost.status.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE){
                 if(!rescheduledFlag){
                     var rescheduledHeader = document.createElement("div");
-                    rescheduledHeader.textContent = "Rescheduled Application(s). Please accept/reject interview";
+                    rescheduledHeader.textContent = "Recruiter has rescheduled below interview(s) -  Please confirm interview timing ";
                     rescheduledHeader.className = "headerRibbon";
                     rescheduledHeader.style = "padding: 8px; text-align: center";
                     parentPendingConfirmation.append(rescheduledHeader);
@@ -259,7 +259,7 @@ function prePopulateJobSection(jobApplication) {
             } else if(jobPost.status.statusId < JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT) {
                 if(!underReviewFlag){
                     var underReviewHeader = document.createElement("div");
-                    underReviewHeader.textContent = "Application Under Review";
+                    underReviewHeader.textContent = "Application(s) Under Review - You will receive a notification once recruiter shortlists you";
                     underReviewHeader.className = "headerRibbon";
                     underReviewHeader.style = "padding: 8px; text-align: center";
                     parentPendingConfirmation.append(underReviewHeader);
@@ -303,7 +303,7 @@ function prePopulateJobSection(jobApplication) {
             } else if (jobPost.status.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || jobPost.status.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
                 if(!rejectedFlag){
                     var rejectedHeader = document.createElement("div");
-                    rejectedHeader.textContent = "Application Not Shortlisted";
+                    rejectedHeader.textContent = "Below application(s) were not shortlisted by the recruiter";
                     rejectedHeader.className = "headerRibbon";
                     rejectedHeader.style = "padding: 8px; text-align: center";
                     parentPendingConfirmation.append(rejectedHeader);

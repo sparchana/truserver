@@ -2376,6 +2376,8 @@ public class JobPostWorkflowEngine {
 
                     sendInterviewConfirmationSms(jobPostWorkflowNew, candidate);
 
+                    interactionResult = InteractionConstants.INTERACTION_RESULT_RECRUITER_AUTO_ACCEPT_JOB_INTERVIEW_DATE;
+
                     // save the interaction
                     InteractionService.createWorkflowInteraction(
                             jobPostWorkflowOld.getJobPostWorkflowUUId(),
