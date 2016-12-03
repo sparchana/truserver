@@ -9,7 +9,7 @@ var rescheduledDate;
 var allReasons = [];
 
 var parentConfirmedCount = 0;
-var parentUnderReviewCount = 0;
+var parentPendingConfirmationCount = 0;
 var parentRejectedCount = 0;
 var parentCompletedCount = 0;
 var globalLat = null;
@@ -112,38 +112,98 @@ function processDataGetAllReason(returnedData) {
 function processDataAndFetchAppliedJobs(returnedData) {
     var candidateJobApplication = returnedData;
 
-    if (Object.keys(candidateJobApplication).length > 0) {
-        candidateJobApplication.reverse();
-        prePopulateJobSection(candidateJobApplication);
-    } else {
-        var parent = $('#myAppliedJobs');
-        var centerDiv = document.createElement("center");
-        parent.append(centerDiv);
-        var notAppliedImg = document.createElement("img");
-        notAppliedImg.style = "width: 80px; margin-top: 6%";
-        notAppliedImg.src = "/assets/dashboard/img/sadFace.png";
-        centerDiv.appendChild(notAppliedImg);
-
-        var notAppliedMsg = document.createElement("div");
-        notAppliedMsg.style = "padding: 16px";
-        notAppliedMsg.textContent = "Uh oh! Looks like you have not applied to any of the jobs yet!";
-        centerDiv.appendChild(notAppliedMsg);
-    }
+    candidateJobApplication.reverse();
+    prePopulateJobSection(candidateJobApplication);
 }
 
 function prePopulateJobSection(jobApplication) {
+    var parentPendingConfirmation = $('#myAppliedJobsPendingConfirmation');
     var parentConfirmed = $('#myAppliedJobsConfirmed');
-    var parentUnderReview = $('#myAppliedJobsUnderReview');
-    var parentRejected = $('#myAppliedJobsRejected');
     var parentCompleted = $('#myAppliedJobsCompleted');
 
+    parentPendingConfirmation.html('');
     parentConfirmed.html('');
-    parentUnderReview.html('');
-    parentRejected.html('');
     parentCompleted.html('');
 
+    var appliedJobList = [];
+    var rescheduled = [];
+    var underReview = [];
+    var rejected = [];
+    var todayInterview = [];
+    var upcomingInterview = [];
+    var pastInterview = [];
+    var completedInterview = [];
+
+    var today = new Date();
+
+    jobApplication.forEach(function (appliedJob) {
+        if(appliedJob.status.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE){
+
+            //rescheduled interviews
+            rescheduled.push(appliedJob);
+        } else if(appliedJob.status.statusId <= JWF_STATUS_INTERVIEW_SCHEDULED){
+
+            //under review interviews
+            underReview.push(appliedJob);
+        } else if(appliedJob.status.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE || appliedJob.status.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT){
+
+            //rejected interviews
+            rejected.push(appliedJob);
+        } else if(appliedJob.status.statusId >= JWF_STATUS_INTERVIEW_CONFIRMED && appliedJob.status.statusId <= JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
+
+            //confirmed Interviews
+            var interviewDate = new Date(appliedJob.scheduledInterviewDate);
+            if(interviewDate.getDate() == today.getDate() && interviewDate.getMonth() == today.getMonth() && interviewDate.getFullYear() == today.getFullYear()) {
+
+                // today's schedule
+                todayInterview.push(appliedJob);
+            } else if(today.getTime() < interviewDate.getTime()){
+
+                // upcoming interviews
+                upcomingInterview.push(appliedJob);
+            } else{
+
+                // past interviews
+                pastInterview.push(appliedJob);
+            }
+        } else if(appliedJob.status.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED) {
+
+            //completed interviews
+            completedInterview.push(appliedJob);
+        }
+    });
+
+    rescheduled.forEach(function (rescheduledInterview) {
+        appliedJobList.push(rescheduledInterview);
+    });
+
+
+    underReview.forEach(function (underReviewInterview) {
+        appliedJobList.push(underReviewInterview);
+    });
+
+    rejected.forEach(function (rejectedInterview) {
+        appliedJobList.push(rejectedInterview);
+    });
+
+    todayInterview.forEach(function (interviewToday) {
+        appliedJobList.push(interviewToday);
+    });
+
+    upcomingInterview.forEach(function (upcoming) {
+        appliedJobList.push(upcoming);
+    });
+
+    pastInterview.forEach(function (past) {
+        appliedJobList.push(past);
+    });
+
+    completedInterview.forEach(function (completed) {
+        appliedJobList.push(completed);
+    });
+
     var count = 0;
-    jobApplication.forEach(function (jobPost) {
+    appliedJobList.forEach(function (jobPost) {
         count++;
         if (count) {
             /* get all localities of the jobApplication */
@@ -178,20 +238,20 @@ function prePopulateJobSection(jobApplication) {
             hotJobItem.id = "hotJobItem";
 
             if(jobPost.status.statusId < JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT) {
-                parentUnderReview.append(hotJobItem);
-                parentUnderReviewCount++;
-            } else if (jobPost.status.statusId > JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE && jobPost.status.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+                parentPendingConfirmation.append(hotJobItem);
+                parentPendingConfirmationCount++;
+            } else if (jobPost.status.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && jobPost.status.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
                 parentConfirmed.append(hotJobItem);
                 parentConfirmedCount++;
             } else if (jobPost.status.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || jobPost.status.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
-                parentRejected.append(hotJobItem);
-                parentRejectedCount++;
+                parentPendingConfirmation.append(hotJobItem);
+                parentPendingConfirmationCount++;
             } else if (jobPost.status.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                 parentCompleted.append(hotJobItem);
                 parentCompletedCount++;
             } else {
-                parentUnderReview.append(hotJobItem);
-                parentUnderReviewCount++;
+                parentPendingConfirmation.append(hotJobItem);
+                parentPendingConfirmationCount++;
             }
 
             var centreTag = document.createElement("center");
@@ -464,7 +524,7 @@ function prePopulateJobSection(jobApplication) {
             titleRowStatus.style = "margin-top: 8px; padding: 0 12px 6px 12px; font-size: 12px";
             jobBodyCol.appendChild(titleRowStatus);
 
-            if(jobPost.status.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && jobPost.status.statusId < JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
+            if(jobPost.status.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && jobPost.status.statusId <= JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                 var addressBody = document.createElement("div");
                 if(jobPost.jobPost.jobPostAddress != null || jobPost.jobPost.jobPostAddress != ""){
                     addressBody.textContent = "Interview Address : " + jobPost.jobPost.jobPostAddress;
@@ -498,48 +558,53 @@ function prePopulateJobSection(jobApplication) {
                         var currentStatus = document.createElement("span");
                         statusBody.appendChild(currentStatus);
 
-                        var statusBodySelect = document.createElement("select");
-                        statusBodySelect.className = "selectDropdown";
-                        statusBodySelect.id = "candidate_interview_status_" + jobPost.jobPost.jobPostId;
-                        statusBody.appendChild(statusBodySelect);
+                        if(jobPost.status.statusId != JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
+                            var statusBodySelect = document.createElement("select");
+                            statusBodySelect.className = "selectDropdown";
+                            statusBodySelect.id = "candidate_interview_status_" + jobPost.jobPost.jobPostId;
+                            statusBody.appendChild(statusBodySelect);
 
-                        if(jobPost.status.statusId == JWF_STATUS_INTERVIEW_CONFIRMED || jobPost.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING){
-                            currentStatus.textContent = "Status not Specified";
-                            currentStatus.style = "font-weight: bold; margin-right: 4px; color: grey";
-                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(defaultOp);
-                            if(jobPost.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING){
-                                currentStatus.textContent = "Not Going";
+                            if(jobPost.status.statusId == JWF_STATUS_INTERVIEW_CONFIRMED || jobPost.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING){
+                                currentStatus.textContent = "Status not Specified";
+                                currentStatus.style = "font-weight: bold; margin-right: 4px; color: grey";
+                                $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(defaultOp);
+                                if(jobPost.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING){
+                                    currentStatus.textContent = "Not Going";
+                                    currentStatus.style = "font-weight: bold; margin-right: 4px; color: red";
+                                } else{
+                                    $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op1);
+                                }
+
+                                $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op2);
+                                $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op3);
+                                $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op4);
+                            } else if(jobPost.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){
+                                currentStatus.textContent = "Delayed";
                                 currentStatus.style = "font-weight: bold; margin-right: 4px; color: red";
-                            } else{
-                                $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op1);
+                                $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(defaultOp);
+                                $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op3);
+                                $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op4);
+                            } else if(jobPost.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED) {
+                                currentStatus.textContent = "Started";
+                                currentStatus.style = "font-weight: bold; margin-right: 4px; color: green";
+                                $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(defaultOp);
+                                $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op2);
+                                $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op4);
                             }
 
-                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op2);
-                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op3);
-                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op4);
-                        } else if(jobPost.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){
-                            currentStatus.textContent = "Delayed";
-                            currentStatus.style = "font-weight: bold; margin-right: 4px; color: red";
-                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(defaultOp);
-                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op3);
-                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op4);
-                        } else if(jobPost.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED) {
-                            currentStatus.textContent = "Started";
-                            currentStatus.style = "font-weight: bold; margin-right: 4px; color: green";
-                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(defaultOp);
-                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op2);
-                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op4);
+                            var statusUpdateBtn = document.createElement("span");
+                            statusUpdateBtn.className = "navigationBtn";
+                            statusUpdateBtn.textContent = "Update";
+                            statusUpdateBtn.style = "margin: 4px";
+                            statusUpdateBtn.onclick = function () {
+                                globalJpId = jobPost.jobPost.jobPostId;
+                                updateStatus();
+                            };
+                            statusBody.appendChild(statusUpdateBtn);
+                        } else{
+                            statusBody.textContent = "Reached";
+                            statusBody.style = "font-weight: bold; margin-right: 4px; color: green";
                         }
-
-                        var statusUpdateBtn = document.createElement("span");
-                        statusUpdateBtn.className = "navigationBtn";
-                        statusUpdateBtn.textContent = "Update";
-                        statusUpdateBtn.style = "margin: 4px";
-                        statusUpdateBtn.onclick = function () {
-                            globalJpId = jobPost.jobPost.jobPostId;
-                            updateStatus();
-                        };
-                        statusBody.appendChild(statusUpdateBtn);
                     }
                 }
             }
@@ -561,10 +626,12 @@ function prePopulateJobSection(jobApplication) {
         }
     });
 
-    if(parentConfirmedCount == 0){
-        $("#noConfirmedApplication").show();
+    if(parentPendingConfirmationCount == 0){
+        $("#noPendingConfirmationApplication").show();
+        $("#myAppliedJobsPendingConfirmation").hide();
     } else{
-        $("#noConfirmedApplication").hide();
+        $("#myAppliedJobsPendingConfirmation").show();
+        $("#noPendingConfirmationApplication").hide();
     }
 }
 
@@ -619,7 +686,7 @@ function processDataForUpdateStatus(returnedData) {
             globalStatus = null;
         } else{
             alert("Status updated successfully");
-            getCandidateAppliedJobs();
+            location.reload();
         }
     } else{
         alert("Something went wrong. Please try again later");
@@ -660,7 +727,7 @@ function processDataConfirmInterview(returnedData) {
                 dir.textContent = "Directions";
                 dir.onclick = function () {
                     if(candidateLat != null){
-                        window.open('https://www.google.com/maps/dir/' + candidateLat + ', ' + candidateLng + '/'+ jobPost.interviewLocationLat + ', ' + jobPost.interviewLocationLng);
+                        window.open('https://www.google.com/maps/dir/' + candidateLat + ', ' + candidateLng + '/'+ globalLat + ', ' + globalLng);
                     } else{
                         window.open('http://maps.google.com/?q='+ globalLat +',' + globalLng);
                     }
@@ -684,7 +751,27 @@ function tabOne() {
     $("#tabOne").addClass("activeTab");
     $("#tabTwo").removeClass("activeTab");
     $("#tabThree").removeClass("activeTab");
-    $("#tabFour").removeClass("activeTab");
+
+    $("#myAppliedJobsConfirmed").hide();
+    if(parentPendingConfirmationCount > 0){
+        $("#myAppliedJobsPendingConfirmation").show();
+        $("#noPendingConfirmationApplication").hide();
+    } else{
+        $("#myAppliedJobsPendingConfirmation").hide();
+        $("#noPendingConfirmationApplication").show();
+    }
+    $("#myAppliedJobsConfirmed").hide();
+    $("#myAppliedJobsCompleted").hide();
+
+    //hiding no application msg
+    $("#noConfirmedApplication").hide();
+    $("#noCompletedApplication").hide();
+}
+
+function tabTwo() {
+    $("#tabOne").removeClass("activeTab");
+    $("#tabTwo").addClass("activeTab");
+    $("#tabThree").removeClass("activeTab");
 
     if(parentConfirmedCount > 0){
         $("#myAppliedJobsConfirmed").show();
@@ -693,47 +780,21 @@ function tabOne() {
         $("#myAppliedJobsConfirmed").hide();
         $("#noConfirmedApplication").show();
     }
-    $("#myAppliedJobsUnderReview").hide();
+    $("#myAppliedJobsPendingConfirmation").hide();
     $("#myAppliedJobsCompleted").hide();
-    $("#myAppliedJobsRejected").hide();
 
     //hiding no application msg
-    $("#noUnderReviewApplication").hide();
+    $("#noPendingConfirmationApplication").hide();
     $("#noCompletedApplication").hide();
-    $("#noRejectedApplication").hide();
-}
-
-function tabTwo() {
-    $("#tabOne").removeClass("activeTab");
-    $("#tabTwo").addClass("activeTab");
-    $("#tabThree").removeClass("activeTab");
-    $("#tabFour").removeClass("activeTab");
-
-    $("#myAppliedJobsConfirmed").hide();
-    if(parentUnderReviewCount > 0){
-        $("#myAppliedJobsUnderReview").show();
-        $("#noUnderReviewApplication").hide();
-    } else{
-        $("#myAppliedJobsUnderReview").hide();
-        $("#noUnderReviewApplication").show();
-    }
-    $("#myAppliedJobsCompleted").hide();
-    $("#myAppliedJobsRejected").hide();
-
-    //hiding no application msg
-    $("#noConfirmedApplication").hide();
-    $("#noCompletedApplication").hide();
-    $("#noRejectedApplication").hide();
 }
 
 function tabThree() {
     $("#tabOne").removeClass("activeTab");
     $("#tabTwo").removeClass("activeTab");
     $("#tabThree").addClass("activeTab");
-    $("#tabFour").removeClass("activeTab");
 
     $("#myAppliedJobsConfirmed").hide();
-    $("#myAppliedJobsUnderReview").hide();
+    $("#myAppliedJobsPendingConfirmation").hide();
 
     if(parentCompletedCount > 0){
         $("#myAppliedJobsCompleted").show();
@@ -745,30 +806,6 @@ function tabThree() {
     $("#myAppliedJobsRejected").hide();
 
     //hiding no application msg
+    $("#noPendingConfirmationApplication").hide();
     $("#noConfirmedApplication").hide();
-    $("#noUnderReviewApplication").hide();
-    $("#noRejectedApplication").hide();
-
-}
-function tabFour() {
-    $("#tabOne").removeClass("activeTab");
-    $("#tabTwo").removeClass("activeTab");
-    $("#tabThree").removeClass("activeTab");
-    $("#tabFour").addClass("activeTab");
-
-    $("#myAppliedJobsConfirmed").hide();
-    $("#myAppliedJobsUnderReview").hide();
-    $("#myAppliedJobsCompleted").hide();
-    if(parentRejectedCount > 0){
-        $("#myAppliedJobsRejected").show();
-        $("#noRejectedApplication").hide();
-    } else{
-        $("#myAppliedJobsRejected").hide();
-        $("#noRejectedApplication").show();
-    }
-
-    //hiding no application msg
-    $("#noConfirmedApplication").hide();
-    $("#noUnderReviewApplication").hide();
-    $("#noCompletedApplication").hide();
 }

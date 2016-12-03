@@ -159,15 +159,6 @@
                     </div>Profile Status
                 </div>
             </div>
-@*            <div class="col-sm-6" style="display: flex;
-                justify-content: center;
-                align-items: flex-end;
-                padding-top: 30px;">
-                <div >
-                    <div id="assessmentDiv" class="inblockDiv" style="margin-left: 16px;"><div class="assessmentHeader">Assessment Status</div></div>
-                </div>
-
-            </div>*@
         </div>
         <div id="editProfileBody">
             <div class="container">
@@ -191,36 +182,33 @@
 
                         <div id="customTab">
                             <div class="row" style="margin: 0;">
-                                <div class="col-lg-3 tabItem activeTab" id="tabOne" onclick="tabOne()">
-                                    Rescheduled/Confirmed Interviews
+                                <div class="col-lg-4 tabItem activeTab" id="tabOne" onclick="tabOne()">
+                                    Pending Confirmation
                                 </div>
-                                <div class="col-lg-3 tabItem" id="tabTwo" onclick="tabTwo()">
-                                    Under Review
+                                <div class="col-lg-4 tabItem" id="tabTwo" onclick="tabTwo()">
+                                    Confirmed
                                 </div>
-                                <div class="col-lg-3 tabItem" id="tabThree" onclick="tabThree()">
+                                <div class="col-lg-4 tabItem" id="tabThree" onclick="tabThree()">
                                     Completed
-                                </div>
-                                <div class="col-lg-3 tabItem" id="tabFour" onclick="tabFour()">
-                                    Rejected
                                 </div>
                             </div>
 
                         </div>
-                        <div id="myAppliedJobsConfirmed"></div>
+
+                        <div id="myAppliedJobsPendingConfirmation" style="display: none"></div>
+                        <div id="noPendingConfirmationApplication" style="padding: 60px 6% 60px 6%">
+                            <center>
+                                <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                                <h5>No pending confirmation applications!</h5>
+                                <h6>You have zero under pending applications!</h6>
+                            </center>
+                        </div>
+                        <div id="myAppliedJobsConfirmed" style="display: none"></div>
                         <div id="noConfirmedApplication" style="padding: 60px 6% 60px 6%; display: none">
                             <center>
                                 <img src="/assets/recruiter/img/empty_box.svg" width="116px">
                                 <h5>No Confirmed applications!</h5>
                                 <h6>You have zero confirmed applications!</h6>
-                            </center>
-                        </div>
-
-                        <div id="myAppliedJobsUnderReview" style="display: none"></div>
-                        <div id="noUnderReviewApplication" style="padding: 60px 6% 60px 6%; display: none">
-                            <center>
-                                <img src="/assets/recruiter/img/empty_box.svg" width="116px">
-                                <h5>No under review applications!</h5>
-                                <h6>You have zero under review applications!</h6>
                             </center>
                         </div>
 
@@ -230,15 +218,6 @@
                                 <img src="/assets/recruiter/img/empty_box.svg" width="116px">
                                 <h5>No Completed Interviews!</h5>
                                 <h6>You have zero completed interviews!</h6>
-                            </center>
-                        </div>
-
-                        <div id="myAppliedJobsRejected" style="display: none"></div>
-                        <div id="noRejectedApplication" style="padding: 60px 6% 60px 6%; display: none">
-                            <center>
-                                <img src="/assets/recruiter/img/empty_box.svg" width="116px">
-                                <h5>No rejected applications yet!</h5>
-                                <h6>Good job! You have zero rejected applications!</h6>
                             </center>
                         </div>
 
