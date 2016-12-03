@@ -77,24 +77,21 @@ function processDegree(returnedDegree) {
     }
 }
 
-function processLanguage(returnedData, idLanguageId) {
+function processLanguage(returnedData) {
     var arrayLang = [];
     var arrayLangId = [];
 
     returnedData.forEach(function (language) {
-        for (var i = 0; i <= idLanguageId.length; i++) {
-            if (idLanguageId[i] == language.languageId) {
-                var id = language.languageId;
-                var name = language.languageName;
-                var item = {};
-                item ["id"] = id;
-                item ["name"] = name;
-                arrayLang.push(name);
-                arrayLangId.push(id);
-                var option = $('<option value=' + id + '></option>').text(name);
-                langArray.push(item);
-            }
-        }
+        console.log(language);
+        var id = language.languageId;
+        var name = language.languageName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        arrayLang.push(name);
+        arrayLangId.push(id);
+        var option = $('<option value=' + id + '></option>').text(name);
+        langArray.push(item);
     });
     populateLanguages(arrayLang.reverse(), arrayLangId.reverse());
 }
@@ -148,6 +145,7 @@ function processDataGetAssets(returnedAssets) {
     var selectList = $('#assets_details');
 
     returnedAssets.forEach(function (asset) {
+        console.log(asset);
 
         var assetsResponseCol = document.createElement("div");
         assetsResponseCol.className = "col-xs-12 col-sm-3 col-md-3";
@@ -172,76 +170,75 @@ function processDataGetAssets(returnedAssets) {
     });
 }
 
-function processIdProofsWithNumbers(returnedData, idProofId) {
+function processIdProofsWithNumbers(returnedData) {
     if (returnedData != null) {
         // minReqTable
         var responseInput = $('#document_details');
 
         returnedData.forEach(function (idProof) {
-            for (var i = 0; i <= idProofId.length; i++) {
-                if (idProofId[i] == idProof.idProofId) {
-                    var documentResponseCol = document.createElement("div");
-                    documentResponseCol.className = "col-sm-6 col-md-4";
-                    documentResponseCol.id = "document_response_checkbox";
-                    responseInput.append(documentResponseCol);
+            console.log(idProof);
+            // to do check idproof obj here
+            var documentResponseCol = document.createElement("div");
+            documentResponseCol.className = "col-sm-6 col-md-4";
+            documentResponseCol.id = "document_response_checkbox";
+            responseInput.append(documentResponseCol);
 
-                    var documentResponseRow1 = document.createElement("div");
-                    documentResponseRow1.className = "row";
-                    documentResponseRow1.id = "document_response_checkbox";
-                    documentResponseRow1.style = "padding:2% 0";
-                    documentResponseCol.appendChild(documentResponseRow1);
+            var documentResponseRow1 = document.createElement("div");
+            documentResponseRow1.className = "row";
+            documentResponseRow1.id = "document_response_checkbox";
+            documentResponseRow1.style = "padding:2% 0";
+            documentResponseCol.appendChild(documentResponseRow1);
 
-                    var documentResponseRow2 = document.createElement("div");
-                    documentResponseRow2.className = "row";
-                    documentResponseRow2.id = "document_response_input_" + idProof.idProofId;
-                    documentResponseRow2.style = "padding:2% 2%;display:none;";
-                    documentResponseCol.appendChild(documentResponseRow2);
+            var documentResponseRow2 = document.createElement("div");
+            documentResponseRow2.className = "row";
+            documentResponseRow2.id = "document_response_input_" + idProof.idProofId;
+            documentResponseRow2.style = "padding:2% 2%;display:none;";
+            documentResponseCol.appendChild(documentResponseRow2);
 
-                    var checkMatchLabel = document.createElement("label");
-                    checkMatchLabel.type = "checkbox";
-                    checkMatchLabel.for = "idProofCheckbox_" + idProof.idProofId;
-                    checkMatchLabel.style = 'margin:4px 10px';
-                    documentResponseRow1.appendChild(checkMatchLabel);
+            var checkMatchLabel = document.createElement("label");
+            checkMatchLabel.type = "checkbox";
+            checkMatchLabel.for = "idProofCheckbox_" + idProof.idProofId;
+            checkMatchLabel.style = 'margin:4px 10px';
+            documentResponseRow1.appendChild(checkMatchLabel);
 
-                    var checkMatch = document.createElement("input");
-                    checkMatch.type = "checkbox";
-                    checkMatch.id = "idProofCheckbox_" + idProof.idProofId;
-                    checkMatch.onclick = function () {
-                        if ($("#idProofCheckbox_" + idProof.idProofId).prop('checked') == true) {
-                            $("#document_response_input_" + idProof.idProofId).css("display", "block");
-                        }
-                        else {
-                            $("#document_response_input_" + idProof.idProofId).css("display", "none");
-                            $("#Invalid_" + idProof.idProofId).css("display", "none");
-                        }
-
-                    };
-                    checkMatchLabel.appendChild(checkMatch);
-
-                    var idProofTitleTd = document.createElement("font");
-                    idProofTitleTd.textContent = idProof.idProofName;
-                    idProofTitleTd.style = "margin:8% 4%";
-                    documentResponseRow1.appendChild(idProofTitleTd);
-
-                    var alertInvalid = document.createElement("p");
-                    alertInvalid.id = "Invalid_" + idProof.idProofId;
-                    alertInvalid.textContent = "(Invalid Number)";
-                    alertInvalid.style = "color:#ff1744;display:none;margin:1px 0 1px 42px;font-size:12px";
-                    documentResponseRow1.appendChild(alertInvalid);
-
-                    var idProofNumberTd = document.createElement("p");
-                    idProofNumberTd.id = "idProofValueTd_" + idProof.idProofId;
-                    documentResponseRow2.appendChild(idProofNumberTd);
-
-                    var ip = document.createElement("INPUT");
-                    ip.className = "form-control";
-                    ip.setAttribute("type", "text");
-                    ip.oninput= validateInput;
-                    ip.placeholder = idProof.idProofName + " Number";
-                    ip.setAttribute("id", "idProofValue_" + idProof.idProofId);
-                    idProofNumberTd.appendChild(ip);
+            var checkMatch = document.createElement("input");
+            checkMatch.type = "checkbox";
+            checkMatch.id = "idProofCheckbox_" + idProof.idProofId;
+            checkMatch.onclick = function () {
+                if ($("#idProofCheckbox_" + idProof.idProofId).prop('checked') == true) {
+                    $("#document_response_input_" + idProof.idProofId).css("display", "block");
                 }
-            }
+                else {
+                    $("#document_response_input_" + idProof.idProofId).css("display", "none");
+                    $("#Invalid_" + idProof.idProofId).css("display", "none");
+                }
+
+            };
+            checkMatchLabel.appendChild(checkMatch);
+
+            var idProofTitleTd = document.createElement("font");
+            idProofTitleTd.textContent = idProof.idProofName;
+            idProofTitleTd.style = "margin:8% 4%";
+            documentResponseRow1.appendChild(idProofTitleTd);
+
+            var alertInvalid = document.createElement("p");
+            alertInvalid.id = "Invalid_" + idProof.idProofId;
+            alertInvalid.textContent = "(Invalid Number)";
+            alertInvalid.style = "color:#ff1744;display:none;margin:1px 0 1px 42px;font-size:12px";
+            documentResponseRow1.appendChild(alertInvalid);
+
+            var idProofNumberTd = document.createElement("p");
+            idProofNumberTd.id = "idProofValueTd_" + idProof.idProofId;
+            documentResponseRow2.appendChild(idProofNumberTd);
+
+            var ip = document.createElement("INPUT");
+            ip.className = "form-control";
+            ip.setAttribute("type", "text");
+            ip.oninput = validateInput;
+            ip.placeholder = idProof.idProofName + " Number";
+            ip.setAttribute("id", "idProofValue_" + idProof.idProofId);
+            idProofNumberTd.appendChild(ip);
+
         });
     }
 }
@@ -422,9 +419,14 @@ function processPreScreenData(returnedData) {
         shouldShowPSModal = false;
         $("#preScreenModal").modal('hide');
         return;
-    } else if(!returnedData.visible){
+    }
+    if(!returnedData.visible) {
+        shouldShowPSModal = false;
+        console.log("modal visible false, hide modal");
         $("#preScreenModal").modal('hide');
+        return;
     } else{
+        console.log("adding modal-open to html");
         $("html").removeClass("modal-open").addClass("modal-open");
     }
 
@@ -447,6 +449,7 @@ function processPreScreenData(returnedData) {
     orderList.className = "list-group";
     subDivTwo.appendChild(orderList);
     propertyIdArray = [];
+
     if (returnedData != null) {
         var elementList = returnedData.elementList;
         candidateId = returnedData.candidateId;
@@ -455,17 +458,19 @@ function processPreScreenData(returnedData) {
             var ajax_type = "POST";
             var url;
             var fn;
+            var renderData;
             if (rowData != null) {
                 // Document criteria follow is_matching (we want to collect documents that the jobpost requires and
                 // candidate hasnt provided us with those details)
                 if (rowData.propertyId == 0 && rowData.isMatching == false) {
                     propertyIdArray.push(rowData.propertyId);
 
-                    var idProofId = [];
+                    var jobPostIdProofArray = [];
                     var jobPostElementList = rowData.jobPostElementList;
                     jobPostElementList.forEach(function (documentData) {
-                        idProofId.push(documentData.object.idProofId);
+                        jobPostIdProofArray.push(documentData.object);
                     });
+
                     var firstproperty = document.createElement("li");
                     firstproperty.textContent = "Do you have the following document(s) ?";
                     firstproperty.style = "color:#09ac58";
@@ -482,11 +487,13 @@ function processPreScreenData(returnedData) {
                     rowBox.appendChild(documentDetails);
                     firstproperty.appendChild(rowBox);
 
-                    url = "/support/api/getDocumentReqForJobRole/?job_post_id=" + returnedData.jobPostId;
-                    ajax_type = "GET";
-                    fn = function (returnedData) {
-                        processIdProofsWithNumbers(returnedData, idProofId);
-                        url = "";
+
+                    // url = "/support/api/getDocumentReqForJobRole/?job_post_id=" + returnedData.jobPostId;
+                    // ajax_type = "GET";
+                    renderData = jobPostIdProofArray;
+                    url = null;
+                    fn = function () {
+                        processIdProofsWithNumbers(renderData);
                     };
                     orderList.appendChild(firstproperty);
                 }
@@ -494,10 +501,10 @@ function processPreScreenData(returnedData) {
                     // Language criteria follow is_matching (we want to collect language proficiency for all those
                     // languages that the jobpost requires but the candidate hasnt provided us the data)
                     propertyIdArray.push(rowData.propertyId);
-                    var idLanguageId = [];
+                    var languageList = [];
                     var jobPostElementList = rowData.jobPostElementList;
                     jobPostElementList.forEach(function (languageData) {
-                        idLanguageId.push(languageData.object.languageId);
+                        languageList.push(languageData.object);
                     });
 
                     var secondProperty = document.createElement("li");
@@ -523,17 +530,29 @@ function processPreScreenData(returnedData) {
 
                     rowBox.appendChild(languageDetails);
                     secondProperty.appendChild(rowBox);
-                    url = "/getAllLanguage";
-                    fn = function (returnedData) {
-                        processLanguage(returnedData, idLanguageId);
-                        url = "";
+
+                    renderData = languageList;
+                    url = null;
+                    fn = function () {
+                        processLanguage(renderData);
                     };
+                    // url = "/getAllLanguage";
+                    // fn = function (returnedData) {
+                    //     url = "";
+                    // };
                     orderList.appendChild(secondProperty);
                 }
                 else if (rowData.propertyId == 2 && rowData.isMatching == false) {
                     // Assets criteria follow is_matching (we want to collect asset_ownership for all those
                     // assets that the jobpost requires but the candidate hasnt provided us the data)
                     propertyIdArray.push(rowData.propertyId);
+
+                    var assetList = [];
+                    var jobPostElementList = rowData.jobPostElementList;
+                    jobPostElementList.forEach(function (assetData) {
+                        assetList.push(assetData.object);
+                    });
+
                     var firstproperty = document.createElement("li");
                     firstproperty.textContent = "Do you own any of the following ?";
                     firstproperty.id = "property_" + rowData.propertyId;
@@ -546,12 +565,17 @@ function processPreScreenData(returnedData) {
                     assetsDetails.id = "assets_details";
                     assetsDetails.style = "padding:2% 0";
 
-                    ajax_type = "GET";
-                    url = "/support/api/getAssetReqForJobRole/?job_post_id=" + returnedData.jobPostId;
-                    fn = function (returnedData) {
-                        processDataGetAssets(returnedData);
-                        url = "";
+                    renderData = assetList;
+                    url = null;
+                    fn = function () {
+                        processDataGetAssets(renderData);
                     };
+                    //
+                    // ajax_type = "GET";
+                    // url = "/support/api/getAssetReqForJobRole/?job_post_id=" + returnedData.jobPostId;
+                    // fn = function (returnedData) {
+                    //     url = "";
+                    // };
 
                     rowBox.appendChild(assetsDetails);
                     firstproperty.appendChild(rowBox);
@@ -1181,6 +1205,12 @@ function processPreScreenData(returnedData) {
                         });
                     } catch (exception) {
                         console.log("exception occured!!" + exception);
+                    }
+                } else {
+                    console.log("url null hence call fn");
+                    if(typeof fn ===  "function"){
+                        fn();
+                        fn = null;
                     }
                 }
                 if (rowData.propertyId == 5) {
