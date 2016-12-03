@@ -324,7 +324,7 @@ function processDataForJobApplications(returnedData) {
                 if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED){
                     if(!acceptInterviewFlag){
                         var actionNeededHeader = document.createElement("div");
-                        actionNeededHeader.textContent = "Please accpet/reject/rescheduled application(s)";
+                        actionNeededHeader.textContent = "Please accept/reject/rescheduled application(s)";
                         actionNeededHeader.className = "headerRibbon";
                         actionNeededHeader.style = "padding: 8px; text-align: center";
                         pendingParent.append(actionNeededHeader);

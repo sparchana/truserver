@@ -134,6 +134,14 @@ function prePopulateJobSection(jobApplication) {
     var pastInterview = [];
     var completedInterview = [];
 
+    var rescheduledFlag = false;
+    var underReviewFlag = false;
+    var rejectedFlag = false;
+    var todayInterviewFlag = false;
+    var upcomingInterviewFlag = false;
+    var pastInterviewFlag = false;
+    var completedInterviewFlag = false;
+
     var today = new Date();
 
     jobApplication.forEach(function (appliedJob) {
@@ -237,16 +245,82 @@ function prePopulateJobSection(jobApplication) {
             var hotJobItem = document.createElement("div");
             hotJobItem.id = "hotJobItem";
 
-            if(jobPost.status.statusId < JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT) {
+            if(jobPost.status.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE){
+                if(!rescheduledFlag){
+                    var rescheduledHeader = document.createElement("div");
+                    rescheduledHeader.textContent = "Rescheduled Application(s). Please accept/reject interview";
+                    rescheduledHeader.className = "headerRibbon";
+                    rescheduledHeader.style = "padding: 8px; text-align: center";
+                    parentPendingConfirmation.append(rescheduledHeader);
+                    rescheduledFlag = true;
+                }
+                parentPendingConfirmation.append(hotJobItem);
+                parentPendingConfirmationCount++;
+            } else if(jobPost.status.statusId < JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT) {
+                if(!underReviewFlag){
+                    var underReviewHeader = document.createElement("div");
+                    underReviewHeader.textContent = "Application Under Review";
+                    underReviewHeader.className = "headerRibbon";
+                    underReviewHeader.style = "padding: 8px; text-align: center";
+                    parentPendingConfirmation.append(underReviewHeader);
+                    underReviewFlag = true;
+                }
                 parentPendingConfirmation.append(hotJobItem);
                 parentPendingConfirmationCount++;
             } else if (jobPost.status.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && jobPost.status.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+                var interviewDate = new Date(jobPost.scheduledInterviewDate);
+                var todayDay = new Date();
+                if(interviewDate.getDate() == todayDay.getDate() && interviewDate.getMonth() == todayDay.getMonth() && interviewDate.getFullYear() == todayDay.getFullYear()) {
+                    if(!todayInterviewFlag){
+                        var todayInterviewHeader = document.createElement("div");
+                        todayInterviewHeader.textContent = "Interview(s) Today. Please update your status";
+                        todayInterviewHeader.className = "headerRibbon";
+                        todayInterviewHeader.style = "padding: 8px; text-align: center";
+                        parentConfirmed.append(todayInterviewHeader);
+                        todayInterviewFlag = true;
+                    }
+                } else if(todayDay.getTime() < interviewDate.getTime()){
+                    if(!upcomingInterviewFlag){
+                        var upcomingInterviewHeader = document.createElement("div");
+                        upcomingInterviewHeader.textContent = "Upcoming Interview(s)";
+                        upcomingInterviewHeader.className = "headerRibbon";
+                        upcomingInterviewHeader.style = "padding: 8px; text-align: center";
+                        parentConfirmed.append(upcomingInterviewHeader);
+                        upcomingInterviewFlag = true;
+                    }
+                } else{
+                    if(!pastInterviewFlag){
+                        var pastInterviewHeader = document.createElement("div");
+                        pastInterviewHeader.textContent = "Past Interview(s)";
+                        pastInterviewHeader.className = "headerRibbon";
+                        pastInterviewHeader.style = "padding: 8px; text-align: center";
+                        parentConfirmed.append(pastInterviewHeader);
+                        pastInterviewFlag = true;
+                    }
+                }
                 parentConfirmed.append(hotJobItem);
                 parentConfirmedCount++;
             } else if (jobPost.status.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || jobPost.status.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
+                if(!rejectedFlag){
+                    var rejectedHeader = document.createElement("div");
+                    rejectedHeader.textContent = "Application Not Shortlisted";
+                    rejectedHeader.className = "headerRibbon";
+                    rejectedHeader.style = "padding: 8px; text-align: center";
+                    parentPendingConfirmation.append(rejectedHeader);
+                    rejectedFlag = true;
+                }
                 parentPendingConfirmation.append(hotJobItem);
                 parentPendingConfirmationCount++;
             } else if (jobPost.status.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
+                if(!completedInterviewFlag){
+                    var completedInterviewHeader = document.createElement("div");
+                    completedInterviewHeader.textContent = "Completed Interview(s)";
+                    completedInterviewHeader.className = "headerRibbon";
+                    completedInterviewHeader.style = "padding: 8px; text-align: center";
+                    parentCompleted.append(completedInterviewHeader);
+                    completedInterviewFlag = true;
+                }
+
                 parentCompleted.append(hotJobItem);
                 parentCompletedCount++;
             } else {
@@ -536,7 +610,7 @@ function prePopulateJobSection(jobApplication) {
             }
 
             if(jobPost.status != null){
-                if(jobPost.status.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE){
+                if(jobPost.status.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && jobPost.status.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
                     var today = new Date();
                     var interviewDate = new Date(jobPost.scheduledInterviewDate);
                     if(interviewDate.getDate() == today.getDate() && interviewDate.getMonth() == today.getMonth() && interviewDate.getFullYear() == today.getFullYear()){ // today's schedule
