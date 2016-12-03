@@ -8,7 +8,9 @@ import dao.staticdao.IdProofDAO;
 import dao.OnGridVerificationStatusDAO;
 import models.entity.Candidate;
 import models.entity.OM.IDProofReference;
+import models.entity.OM.JobHistory;
 import models.entity.Static.IdProof;
+import models.entity.Static.JobRole;
 import models.entity.ongrid.OnGridProfessions;
 import models.entity.ongrid.OnGridVerificationFields;
 import models.entity.ongrid.OnGridVerificationStatus;
@@ -21,6 +23,7 @@ import play.api.Play;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -128,7 +131,7 @@ public class AadhaarService {
             if (responseBody != null) break;
 
             Logger.error("Exception on Ongrid Aadhaar verification request for " + aadhaarUID
-                    + " Trial Count: " + trialCount + ". Retyring..");
+                    + " Trial Count: " + trialCount + ". Retrying..");
         }
 
         if (responseBody == null) {
@@ -159,13 +162,24 @@ public class AadhaarService {
     {
         Long professionId = null;
 
-        if (candidate.getCandidateCurrentJobDetail() != null) {
-            OnGridProfessions profession =
-                    OnGridProfessions.find.where().eq("jobRole",
-                            candidate.getCandidateCurrentJobDetail().getJobRole()).findUnique();
+        if (candidate.getJobHistoryList() != null && !candidate.getJobHistoryList().isEmpty()) {
 
-            if (profession != null) {
-                professionId = profession.getProfessionId();
+            JobRole currentJobRole = null;
+
+            for (JobHistory jobHistory : candidate.getJobHistoryList()) {
+                if(jobHistory.getCurrentJob() != null && jobHistory.getCurrentJob()) {
+                    currentJobRole = jobHistory.getJobRole();
+                }
+            }
+
+            List<OnGridProfessions> professionsList =
+                    OnGridProfessions.find.where().eq("jobRole", currentJobRole).findList();
+
+            if (professionsList != null && !professionsList.isEmpty()) {
+                // Ongrid has lots of job roles that trujobs doesnt have. So currently multiple trujobs jobroles
+                // are mapped to single ongrid jobrole
+                // we will take the first item from the list for such cases to construct the request
+                professionId = professionsList.get(0).getProfessionId();
             }
         }
 
