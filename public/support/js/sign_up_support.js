@@ -50,8 +50,7 @@ function getIdProofs() {
     return idProofArray;
 }
 function getAssetsForJobRole(){
-    console.log("Result : "+jobPrefString);
-    var jobRoleId = $('#candidateJobPref').val();
+   var jobRoleId = $('#candidateJobPref').val();
     if(jobRoleId != 0){
         try {
             $.ajax({
