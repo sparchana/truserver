@@ -1022,6 +1022,8 @@ public class JobPostWorkflowEngine {
                                     preScreenElement.jobPostElementList = new ArrayList<>();
                                     preScreenElement.candidateElementList = new ArrayList<>();
 
+                                    preScreenElement.isMatching = true;
+
                                     preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
                                     List<Long> localityIdList = new ArrayList<>();
                                     Iterator<JobPostToLocality> iterator = jobPost.getJobPostToLocalityList().iterator();
@@ -1042,15 +1044,23 @@ public class JobPostWorkflowEngine {
 
                                     List<Candidate> candidateList = filterByLatLngOrHomeLocality(new ArrayList<>(Arrays.asList(candidate)), localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
                                     if(candidateList.size()>0) {
-                                        preScreenElement.candidateElementList.add(new PreScreenPopulateResponse.PreScreenCustomObject((null),
-                                                (candidateList.get(0).getMatchedLocation()), false));
+                                        preScreenElement.candidateElementList.add(new PreScreenPopulateResponse.PreScreenCustomObject((candidateList.get(0).getLocality()),
+                                                (candidateList.get(0).getMatchedLocation()), true));
+
+                                        if(candidateList.get(0).getLocality() == null && candidateList.get(0).getCandidateLocalityLat() == null){
+                                            preScreenElement.isMatching = false;
+                                            preScreenElement.candidateElementList = new ArrayList<>();
+                                        }
+                                        if(candidateList.get(0).getMatchedLocation().isEmpty()){
+                                            preScreenElement.isMatching = false;
+                                        }
+
 
                                         // set final candidate placeholders here
                                         preScreenElement.candidatePlaceHolder =  (candidateList.get(0).getMatchedLocation());
 
                                     }
                                     preScreenElement.isMinReq = false;
-                                    preScreenElement.isMatching = true;
                                     preScreenElement.isSingleEntity = false;
 
                                     populateResponse.elementList.add(preScreenElement);
@@ -1112,12 +1122,13 @@ public class JobPostWorkflowEngine {
         }
         if(populateResponse.elementList != null && populateResponse.elementList.size() > 0) {
             for(PreScreenPopulateResponse.PreScreenElement pe : populateResponse.elementList) {
-                if(pe!= null && !pe.isMatching() &&  pe.getCandidateElement() == null) {
-                    // show UI to collect candidate missing data
-                    if((pe.isSingleEntity() && pe.getCandidateElement() == null) ||
-                            (!pe.isSingleEntity() &&
-                                    (pe.getCandidateElementList() == null || pe.getCandidateElementList().size() == 0))){
+                if(pe!= null && !pe.isMatching()){
+                    if((pe.isSingleEntity() && pe.getCandidateElement() == null)){
                         isCandidateDataMissing = true;
+                        break;
+                    } else if(!pe.isSingleEntity()) {
+                        isCandidateDataMissing = true;
+                        break;
                     }
                 }
             }
