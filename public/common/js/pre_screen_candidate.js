@@ -378,11 +378,10 @@ function openCandidatePreScreenModal(jobPostId, candidateMobile) {
             }
         }
         base_api_url += "&rePreScreen=" + true;
+        console.log("modalOpenAttempt: "+modalOpenAttempt);
         if (modalOpenAttempt == 1) {
             if(shouldShowPSModal){
                 $("#preScreenModal").modal();
-            } else {
-                $("#preScreenModal").modal('hide');
             }
         }
         if (modalOpenAttempt == 0) {
@@ -401,7 +400,6 @@ function openCandidatePreScreenModal(jobPostId, candidateMobile) {
                 console.log("exception occured!!" + exception.stack);
             }
         }
-        $.notify("Please complete Job Application form", 'success');
     }
 }
 
@@ -418,17 +416,20 @@ function processPreScreenData(returnedData) {
     if(returnedData.elementList == null || returnedData.elementList.length == 0) {
         shouldShowPSModal = false;
         $("#preScreenModal").modal('hide');
+        $.notify("Job Application Successfully Completed ", 'success');
         return;
     }
     if(!returnedData.visible) {
         shouldShowPSModal = false;
         console.log("modal visible false, hide modal");
         $("#preScreenModal").modal('hide');
+        $.notify("Job Application Successfully Completed ", 'success');
         return;
     } else{
         console.log("adding modal-open to html");
         $("html").removeClass("modal-open").addClass("modal-open");
     }
+    $.notify("Please complete Job Application form", 'success');
 
     var parent = $('#missingInfo');
     var mainDiv = document.createElement("div");
@@ -1122,7 +1123,7 @@ function processPreScreenData(returnedData) {
                     seventhproperty.appendChild(rowBox);
                     orderList.appendChild(seventhproperty);
                 }
-                else if (rowData.propertyId == 8 && rowData.isMatching == false) {
+                else if (rowData.propertyId == 8 && rowData.isMatching == false && rowData.candidateElementList == null) {
                     propertyIdArray.push(rowData.propertyId);
                     var eigthproperty = document.createElement("li");
                     eigthproperty.textContent = "Which is your home locality? ";
@@ -1229,7 +1230,7 @@ function processPreScreenData(returnedData) {
                 }
             }
         });
-
+        $("#preScreenModal").modal();
     }
 
 }
