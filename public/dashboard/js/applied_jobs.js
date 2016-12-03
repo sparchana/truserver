@@ -395,7 +395,12 @@ function prePopulateJobSection(jobApplication) {
             var dir = document.createElement("span");
             if(jobPost.status.statusId < JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT){
                 divInterviewStatus.textContent = "Job application under review";
-                divInterviewStatus.style = "color: #eb9800; font-weight: 600";
+                divInterviewStatus.style = "color: #eb9800; font-weight: 600; padding: 0";
+                if(jobPost.scheduledInterviewDate != null){
+                    divInterviewStatus.textContent = "You have scheduled your interview on " + new Date(jobPost.scheduledInterviewDate).getDate()
+                        + "/" + (new Date(jobPost.scheduledInterviewDate).getMonth() + 1) + "/" + new Date(jobPost.scheduledInterviewDate).getFullYear()
+                        + " between " + jobPost.scheduledInterviewTimeSlot.interviewTimeSlotName + ". Application under review";
+                }
             } else{
                 if(jobPost.status.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && jobPost.status.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
                     if(jobPost.interviewLocationLat != null){
@@ -420,7 +425,7 @@ function prePopulateJobSection(jobApplication) {
                     divInterviewStatus.textContent = "Application rejected by the Candidate";
                     divInterviewStatus.style = "color: red; font-weight: 600";
                 } else if(jobPost.status.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE){
-                    divInterviewStatus.textContent = "Scheduled on " + new Date(jobPost.scheduledInterviewDate).getDate() + "/" + (new Date(jobPost.scheduledInterviewDate).getMonth() + 1) + "/" + new Date(jobPost.scheduledInterviewDate).getFullYear() + " between " + jobPost.scheduledInterviewTimeSlot.interviewTimeSlotName;
+                    divInterviewStatus.textContent = "Recruiter has rescheduled your interview on " + new Date(jobPost.scheduledInterviewDate).getDate() + "/" + (new Date(jobPost.scheduledInterviewDate).getMonth() + 1) + "/" + new Date(jobPost.scheduledInterviewDate).getFullYear() + " between " + jobPost.scheduledInterviewTimeSlot.interviewTimeSlotName;
                     divInterviewStatus.style = "padding: 0; color: orange; font-weight: 600";
 
                     // accept interview

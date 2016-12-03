@@ -1289,9 +1289,15 @@ public class Application extends Controller {
 
     public static Result getAllCompanyLogos() {
         List<Company> companyList = Company.find.where()
+                .ne("CompanyLogo", "https://s3.amazonaws.com/trujobs.in/companyLogos/default_company_logo.png")
                 .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
                 .orderBy("companyName").findList();
-        return ok(toJson(companyList));
+
+        List<String> logoList = new ArrayList<>();
+        for(Company company: companyList){
+            logoList.add(company.getCompanyLogo());
+        }
+        return ok(toJson(logoList));
     }
 
     @Security.Authenticated(SuperAdminSecured.class)
