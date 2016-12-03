@@ -339,7 +339,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="row" style="margin-top: 8px">
+                                    <div class="row" style="margin-top: 8px" id="assetContainer">
                                         <div class="col-sm-3"><h5>Do you own any of the following?</h5></div>
                                         <div class="col-sm-5" style="margin-top: 4px;margin-bottom:10px">
                                             <div style="width: 100%; height: 34px;" class="btn-group" data-toggle="buttons">
@@ -354,6 +354,7 @@
                                                     prePopulate: candidateAssetArray,
                                                     preventDuplicates: true
                                                 });
+                                                getAssets();
                                             });
                                         </script>
                                             </div>
