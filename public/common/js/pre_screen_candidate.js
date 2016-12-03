@@ -1776,7 +1776,7 @@ function submitPreScreen() {
                     success: function (returnedData) {
                         if(returnedData == "INTERVIEW"){
                             $("#preScreenModal").modal('hide');
-                            initInterviewModal(candidateId, jobPostId, isSupport);
+                            initInterviewModal(candidateId, jpId, isSupport);
                         } else if(returnedData == "OK") {
                             $("#preScreenModal").modal('hide');
                             $.notify("Successfully Submitted Application form. Thanks !", 'success');

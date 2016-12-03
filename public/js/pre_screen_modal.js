@@ -1522,6 +1522,12 @@ function processPreScreenContent(returnedData, customD, isSupport) {
         }
         return;
     }
+    if(returnedData != null && !returnedData.visible && !isSupport){
+        notifyError("Please complete Job Application form", 'success');
+        bootbox.hideAll();
+        initInterviewModal(returnedData.candidateId, returnedData.jobPostId, false);
+        return;
+    }
 
     if(returnedData != null){
         if(returnedData.elementList.length == 0){
