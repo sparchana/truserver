@@ -2464,7 +2464,10 @@ public class JobPostWorkflowEngine {
         // TODO find a better way to handle applicants who applied to a job directly and didn't went through prescreen, but choosen interview slot
         // we create prescreen completed here for them to process them to interview stage
         // hint to find all these candidate would be interview slot set in jobPostworkflow table with status 4
-        if(jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_SELECTED){
+        if(((channel == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID)
+                || (channel == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE)
+                || (channel == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE))
+                && (jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_SELECTED)){
             JobPostWorkflow jobPostWorkflowNew = JobPostWorkflowEngine.saveNewJobPostWorkflow(candidateId,
                     jobPostId, jobPostWorkflowOld, ServerConstants.JWF_STATUS_SELECTED,
                     ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED, interviewSlotDetail.getTimeSlot(),
