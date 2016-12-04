@@ -5,6 +5,7 @@ function processJobPostInterviewSlot(returnedData, isSupport) {
     if(returnedData.interviewDetailsList == null || returnedData.interviewDetailsList.length == 0) {
         $('body').removeClass('open-interview-selector-modal');
         bootbox.hideAll();
+        nfy("Submitted Successfully.", 'success');
         return;
     }
 
@@ -159,6 +160,7 @@ function checkSlotAvailability(x, interviewDays) {
 
 
 function initInterviewModal(candidateId, jobPostId, isSupport) {
+    console.log("interview Modal init");
     var htmlBodyContent = ''+
         '<div id="confirmationMsg">'+
         '<center>'+

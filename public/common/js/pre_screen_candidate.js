@@ -8,6 +8,7 @@ var localityArray = [];
 var jobRoleArray = [];
 var propertyIdArray = [];
 var candidateId;
+var jpId;
 
 var shouldShowPSModal = true;
 
@@ -159,7 +160,7 @@ function processDataGetAssets(returnedAssets) {
 
         var checkMatch = document.createElement("input");
         checkMatch.type = "checkbox";
-        checkMatch.id = "idProofCheckbox_" + asset.assetId;
+        checkMatch.id = "assetsCheckboxId_" + asset.assetId;
 
         var assetsTitle = document.createElement("font");
         assetsTitle.textContent = asset.assetTitle;
@@ -378,7 +379,6 @@ function openCandidatePreScreenModal(jobPostId, candidateMobile) {
             }
         }
         base_api_url += "&rePreScreen=" + true;
-        console.log("modalOpenAttempt: "+modalOpenAttempt);
         if (modalOpenAttempt == 1) {
             if(shouldShowPSModal){
                 $("#preScreenModal").modal();
@@ -399,10 +399,28 @@ function openCandidatePreScreenModal(jobPostId, candidateMobile) {
             } catch (exception) {
                 console.log("exception occured!!" + exception.stack);
             }
+            try {
+                $.ajax({
+                    type: "POST",
+                    url: "/getJobPostInfo/" + jobPostId + "/0",
+                    data: false,
+                    contentType: false,
+                    processData: false,
+                    success: processDataForJobPostLocationPrescreen
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
         }
+
     }
 }
+function processDataForJobPostLocationPrescreen(returnedData){
 
+    $('#ps_jobNameConfirmation').html(returnedData.jobPostTitle);
+    $('#ps_companyNameConfirmation').html(returnedData.company.companyName);
+
+}
 function processPreScreenData(returnedData) {
     if (returnedData == null || returnedData.status != "SUCCESS") {
         if (returnedData != null && returnedData.status == "INVALID") {
@@ -422,8 +440,9 @@ function processPreScreenData(returnedData) {
     if(!returnedData.visible) {
         shouldShowPSModal = false;
         console.log("modal visible false, hide modal");
-        $("#preScreenModal").modal('hide');
         $.notify("Job Application Successfully Completed ", 'success');
+        $("#preScreenModal").modal('hide');
+        initInterviewModal(returnedData.candidateId, returnedData.jobPostId, false);
         return;
     } else{
         console.log("adding modal-open to html");
@@ -454,6 +473,7 @@ function processPreScreenData(returnedData) {
     if (returnedData != null) {
         var elementList = returnedData.elementList;
         candidateId = returnedData.candidateId;
+        jpId = returnedData.jobPostId;
 
         elementList.forEach(function (rowData) {
             var ajax_type = "POST";
@@ -1767,13 +1787,13 @@ function submitPreScreen() {
             try {
                 $.ajax({
                     type: "POST",
-                    url: "/updateCandidateDetailsViaPreScreen/?propertyIdList=" + propertyIdArray + "&candidateMobile=" + localStorage.getItem("mobile") + "&jobPostId="+jobPostId,
+                    url: "/updateCandidateDetailsViaPreScreen/?propertyIdList=" + propertyIdArray + "&candidateMobile=" + localStorage.getItem("mobile") + "&jobPostId="+jpId,
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(d),
                     success: function (returnedData) {
                         if(returnedData == "INTERVIEW"){
                             $("#preScreenModal").modal('hide');
-                            initInterviewModal(candidateId, jobPostId, isSupport);
+                            initInterviewModal(candidateId, jpId, isSupport);
                         } else if(returnedData == "OK") {
                             $("#preScreenModal").modal('hide');
                             $.notify("Successfully Submitted Application form. Thanks !", 'success');

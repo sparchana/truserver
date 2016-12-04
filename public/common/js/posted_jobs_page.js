@@ -134,9 +134,7 @@ function processDataForJobPostLocation(returnedData) {
 
     $('#locality_jobNameConfirmation').html(returnedData.jobPostTitle);
     $('#locality_companyNameConfirmation').html(returnedData.company.companyName);
-
-    $('#ps_jobNameConfirmation').html(returnedData.jobPostTitle);
-    $('#ps_companyNameConfirmation').html(returnedData.company.companyName);
+    
 
     $('#jobLocality').html('');
     var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");

@@ -33,6 +33,8 @@ var jobPrefString = "";
 var check = 0;
 var agentAcLvl;
 
+var candidatejobPrefRole;
+
 function getLocality() {
     return localityArray;
 }
@@ -47,9 +49,8 @@ function getJob() {
 function getIdProofs() {
     return idProofArray;
 }
-
 function getAssetsForJobRole(){
-    var jobRoleId = $('#candidateJobPref').val();
+   var jobRoleId = $('#candidateJobPref').val();
     if(jobRoleId != 0){
         try {
             $.ajax({
@@ -81,6 +82,15 @@ function processDataGetAssets(returnedAssets) {
         });
         if(assetArray.length > 0) {
             $("#assetContainer").show();
+            $("#candidateAsset").tokenInput('destroy');
+            $("#candidateAsset").tokenInput(getAssets(), {
+                theme: "facebook",
+                placeholder: "What assets do you own?",
+                hintText: "Start typing (eg. Smartphone, Bike, Car)",
+                minChars: 0,
+                prePopulate: candidateAssetArray,
+                preventDuplicates: true
+            });
         }else{
             $("#assetContainer").hide();
         }
@@ -319,7 +329,6 @@ function processDataAndFillAllFields(returnedData) {
             $("#candidateThirdMobile").val(returnedData.candidateThirdMobile.substring(3, 13));
         }
 
-
         /* get Candidate's job preference */
         try {
             var jobPref = returnedData.jobPreferencesList;
@@ -336,6 +345,7 @@ function processDataAndFillAllFields(returnedData) {
         } catch (err) {
             console.log(err);
         }
+
 
         try {
             var localityPref = returnedData.localityPreferenceList;
@@ -891,7 +901,6 @@ function onCallYes(leadId) {
         $('#callYesClass').hide();
         activateEdit();
     }
-
 }
 
 function cancelAndRedirect() {
