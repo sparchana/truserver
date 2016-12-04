@@ -339,6 +339,7 @@ $(function() {
             }
         }
 
+        slotArray = [];
         $('#interviewTimeSlot input:checked').map(function() {
             var slotId = this.value;
             slotArray.push(parseInt(slotId));

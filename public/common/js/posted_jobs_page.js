@@ -131,8 +131,10 @@ function addLocalitiesToModal() {
 }
 
 function processDataForJobPostLocation(returnedData) {
-    $("#jobNameConfirmation").html(returnedData.jobPostTitle);
-    $("#companyNameConfirmation").html(returnedData.company.companyName);
+
+    $('#locality_jobNameConfirmation').html(returnedData.jobPostTitle);
+    $('#locality_companyNameConfirmation').html(returnedData.company.companyName);
+    
 
     $('#jobLocality').html('');
     var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
@@ -350,6 +352,7 @@ function processDataCheckJobs(returnedData) {
         jobArray.push(item);
     });
 }
+
 function applyJobBtnAction() {
     $('#jobApplyConfirm').modal();
     var candidateMobile = localStorage.getItem("mobile");
@@ -359,6 +362,7 @@ function applyJobBtnAction() {
     $('#applyButton').hide();
     addLocalitiesToModal();
 }
+
 function processJobPostAppliedStatus(status) {
     if(status == "true"){
         $(".jobApplyBtnV2").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");

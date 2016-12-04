@@ -379,7 +379,6 @@ function openCandidatePreScreenModal(jobPostId, candidateMobile) {
             }
         }
         base_api_url += "&rePreScreen=" + true;
-        console.log("modalOpenAttempt: "+modalOpenAttempt);
         if (modalOpenAttempt == 1) {
             if(shouldShowPSModal){
                 $("#preScreenModal").modal();
@@ -400,10 +399,28 @@ function openCandidatePreScreenModal(jobPostId, candidateMobile) {
             } catch (exception) {
                 console.log("exception occured!!" + exception.stack);
             }
+            try {
+                $.ajax({
+                    type: "POST",
+                    url: "/getJobPostInfo/" + jobPostId + "/0",
+                    data: false,
+                    contentType: false,
+                    processData: false,
+                    success: processDataForJobPostLocationPrescreen
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
         }
+
     }
 }
+function processDataForJobPostLocationPrescreen(returnedData){
 
+    $('#ps_jobNameConfirmation').html(returnedData.jobPostTitle);
+    $('#ps_companyNameConfirmation').html(returnedData.company.companyName);
+
+}
 function processPreScreenData(returnedData) {
     if (returnedData == null || returnedData.status != "SUCCESS") {
         if (returnedData != null && returnedData.status == "INVALID") {
