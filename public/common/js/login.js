@@ -23,9 +23,10 @@ function postLogin(returnedData) {
         var jp_id = applyJobId;
         applyJobFlag = 0;
         applyJobId = 0;
-        setTimeout(function(){
+        window.location = "/dashboard/appliedJobs/?ps=true&jp_id="+jp_id+"&pref_loc="+prefLocation;
+        /*setTimeout(function(){
             window.location = "/dashboard/appliedJobs/?ps=true&jp_id="+jp_id+"&prefLoc="+prefLocation;
-        }, 3000);
+        }, 3000);*/
     } else{
         window.location = "/dashboard";
     }

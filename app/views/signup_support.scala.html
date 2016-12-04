@@ -457,7 +457,7 @@
                             <div class="row" style="margin-top: 4px" id="assetContainer">
                                 <div class="col-sm-3"><h5>Assets Ownership?:</h5></div>
                                 <div class="col-sm-9" style="margin-top: 6px;">
-                                    <input type="text" id="candidateAsset" >
+                                    <input type="text" id="candidateAsset" onclick="getAssetsForCandidate()">
                                     <script type="text/javascript">
                                             $(document).ready(function() {
                                                 $("#candidateAsset").tokenInput(getAssets(), {
@@ -468,8 +468,8 @@
                                                     prePopulate: candidateAssetArray,
                                                     preventDuplicates: true
                                                 });
-                                                getAssetsForJobRole();
                                                 getAssets();
+                                                getAssetsForJobRole();
                                             });
                                     </script>
                                 </div>
