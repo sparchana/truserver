@@ -97,21 +97,25 @@ li .open>.dropdown-menu{
 #candidateExp{
     margin:0 8% 0 2%;
 }
+.btn-group label{
+    width:110px;
+}
 @media screen and (max-width: 970px) {
     #preScreenModalBody{
         width: 100%;
     }
 }
 @media screen and (max-width: 768px) {
+    .btn-group label{
+        width:100%;
+    }
     #candidateFresh{
         margin:0 2%;
     }
     #candidateExp{
         margin:0 2%;
     }
-    .modal .modal-dialog{
-        margin:20px 0;
-    }
+
     #language_details{
         text-align: center;
     }
