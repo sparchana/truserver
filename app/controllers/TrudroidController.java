@@ -1678,7 +1678,6 @@ public class TrudroidController {
         }
 
         response.setShouldShow(populateResponse.isVisible());
-        List<Integer> propertyIdList = new ArrayList<>();
         for (PreScreenPopulateResponse.PreScreenElement pe : populateResponse.getElementList()) {
             if (pe != null && !pe.isMatching() && pe.getCandidateElement() == null) {
                 // show UI to collect candidate missing data
@@ -1707,6 +1706,7 @@ public class TrudroidController {
                             preScreenDocument.addAllJobPostIdProof(idProofObjectList);
                             preScreenDocument.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_DOCUMENT));
                             preScreenDocument.setPropertyId((PROPERTY_TYPE_DOCUMENT));
+                            response.addHpPropertyId(PROPERTY_TYPE_DOCUMENT);
                             response.setDocumentList(preScreenDocument.build());
                             break;
                         case PROPERTY_TYPE_LANGUAGE:
@@ -1725,6 +1725,7 @@ public class TrudroidController {
                             preScreenLanguage.addAllJobPostLanguage(languageObjectList);
                             preScreenLanguage.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_LANGUAGE));
                             preScreenLanguage.setPropertyId((PROPERTY_TYPE_LANGUAGE));
+                            response.addHpPropertyId(PROPERTY_TYPE_LANGUAGE);
                             response.setLanguageList(preScreenLanguage.build());
                             break;
                         case PROPERTY_TYPE_ASSET_OWNED:
@@ -1757,6 +1758,7 @@ public class TrudroidController {
                             preScreenExperience.setIsMatching(pe.isMatching());
                             preScreenExperience.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_EXPERIENCE));
                             preScreenExperience.setPropertyId((PROPERTY_TYPE_EXPERIENCE));
+                            response.addHpPropertyId(PROPERTY_TYPE_EXPERIENCE);
                             response.setExperience(preScreenExperience.build());
                             break;
                         case PROPERTY_TYPE_EDUCATION:
@@ -1764,6 +1766,7 @@ public class TrudroidController {
                             preScreenEducation.setIsMatching(pe.isMatching());
                             preScreenEducation.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_EDUCATION));
                             preScreenEducation.setPropertyId((PROPERTY_TYPE_EDUCATION));
+                            response.addHpPropertyId(PROPERTY_TYPE_EDUCATION);
                             response.setEducation(preScreenEducation.build());
                             break;
                         case PROPERTY_TYPE_GENDER:

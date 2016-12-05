@@ -671,17 +671,18 @@ public class JobPostWorkflowEngine {
                         if (candidate.getIdProofReferenceList() != null && candidate.getIdProofReferenceList().size() > 0) {
                             isAvailable = true;
                         }
-                        Map<Integer, IDProofReference> idProofMap = new HashMap<>();
+                        Map<Integer, IDProofReference> candidateIdProofMap = new HashMap<>();
                         for(IDProofReference idProofReference :  candidate.getIdProofReferenceList()) {
-                            idProofMap.put(idProofReference.getIdProof().getIdProofId(), idProofReference);
+                            candidateIdProofMap.put(idProofReference.getIdProof().getIdProofId(), idProofReference);
                         }
 
                         for (PreScreenRequirement preScreenRequirement : entry.getValue()) {
+                            boolean addToList = false;
                             // property ID
                             preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
 
                             // candidateElement list
-                            IDProofReference idProofReference = idProofMap.get(preScreenRequirement.getIdProof().getIdProofId());
+                            IDProofReference idProofReference = candidateIdProofMap.get(preScreenRequirement.getIdProof().getIdProofId());
 
                             if (isAvailable && idProofReference != null) {
                                 // candidate placeholder
@@ -689,11 +690,13 @@ public class JobPostWorkflowEngine {
 
                                 if((idProofReference.getIdProofNumber() == null || idProofReference.getIdProofNumber().trim().isEmpty())){
                                     preScreenElement.isMatching = false;
+                                    addToList = true;
                                 }
                                 preScreenElement.candidateElementList.add(new PreScreenPopulateResponse.PreScreenCustomObject(idProofReference,
                                         preScreenRequirement.getIdProof().getIdProofName(), true));
                             } else {
                                 preScreenElement.isMatching = false;
+                                addToList = true;
                             }
 
 
@@ -701,7 +704,7 @@ public class JobPostWorkflowEngine {
                             jobPostPlaceHolderList.add(preScreenRequirement.getIdProof().getIdProofName());
 
                             // jobPostElement list
-                            if(!preScreenElement.isMatching) {
+                            if(addToList) {
 
                                 preScreenElement.jobPostElementList.add(
                                         new PreScreenPopulateResponse.PreScreenCustomObject(preScreenRequirement.getIdProof(),
