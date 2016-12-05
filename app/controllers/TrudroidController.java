@@ -1707,4 +1707,26 @@ public class TrudroidController {
 
         return ok(Base64.encodeBase64String(updateTokenResponseBuilder.build().toByteArray()));
     }
+
+    public static Result mCandidateLogout() {
+        LogoutCandidateRequest logoutCandidateRequest = null;
+        LogoutCandidateResponse.Builder logoutCandidateResponseBuilder = LogoutCandidateResponse.newBuilder();
+
+        try {
+            String requestString = request().body().asText();
+            logoutCandidateRequest = LogoutCandidateRequest.parseFrom(Base64.decodeBase64(requestString));
+
+            if(CandidateService.logoutCandidate(logoutCandidateRequest) == 1){
+                logoutCandidateResponseBuilder.setStatus(LogoutCandidateResponse.Status.SUCCESS);
+            } else{
+                logoutCandidateResponseBuilder.setStatus(LogoutCandidateResponse.Status.FAILURE);
+            }
+
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+
+        return ok(Base64.encodeBase64String(logoutCandidateResponseBuilder.build().toByteArray()));
+
+    }
 }

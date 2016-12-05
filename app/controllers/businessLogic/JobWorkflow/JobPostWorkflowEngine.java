@@ -2495,7 +2495,7 @@ public class JobPostWorkflowEngine {
             String msg = "Hi Adarsh! you have been selected got the job: " + jobPostWorkflowNew.getJobPost().getJobPostTitle() + " at " + jobPostWorkflowNew.getJobPost().getCompany().getCompanyName() +
                     ". Congratulations!";
             if(candidate.getCandidateAndroidToken() != null){
-                new NotificationUtil().SendNotification(msg, "Interview Selected", candidate.getCandidateAndroidToken());
+                new NotificationUtil().SendNotification(msg, "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS);
             } else{
                 Logger.info("Token not available");
             }
@@ -2505,7 +2505,7 @@ public class JobPostWorkflowEngine {
             String msg = "Hi Adarsh! you were not selected for the job: " + jobPostWorkflowNew.getJobPost().getJobPostTitle() + " at " + jobPostWorkflowNew.getJobPost().getCompany().getCompanyName();
 
             if(candidate.getCandidateAndroidToken() != null){
-                new NotificationUtil().SendNotification(msg, "Interview Rejected", candidate.getCandidateAndroidToken());
+                new NotificationUtil().SendNotification(msg, "Interview Rejected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS);
             } else{
                 Logger.info("Token not available");
             }

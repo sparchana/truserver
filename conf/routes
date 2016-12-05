@@ -255,6 +255,7 @@ POST        /mGetLocalityForLatLngOrPlaceId                               contro
 POST        /mConfirmInterview                                            controllers.TrudroidController.mConfirmInterview()
 POST        /mUpdateCandidateStatus                                       controllers.TrudroidController.mUpdateCandidateStatus()
 POST        /mUpdateCandidateToken                                        controllers.TrudroidController.mUpdateCandidateToken()
+POST        /mCandidateLogout                                             controllers.TrudroidController.mCandidateLogout()
 
 # Update interview status API
 # ~~~~~~~~~~~~

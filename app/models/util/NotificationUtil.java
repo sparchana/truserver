@@ -9,7 +9,7 @@ import java.io.IOException;
  * Created by dodo on 1/12/16.
  */
 public class NotificationUtil {
-    public void SendNotification(String messageText, String title, String token){
+    public void SendNotification(String messageText, String title, String token, int intentType){
         final Sender sender = new Sender("AAAAYK9P22w:APA91bHF7nJZ7BPFYTAnNEYtnnjqRxJA11vzli3cVdmLwu5OeHadupdrX5zyDT4W1hFT-DtQRCemQfSR9lVmfcEfPk3uUGVyEAvxaIew1cBqtF1SANUFzjWp9j8aAyLJ0B7N3nZVr3rYkiLifQulkClwhwUi3cHJcQ");
         com.google.android.gcm.server.Result result = null;
 
@@ -17,6 +17,7 @@ public class NotificationUtil {
                 .delayWhileIdle(true)
                 .addData("title", title)
                 .addData("message", messageText)
+                .addData("type", String.valueOf(intentType))
                 .build();
 
         try {
