@@ -160,7 +160,7 @@ function processDataGetAssets(returnedAssets) {
 
         var checkMatch = document.createElement("input");
         checkMatch.type = "checkbox";
-        checkMatch.id = "idProofCheckbox_" + asset.assetId;
+        checkMatch.id = "assetsCheckboxId_" + asset.assetId;
 
         var assetsTitle = document.createElement("font");
         assetsTitle.textContent = asset.assetTitle;
@@ -440,8 +440,9 @@ function processPreScreenData(returnedData) {
     if(!returnedData.visible) {
         shouldShowPSModal = false;
         console.log("modal visible false, hide modal");
-        $("#preScreenModal").modal('hide');
         $.notify("Job Application Successfully Completed ", 'success');
+        $("#preScreenModal").modal('hide');
+        initInterviewModal(returnedData.candidateId, returnedData.jobPostId, false);
         return;
     } else{
         console.log("adding modal-open to html");
@@ -1792,7 +1793,7 @@ function submitPreScreen() {
                     success: function (returnedData) {
                         if(returnedData == "INTERVIEW"){
                             $("#preScreenModal").modal('hide');
-                            initInterviewModal(candidateId, jobPostId, isSupport);
+                            initInterviewModal(candidateId, jpId, isSupport);
                         } else if(returnedData == "OK") {
                             $("#preScreenModal").modal('hide');
                             $.notify("Successfully Submitted Application form. Thanks !", 'success');

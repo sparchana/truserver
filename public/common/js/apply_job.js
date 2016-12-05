@@ -36,10 +36,10 @@ function processDataApplyJob(returnedData, jobPostId, candidateId, isPartner) {
             console.log(err);
         }
         // generate prescreen modal here
-        if(isPartner){
+        if(isPartner) {
             openPartnerPreScreenModal(jobPostId, candidateId);
         } else {
-            // openCandidatePreScreenModal(jobPostId, localStorage.getItem("mobile"));
+            openCandidatePreScreenModal(jobPostId, localStorage.getItem("mobile"));
         }
     } else if(returnedData.status == 2){
         $("#messagePromptModal").modal("show");
@@ -85,11 +85,11 @@ function applyJobSubmitViaCandidate(id, localityId, prefTimeSlot, scheduledInter
         $("#myLoginModal").modal("show");
         $("#signInPopup").html("Sign In to Apply");
     } else{
-        if(triggerModal){
+        /*if(triggerModal){
                 openCandidatePreScreenModal(id, localStorage.getItem("mobile"));
                 interviewButtonCondition(id);
-            /*getAssessmentQuestions(null, id);*/
-        }
+            /!*getAssessmentQuestions(null, id);*!/
+        // }*/
         if($('#applyButton')!=null){
             $('#applyButton').attr('disabled', true).html("Applying...");
 

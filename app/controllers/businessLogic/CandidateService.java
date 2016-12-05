@@ -36,6 +36,7 @@ import static api.InteractionConstants.*;
 import static controllers.businessLogic.InteractionService.*;
 import static controllers.businessLogic.LeadService.createOrUpdateConvertedLead;
 import static models.util.Util.generateOtp;
+import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 
 
@@ -629,6 +630,7 @@ public class CandidateService
                     IDProofReference existingIdProofRef = existingIdProofIdToReference.get(idProofWithIdNumber.getIdProofId());
 
                     if (existingIdProofRef.getIdProofNumber() == null
+                            || existingIdProofRef.getIdProofNumber().trim().isEmpty()
                             || !existingIdProofRef.getIdProofNumber().equals(idProofWithIdNumber.getIdNumber()))
                     {
                         existingIdProofRef.setIdProofNumber(idProofWithIdNumber.getIdNumber());
@@ -643,6 +645,10 @@ public class CandidateService
                             Logger.info("Updating aadhaar for candidate " + candidate.getCandidateMobile());
                             isVerifyAadhaar = true;
                         }
+                    } else {
+                        // if the incoming data is exactly same as already in db, add it directly to the candidateIdProofList,
+                        // since the cascade overrides all the data of a foreign key.
+                        candidateIdProofListToSave.add(existingIdProofRef);
                     }
                 }
                 // if this is the first time we are getting this idproof details for candidate, then create new record
@@ -661,6 +667,7 @@ public class CandidateService
                 }
             }
 
+            Logger.info(String.valueOf(toJson(candidateIdProofListToSave)));
             candidate.setIdProofReferenceList(candidateIdProofListToSave);
             candidate.update();
         }
