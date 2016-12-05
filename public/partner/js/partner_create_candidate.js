@@ -955,7 +955,7 @@ $(function() {
                 statusCheck=0;
             }
             else{
-                if(id.idProofValue == ""){
+                if(id.idProofValue == "" || id.idProofValue == undefined || id.idProofValue.trim().length == 0){
                     notifyError("Please provide document details");
                     statusCheck=0;
                 }
@@ -1170,7 +1170,7 @@ function validateInput(idProofId, value) {
         } else {
             return true;
         }
-    } else if (idProofId == 1) {
+    } else if (idProofId == 1 || idProofId == 7) {
         if (!validateDL(value)) {
             return false;
         } else {

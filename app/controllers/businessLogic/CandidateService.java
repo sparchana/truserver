@@ -590,7 +590,7 @@ public class CandidateService
     }
 
     // individual update service for pre-screen-edit
-    public static List<IDProofReference> updateCandidateDocument(Candidate candidate,
+    public static boolean updateCandidateDocument(Candidate candidate,
                                                                  UpdateCandidateDocument updateCandidateDocument)
     {
 
@@ -629,6 +629,7 @@ public class CandidateService
                     IDProofReference existingIdProofRef = existingIdProofIdToReference.get(idProofWithIdNumber.getIdProofId());
 
                     if (existingIdProofRef.getIdProofNumber() == null
+                            || existingIdProofRef.getIdProofNumber().trim().isEmpty()
                             || !existingIdProofRef.getIdProofNumber().equals(idProofWithIdNumber.getIdNumber()))
                     {
                         existingIdProofRef.setIdProofNumber(idProofWithIdNumber.getIdNumber());
@@ -643,6 +644,10 @@ public class CandidateService
                             Logger.info("Updating aadhaar for candidate " + candidate.getCandidateMobile());
                             isVerifyAadhaar = true;
                         }
+                    } else {
+                        // if the incoming data is exactly same as already in db, add it directly to the candidateIdProofList,
+                        // since the cascade overrides all the data of a foreign key.
+                        candidateIdProofListToSave.add(existingIdProofRef);
                     }
                 }
                 // if this is the first time we are getting this idproof details for candidate, then create new record
@@ -661,23 +666,12 @@ public class CandidateService
                 }
             }
 
-            // iterate on ids that were removed and delete them
-            /*for (Integer idProofId : existingIdProofIdToReference.keySet()) {
-                if (!idProofIdList.contains(idProofId)) {
-                    // delete this entry
-                    existingIdProofIdToReference.get(idProofId).delete();
-                }
-            }*/
+            Logger.info(String.valueOf(toJson(candidateIdProofListToSave)));
             candidate.setIdProofReferenceList(candidateIdProofListToSave);
             candidate.update();
-
-            // if Aadhaar details were inserted or updated then lets send aadhaar verification request
-            if (isVerifyAadhaar) {
-                verifyAadhaar(candidate.getCandidateMobile());
-            }
         }
 
-        return candidateIdProofListToSave;
+        return isVerifyAadhaar;
     }
 
     public static void updateCandidateLanguageKnown(Candidate candidate,
@@ -1000,6 +994,17 @@ public class CandidateService
             SmsUtil.sendWelcomeSmsFromSupport(candidate.getCandidateFirstName(), candidate.getCandidateMobile(), dummyPassword);
             Logger.info("Dummy auth saved and sent to " + candidate.getCandidateMobile());
         }
+    }
+
+    public static void verifyAadhaar(String candidateMobile) {
+        Logger.info("verifying aadhaar for " + candidateMobile);
+        new Thread(() -> {
+            AadhaarService aadhaarService = new AadhaarService(OnGridConstants.AUTH_STRING,
+                    OnGridConstants.COMMUNITY_ID, OnGridConstants.BASE_URL);
+
+            OngridAadhaarVerificationResponse response =
+                    aadhaarService.sendAadharSyncVerificationRequest(candidateMobile);
+        }).start();
     }
 
     private static CandidateSignUpResponse createNewCandidate(Candidate candidate, Lead lead) {
@@ -1512,16 +1517,5 @@ public class CandidateService
         }
 
         return response;
-    }
-
-    private static void verifyAadhaar(String candidateMobile) {
-        Logger.info("verifying aadhaar for " + candidateMobile);
-        new Thread(() -> {
-            AadhaarService aadhaarService = new AadhaarService(OnGridConstants.AUTH_STRING,
-                    OnGridConstants.COMMUNITY_ID, OnGridConstants.BASE_URL);
-
-            OngridAadhaarVerificationResponse response =
-                    aadhaarService.sendAadharSyncVerificationRequest(candidateMobile);
-        }).start();
     }
 }

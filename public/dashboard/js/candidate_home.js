@@ -172,9 +172,9 @@ function processDataAllJobPosts(returnedData) {
 
                 var salaryDiv = document.createElement("div");
                 salaryDiv.style = "display: inline-block; font-size: 13px";
-                if(jobPost.jobPostMaxSalary == "0"){
+                if(jobPost.jobPostMaxSalary == "0" || jobPost.jobPostMaxSalary == null){
                     salaryDiv.textContent = jobPost.jobPostMinSalary + " monthly";
-                } else{
+                } else {
                     salaryDiv.textContent = jobPost.jobPostMinSalary + " - " + jobPost.jobPostMaxSalary + " monthly";
                 }
 

@@ -212,7 +212,6 @@ function validateAadhar(array) {
 // validate Driving Licence
 function validateDL(dlNumber) {
     if (dlNumber == null) {
-        console.log("its null");
         return false;
     }
     // if(dlNumber == "") {

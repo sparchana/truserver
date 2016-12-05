@@ -633,6 +633,9 @@ hr{
 
 }
 
+.owl-item{
+    text-align: center;
+}
 
 #jobRoleName:hover{
     cursor:pointer;
@@ -655,6 +658,7 @@ hr{
 .showPageAllJobs{
     margin-top: 24px;
 }
+
 @media screen and (max-width: 768px) {
     .showPageAllJobs{
         margin-top: 4px;

@@ -199,6 +199,7 @@ GET         /getAllSkills/:id                                             contro
 GET         /getAllIdProofs/:id                                           controllers.Application.getAllIdProofs(id : String)
 GET         /getAllJobPosts                                               controllers.Application.getAllJobPosts()
 GET         /checkNavBar                                                  controllers.Application.checkNavBar()
+GET         /getAllCompanyLogos                                           controllers.Application.getAllCompanyLogos()
 
 POST        /getAllDegree                                                 controllers.Application.getAllDegree()
 POST        /getAllEducation                                              controllers.Application.getAllEducation()
@@ -212,7 +213,6 @@ POST        /getAllLanguage                                               contro
 POST        /getAllLocality                                               controllers.Application.getAllLocality()
 POST        /getAllShift                                                  controllers.Application.getAllShift()
 POST        /getAllTransportation                                         controllers.Application.getAllTransportation()
-POST        /getAllCompanyLogos                                           controllers.Application.getAllCompanyLogos()
 POST        /getAllAsset                                                  controllers.Application.getAllAsset()
 POST        /getAllInterviewRejectReasons                                 controllers.Application.getAllInterviewRejectReasons()
 POST        /getAllInterviewNotGoingReasons                               controllers.Application.getAllInterviewNotGoingReasons()
