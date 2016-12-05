@@ -39,17 +39,16 @@ public class NotificationUtil {
         String msg = "Hi " + candidate.getCandidateFirstName() + "! You have been selected got the job: " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() +
                 ". Congratulations!";
         if(candidate.getCandidateAndroidToken() != null){
-            sendNotification(msg, "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS);
+            sendNotification(msg, "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_COMPLETED);
         } else{
             Logger.info("Token not available");
         }
     }
 
     public static void sendInterviewRejectionNotification(Candidate candidate, JobPostWorkflow jobPostWorkflow){
-        String msg = "Hi " + candidate.getCandidateFirstName() + "! You were not selected for the job: " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() +
-                ". Congratulations!";
+        String msg = "Hi " + candidate.getCandidateFirstName() + "! You were not selected for the job: " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName();
         if(candidate.getCandidateAndroidToken() != null){
-            sendNotification(msg, "Interview Rejected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS);
+            sendNotification(msg, "Interview Rejected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_COMPLETED);
         } else{
             Logger.info("Token not available");
         }
@@ -68,7 +67,7 @@ public class NotificationUtil {
         " has been confirmed on " + interviewDate + " between " + jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName();
 
         if(candidate.getCandidateAndroidToken() != null){
-            sendNotification(msg, "Interview Confirmed", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS);
+            sendNotification(msg, "Interview Confirmed", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
         } else{
             Logger.info("Token not available");
         }
@@ -87,7 +86,7 @@ public class NotificationUtil {
                 " has been rescheduled on " + interviewDateString + " between " + slot.getInterviewTimeSlotName();
 
         if(candidate.getCandidateAndroidToken() != null){
-            sendNotification(msg, "Interview Confirmed", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS);
+            sendNotification(msg, "Interview Confirmed", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
         } else{
             Logger.info("Token not available");
         }
@@ -98,7 +97,7 @@ public class NotificationUtil {
                 " was not shortlisted";
 
         if(candidate.getCandidateAndroidToken() != null){
-            sendNotification(msg, "Application not shortlisted", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS);
+            sendNotification(msg, "Application not shortlisted", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
         } else{
             Logger.info("Token not available");
         }
@@ -109,7 +108,7 @@ public class NotificationUtil {
                 " has been shortlisted for the interview. We will get in touch with you shortly to confirm interview date and time!";
 
         if(candidate.getCandidateAndroidToken() != null){
-            sendNotification(msg, "Application not shortlisted", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS);
+            sendNotification(msg, "Application not shortlisted", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
         } else{
             Logger.info("Token not available");
         }
