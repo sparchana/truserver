@@ -213,7 +213,11 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
             nfy("Submitted successfully. Refreshing page.", 'success');
 
             setTimeout(function () {
-                location.reload();
+                if(window.location.pathname == "/dashboard/appliedJobs/"){
+                    window.location.href = "/dashboard/appliedJobs/";
+                } else {
+                    location.reload();
+                }
                 // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
             }, 2000);
         },
