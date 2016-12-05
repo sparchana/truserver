@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
+import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
+
 /**
  * Created by dodo on 1/12/16.
  */
@@ -108,12 +110,20 @@ public class NotificationUtil {
                 " has been shortlisted for the interview. We will get in touch with you shortly to confirm interview date and time!";
 
         if(candidate.getCandidateAndroidToken() != null){
-            sendNotification(msg, "Application not shortlisted", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
+            sendNotification(msg, "Application Shortlisted", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
         } else{
             Logger.info("Token not available");
         }
-
     }
 
+    public static void sendJobApplicationNotification(Candidate candidate, String jobTitle, String company, String prescreenLocation) {
+        String msg = "You have applied to " + jobTitle + " job at " + company + " @" + prescreenLocation + ". Your application is under review " +
+                "and you will get a notification once the recruiter shortlists you for interview.";
 
+        if(candidate.getCandidateAndroidToken() != null){
+            sendNotification(msg, "Job Application Successful!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
+        } else{
+            Logger.info("Token not available");
+        }
+    }
 }
