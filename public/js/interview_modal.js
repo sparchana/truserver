@@ -281,12 +281,20 @@ function processInterviewSubmissionResponse(returnData) {
     if(returnData == "OK"){
         nfy("Interview Submitted successfully. Refreshing ..", 'success');
         setTimeout(function () {
-            location.reload();
+            if(window.location.pathname == "/dashboard/appliedJobs/"){
+                window.location.href = "/dashboard/appliedJobs/";
+            } else {
+                location.reload();
+            }
         }, 2000);
     } else {
         nfy("Something went wrong. Refreshing page. After refresh please try again.", 'error');
         setTimeout(function () {
-            location.reload();
+            if(window.location.pathname == "/dashboard/appliedJobs/"){
+                window.location.href = "/dashboard/appliedJobs/";
+            } else {
+                location.reload();
+            }
         }, 2000);
     }
 }
