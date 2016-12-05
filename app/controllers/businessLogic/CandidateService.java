@@ -1532,7 +1532,7 @@ public class CandidateService
         return 0;
     }
 
-    public static int logoutCandidate(LogoutCandidateRequest logoutCandidateRequest) {
+    public static int logoutTrudroidCandidate(LogoutCandidateRequest logoutCandidateRequest) {
         Candidate candidate = Candidate.find.where().eq("CandidateId", logoutCandidateRequest.getCandidateId()).findUnique();
         if(candidate != null){
             Logger.info("Clearing android token for candidate and logging out from app");

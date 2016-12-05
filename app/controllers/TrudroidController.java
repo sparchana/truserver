@@ -1720,7 +1720,7 @@ public class TrudroidController {
             String requestString = request().body().asText();
             logoutCandidateRequest = LogoutCandidateRequest.parseFrom(Base64.decodeBase64(requestString));
 
-            if(CandidateService.logoutCandidate(logoutCandidateRequest) == 1){
+            if(CandidateService.logoutTrudroidCandidate(logoutCandidateRequest) == 1){
                 logoutCandidateResponseBuilder.setStatus(LogoutCandidateResponse.Status.SUCCESS);
             } else{
                 logoutCandidateResponseBuilder.setStatus(LogoutCandidateResponse.Status.FAILURE);

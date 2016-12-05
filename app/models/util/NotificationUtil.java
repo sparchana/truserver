@@ -38,7 +38,7 @@ public class NotificationUtil {
     }
 
     public static void sendInterviewSelectionNotification(Candidate candidate, JobPostWorkflow jobPostWorkflow){
-        String msg = "Hi " + candidate.getCandidateFirstName() + "! You have been selected got the job: " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() +
+        String msg = "Hi " + candidate.getCandidateFirstName() + "! You have been selected for the job: " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() +
                 ". Congratulations!";
         if(candidate.getCandidateAndroidToken() != null){
             sendNotification(msg, "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_COMPLETED);
@@ -88,7 +88,7 @@ public class NotificationUtil {
                 " has been rescheduled on " + interviewDateString + " between " + slot.getInterviewTimeSlotName();
 
         if(candidate.getCandidateAndroidToken() != null){
-            sendNotification(msg, "Interview Confirmed", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
+            sendNotification(msg, "Interview Rescheduled", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
         } else{
             Logger.info("Token not available");
         }
