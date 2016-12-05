@@ -254,6 +254,8 @@ POST        /mGetCandidateUpdateEducationProfileStatics                   contro
 POST        /mGetLocalityForLatLngOrPlaceId                               controllers.TrudroidController.mGetLocalityForLatLngOrPlaceId()
 POST        /mConfirmInterview                                            controllers.TrudroidController.mConfirmInterview()
 POST        /mUpdateCandidateStatus                                       controllers.TrudroidController.mUpdateCandidateStatus()
+POST        /mUpdateCandidateToken                                        controllers.TrudroidController.mUpdateCandidateToken()
+POST        /mCandidateLogout                                             controllers.TrudroidController.mCandidateLogout()
 
 # Update interview status API
 # ~~~~~~~~~~~~
@@ -262,6 +264,10 @@ GET         /u/:cId/:jpId                                                 contro
 POST        /getJpWfStatus/:cId/:jpId                                     controllers.Application.getJpWfStatus(cId : Long, jpId : Long)
 POST        /updateStatus/:cId/:jpId/:value/:reason                       controllers.Application.updateInterviewStatus(cId : Long, jpId : Long, value : Long, reason : Long)
 POST        /updateStatusCandidate/:jpId/:value/:reason                   controllers.Application.updateInterviewStatusViaCandidate(jpId : Long, value : Long, reason : Long)
+
+
+# notification test
+GET         /testNotification                                             controllers.Application.testnotification()
 
 # Test API
 # ~~~~~~~~~~~~~
