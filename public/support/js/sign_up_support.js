@@ -1442,7 +1442,7 @@ function saveProfileForm() {
 
     //document value verification
     documentValues.forEach(function(id){
-        if(id.idProofId == ""){
+        if(id.idProofId == null || id.idProofId == ""){
             $.notify({
                 title: "Invalid Input: ",
                 message: "Please select document",
@@ -1456,7 +1456,7 @@ function saveProfileForm() {
             statusCheck=0;
         }
         else{
-            if(id.idProofValue == ""){
+            if(id.idProofValue == null || id.idProofValue == ""){
                 $.notify({
                     title: "Invalid Input: ",
                     message: "Please provide document details",
