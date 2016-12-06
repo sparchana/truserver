@@ -1550,13 +1550,14 @@ public class CandidateService
             candidateFeedback.setCandidate(candidate);
             candidateFeedback.setFeedbackComments(addFeedbackRequest.getFeedbackComment());
             candidateFeedback.setFeedbackRating(addFeedbackRequest.getRatingScore());
+            candidateFeedback.setFeedbackChannel(INTERACTION_CHANNEL_CANDIDATE_ANDROID);
             candidateFeedback.save();
 
             for(FeedbackReasonObject feedbackReasonObject : addFeedbackRequest.getFeedbackReasonObjectList()){
                 FeedbackToReason feedbackToReason = new FeedbackToReason();
                 feedbackToReason.setCandidateFeedback(candidateFeedback);
                 feedbackToReason.setCandidateFeedbackReason(CandidateFeedbackReason.find.where()
-                        .eq("feedback_reason_id", feedbackReasonObject.getReasonId()).findUnique());
+                        .eq("reason_id", feedbackReasonObject.getReasonId()).findUnique());
                 feedbackToReason.save();
             }
 

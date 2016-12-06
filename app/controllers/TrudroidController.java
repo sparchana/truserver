@@ -1000,10 +1000,6 @@ public class TrudroidController {
                 //Job Application Object (Proto) to get all the job application applied by the candidate (list object)
                 JobPostWorkFlowObject.Builder jobPostWorkFlowObjBuilder = JobPostWorkFlowObject.newBuilder();
 
-                for(JobPostWorkflow j : appliedJobsList){
-                    Logger.info(j.getJobPost().getJobPostTitle() + " ----------------------");
-                }
-
                 //iterating all the applied jobs
                 for (JobPostWorkflow jwpf : appliedJobsList) {
 
