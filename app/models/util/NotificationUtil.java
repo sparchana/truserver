@@ -4,23 +4,22 @@ import api.ServerConstants;
 import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.Sender;
 import models.entity.Candidate;
-import models.entity.JobPost;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Static.InterviewTimeSlot;
 import play.Logger;
+import play.Play;
 
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
-
-import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 
 /**
  * Created by dodo on 1/12/16.
  */
 public class NotificationUtil {
     public static void sendNotification(String messageText, String title, String token, int intentType){
-        final Sender sender = new Sender("AAAAYK9P22w:APA91bHF7nJZ7BPFYTAnNEYtnnjqRxJA11vzli3cVdmLwu5OeHadupdrX5zyDT4W1hFT-DtQRCemQfSR9lVmfcEfPk3uUGVyEAvxaIew1cBqtF1SANUFzjWp9j8aAyLJ0B7N3nZVr3rYkiLifQulkClwhwUi3cHJcQ");
+        String senderKey = Play.application().configuration().getString("fcm.senderKey");
+        final Sender sender = new Sender(senderKey);
         com.google.android.gcm.server.Result result = null;
 
         final Message message = new Message.Builder().timeToLive(30)
@@ -117,11 +116,11 @@ public class NotificationUtil {
     }
 
     public static void sendJobApplicationNotification(Candidate candidate, String jobTitle, String company, String prescreenLocation) {
-        String msg = "You have applied to " + jobTitle + " job at " + company + " @" + prescreenLocation + ". Your application is under review " +
+        String msg = "You have initiated your application for " + jobTitle + " job at " + company + " @" + prescreenLocation + ". Your application is under review " +
                 "and you will get a notification once the recruiter shortlists you for interview.";
 
         if(candidate.getCandidateAndroidToken() != null){
-            sendNotification(msg, "Job Application Successful!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
+            sendNotification(msg, "Job Application Initiated!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
         } else{
             Logger.info("Token not available");
         }

@@ -236,6 +236,7 @@ POST        /mFindUserAndSendOtp                                          contro
 POST        /mGetAllJobRoles                                              controllers.TrudroidController.mGetAllJobRoles()
 POST        /mGetAllJobPosts                                              controllers.TrudroidController.mGetAllJobPosts()
 POST        /mGetAllNotGoingReason                                        controllers.TrudroidController.mGetAllNotGoingReason()
+POST        /mGetAllFeedbackReason                                        controllers.TrudroidController.mGetAllFeedbackReason()
 POST        /mAddHomeLocality                                             controllers.TrudroidController.mAddHomeLocality()
 POST        /mApplyJob                                                    controllers.TrudroidController.mApplyJob()
 POST        /mAddJobPref                                                  controllers.TrudroidController.mAddJobPref()
@@ -265,6 +266,7 @@ POST        /mUpdateCandidateStatus                                       contro
 POST        /mCheckInterviewSlotAvailability                              controllers.TrudroidController.mCheckInterviewSlotAvailability()
 POST        /mUpdateCandidateToken                                        controllers.TrudroidController.mUpdateCandidateToken()
 POST        /mCandidateLogout                                             controllers.TrudroidController.mCandidateLogout()
+POST        /mAddFeedback                                                 controllers.TrudroidController.mAddFeedback()
 
 # Update interview status API
 # ~~~~~~~~~~~~
