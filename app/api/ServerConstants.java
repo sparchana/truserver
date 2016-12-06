@@ -238,33 +238,58 @@ public class ServerConstants {
     public static final int CATEGORY_ASSET = 3;
     public static final int CATEGORY_PROFILE = 4;
 
+    /* ---  Pre Screening Key ---- */
+    public static final int PROPERTY_TYPE_DOCUMENT = 0;
+    public static final int PROPERTY_TYPE_LANGUAGE = 1;
+    public static final int PROPERTY_TYPE_ASSET_OWNED = 2;
+    public static final int PROPERTY_TYPE_MAX_AGE = 3;
+    public static final int PROPERTY_TYPE_EXPERIENCE = 4;
+    public static final int PROPERTY_TYPE_EDUCATION = 5;
+    public static final int PROPERTY_TYPE_GENDER = 6;
+    public static final int PROPERTY_TYPE_SALARY = 7;
+    public static final int PROPERTY_TYPE_LOCALITY = 8;
+    public static final int PROPERTY_TYPE_WORK_SHIFT = 9;
 
-    // preScreening propertyId
-    public enum PropertyType{
-        DOCUMENT,
-        LANGUAGE,
-        ASSET_OWNED,
-        MAX_AGE,
-        EXPERIENCE,
-        EDUCATION,
-        GENDER,
-        SALARY,
-        LOCALITY,
-        WORK_SHIFT;
-
-        public String toString() {
-            String title = name();
-            if(title.contains("_")){
-                String head = title.split("_")[0];
-                String tail = title.split("_")[1];
-                head = head.charAt(0) + head.substring(1).toLowerCase();
-                tail = tail.charAt(0) + tail.substring(1).toLowerCase();
-                return head +" "+ tail;
-            } else {
-                return name().charAt(0) + name().substring(1).toLowerCase();
-            }
-        }
+    /* ---  Pre Screening Map ---- */
+    public static final Map<Integer, String> PROPERTY_TYPE_MAP = new HashMap<>();
+    static {
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_DOCUMENT, "Document");
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_LANGUAGE, "Language");
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_ASSET_OWNED, "Asset Owned");
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_MAX_AGE, "Max Age");
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_EXPERIENCE, "Experience");
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_EDUCATION, "Education");
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_GENDER, "Gender");
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_SALARY, "Salary");
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_LOCALITY, "Locality");
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_WORK_SHIFT, "Work Shift");
     }
+
+//    public enum PropertyType{
+//        DOCUMENT,
+//        LANGUAGE,
+//        ASSET_OWNED,
+//        MAX_AGE,
+//        EXPERIENCE,
+//        EDUCATION,
+//        GENDER,
+//        SALARY,
+//        LOCALITY,
+//        WORK_SHIFT;
+//
+//        public String toString() {
+//            String title = name();
+//            if(title.contains("_")){
+//                String head = title.split("_")[0];
+//                String tail = title.split("_")[1];
+//                head = head.charAt(0) + head.substring(1).toLowerCase();
+//                tail = tail.charAt(0) + tail.substring(1).toLowerCase();
+//                return head +" "+ tail;
+//            } else {
+//                return name().charAt(0) + name().substring(1).toLowerCase();
+//            }
+//        }
+//    }
 
     // Recruiter constants
     public static int RECRUITER_CATEGORY_CONTACT_UNLOCK = 1;
@@ -290,6 +315,11 @@ public class ServerConstants {
     public static final int INTERVIEW_STATUS_RESCHEDULED = 3;
     public static final int INTERVIEW_STATUS_REJECTED_BY_CANDIDATE = 4;
 
+    // is_interview_required response
+    public static final int ERROR = 0;
+    public static final int INTERVIEW_NOT_REQUIRED = 1; // "OK"
+    public static final int INTERVIEW_REQUIRED = 2;     // "INTERVIEW"
+
     // rescheduled Interview status
     public static final int RESCHEULED_INTERVIEW_STATUS_ACCEPTED = 1;
     public static final int RESCHEULED_INTERVIEW_STATUS_REJECTED = 0;
@@ -312,4 +342,5 @@ public class ServerConstants {
     public static final int INTERVIEW_NOT_SELECED_TYPE_REASON = 3;
 
     public static final String CREATED_BY = "Candidate";
+
 }

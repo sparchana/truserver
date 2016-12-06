@@ -8,8 +8,11 @@ import api.http.httpRequest.ApplyJobRequest;
 import api.GoogleSheetHttpRequest;
 import api.http.httpResponse.AddJobPostResponse;
 import api.http.httpResponse.ApplyJobResponse;
+import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
+import api.http.httpResponse.interview.InterviewResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Model;
+import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.OM.*;
@@ -18,7 +21,6 @@ import models.util.EmailUtil;
 import models.util.SmsUtil;
 import play.Logger;
 import play.api.Play;
-import play.mvc.Result;
 
 import java.io.*;
 import java.net.URLEncoder;
@@ -733,10 +735,29 @@ public class JobService {
                     jobPostWorkflow.save();
                 }
             }
+            PreScreenPopulateResponse populateResponse = JobPostWorkflowEngine.getJobPostVsCandidate(Long.valueOf(applyJobRequest.getJobId()),
+                    existingCandidate.getCandidateId(), false);
+            if(populateResponse.isVisible()){
+                applyJobResponse.setPreScreenAvailable(true);
+            } else {
+                applyJobResponse.setPreScreenAvailable(false);
+            }
+            InterviewResponse interviewResponse = JobPostWorkflowEngine.isInterviewRequired(existingJobPost);
+            if(interviewResponse.getStatus() < ServerConstants.INTERVIEW_REQUIRED){
+                applyJobResponse.setInterviewAvailable(false);
+            } else {
+                applyJobResponse.setInterviewAvailable(true);
+            }
+            // adding only those field that are req by interview UI messaging
+            applyJobResponse.setJobRoleTitle(existingJobPost.getJobRole().getJobName());
+            applyJobResponse.setJobTitle(existingJobPost.getJobPostTitle());
+            applyJobResponse.setCompanyName(existingJobPost.getCompany().getCompanyName());
+            applyJobResponse.setJobPostId(existingJobPost.getJobPostId());
         } else{
             applyJobResponse.setStatus(ApplyJobResponse.STATUS_NO_CANDIDATE);
             Logger.info("Candidate Does not exists");
         }
+
         return applyJobResponse;
     }
 
