@@ -16,6 +16,7 @@ import com.google.api.client.repackaged.com.google.common.base.Strings;
 import controllers.businessLogic.ongrid.AadhaarService;
 import controllers.businessLogic.ongrid.OnGridConstants;
 import dao.staticdao.IdProofDAO;
+import in.trujobs.proto.LogoutCandidateRequest;
 import models.entity.Auth;
 import models.entity.Candidate;
 import models.entity.Lead;
@@ -1518,5 +1519,27 @@ public class CandidateService
         }
 
         return response;
+    }
+
+    public static Integer updateAndroidToken(String token, String candidateId) {
+        Logger.info("Updating token for " + candidateId);
+        Candidate candidate = Candidate.find.where().eq("CandidateId", candidateId).findUnique();
+        if(candidate != null){
+            candidate.setCandidateAndroidToken(token);
+            candidate.update();
+            return 1;
+        }
+        return 0;
+    }
+
+    public static int logoutTrudroidCandidate(LogoutCandidateRequest logoutCandidateRequest) {
+        Candidate candidate = Candidate.find.where().eq("CandidateId", logoutCandidateRequest.getCandidateId()).findUnique();
+        if(candidate != null){
+            Logger.info("Clearing android token for candidate and logging out from app");
+            candidate.setCandidateAndroidToken(null);
+            candidate.update();
+            return 1;
+        }
+        return 0;
     }
 }

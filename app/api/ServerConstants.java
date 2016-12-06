@@ -311,5 +311,15 @@ public class ServerConstants {
     public static final int INTERVIEW_NOT_GOING_TYPE_REASON = 2;
     public static final int INTERVIEW_NOT_SELECED_TYPE_REASON = 3;
 
+    /* android notification intent type */
+    public static final int ANDROID_INTENT_ACTIVITY_SEARCH_JOBS = 1;
+    public static final int ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING = 2;
+    public static final int ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED = 3;
+    public static final int ANDROID_INTENT_ACTIVITY_MY_JOBS_COMPLETED = 4;
+    public static final int ANDROID_INTENT_ACTIVITY_MY_PROFILE = 5;
+    public static final int ANDROID_INTENT_ACTIVITY_REFER = 6;
+    public static final int ANDROID_INTENT_ACTIVITY_FEEDBACK = 7;
+    public static final int ANDROID_INTENT_ACTIVITY_INTERVIEW_TIPS = 8;
+
     public static final String CREATED_BY = "Candidate";
 }
