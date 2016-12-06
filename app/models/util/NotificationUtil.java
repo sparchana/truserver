@@ -20,7 +20,7 @@ import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
  */
 public class NotificationUtil {
     public static void sendNotification(String messageText, String title, String token, int intentType){
-        final Sender sender = new Sender("AAAAYK9P22w:APA91bHF7nJZ7BPFYTAnNEYtnnjqRxJA11vzli3cVdmLwu5OeHadupdrX5zyDT4W1hFT-DtQRCemQfSR9lVmfcEfPk3uUGVyEAvxaIew1cBqtF1SANUFzjWp9j8aAyLJ0B7N3nZVr3rYkiLifQulkClwhwUi3cHJcQ");
+        final Sender sender = new Sender("AAAAmJc2ng4:APA91bE6O5LLyszMHiDJ5ya5B4bGO3j1E6yJz2ZeD6ciI4v80bhztRfvJ_UQ3gjUVfdOHE23ESj4GDD0ba7fWvpqCaNcciWYXH-EeZvm0qYBIo7NxWs7rhTUM58VuawZsyN7QI73nQqg5jfQSFQShaaGMIkF_nmNCQ");
         com.google.android.gcm.server.Result result = null;
 
         final Message message = new Message.Builder().timeToLive(30)

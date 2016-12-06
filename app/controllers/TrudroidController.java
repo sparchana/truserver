@@ -6,6 +6,7 @@ import api.http.CandidateKnownLanguage;
 import api.http.CandidateSkills;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
+import api.http.httpRequest.AddFeedbackRequest;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
 import com.amazonaws.util.json.JSONException;
@@ -15,6 +16,7 @@ import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
+import dao.staticdao.TrudroidFeedbackReasonDAO;
 import in.trujobs.proto.*;
 import in.trujobs.proto.ApplyJobRequest;
 import models.entity.Candidate;
@@ -1674,8 +1676,6 @@ public class TrudroidController {
 
     public static Result mGetAllNotGoingReason() {
         NotGoingReasonResponse.Builder notGoingReasonResponse = NotGoingReasonResponse.newBuilder();
-        List<models.entity.Static.JobRole> jobRoleList =
-                models.entity.Static.JobRole.find.where().orderBy().asc("jobName").findList();
 
         List<ReasonObject> reasonObjectList = new ArrayList<>();
         List<RejectReason> reason = new RejectReasonDAO().getByType(ServerConstants.INTERVIEW_NOT_GOING_TYPE_REASON);
@@ -1689,6 +1689,24 @@ public class TrudroidController {
 
         notGoingReasonResponse.addAllReasonObject(reasonObjectList);
         return ok(Base64.encodeBase64String(notGoingReasonResponse.build().toByteArray()));
+    }
+
+    public static Result mGetAllFeedbackReason() {
+        FeedbackReasonResponse.Builder feedbackReasonResponse = FeedbackReasonResponse.newBuilder();
+
+        List<FeedbackReasonObject> reasonObjectList = new ArrayList<>();
+        List<TrudroidFeedbackReason> reason = new TrudroidFeedbackReasonDAO().getAll();
+
+        for (TrudroidFeedbackReason trudroidFeedbackReason : reason) {
+            FeedbackReasonObject.Builder feedbackReasonObject = FeedbackReasonObject.newBuilder();
+            feedbackReasonObject.setReasonId(trudroidFeedbackReason.getFeedbackReasonId());
+            feedbackReasonObject.setReasonTitle(trudroidFeedbackReason.getFeedbackReasonName());
+            feedbackReasonObject.setReasonType(trudroidFeedbackReason.getFeedbackReasonType());
+            reasonObjectList.add(feedbackReasonObject.build());
+        }
+
+        feedbackReasonResponse.addAllFeedbackReasonObject(reasonObjectList);
+        return ok(Base64.encodeBase64String(feedbackReasonResponse.build().toByteArray()));
     }
 
     public static Result mUpdateCandidateToken() {
@@ -1731,6 +1749,25 @@ public class TrudroidController {
         }
 
         return ok(Base64.encodeBase64String(logoutCandidateResponseBuilder.build().toByteArray()));
+    }
 
+    public static Result mAddFeedback(){
+        in.trujobs.proto.AddFeedbackRequest addFeedbackRequest = null;
+        AddFeedbackResponse.Builder addFeedbackResponseBuilder = AddFeedbackResponse.newBuilder();
+
+        try {
+            String requestString = request().body().asText();
+            addFeedbackRequest = in.trujobs.proto.AddFeedbackRequest.parseFrom(Base64.decodeBase64(requestString));
+
+            if(CandidateService.addTrudroidFeedback(addFeedbackRequest) == 1){
+                addFeedbackResponseBuilder.setStatus(AddFeedbackResponse.Status.SUCCESS);
+            } else{
+                addFeedbackResponseBuilder.setStatus(AddFeedbackResponse.Status.FAILURE);
+            }
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+
+        return ok(Base64.encodeBase64String(addFeedbackResponseBuilder.build().toByteArray()));
     }
 }
