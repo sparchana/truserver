@@ -4,23 +4,22 @@ import api.ServerConstants;
 import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.Sender;
 import models.entity.Candidate;
-import models.entity.JobPost;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Static.InterviewTimeSlot;
 import play.Logger;
+import play.Play;
 
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
-
-import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 
 /**
  * Created by dodo on 1/12/16.
  */
 public class NotificationUtil {
     public static void sendNotification(String messageText, String title, String token, int intentType){
-        final Sender sender = new Sender("AAAAYK9P22w:APA91bHF7nJZ7BPFYTAnNEYtnnjqRxJA11vzli3cVdmLwu5OeHadupdrX5zyDT4W1hFT-DtQRCemQfSR9lVmfcEfPk3uUGVyEAvxaIew1cBqtF1SANUFzjWp9j8aAyLJ0B7N3nZVr3rYkiLifQulkClwhwUi3cHJcQ");
+        String senderKey = Play.application().configuration().getString("fcm.senderKey");
+        final Sender sender = new Sender(senderKey);
         com.google.android.gcm.server.Result result = null;
 
         final Message message = new Message.Builder().timeToLive(30)
