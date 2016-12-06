@@ -1,3 +1,7 @@
+/* Global Constant */
+var INTERVIEW_ERROR = 0;
+var INTERVIEW_NOT_REQUIRED = 1; // "OK"
+var INTERVIEW_REQUIRED = 2;     // "INTERVIEW"
 
 var jpTitle;
 var compName;
@@ -35,7 +39,7 @@ function processJobPostInterviewSlot(returnedData, isSupport) {
 
         var interviewDetailsList = returnedData.interviewDetailsList;
         if (interviewDetailsList[0].interviewDays != null) {
-            var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
+            var interviewDays = interviewDetailsList[0].interviewDays.toString(2); // binary format
 
             /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
             if (interviewDays.length != 7) {
@@ -45,6 +49,7 @@ function processJobPostInterviewSlot(returnedData, isSupport) {
                 for (i = 0; i < x; i++) {
                     modifiedInterviewDays += "0";
                 }
+
                 modifiedInterviewDays += interviewDays;
                 interviewDays = modifiedInterviewDays;
             }
@@ -213,7 +218,11 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
             nfy("Submitted successfully. Refreshing page.", 'success');
 
             setTimeout(function () {
-                location.reload();
+                if(window.location.pathname == "/dashboard/appliedJobs/"){
+                    window.location.href = "/dashboard/appliedJobs/";
+                } else {
+                    location.reload();
+                }
                 // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
             }, 2000);
         },
@@ -278,15 +287,23 @@ function finalInterviewSlotSubmission(candidateId, jobPostId) {
 
 function processInterviewSubmissionResponse(returnData) {
     // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
-    if(returnData == "OK"){
+    if(returnData.status == INTERVIEW_NOT_REQUIRED){
         nfy("Interview Submitted successfully. Refreshing ..", 'success');
         setTimeout(function () {
-            location.reload();
+            if(window.location.pathname == "/dashboard/appliedJobs/"){
+                window.location.href = "/dashboard/appliedJobs/";
+            } else {
+                location.reload();
+            }
         }, 2000);
     } else {
         nfy("Something went wrong. Refreshing page. After refresh please try again.", 'error');
         setTimeout(function () {
-            location.reload();
+            if(window.location.pathname == "/dashboard/appliedJobs/"){
+                window.location.href = "/dashboard/appliedJobs/";
+            } else {
+                location.reload();
+            }
         }, 2000);
     }
 }

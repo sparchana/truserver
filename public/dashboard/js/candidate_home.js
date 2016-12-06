@@ -447,10 +447,12 @@ function processDataAndFillMinProfile(returnedData) {
     }
 
     var appliedJobs = returnedData.jobApplicationList;
-    appliedJobs.forEach(function (jobApplication) {
-        $("#apply_btn_" + jobApplication.jobPost.jobPostId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
-        $("#applyBtnDiv_" + jobApplication.jobPost.jobPostId).prop('disabled',true);
-    });
+    if(appliedJobs != null) {
+        appliedJobs.forEach(function (jobApplication) {
+            $("#apply_btn_" + jobApplication.jobPost.jobPostId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
+            $("#applyBtnDiv_" + jobApplication.jobPost.jobPostId).prop('disabled',true);
+        });
+    }
 
     getJobsForCandidate();
 

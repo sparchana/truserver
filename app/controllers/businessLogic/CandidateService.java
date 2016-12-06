@@ -560,7 +560,6 @@ public class CandidateService
         }
 
         candidate.update();
-        Logger.info("Candidate with mobile " +  candidate.getCandidateMobile() + " created/updated successfully");
 
         // Trigger aadhaar verification
         verifyAadhaar(candidate.getCandidateMobile());
@@ -1298,7 +1297,7 @@ public class CandidateService
             candidate.setTimeShiftPreference(getTimeShiftPref(request.getCandidateTimeShiftPref(), candidate));
         }
 
-        if (request.getCandidateAssetList() != null) {
+        if (request.getCandidateAssetList() != null  && request.getCandidateAssetList().size() > 0) {
             candidate.setCandidateAssetList(getAssetList(request.getCandidateAssetList() , candidate));
         }
 
