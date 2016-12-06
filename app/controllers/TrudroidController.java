@@ -2282,18 +2282,20 @@ public class TrudroidController {
     public static Result mGetAllFeedbackReason() {
         FeedbackReasonResponse.Builder feedbackReasonResponse = FeedbackReasonResponse.newBuilder();
 
+/*
         List<FeedbackReasonObject> reasonObjectList = new ArrayList<>();
-        List<TrudroidFeedbackReason> reason = new TrudroidFeedbackReasonDAO().getAll();
+        List<CandidateFeedbackReason> reason = new TrudroidFeedbackReasonDAO().getAll();
 
-        for (TrudroidFeedbackReason trudroidFeedbackReason : reason) {
+        for (CandidateFeedbackReason candidateFeedbackReason : reason) {
             FeedbackReasonObject.Builder feedbackReasonObject = FeedbackReasonObject.newBuilder();
-            feedbackReasonObject.setReasonId(trudroidFeedbackReason.getFeedbackReasonId());
-            feedbackReasonObject.setReasonTitle(trudroidFeedbackReason.getFeedbackReasonName());
-            feedbackReasonObject.setReasonType(trudroidFeedbackReason.getFeedbackReasonType());
+            feedbackReasonObject.setReasonId(candidateFeedbackReason.getFeedbackReasonId());
+            feedbackReasonObject.setReasonTitle(candidateFeedbackReason.getFeedbackReasonName());
+            feedbackReasonObject.setReasonType(candidateFeedbackReason.getFeedbackReasonType());
             reasonObjectList.add(feedbackReasonObject.build());
         }
 
         feedbackReasonResponse.addAllFeedbackReasonObject(reasonObjectList);
+*/
         return ok(Base64.encodeBase64String(feedbackReasonResponse.build().toByteArray()));
     }
 }

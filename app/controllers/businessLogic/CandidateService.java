@@ -1546,18 +1546,18 @@ public class CandidateService
     public static int addTrudroidFeedback(AddFeedbackRequest addFeedbackRequest) {
         Candidate candidate = Candidate.find.where().eq("CandidateId", addFeedbackRequest.getCandidateId()).findUnique();
         if(candidate != null){
-            TrudroidFeedback trudroidFeedback = new TrudroidFeedback();
-            trudroidFeedback.setCandidate(candidate);
-            trudroidFeedback.setFeedbackComments(addFeedbackRequest.getFeedbackComment());
-            trudroidFeedback.setFeedbackRating(addFeedbackRequest.getRatingScore());
-            trudroidFeedback.save();
+            CandidateFeedback candidateFeedback = new CandidateFeedback();
+            candidateFeedback.setCandidate(candidate);
+            candidateFeedback.setFeedbackComments(addFeedbackRequest.getFeedbackComment());
+            candidateFeedback.setFeedbackRating(addFeedbackRequest.getRatingScore());
+            candidateFeedback.save();
 
             for(FeedbackReasonObject feedbackReasonObject : addFeedbackRequest.getFeedbackReasonObjectList()){
-                FeedbackToFeedbackReason feedbackToFeedbackReason = new FeedbackToFeedbackReason();
-                feedbackToFeedbackReason.setTrudroidFeedback(trudroidFeedback);
-                feedbackToFeedbackReason.setTrudroidFeedbackReason(TrudroidFeedbackReason.find.where()
+                FeedbackToReason feedbackToReason = new FeedbackToReason();
+                feedbackToReason.setCandidateFeedback(candidateFeedback);
+                feedbackToReason.setCandidateFeedbackReason(CandidateFeedbackReason.find.where()
                         .eq("feedback_reason_id", feedbackReasonObject.getReasonId()).findUnique());
-                feedbackToFeedbackReason.save();
+                feedbackToReason.save();
             }
 
             Logger.info("Feedback added successfully");

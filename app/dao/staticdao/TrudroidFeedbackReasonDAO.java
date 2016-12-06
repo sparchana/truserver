@@ -1,6 +1,6 @@
 package dao.staticdao;
 
-import models.entity.Static.TrudroidFeedbackReason;
+import models.entity.Static.CandidateFeedbackReason;
 
 import java.util.List;
 
@@ -8,20 +8,20 @@ import java.util.List;
  * Created by dodo on 6/12/16.
  */
 public class TrudroidFeedbackReasonDAO {
-    public TrudroidFeedbackReason getById(Long reasonId) {
-        return TrudroidFeedbackReason.find.where().eq("reason_id", reasonId).findUnique();
+    public CandidateFeedbackReason getById(Long reasonId) {
+        return CandidateFeedbackReason.find.where().eq("reason_id", reasonId).findUnique();
     }
 
-    public TrudroidFeedbackReason getByName(String name) {
-        return TrudroidFeedbackReason.find.where().eq("reason_name", name).findUnique();
+    public CandidateFeedbackReason getByName(String name) {
+        return CandidateFeedbackReason.find.where().eq("reason_name", name).findUnique();
     }
 
-    public List<TrudroidFeedbackReason> getByType(Integer type) {
-        return TrudroidFeedbackReason.find.where().eq("reason_type", type).orderBy("reason_name").findList();
+    public List<CandidateFeedbackReason> getByType(Integer type) {
+        return CandidateFeedbackReason.find.where().eq("reason_type", type).orderBy("reason_name").findList();
     }
 
-    public List<TrudroidFeedbackReason> getAll() {
-        return TrudroidFeedbackReason.find.all();
+    public List<CandidateFeedbackReason> getAll() {
+        return CandidateFeedbackReason.find.all();
     }
 
 }

@@ -2,7 +2,7 @@ package models.entity.OM;
 
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import models.entity.Static.TrudroidFeedbackReason;
+import models.entity.Static.CandidateFeedbackReason;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -10,12 +10,12 @@ import java.sql.Timestamp;
 /**
  * Created by dodo on 6/12/16.
  */
-@Entity(name = "feedback_to_feedback_reason")
-@Table(name = "feedback_to_feedback_reason")
-public class FeedbackToFeedbackReason extends Model {
+@Entity(name = "feedback_to_reason")
+@Table(name = "feedback_to_reason")
+public class FeedbackToReason extends Model {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "feedback_to_feedback_reason_id", columnDefinition = "bigint signed", unique = true)
+    @Column(name = "feedback_to_reason_id", columnDefinition = "bigint signed", unique = true)
     private Long feedbackToFeedbackReasonId;
 
     @Column(name = "creation_timestamp", columnDefinition = "timestamp not null default current_timestamp")
@@ -24,18 +24,18 @@ public class FeedbackToFeedbackReason extends Model {
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "feedback_id", referencedColumnName = "feedback_id")
-    private TrudroidFeedback trudroidFeedback;
+    private CandidateFeedback candidateFeedback;
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "feedback_reason_id", referencedColumnName = "feedback_reason_id")
-    private TrudroidFeedbackReason trudroidFeedbackReason;
+    @JoinColumn(name = "reason_id", referencedColumnName = "reason_id")
+    private CandidateFeedbackReason candidateFeedbackReason;
 
-    public FeedbackToFeedbackReason() {
+    public FeedbackToReason() {
         this.creationTimestamp = new Timestamp(System.currentTimeMillis());
     }
 
-    public static Finder<String, FeedbackToFeedbackReason> find = new Finder(FeedbackToFeedbackReason.class);
+    public static Finder<String, FeedbackToReason> find = new Finder(FeedbackToReason.class);
 
     public Long getFeedbackToFeedbackReasonId() {
         return feedbackToFeedbackReasonId;
@@ -53,19 +53,19 @@ public class FeedbackToFeedbackReason extends Model {
         this.creationTimestamp = creationTimestamp;
     }
 
-    public TrudroidFeedback getTrudroidFeedback() {
-        return trudroidFeedback;
+    public CandidateFeedback getCandidateFeedback() {
+        return candidateFeedback;
     }
 
-    public void setTrudroidFeedback(TrudroidFeedback trudroidFeedback) {
-        this.trudroidFeedback = trudroidFeedback;
+    public void setCandidateFeedback(CandidateFeedback candidateFeedback) {
+        this.candidateFeedback = candidateFeedback;
     }
 
-    public TrudroidFeedbackReason getTrudroidFeedbackReason() {
-        return trudroidFeedbackReason;
+    public CandidateFeedbackReason getCandidateFeedbackReason() {
+        return candidateFeedbackReason;
     }
 
-    public void setTrudroidFeedbackReason(TrudroidFeedbackReason trudroidFeedbackReason) {
-        this.trudroidFeedbackReason = trudroidFeedbackReason;
+    public void setCandidateFeedbackReason(CandidateFeedbackReason candidateFeedbackReason) {
+        this.candidateFeedbackReason = candidateFeedbackReason;
     }
 }

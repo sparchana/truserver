@@ -11,9 +11,9 @@ import java.sql.Timestamp;
  * Created by dodo on 6/12/16.
  */
 
-@Entity(name = "trudroid_feedback")
-@Table(name = "trudroid_feedback")
-public class TrudroidFeedback extends Model {
+@Entity(name = "candidate_feedback")
+@Table(name = "candidate_feedback")
+public class CandidateFeedback extends Model {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "feedback_id", columnDefinition = "int signed", unique = true)
@@ -28,14 +28,17 @@ public class TrudroidFeedback extends Model {
     @Column(name = "feedback_rating", columnDefinition = "int null")
     private Integer feedbackRating;
 
+    @Column(name = "feedback_channel", columnDefinition = "int signed not null", nullable = false)
+    private int feedbackChannel; // website, android, partner
+
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
     private Candidate candidate;
 
-    public static Model.Finder<String, TrudroidFeedback> find = new Model.Finder(TrudroidFeedback.class);
+    public static Model.Finder<String, CandidateFeedback> find = new Model.Finder(CandidateFeedback.class);
 
-    public TrudroidFeedback() {
+    public CandidateFeedback() {
         this.creationTimestamp = new Timestamp(System.currentTimeMillis());
     }
 
@@ -63,6 +66,14 @@ public class TrudroidFeedback extends Model {
         this.feedbackComments = feedbackComments;
     }
 
+    public Integer getFeedbackRating() {
+        return feedbackRating;
+    }
+
+    public void setFeedbackRating(Integer feedbackRating) {
+        this.feedbackRating = feedbackRating;
+    }
+
     public Candidate getCandidate() {
         return candidate;
     }
@@ -71,11 +82,11 @@ public class TrudroidFeedback extends Model {
         this.candidate = candidate;
     }
 
-    public Integer getFeedbackRating() {
-        return feedbackRating;
+    public int getFeedbackChannel() {
+        return feedbackChannel;
     }
 
-    public void setFeedbackRating(Integer feedbackRating) {
-        this.feedbackRating = feedbackRating;
+    public void setFeedbackChannel(int feedbackChannel) {
+        this.feedbackChannel = feedbackChannel;
     }
 }
