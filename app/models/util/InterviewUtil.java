@@ -1,6 +1,6 @@
 package models.util;
 
-import java.sql.Date;
+import java.util.Date;
 
 /**
  * Created by zero on 29/11/16.
