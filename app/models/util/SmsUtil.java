@@ -97,7 +97,7 @@ public class SmsUtil {
     }
 
     public static void sendJobApplicationSms(String candidateName, String jobTitle, String company, String mobile, String prescreenLocation, int channelType) {
-        String msg = "Hi " + candidateName + ", you have applied to " + jobTitle + " job at " + company + " @" + prescreenLocation + ". Your application is under review " +
+        String msg = "Hi " + candidateName + ", you have initiated your application for " + jobTitle + " job at " + company + " @" + prescreenLocation + ". Your application is under review " +
                 "and you will get a notification once the recruiter shortlists you for interview. All the best! www.trujobs.in.";
         if(channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
             msg += " Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";

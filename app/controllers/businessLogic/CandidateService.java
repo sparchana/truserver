@@ -1548,6 +1548,7 @@ public class CandidateService
         if(candidate != null){
             TrudroidFeedback trudroidFeedback = new TrudroidFeedback();
             trudroidFeedback.setCandidate(candidate);
+            trudroidFeedback.setFeedbackComments(addFeedbackRequest.getFeedbackComment());
             trudroidFeedback.setFeedbackRating(addFeedbackRequest.getRatingScore());
             trudroidFeedback.save();
 
