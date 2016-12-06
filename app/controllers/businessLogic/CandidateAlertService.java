@@ -75,7 +75,7 @@ public class CandidateAlertService {
                         null,
                         ServerConstants.SORT_DEFAULT,
                         false,
-                        true).size();
+                        false).size();
             }
 
             if (jobsCount > 0) {
