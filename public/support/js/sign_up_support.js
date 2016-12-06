@@ -150,7 +150,6 @@ $(document).ready(function () {
         console.log("exception occured!!" + exception);
     }
 
-
     try {
         $.ajax({
             type: "POST",
@@ -342,6 +341,7 @@ function processDataAndFillAllFields(returnedData) {
                 jobPrefString +=id + ",";
             });
             jobPrefString = jobPrefString.substring(0, jobPrefString.length - 1);
+            getAssetsForJobRole(jobPrefString);
         } catch (err) {
             console.log(err);
         }
@@ -712,17 +712,6 @@ function processDataCheckJobs(returnedData) {
         item ["id"] = id;
         item ["name"] = name;
         jobArray.push(item);
-    });
-}
-function processDataCheckAssets(returnedData) {
-    assetArray = [];
-    returnedData.forEach(function (asset) {
-        var id = asset.assetId;
-        var name = asset.assetTitle;
-        var item = {};
-        item ["id"] = id;
-        item ["name"] = name;
-        assetArray.push(item);
     });
 }
 
@@ -1453,7 +1442,7 @@ function saveProfileForm() {
 
     //document value verification
     documentValues.forEach(function(id){
-        if(id.idProofId == ""){
+        if(id.idProofId == null || id.idProofId == ""){
             $.notify({
                 title: "Invalid Input: ",
                 message: "Please select document",
@@ -1467,7 +1456,7 @@ function saveProfileForm() {
             statusCheck=0;
         }
         else{
-            if(id.idProofValue == ""){
+            if(id.idProofValue == null || id.idProofValue == ""){
                 $.notify({
                     title: "Invalid Input: ",
                     message: "Please provide document details",
@@ -2218,7 +2207,9 @@ $(function () {
         generateExperience($('#candidateJobPref').val());
         prefillCandidatePastJobExp(candidatePastJobExp);
         unlockcurrentJobRadio();
-        getAssetsForJobRole();
+        if(assetArray.length == 0){
+            getAssetsForJobRole(null);
+        }
         $("#candidateAsset").tokenInput('destroy');
         $("#candidateAsset").tokenInput(getAssets(), {
             theme: "facebook",
