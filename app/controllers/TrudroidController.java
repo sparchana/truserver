@@ -1508,16 +1508,16 @@ public class TrudroidController {
             }
             jobPostList.addAll(JobSearchService.getRelevantJobPostsWithinDistance(jobSearchRequest.getLatitude(),
                     jobSearchRequest.getLongitude(), jobRoleIdList, jobFilterRequestBuilder.build(),
-                    sortby, false, true));
+                    sortby, false, false));
 
         } else {
             if (jobSearchRequest.getLatitude() != 0.0 && jobSearchRequest.getLongitude() != 0.0) {
                 jobPostList.addAll(
                         JobSearchService.getRelevantJobPostsWithinDistance(jobSearchRequest.getLatitude(),
-                                jobSearchRequest.getLongitude(), jobRoleIdList, null, ServerConstants.SORT_DEFAULT, false, true));
+                                jobSearchRequest.getLongitude(), jobRoleIdList, null, ServerConstants.SORT_DEFAULT, false, false));
             } else {
                 jobPostList.addAll(JobSearchService.getRelevantJobPostsWithinDistance(null,
-                        null, jobRoleIdList, null, ServerConstants.SORT_DEFAULT, false, true));
+                        null, jobRoleIdList, null, ServerConstants.SORT_DEFAULT, false, false));
             }
         }
 
