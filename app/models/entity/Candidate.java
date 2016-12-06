@@ -211,6 +211,9 @@ public class Candidate extends Model {
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     private List<OngridVerificationResults> candidateVerificationList;
 
+    @Column(name = "candidate_android_token", columnDefinition = "text null")
+    private String candidateAndroidToken;
+
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
     public Candidate() {
@@ -631,6 +634,14 @@ public class Candidate extends Model {
 
     public void setCandidateVerificationList(List<OngridVerificationResults> candidateVerificationList) {
         this.candidateVerificationList = candidateVerificationList;
+    }
+
+    public String getCandidateAndroidToken() {
+        return candidateAndroidToken;
+    }
+
+    public void setCandidateAndroidToken(String candidateAndroidToken) {
+        this.candidateAndroidToken = candidateAndroidToken;
     }
 }
 

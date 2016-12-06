@@ -18,6 +18,7 @@ import models.entity.*;
 import models.entity.OM.*;
 import models.entity.Static.*;
 import models.util.EmailUtil;
+import models.util.NotificationUtil;
 import models.util.SmsUtil;
 import play.Logger;
 import play.api.Play;
@@ -688,6 +689,9 @@ public class JobService {
                         }
                     } else{
                         SmsUtil.sendJobApplicationSms(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName(), channelType);
+
+                        //sending notification
+                        NotificationUtil.sendJobApplicationNotification(existingCandidate, existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), jobApplication.getLocality().getLocalityName());
                     }
 
                     jobApplication.save();

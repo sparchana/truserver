@@ -25,6 +25,7 @@ import models.entity.OM.*;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
 import models.entity.Static.*;
+import models.util.NotificationUtil;
 import models.util.SmsUtil;
 import models.util.Util;
 import org.apache.commons.lang3.StringUtils;
@@ -2193,6 +2194,9 @@ public class JobPostWorkflowEngine {
                 if(interviewStatusRequest.getInterviewSchedule() == null){ //candidate shortlisted because slots and interview days is not available
                     sendInterviewShortlistSms(jobPost, candidate);
 
+                    //sending notification
+                    NotificationUtil.sendInterviewShortlistNotification(candidate, jobPostWorkflowOld);
+
                     // creating interaction
                     createInteractionForRecruiterShortlistJobApplicationWithoutDate(candidate.getCandidateUUId(), jobPost.getRecruiterProfile().getRecruiterProfileUUId());
                     jwType = InteractionConstants.INTERACTION_TYPE_RECRUITER_SHORTLIST_JOB_APPLICATION_INTERVIEW;
@@ -2203,6 +2207,9 @@ public class JobPostWorkflowEngine {
 
                     // creating interaction
                     createInteractionForRecruiterAcceptingInterviewDate(candidate.getCandidateUUId(), jobPost.getRecruiterProfile().getRecruiterProfileUUId());
+
+                    //sending notification
+                    NotificationUtil.sendInterviewConfirmationNotification(candidate, jobPostWorkflowOld);
 
                     if(jobApplication != null && jobApplication.getPartner() != null){
                         sendInterviewConfirmationSmsToPartner(jobPostWorkflowOld, candidate, jobApplication.getPartner());
@@ -2219,6 +2226,9 @@ public class JobPostWorkflowEngine {
                 // creating interaction
                 createInteractionForRecruiterRejectingInterviewDate(candidate.getCandidateUUId(), jobPostWorkflowOld.getJobPost().getRecruiterProfile().getRecruiterProfileUUId());
 
+                //sending notification
+                NotificationUtil.sendInterviewNotShortlistNotification(candidate, jobPostWorkflowOld);
+
                 if(jobApplication != null && jobApplication.getPartner() != null){
                     sendInterviewRejectionSmsToPartner(jobPostWorkflowOld, candidate, jobApplication.getPartner());
                 }
@@ -2233,6 +2243,10 @@ public class JobPostWorkflowEngine {
                 interactionResult = " interview rescheduled";
 
                 InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", interviewStatusRequest.getRescheduledSlot()).findUnique();
+
+                //sending notification
+                NotificationUtil.sendInterviewRescheduledNotification(jobPostWorkflowOld, candidate, date, interviewTimeSlot);
+
                 sendInterviewReschedulingSms(jobPostWorkflowOld, candidate, date, interviewTimeSlot);
 
                 if(jobApplication != null && jobApplication.getPartner() != null){
@@ -2298,10 +2312,16 @@ public class JobPostWorkflowEngine {
             //sms to candidate
             sendInterviewConfirmationSms(jobPostWorkflowOld, candidate);
 
+            //sending notification
+            NotificationUtil.sendInterviewConfirmationNotification(candidate, jobPostWorkflowOld);
+
         } else if(value == ServerConstants.RESCHEULED_INTERVIEW_STATUS_REJECTED){ // reject
             interactionResult = " interview rejected by candidate";
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_REJECTS_RESCHEDULED_INTERVIEW;
             jwStatus = ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE;
+
+            //sending notification
+            NotificationUtil.sendInterviewNotShortlistNotification(candidate, jobPostWorkflowOld);
 
             sendInterviewCandidateInterviewReject(jobPostWorkflowOld, candidate);
         }
@@ -2680,13 +2700,21 @@ public class JobPostWorkflowEngine {
 
         interviewFeedbackUpdate.save();
 
+        Candidate candidate = Candidate.find.where().eq("candidateId", addFeedbackRequest.getCandidateId()).findUnique();
+
         if(jwStatus == ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+            //sending notification
+            NotificationUtil.sendInterviewSelectionNotification(candidate, jobPostWorkflowNew);
+
+            //sending sms
             sendSelectedSmsToCandidate(jobPostWorkflowNew);
         } else{
+            //sending notification
+            NotificationUtil.sendInterviewRejectionNotification(candidate, jobPostWorkflowNew);
+
+            //sending sms
             sendRejectedSmsToCandidate(jobPostWorkflowNew);
         }
-
-        Candidate candidate = Candidate.find.where().eq("candidateId", addFeedbackRequest.getCandidateId()).findUnique();
 
         // save the interaction
         InteractionService.createWorkflowInteraction(

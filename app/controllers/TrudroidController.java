@@ -2197,4 +2197,46 @@ public class TrudroidController {
 
         return ok(Base64.encodeBase64String(checkInterviewSlotResponse.build().toByteArray()));
     }
+
+    public static Result mUpdateCandidateToken() {
+        UpdateTokenRequest updateTokenRequest = null;
+        UpdateTokenResponse.Builder updateTokenResponseBuilder = UpdateTokenResponse.newBuilder();
+
+        try {
+            String requestString = request().body().asText();
+            updateTokenRequest = UpdateTokenRequest.parseFrom(Base64.decodeBase64(requestString));
+
+            if(CandidateService.updateAndroidToken(updateTokenRequest.getToken(), updateTokenRequest.getCandidateId()) == 1){
+                updateTokenResponseBuilder.setStatus(UpdateTokenResponse.Status.SUCCESS);
+            } else{
+                updateTokenResponseBuilder.setStatus(UpdateTokenResponse.Status.FAILURE);
+            }
+
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+
+        return ok(Base64.encodeBase64String(updateTokenResponseBuilder.build().toByteArray()));
+    }
+
+    public static Result mCandidateLogout() {
+        LogoutCandidateRequest logoutCandidateRequest = null;
+        LogoutCandidateResponse.Builder logoutCandidateResponseBuilder = LogoutCandidateResponse.newBuilder();
+
+        try {
+            String requestString = request().body().asText();
+            logoutCandidateRequest = LogoutCandidateRequest.parseFrom(Base64.decodeBase64(requestString));
+
+            if (CandidateService.logoutTrudroidCandidate(logoutCandidateRequest) == 1) {
+                logoutCandidateResponseBuilder.setStatus(LogoutCandidateResponse.Status.SUCCESS);
+            } else {
+                logoutCandidateResponseBuilder.setStatus(LogoutCandidateResponse.Status.FAILURE);
+            }
+
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+
+        return ok(Base64.encodeBase64String(logoutCandidateResponseBuilder.build().toByteArray()));
+    }
 }
