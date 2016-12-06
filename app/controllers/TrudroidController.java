@@ -41,6 +41,8 @@ import java.util.*;
 
 import static api.ServerConstants.*;
 import static controllers.businessLogic.JobSearchService.*;
+import static models.util.InterviewUtil.getDayVal;
+import static models.util.InterviewUtil.getMonthVal;
 import static models.util.Util.generateOtp;
 import static models.util.Validator.isValidLocalityName;
 import static play.libs.Json.toJson;
@@ -2068,29 +2070,45 @@ public class TrudroidController {
                 return badRequest();
             }
 
-            List<InterviewSlot> interviewSlots = new ArrayList<>();
-            for (InterviewDetails details : jobPost.getInterviewDetailsList()) {
-                details.getInterviewDays();
-                details.getInterviewTimeSlot();
+            Map<String, InterviewDateTime> interviewSlotMap = new LinkedHashMap<>();
+            // get today's date
+            Calendar newCalendar = Calendar.getInstance();
+            newCalendar.get(Calendar.YEAR);
+            newCalendar.get(Calendar.MONTH);
+            newCalendar.get(Calendar.DAY_OF_MONTH);
+            Date today = newCalendar.getTime();
 
-                // build slotobject
-                InterviewTimeSlotObject.Builder interviewTimeSlot = InterviewTimeSlotObject.newBuilder();
-                interviewTimeSlot.setSlotId(details.getInterviewTimeSlot().getInterviewTimeSlotId());
-                interviewTimeSlot.setSlotTitle(details.getInterviewTimeSlot().getInterviewTimeSlotName());
+            for (int k = 2; k < 9; ++k) {
 
-                // build interview
-                InterviewSlot.Builder interviewSlot = InterviewSlot.newBuilder();
-                interviewSlot.setInterviewTimeSlotObject(interviewTimeSlot.build());
+                Calendar c = Calendar.getInstance();
+                c.setTime(today);
+                c.add(Calendar.DATE, k);
+                Date future = c.getTime();
 
-
+                for (InterviewDetails details : jobPost.getInterviewDetailsList()) {
                 /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
-                String interviewDays = InterviewUtil.fixPrecedingZero(Integer.toBinaryString(details.getInterviewDays()));
+                    String interviewDays = InterviewUtil.fixPrecedingZero(Integer.toBinaryString(details.getInterviewDays()));
 
-                interviewSlot.setInterviewDays(interviewDays);
-                interviewSlots.add(interviewSlot.build());
+                    if (InterviewUtil.checkSlotAvailability(future, interviewDays)) {
+
+                        InterviewTimeSlotObject.Builder timeSlot = InterviewTimeSlotObject.newBuilder();
+                        timeSlot.setSlotId(details.getInterviewTimeSlot().getInterviewTimeSlotId());
+                        timeSlot.setSlotTitle(details.getInterviewTimeSlot().getInterviewTimeSlotName());
+
+                        InterviewDateTime.Builder interviewDateTime = InterviewDateTime.newBuilder();
+                        interviewDateTime.setInterviewTimeSlot(timeSlot.build());
+                        interviewDateTime.setInterviewDateMillis(future.getTime());
+
+                        String slotString = getDayVal(future.getDay())+ ", "
+                                + future.getDate() + " " + getMonthVal((future.getMonth() + 1))
+                                + " (" + details.getInterviewTimeSlot().getInterviewTimeSlotName() + ")" ;
+
+                        interviewSlotMap.put(slotString, interviewDateTime.build());
+                    }
+                }
             }
 
-            response.addAllInterviewSlots(interviewSlots);
+            response.putAllInterviewSlotsMap(interviewSlotMap);
 
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
