@@ -1049,7 +1049,7 @@ public class TrudroidController {
                         }
 
                         jobPostObjectBuilder.setJobPostMinSalary(jwpf.getJobPost().getJobPostMinSalary());
-                        if (jwpf.getJobPost().getJobPostMaxSalary() == 0 || jwpf.getJobPost().getJobPostMaxSalary() == null) {
+                        if (jwpf.getJobPost().getJobPostMaxSalary() == null || jwpf.getJobPost().getJobPostMaxSalary() == 0) {
                             jobPostObjectBuilder.setJobPostMaxSalary(0);
                         } else {
                             jobPostObjectBuilder.setJobPostMaxSalary(jwpf.getJobPost().getJobPostMaxSalary());
