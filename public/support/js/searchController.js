@@ -283,6 +283,7 @@ function renderSearchResult(returnedData) {
     else {
         $('#searchError').hide();
         var returnedDataArray = [];
+
         try {
             candidateList.forEach(function (newCandidate) {
                 // prep strings for display
@@ -295,6 +296,9 @@ function renderSearchResult(returnedData) {
                 if (newCandidate.locality != null) {
                     locality = newCandidate.locality.localityName;
                 }
+
+                var verificationMap = getVerificationStatus(newCandidate);
+
                 returnedDataArray.push({
                     'cLID': '<a href="/candidateSignupSupport/' + newCandidate.lead.leadId + '/false" target="_blank">' + newCandidate.lead.leadId + '</a>',
                     'candidateFirstName': getFirstName(newCandidate.candidateFirstName) + " " + getLastName(newCandidate.candidateLastName),
@@ -321,7 +325,13 @@ function renderSearchResult(returnedData) {
                     'candidateExperienceLetter': getYesNo(newCandidate.candidateExperienceLetter),
                     'isActive': getProperProfileStatus(newCandidate.candidateprofilestatus),
                     'candidateExpiry': getExpiry(newCandidate.candidateStatusDetail),
-                    'candidateIdProofs': getIdProof(newCandidate.idProofReferenceList)
+                    'candidateIdProofs': getIdProof(newCandidate.idProofReferenceList),
+                    'candidateAadhaarNumber': getAadhaarNumber(newCandidate.idProofReferenceList),
+                    'candidateNameVerified': verificationMap["Name"],
+                    'candidatePhoneVerified': verificationMap["Phone"],
+                    'candidateDOBVerified': verificationMap["DOB"],
+                    'candidateGenderVerified': verificationMap["Gender"],
+                    'candidateVerifyNow': '<input style="margin-left: 6px" type="button" value="Verify" onclick="verifyAadhaar('+ newCandidate.candidateMobile + ')">'
                 })
             });
 
@@ -357,7 +367,13 @@ function renderSearchResult(returnedData) {
                     {"data": "candidateExperienceLetter"},
                     {"data": "isActive"},
                     {"data": "candidateExpiry"},
-                    {"data": "candidateIdProofs"}
+                    {"data": "candidateIdProofs"},
+                    {"data": "candidateAadhaarNumber"},
+                    {"data": "candidateNameVerified"},
+                    {"data": "candidatePhoneVerified"},
+                    {"data": "candidateDOBVerified"},
+                    {"data": "candidateGenderVerified"},
+                    {"data": "candidateVerifyNow"}
                 ],
                 "deferRender": true,
                 "scroller": true,
@@ -415,6 +431,7 @@ function renderSearchResult(returnedData) {
             $('#maxAge').keyup(function () {
                 oTable.fnDraw();
             });
+
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
@@ -431,11 +448,15 @@ function searchForm(){
     var searchLocality = $('#candidateLocalityPref').val().split(",");
     
     for(i=0;i<searchJob.length;i++){
-        jobArray.push(searchJob[i]);
+        if (searchJob[i] != '') {
+            jobArray.push(searchJob[i]);
+        }
     }
 
     for(i=0;i<searchLocality.length;i++){
-        localityArray.push(searchLocality[i]);
+        if (searchLocality[i] != '') {
+            localityArray.push(searchLocality[i]);
+        }
     }
     /* ajax commands to fetch all localities and jobs*/
     var d = {
@@ -445,7 +466,8 @@ function searchForm(){
         candidateJobInterest: jobArray,
         fromThisDate: $('#fromThisDate').val(),
         toThisDate: $('#toThisDate').val(),
-        languageKnown: $('#languageMultiSelect').val()
+        languageKnown: $('#languageMultiSelect').val(),
+        idProofs: $('#idProofMultiSelect').val()
     };
     if(d.fromThisDate > d.toThisDate){
         $.notify({
@@ -458,7 +480,7 @@ function searchForm(){
         },{
             type: 'danger'
         });
-        console.log("wrong date range selection. Please select appropriate from/to Date");
+
         shouldAddFooter = false;
     } else {
         shouldAddFooter = true;
@@ -580,6 +602,109 @@ function processLanguage(returnLanguage) {
     }
 }
 
+function processIdProof(responseData) {
+    if(responseData != null){
+        var data = [];
+
+        responseData.forEach(function (idproof) {
+            var opt = {
+                label: idproof.idProofName, value: parseInt(idproof.idProofId)
+            };
+            data.push(opt);
+        });
+
+        var selectList = $('#idProofMultiSelect');
+        selectList.multiselect({
+            includeSelectAllOption: true,
+            maxHeight: 300
+        });
+        selectList.multiselect('dataprovider', data);
+        selectList.multiselect('rebuild');
+    }
+}
+
+function getAadhaarNumber(idProofList) {
+    var returnVal = "N/A"
+    try {
+        if (idProofList != null) {
+            idProofList.forEach(function (idProofRef) {
+                if (idProofRef.idProof.idProofId == 3) {
+                    if (idProofRef.idProofNumber != 'undefined') {
+                        returnVal = idProofRef.idProofNumber;
+                    }
+                }
+            });
+        }
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+    return returnVal;
+}
+
+function getVerificationStatus(candidate) {
+
+    var verificationList = candidate.candidateVerificationList;
+    var resultMap = new Object();
+    resultMap["Name"] = "N/A";
+    resultMap["Phone"] = "N/A";
+    resultMap["DOB"] = "N/A";
+    resultMap["Gender"] = "N/A";
+
+    if (verificationList != null && verificationList.length > 0) {
+
+        verificationList.forEach(function (verificationResult) {
+            if (verificationResult.ongridField.fieldId == 3) {
+                resultMap["Name"] = verificationResult.ongridVerificationStatus.statusName;
+            }
+            if (verificationResult.ongridField.fieldId == 4) {
+                resultMap["Phone"] = verificationResult.ongridVerificationStatus.statusName;
+            }
+            if (verificationResult.ongridField.fieldId == 5) {
+                resultMap["DOB"] = verificationResult.ongridVerificationStatus.statusName;
+            }
+            if (verificationResult.ongridField.fieldId == 9) {
+                resultMap["Gender"] = verificationResult.ongridVerificationStatus.statusName;
+            }
+        });
+    }
+
+    return resultMap;
+}
+
+function verifyAadhaar(candidateMobile) {
+    NProgress.start();
+    try {
+        $.ajax({
+            type: "POST",
+            crossDomain: true,
+            url: "/api/compute/verifyAadhar/" + candidateMobile,
+            async: true,
+            success: handleAadharVerificationResponse
+        });
+    }
+    catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function handleAadharVerificationResponse(response) {
+    var msg = response.responseMessage;
+    $.notify({
+        title: "Verification response: ",
+        message: msg + ". Refreshing search results",
+        animate: {
+            enter: 'animated lightSpeedIn',
+            exit: 'animated lightSpeedOut'
+        }
+    },{
+        type: 'danger'
+    });
+
+    $("#searchBtn").trigger("click");
+
+    NProgress.done();
+}
+
 $(function() {
     // create multiselect for languages
     try {
@@ -591,6 +716,21 @@ $(function() {
             contentType: false,
             processData: false,
             success: processLanguage
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+    // create multiselect for idproof
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllIdProof",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processIdProof
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);

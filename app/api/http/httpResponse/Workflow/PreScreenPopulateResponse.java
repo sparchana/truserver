@@ -8,18 +8,19 @@ import java.util.List;
  */
 public class PreScreenPopulateResponse {
 
-    public enum Status{
+    public enum Status {
         UNKNOWN,
         FAILURE,
         SUCCESS,
         INVALID
     }
+
     public static class PreScreenCustomObject {
         Object object;
         boolean isObjectAvailable;
         Object placeHolder;
 
-        public PreScreenCustomObject(Object object, Object placeHolder , boolean isObjectAvailable) {
+        public PreScreenCustomObject(Object object, Object placeHolder, boolean isObjectAvailable) {
             this.object = object;
             this.placeHolder = placeHolder;
             this.isObjectAvailable = isObjectAvailable;
@@ -50,109 +51,126 @@ public class PreScreenPopulateResponse {
         }
     }
 
+    public static class PreScreenElement {
+        public String propertyTitle;
+        public int propertyId;
 
-        public static class PreScreenElement {
-            public String propertyTitle;
-            public int propertyId;
+        public List<Object> propertyIdList;
+        public List<PreScreenCustomObject> jobPostElementList;
+        public List<PreScreenCustomObject> candidateElementList;
+        public boolean isMatching;
+        public boolean isSingleEntity;
+        public boolean isMinReq;
+        public Object jobPostPlaceHolder;
+        public Object candidatePlaceHolder;
 
-            public List<Object> propertyIdList;
-            public List<PreScreenCustomObject> jobPostElementList;
-            public List<PreScreenCustomObject> candidateElementList;
-            public boolean isMatching;
-            public boolean isSingleEntity;
-            public boolean isMinReq;
+        // used with single entity
+        public PreScreenCustomObject jobPostElement;
+        public PreScreenCustomObject candidateElement;
 
-            // used with single entity
-            public PreScreenCustomObject jobPostElement;
-            public PreScreenCustomObject candidateElement;
-
-            public PreScreenElement() {
-                this.isMatching = true;
-                this.isMinReq = true;
-                this.isSingleEntity = true;
-                this.propertyIdList = new ArrayList<>();
-            }
-
-            public String getPropertyTitle() {
-                return propertyTitle;
-            }
-
-            public void setPropertyTitle(String propertyTitle) {
-                this.propertyTitle = propertyTitle;
-            }
-
-            public int getPropertyId() {
-                return propertyId;
-            }
-
-            public void setPropertyId(int propertyId) {
-                this.propertyId = propertyId;
-            }
-
-            public List<Object> getPropertyIdList() {
-                return propertyIdList;
-            }
-
-            public void setPropertyIdList(List<Object> propertyIdList) {
-                this.propertyIdList = propertyIdList;
-            }
-
-            public List<PreScreenCustomObject> getJobPostElementList() {
-                return jobPostElementList;
-            }
-
-            public void setJobPostElementList(List<PreScreenCustomObject> jobPostElementList) {
-                this.jobPostElementList = jobPostElementList;
-            }
-
-            public List<PreScreenCustomObject> getCandidateElementList() {
-                return candidateElementList;
-            }
-
-            public void setCandidateElementList(List<PreScreenCustomObject> candidateElementList) {
-                this.candidateElementList = candidateElementList;
-            }
-
-            public boolean isMatching() {
-                return isMatching;
-            }
-
-            public void setMatching(boolean matching) {
-                isMatching = matching;
-            }
-
-            public boolean isSingleEntity() {
-                return isSingleEntity;
-            }
-
-            public void setSingleEntity(boolean singleEntity) {
-                isSingleEntity = singleEntity;
-            }
-
-            public boolean isMinReq() {
-                return isMinReq;
-            }
-
-            public void setMinReq(boolean minReq) {
-                isMinReq = minReq;
-            }
-
-            public PreScreenCustomObject getJobPostElement() {
-                return jobPostElement;
-            }
-
-            public void setJobPostElement(PreScreenCustomObject jobPostElement) {
-                this.jobPostElement = jobPostElement;
-            }
-
-            public PreScreenCustomObject getCandidateElement() {
-                return candidateElement;
-            }
-
-            public void setCandidateElement(PreScreenCustomObject candidateElement) {
-                this.candidateElement = candidateElement;
-            }
+        public PreScreenElement() {
+            this.isMatching = true;
+            this.isMinReq = true;
+            this.isSingleEntity = true;
+            this.propertyIdList = new ArrayList<>();
         }
+
+        public String getPropertyTitle() {
+            return propertyTitle;
+        }
+
+        public void setPropertyTitle(String propertyTitle) {
+            this.propertyTitle = propertyTitle;
+        }
+
+        public int getPropertyId() {
+            return propertyId;
+        }
+
+        public void setPropertyId(int propertyId) {
+            this.propertyId = propertyId;
+        }
+
+        public List<Object> getPropertyIdList() {
+            return propertyIdList;
+        }
+
+        public void setPropertyIdList(List<Object> propertyIdList) {
+            this.propertyIdList = propertyIdList;
+        }
+
+        public List<PreScreenCustomObject> getJobPostElementList() {
+            return jobPostElementList;
+        }
+
+        public void setJobPostElementList(List<PreScreenCustomObject> jobPostElementList) {
+            this.jobPostElementList = jobPostElementList;
+        }
+
+        public List<PreScreenCustomObject> getCandidateElementList() {
+            return candidateElementList;
+        }
+
+        public void setCandidateElementList(List<PreScreenCustomObject> candidateElementList) {
+            this.candidateElementList = candidateElementList;
+        }
+
+        public boolean isMatching() {
+            return isMatching;
+        }
+
+        public void setMatching(boolean matching) {
+            isMatching = matching;
+        }
+
+        public boolean isSingleEntity() {
+            return isSingleEntity;
+        }
+
+        public void setSingleEntity(boolean singleEntity) {
+            isSingleEntity = singleEntity;
+        }
+
+        public boolean isMinReq() {
+            return isMinReq;
+        }
+
+        public void setMinReq(boolean minReq) {
+            isMinReq = minReq;
+        }
+
+        public PreScreenCustomObject getJobPostElement() {
+            return jobPostElement;
+        }
+
+        public void setJobPostElement(PreScreenCustomObject jobPostElement) {
+            this.jobPostElement = jobPostElement;
+        }
+
+        public PreScreenCustomObject getCandidateElement() {
+            return candidateElement;
+        }
+
+        public void setCandidateElement(PreScreenCustomObject candidateElement) {
+            this.candidateElement = candidateElement;
+        }
+
+        public Object getJobPostPlaceHolder() {
+            return jobPostPlaceHolder;
+        }
+
+        public void setJobPostPlaceHolder(Object jobPostPlaceHolder) {
+            this.jobPostPlaceHolder = jobPostPlaceHolder;
+        }
+
+        public Object getCandidatePlaceHolder() {
+            return candidatePlaceHolder;
+        }
+
+        public void setCandidatePlaceHolder(Object candidatePlaceHolder) {
+            this.candidatePlaceHolder = candidatePlaceHolder;
+        }
+    }
 
     // min req
     public Long jobPostId;
@@ -161,8 +179,9 @@ public class PreScreenPopulateResponse {
     public List<PreScreenElement> elementList;
     public Status status;
     public String jobPostMinReq;
+    public boolean visible;
 
-    public PreScreenPopulateResponse(){
+    public PreScreenPopulateResponse() {
         this.elementList = new ArrayList<>();
     }
 
@@ -188,5 +207,21 @@ public class PreScreenPopulateResponse {
 
     public void setJobPostMinReq(String jobPostMinReq) {
         this.jobPostMinReq = jobPostMinReq;
+    }
+
+    public Long getCandidateId() {
+        return candidateId;
+    }
+
+    public void setCandidateId(Long candidateId) {
+        this.candidateId = candidateId;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }

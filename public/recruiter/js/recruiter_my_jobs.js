@@ -1,6 +1,15 @@
 /**
  * Created by hawk on 21/10/16.
  */
+
+$(window).load(function() {
+    $(".homeNav").removeClass("active");
+    $(".homeNavMobile").removeClass("active");
+    $(".jobNav").addClass("active");
+    $(".jobNavMobile").addClass("active");
+
+});
+
 $(document).ready(function(){
     checkRecruiterLogin();
     try {
@@ -44,7 +53,7 @@ function processDataGenerateJobPostView(returnedData) {
         logoutRecruiter();
     } else{
         var parent = $('.myJobsRecruiter');
-
+        returnedData = returnedData.reverse();
         if(Object.keys(returnedData).length){
             returnedData.forEach(function (jobPost) {
                 var mainDiv =  document.createElement("div");
@@ -147,8 +156,13 @@ function processDataGenerateJobPostView(returnedData) {
                 colApplicant.appendChild(spanApplications);
 
                 var applicantBtn = document.createElement('a');
-                applicantBtn.style = "font-weight:600;text-decoration:none";
+                applicantBtn.style = "font-weight: bold; text-decoration:none";
                 colApplicant.appendChild(applicantBtn);
+
+                var newApplication = document.createElement('div');
+                newApplication.style = "margin-top: 4px";
+                newApplication.className = "newCounter";
+                colApplicant.appendChild(newApplication);
 
                 var colJobStatus = document.createElement("div");
                 colJobStatus.className = 'col s12 m1 l1';
@@ -202,7 +216,24 @@ function processDataGenerateJobPostView(returnedData) {
                         contentType: false,
                         processData: false,
                         success: function(data) {
+                            var candidateList = [];
+                            $.each(data, function (key, value) {
+                                if (value != null) {
+                                    candidateList.push(value);
+                                }
+                            });
+                            var count = 0;
+                            candidateList.forEach(function (jobApplication) {
+                                try{
+                                    if(jobApplication.extraData.workflowStatus.statusId == 5){
+                                        count++;
+                                    }
+                                } catch (err){}
+                            });
                             applicantBtn.textContent = Object.keys(data).length;
+                            if(count > 0){
+                                newApplication.textContent = " (" + count + " new)";
+                            }
                             applicantBtn.style = 'text-align:center';
                             if(Object.keys(data).length > 0){
                                 applicantBtn.className = 'btn-floating btn-small waves-effect waves-light green accent-3';

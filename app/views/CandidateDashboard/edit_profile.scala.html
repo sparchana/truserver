@@ -14,7 +14,6 @@
         @*<script type="text/javascript" src="/assets/common/js/jquery.min_1_12_0.js"></script>*@
         <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
         <script type="text/javascript" src="/assets/dashboard/js/user_login.js"></script>
-        <script type="text/javascript" src="/assets/dashboard/js/dashboard.js"></script>
 
 
         <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
@@ -22,6 +21,7 @@
         <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/materialDashboard.css">
         <script type="text/javascript" src="/assets/dashboard/js/materialDashboard.js"></script>
         <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
+        <link rel="stylesheet" href="/assets/support/css/bootstrap-multiselect.css" type="text/css"/>
         <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
         <script type="text/javascript" src="/assets/support/js/bootstrap-notify.min.js"></script>
 
@@ -76,10 +76,10 @@
                             </a>
                         </li>
 
-                        <li><a href="/dashboard">Candidate Dashboard</a></li>
-                        <li><a href="/dashboard/editProfile" id="activeLink">Profile</a></li>
-                        <li><a href="/dashboard/appliedJobs/">View Applied Jobs</a></li>
-                        <li><a href="/showJobs">View All Jobs</a></li>
+                        <li class="candidateDashboard"><a href="/dashboard" >Candidate Dashboard</a></li>
+                        <li class="candidateProfile activeLink"><a href="/dashboard/editProfile" >Profile</a></li>
+                        <li class="viewAppliedJob"><a href="/dashboard/appliedJobs/">View Applied Jobs</a></li>
+                        <li class="viewAllJobs"><a href="/showJobs" >View All Jobs</a></li>
                         <li><a href="#" onclick="logoutUser()">Log Out</a></li>
                     </ul>
                 </div>
@@ -112,7 +112,7 @@
 
 
         <div id="sectionHead" class="container profileBody">
-            <div class="col-sm-6">
+            <div class="col-sm-12">
                 <img src="/assets/dashboard/img/userMale.svg" id="userImg">
                 <h4>
                     <b>
@@ -131,7 +131,7 @@
                     </div>Profile Status
                 </div>
             </div>
-            <div class="col-sm-6" style="display: flex;
+@*            <div class="col-sm-6" style="display: flex;
                 justify-content: center;
                 align-items: flex-end;
                 padding-top: 30px;">
@@ -139,19 +139,15 @@
                     <div id="assessmentDiv" class="inblockDiv" style="margin-left: 16px;"><div class="assessmentHeader">Assessment Status</div></div>
                 </div>
 
-            </div>
+            </div>*@
         </div>
-        <div id="sectionBody" class="startBody" style="padding-left: 6%;
-            padding-right: 6%;
-            padding-top: 2%;
-            padding-bottom: 2%">
+        <div id="sectionBody" class="startBody" style="padding-left: 6%;padding-right: 6%;padding-top: 2%;padding-bottom: 2%">
             <div class="container">
                     <div class="row">
                         <div style="display: inline-block">
                             <h2>Edit Profile</h2>
                         </div>
-                        <div style="display: inline-block;
-                            margin-left: 16%">
+                        <div style="display: inline-block;margin-left: 16%">
                             <center class="visible-lg">
                                 <div>
                                     <div id="editBasic" class="editSection" style="display: inline-block;
@@ -312,6 +308,58 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row" style="margin-top: 8px">
+                                        <div class="col-sm-3"><h5>Mention atleast one ID proof<font color="red">*</font></h5></div>
+                                        <div class="col-sm-5" style="margin-top: 4px">
+                                            <div style="width: 100%; height: 56px;" class="btn-group" data-toggle="buttons">
+                                                <input type="text" id="candidateIdProof" >
+                                                <script type="text/javascript">
+                                            $(document).ready(function() {
+                                                $("#candidateIdProof").tokenInput(getIdProofs(), {
+                                                    theme: "facebook",
+                                                    placeholder: "What ID Proofs you have?",
+                                                    hintText: "Start typing (eg. PAN, Driving Licence,..)",
+                                                    minChars: 0,
+                                                    prePopulate: candidateIdProofArray,
+                                                    preventDuplicates: true
+                                                });
+                                            });
+                                        </script>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-3"></div>
+                                        <div class="col-sm-5">
+                                            <div id="doc_details">
+                                                <table id="docTableTable" class="table table-striped" cellspacing="0" width="100%">
+                                                    <thead></thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" style="margin-top: 8px" id="assetContainer">
+                                        <div class="col-sm-3"><h5>Do you own any of the following?</h5></div>
+                                        <div class="col-sm-5" style="margin-top: 4px;margin-bottom:10px">
+                                            <div style="width: 100%; height: 34px;" class="btn-group" data-toggle="buttons">
+                                                <input type="text" id="candidateAsset" >
+                                                <script type="text/javascript">
+                                            $(document).ready(function() {
+                                                $("#candidateAsset").tokenInput(getAssets(), {
+                                                    theme: "facebook",
+                                                    placeholder: "What assets do you own?",
+                                                    hintText: "Start typing (eg. Smartphone, Bike, Car)",
+                                                    minChars: 0,
+                                                    prePopulate: candidateAssetArray,
+                                                    preventDuplicates: true
+                                                });
+                                                getAssets();
+                                            });
+                                        </script>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <br>
                                     <!-- next/save btn -->
@@ -320,7 +368,6 @@
                                 </div>
                             </form>
                         </div>
-
                         <div id="skillProfileSection">
                             <h4>Let us know about your work experience</h4>
                             <form id="candidateUpdateLanguageAndSkills" method="post">
@@ -430,7 +477,6 @@
                                 </div>
                             </form>
                         </div>
-
                         <div id="educationProfileSection">
                             <h4>Tell us about your educational background!</h4>
                             <form id="candidateUpdateEducationDetails" method="post">
@@ -488,6 +534,7 @@
             <!-- Including Bootstrap -->
         <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+        <script type="text/javascript" src="/assets/dashboard/js/dashboard.js"></script>
         <script type="text/javascript" src="/assets/dashboard/js/dashboard_prefill.js"></script>
         <script type="text/javascript" src="/assets/common/js/all_job_role_footer.js"></script>
 
@@ -496,6 +543,7 @@
         <script type="text/javascript" src="/assets/js/bootbox.min.js"></script>
         <script type="text/javascript" src="/assets/js/assessment_modal.js"></script>
         <script type="text/javascript" src="/assets/js/assessment_indicator.js"></script>
+        <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
             <!-- Menu Toggle Script -->
         <script>
             $(document).ready(function () {

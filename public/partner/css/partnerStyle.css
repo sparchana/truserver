@@ -192,6 +192,7 @@ option:checked {
     float: right;
 }
 #registerBtnSubmit{
+
     border: none;
     background-color: #26A69A;
     color: white;

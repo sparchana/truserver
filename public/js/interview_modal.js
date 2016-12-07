@@ -1,15 +1,25 @@
+/* Global Constant */
+var INTERVIEW_ERROR = 0;
+var INTERVIEW_NOT_REQUIRED = 1; // "OK"
+var INTERVIEW_REQUIRED = 2;     // "INTERVIEW"
 
-function processJobPostInterviewSlot(returnedData) {
+var jpTitle;
+var compName;
+function processJobPostInterviewSlot(returnedData, isSupport) {
     if(returnedData.interviewDetailsList == null || returnedData.interviewDetailsList.length == 0) {
         $('body').removeClass('open-interview-selector-modal');
         bootbox.hideAll();
+        nfy("Submitted Successfully.", 'success');
         return;
     }
+
     // document.getElementById("applyJobCandidateName").innerHTML = candidateInfo.candidateFirstName;
-    $("#jobNameConfirmation").html(returnedData.jobPostTitle);
-    $("#companyNameConfirmation").html(returnedData.company.companyName);
-    /*var i;
-    $('#jobLocality').html('');
+    jpTitle = returnedData.jobPostTitle;
+    compName = returnedData.company.companyName;
+    $("#jobTitle").html(returnedData.jobPostTitle);
+    $("#compName").html(returnedData.company.companyName);
+    var i;
+    /*$('#jobLocality').html('');
     var defaultOption = $('<option value="-1"></option>').text("Select Preferred Location");
     $('#jobLocality').append(defaultOption);
     var jobLocality = returnedData.jobPostToLocalityList;
@@ -29,7 +39,7 @@ function processJobPostInterviewSlot(returnedData) {
 
         var interviewDetailsList = returnedData.interviewDetailsList;
         if (interviewDetailsList[0].interviewDays != null) {
-            var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
+            var interviewDays = interviewDetailsList[0].interviewDays.toString(2); // binary format
 
             /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
             if (interviewDays.length != 7) {
@@ -39,13 +49,19 @@ function processJobPostInterviewSlot(returnedData) {
                 for (i = 0; i < x; i++) {
                     modifiedInterviewDays += "0";
                 }
+
                 modifiedInterviewDays += interviewDays;
                 interviewDays = modifiedInterviewDays;
             }
         }
         //slots
         var today = new Date();
-        for (i = 2; i < 9; i++) {
+        if(isSupport) {
+            i =1;
+        } else {
+            i =2;
+        }
+        for (; i < 9; i++) {
             // 0 - > sun 1 -> mon ...
             var x = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
             if (checkSlotAvailability(x, interviewDays)) {
@@ -148,29 +164,29 @@ function checkSlotAvailability(x, interviewDays) {
 }
 
 
-function initInterviewModal(candidateId, jobPostId) {
+function initInterviewModal(candidateId, jobPostId, isSupport) {
+    console.log("interview Modal init");
     var htmlBodyContent = ''+
         '<div id="confirmationMsg">'+
         '<center>'+
         '<img src="/assets/common/img/jobApply.png" width="48px">'+
         '</center>'+
         '<center>'+
-        '<h4>You are applying to <b><div style="display: inline-block" id="jobNameConfirmation"></div></b>'+
-        ' job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>'+
-        '<h5 style="margin-top: 16px">Please fill the form below to complete the application process</h5>'+
+        '<h6> For <b><div style="display: inline-block" id="jobTitle"></div></b>'+
+        ' job at <b><div style="display: inline-block" id="compName"></div></b>'+
+        '.</h6>'+
+        '<h6 style="margin-top: 16px">Please select the interview date and time</h6>'+
         '<div class="materialDash"></div>'+
         '<div class="interview_container" style="margin-top: 16px">'+
-        '<div class="row" style="margin-top: 4px" id="interViewSection">'+
-        '<div class="col-sm-6">'+
-        '<h5 style="text-align: right">Please select the interview date and time:</h5></div>'+
-        '<div class="col-sm-6">'+
-        '<select id="interViewSlot" class="selectDropdown" style="width: 184px; float: left; margin-top: 8px"></select>'+
+        '<div class="row" style="margin-top: 4px;text-align: center" id="interViewSection">'+
+        '<div class="col-md-12">'+
+        '<center><select id="interViewSlot" class="selectDropdown" style="width: 210px;padding:1%;margin-top: 8px"></select></center>'+
         '</div>'+
         '</div>'+
         '</div>'+
         '</center>'+
         '</div>';
-    var title = "Interview Slot Selector";
+    var title = "Last step! Select your interview time slot";
 
     generateInterviewSlotModal(title, htmlBodyContent, candidateId, jobPostId);
 
@@ -181,7 +197,9 @@ function initInterviewModal(candidateId, jobPostId) {
             data: false,
             contentType: false,
             processData: false,
-            success: processJobPostInterviewSlot
+            success: function (returnedData) {
+                processJobPostInterviewSlot(returnedData, isSupport);
+            }
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
@@ -189,7 +207,6 @@ function initInterviewModal(candidateId, jobPostId) {
 }
 
 function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
-    console.log("rendering modal");
     var interviewDialog = bootbox.dialog({
         className: "interview-slot-selector-modal",
         title: title,
@@ -198,15 +215,20 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
         animate: true,
         onEscape: function() {
             $('body').removeClass('open-interview-selector-modal');
-            notifyError("Submitted successfully. Refreshing page.", 'success');
+            nfy("Submitted successfully. Refreshing page.", 'success');
 
             setTimeout(function () {
-                location.reload();
+                if(window.location.pathname == "/dashboard/appliedJobs/"){
+                    window.location.href = "/dashboard/appliedJobs/";
+                } else {
+                    location.reload();
+                }
                 // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
             }, 2000);
         },
         buttons: {
             "Submit": {
+                id:"interviewModalBtn",
                 className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent interview-selector-submit",
                 callback: function () {
                     finalInterviewSlotSubmission(candidateId, jobPostId);
@@ -219,6 +241,7 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
     $("#interViewSlot").change(function (){
         if($("#interViewSlot").val() != -1){
             $(".btn.interview-selector-submit").prop('disabled', false);
+            $(".btn.interview-selector-submit").css({'background-color':'#09ac58','color':'#ffffff'});
         } else {
             $(".btn.interview-selector-submit").prop('disabled', true);
         }
@@ -241,7 +264,6 @@ function finalInterviewSlotSubmission(candidateId, jobPostId) {
         };
         var base_api_url ="/support/api/updateCandidateInterviewDetail/";
         if(base_api_url == null || jobPostId == null) {
-            console.log("please provide candidateId && jobPostId");
             return
         } else {
             base_api_url +="?";
@@ -262,21 +284,29 @@ function finalInterviewSlotSubmission(candidateId, jobPostId) {
         });
     }
 }
-
 function processInterviewSubmissionResponse(returnData) {
-    console.log(returnData);
     // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
-    notifyError("Interview Submitted successfully. Refreshing ..", 'success');
-    setTimeout(function () {
-        location.reload();
-    }, 2000);
-}
-
-function interviewSubmitResponse(returnData){
-    if(returnData == "ok"){
+    if(returnData == "OK"){
+        nfy("Interview Submitted successfully. Refreshing ..", 'success');
         setTimeout(function () {
-            location.reload();
-            // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
+            if(window.location.pathname == "/dashboard/appliedJobs/"){
+                window.location.href = "/dashboard/appliedJobs/";
+            } else {
+                location.reload();
+            }
+        }, 2000);
+    } else {
+        nfy("Something went wrong. Refreshing page. After refresh please try again.", 'error');
+        setTimeout(function () {
+            if(window.location.pathname == "/dashboard/appliedJobs/"){
+                window.location.href = "/dashboard/appliedJobs/";
+            } else {
+                location.reload();
+            }
         }, 2000);
     }
+}
+
+function nfy(msg, style) {
+    $.notify(msg, style);
 }

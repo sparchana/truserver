@@ -67,7 +67,6 @@ function getJobsForCandidate() {
 }
 
 function processDataAllJobPosts(returnedData) {
-    console.log(returnedData);
     var jobPostCount = Object.keys(returnedData).length;
     if(jobPostCount > 0){
         var count = 0;
@@ -173,9 +172,9 @@ function processDataAllJobPosts(returnedData) {
 
                 var salaryDiv = document.createElement("div");
                 salaryDiv.style = "display: inline-block; font-size: 13px";
-                if(jobPost.jobPostMaxSalary == "0"){
+                if(jobPost.jobPostMaxSalary == "0" || jobPost.jobPostMaxSalary == null){
                     salaryDiv.textContent = jobPost.jobPostMinSalary + " monthly";
-                } else{
+                } else {
                     salaryDiv.textContent = jobPost.jobPostMinSalary + " - " + jobPost.jobPostMaxSalary + " monthly";
                 }
 
@@ -285,10 +284,6 @@ function processDataAllJobPosts(returnedData) {
     } else {
         $("#jobLoaderDiv").hide();
     }
-}
-
-function confirmApply() {
-    applyJob(jobPostId, prefLocation, true);
 }
 
 $(function() {
@@ -452,10 +447,12 @@ function processDataAndFillMinProfile(returnedData) {
     }
 
     var appliedJobs = returnedData.jobApplicationList;
-    appliedJobs.forEach(function (jobApplication) {
-        $("#apply_btn_" + jobApplication.jobPost.jobPostId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
-        $("#applyBtnDiv_" + jobApplication.jobPost.jobPostId).prop('disabled',true);
-    });
+    if(appliedJobs != null) {
+        appliedJobs.forEach(function (jobApplication) {
+            $("#apply_btn_" + jobApplication.jobPost.jobPostId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
+            $("#applyBtnDiv_" + jobApplication.jobPost.jobPostId).prop('disabled',true);
+        });
+    }
 
     getJobsForCandidate();
 

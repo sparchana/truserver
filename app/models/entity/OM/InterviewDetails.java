@@ -29,6 +29,15 @@ public class InterviewDetails extends Model {
     @Column(name = "interview_days", columnDefinition = "binary(7) null")
     private Byte interviewDays;
 
+    @Column(name = "Latitude", columnDefinition = "double(10,6) null")
+    private Double lat;
+
+    @Column(name = "Longitude", columnDefinition = "double(10,6) null")
+    private Double lng;
+
+    @Column(name = "PlaceId", columnDefinition = "text null")
+    private String placeId;
+
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "JobPostId", referencedColumnName = "jobPostId")
@@ -38,6 +47,9 @@ public class InterviewDetails extends Model {
     @JsonManagedReference
     @JoinColumn(name = "interview_time_slot_id", referencedColumnName = "interview_time_slot_id")
     private InterviewTimeSlot interviewTimeSlot;
+
+    @Column(name = "ReviewApplication", columnDefinition = "int(1) null")
+    private Integer reviewApplication;
 
     public static Finder<String, InterviewDetails> find = new Finder(InterviewDetails.class);
 
@@ -79,5 +91,37 @@ public class InterviewDetails extends Model {
 
     public void setInterviewDays(Byte interviewDays) {
         this.interviewDays = interviewDays;
+    }
+
+    public Double getLat() {
+        return lat;
+    }
+
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
+
+    public Double getLng() {
+        return lng;
+    }
+
+    public void setLng(Double lng) {
+        this.lng = lng;
+    }
+
+    public String getPlaceId() {
+        return placeId;
+    }
+
+    public void setPlaceId(String placeId) {
+        this.placeId = placeId;
+    }
+
+    public Integer getReviewApplication() {
+        return reviewApplication;
+    }
+
+    public void setReviewApplication(Integer reviewApplication) {
+        this.reviewApplication = reviewApplication;
     }
 }

@@ -32,6 +32,9 @@
         <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
         <script type="text/javascript" src="/assets/support/js/add_job_post.js"></script>
 
+        <script type="text/javascript" src='http://maps.google.com/maps/api/js?key=AIzaSyC5Fz6NhcQVP2c3kCIR5rs6bOrgGDwEiY0&sensor=false&libraries=places'></script>
+        <script src="/assets/recruiter/js/locationpicker.jquery.min.js"></script>
+
         <script type="text/javascript">
             $(function () {
                 $('#jobPostStartTimePicker').datetimepicker({
@@ -337,13 +340,6 @@
                         <div class="panel-heading" style="cursor: pointer;">Interview Details</div>
                         <div class="panel-container" style="padding: 1%;">
                             <div class="row">
-                                <div class="col-sm-3"><h5>Interview Address:</h5></div>
-                                <div class="col-sm-9">
-                                    <textarea rows="4" cols="80" id="jobPostAddress" class="form-control input-md" maxlength="5000"></textarea>
-                                </div>
-                            </div>
-
-                            <div class="row">
                                 <div class="col-sm-3"><h5>Interview Days</h5></div>
                                 <div class="col-sm-9" id="interviewDaySection">
                                     <input id="interview_day_1" type="checkbox">Monday &nbsp;&nbsp;&nbsp;
@@ -363,6 +359,30 @@
                                     <div style="width: 100%;
                                         height: 34px;" id="interviewTimeSlot" class="btn-group" data-toggle="buttons"></div>
                                     <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 8px; margin-bottom: 8px">
+                                <div class="col-sm-3"></div>
+                                <div class="col-sm-9">
+                                    <input id="check_applications" type="checkbox" checked>Confirm interviews for all applications (uncheck this option if the recruiter want to review applications before confirming interviews)&nbsp;&nbsp;&nbsp;
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Interview Address:</h5></div>
+                                <div class="col-sm-9">
+                                    <div id="jobPostAddressVal" style="margin-top: 8px">Not Specified</div>
+                                    <input id="jobPostAddress" placeholder="Interview location">
+                                    <span id="interviewLocationUpdate" style="cursor: pointer; color: #0D47A1" onclick="interviewUpdate()"><b>Update</b></span>
+
+                                    <!-- map view -->
+                                    <div style="display: none">
+                                        <input type="text" id="jp_address_text" style="width: 400px"/>
+                                        <input type="text" id="jp_lat"/>
+                                        <input type="text" id="jp_lon"/>
+                                    </div>
+                                    <div id="map_parent"></div>
                                 </div>
                             </div>
                         </div>

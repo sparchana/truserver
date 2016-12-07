@@ -75,14 +75,13 @@ public class JobSearchService {
 
         for (Integer source : jobPostSources) {
 
-            // We are collecting results for job posts mathcing the exact jobrole ids and other relevant job role ids
+            // We are collecting results for job posts matching the exact jobrole ids and other relevant job role ids
             // in different lists so that we can maintain sort order within these groups
             // Eg. For a telecaller job search, we want to first show all telecaller jobs sorted in the given order
             // followed by by all BPO jobs
 
             List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, filterParams, sortBy, isHot, source);
 
-            // TODO: This should be changed to a fetch from DB. Sbould not be computed upon every run.
             List<Long> relatedJobRoleIds = JobRelevancyEngine.getRelatedJobRoleIds(jobRoleIds);
 
             List<JobPost> relatedJobRoleJobs = queryAndReturnJobPosts(relatedJobRoleIds, filterParams, sortBy, isHot, source);
@@ -246,11 +245,13 @@ public class JobSearchService {
                 }
             }
 
-            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, null, null, true, ServerConstants.SOURCE_INTERNAL);
+            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, null, SORT_BY_DATE_POSTED,
+                    true, ServerConstants.SOURCE_INTERNAL);
 
             List<Long> relevantJobRoleIds = JobRelevancyEngine.getRelatedJobRoleIds(jobRoleIds);
 
-            List<JobPost> relevantJobRoleJobs = queryAndReturnJobPosts(relevantJobRoleIds, null, null, true, ServerConstants.SOURCE_INTERNAL);
+            List<JobPost> relevantJobRoleJobs = queryAndReturnJobPosts(relevantJobRoleIds, null, SORT_BY_DATE_POSTED,
+                    true, ServerConstants.SOURCE_INTERNAL);
 
             List<Long> finalJobRoleIdList = new ArrayList<>();
             finalJobRoleIdList.addAll(jobRoleIds);
@@ -264,7 +265,8 @@ public class JobSearchService {
             List<Long> otherJobRoleIdList = jobRoleList.stream().map(JobRole::getJobRoleId).collect(Collectors.toList());
 
             //getting all the internal jobs apart form candidate's job role pref & relevant job roles
-            List<JobPost> otherJobRoleJobs = queryAndReturnJobPosts(otherJobRoleIdList, null, null, false, ServerConstants.SOURCE_INTERNAL);
+            List<JobPost> otherJobRoleJobs = queryAndReturnJobPosts(otherJobRoleIdList, null, SORT_BY_DATE_POSTED,
+                    true, ServerConstants.SOURCE_INTERNAL);
 
             for(JobPost jobPost : relevantJobRoleJobs) {
                 if(!exactJobRoleJobs.contains(jobPost)) {

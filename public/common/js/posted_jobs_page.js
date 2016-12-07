@@ -2,6 +2,9 @@ var jobId = 0;
 var localityArray = [];
 var jobArray = [];
 
+var prefTimeSlot = null;
+var scheduledInterviewDate = null;
+
 function getLocality(){
     return localityArray;
 }
@@ -128,8 +131,10 @@ function addLocalitiesToModal() {
 }
 
 function processDataForJobPostLocation(returnedData) {
-    $("#jobNameConfirmation").html(returnedData.jobPostTitle);
-    $("#companyNameConfirmation").html(returnedData.company.companyName);
+
+    $('#locality_jobNameConfirmation').html(returnedData.jobPostTitle);
+    $('#locality_companyNameConfirmation').html(returnedData.company.companyName);
+    
 
     $('#jobLocality').html('');
     var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
@@ -143,16 +148,82 @@ function processDataForJobPostLocation(returnedData) {
         var option=$('<option value=' + locality.locality.localityId + '></option>').text(locality.locality.localityName);
         $('#jobLocality').append(option);
     });
+
+    if (Object.keys(returnedData.interviewDetailsList).length > 0) {
+        //slots
+        var i;
+        $('#interviewSlot').html('');
+        var defaultOption = $('<option value="-1"></option>').text("Select Time Slot");
+        $('#interviewSlot').append(defaultOption);
+
+        var interviewDetailsList = returnedData.interviewDetailsList;
+        if (interviewDetailsList[0].interviewDays != null) {
+            var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
+
+            /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
+            if (interviewDays.length != 7) {
+                x = 7 - interviewDays.length;
+                var modifiedInterviewDays = "";
+
+                for (i = 0; i < x; i++) {
+                    modifiedInterviewDays += "0";
+                }
+                modifiedInterviewDays += interviewDays;
+                interviewDays = modifiedInterviewDays;
+            }
+        }
+        //slots
+        var today = new Date();
+        for (i = 2; i < 9; i++) {
+            // 0 - > sun 1 -> mon ...
+            var x = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+            if (checkSlotAvailability(x, interviewDays)) {
+                interviewDetailsList.forEach(function (timeSlot) {
+                    var dateSlotSelectedId = x.getFullYear() + "-" + (x.getMonth() + 1) + "-" + x.getDate() + "_" + timeSlot.interviewTimeSlot.interviewTimeSlotId;
+                    var option = $('<option value="' + dateSlotSelectedId + '"></option>').text(getDayVal(x.getDay()) + ", " + x.getDate() + " " + getMonthVal((x.getMonth() + 1)) + " (" + timeSlot.interviewTimeSlot.interviewTimeSlotName + ")");
+                    $('#interviewSlot').append(option);
+                });
+            }
+        }
+        $('#interviewSection').show();
+    } else{
+        $('#interviewSection').hide();
+    }
 }
 
 function confirmApply() {
-    applyJob(jobPostId, prefLocation, true);
+    $("#applyButton").addClass("jobApplied").removeClass("jobApplyBtnModal").prop('disabled',true).html("Applying");
+    applyJobSubmitViaCandidate(jobPostId, prefLocation, prefTimeSlot, scheduledInterviewDate, true);
+//    applyJob(jobPostId, prefLocation, true);
 }
 
 $(function() {
     $("#jobLocality").change(function (){
-        if($(this).val() != -1){
+        if($(this).val() != -1 && $("#interviewSlot").val() != -1){
             prefLocation = $(this).val();
+            prefLocationName = $("#jobLocality option:selected").text();
+
+            try{
+                if ($("#interviewSlot").css('display') != 'none'){
+                    var combinedValue = $("#interviewSlot").val().split("_");
+                    scheduledInterviewDate = combinedValue[0];
+                    prefTimeSlot = combinedValue[1];
+                }
+            } catch(err){}
+
+            $("#applyButton").show();
+        } else{
+            $("#applyButton").hide();
+        }
+    });
+
+    $("#interviewSlot").change(function (){
+        if($(this).val() != -1 && $("#jobLocality").val() != -1){
+            var combinedValue = $(this).val().split("_");
+            scheduledInterviewDate = combinedValue[0];
+            prefTimeSlot = combinedValue[1];
+
+            prefLocation = $("#jobLocality").val();
             prefLocationName = $("#jobLocality option:selected").text();
             $("#applyButton").show();
         } else{
@@ -160,6 +231,91 @@ $(function() {
         }
     });
 });
+
+function getDayVal(month){
+    switch(month) {
+        case 0:
+            return "Sun";
+            break;
+        case 1:
+            return "Mon";
+            break;
+        case 2:
+            return "Tue";
+            break;
+        case 3:
+            return "Wed";
+            break;
+        case 4:
+            return "Thu";
+            break;
+        case 5:
+            return "Fri";
+            break;
+        case 6:
+            return "Sat";
+            break;
+    }
+}
+
+function getMonthVal(month){
+    switch(month) {
+        case 1:
+            return "Jan";
+            break;
+        case 2:
+            return "Feb";
+            break;
+        case 3:
+            return "Mar";
+            break;
+        case 4:
+            return "Apr";
+            break;
+        case 5:
+            return "May";
+            break;
+        case 6:
+            return "Jun";
+            break;
+        case 7:
+            return "Jul";
+            break;
+        case 8:
+            return "Aug";
+            break;
+        case 9:
+            return "Sep";
+            break;
+        case 10:
+            return "Oct";
+            break;
+        case 11:
+            return "Nov";
+            break;
+        case 12:
+            return "Dec";
+            break;
+    }
+}
+
+function checkSlotAvailability(x, interviewDays) {
+    if(x.getDay() == 1 && interviewDays.charAt(0) == '1'){ // monday
+        return true;
+    } else if(x.getDay() == 2 && interviewDays.charAt(1) == '1'){ //tue
+        return true;
+    } else if(x.getDay() == 3 && interviewDays.charAt(2) == '1'){ //wed
+        return true;
+    } else if(x.getDay() == 4 && interviewDays.charAt(3) == '1'){ //thu
+        return true;
+    } else if(x.getDay() == 5 && interviewDays.charAt(4) == '1'){ //fri
+        return true;
+    } else if(x.getDay() == 6 && interviewDays.charAt(5) == '1'){ //sat
+        return true;
+    } else if(x.getDay() == 0 && interviewDays.charAt(6) == '1'){ //sun
+        return true;
+    }
+}
 
 function openLogin() {
     $("#signInPopup").html("Sign In");
@@ -199,11 +355,14 @@ function processDataCheckJobs(returnedData) {
 
 function applyJobBtnAction() {
     $('#jobApplyConfirm').modal();
+    var candidateMobile = localStorage.getItem("mobile");
     jobPostId = jobId;
     jobLocalityArray = [];
+    //openCandidatePreScreenModal(jobPostId, localStorage.getItem("mobile"));
     $('#applyButton').hide();
     addLocalitiesToModal();
 }
+
 function processJobPostAppliedStatus(status) {
     if(status == "true"){
         $(".jobApplyBtnV2").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");

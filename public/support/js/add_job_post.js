@@ -4,8 +4,6 @@
 
 var recId = 0;
 
-var totalAmount = 0;
-
 var contactCredits = 0;
 var interviewCredits = 0;
 
@@ -175,12 +173,12 @@ $(function() {
         var interviewDayCount = 0;
         $('#interviewTimeSlot input:checkbox').each(function () {
             if ($(this).is(':checked')) {
-                timeSlotCount =+ 1;
+                timeSlotCount = timeSlotCount + 1;
             }
         });
         for(i=1;i<=7;i++) {
             if ($("#interview_day_" + i).is(":checked")) {
-                interviewDayCount =+ 1;
+                interviewDayCount = interviewDayCount + 1;
             }
         }
 
@@ -205,7 +203,7 @@ $(function() {
             notifyError("Please enter Job Post Company", 'danger');
             $("#jobPostCompany").addClass('selectDropdownInvalid').removeClass('selectDropdown');
             status = 0;
-        } else if($("#jobPostRecruiter").val() == "" && recId == 0){
+        } else if($("#jobPostRecruiter").val() == "" && $("#jobPostRecruiter").val() == "-1" && recId <= 0){
             notifyError("Please select a recruiter", 'danger');
             $("#jobPostCompany").addClass('selectDropdown').removeClass('selectDropdownInvalid');
             $("#jobPostRecruiter").addClass('selectDropdownInvalid').removeClass('selectDropdown');
@@ -248,18 +246,15 @@ $(function() {
         } else if($("#jobPostStartTime").val() != -1){
             if($("#jobPostEndTime").val() != -1){
                 if(parseInt($("#jobPostStartTime").val()) >= parseInt($("#jobPostEndTime").val())){
-                    notifyError("Start time cannot be more than end time", 'danger');
-                    status = 0;
+                    if($("#jobPostWorkShift").val() == 1 || $("#jobPostWorkShift").val() == 3 || $("#jobPostWorkShift").val() == null || $("#jobPostWorkShift").val() == ''){
+                        notifyError("Start time cannot be more than end time. If night shift, please specify evening shift", 'danger');
+                        status = 0;
+                    } //else its a night shift job
                 }
             } else{
                 notifyError("Please select job end time", 'danger');
                 status = 0;
             }
-        } else if(locality == ""){
-            $("#jobPostVacancies").removeClass('invalid');
-            $("#jobPostLocalities").addClass('invalid');
-            notifyError("Please enter localities", 'danger');
-            status = 0;
         } else if($("#jobPostExperience").val() == ""){
             $("#jobPostLocalities").removeClass('invalid');
             $("#jobPostExperience").addClass('selectDropdownInvalid').removeClass('selectDropdown');
@@ -272,6 +267,13 @@ $(function() {
             status = 0;
         } else if(timeSlotCount > 0 && interviewDayCount == 0){
             notifyError("Please select interview days", 'danger');
+            status = 0;
+        }
+
+        if(locality == ""){
+            $("#jobPostVacancies").removeClass('invalid');
+            $("#jobPostLocalities").addClass('invalid');
+            notifyError("Please enter localities", 'danger');
             status = 0;
         }
 
@@ -328,6 +330,33 @@ $(function() {
             status = 0;
         }
 
+        var interviewDays = "";
+        for(i=1;i<=7;i++){
+            if($("#interview_day_" + i).is(":checked")){
+                interviewDays += "1";
+            } else{
+                interviewDays += "0";
+            }
+        }
+
+        slotArray = [];
+        $('#interviewTimeSlot input:checked').map(function() {
+            var slotId = this.value;
+            slotArray.push(parseInt(slotId));
+        }).get();
+
+
+        if(interviewDays == "0000000"){
+            notifyError("Please specify interview days", 'danger');
+            status = 0;
+        } else if(slotArray == []){
+            notifyError("Please specify interview slots", 'danger');
+            status = 0;
+        } else if(interviewLat == null){
+            notifyError("Please enter interview address", 'danger');
+            status = 0;
+        }
+
         if(status == 1){
             if($("#jobPostRecruiter").val() != "" && $("#jobPostRecruiter").val() != null && $("#jobPostRecruiter").val() != undefined){
                 recId = $("#jobPostRecruiter").val();
@@ -361,19 +390,16 @@ $(function() {
                 }
             }
 
-            var interviewDays = "";
-            for(i=1;i<=7;i++){
-                if($("#interview_day_" + i).is(":checked")){
-                    interviewDays += "1";
-                } else{
-                    interviewDays += "0";
-                }
-            }
+            fullAddress = $('#jp_address_text').val();
+            interviewLat = $("#jp_lat").val();
+            interviewLng = $("#jp_lon").val();
 
-            $('#interviewTimeSlot input:checked').map(function() {
-                var slotId = this.value;
-                slotArray.push(parseInt(slotId));
-            }).get();
+            var reviewApplication;
+            if($('#check_applications').is(':checked')){
+                reviewApplication = 1;
+            } else{
+                reviewApplication = 0;
+            }
 
             try {
                 var d = {
@@ -388,7 +414,7 @@ $(function() {
                     jobPostTitle: $("#jobPostTitle").val(),
                     jobPostIncentives: $("#jobPostIncentives").val(),
                     jobPostMinRequirement: $("#jobPostMinRequirement").val(),
-                    jobPostAddress: $("#jobPostAddress").val(),
+                    jobPostAddress: fullAddress,
                     jobPostPinCode: $("#jobPostPinCode").val(),
                     jobPostVacancies: $("#jobPostVacancies").val(),
                     jobPostLocalities: jobPostLocalities,
@@ -411,8 +437,10 @@ $(function() {
                     jobPostDocument: jobPostDocument,
                     jobPostAsset: jobPostAsset,
                     jobPostMaxAge: maxAge,
-                    jobPostGender: jobPostGender
-
+                    jobPostGender: jobPostGender,
+                    jobPostInterviewLocationLat: interviewLat,
+                    jobPostInterviewLocationLng: interviewLng,
+                    reviewApplications: reviewApplication
                 };
                 $.ajax({
                     type: "POST",

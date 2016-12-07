@@ -429,12 +429,49 @@
                                     </script>
                                 </div>
                             </div>
+                                <!-- skill details -->
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div id="doc_details">
+                                        <table id="docTableTable" class="table table-striped" cellspacing="0" width="100%">
+                                            <thead></thead>
+                                            <tbody></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="row" style="margin-top: 4px">
                                 <div class="col-sm-5"><h5>Do you have an Experience Letter for your Current job?:</h5></div>
                                 <div class="col-sm-7" style="margin-top: 6px;">
                                     <input type="radio" name="experienceLetter" id="experienceLetterY" value="1">&nbsp;Yes&nbsp;&nbsp;
                                     <input type="radio" name="experienceLetter" id="experienceLetterN" value="0">&nbsp;No
+                                </div>
+                            </div>
+                        </div>
+
+
+                            <!-- Asset details -->
+                        <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Asset Details</h4>
+                        <div id="asset_details">
+                            <div class="row" style="margin-top: 4px" id="assetContainer">
+                                <div class="col-sm-3"><h5>Assets Ownership?:</h5></div>
+                                <div class="col-sm-9" style="margin-top: 6px;">
+                                    <input type="text" id="candidateAsset" onclick="getAssetsForCandidate()">
+                                    <script type="text/javascript">
+                                            $(document).ready(function() {
+                                                $("#candidateAsset").tokenInput(getAssets(), {
+                                                    theme: "facebook",
+                                                    placeholder: "What assets do you own?",
+                                                    hintText: "Start typing jobs (eg. Smartphone, Bike, Car)",
+                                                    minChars: 0,
+                                                    prePopulate: candidateAssetArray,
+                                                    preventDuplicates: true
+                                                });
+                                                getAssets();
+                                                getAssetsForJobRole();
+                                            });
+                                    </script>
                                 </div>
                             </div>
                         </div>

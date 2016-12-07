@@ -19,6 +19,9 @@
             <!-- Bootstrap Core CSS -->
         <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
         <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
+        <link rel="stylesheet" type="text/css" href="/assets/owl-carousel/owl.carousel.css">
+        <link rel="stylesheet" type="text/css" href="/assets/owl-carousel/owl.transitions.css">
+
         <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
 
         @*<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>*@
@@ -29,7 +32,6 @@
         <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
 
         <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
-        <script type="text/javascript" src="/assets/common/js/validation.js"></script>
 
         <script>
             localStorage.clear();
@@ -45,7 +47,7 @@
         </script>
     </head>
     <body>
-    <div>
+
         <div id="preloader">
             <div id="loaderLogo">
                 <img id="leaderLogo" src="/assets/common/img/logo-color.gif" alt="TruJobs Logo" height="40px">
@@ -138,9 +140,8 @@
                     </div>
 
                     <button type="submit" id="registerBtnSubmit" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
-                        <!-- Text input-->
+                    <p><font size = 2px> By signing up I agree to <a href='/privacy'>Terms & Conditions</a></font></p>
                 </form>
-
 
                 <div style="text-align: center">
                     <div class="errorMsgText" id="alreadyMsgCandidate" style="margin-top: 2%;display: none;">
@@ -172,24 +173,14 @@
                 <div id="jobRoleGrid" style="width: auto"></div>
             </div>
         </div>
+
         <div class="container">
-            <div class="company_class">
-                Companies Hiring From Us                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      </Us>
-            </div>
+            <center>
+                <div class="company_class">Companies Hiring From Us</div>
+                <div class="materialDash"></div>
+                <div id="hiringCompanyLogo" class="owl-carousel" style="margin: 36px 0 48px 0"></div>
+            </center>
         </div>
-        <center id="hiringCompanyContent">
-            <div class="materialDash"></div>
-            <div class="container" id="company_box">
-                <div class="row">
-                         <div class="col-sm-12" id="slider_logo">
-                            <div id="myCarousel" class="carousel slide" data-ride="carousel">
-                            <!-- Wrapper for slides -->
-                                <div class="carousel-inner" id="hiringCompanies" role="listbox"></div>
-                                </div>
-                         </div>
-                </div>
-            </div>
-        </center>
 
         <!-- App section -->
         <div class="container-fluid" id="appStoreContainer">
@@ -443,8 +434,11 @@
             ga('send', 'pageview');
         </script>
 
+        <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+        <script type="text/javascript" src="/assets/owl-carousel/owl.carousel.min.js"></script>
         <script type="text/javascript" src="/assets/common/js/home_page.js"></script>
         <script type="text/javascript" src="/assets/common/js/all_hot_jobs.js"></script>
         <script type="text/javascript" src="/assets/common/js/all_job_role_with_jobs.js"></script>
+
     </body>
 </html>

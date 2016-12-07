@@ -26,6 +26,9 @@
     <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
     <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
 
+    <script type="text/javascript" src='http://maps.google.com/maps/api/js?key=AIzaSyC5Fz6NhcQVP2c3kCIR5rs6bOrgGDwEiY0&sensor=false&libraries=places'></script>
+    <script src="/assets/recruiter/js/locationpicker.jquery.min.js"></script>
+
     <meta name="theme-color" content="#000000">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   </head>
@@ -47,7 +50,7 @@
         <div class="col s12" style="padding: 0">
           <ul class="tabs" style="border-top-right-radius: 6px; border-top-left-radius: 6px">
             <li class="tab col s4"><a href="#jobDetails" onclick="changeJobDescClass()"><font id="jobDescTabHead" class="activeTab" size="2" style="font-weight: 600">Job Description</font></a></li>
-            <li class="tab col s4"><a href="#jobRequirement" onclick="changeJobReqClass()"><font id="jobReqTabHead" size="2" style="font-weight: 600">Job Requirements</font></a></li>
+            <li class="tab col s4"><a href="#jobRequirement" onclick="changeJobReqClass()"><font id="jobReqTabHead" size="2" style="font-weight: 600">Job Requirements & Interview Schedule</font></a></li>
           </ul>
         </div>
         <div id="jobDetails" class="col s12">
@@ -276,6 +279,7 @@
                         </div>
                       </div>
                     </div>
+
                     <div class="row" id="jobPostDetails" style="margin-top: -16px">
                       <div class="input-field col s6 l4" >
                         <label>Is there any age limitation for this job?</label>
@@ -293,10 +297,9 @@
                         <div class="input-field col s6 l4" style="margin-top: 0px;">
                           <input placeholder="Specify max age limitation" id="jobPostMaxAge" style="display: none;" type="number" class="validate">
                         </div>
-
                       </div>
-
                     </div>
+
                     <div class="row" id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 18px">
                         <label>Should the candidate have any minimum education qualification?</label>
@@ -403,20 +406,95 @@
                       </div>
                     </div>
 
-                    <div class="row" style="margin: 40px 0 0 0">
-                      <a class="waves-effect waves-light ascentGreen btn right" id="saveEdit" onclick="saveJob()"><font style="color: #fff;
-                        font-weight: 400"><b>Save</b></font>
-                      </a>
-                      <a class="waves-effect waves-light orange lighten-1 btn right" id="previousTab" onclick="toJobDetail()"><font style="color: #fff;
-                        font-weight: 400"><b>Back</b></font>
-                      </a>
+                    <br>
+                    <font size="3" style="font-weight: bold">Please mention when can candidates walk-in for interviews</font>
+                    <div class="row" id="jobPostDetails" style="margin-bottom:20px;">
+                      <div class="input-field col s3 l4" style="margin-top: 20px">
+                        <label>Interview Days :</label>
+                      </div>
+                      <div class="input-field col s9 l7" style="margin-left:-10px">
+                        <input type="checkbox" id="interview_day_1" />
+                        <label for="interview_day_1">Mon </label><span style="margin-left:10px"></span>
+
+                        <input type="checkbox" id="interview_day_2" />
+                        <label for="interview_day_2">Tue </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="interview_day_3" />
+                        <label for="interview_day_3">Wed </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="interview_day_4" />
+                        <label for="interview_day_4">Thr </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="interview_day_5" />
+                        <label for="interview_day_5">Fri </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="interview_day_6" />
+                        <label for="interview_day_6">Sat </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="interview_day_7" />
+                        <label for="interview_day_7">Sun </label>
+                      </div>
                     </div>
+
+                    <div class="row" id="jobPostDetails" style="margin-bottom:20px;">
+                      <div class="input-field col s3 l4" style="margin-top: 20px">
+                        <label>Interview Time Slots :</label>
+                      </div>
+                      <div class="input-field col s9 l7" style="margin-left:-10px">
+                        <div id="timeSlotSection"></div>
+                      </div>
+                    </div>
+
+                    <div class="row" id="jobPostDetails">
+                      <div class="input-field col s6 l4" style="margin-top: 20px">
+                      </div>
+                      <div class="input-field col s6 l7" style="padding: 0">
+                        <input type="checkbox" id="check_applications"/>
+                        <label for="check_applications" id="reviewApplicationLabel">Confirm interviews for all applications (uncheck this option if you want to review applications before confirming interviews)</label>
+                      </div>
+                    </div>
+
+                    <div class="row" id="jobPostDetails">
+                      <div class="input-field col s6 l4" style="margin-top: 20px">
+                        <label>Interview address:<font color="red">*</font></label>
+                      </div>
+                      <div class="input-field col s6 l4">
+                        <div id="jobPostInterviewLocationVal" style="display: none; margin-top: 16px">Not Specified</div>
+                        <input id="jobPostInterviewLocation" placeholder="Start typing your address..">
+                        <span id="interviewLocationUpdate" style="cursor: pointer; color: #2ec866" onclick="interviewUpdate()"><b>Update</b></span>
+
+                        <div style="display: none">
+                            <input type="text" id="jp_address_text" style="width: 400px"/>
+                            <input type="text" id="jp_lat"/>
+                            <input type="text" id="jp_lon"/>
+                        </div>
+                        <div id="map_parent"></div>
+                      </div>
+                    </div>
+
+                    <div class="row" style="margin: 0">
+                        <a class="waves-effect waves-light ascentGreen btn right" id="saveEdit" onclick="saveJob()"><font style="color: #fff;
+                            font-weight: 400"><b>Save</b></font>
+                        </a>
+                        <a class="waves-effect waves-light orange lighten-1 btn right" id="previousTab" onclick="toJobDetail()"><font style="color: #fff;
+                            font-weight: 400"><b>Back</b></font>
+                        </a>
+                  </div>
+
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+
+
+      <!-- Modal Structure -->
+    <div id="modal1" class="modal">
+      <div class="modal-content">
+        <h4>Modal Header</h4>
+        <p>A bunch of text</p>
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
       </div>
     </div>
 

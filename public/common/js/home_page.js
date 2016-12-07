@@ -59,20 +59,13 @@ $(function () {
     })
 });
 
-$(window).load(function() {
-    $('html, body').css({
-        'overflow': 'auto',
-        'height': 'auto'
-    });
-    $("#status").fadeOut();
-    $("#loaderLogo").fadeOut();
-    $("#preloader").delay(500).fadeOut("slow");
-});
-
 $(window).load(function(){
     if(window.location.href.indexOf('#signin') != -1) {
         $('#myLoginModal').modal('show');
     }
+
+    var autoPlay = $("#hiringCompanyLogo");
+    autoPlay.trigger('owl.play',2200);
 });
 
 $(document).ready(function(){
@@ -120,92 +113,30 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getAllCompanyLogos",
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataCheckCompanyLogo
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
+
+    $("#hiringCompanyLogo").owlCarousel({
+        items : 3,
+        itemsMobile : true,
+        jsonPath : '/getAllCompanyLogos',
+        jsonSuccess : customDataSuccess
+    });
 });
 
-function processDataCheckCompanyLogo(returnedData) {
-    var companyCount = Object.keys(returnedData).length;
-    var companyRowCount = Math.floor(companyCount / 3); // 3 because we are showing 6 companies in a row
-    var remainingCompanies = companyCount % 3;
-
-    var count = 0;
-    var start = 0;
-    var parent = $("#hiringCompanies");
-
-    var rowDiv = document.createElement("div");
-    rowDiv.className = "item active";
-    parent.append(rowDiv);
-
-    returnedData.forEach(function (company) {
-        if(count >= start && count < (start+3)){
-            var logoDiv = document.createElement("div");
-            logoDiv.className = "col-sm-4";
-            rowDiv.appendChild(logoDiv);
-
-            var companyLogo = document.createElement("img");
-            companyLogo.className = "img-responsive";
-            companyLogo.id = "companyLogoSlider";
-            companyLogo.setAttribute('alt', "Companies Hiring");
-            if(company.companyLogo != null){
-                companyLogo.src = company.companyLogo;
-            }
-            logoDiv.appendChild(companyLogo);
-        }
-        count++;
-        //checking when to end the loop
-        if(count > 3){ return true; }
+function customDataSuccess(data){
+    var content = "";
+    data.forEach(function (logo) {
+        var img = logo;
+        content += "<img width='228px' height='76px' src=\"" +img+ "\">"
     });
+    $("#hiringCompanyLogo").html(content);
 
-    var startIndex = 3;
-    for(var i=1;i<companyRowCount; i++){
-        setCompanyLogos(returnedData, startIndex);
-        startIndex = startIndex + 3;
-    }
-    if(remainingCompanies > 0){
-        startIndex = companyCount - remainingCompanies;
-        setCompanyLogos(returnedData, startIndex);
-    }
-}
-
-function setCompanyLogos(returnedData, start){
-    var count = 0;
-    var parent = $("#hiringCompanies");
-
-    var rowDiv = document.createElement("div");
-    rowDiv.className = "item";
-    parent.append(rowDiv);
-
-    returnedData.forEach(function (company) {
-        if(count >= start && count < (start+3)){
-            var logoDiv = document.createElement("div");
-            logoDiv.className = "col-sm-4";
-            rowDiv.appendChild(logoDiv);
-
-            var companyLogo = document.createElement("img");
-            companyLogo.className = "img-responsive";
-            companyLogo.id = "companyLogoSlider";
-            companyLogo.setAttribute('alt', "Companies Hiring");
-            if(company.companyLogo != null){
-                companyLogo.src = company.companyLogo;
-            }
-            logoDiv.appendChild(companyLogo);
-
-        }
-        count++;
-        //checking when to end the loop
-        if(count > start + 3){ return true; }
+    $('html, body').css({
+        'overflow': 'auto',
+        'height': 'auto'
     });
+    $("#status").fadeOut();
+    $("#loaderLogo").fadeOut();
+    $("#preloader").delay(500).fadeOut("slow");
 }
 
 function createAndAppendDivider(title) {
@@ -529,6 +460,14 @@ function processDataAllJobPosts(returnedData) {
             document.getElementById("hotJobs").style.height = "72%";
         }
     }
+
+    $('html, body').css({
+        'overflow': 'auto',
+        'height': 'auto'
+    });
+    $("#status").fadeOut();
+    $("#loaderLogo").fadeOut();
+    $("#preloader").delay(500).fadeOut("slow");
 }
 
 $(function() {

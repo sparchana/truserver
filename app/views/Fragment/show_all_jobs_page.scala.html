@@ -72,6 +72,7 @@
                     $('#nav_bar_inc').load('/navBar');
                     localStorage.setItem("incentives", "0");
                 }
+                setTimeout(function(){ $(".viewAllJobs").addClass("activeLink"); },3000);
             }
 
             $(document).ready(function(){
@@ -136,31 +137,6 @@
                 <br>
             </div>
         </div>
-
-    <!-- confirm job modal -->
-    <div class="modal fade" id="jobApplyConfirm" tabindex="-1" role="dialog" aria-labelledby="jobApplyConfirm">
-        <div class="modal-dialog" role="document" id="customModal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="myModalLabel">Job Application Confirmation</h4>
-                </div>
-                <div class="modal-body">
-                    <div id="confirmationMsg">
-                        <center>
-                            <img src="/assets/common/img/jobApply.png" width="48px">
-                        </center>
-                        <center>
-                            <h5>You are applying for <b><div style="display: inline-block" id="jobNameConfirmation"></div></b> job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>.</h5>
-                            <h5>Please select the location where you can work:</h5>
-                            <select id="jobLocality" class="selectDropdown"></select>
-                            <button type="submit" onclick="confirmApply()" id="applyButton" class="jobApplyBtnModal" style="display : none; margin: 6px">Apply</button>
-                        </center>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- custom message modal -->
     <div class="modal fade" id="messagePromptModal" tabindex="-1" role="dialog" aria-labelledby="messagePromptModalLabel">
@@ -267,7 +243,8 @@
         ga('send', 'pageview');
     </script>
 
-        <script type="text/javascript" src="/assets/common/js/home_page.js"></script>
+    <script type="text/javascript" src="/assets/owl-carousel/owl.carousel.min.js"></script>
+    <script type="text/javascript" src="/assets/common/js/home_page.js"></script>
     <script type="text/javascript" src="/assets/common/js/all_jobs.js"></script>
     <script type="text/javascript" src="/assets/common/js/all_job_role_with_jobs.js"></script>
     </body>

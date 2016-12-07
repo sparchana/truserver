@@ -52,6 +52,24 @@ public class InteractionConstants {
     public static final String INTERACTION_RESULT_NEW_RECRUITER_LEAD_ADDED = "New Recruiter Lead made contact";
     public static final String INTERACTION_RESULT_EXISTING_RECRUITER_MADE_CONTACT = "Existing Recruiter Lead made contact";
 
+    public static final String INTERACTION_RESULT_RECRUITER_AUTO_ACCEPT_JOB_INTERVIEW_DATE = "Recruiter has enabled auto-confirm for interview date and time";
+    public static final String INTERACTION_RESULT_RECRUITER_ACCEPT_JOB_INTERVIEW_DATE = "Recruiter accepts interview date and time";
+    public static final String INTERACTION_RESULT_RECRUITER_REJECT_JOB_INTERVIEW_DATE = "Recruiter rejects interview date and time";
+    public static final String INTERACTION_RESULT_RECRUITER_RESCHEDULE_JOB_INTERVIEW_DATE = "Recruiter reschedule interview date and time";
+    public static final String INTERACTION_RESULT_RECRUITER_SHORTLISTS_JOB_INTERVIEW_WITHOUT_DATE = "Recruiter shortlists job application without date and time";
+    public static final String INTERACTION_RESULT_CANDIDATE_ACCEPTS_RESCHEDULED_INTERVIEW = "Candidate accepts rescheduled interview date and time";
+    public static final String INTERACTION_RESULT_CANDIDATE_REJECTS_RESCHEDULED_INTERVIEW = "Candidate rejects rescheduled interview date and time";
+
+    public static final String INTERACTION_RESULT_CANDIDATE_NOT_GOING = "Candidate not going for interview";
+    public static final String INTERACTION_RESULT_CANDIDATE_DELAYED = "Candidate delayed for interview";
+    public static final String INTERACTION_RESULT_CANDIDATE_STARTED = "Candidate started for interview";
+    public static final String INTERACTION_RESULT_CANDIDATE_REACHED = "Candidate reached for interview";
+
+    public static final String INTERACTION_RESULT_CANDIDATE_SELECTED = "Candidate selected in interview";
+    public static final String INTERACTION_RESULT_CANDIDATE_REJECTED = "Candidate rejected in interview";
+    public static final String INTERACTION_RESULT_CANDIDATE_NO_SHOW = "Candidate no show in interview";
+    public static final String INTERACTION_RESULT_CANDIDATE_NOT_QUALIFIED = "Candidate not qualified in interview";
+
     public static final String INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB = "Candidate applied to a job: ";
     public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB = "Candidate tried to apply to a job: ";
     public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_RESET_PASSWORD = "Candidate tried to reset password";
@@ -137,10 +155,8 @@ public class InteractionConstants {
     public static final int INTERACTION_TYPE_RECRUITER_INTERVIEW_UNLOCK = 45;
     public static final int INTERACTION_TYPE_RECRUITER_CREDIT_REQUEST = 46;
 
-
     public static final int INTERACTION_TYPE_NEW_JOB_CREATED = 47;
     public static final int INTERACTION_TYPE_EXISTING_JOB_UPDATED = 48;
-
 
     public static final int INTERACTION_TYPE_CANDIDATE_SELECTED_FOR_PRESCREEN = 50;
     public static final int INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_ATTEMPTED = 51;
@@ -148,8 +164,26 @@ public class InteractionConstants {
     public static final int INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_PASSED = 53;
     public static final int INTERACTION_TYPE_CANDIDATE_INTERVIEW_SCHEDULED = 54;
 
-    public static final Map<Integer, String> INTERACTION_CHANNEL = new HashMap<>();
+    public static final int INTERACTION_TYPE_RECRUITER_ACCEPT_JOB_APPLICATION_INTERVIEW = 55;
+    public static final int INTERACTION_TYPE_RECRUITER_REJECT_JOB_APPLICATION_INTERVIEW = 56;
+    public static final int INTERACTION_TYPE_RECRUITER_RESCHEDULE_JOB_APPLICATION_INTERVIEW = 57;
+    public static final int INTERACTION_TYPE_RECRUITER_SHORTLIST_JOB_APPLICATION_INTERVIEW = 58;
+    public static final int INTERACTION_TYPE_CANDIDATE_ACCEPTS_RESCHEDULED_INTERVIEW = 59;
+    public static final int INTERACTION_TYPE_CANDIDATE_REJECTS_RESCHEDULED_INTERVIEW = 60;
 
+    public static final int INTERACTION_TYPE_CANDIDATE_STATUS_NOT_GOING = 61;
+    public static final int INTERACTION_TYPE_CANDIDATE_STATUS_DELAYED = 62;
+    public static final int INTERACTION_TYPE_CANDIDATE_STATUS_STARTED = 63;
+    public static final int INTERACTION_TYPE_CANDIDATE_STATUS_REACHED = 64;
+
+    public static final int INTERACTION_TYPE_CANDIDATE_FEEDBACK_SELECTED = 65;
+    public static final int INTERACTION_TYPE_CANDIDATE_FEEDBACK_REJECTED = 66;
+    public static final int INTERACTION_TYPE_CANDIDATE_FEEDBACK_NO_SHOW = 67;
+    public static final int INTERACTION_TYPE_CANDIDATE_FEEDBACK_NOT_QUALIFIED = 68;
+
+    public static final Map<Integer, String> INTERACTION_CHANNEL_MAP = new HashMap<>();
+
+    public static final int INTERACTION_CHANNEL_UNKNOWN = 0;
     public static final int INTERACTION_CHANNEL_CANDIDATE_WEBSITE = 1;
     public static final int INTERACTION_CHANNEL_CANDIDATE_ANDROID = 2;
     public static final int INTERACTION_CHANNEL_PARTNER_WEBSITE = 3;
@@ -185,6 +219,23 @@ public class InteractionConstants {
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_FAILED, "Candidate Pre Screen Failed");
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_INTERVIEW_SCHEDULED, "Candidate Interview Scheduled");
 
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_RECRUITER_ACCEPT_JOB_APPLICATION_INTERVIEW, "Recruiter confirms interview");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_RECRUITER_REJECT_JOB_APPLICATION_INTERVIEW, "Recruiter rejects interview");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_RECRUITER_RESCHEDULE_JOB_APPLICATION_INTERVIEW, "Recruiter rescheduled interview");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_RECRUITER_SHORTLIST_JOB_APPLICATION_INTERVIEW, "Recruiter shortlists interview");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_ACCEPTS_RESCHEDULED_INTERVIEW, "Candidate accepts rescheduled interview");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_REJECTS_RESCHEDULED_INTERVIEW, "Candidate rejects rescheduled interview");
+
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_STATUS_NOT_GOING, "Candidate not going for interview");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_STATUS_DELAYED, "Candidate delayed for interview");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_STATUS_STARTED, "Candidate started for interview");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_STATUS_REACHED, "Candidate reached for interview");
+
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_FEEDBACK_SELECTED, "Candidate selected at interview");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_FEEDBACK_REJECTED, "Candidate rejected at interview");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_FEEDBACK_NO_SHOW, "Candidate no show at interview");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_FEEDBACK_NOT_QUALIFIED, "Candidate not qualified at interview");
+
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_TRIED_PASSWORD_RESET, "Tried to reset Password");
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_PASSWORD_RESET_SUCCESS, "Reset Password Successful");
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_LOG_IN, "Log In");
@@ -201,10 +252,11 @@ public class InteractionConstants {
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED, "Existing Partner tried Sign Up. Already a Partner");
 
         //channel map
-        INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_CANDIDATE_WEBSITE, "Candidate via Website");
-        INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_CANDIDATE_ANDROID, "Candidate via Android");
-        INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_PARTNER_WEBSITE, "Partner via Website");
-        INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_SUPPORT_WEBSITE, "Support via Website");
-        INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_KNOWLARITY, "Knowlarity");
+        INTERACTION_CHANNEL_MAP.put(INTERACTION_CHANNEL_CANDIDATE_WEBSITE, "Candidate via Website");
+        INTERACTION_CHANNEL_MAP.put(INTERACTION_CHANNEL_CANDIDATE_ANDROID, "Candidate via Android");
+        INTERACTION_CHANNEL_MAP.put(INTERACTION_CHANNEL_PARTNER_WEBSITE, "Partner via Website");
+        INTERACTION_CHANNEL_MAP.put(INTERACTION_CHANNEL_SUPPORT_WEBSITE, "Support via Website");
+        INTERACTION_CHANNEL_MAP.put(INTERACTION_CHANNEL_KNOWLARITY, "Knowlarity");
+        INTERACTION_CHANNEL_MAP.put(INTERACTION_CHANNEL_RECRUITER_WEBSITE, "Recruiter via Website");
     }
 }

@@ -25,6 +25,7 @@ function initDecorator(colorPalette) {
     }
     decorator = {
         preScreen: {
+            title: "",
             className: "mdl-grid"
         },
         container : {
@@ -35,6 +36,8 @@ function initDecorator(colorPalette) {
         },
         table: {
             mainTable: {
+                title: "Min Requirement",
+                titleStyle: "margin:0;color:rgb(63, 81, 181);padding: 2%;background-color: rgba(255, 255, 255, 0.99);",
                 className: "mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col",
                 style: "margin:0;border:none",
                 tHead: {
@@ -51,6 +54,8 @@ function initDecorator(colorPalette) {
                 }
             },
             otherTable: {
+                title: "Other Requirement",
+                titleStyle: "margin: 30px 0 0 0;color:rgb(63, 81, 181);padding: 2%;background-color: rgba(255, 255, 255, 0.99);",
                 className: "mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col",
                 style: "margin:0;border:none",
                 tHead: {
@@ -80,10 +85,12 @@ function initDecorator(colorPalette) {
             glyphIconWrongClass: "glyphicon glyphicon-remove",
             rowHeading: {
                 post: {
+                    title: "Job Post Min Req",
                     isRequired: true,
                     style: "padding:1% 2%;background-color:"+colorPalette.color.main.headerColor+";color:#fff"
                 },
                 note: {
+                    title: "Note",
                     isRequired: true,
                     style: "padding:1% 2%;background-color:"+colorPalette.color.main.headerColor+";color:#fff"
                 }
@@ -104,17 +111,25 @@ function initDecorator(colorPalette) {
         textContainers: {
             visibility: true,
             minReqContainer: {
+                title: "",
                 visibility: true,
                 className: "col-lg-6 form-group remove-padding-left"
             },
             noteContainer: {
+                title: "",
                 visibility: true,
-                className: "col-lg-6 form-group"
+                className: "col-lg-6 form-group remove-padding-right"
             }
+        },
+        edit:{
+          title: "Edit"
         },
         finalSubmissionBypassRequired: false,
         callYesNoRequired: true,
         columnVisible: [1, 2, 3, 4, 5, 6],
+        modalFooter: {
+                footerMessage: "Did the candidate pass pre-screen?"
+        }
     };
     return decorator;
 }
@@ -191,6 +206,7 @@ function processLanguage(returnedData) {
     var arrayLang = [];
     var arrayLangId = [];
     var defaultOption = $('<option value="-1"></option>').text("Select");
+    langArray = [];
     returnedData.forEach(function (language) {
         var id = language.languageId;
         var name = language.languageName;
@@ -371,11 +387,9 @@ function processIdProofsWithNumbers(returnedData, customD) {
 }
 
 function validateInput() {
-    console.log(this.id);
     var id = this.id.split("_")[1];
     // aadhaar validation
     if(id == 3) {
-        console.log(this.value);
         if(!validateAadhar(this.value)){
             $('.btn.edit-modal-submit').prop('disabled', true);
             notifyModal("Invalid Input","Invalid Aadhaar Card Number. (Example: 100120023003)");
@@ -385,7 +399,6 @@ function validateInput() {
         $("#idProofCheckbox_"+id).prop('checked', true);
     }
     if(id == 1){
-        console.log(this.value);
         if(!validateDL(this.value)){
             $('.btn.edit-modal-submit').prop('disabled', true);
             notifyModal("Invalid Input","Invalid Driving Licence Number. (Example: TN7520130008800 or TN-7520130008800)");
@@ -395,7 +408,6 @@ function validateInput() {
         $("#idProofCheckbox_"+id).prop('checked', true);
     }
     if(id == 2){
-        console.log(this.value);
         if(!validatePASSPORT(this.value)){
             $('.btn.edit-modal-submit').prop('disabled', true);
             notifyModal("Invalid Input","Invalid Pass Port Number. (Example: A12 34567)");
@@ -405,7 +417,6 @@ function validateInput() {
         $("#idProofCheckbox_"+id).prop('checked', true);
     }
     if(id == 4){
-        console.log(this.value);
         if(!validatePAN(this.value)){
             $('.btn.edit-modal-submit').prop('disabled', true);
             notifyModal("Invalid Input","Invalid PAN Card Number. (Example: ABCDE1234Z)");
@@ -414,12 +425,9 @@ function validateInput() {
         }
         $("#idProofCheckbox_"+id).prop('checked', true);
     }
-    console.log(this.parentNode);
 }
 function processLocality(returnedData) {
-    console.log("fetched all locality. now rendering locality token input");
-
-    var locArray = [];
+    localityArray = [];
     if (returnedData != null) {
         returnedData.forEach(function (locality) {
             var id = locality.localityId;
@@ -428,12 +436,9 @@ function processLocality(returnedData) {
             item ["id"] = id;
             item ["name"] = name;
             localityArray.push(item);
-            locArray.push(item);
         });
 
         if (localityArray != null) {
-            console.log("localityArray: "+localityArray.length);
-            console.log("localityArray: "+locArray.length);
             $("#candidateHomeLocality").tokenInput(getLocalityArray(), {
                 theme: "facebook",
                 placeholder: "job Localities?",
@@ -454,7 +459,6 @@ function getLocalityArray() {
 
 function updateCallAttempts(cId, jpId, status) {
     if(cId == null || jpId == null) {
-        console.log("invalid candidateId and jobPostId");
         return;
     }
     NProgress.start();
@@ -464,14 +468,14 @@ function updateCallAttempts(cId, jpId, status) {
         url: base_url +"?candidateId="+cId+"&jobPostId="+jpId+"&callStatus="+status,
         processData: false,
         success: function (returnedData) {
-            if(returnedData == "OK"){
+            if(returnedData == true){
                 // notifyModal("Call response saved successfully.");
                 // setTimeout(function () {
                 //     location.reload();
                 //     // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
                 // }, 2000);
                 bootbox.hideAll();
-            } else if(returnedData == "NA") {
+            } else if(returnedData == false) {
                 // notifyModal("Error while saving call response.");
             }
         }
@@ -486,18 +490,24 @@ function saveAttempt(candidateId, jobPostId) {
 }
 
 function onCallYes(candidateId, jobPostId) {
-    console.log("connected: " + candidateId +" "+ jobPostId);
     $('#callNoClass').hide();
     $('#pre_screen_body').show();
     updateCallAttempts(candidateId, jobPostId, "CONNECTED");
-    activateSubmit();
+    activateSubmit(true);
 }
 
-function activateSubmit() {
-    if($('input:radio[name="verdict"]:checked').val() != null
-    && $('input:radio[name="callConnected"]:checked').val() == "yes"){
-        $('.btn.modal-submit').prop('disabled', false);
+function activateSubmit(data) {
+    if(data){
+        if($('input:radio[name="verdict"]:checked').val() != null
+            && $('input:radio[name="callConnected"]:checked').val() == "yes"){
+            $('.btn.modal-submit').prop('disabled', false);
+        }
+    } else {
+        if($('input:radio[name="verdict"]:checked').val() != null){
+            $('.btn.modal-submit').prop('disabled', false);
+        }
     }
+
 }
 function onCallNo(candidateId, jobPostId) {
     $('#callNoClass').show();
@@ -505,7 +515,7 @@ function onCallNo(candidateId, jobPostId) {
     $('.btn.modal-submit').prop('disabled', true);
 }
 
-function triggerPreScreenResponseSubmission(candidateId, jobPostId) {
+function triggerPreScreenResponseSubmission(candidateId, jobPostId, isSupport) {
 
     var allSelectedValues = $("#pre_screen_body input[type='checkbox']:checked");
     var responseList = [];
@@ -545,7 +555,7 @@ function triggerPreScreenResponseSubmission(candidateId, jobPostId) {
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(d),
                 success: function (returnData) {
-                    processPostPreScreenResponse(returnData, candidateId, jobPostId);
+                    processPostPreScreenResponse(returnData, candidateId, jobPostId, isSupport);
                 }
             });
         } catch (exception) {
@@ -554,7 +564,7 @@ function triggerPreScreenResponseSubmission(candidateId, jobPostId) {
     }
 }
 
-function saveEditedResponses(candidateId, propId, jobPostId) {
+function saveEditedResponses(candidateId, propId, jobPostId, isSupport) {
     var d;
     var dobCheck = 1;
     var okToSubmit = true; // validation check before submit | { 1 = ok , 0 = not ok }
@@ -662,7 +672,10 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
         var totalExp = expMonth + (12 * expYear);
 
         d = {
-            candidateTotalExperience: totalExp
+            candidateTotalExperience: totalExp,
+            pastCompanyList: [],
+            candidateIsEmployed: null,
+            extraDetailAvailable: false
         }
 
     } else if(propId == 5) {
@@ -721,7 +734,7 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(d),
                 success: function (returnedData) {
-                    processFinalSubmitResponse(returnedData, jobPostId, candidateId, propId);
+                    processFinalSubmitResponse(returnedData, jobPostId, candidateId, propId, isSupport);
                 }
             });
         } catch (exception) {
@@ -743,10 +756,9 @@ function notifyModal(title, message){
     });
 }
 
-function processFinalSubmitResponse(returnedData, jobPostId, candidateId, propId) {
-    console.log(returnedData);
+function processFinalSubmitResponse(returnedData, jobPostId, candidateId, propId, isSupport) {
     if(returnedData != "error" || returnedData.trim() != ""){
-        getPreScreenContent(jobPostId, candidateId, true, 0, null, null);
+        getPreScreenContent(jobPostId, candidateId, true, null, null, isSupport);
         // get new jobPostVsCandidate data
         // construct new pre_screen_body
         // render it $('#pre_screen_body').html("test")
@@ -754,8 +766,7 @@ function processFinalSubmitResponse(returnedData, jobPostId, candidateId, propId
     }
 }
 
-function generateEditModalView(title, message, candidateId, propId, overflow, jobPostId) {
-    console.log("rendering modal");
+function generateEditModalView(title, message, candidateId, propId, overflow, jobPostId, isSupport) {
     var editDialog = bootbox.dialog({
         className: "pre-screen-modal",
         title: title,
@@ -769,7 +780,7 @@ function generateEditModalView(title, message, candidateId, propId, overflow, jo
             "Save": {
                 className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent edit-modal-submit",
                 callback: function () {
-                    return saveEditedResponses(candidateId, propId, jobPostId);
+                    return saveEditedResponses(candidateId, propId, jobPostId, isSupport);
                 }
             }
         }
@@ -782,12 +793,11 @@ function generateEditModalView(title, message, candidateId, propId, overflow, jo
     $('body').removeClass('modal-open').removeClass('open-edit-modal').addClass('open-edit-modal');
 }
 
-function fetchEditModalContent(candidateId, propId, jobPostId, customD) {
+function fetchEditModalContent(candidateId, propId, jobPostId, customD, isSupport) {
 
     // api call and render child modal
     var base_api_url ="/support/api/getCandidateDetails/";
     if(base_api_url == null || candidateId == null) {
-        console.log("please provide candidateId && propertyId");
         return
     } else {
         base_api_url +="?";
@@ -798,13 +808,11 @@ function fetchEditModalContent(candidateId, propId, jobPostId, customD) {
             base_api_url += "&propertyId=" + propId;
         }
     }
-    console.log(base_api_url);
     // work_shift
     var url;
     var ajax_type = "POST";
     var fn; // options creator
     var setter = function(returnedData) {
-        console.log("candidate's info:" + JSON.stringify(returnedData));
     }; // this sets the values in the prev created options
     var htmlBodyContent = "test";
     var modalTitle="test";
@@ -813,7 +821,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId, customD) {
 
     if(propId == 0) {
         htmlBodyContent = '<div id="document_details">'+
-            '<h5>Document Details:</h5>'+
+            '<h4 class="mdl-shadow--2dp" style=";margin: 0;color:rgb(63, 81, 181);padding: 2%;background-color: rgba(255, 255, 255, 0.99);">Document Details:</h4>'+
             '</div>';
 
         modalTitle = "Candidate Document Edit";
@@ -1030,7 +1038,6 @@ function fetchEditModalContent(candidateId, propId, jobPostId, customD) {
 
         };
         setter = function (returnedData) {
-            console.log("setting candidate locality");
 
             if(returnedData!= null) {
                 try {
@@ -1070,7 +1077,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId, customD) {
     }
 
     // generates html container
-    generateEditModalView(modalTitle, htmlBodyContent, candidateId, propId, isOverFlowRequired, jobPostId);
+    generateEditModalView(modalTitle, htmlBodyContent, candidateId, propId, isOverFlowRequired, jobPostId, isSupport);
 
     if(url != null) {
         try {
@@ -1116,17 +1123,17 @@ function fetchEditModalContent(candidateId, propId, jobPostId, customD) {
     }
 }
 
-function constructPreScreenBodyContainer(returnedData, customD) {
+function constructPreScreenBodyContainer(returnedData, customD, isSupport) {
     var candidateId = returnedData.candidateId;
     var jobPostId = returnedData.jobPostId;
     var container = $('<div class="'+customD.container.className+'" id="pre_screen_container_row"></div>');
 
     var minReqTableContainer = $('<div id="minReqTable"></div>');
-    container.append('<h4 style="margin-top: 0">Min Requirement</h4>');
+    container.append('<h4 class="mdl-shadow--2dp" style="'+customD.table.mainTable.titleStyle+'">'+customD.table.mainTable.title+'</h4>');
     container.append(minReqTableContainer);
 
     var otherReqTableContainer = $('<div id="otherReqTable"></div>');
-    container.append('<h4>Other Requirement</h4>');
+    container.append('<h4 class="mdl-shadow--2dp" style="'+customD.table.otherTable.titleStyle+'">'+customD.table.otherTable.title+'</h4>');
     container.append(otherReqTableContainer);
 
     // minReqTable
@@ -1272,7 +1279,7 @@ function constructPreScreenBodyContainer(returnedData, customD) {
             var label = document.createElement("label");
             label.for= "job_post_min_req";
             label.style = "margin:0";
-            label.textContent = "Job Post Min Req";
+            label.textContent = customD.textContainers.minReqContainer.title;
             rowHeadingPost.appendChild(label);
             minReqContainer.appendChild(minReqTextArea);
             splitDiv.append(minReqContainer);
@@ -1297,14 +1304,14 @@ function constructPreScreenBodyContainer(returnedData, customD) {
 
             var label = document.createElement("label");
             label.for= "pre_screen_note";
-            label.textContent = "Note";
+            label.textContent =  customD.textContainers.noteContainer.title;
             label.style = "margin :0";
             rowHeadingNote.appendChild(label);
             noteContainer.appendChild(textarea);
             splitDiv.append(noteContainer);
-            container.append(splitDiv);
             // note end
         }
+        container.append(splitDiv);
     }
 
 
@@ -1318,6 +1325,7 @@ function constructPreScreenBodyContainer(returnedData, customD) {
 
                 if ($.inArray(1, customD.columnVisible) > -1) {
                     var bodyContentData1 = document.createElement("td");
+                    bodyContentData1.style = ("font-weight:600");
                     bodyContentData1.textContent = rowData.propertyTitle;
                     bodyContentBox.appendChild(bodyContentData1);
                 }
@@ -1326,22 +1334,25 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                     bodyContentData2.id = "jobPostValue_"+rowData.propertyId;
                     bodyContentBox.appendChild(bodyContentData2);
 
-                    if(rowData.isSingleEntity){
-                        bodyContentData2.textContent = getPlaceholderValue(rowData.jobPostElement);
-                    } else {
-                        bodyContentData2.textContent = getPlaceholderArray(rowData.jobPostElementList);
-                    }
+                    bodyContentData2.textContent = rowData.jobPostPlaceHolder;
+                    // if(rowData.isSingleEntity){
+                    //     bodyContentData2.textContent = getPlaceholderValue(rowData.jobPostElement);
+                    // } else {
+                    //     bodyContentData2.textContent = getPlaceholderArray(rowData.jobPostElementList);
+                    // }
                 }
                 if ($.inArray(3, customD.columnVisible) > -1) {
                     var bodyContentData3 = document.createElement("td");
                     bodyContentData3.id = "candidateValue_"+rowData.propertyId;
                     bodyContentBox.appendChild(bodyContentData3);
 
-                    if(rowData.isSingleEntity){
-                        bodyContentData3.textContent = getPlaceholderValue(rowData.candidateElement);
-                    } else {
-                        bodyContentData3.textContent = getPlaceholderArray(rowData.candidateElementList);
-                    }
+                    bodyContentData3.textContent = rowData.candidatePlaceHolder;
+
+                    // if(rowData.isSingleEntity){
+                    //     bodyContentData3.textContent = getPlaceholderValue(rowData.candidateElement);
+                    // } else {
+                    //     bodyContentData3.textContent = getPlaceholderArray(rowData.candidateElementList);
+                    // }
                 }
                 if ($.inArray(4, customD.columnVisible) > -1) {
                     var spanTd = document.createElement("td");
@@ -1380,11 +1391,11 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                     var editLink = document.createElement("td");
                     var a = document.createElement('a');
                     if(!((rowData.propertyId == "3") && (bodyContentData3.textContent.length > 0))){
-                        var linkText = document.createTextNode("Edit");
+                        var linkText = document.createTextNode(customD.edit.title);
                         a.appendChild(linkText);
                         a.style = "cursor: pointer";
                         a.onclick = function () {
-                            fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD);
+                            fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD, isSupport);
                         };
                     }
                     editLink.appendChild(a);
@@ -1398,6 +1409,7 @@ function constructPreScreenBodyContainer(returnedData, customD) {
 
                 if ($.inArray(1, customD.columnVisible) > -1) {
                     var bodyContentData1 = document.createElement("td");
+                    bodyContentData1.style = ("font-weight:600");
                     bodyContentData1.textContent = rowData.propertyTitle;
                     bodyContentBox.appendChild(bodyContentData1);
                 }
@@ -1406,22 +1418,26 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                     bodyContentData2.id = "jobPostValue_"+rowData.propertyId;
                     bodyContentBox.appendChild(bodyContentData2);
 
-                    if(rowData.isSingleEntity){
-                        bodyContentData2.textContent = getPlaceholderValue(rowData.jobPostElement);
-                    } else {
-                        bodyContentData2.textContent = getPlaceholderArray(rowData.jobPostElementList);
-                    }
+                    bodyContentData2.textContent = rowData.jobPostPlaceHolder;
+
+                    // if(rowData.isSingleEntity){
+                    //     bodyContentData2.textContent = getPlaceholderValue(rowData.jobPostElement);
+                    // } else {
+                    //     bodyContentData2.textContent = getPlaceholderArray(rowData.jobPostElementList);
+                    // }
                 }
                 if ($.inArray(3, customD.columnVisible) > -1) {
                     var bodyContentData3 = document.createElement("td");
                     bodyContentData3.id = "candidateValue_"+rowData.propertyId;
                     bodyContentBox.appendChild(bodyContentData3);
 
-                    if(rowData.isSingleEntity){
-                        bodyContentData3.textContent = getPlaceholderValue(rowData.candidateElement);
-                    } else {
-                        bodyContentData3.textContent = getPlaceholderArray(rowData.candidateElementList);
-                    }
+                    bodyContentData3.textContent = rowData.candidatePlaceHolder;
+
+                    // if(rowData.isSingleEntity){
+                    //     bodyContentData3.textContent = getPlaceholderValue(rowData.candidateElement);
+                    // } else {
+                    //     bodyContentData3.textContent = getPlaceholderArray(rowData.candidateElementList);
+                    // }
                 }
                 if ($.inArray(4, customD.columnVisible) > -1) {
                     var spanTd = document.createElement("td");
@@ -1456,12 +1472,12 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                     var a = document.createElement('a');
                     // edit href
                     if(!(rowData.propertyId == "6" && bodyContentData3.textContent.length > 0)){
-                        var linkText = document.createTextNode("Edit");
+                        var linkText = document.createTextNode(customD.edit.title);
                         a.appendChild(linkText);
                         a.style = "cursor: pointer";
-                        a.title = "Edit";
+                        a.title = customD.edit.title;
                         a.onclick = function () {
-                            fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD);
+                            fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD, isSupport);
                         };
                     }
                     editLink.appendChild(a);
@@ -1473,18 +1489,19 @@ function constructPreScreenBodyContainer(returnedData, customD) {
 
     return container;
 }
+//
+// function getPlaceholderArray(elementList){
+//     var arr = [];
+//     if(elementList != null) {
+//         elementList.forEach(function (customObject) {
+//             if(customObject != null){
+//                 arr.push(customObject.placeHolder);
+//             }
+//         })
+//     }
+//     return arr;
+// }
 
-function getPlaceholderArray(elementList){
-    var arr = [];
-    if(elementList != null) {
-        elementList.forEach(function (customObject) {
-            if(customObject != null){
-                arr.push(customObject.placeHolder);
-            }
-        })
-    }
-    return arr;
-}
 function getPlaceholderValue(element){
     if(element != null) {
         return element.placeHolder;
@@ -1496,9 +1513,8 @@ function getPlaceholderValue(element){
 
 
 // customD : custom Decorator object
-function processPreScreenContent(returnedData, customD) {
+function processPreScreenContent(returnedData, customD, isSupport) {
     if(returnedData == null || returnedData.status != "SUCCESS") {
-        console.log(returnedData);
         if (returnedData != null && returnedData.status == "INVALID") {
             notifyModal("Pre Screen Status: Completed", "Pre Screen Already Completed");
         } else {
@@ -1506,7 +1522,19 @@ function processPreScreenContent(returnedData, customD) {
         }
         return;
     }
+    if(returnedData != null && !returnedData.visible && !isSupport){
+        notifyError("Please complete Job Application form", 'success');
+        bootbox.hideAll();
+        initInterviewModal(returnedData.candidateId, returnedData.jobPostId, false);
+        return;
+    }
+
     if(returnedData != null){
+        if(returnedData.elementList.length == 0){
+            bootbox.hideAll();
+            initInterviewModal(returnedData.candidateId, returnedData.jobPostId, false);
+            return;
+        }
         // if(returnedData == "OK" || returnedData == "NA" ) {
         //     processPostPreScreenResponse(returnedData);
         //     return returnedData;
@@ -1518,40 +1546,44 @@ function processPreScreenContent(returnedData, customD) {
         var jobPostId = returnedData.jobPostId;
 
         var preScreenBody = $('<div id="pre_screen_body" class="'+customD.container.className+'"></div>');
-        var container = constructPreScreenBodyContainer(returnedData, customD);
+        var container = constructPreScreenBodyContainer(returnedData, customD, isSupport);
 
         preScreenBody.append(container);
 
+        var titleMessage;
+        if(customD.callYesNoRequired){
+            titleMessage = $('' +
+                '<div class="row">'+
+                '<div class="col-sm-6">'+
+                '<h5 id="callConfirmation" style="margin:2px">Call Connected? :&nbsp; ' +
+                '<input type="radio" name="callConnected" id="callYes" value="yes" onclick="onCallYes('+candidateId+', '+jobPostId+')">&nbsp;Yes&nbsp; ' +
+                '<input type="radio" name="callConnected" id="callNo" value="no"  onclick="onCallNo('+candidateId+', '+jobPostId+')">&nbsp;No ' +
+                '<div id="callNoClass" style="display: none;">' +
+                '<h6>Reason?:' +
+                '<select id="callResponse" class="selectDropdown" style="margin: 0 8px;" >' +
+                '<option value="busy">Busy</option>' +
+                '<option value="not_reachable">Not Reachable</option>' +
+                '<option value="not_answering">Not Answering</option>' +
+                '<option value="switched_off">Switched Off</option>' +
+                '<option value="dnd">DND</option>' +
+                '<option value="third_person">Third Person</option>' +
+                '<option value="others">Others</option>' +
+                '</select>' +
+                '<button type="submit" id="responseSaveBtn"  class="'+customD.callYesNo.button.className+'" onclick="saveAttempt('+candidateId+', '+jobPostId+')">Save</button>' +
+                '</h6>' +
+                '</div>' +
+                '</h5>'+
+                '</div>'+
+                '</div>');
+        } else {
+            titleMessage = customD.preScreen.title;
+        }
 
-        var callYesNo = $('' +
-            '<div class="row">'+
-            '<div class="col-sm-6">'+
-            '<h5 id="callConfirmation" style="margin:2px">Call Connected? :&nbsp; ' +
-            '<input type="radio" name="callConnected" id="callYes" value="yes" onclick="onCallYes('+candidateId+', '+jobPostId+')">&nbsp;Yes&nbsp; ' +
-            '<input type="radio" name="callConnected" id="callNo" value="no"  onclick="onCallNo('+candidateId+', '+jobPostId+')">&nbsp;No ' +
-            '<div id="callNoClass" style="display: none;">' +
-            '<h6>Reason?:' +
-            '<select id="callResponse" class="selectDropdown" style="margin: 0 8px;" >' +
-            '<option value="busy">Busy</option>' +
-            '<option value="not_reachable">Not Reachable</option>' +
-            '<option value="not_answering">Not Answering</option>' +
-            '<option value="switched_off">Switched Off</option>' +
-            '<option value="dnd">DND</option>' +
-            '<option value="third_person">Third Person</option>' +
-            '<option value="others">Others</option>' +
-            '</select>' +
-            '<button type="submit" id="responseSaveBtn"  class="'+customD.callYesNo.button.className+'" onclick="saveAttempt('+candidateId+', '+jobPostId+')">Save</button>' +
-            '</h6>' +
-            '</div>' +
-            '</h5>'+
-            '</div>'+
-            '</div>');
-
-        renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, customD);
+        renderParentModal(preScreenBody, titleMessage, jobPostId, candidateId, customD, isSupport);
     }
 }
 
-function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, customD) {
+function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, customD, isSupport) {
     var bootbox_dialog = bootbox.dialog({
         className: customD.bootBoxMain.className,
         title: callYesNo,
@@ -1578,8 +1610,7 @@ function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, cus
                     } else {
                         $('body').removeClass('open-modal');
                         //if($("#pre_screen_body input[type='checkbox']:checked").size() > 0) {}
-                        triggerPreScreenResponseSubmission(candidateId, jobPostId);
-                        console.log("final prescreen submission triggered");
+                        triggerPreScreenResponseSubmission(candidateId, jobPostId, isSupport);
                         return true;
                     }
                 }
@@ -1589,13 +1620,13 @@ function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, cus
     bootbox_dialog.init(function () {
         var forceSetContainer = $('.modal-footer');
         var forceSetDiv = $('' +
-            '<div class="col-xs-11" style="text-align: left">' +
+            '<div class="col-xs-11" style="text-align: right">' +
             '<h5 style="margin:2px; font-size: 12px;">' +
-            '<div style="display:inline-block; margin: 0 1px;text-align: left; color: #b9151b">*</div>' +
-            'Did the candidate pass pre-screen?&nbsp;:&nbsp;' +
+            '<div style="display:inline-block; margin: 0 1px;text-align: left; color: #b9151b" id="footerMessage">*</div>' +
+            ''+customD.modalFooter.footerMessage+'&nbsp;:&nbsp;' +
             '<div style="display: inline-block; vertical-align: middle; margin: 0px;">' +
-            '<input type="radio" name="verdict" id="pass" value="1" style="margin: 0 2px" onclick="activateSubmit()">Yes' +
-            '<input type="radio" name="verdict" id="fail" value="0" style="margin: 0 2px" onclick="activateSubmit()">No' +
+            '<input type="radio" name="verdict" id="pass" value="1" style="margin: 0 2px" onclick="activateSubmit('+customD.callYesNoRequired+')">Yes' +
+            '<input type="radio" name="verdict" id="fail" value="0" style="margin: 0 2px" onclick="activateSubmit('+customD.callYesNoRequired+')">No' +
             '</div>' +
             '</h5>' +
             '</div>'
@@ -1605,33 +1636,35 @@ function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, cus
         if(customD.finalSubmissionButton.init.disabled){
             $('.btn.modal-submit').prop('disabled', true);
         }
-        $('#pre_screen_body').hide();
+        if(!customD.callYesNoRequired){
+            $('#pre_screen_body').show();
+        } else {
+            $('#pre_screen_body').hide();
+        }
         $('body').removeClass('modal-open').removeClass('open-modal').addClass('open-modal');
     });
 }
 
-function processPostPreScreenResponse(response, candidateId, jobPostId) {
-    console.log(response);
-    if(response == "OK"){
+function processPostPreScreenResponse(response, candidateId, jobPostId, isSupport) {
+    if(response.status == INTERVIEW_NOT_REQUIRED){
         notifyError("Submitted successfully.", 'success');
         setTimeout(function () {
             location.reload();
         }, 2000);
-    } else if(response == "INTERVIEW"){
+    } else if(response.status == INTERVIEW_REQUIRED){
         notifyError("Submitted successfully. Please select Interview Slot.", 'success');
-        initInterviewModal(candidateId, jobPostId);
+        initInterviewModal(candidateId, jobPostId, isSupport);
     } else {
         notifyError("Error! Something Went wrong please try again.", 'danger')
     }
 }
 
-function reProcessPreScreenContent(returnedData, customD){
+function reProcessPreScreenContent(returnedData, customD, isSupport){
     if(returnedData == null || returnedData.status != "SUCCESS") {
-        console.log(returnedData);
         pushToSnackbar("Request failed. Something went Wrong! Please Refresh");
     }
     if(returnedData != null){
-        var container = constructPreScreenBodyContainer(returnedData, customD);
+        var container = constructPreScreenBodyContainer(returnedData, customD, isSupport);
         var allSelectedCheckboxIdArray = $("#pre_screen_body input[type='checkbox']:checked").parent();
         var tempList = [];
         var len = allSelectedCheckboxIdArray.size();
@@ -1643,7 +1676,6 @@ function reProcessPreScreenContent(returnedData, customD){
         $('#pre_screen_body').html(container);
         for (var j = 0; j < len; j++) {
             var id = tempList[j];
-            console.log("id-->"+id + " <-");
             $('#ready_checkbox_'+id).children().prop('checked', true);
         }
 
@@ -1651,20 +1683,17 @@ function reProcessPreScreenContent(returnedData, customD){
     }
 }
 
-function getPreScreenContent(jobPostId, candidateId, isRebound, actorId, customD, rePreScreen) {
+function getPreScreenContent(jobPostId, candidateId, isRebound, customD, rePreScreen, isSupport) {
     if(customD == null ) {
-        customD = initDecorator(null);
-    }
-    if(actorId == 100) {
-        console.log("actor: Partner");
-    } else if (actorId == 0) {
-        console.log("actor: Support");
-    } else if (actorId == 999) {
-        console.log("actor: Self");
+        isSupport = true;
+        if(decorator != null){
+            customD = decorator;
+        } else {
+            customD = initDecorator(null);
+        }
     }
     var base_api_url ="/support/api/getJobPostVsCandidate/";
     if(base_api_url == null || jobPostId == null) {
-        console.log("please provide candidateId && jobPostId");
         return
     } else {
         base_api_url +="?";
@@ -1680,19 +1709,18 @@ function getPreScreenContent(jobPostId, candidateId, isRebound, actorId, customD
     } else {
         base_api_url +="&rePreScreen="+true;
     }
-
+    base_api_url +="&candidateMobile";
 
     var processor;
     if(!isRebound) {
         processor = function (returnedData) {
-            processPreScreenContent(returnedData, customD);
+            processPreScreenContent(returnedData, customD, isSupport);
         }
     } else {
         processor = function (returnedData) {
-            reProcessPreScreenContent(returnedData, customD);
+            reProcessPreScreenContent(returnedData, customD, isSupport);
         }
     }
-    console.log("jobPostVsCandidate_URL: " + base_api_url);
     try {
         $.ajax({
             type: "GET",
@@ -1720,6 +1748,7 @@ function pushToSnackbar(msg) {
     snackbarContainer.MaterialSnackbar.showSnackbar(data);
 
 }
+
 function notifyError(msg, type) {
     $.notify({
         message: msg,

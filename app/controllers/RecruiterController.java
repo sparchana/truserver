@@ -1,16 +1,14 @@
 package controllers;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpRequest.LoginRequest;
-import api.http.httpRequest.Recruiter.AddCreditRequest;
-import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
-import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
+import api.http.httpRequest.Recruiter.*;
 import api.http.httpRequest.ResetPasswordResquest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.CandidateWorkflowData;
-import api.http.httpResponse.Recruiter.JobApplicationResponse;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +18,6 @@ import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import controllers.security.SecuredUser;
 import models.entity.JobPost;
-import models.entity.OM.JobApplication;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterProfile;
@@ -33,6 +30,7 @@ import play.mvc.Security;
 import java.io.IOException;
 import java.util.*;
 
+import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterSearchCandidate;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.request;
@@ -193,7 +191,7 @@ public class RecruiterController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(RecruiterService.createRecruiterProfile(recruiterSignUpRequest, InteractionService.InteractionChannelType.SELF)));
+        return ok(toJson(RecruiterService.createRecruiterProfile(recruiterSignUpRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE)));
     }
 
 
@@ -215,30 +213,11 @@ public class RecruiterController {
                 RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
                 if(recruiterProfile != null){
                     if(jobPost.getRecruiterProfile() != null){
-                        if(Objects.equals(jobPost.getRecruiterProfile().getRecruiterProfileId(), recruiterProfile.getRecruiterProfileId())){
-                            List<JobApplication> jobApplicationList = JobApplication.find.where().eq("JobPostId", jobPostId).findList();
-                            List<JobApplicationResponse> jobApplicationResponseList = new ArrayList<>();
-                            for(JobApplication jobApplication: jobApplicationList){
-                                JobApplicationResponse jobApplicationResponse = new JobApplicationResponse();
-
-                                jobApplicationResponse.setCandidate(jobApplication.getCandidate());
-                                jobApplicationResponse.setJobApplicationId(jobApplication.getJobApplicationId());
-                                jobApplicationResponse.setJobApplicationCreatingTimeStamp(String.valueOf(jobApplication.getJobApplicationCreateTimeStamp()));
-                                jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
-                                jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
-                                jobApplicationResponse.setInterviewTimeSlot(jobApplication.getInterviewTimeSlot());
-                                jobApplicationResponse.setScheduledInterviewDate(jobApplication.getScheduledInterviewDate());
-
-                                jobApplicationResponseList.add(jobApplicationResponse);
-                            }
-
-                            return ok(toJson(jobApplicationResponseList));
-                        }
+                        return ok(toJson(JobPostWorkflowEngine.getRecruiterJobLinedUpCandidates(jobPostId)));
                     }
                 }
             }
         }
-
         return ok("0");
     }
 
@@ -410,7 +389,7 @@ public class RecruiterController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(JobService.addJobPost(addJobPostRequest, InteractionService.InteractionChannelType.SELF)));
+        return ok(toJson(JobService.addJobPost(addJobPostRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE)));
     }
 
     public static Result renderAllRecruiterJobPosts() {
@@ -433,6 +412,53 @@ public class RecruiterController {
 
         return ok(toJson(RecruiterService.findRecruiterAndSendOtp(FormValidator.convertToIndianMobileFormat(recruiterMobile))));
 
+    }
+
+    public static Result updateInterviewStatus() {
+        JsonNode req = request().body().asJson();
+
+        InterviewStatusRequest interviewStatusRequest = new InterviewStatusRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            interviewStatusRequest = newMapper.readValue(req.toString(), InterviewStatusRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(session().get("sessionChannel") == null){
+            Logger.warn("SessionChannel null, hence recruiter logged out");
+            logoutRecruiter();
+            return badRequest();
+        }
+
+        return JobPostWorkflowEngine.updateInterviewStatus(interviewStatusRequest, InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE);
+    }
+
+    public static Result getTodayInterviewDetails() {
+        JsonNode req = request().body().asJson();
+
+        InterviewTodayRequest interviewTodayRequest = new InterviewTodayRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            interviewTodayRequest = newMapper.readValue(req.toString(), InterviewTodayRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ok(toJson(JobPostWorkflowEngine.getTodaysInterviewDetails(interviewTodayRequest)));
+    }
+
+    public static Result getPendingCandidateApproval() {
+        JsonNode req = request().body().asJson();
+
+        InterviewTodayRequest interviewTodayRequest = new InterviewTodayRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            interviewTodayRequest = newMapper.readValue(req.toString(), InterviewTodayRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ok(toJson(JobPostWorkflowEngine.processDataPendingApproval(interviewTodayRequest)));
     }
 
     // sorting helper methods
@@ -483,6 +509,10 @@ public class RecruiterController {
 
     public static Result renderAllUnlockedCandidates() {
         return ok(views.html.Recruiter.recruiter_unlocked_candidate.render());
+    }
+
+    public static Result trackApplication(long id) {
+        return ok(views.html.Recruiter.recruiter_interviews.render());
     }
 
 }

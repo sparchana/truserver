@@ -34,6 +34,8 @@ libraryDependencies += "com.google.apis" % "google-api-services-drive" % "v3-rev
 
 libraryDependencies += "com.google.protobuf" % "protobuf-java" % "3.0.0-beta-2"
 
+libraryDependencies += "com.squareup.okhttp3" % "okhttp" % "3.4.2"
+
 libraryDependencies += "net.sf.opencsv" % "opencsv" % "2.3"
 
 libraryDependencies += "com.typesafe.play" % "play-json_2.11" % "2.5.0"
@@ -43,5 +45,9 @@ libraryDependencies += "org.mockito" % "mockito-core" % "1.10.19"
 libraryDependencies += "org.json"%"org.json"%"chargebee-1.0"
 
 libraryDependencies += "org.apache.commons" % "commons-email" % "1.3.1"
+
+libraryDependencies += "com.googlecode.json-simple" % "json-simple" % "1.1"
+
+libraryDependencies += "com.google.gcm" % "gcm-server" % "1.0.0"
 
 libraryDependencies += evolutions

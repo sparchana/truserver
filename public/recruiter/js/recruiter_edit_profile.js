@@ -13,10 +13,14 @@ $(document).scroll(function(){
         $('nav').css({"background": "transparent"});
     }
 });
+
 $(document).ready(function(){
     $(".button-collapse").sideNav();
     $(".dropdown-button").dropdown();
     checkRecruiterLogin();
+    $(".profileNav").addClass("active");
+    $(".profileNavMobile").addClass("active");
+
     try {
         $.ajax({
             type: "POST",
@@ -218,7 +222,6 @@ function validateCompanyTypeVal(val, text) {
         $('#rec_company_type').tokenize().tokenRemove(val);
         notifyError("Please select a valid company type from the dropdown list");
     }
-
 }
 
 function validateCompanyLocationVal(val, text) {

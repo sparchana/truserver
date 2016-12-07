@@ -92,6 +92,9 @@ function scrollToTop() {
 $(document).ready(function(){
     checkRecruiterLogin();
     getRecruiterInfo();
+
+    $(".searchNav").addClass("active");
+    $(".searchNavMobile").addClass("active");
     try {
         $.ajax({
             type: "POST",
@@ -981,7 +984,7 @@ function generateCandidateCards(candidateSearchResult) {
 
         innerInlineBlockDiv = document.createElement("div");
         innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
-        innerInlineBlockDiv.textContent = "Skills(s)";
+        innerInlineBlockDiv.textContent = "Skill(s)";
         inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
         var candidateSkillVal = document.createElement("div");
@@ -993,15 +996,19 @@ function generateCandidateCards(candidateSearchResult) {
             var skillVal = "";
             var allSkillVal = "";
             var count = 0;
+            var skillCount = 0;
             skillList.forEach(function (skill){
                 count = count + 1;
                 if(count < 4){
-                    if(skill.candidateSkillResponse){
+                    if(skill.candidateSkillResponse == true){
                         skillVal += skill.skill.skillName + ", ";
                         allSkillVal += skill.skill.skillName + ", ";
+                        skillCount ++;
                     }
                 } else{
-                    allSkillVal += skill.skill.skillName + ", ";
+                    if(skill.candidateSkillResponse == true){
+                        allSkillVal += skill.skill.skillName + ", ";
+                    }
                 }
             });
             candidateSkillVal.textContent = skillVal.substring(0, skillVal.length - 2);
@@ -1010,7 +1017,7 @@ function generateCandidateCards(candidateSearchResult) {
         }
         inlineBlockDiv.appendChild(candidateSkillVal);
 
-        if(skillListCount > 3){
+        if(skillCount > 3){
             var toolTip = document.createElement("a");
             toolTip.className = "tooltipped";
             toolTip.style = "cursor: pointer; text-decoration: none";
@@ -1019,6 +1026,10 @@ function generateCandidateCards(candidateSearchResult) {
             toolTip.setAttribute("data-tooltip", allSkillVal.substring(0, allSkillVal.length - 2));
             toolTip.textContent = ", more";
             candidateSkillVal.appendChild(toolTip);
+        }
+
+        if(skillCount == 0){
+            candidateSkillVal.textContent = "Not specified";
         }
 
         //documents

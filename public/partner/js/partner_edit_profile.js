@@ -144,14 +144,5 @@ function savePartnerProfile() {
 }
 
 function notifyError(msg){
-    $.notify({
-        message: msg,
-        animate: {
-            enter: 'animated lightSpeedIn',
-            exit: 'animated lightSpeedOut'
-        }
-    },{
-        type: 'danger'
-    });
+    $.notify(msg, "error");
 }
-
