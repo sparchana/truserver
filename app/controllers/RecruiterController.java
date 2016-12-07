@@ -9,6 +9,10 @@ import api.http.httpRequest.Recruiter.*;
 import api.http.httpRequest.ResetPasswordResquest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.CandidateWorkflowData;
+import api.http.httpResponse.Recruiter.RecruiterJobPostResponse;
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.RawSql;
+import com.avaje.ebean.RawSqlBuilder;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,7 +21,9 @@ import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import controllers.security.SecuredUser;
+import dao.JobPostWorkFlowDAO;
 import models.entity.JobPost;
+import models.entity.OM.JobPostWorkflow;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterProfile;
@@ -223,7 +229,29 @@ public class RecruiterController {
 
     public static Result getAllRecruiterJobPosts() {
         if(session().get("recruiterId") != null){
-            return ok(toJson(JobPost.find.where().eq("JobRecruiterId", session().get("recruiterId")).findList()));
+            List<JobPost> recruiterJobPost = JobPost.find.where().eq("JobRecruiterId", session().get("recruiterId")).findList();
+
+            Integer pendingCount;
+            List<RecruiterJobPostResponse> recruiterJobPostResponseList = new ArrayList<>();
+            for(JobPost jobPost : recruiterJobPost){
+                pendingCount = 0;
+
+                List<JobPostWorkflow> jobPostWorkflowList = new JobPostWorkFlowDAO().recruiterJobApplicant(jobPost.getJobPostId());
+
+                RecruiterJobPostResponse recruiterJobPostResponse = new RecruiterJobPostResponse();
+                recruiterJobPostResponse.setJobPost(jobPost);
+                recruiterJobPostResponse.setApplicants(jobPostWorkflowList.size());
+
+                for(JobPostWorkflow jwpf : jobPostWorkflowList){
+                    if(jwpf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
+                        pendingCount++;
+                    }
+                }
+
+                recruiterJobPostResponse.setPendingCount(pendingCount);
+                recruiterJobPostResponseList.add(recruiterJobPostResponse);
+            }
+            return ok(toJson(recruiterJobPostResponseList));
         }
         return ok("0");
     }

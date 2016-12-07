@@ -29,6 +29,7 @@ $(document).scroll(function(){
         $('nav').css({"background": "transparent"});
     }
 });
+
 $(document).ready(function(){
     checkRecruiterLogin();
     getRecruiterInfo();
@@ -125,6 +126,7 @@ function processDataForJobPost(returnedData) {
 }
 
 function getAllCandidates() {
+    $("#loadingIcon").show();
     try {
         $.ajax({
             type: "POST",
@@ -1207,6 +1209,7 @@ function processDataForJobApplications(returnedData) {
             console.log("exception occured!!" + exception.stack);
         }
 
+        $("#loadingIcon").hide();
     } else{
         logoutRecruiter();
     }
