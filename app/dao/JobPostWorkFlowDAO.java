@@ -19,7 +19,7 @@ public class JobPostWorkFlowDAO {
                 "from job_post_workflow jwf where jwf.creation_timestamp = (select max(creation_timestamp)\n" +
                 " from job_post_workflow where jwf.job_post_id = job_post_workflow.job_post_id and job_post_workflow.candidate_id = " + candidateId + ")" +
                 "and jwf.job_post_workflow_id = (select max(job_post_workflow_id) from job_post_workflow where jwf.job_post_id = job_post_workflow.job_post_id and job_post_workflow.candidate_id = " + candidateId +
-                " ) order by creation_timestamp";
+                " ) order by creation_timestamp desc";
 
         RawSql rawSql = RawSqlBuilder.parse(candidateAppliedJobsSql)
                 .tableAliasMapping("jwf", "job_post_workflow")
