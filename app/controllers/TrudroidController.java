@@ -475,7 +475,7 @@ public class TrudroidController {
                     candidateBuilder.setCandidateTotalExperience(candidate.getCandidateTotalExperience());
                 }
 
-                candidateBuilder.setAppliedJobs(candidate.getJobApplicationList().size());
+                candidateBuilder.setAppliedJobs(new JobPostWorkFlowDAO().candidateAppliedJobs(candidate.getCandidateId()).size());
 
                 //getting candidate DOB
                 if (candidate.getCandidateDOB() != null) {
