@@ -61,10 +61,13 @@
                 function processDataCheckNavBar(returnedData) {
                     if(returnedData == '1'){
                         $('#nav_bar_inc').load('/navBarLoggedIn');
+                        $("#headingMain").addClass("pull-right");
+                        $(".leadBox").hide();
                         localStorage.setItem("incentives", "0");
                     } else if(returnedData == '2'){
                         $('#nav_bar_inc').load('/partnerNavBarLoggedIn');
                         $(".leadBox").hide();
+                        $("#headingMain").addClass("pull-right");
                         localStorage.setItem("incentives", "1");
                     } else {
                         $('#nav_bar_inc').load('/navBar');
