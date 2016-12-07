@@ -478,7 +478,7 @@ function processDataForJobApplications(returnedData) {
             //interview date/time slot
             var scheduledInterviewDate = document.createElement("div");
             scheduledInterviewDate.className = "col s12 l6";
-            scheduledInterviewDate.style = "color: black; text-align: left; padding: 8px";
+            scheduledInterviewDate.style = "color: black; text-align: left; padding: 8px 0 8px 8px";
             candidateCardRow.appendChild(scheduledInterviewDate);
 
             inlineBlockDiv = document.createElement("div");

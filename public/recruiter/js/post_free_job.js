@@ -10,7 +10,7 @@ var fullAddress;
 var interviewLat;
 var interviewLng;
 
-var timeSlotCount = 0;
+var timeSlotTotalCount = 0;
 
 function processDataCheckLocality(returnedData) {
     if (returnedData != null) {
@@ -79,7 +79,7 @@ function processDataGetAllLanguage(returnLanguage) {
 function processDataGetAllTimeSlots(returnedData) {
     $('#timeSlotSection').html('');
     returnedData.forEach(function(timeSlot) {
-        timeSlotCount++;
+        timeSlotTotalCount++;
         var id = timeSlot.interviewTimeSlotId;
         var name = timeSlot.interviewTimeSlotName;
         var item = {};
@@ -704,7 +704,7 @@ function saveJob() {
 
         var timeSlotCount = 0;
         var interviewDayCount = 0;
-        for(i=1; i<= timeSlotCount; i++){
+        for(i=1; i<= timeSlotTotalCount; i++){
             if($("#interview_slot_" + i).is(":checked")){
                 timeSlotCount = timeSlotCount + 1;
             }
@@ -733,7 +733,7 @@ function saveJob() {
     }
 
     var slotArray = [];
-    for(i = 1; i <= timeSlotCount; i++){
+    for(i = 1; i <= timeSlotTotalCount; i++){
         if($("#interview_slot_" + i).is(":checked")){
             slotArray.push(parseInt(i));
         }
