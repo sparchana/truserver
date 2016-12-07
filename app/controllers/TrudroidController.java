@@ -1013,6 +1013,7 @@ public class TrudroidController {
 
                     jobPostWorkFlowObjBuilder.setCreationTimeMillis(jwpf.getCreationTimestamp().getTime());
 
+                    jobPostWorkFlowObjBuilder.setInterviewDateMillis(0);
                     if (jwpf.getScheduledInterviewDate() != null) {
                         jobPostWorkFlowObjBuilder.setInterviewDateMillis(jwpf.getScheduledInterviewDate().getTime());
                     }
