@@ -970,11 +970,11 @@ $(function () {
                         } else {
                             return '<a href="'+"/workflowInteraction/"+newCandidate.extraData.workflowUUId+'" id="'+newCandidate.extraData.workflowId+'" style="cursor:pointer;" target="_blank">'+newCandidate.extraData.preScreenCallAttemptCount+'</a>';
                         }
-                    } else if(app.currentView == "pre_screen_completed_view" || app.currentView == "confirmed_interview_view" || app.currentView == "completed_interview_view" || app.currentView == "pending_interview_schedule"){
-                        if(newCandidate.extraData.preScreenCallAttemptCount == null) {
+                    } else if (app.currentView == "pre_screen_completed_view" || app.currentView == "confirmed_interview_view" || app.currentView == "completed_interview_view" || app.currentView == "pending_interview_schedule") {
+                        if (newCandidate.extraData.allInteractionCount == null) {
                             return "0";
                         } else {
-                            return '<a href="'+"/workflowInteraction/"+newCandidate.extraData.workflowUUId+'" id="'+newCandidate.extraData.workflowId+'" style="cursor:pointer;" target="_blank">'+newCandidate.extraData.preScreenCallAttemptCount+'</a>';
+                            return '<a href="' + "/workflowInteraction/" + newCandidate.extraData.workflowUUId + '" id="' + newCandidate.extraData.workflowId + '" style="cursor:pointer;" target="_blank">' + newCandidate.extraData.allInteractionCount + '</a>';
                         }
                     } else {
                         return "";

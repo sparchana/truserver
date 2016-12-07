@@ -343,6 +343,9 @@ function processDataForJobApplications(returnedData) {
                         pendingParent.append(pendingConfirmationHeader);
                         pendingConfirmationFlag = true;
                     }
+                    pendingParent.append(candidateCard);
+                    pendingCount++;
+                    actionNeeded = false;
 
                 } else if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
                     var todayDay = new Date();
