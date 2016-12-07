@@ -771,8 +771,8 @@ public class TrudroidController {
                 //setting other values to the other jobs post builder
                 companyOtherJobPostBuilder.setJobPostId(companyJobPost.getJobPostId());
                 companyOtherJobPostBuilder.setJobPostTitle(companyJobPost.getJobPostTitle());
-                companyOtherJobPostBuilder.setJobPostMinSalary(companyJobPost.getJobPostMinSalary());
-                companyOtherJobPostBuilder.setJobPostMaxSalary(companyJobPost.getJobPostMaxSalary());
+                if(companyJobPost.getJobPostMinSalary()!= null) companyOtherJobPostBuilder.setJobPostMinSalary(companyJobPost.getJobPostMinSalary());
+                if(companyJobPost.getJobPostMaxSalary()!= null) companyOtherJobPostBuilder.setJobPostMaxSalary(companyJobPost.getJobPostMaxSalary());
 
                 // list of all the localities of the job post
                 List<JobPostToLocality> jobPostToLocalityList = companyJobPost.getJobPostToLocalityList();
