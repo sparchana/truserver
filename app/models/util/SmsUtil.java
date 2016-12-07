@@ -1,11 +1,8 @@
 package models.util;
 
-import api.ServerConstants;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
-import controllers.businessLogic.InteractionService;
 import models.entity.Candidate;
 import models.entity.JobPost;
-import models.entity.OM.JobApplication;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Partner;
 import models.entity.Recruiter.RecruiterProfile;
@@ -19,9 +16,6 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
@@ -103,7 +97,7 @@ public class SmsUtil {
     }
 
     public static void sendJobApplicationSms(String candidateName, String jobTitle, String company, String mobile, String prescreenLocation, int channelType) {
-        String msg = "Hi " + candidateName + ", you have applied to " + jobTitle + " job at " + company + " @" + prescreenLocation + ". Your application is under review " +
+        String msg = "Hi " + candidateName + ", you have initiated your application for " + jobTitle + " job at " + company + " @" + prescreenLocation + ". Your application is under review " +
                 "and you will get a notification once the recruiter shortlists you for interview. All the best! www.trujobs.in.";
         if(channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
             msg += " Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
@@ -341,7 +335,6 @@ public class SmsUtil {
 
         String interviewDate = day + "-" + (month + 1) + "-" + year;
 
-        Logger.info(year + " " + day + " " + month + " ");
         String msg = "Hi " + candidate.getCandidateFirstName() + ", your interview for " + jobApplication.getJobPost().getJobPostTitle() + " at " + jobApplication.getJobPost().getCompany().getCompanyName() +
                 " has been confirmed on " + interviewDate + " between " + jobApplication.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Please reach the office on time with your documents. All the best!";
         if(jobApplication.getJobPost().getJobPostAddress() != null || !Objects.equals(jobApplication.getJobPost().getJobPostAddress(), "")){

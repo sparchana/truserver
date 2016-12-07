@@ -25,11 +25,13 @@ import models.entity.OM.*;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
 import models.entity.Static.*;
+import models.util.NotificationUtil;
 import models.util.SmsUtil;
 import models.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 import play.mvc.Result;
+import scala.Int;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -514,7 +516,7 @@ public class JobPostWorkflowEngine {
         }
 
         candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
-        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), status);
+        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), new ArrayList<Integer>(Arrays.asList(status)));
 
         for ( Candidate candidate: candidateList) {
             CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
@@ -1419,7 +1421,7 @@ public class JobPostWorkflowEngine {
         }
 
         candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
-        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), jpwfStatus);
+        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), new ArrayList<Integer>(Arrays.asList(jpwfStatus)));
 
         for ( Candidate candidate: candidateList) {
             CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
@@ -1501,7 +1503,7 @@ public class JobPostWorkflowEngine {
         }
 
         candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
-        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), jpwfStatus);
+        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), new ArrayList<Integer>(Arrays.asList(jpwfStatus)));
 
         for ( Candidate candidate: candidateList) {
             CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
@@ -1552,7 +1554,7 @@ public class JobPostWorkflowEngine {
         }
 
         candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
-        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), status);
+        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), new ArrayList<Integer>(Arrays.asList(status)));
 
         for ( Candidate candidate: candidateList) {
             CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
@@ -1565,12 +1567,16 @@ public class JobPostWorkflowEngine {
     }
 
     public static Map<Long, CandidateWorkflowData> getAllCompletedInterviews(Long jobPostId) {
-        Integer status = ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED;
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED);
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_REJECTED);
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED);
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW);
 
         List<JobPostWorkflow> jobPostWorkflowList;
         jobPostWorkflowList = JobPostWorkflow.find.where()
                 .eq("jobPost.jobPostId", jobPostId)
-                .ge("status_id", status)
+                .in("status_id", statusList)
                 .findList();
 
         List<Candidate> candidateList = new ArrayList<>();
@@ -1590,7 +1596,8 @@ public class JobPostWorkflowEngine {
         }
 
         candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
-        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), status);
+        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId)
+                .findUnique(), statusList);
 
         for ( Candidate candidate: candidateList) {
             CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
@@ -1780,9 +1787,10 @@ public class JobPostWorkflowEngine {
         return filteredCandidateList;
     }
 
-    private static Map<Long, CandidateExtraData> computeExtraData(List<Candidate> candidateList, JobPost jobPost, Integer status) {
-        if(status == null) {
-            status = ServerConstants.JWF_STATUS_SELECTED;
+    private static Map<Long, CandidateExtraData> computeExtraData(List<Candidate> candidateList, JobPost jobPost, List<Integer> statusList) {
+        if(statusList == null || statusList.size() == 0) {
+            statusList = new ArrayList<>();
+            statusList.add(ServerConstants.JWF_STATUS_SELECTED);
         }
 
         SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT_HH);
@@ -1851,7 +1859,7 @@ public class JobPostWorkflowEngine {
                 .findMap("objectAUUId", String.class);
 
         List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
-                .eq("status.statusId", status)
+                .in("status.statusId", statusList)
                 .isNotNull("candidate")
                 .eq("job_post_id", jobPost.getJobPostId())
                 .in("candidate.candidateId", candidateIdList)
@@ -1886,6 +1894,7 @@ public class JobPostWorkflowEngine {
             CandidateExtraData candidateExtraData = candidateExtraDataMap.get(candidate.getCandidateId());
 
             if( candidateExtraData == null) {
+
                 candidateExtraData = new CandidateExtraData();
 
                 // compute applied on
@@ -1900,27 +1909,27 @@ public class JobPostWorkflowEngine {
                 // compute 'has attempted assessment' for this JobPost-JobRole, If yes then this contains assessmentId
                 candidateExtraData.setAssessmentAttemptId(assessmentMap.get(candidate.getCandidateId()));
 
-                if(candidateWithPreScreenAttemptCountMap != null && candidateWithPreScreenAttemptCountMap.size()>0){
+                if(candidateWithPreScreenAttemptCountMap.size() > 0){
                     candidateExtraData.setPreScreenCallAttemptCount(candidateWithPreScreenAttemptCountMap.get(candidate.getCandidateUUId()));
                 }
                 // other intelligent scoring will come here
 
                 // Job Application Mode (Self/Partner).
-                if(jobApplicationModeMap != null && jobApplicationModeMap.size() > 0) {
+                if(jobApplicationModeMap.size() > 0) {
                     candidateExtraData.setJobApplicationMode(jobApplicationModeMap.get(candidate.getCandidateId()));
                 }
 
                 // 'Pre-screen selection timestamp' along with jobPostWorkflowId, uuid
-                if(candidateToJobPostWorkflowMap != null && candidateToJobPostWorkflowMap.size() > 0) {
+                if(candidateToJobPostWorkflowMap.size() > 0) {
                     JobPostWorkflow jobPostWorkflow = candidateToJobPostWorkflowMap.get(candidate.getCandidateId());
 
-                    if(jobPostWorkflow!= null){
+                    if(jobPostWorkflow != null){
                         candidateExtraData.setPreScreenSelectionTimeStamp(jobPostWorkflow.getCreationTimestamp());
                         candidateExtraData.setWorkflowId(jobPostWorkflow.getJobPostWorkflowId());
                         candidateExtraData.setWorkflowUUId(jobPostWorkflow.getJobPostWorkflowUUId());
                         candidateExtraData.setCreatedBy(jobPostWorkflow.getCreatedBy());
 
-                        if(status >= ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED) {
+                        if(jobPostWorkflow.getStatus().getStatusId() >= ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED) {
                             List<Interaction> interactionList = Interaction.find
                                     .where().eq("objectAUUId", jobPostWorkflow.getJobPostWorkflowUUId())
                                     .findList();
@@ -2193,6 +2202,9 @@ public class JobPostWorkflowEngine {
                 if(interviewStatusRequest.getInterviewSchedule() == null){ //candidate shortlisted because slots and interview days is not available
                     sendInterviewShortlistSms(jobPost, candidate);
 
+                    //sending notification
+                    NotificationUtil.sendInterviewShortlistNotification(candidate, jobPostWorkflowOld);
+
                     // creating interaction
                     createInteractionForRecruiterShortlistJobApplicationWithoutDate(candidate.getCandidateUUId(), jobPost.getRecruiterProfile().getRecruiterProfileUUId());
                     jwType = InteractionConstants.INTERACTION_TYPE_RECRUITER_SHORTLIST_JOB_APPLICATION_INTERVIEW;
@@ -2203,6 +2215,9 @@ public class JobPostWorkflowEngine {
 
                     // creating interaction
                     createInteractionForRecruiterAcceptingInterviewDate(candidate.getCandidateUUId(), jobPost.getRecruiterProfile().getRecruiterProfileUUId());
+
+                    //sending notification
+                    NotificationUtil.sendInterviewConfirmationNotification(candidate, jobPostWorkflowOld);
 
                     if(jobApplication != null && jobApplication.getPartner() != null){
                         sendInterviewConfirmationSmsToPartner(jobPostWorkflowOld, candidate, jobApplication.getPartner());
@@ -2219,6 +2234,9 @@ public class JobPostWorkflowEngine {
                 // creating interaction
                 createInteractionForRecruiterRejectingInterviewDate(candidate.getCandidateUUId(), jobPostWorkflowOld.getJobPost().getRecruiterProfile().getRecruiterProfileUUId());
 
+                //sending notification
+                NotificationUtil.sendInterviewNotShortlistNotification(candidate, jobPostWorkflowOld);
+
                 if(jobApplication != null && jobApplication.getPartner() != null){
                     sendInterviewRejectionSmsToPartner(jobPostWorkflowOld, candidate, jobApplication.getPartner());
                 }
@@ -2233,6 +2251,10 @@ public class JobPostWorkflowEngine {
                 interactionResult = " interview rescheduled";
 
                 InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", interviewStatusRequest.getRescheduledSlot()).findUnique();
+
+                //sending notification
+                NotificationUtil.sendInterviewRescheduledNotification(jobPostWorkflowOld, candidate, date, interviewTimeSlot);
+
                 sendInterviewReschedulingSms(jobPostWorkflowOld, candidate, date, interviewTimeSlot);
 
                 if(jobApplication != null && jobApplication.getPartner() != null){
@@ -2298,10 +2320,16 @@ public class JobPostWorkflowEngine {
             //sms to candidate
             sendInterviewConfirmationSms(jobPostWorkflowOld, candidate);
 
+            //sending notification
+            NotificationUtil.sendInterviewConfirmationNotification(candidate, jobPostWorkflowOld);
+
         } else if(value == ServerConstants.RESCHEULED_INTERVIEW_STATUS_REJECTED){ // reject
             interactionResult = " interview rejected by candidate";
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_REJECTS_RESCHEDULED_INTERVIEW;
             jwStatus = ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE;
+
+            //sending notification
+            NotificationUtil.sendInterviewNotShortlistNotification(candidate, jobPostWorkflowOld);
 
             sendInterviewCandidateInterviewReject(jobPostWorkflowOld, candidate);
         }
@@ -2384,7 +2412,7 @@ public class JobPostWorkflowEngine {
         }
 
         candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
-        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), status);
+        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), new ArrayList<Integer>(Arrays.asList(status)));
 
         Map<Long, CandidateScoreData> candidateScoreDataMap = computeScoreData(candidateList, jobPostId);
 
@@ -2680,13 +2708,21 @@ public class JobPostWorkflowEngine {
 
         interviewFeedbackUpdate.save();
 
+        Candidate candidate = Candidate.find.where().eq("candidateId", addFeedbackRequest.getCandidateId()).findUnique();
+
         if(jwStatus == ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+            //sending notification
+            NotificationUtil.sendInterviewSelectionNotification(candidate, jobPostWorkflowNew);
+
+            //sending sms
             sendSelectedSmsToCandidate(jobPostWorkflowNew);
         } else{
+            //sending notification
+            NotificationUtil.sendInterviewRejectionNotification(candidate, jobPostWorkflowNew);
+
+            //sending sms
             sendRejectedSmsToCandidate(jobPostWorkflowNew);
         }
-
-        Candidate candidate = Candidate.find.where().eq("candidateId", addFeedbackRequest.getCandidateId()).findUnique();
 
         // save the interaction
         InteractionService.createWorkflowInteraction(

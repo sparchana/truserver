@@ -7,12 +7,10 @@ import api.http.CandidateSkills;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlotDetail;
-import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
-import api.http.httpResponse.interview.InterviewResponse;
 import com.amazonaws.util.json.JSONException;
 import com.google.api.client.util.Base64;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -20,6 +18,7 @@ import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
+import dao.staticdao.TrudroidFeedbackReasonDAO;
 import in.trujobs.proto.*;
 import in.trujobs.proto.ApplyJobRequest;
 import models.entity.Candidate;
@@ -27,7 +26,6 @@ import models.entity.Company;
 import models.entity.JobPost;
 import models.entity.OM.*;
 import models.entity.Static.*;
-import models.entity.Static.InterviewTimeSlot;
 import models.util.InterviewUtil;
 import models.util.SmsUtil;
 import play.Logger;
@@ -41,6 +39,8 @@ import java.util.*;
 
 import static api.ServerConstants.*;
 import static controllers.businessLogic.JobSearchService.*;
+import static models.util.InterviewUtil.getDayVal;
+import static models.util.InterviewUtil.getMonthVal;
 import static models.util.Util.generateOtp;
 import static models.util.Validator.isValidLocalityName;
 import static play.libs.Json.toJson;
@@ -1013,6 +1013,7 @@ public class TrudroidController {
 
                     jobPostWorkFlowObjBuilder.setCreationTimeMillis(jwpf.getCreationTimestamp().getTime());
 
+                    jobPostWorkFlowObjBuilder.setInterviewDateMillis(0);
                     if (jwpf.getScheduledInterviewDate() != null) {
                         jobPostWorkFlowObjBuilder.setInterviewDateMillis(jwpf.getScheduledInterviewDate().getTime());
                     }
@@ -1048,7 +1049,7 @@ public class TrudroidController {
                         }
 
                         jobPostObjectBuilder.setJobPostMinSalary(jwpf.getJobPost().getJobPostMinSalary());
-                        if (jwpf.getJobPost().getJobPostMaxSalary() == 0 || jwpf.getJobPost().getJobPostMaxSalary() == null) {
+                        if (jwpf.getJobPost().getJobPostMaxSalary() == null || jwpf.getJobPost().getJobPostMaxSalary() == 0) {
                             jobPostObjectBuilder.setJobPostMaxSalary(0);
                         } else {
                             jobPostObjectBuilder.setJobPostMaxSalary(jwpf.getJobPost().getJobPostMaxSalary());
@@ -1078,6 +1079,7 @@ public class TrudroidController {
 
                     jobApplicationListToReturn.add(jobPostWorkFlowObjBuilder.build());
                 }
+
                 //adding the list to the main response builder
                 candidateAppliedJobPostWorkFlowResponse.addAllJobPostWorkFlowObject(jobApplicationListToReturn);
 
@@ -1503,16 +1505,16 @@ public class TrudroidController {
             }
             jobPostList.addAll(JobSearchService.getRelevantJobPostsWithinDistance(jobSearchRequest.getLatitude(),
                     jobSearchRequest.getLongitude(), jobRoleIdList, jobFilterRequestBuilder.build(),
-                    sortby, false, true));
+                    sortby, false, false));
 
         } else {
             if (jobSearchRequest.getLatitude() != 0.0 && jobSearchRequest.getLongitude() != 0.0) {
                 jobPostList.addAll(
                         JobSearchService.getRelevantJobPostsWithinDistance(jobSearchRequest.getLatitude(),
-                                jobSearchRequest.getLongitude(), jobRoleIdList, null, ServerConstants.SORT_DEFAULT, false, true));
+                                jobSearchRequest.getLongitude(), jobRoleIdList, null, ServerConstants.SORT_DEFAULT, false, false));
             } else {
                 jobPostList.addAll(JobSearchService.getRelevantJobPostsWithinDistance(null,
-                        null, jobRoleIdList, null, ServerConstants.SORT_DEFAULT, false, true));
+                        null, jobRoleIdList, null, ServerConstants.SORT_DEFAULT, false, false));
             }
         }
 
@@ -1681,109 +1683,118 @@ public class TrudroidController {
         for (PreScreenPopulateResponse.PreScreenElement pe : populateResponse.getElementList()) {
             if (pe != null && !pe.isMatching() && pe.getCandidateElement() == null) {
                 // show UI to collect candidate missing data
-                if ((pe.isSingleEntity() && pe.getCandidateElement() == null) ||
-                        (!pe.isSingleEntity() &&
-                                (pe.getCandidateElementList() == null || pe.getCandidateElementList().size() == 0))) {
-                    // add constructor object for only those object which are not filled by candidate
-                    response.setCandidateId(candidate.getCandidateId());
-                    response.setJobPostId(preScreenPopulateRequest.getJobPostId());
-                    response.addPropertyId(pe.getPropertyId());
+                // add constructor object for only those object which are not filled by candidate
+                response.setCandidateId(candidate.getCandidateId());
+                response.setJobPostId(preScreenPopulateRequest.getJobPostId());
 
-                    switch (pe.getPropertyId()) {
-                        case PROPERTY_TYPE_DOCUMENT:
-                            PreScreenDocumentObject.Builder preScreenDocument = PreScreenDocumentObject.newBuilder();
-                            List<IdProofObject> idProofObjectList = new ArrayList<>();
-                            for (Object object : pe.getJobPostElementList()) {
-                                PreScreenPopulateResponse.PreScreenCustomObject customObject = (PreScreenPopulateResponse.PreScreenCustomObject) object;
+                /*
+                * In app, experience fragment contains Last Withdrawn Salary
+                * Locality will always be available if a candidate has signed up
+                * via both {app, website}
+                *
+                * Hence ignoring both id
+                *
+                * */
+                if(pe.getPropertyId() == PROPERTY_TYPE_LOCALITY ||
+                        pe.getPropertyId() == PROPERTY_TYPE_SALARY){
+                    continue;
+                }
+                response.addPropertyId(pe.getPropertyId());
 
-                                IdProof idProof = (IdProof) customObject.getObject();
-                                IdProofObject.Builder idProofObject = IdProofObject.newBuilder();
-                                idProofObject.setIdProofId(idProof.getIdProofId());
-                                idProofObject.setIdProofName(idProof.getIdProofName());
-                                idProofObjectList.add(idProofObject.build());
-                            }
-                            preScreenDocument.setIsMatching(pe.isMatching());
-                            preScreenDocument.addAllJobPostIdProof(idProofObjectList);
-                            preScreenDocument.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_DOCUMENT));
-                            preScreenDocument.setPropertyId((PROPERTY_TYPE_DOCUMENT));
-                            response.addHpPropertyId(PROPERTY_TYPE_DOCUMENT);
-                            response.setDocumentList(preScreenDocument.build());
-                            break;
-                        case PROPERTY_TYPE_LANGUAGE:
-                            PreScreenLanguageObject.Builder preScreenLanguage = PreScreenLanguageObject.newBuilder();
-                            List<LanguageObject> languageObjectList = new ArrayList<>();
-                            for (Object object : pe.getJobPostElementList()) {
-                                PreScreenPopulateResponse.PreScreenCustomObject customObject = (PreScreenPopulateResponse.PreScreenCustomObject) object;
+                switch (pe.getPropertyId()) {
+                    case PROPERTY_TYPE_DOCUMENT:
+                        PreScreenDocumentObject.Builder preScreenDocument = PreScreenDocumentObject.newBuilder();
+                        List<IdProofObject> idProofObjectList = new ArrayList<>();
+                        for (Object object : pe.getJobPostElementList()) {
+                            PreScreenPopulateResponse.PreScreenCustomObject customObject = (PreScreenPopulateResponse.PreScreenCustomObject) object;
 
-                                Language language = (Language) customObject.getObject();
-                                LanguageObject.Builder languageObject = LanguageObject.newBuilder();
-                                languageObject.setLanguageId(language.getLanguageId());
-                                languageObject.setLanguageName(language.getLanguageName());
-                                languageObjectList.add(languageObject.build());
-                            }
-                            preScreenLanguage.setIsMatching(pe.isMatching());
-                            preScreenLanguage.addAllJobPostLanguage(languageObjectList);
-                            preScreenLanguage.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_LANGUAGE));
-                            preScreenLanguage.setPropertyId((PROPERTY_TYPE_LANGUAGE));
-                            response.addHpPropertyId(PROPERTY_TYPE_LANGUAGE);
-                            response.setLanguageList(preScreenLanguage.build());
-                            break;
-                        case PROPERTY_TYPE_ASSET_OWNED:
-                            PreScreenAssetObject.Builder preScreenAsset = PreScreenAssetObject.newBuilder();
-                            List<AssetObject> assetObjectList = new ArrayList<>();
-                            for (Object object : pe.getJobPostElementList()) {
-                                PreScreenPopulateResponse.PreScreenCustomObject customObject = (PreScreenPopulateResponse.PreScreenCustomObject) object;
+                            IdProof idProof = (IdProof) customObject.getObject();
+                            IdProofObject.Builder idProofObject = IdProofObject.newBuilder();
+                            idProofObject.setIdProofId(idProof.getIdProofId());
+                            idProofObject.setIdProofName(idProof.getIdProofName());
+                            idProofObjectList.add(idProofObject.build());
+                        }
+                        preScreenDocument.setIsMatching(pe.isMatching());
+                        preScreenDocument.addAllJobPostIdProof(idProofObjectList);
+                        preScreenDocument.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_DOCUMENT));
+                        preScreenDocument.setPropertyId((PROPERTY_TYPE_DOCUMENT));
+                        response.addHpPropertyId(PROPERTY_TYPE_DOCUMENT);
+                        response.setDocumentList(preScreenDocument.build());
+                        break;
+                    case PROPERTY_TYPE_LANGUAGE:
+                        PreScreenLanguageObject.Builder preScreenLanguage = PreScreenLanguageObject.newBuilder();
+                        List<LanguageObject> languageObjectList = new ArrayList<>();
+                        for (Object object : pe.getJobPostElementList()) {
+                            PreScreenPopulateResponse.PreScreenCustomObject customObject = (PreScreenPopulateResponse.PreScreenCustomObject) object;
 
-                                Asset asset = (Asset) customObject.getObject();
-                                AssetObject.Builder assetObject = AssetObject.newBuilder();
-                                assetObject.setAssetId(asset.getAssetId());
-                                assetObject.setAssetTitle(asset.getAssetTitle());
-                                assetObjectList.add(assetObject.build());
-                            }
-                            preScreenAsset.setIsMatching(pe.isMatching());
-                            preScreenAsset.addAllJobPostAsset(assetObjectList);
-                            preScreenAsset.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_ASSET_OWNED));
-                            preScreenAsset.setPropertyId((PROPERTY_TYPE_ASSET_OWNED));
-                            response.setAssetList(preScreenAsset.build());
-                            break;
-                        case PROPERTY_TYPE_MAX_AGE:
-                            PreScreenAgeObject.Builder preScreenAge = PreScreenAgeObject.newBuilder();
-                            preScreenAge.setIsMatching(pe.isMatching());
-                            preScreenAge.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_MAX_AGE));
-                            preScreenAge.setPropertyId((PROPERTY_TYPE_MAX_AGE));
-                            response.setAge(preScreenAge.build());
-                            break;
-                        case PROPERTY_TYPE_EXPERIENCE:
-                            PreScreenExperienceObject.Builder preScreenExperience = PreScreenExperienceObject.newBuilder();
-                            preScreenExperience.setIsMatching(pe.isMatching());
-                            preScreenExperience.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_EXPERIENCE));
-                            preScreenExperience.setPropertyId((PROPERTY_TYPE_EXPERIENCE));
-                            response.addHpPropertyId(PROPERTY_TYPE_EXPERIENCE);
-                            response.setExperience(preScreenExperience.build());
-                            break;
-                        case PROPERTY_TYPE_EDUCATION:
-                            PreScreenEducationObject.Builder preScreenEducation = PreScreenEducationObject.newBuilder();
-                            preScreenEducation.setIsMatching(pe.isMatching());
-                            preScreenEducation.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_EDUCATION));
-                            preScreenEducation.setPropertyId((PROPERTY_TYPE_EDUCATION));
-                            response.addHpPropertyId(PROPERTY_TYPE_EDUCATION);
-                            response.setEducation(preScreenEducation.build());
-                            break;
-                        case PROPERTY_TYPE_GENDER:
-                            PreScreenGenderObject.Builder preScreenGender = PreScreenGenderObject.newBuilder();
-                            preScreenGender.setIsMatching(pe.isMatching());
-                            preScreenGender.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_GENDER));
-                            preScreenGender.setPropertyId((PROPERTY_TYPE_GENDER));
-                            response.setGender(preScreenGender.build());
-                            break;
-                        case PROPERTY_TYPE_SALARY:
-                            PreScreenSalaryObject.Builder preScreenSalary = PreScreenSalaryObject.newBuilder();
-                            preScreenSalary.setIsMatching(pe.isMatching());
-                            preScreenSalary.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_SALARY));
-                            preScreenSalary.setPropertyId((PROPERTY_TYPE_SALARY));
-                            response.setSalary(preScreenSalary.build());
-                            break;
-                    }
+                            Language language = (Language) customObject.getObject();
+                            LanguageObject.Builder languageObject = LanguageObject.newBuilder();
+                            languageObject.setLanguageId(language.getLanguageId());
+                            languageObject.setLanguageName(language.getLanguageName());
+                            languageObjectList.add(languageObject.build());
+                        }
+                        preScreenLanguage.setIsMatching(pe.isMatching());
+                        preScreenLanguage.addAllJobPostLanguage(languageObjectList);
+                        preScreenLanguage.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_LANGUAGE));
+                        preScreenLanguage.setPropertyId((PROPERTY_TYPE_LANGUAGE));
+                        response.addHpPropertyId(PROPERTY_TYPE_LANGUAGE);
+                        response.setLanguageList(preScreenLanguage.build());
+                        break;
+                    case PROPERTY_TYPE_ASSET_OWNED:
+                        PreScreenAssetObject.Builder preScreenAsset = PreScreenAssetObject.newBuilder();
+                        List<AssetObject> assetObjectList = new ArrayList<>();
+                        for (Object object : pe.getJobPostElementList()) {
+                            PreScreenPopulateResponse.PreScreenCustomObject customObject = (PreScreenPopulateResponse.PreScreenCustomObject) object;
+
+                            Asset asset = (Asset) customObject.getObject();
+                            AssetObject.Builder assetObject = AssetObject.newBuilder();
+                            assetObject.setAssetId(asset.getAssetId());
+                            assetObject.setAssetTitle(asset.getAssetTitle());
+                            assetObjectList.add(assetObject.build());
+                        }
+                        preScreenAsset.setIsMatching(pe.isMatching());
+                        preScreenAsset.addAllJobPostAsset(assetObjectList);
+                        preScreenAsset.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_ASSET_OWNED));
+                        preScreenAsset.setPropertyId((PROPERTY_TYPE_ASSET_OWNED));
+                        response.setAssetList(preScreenAsset.build());
+                        break;
+                    case PROPERTY_TYPE_MAX_AGE:
+                        PreScreenAgeObject.Builder preScreenAge = PreScreenAgeObject.newBuilder();
+                        preScreenAge.setIsMatching(pe.isMatching());
+                        preScreenAge.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_MAX_AGE));
+                        preScreenAge.setPropertyId((PROPERTY_TYPE_MAX_AGE));
+                        response.setAge(preScreenAge.build());
+                        break;
+                    case PROPERTY_TYPE_EXPERIENCE:
+                        PreScreenExperienceObject.Builder preScreenExperience = PreScreenExperienceObject.newBuilder();
+                        preScreenExperience.setIsMatching(pe.isMatching());
+                        preScreenExperience.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_EXPERIENCE));
+                        preScreenExperience.setPropertyId((PROPERTY_TYPE_EXPERIENCE));
+                        response.addHpPropertyId(PROPERTY_TYPE_EXPERIENCE);
+                        response.setExperience(preScreenExperience.build());
+                        break;
+                    case PROPERTY_TYPE_EDUCATION:
+                        PreScreenEducationObject.Builder preScreenEducation = PreScreenEducationObject.newBuilder();
+                        preScreenEducation.setIsMatching(pe.isMatching());
+                        preScreenEducation.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_EDUCATION));
+                        preScreenEducation.setPropertyId((PROPERTY_TYPE_EDUCATION));
+                        response.addHpPropertyId(PROPERTY_TYPE_EDUCATION);
+                        response.setEducation(preScreenEducation.build());
+                        break;
+                    case PROPERTY_TYPE_GENDER:
+                        PreScreenGenderObject.Builder preScreenGender = PreScreenGenderObject.newBuilder();
+                        preScreenGender.setIsMatching(pe.isMatching());
+                        preScreenGender.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_GENDER));
+                        preScreenGender.setPropertyId((PROPERTY_TYPE_GENDER));
+                        response.setGender(preScreenGender.build());
+                        break;
+                    case PROPERTY_TYPE_SALARY:
+                        PreScreenSalaryObject.Builder preScreenSalary = PreScreenSalaryObject.newBuilder();
+                        preScreenSalary.setIsMatching(pe.isMatching());
+                        preScreenSalary.setPropertyTitle(ServerConstants.PROPERTY_TYPE_MAP.get(PROPERTY_TYPE_SALARY));
+                        preScreenSalary.setPropertyId((PROPERTY_TYPE_SALARY));
+                        response.setSalary(preScreenSalary.build());
+                        break;
                 }
             }
         }
@@ -2072,29 +2083,45 @@ public class TrudroidController {
                 return badRequest();
             }
 
-            List<InterviewSlot> interviewSlots = new ArrayList<>();
-            for (InterviewDetails details : jobPost.getInterviewDetailsList()) {
-                details.getInterviewDays();
-                details.getInterviewTimeSlot();
+            Map<String, InterviewDateTime> interviewSlotMap = new LinkedHashMap<>();
+            // get today's date
+            Calendar newCalendar = Calendar.getInstance();
+            newCalendar.get(Calendar.YEAR);
+            newCalendar.get(Calendar.MONTH);
+            newCalendar.get(Calendar.DAY_OF_MONTH);
+            Date today = newCalendar.getTime();
 
-                // build slotobject
-                InterviewTimeSlotObject.Builder interviewTimeSlot = InterviewTimeSlotObject.newBuilder();
-                interviewTimeSlot.setSlotId(details.getInterviewTimeSlot().getInterviewTimeSlotId());
-                interviewTimeSlot.setSlotTitle(details.getInterviewTimeSlot().getInterviewTimeSlotName());
+            for (int k = 2; k < 9; ++k) {
 
-                // build interview
-                InterviewSlot.Builder interviewSlot = InterviewSlot.newBuilder();
-                interviewSlot.setInterviewTimeSlotObject(interviewTimeSlot.build());
+                Calendar c = Calendar.getInstance();
+                c.setTime(today);
+                c.add(Calendar.DATE, k);
+                Date future = c.getTime();
 
-
+                for (InterviewDetails details : jobPost.getInterviewDetailsList()) {
                 /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
-                String interviewDays = InterviewUtil.fixPrecedingZero(Integer.toBinaryString(details.getInterviewDays()));
+                    String interviewDays = InterviewUtil.fixPrecedingZero(Integer.toBinaryString(details.getInterviewDays()));
 
-                interviewSlot.setInterviewDays(interviewDays);
-                interviewSlots.add(interviewSlot.build());
+                    if (InterviewUtil.checkSlotAvailability(future, interviewDays)) {
+
+                        InterviewTimeSlotObject.Builder timeSlot = InterviewTimeSlotObject.newBuilder();
+                        timeSlot.setSlotId(details.getInterviewTimeSlot().getInterviewTimeSlotId());
+                        timeSlot.setSlotTitle(details.getInterviewTimeSlot().getInterviewTimeSlotName());
+
+                        InterviewDateTime.Builder interviewDateTime = InterviewDateTime.newBuilder();
+                        interviewDateTime.setInterviewTimeSlot(timeSlot.build());
+                        interviewDateTime.setInterviewDateMillis(future.getTime());
+
+                        String slotString = getDayVal(future.getDay())+ ", "
+                                + future.getDate() + " " + getMonthVal((future.getMonth() + 1))
+                                + " (" + details.getInterviewTimeSlot().getInterviewTimeSlotName() + ")" ;
+
+                        interviewSlotMap.put(slotString, interviewDateTime.build());
+                    }
+                }
             }
 
-            response.addAllInterviewSlots(interviewSlots);
+            response.putAllInterviewSlotsMap(interviewSlotMap);
 
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
@@ -2156,8 +2183,6 @@ public class TrudroidController {
 
     public static Result mGetAllNotGoingReason() {
         NotGoingReasonResponse.Builder notGoingReasonResponse = NotGoingReasonResponse.newBuilder();
-        List<models.entity.Static.JobRole> jobRoleList =
-                models.entity.Static.JobRole.find.where().orderBy().asc("jobName").findList();
 
         List<ReasonObject> reasonObjectList = new ArrayList<>();
         List<RejectReason> reason = new RejectReasonDAO().getByType(ServerConstants.INTERVIEW_NOT_GOING_TYPE_REASON);
@@ -2200,5 +2225,85 @@ public class TrudroidController {
         }
 
         return ok(Base64.encodeBase64String(checkInterviewSlotResponse.build().toByteArray()));
+    }
+
+    public static Result mUpdateCandidateToken() {
+        UpdateTokenRequest updateTokenRequest = null;
+        UpdateTokenResponse.Builder updateTokenResponseBuilder = UpdateTokenResponse.newBuilder();
+
+        try {
+            String requestString = request().body().asText();
+            updateTokenRequest = UpdateTokenRequest.parseFrom(Base64.decodeBase64(requestString));
+
+            if(CandidateService.updateAndroidToken(updateTokenRequest.getToken(), updateTokenRequest.getCandidateId()) == 1){
+                updateTokenResponseBuilder.setStatus(UpdateTokenResponse.Status.SUCCESS);
+            } else{
+                updateTokenResponseBuilder.setStatus(UpdateTokenResponse.Status.FAILURE);
+            }
+
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+
+        return ok(Base64.encodeBase64String(updateTokenResponseBuilder.build().toByteArray()));
+    }
+
+    public static Result mCandidateLogout() {
+        LogoutCandidateRequest logoutCandidateRequest = null;
+        LogoutCandidateResponse.Builder logoutCandidateResponseBuilder = LogoutCandidateResponse.newBuilder();
+
+        try {
+            String requestString = request().body().asText();
+            logoutCandidateRequest = LogoutCandidateRequest.parseFrom(Base64.decodeBase64(requestString));
+
+            if (CandidateService.logoutTrudroidCandidate(logoutCandidateRequest) == 1) {
+                logoutCandidateResponseBuilder.setStatus(LogoutCandidateResponse.Status.SUCCESS);
+            } else {
+                logoutCandidateResponseBuilder.setStatus(LogoutCandidateResponse.Status.FAILURE);
+            }
+
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+
+        return ok(Base64.encodeBase64String(logoutCandidateResponseBuilder.build().toByteArray()));
+    }
+
+    public static Result mAddFeedback(){
+        in.trujobs.proto.AddFeedbackRequest addFeedbackRequest = null;
+        AddFeedbackResponse.Builder addFeedbackResponseBuilder = AddFeedbackResponse.newBuilder();
+
+        try {
+            String requestString = request().body().asText();
+            addFeedbackRequest = in.trujobs.proto.AddFeedbackRequest.parseFrom(Base64.decodeBase64(requestString));
+
+            if(CandidateService.addTrudroidFeedback(addFeedbackRequest) == 1){
+                addFeedbackResponseBuilder.setStatus(AddFeedbackResponse.Status.SUCCESS);
+            } else{
+                addFeedbackResponseBuilder.setStatus(AddFeedbackResponse.Status.FAILURE);
+            }
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+
+        return ok(Base64.encodeBase64String(addFeedbackResponseBuilder.build().toByteArray()));
+    }
+
+    public static Result mGetAllFeedbackReason() {
+        FeedbackReasonResponse.Builder feedbackReasonResponse = FeedbackReasonResponse.newBuilder();
+
+        List<FeedbackReasonObject> reasonObjectList = new ArrayList<>();
+        List<CandidateFeedbackReason> reason = new TrudroidFeedbackReasonDAO().getAll();
+
+        for (CandidateFeedbackReason candidateFeedbackReason : reason) {
+            FeedbackReasonObject.Builder feedbackReasonObject = FeedbackReasonObject.newBuilder();
+            feedbackReasonObject.setReasonId(candidateFeedbackReason.getReasonId());
+            feedbackReasonObject.setReasonTitle(candidateFeedbackReason.getReasonName());
+            feedbackReasonObject.setReasonType(candidateFeedbackReason.getReasonType());
+            reasonObjectList.add(feedbackReasonObject.build());
+        }
+
+        feedbackReasonResponse.addAllFeedbackReasonObject(reasonObjectList);
+        return ok(Base64.encodeBase64String(feedbackReasonResponse.build().toByteArray()));
     }
 }
