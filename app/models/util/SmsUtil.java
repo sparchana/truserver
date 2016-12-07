@@ -362,7 +362,7 @@ public class SmsUtil {
                 " has been accepted by the recruiter. Please ask your candidate to carry required documents and reach the interview venue on time. ";
 
         if(jobApplication.getInterviewLocationLat() != null){
-            msg += "Address: http://maps.google.com/?q=" + jobApplication.getJobPost().getLatitude() + ", " + jobApplication.getJobPost().getLongitude();
+            msg += "Address: http://maps.google.com/?q=" + jobApplication.getInterviewLocationLat() + ", " + jobApplication.getInterviewLocationLng();
         }
 
         msg += ". Thanks for using www.trujobs.in!";
