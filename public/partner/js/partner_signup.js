@@ -75,7 +75,6 @@ $(function() {
                     partnerPassword: authPassword,
                     partnerAuthMobile: authMobile
                 };
-                console.log(d);
                 $.ajax({
                     type: "POST",
                     url: "/addPartnerPassword",
