@@ -135,9 +135,9 @@ function populateLanguages(l, lId) {
 
 
             cell1.innerHTML = '<span style="margin-top:8px">' + l[i] + '</span>';
-            cell2.innerHTML = "<div class=\"btn-group\" style=\"margin:4px 10px\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"u\" value=0 >Understand</label></div>";
-            cell3.innerHTML = "<div class=\"btn-group\" style=\"margin:4px 10px\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
-            cell4.innerHTML = "<div class=\"btn-group\" style=\"margin:4px 10px\"  data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"rw\" value=0 >Read/Write</label></div>";
+            cell2.innerHTML = "<div class=\"btn-group\" style=\"margin:6px 0px\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"u\" value=0 >Understand</label></div>";
+            cell3.innerHTML = "<div class=\"btn-group\" style=\"margin:6px 0px\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
+            cell4.innerHTML = "<div class=\"btn-group\" style=\"margin:6px 0px\"  data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"rw\" value=0 >Read/Write</label></div>";
         }
     }
 }

@@ -357,7 +357,7 @@ div.inblockDiv{
     padding: 2%;
 }
 
-#activeLink{
+.activeLink{
     color: #fefffd;
     font-weight: bold;
 }
