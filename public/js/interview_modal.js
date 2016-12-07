@@ -284,10 +284,10 @@ function finalInterviewSlotSubmission(candidateId, jobPostId) {
         });
     }
 }
-
+ew
 function processInterviewSubmissionResponse(returnData) {
     // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
-    if(returnData.status == INTERVIEW_NOT_REQUIRED){
+    if(returnData == "OK"){
         nfy("Interview Submitted successfully. Refreshing ..", 'success');
         setTimeout(function () {
             if(window.location.pathname == "/dashboard/appliedJobs/"){

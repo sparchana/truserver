@@ -1686,6 +1686,19 @@ public class TrudroidController {
                 // add constructor object for only those object which are not filled by candidate
                 response.setCandidateId(candidate.getCandidateId());
                 response.setJobPostId(preScreenPopulateRequest.getJobPostId());
+
+                /*
+                * In app, experience fragment contains Last Withdrawn Salary
+                * Locality will always be available if a candidate has signed up
+                * via both {app, website}
+                *
+                * Hence ignoring both id
+                *
+                * */
+                if(pe.getPropertyId() == PROPERTY_TYPE_LOCALITY ||
+                        pe.getPropertyId() == PROPERTY_TYPE_SALARY){
+                    continue;
+                }
                 response.addPropertyId(pe.getPropertyId());
 
                 switch (pe.getPropertyId()) {
