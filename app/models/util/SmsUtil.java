@@ -116,7 +116,7 @@ public class SmsUtil {
     public static void sendWelcomeSmsFromWebsite(String name, String mobile)
     {
         String msg = "Hi " + name + ", Welcome to Trujobs.in! "
-                + "Complete your profile and skill assessment today to begin your job search or download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+                + "Complete your profile today to begin your job search or download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
 
         sendSms(mobile, msg);
     }

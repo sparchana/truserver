@@ -12,15 +12,13 @@ function processDataLogin(returnedData) {
     if(returnedData.status == 1) {
         // Store
         window.location = "/partner/home";
-    }
-
-    else if(returnedData.status == 3){
-        $('#noUserLogin').show();
+    } else if(returnedData.status == 3){
+        $('#errorMsgReset').show();
         $('#incorrectMsgLogin').hide();
     }
 
     else {
-        $('#noUserLogin').hide();
+        $('#errorMsgReset').hide();
         $('#incorrectMsgLogin').show();
     }
 }
