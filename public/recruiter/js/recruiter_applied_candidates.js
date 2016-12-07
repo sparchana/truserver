@@ -126,7 +126,6 @@ function processDataForJobPost(returnedData) {
 }
 
 function getAllCandidates() {
-    $("#loadingIcon").show();
     try {
         $.ajax({
             type: "POST",

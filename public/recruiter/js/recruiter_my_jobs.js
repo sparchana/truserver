@@ -5,18 +5,17 @@
 var newCount = 0;
 
 $(window).load(function() {
-    $(".homeNav").removeClass("active");
-    $(".homeNavMobile").removeClass("active");
-    $(".jobNav").addClass("active");
-    $(".jobNavMobile").addClass("active");
-
-    if(newCount == 0){
-        $(".badge").hide();
-    } else{
-        $(".badge").show();
-        $("#pendingApproval").addClass("newNotification").html(newCount + " new");
-        $("#pendingApprovalMobile").addClass("newNotification").html(newCount + " new");
-    }
+    setTimeout(function(){
+        if(newCount == 0){
+            $(".badge").hide();
+        } else{
+            $(".badge").show();
+            $("#pendingApproval").addClass("newNotification").html(newCount + " new");
+            $("#pendingApprovalMobile").addClass("newNotification").html(newCount + " new");
+        }
+        $(".jobNav").addClass("active");
+        $(".jobNavMobile").addClass("active");
+    }, 100);
 });
 
 $(document).scroll(function(){

@@ -10,17 +10,19 @@ var globalJpId;
 var allReason = [];
 
 $(window).load(function() {
-    $(".homeNav").addClass("active");
-    $(".homeNavMobile").addClass("active");
 
-    if(newCount == 0){
-        $(".badge").hide();
-    } else{
-        $(".badge").show();
-        $("#pendingApproval").addClass("newNotification").html(newCount + " new");
-        $("#pendingApprovalMobile").addClass("newNotification").html(newCount + " new");
-    }
+    setTimeout(function(){
+        $(".homeNav").addClass("active");
+        $(".homeNavMobile").addClass("active");
 
+        if(newCount == 0){
+            $(".badge").hide();
+        } else{
+            $(".badge").show();
+            $("#pendingApproval").addClass("newNotification").html(newCount + " new");
+            $("#pendingApprovalMobile").addClass("newNotification").html(newCount + " new");
+        }
+    }, 100);
 });
 
 function logoutRecruiter() {
