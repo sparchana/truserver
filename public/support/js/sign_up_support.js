@@ -1456,7 +1456,7 @@ function saveProfileForm() {
             statusCheck=0;
         }
         else{
-            if(id.idProofValue == null || id.idProofValue == ""){
+            if(id.idProofValue == null){
                 $.notify({
                     title: "Invalid Input: ",
                     message: "Please provide document details",
@@ -2298,6 +2298,9 @@ function disableOrEnableOnCallPanel() {
 }
 
 function validateInput(idProofId, value) {
+    if(value == ""){
+        return true;
+    }
     // aadhaar validation
     if (idProofId == 3) {
         if (!validateAadhar(value)) {
