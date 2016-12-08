@@ -236,8 +236,13 @@ public class RecruiterController {
 
             }
 
+            List<JobPostWorkflow> jobPostWorkflowList = new ArrayList<>();
+
+            if(Objects.equals(jpIdList, "")){
+                return ok(toJson(jobPostWorkflowList));
+            }
             // if candidate who have applied to the jobpost, only those jobpostworkflow obj will be returned
-            List<JobPostWorkflow> jobPostWorkflowList = new JobPostWorkFlowDAO().getJobApplications(jpIdList.substring(0, jpIdList.length()-2));
+            jobPostWorkflowList = new JobPostWorkFlowDAO().getJobApplications(jpIdList.substring(0, jpIdList.length()-2));
 
             Map<Long, RecruiterJobPostObject> recruiterJobPostResponseMap = new LinkedHashMap<>();
             for(JobPostWorkflow jpwf : jobPostWorkflowList){
