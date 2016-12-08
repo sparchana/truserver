@@ -1783,7 +1783,7 @@ public class JobPostWorkflowEngine {
                     );
 
                     if(distance == null){
-                        Logger.error("Lat/Lng is null for Locality id: "+locality.getLocalityId());
+                        //Lat/Lng is null for this locality
                         continue;
                     }
                     Double searchRadius = ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS;
