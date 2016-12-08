@@ -2,14 +2,27 @@
  * Created by dodo on 10/10/16.
  */
 
+var newCount = 0;
+
 var globalCandidateId;
 var globalJpId;
 
 var allReason = [];
 
 $(window).load(function() {
-    $(".homeNav").addClass("active");
-    $(".homeNavMobile").addClass("active");
+
+    setTimeout(function(){
+        $(".homeNav").addClass("active");
+        $(".homeNavMobile").addClass("active");
+
+        if(newCount == 0){
+            $(".badge").hide();
+        } else{
+            $(".badge").show();
+            $("#pendingApproval").addClass("newNotification").html(newCount + " new");
+            $("#pendingApprovalMobile").addClass("newNotification").html(newCount + " new");
+        }
+    }, 100);
 });
 
 function logoutRecruiter() {
@@ -115,14 +128,21 @@ function processDataNotSelectedReason(returnedData){
 }
 
 function processDataGetJobPostDetails(returnedData) {
+    var jobPostList = [];
+    $.each(returnedData, function (key, value) {
+        jobPostList.push(value);
+    });
+
+    newCount = 0;
     var interviews = "";
     var x, i;
     var jpId = [];
-    returnedData.forEach(function (jobPost) {
+    jobPostList.forEach(function (jobPost) {
         var interviewDays;
 
-        if (Object.keys(jobPost.interviewDetailsList).length > 0) {
-            var interviewDetailsList = jobPost.interviewDetailsList;
+        newCount += jobPost.pendingCount;
+        if (Object.keys(jobPost.jobPost.interviewDetailsList).length > 0) {
+            var interviewDetailsList = jobPost.jobPost.interviewDetailsList;
             if (interviewDetailsList[0].interviewDays != null) {
                 interviewDays = interviewDetailsList[0].interviewDays.toString(2);
 
@@ -141,16 +161,16 @@ function processDataGetJobPostDetails(returnedData) {
 
             var today = new Date();
             if(interviewDays.charAt(today.getDay() - 1) == 1){ // today's schedule
-                jpId.push(parseInt(jobPost.jobPostId));
+                jpId.push(parseInt(jobPost.jobPost.jobPostId));
                 var slotsToday = "";
                 interviewDetailsList.forEach(function (slots) {
                     slotsToday += slots.interviewTimeSlot.interviewTimeSlotName + ", ";
                 });
 
                 interviews += '<div class="row" style="padding: 0 24px 0 24px">' +
-                    '<div class="col s12 m5" style="font-size: 16px"><b>' + jobPost.jobPostTitle + '</b></div>' +
+                    '<div class="col s12 m5" style="font-size: 16px"><b>' + jobPost.jobPost.jobPostTitle + '</b></div>' +
                     '<div class="col s12 m4">' + slotsToday.substring(0, (slotsToday.length) -2 ) + '</div>' +
-                    '<div class="col s12 m3"><a href="/recruiter/job/track/' + jobPost.jobPostId + '" target="_blank">' +
+                    '<div class="col s12 m3"><a href="/recruiter/job/track/' + jobPost.jobPost.jobPostId + '" target="_blank">' +
                     '<button class="btn waves-effect waves-light" style="margin-top: -6px" type="submit" name="action">Track<i class="material-icons right">send</i></button>' +
                     '</a></div></div>';
             }
@@ -173,31 +193,7 @@ function processDataGetJobPostDetails(returnedData) {
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
-
-        try {
-            $.ajax({
-                type: "POST",
-                url: "/getPendingCandidateApproval",
-                async: true,
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(d),
-                success: processDataPendingApproval
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
-        }
     }
-}
-
-function processDataPendingApproval(returnedData) {
-    if(returnedData == 0){
-        $(".badge").hide();
-    } else{
-        $(".badge").show();
-        $("#pendingApproval").addClass("newNotification").html(returnedData + " new");
-        $("#pendingApprovalMobile").addClass("newNotification").html(returnedData + " new");
-    }
-
 }
 
 function processDataInterviewToday(returnedData) {
@@ -238,6 +234,7 @@ function processDataInterviewToday(returnedData) {
                 feedback +
                 '</tr>';
         });
+
         $("#todayInterviewTable").show();
         $("#noInterviews").hide();
         parent.append(interviews);

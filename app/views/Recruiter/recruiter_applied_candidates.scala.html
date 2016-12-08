@@ -51,6 +51,18 @@
                     <li id="tab3Parent" class="tab col s3" onclick="tabChange3()"><a href="#completed"><font id="tab3">Completed</font></a></li>
                 </ul>
             </div>
+
+            <center>
+                <div id="loadingIcon" style="padding-top: 6%">
+                    <center>
+                        <h5>Fetching Applications</h5>
+                        <svg viewBox="0 0 32 32" width="32" height="32">
+                            <circle id="loadingSpinner" cx="16" cy="16" r="14" fill="none"></circle>
+                        </svg>
+                    </center>
+                </div>
+            </center>
+
             <div id="pendingConfirmation" class="col s12">
                 <div id="noPendingApplication" style="padding: 90px 6% 90px 6%; display: none">
                     <center>
