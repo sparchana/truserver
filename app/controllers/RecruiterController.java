@@ -9,10 +9,6 @@ import api.http.httpRequest.Recruiter.*;
 import api.http.httpRequest.ResetPasswordResquest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.CandidateWorkflowData;
-import api.http.httpResponse.Recruiter.RecruiterJobPostResponse;
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.RawSql;
-import com.avaje.ebean.RawSqlBuilder;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -229,31 +225,112 @@ public class RecruiterController {
 
     public static Result getAllRecruiterJobPosts() {
         if(session().get("recruiterId") != null){
-            List<JobPost> recruiterJobPost = JobPost.find.where().eq("JobRecruiterId", session().get("recruiterId")).findList();
 
-            Integer pendingCount;
-            List<RecruiterJobPostResponse> recruiterJobPostResponseList = new ArrayList<>();
-            for(JobPost jobPost : recruiterJobPost){
-                pendingCount = 0;
+            Map<?, JobPost> recruiterJobPostMap = JobPost.find.where().eq("JobRecruiterId", session().get("recruiterId")).setMapKey("jobPostId").findMap();
 
-                List<JobPostWorkflow> jobPostWorkflowList = new JobPostWorkFlowDAO().recruiterJobApplicant(jobPost.getJobPostId());
+            String jpIdList = "";
 
-                RecruiterJobPostResponse recruiterJobPostResponse = new RecruiterJobPostResponse();
-                recruiterJobPostResponse.setJobPost(jobPost);
-                recruiterJobPostResponse.setApplicants(jobPostWorkflowList.size());
+            for(Map.Entry<?, JobPost> entity: recruiterJobPostMap.entrySet()) {
+                JobPost jobPost = entity.getValue();
+                jpIdList += "'" + jobPost.getJobPostId() + "', ";
 
-                for(JobPostWorkflow jwpf : jobPostWorkflowList){
-                    if(jwpf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
-                        pendingCount++;
-                    }
+            }
+
+            // if candidate who have applied to the jobpost, only those jobpostworkflow obj will be returned
+            List<JobPostWorkflow> jobPostWorkflowList = new JobPostWorkFlowDAO().getJobApplications(jpIdList.substring(0, jpIdList.length()-2));
+
+            Map<Long, RecruiterJobPostObject> recruiterJobPostResponseMap = new LinkedHashMap<>();
+            for(JobPostWorkflow jpwf : jobPostWorkflowList){
+                RecruiterJobPostObject singleObject = recruiterJobPostResponseMap.get(jpwf.getJobPost().getJobPostId());
+
+                if(singleObject == null ){
+                    singleObject = new RecruiterJobPostObject();
+                    recruiterJobPostResponseMap.put(jpwf.getJobPost().getJobPostId(), singleObject);
+                    singleObject.setJobPost(jpwf.getJobPost());
                 }
 
-                recruiterJobPostResponse.setPendingCount(pendingCount);
-                recruiterJobPostResponseList.add(recruiterJobPostResponse);
+                // jpwf of one candidate
+                Map<Long, JobPostWorkflow> response = singleObject.getJobPostWorkflowMap();
+                if(response == null){
+                    response = new HashMap<>();
+                }
+                if(response.get(jpwf.getCandidate().getCandidateId()) == null){
+                    response.put(jpwf.getCandidate().getCandidateId(), jpwf);
+                    if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
+                        singleObject.setPendingCount(singleObject.getPendingCount()+1);
+                    }
+                    singleObject.setTotalCount(singleObject.getTotalCount()+1);
+                    singleObject.setJobPostWorkflowMap(response);
+                }
             }
-            return ok(toJson(recruiterJobPostResponseList));
+
+
+            for(Map.Entry<?, JobPost> entity: recruiterJobPostMap.entrySet()) {
+                // jobpost to which no candidate has applied
+                RecruiterJobPostObject singleObject = recruiterJobPostResponseMap.get(entity.getKey());
+                if(singleObject == null) {
+                    singleObject = new RecruiterJobPostObject();
+                    singleObject.setJobPost(entity.getValue());
+                    singleObject.setTotalCount(0);
+                    singleObject.setPendingCount(0);
+
+                    recruiterJobPostResponseMap.put((Long) entity.getKey(), singleObject);
+                }
+            }
+
+            return ok(toJson(recruiterJobPostResponseMap));
         }
         return ok("0");
+    }
+
+    public static class RecruiterJobPostObject{
+        Map<Long, JobPostWorkflow> jobPostWorkflowMap;
+        int pendingCount;
+        int totalCount;
+        JobPost jobPost;
+
+        public RecruiterJobPostObject() {
+            pendingCount = 0;
+            totalCount = 0;
+        }
+
+        public RecruiterJobPostObject(Map<Long, JobPostWorkflow> jobPostWorkflowMap, int pendingCount, int totalCount) {
+            this.jobPostWorkflowMap = jobPostWorkflowMap;
+            this.pendingCount = pendingCount;
+            this.totalCount = totalCount;
+        }
+
+        public Map<Long, JobPostWorkflow> getJobPostWorkflowMap() {
+            return jobPostWorkflowMap;
+        }
+
+        public void setJobPostWorkflowMap(Map<Long, JobPostWorkflow> jobPostWorkflowMap) {
+            this.jobPostWorkflowMap = jobPostWorkflowMap;
+        }
+
+        public int getPendingCount() {
+            return pendingCount;
+        }
+
+        public void setPendingCount(int pendingCount) {
+            this.pendingCount = pendingCount;
+        }
+
+        public int getTotalCount() {
+            return totalCount;
+        }
+
+        public void setTotalCount(int totalCount) {
+            this.totalCount = totalCount;
+        }
+
+        public JobPost getJobPost() {
+            return jobPost;
+        }
+
+        public void setJobPost(JobPost jobPost) {
+            this.jobPost = jobPost;
+        }
     }
 
     @Security.Authenticated(SecuredUser.class)

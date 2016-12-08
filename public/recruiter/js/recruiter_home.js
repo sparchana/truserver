@@ -128,11 +128,16 @@ function processDataNotSelectedReason(returnedData){
 }
 
 function processDataGetJobPostDetails(returnedData) {
+    var jobPostList = [];
+    $.each(returnedData, function (key, value) {
+        jobPostList.push(value);
+    });
+
     newCount = 0;
     var interviews = "";
     var x, i;
     var jpId = [];
-    returnedData.forEach(function (jobPost) {
+    jobPostList.forEach(function (jobPost) {
         var interviewDays;
 
         newCount += jobPost.pendingCount;

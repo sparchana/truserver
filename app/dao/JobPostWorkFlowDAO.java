@@ -40,11 +40,11 @@ public class JobPostWorkFlowDAO {
         return appliedJobsList;
     }
 
-    public static List<JobPostWorkflow> recruiterJobApplicant(Long jobPostId) {
+    public static List<JobPostWorkflow> getJobApplications(String jobPostId) {
         String statusSql = " and (status_id NOT IN ( '" + ServerConstants.JWF_STATUS_PRESCREEN_FAILED + "')) ";
         String workFlowQueryBuilder = "select createdby, candidate_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
                 " where i.job_post_id " +
-                " = ('" + jobPostId + "') " +
+                " in (" + jobPostId + ") " +
                 statusSql +
                 " and creation_timestamp = " +
                 " (select max(creation_timestamp) from job_post_workflow " +

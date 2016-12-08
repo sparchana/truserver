@@ -70,10 +70,14 @@ function processDataGenerateJobPostView(returnedData) {
         logoutRecruiter();
     } else{
         newCount = 0;
+        var jobPostList = [];
+        $.each(returnedData, function (key, value) {
+            jobPostList.push(value);
+        });
         var parent = $('.myJobsRecruiter');
-        returnedData = returnedData.reverse();
-        if(Object.keys(returnedData).length){
-            returnedData.forEach(function (jobPost) {
+        if(Object.keys(jobPostList).length){
+            jobPostList.reverse();
+            jobPostList.forEach(function (jobPost) {
                 var mainDiv =  document.createElement("div");
                 parent.append(mainDiv);
 
@@ -207,19 +211,19 @@ function processDataGenerateJobPostView(returnedData) {
                     colJobStatus.textContent = "Not specified";
                 }
 
-                applicantBtn.textContent = jobPost.applicants;
+                applicantBtn.textContent = jobPost.totalCount;
                 if(jobPost.pendingCount > 0){
                     newApplication.textContent = " (" + jobPost.pendingCount + " new)";
                 }
                 newCount += jobPost.pendingCount;
                 applicantBtn.style = 'text-align: center; font-weight: bold';
-                if(jobPost.applicants > 0){
+                if(jobPost.totalCount > 0){
                     applicantBtn.className = 'btn-floating btn-small waves-effect waves-light green accent-3';
                 }
                 else{
                     applicantBtn.className = 'btn-floating btn-small waves-effect waves-light blue-grey lighten-4';
                 }
-                if(jobPost.applicants > 0){
+                if(jobPost.totalCount > 0){
                     applicantBtn.onclick = function () {
                         openAppliedCandidate(jobPost.jobPost.jobPostId);
                     };
@@ -232,7 +236,7 @@ function processDataGenerateJobPostView(returnedData) {
 
                 var editViewBtn = document.createElement('button');
                 editViewBtn.className = 'waves-effect waves-blue-grey lighten-5 btn-flat';
-                editViewBtn.style = 'color:#1976d2;padding:0;font-size:12px;';
+                editViewBtn.style = 'color:#1976d2; padding:0; font-size:12px;';
                 editViewBtn.textContent='View/Edit';
 
                 editViewBtn.onclick = function () {
