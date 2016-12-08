@@ -1749,7 +1749,9 @@ public class JobPostWorkflowEngine {
                 if((candidate.getCandidateLocalityLat() != null && candidate.getCandidateLocalityLng()!= null)) {
                     candidateLat = candidate.getCandidateLocalityLat();
                     candidateLng = candidate.getCandidateLocalityLng();
-                } else if(candidate.getLocality() != null) {
+                } else if(candidate.getLocality() != null
+                        && (candidate.getLocality().getLat() != null
+                || candidate.getLocality().getLng()!= null)) {
                     candidateLat = candidate.getLocality().getLat();
                     candidateLng = candidate.getLocality().getLng();
                 } else {
@@ -1758,13 +1760,17 @@ public class JobPostWorkflowEngine {
                 }
 
                 for (Locality locality : jobPostLocalityList) {
-                    double distance = MatchingEngineService.getDistanceFromCenter(
+                    Double distance = MatchingEngineService.getDistanceFromCenter(
                             locality.getLat(),
                             locality.getLng(),
                             candidateLat,
                             candidateLng
                     );
 
+                    if(distance == null){
+                        Logger.error("Lat/Lng is null for Locality id: "+locality.getLocalityId());
+                        continue;
+                    }
                     Double searchRadius = ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS;
                     if(distanceRadius != null){
                         searchRadius = distanceRadius;
