@@ -841,7 +841,7 @@ public class Application extends Controller {
         return ok(toJson(jobPosts));
     }
     public static Result getAllHotJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.setUseQueryCache(!isDevMode).where().eq("jobPostIsHot", "1").eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
+        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPosts));
     }
 
