@@ -132,8 +132,12 @@ function processDataGetJobPostDetails(returnedData) {
     $.each(returnedData, function (key, value) {
         jobPostList.push(value);
     });
-
     newCount = 0;
+
+    if(jobPostList.length == 0){
+        $("#noInterviews").show();
+    }
+
     var interviews = "";
     var x, i;
     var jpId = [];
@@ -197,7 +201,9 @@ function processDataGetJobPostDetails(returnedData) {
 }
 
 function processDataInterviewToday(returnedData) {
+    console.log(returnedData);
     var parent = $("#tableBody");
+    $("#noInterviews").show();
     var interviews = "";
     if(returnedData != null && Object.keys(returnedData).length > 0){
         returnedData.forEach(function (application) {
