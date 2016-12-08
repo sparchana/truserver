@@ -300,7 +300,6 @@ function updateStatusAjax(cid, jpId, val, reason) {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-
 }
 
 function processDataForUpdateStatus(returnedData) {
