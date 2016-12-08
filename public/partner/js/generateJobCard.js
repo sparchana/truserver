@@ -350,6 +350,7 @@ function createAndAppendDivider(title) {
 
 function processDataAllJobPosts(returnedData) {
     var jobPostCount = Object.keys(returnedData).length;
+    $("#partnerLoader").hide();
     if(jobPostCount > 0){
         var count = 0;
         var parent = $("#hotJobs");

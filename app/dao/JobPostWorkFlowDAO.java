@@ -1,5 +1,6 @@
 package dao;
 
+import api.ServerConstants;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.RawSql;
 import com.avaje.ebean.RawSqlBuilder;
@@ -37,6 +38,31 @@ public class JobPostWorkFlowDAO {
                 .findList();
 
         return appliedJobsList;
+    }
+
+    public static List<JobPostWorkflow> getJobApplications(String jobPostId) {
+        String statusSql = " and (status_id NOT IN ( '" + ServerConstants.JWF_STATUS_PRESCREEN_FAILED + "')) ";
+        String workFlowQueryBuilder = "select createdby, candidate_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
+                " where i.job_post_id " +
+                " in (" + jobPostId + ") " +
+                statusSql +
+                " and creation_timestamp = " +
+                " (select max(creation_timestamp) from job_post_workflow " +
+                "       where i.candidate_id = job_post_workflow.candidate_id " +
+                "       and i.job_post_id = job_post_workflow.job_post_id) " +
+                " order by creation_timestamp desc ";
+
+        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder)
+                .columnMapping("creation_timestamp", "creationTimestamp")
+                .columnMapping("job_post_id", "jobPost.jobPostId")
+                .columnMapping("status_id", "status.statusId")
+                .columnMapping("candidate_id", "candidate.candidateId")
+                .columnMapping("createdby", "createdBy")
+                .create();
+
+        return Ebean.find(JobPostWorkflow.class)
+                .setRawSql(rawSql)
+                .findList();
     }
 
 }

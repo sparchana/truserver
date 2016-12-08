@@ -1614,7 +1614,22 @@ public class JobPostWorkflowEngine {
         List<InterviewTodayResponse> responseList = new ArrayList<>();
 
         Calendar now = Calendar.getInstance();
-        String todaysDate = now.get(Calendar.YEAR) + "-" + (now.get(Calendar.MONTH) + 1) + "-" + now.get(Calendar.DATE);
+        int mMonth = (now.get(Calendar.MONTH) + 1);
+        int mDay = now.get(Calendar.DAY_OF_MONTH);
+        int mYear = now.get(Calendar.YEAR);
+
+        String cDay = String.valueOf(mDay);
+        String cMonth = String.valueOf(mMonth);
+
+        if(mDay < 10){
+            cDay = "0" + mDay;
+        }
+
+        if(mMonth < 10){
+            cMonth = "0" + mMonth;
+        }
+
+        String todaysDate = mYear + "-" + cMonth + "-" + cDay;
 
         List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
                 .in("job_post_id", interviewTodayRequest.getJpId())
