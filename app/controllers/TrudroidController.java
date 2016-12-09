@@ -2214,8 +2214,7 @@ public class TrudroidController {
             JobPost jobPost = JobPost.find.where().eq("jobPostId", checkInterviewSlotRequest.getJobPostId()).findUnique();
             if(jobPost == null) {
                 checkInterviewSlotResponse.setStatus(CheckInterviewSlotResponse.Status.FAILURE);
-            }
-            if(JobPostWorkflowEngine.isInterviewRequired(jobPost).getStatus() == ServerConstants.INTERVIEW_REQUIRED){
+            } else if(JobPostWorkflowEngine.isInterviewRequired(jobPost).getStatus() == ServerConstants.INTERVIEW_REQUIRED){
                 checkInterviewSlotResponse.setShouldShowInterview(true);
             } else {
                 checkInterviewSlotResponse.setShouldShowInterview(false);
