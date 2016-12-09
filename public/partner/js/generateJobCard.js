@@ -194,8 +194,8 @@ function getAllAppliedJobs() {
                                     rescheduledDate = "Interview Rescheduled on " + new Date(jobApplication.scheduledInterviewDate).getDate() + "/" + (new Date(jobApplication.scheduledInterviewDate).getMonth() + 1) + "/" + new Date(jobApplication.scheduledInterviewDate).getFullYear() + " between " + jobApplication.scheduledInterviewTimeSlot.interviewTimeSlotName;
                                     currentStatus = rescheduledDate;
                                     currentStatus += '<span id="interview_status_option_' + jpId + '">' +
-                                        '<span class="accept" onclick="confirmInterview('+ jpId + ', 1);"><img src="/assets/recruiter/img/icons/accept.svg" height="16px" width="14px"></span>' +
-                                        '<span class="reject" onclick="confirmInterview('+ jpId + ', 0);"><img src="/assets/recruiter/img/icons/reject.svg" height="16px" width="14px"></span>' +
+                                        '<span class="accept" onclick="confirmInterview('+ jpId + ', 1);"><img src="/assets/dashboard/img/reached.svg" id="accept_reject_btn" height="24px" width="24px">Accept</span>' +
+                                        '<span class="reject" onclick="confirmInterview('+ jpId + ', 0);"><img src="/assets/dashboard/img/not_going.svg" id="accept_reject_btn" height="24px" width="24px">Reject</span>' +
                                         '</span>';
                                 } else if(jobApplication.status.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                                     currentStatus = jobApplication.status.statusTitle;

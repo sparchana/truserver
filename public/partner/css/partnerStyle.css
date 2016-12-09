@@ -526,6 +526,12 @@ a:hover{
     animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
 }
 
+#accept_reject_btn{
+    margin-left: 4px;
+    margin-right: 4px;
+    margin-top: -4px;
+}
+
 @media screen and (max-width: 768px) {
     .navbar-nav>li>a {
         background-color: #00897b;

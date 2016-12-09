@@ -277,7 +277,6 @@ function toJobRequirement(){
         $('body').scrollTop(0);
 
         renderMap();
-
     }
 
 }
