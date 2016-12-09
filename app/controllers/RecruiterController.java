@@ -293,7 +293,6 @@ public class RecruiterController {
                     }
 
                     // sort by last active
-                    // TODO move 1,2,3 to server constant
                     if (Objects.equals(matchingCandidateRequest.getSortBy(), ServerConstants.REC_SORT_LASTEST_ACTIVE)) {
                         // last active, latest on top
                         Collections.sort(listToBeReturned,  new LastActiveComparator());
