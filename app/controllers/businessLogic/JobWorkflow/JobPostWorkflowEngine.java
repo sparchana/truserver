@@ -2167,8 +2167,14 @@ public class JobPostWorkflowEngine {
                         + ", " + InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
 
         StringBuilder interactionQueryBuilder = new StringBuilder("select distinct objectauuid, creationtimestamp, interactionchannel from interaction i " +
-                " where i.objectauuid " +
+                " where " +
+                " (" +
+                " i.objectauuid " +
                 " in ('" + candidateListString + "') " +
+                " or " +
+                " i.objectbuuid  " +
+                " in ('" + candidateListString + "') " +
+                " )" +
                 " and i.interactionchannel " +
                 " in ('" + interactionChannelString + "') " +
                 " and creationtimestamp = " +
