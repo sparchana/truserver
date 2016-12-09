@@ -428,6 +428,9 @@ function prePopulateJobSection(jobApplication) {
                     divInterviewStatus.textContent = "Recruiter has rescheduled your interview on " + new Date(jobPost.scheduledInterviewDate).getDate() + "/" + (new Date(jobPost.scheduledInterviewDate).getMonth() + 1) + "/" + new Date(jobPost.scheduledInterviewDate).getFullYear() + " between " + jobPost.scheduledInterviewTimeSlot.interviewTimeSlotName;
                     divInterviewStatus.style = "padding: 0; color: orange; font-weight: 600";
 
+                    var br = document.createElement("br");
+                    divInterviewStatus.appendChild(br);
+
                     // accept interview
                     var candidateInterviewAccept = document.createElement("span");
                     candidateInterviewAccept.className = "accept";
