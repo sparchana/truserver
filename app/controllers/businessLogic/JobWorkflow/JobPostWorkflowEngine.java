@@ -2162,7 +2162,9 @@ public class JobPostWorkflowEngine {
     private static RawSql getRawSqlForInteraction(String candidateListString) {
         String interactionChannelString =
                 InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID
-                        + ", " + InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
+                        + ", " + InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE
+                        + ", " + InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE
+                        + ", " + InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
 
         StringBuilder interactionQueryBuilder = new StringBuilder("select distinct objectauuid, creationtimestamp, interactionchannel from interaction i " +
                 " where i.objectauuid " +
