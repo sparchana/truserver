@@ -300,7 +300,6 @@ function updateStatusAjax(cid, jpId, val, reason) {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-
 }
 
 function processDataForUpdateStatus(returnedData) {
@@ -350,6 +349,7 @@ function createAndAppendDivider(title) {
 
 function processDataAllJobPosts(returnedData) {
     var jobPostCount = Object.keys(returnedData).length;
+    $("#partnerLoader").hide();
     if(jobPostCount > 0){
         var count = 0;
         var parent = $("#hotJobs");
