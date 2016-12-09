@@ -6,6 +6,8 @@ var pathname;
 var updateUrl;
 var candidateId;
 var jpId;
+var showNotGoingModal = false;
+var allReasons = [];
 
 $(document).ready(function() {
     pathname = window.location.pathname; // Returns path only
@@ -25,6 +27,20 @@ $(document).ready(function() {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllInterviewNotGoingReasons",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetAllReason
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 });
 
 function processDataForGetStatus(returnedData) {
@@ -38,12 +54,12 @@ function processDataForGetStatus(returnedData) {
     parent.append(defaultOption);
 
     if(returnedData != 0 && returnedData != null){
-        if(returnedData.status.statusId == 11){ // delayed
+        if(returnedData.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){ // delayed
             parent.append(option3);
             parent.append(option4);
-        } else if(returnedData.status.statusId == 12){ // started
+        } else if(returnedData.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED){ // started
             parent.append(option4);
-        } else if(returnedData.status.statusId == 10 || returnedData.status.statusId == 13){ // reached or not going
+        } else if(returnedData.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){ // reached or not going
             alert("You have already reached!");
         } else {
             parent.append(option1);
@@ -56,12 +72,33 @@ function processDataForGetStatus(returnedData) {
     }
 }
 
+function confirmUpdateStatusNotGoing(){
+    if($("#notGoingReason").val() > 0){
+        document.getElementById("updateNotGoingReasonBtn").disabled = true;
+        updateStatus();
+    } else{
+        alert("Please select a reason for not going for interview");
+    }
+}
+
+
 function updateStatus() {
-    if($("#status_val").val() > 0){
+    var notGoingReason = $("#notGoingReason").val();
+    if($("#notGoingReason").val() == null || $("#notGoingReason").val() == undefined){
+        notGoingReason = 0;
+    }
+
+    var statusVal = $("#status_val").val();
+    if(statusVal > 0){
+        if(statusVal == 1 && showNotGoingModal == false){
+            showNotGoingModal = true;
+        } else{
+            showNotGoingModal = false;
+        }
         try {
             $.ajax({
                 type: "POST",
-                url: "/updateStatus/" + candidateId + "/" + jpId + "/" + $("#status_val").val(),
+                url: "/updateStatus/" + candidateId + "/" + jpId + "/" + statusVal + "/" + notGoingReason,
                 data: false,
                 contentType: false,
                 processData: false,
@@ -75,9 +112,44 @@ function updateStatus() {
     }
 }
 
+function processDataGetAllReason(returnedData) {
+    returnedData.forEach(function(reason) {
+        var id = reason.reasonId;
+        var name = reason.reasonName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        allReasons.push(item);
+    });
+}
+
+
 function processDataForUpdateStatus(returnedData) {
     if(returnedData == 1){
-        alert("Status updated");
+        //disabling button
+        document.getElementById("updateStatusBtn").disabled = true;
+        $("#updateStatusBtn").val("Updated");
+
+        if(showNotGoingModal){
+            $('#notGoingReason').html('');
+            var defaultOption = $('<option value="0"></option>').text("Select a reason");
+            $('#notGoingReason').append(defaultOption);
+
+            allReasons.forEach(function (reason) {
+                var id = reason.id;
+                var name = reason.name;
+                var option = $('<option value=' + id + '></option>').text(name);
+                $('#notGoingReason').append(option);
+            });
+
+            $("#notGoingModal").modal("show");
+        } else{
+            alert("Status updated");
+            $("#notGoingModal").modal("hide");
+            setTimeout(function(){
+                location.reload();
+            }, 2000);
+        }
     } else{
         alert("Something went wrong");
     }

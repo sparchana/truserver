@@ -1130,7 +1130,7 @@ function processDataForJobApplications(returnedData) {
             candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
 
             var unlockContactCol = document.createElement("div");
-            unlockContactCol.className = "col s12 l6";
+            unlockContactCol.className = "col s12 l6 unlockDiv";
             unlockDivRow.appendChild(unlockContactCol);
 
             if(value.extraData.workflowStatus != null) {
@@ -1140,7 +1140,7 @@ function processDataForJobApplications(returnedData) {
 
                     if(todayDay.getTime() >= interviewDate.getTime()){
                         var feedbackBtn = document.createElement("a");
-                        feedbackBtn.className = "waves-effect waves-light btn";
+                        feedbackBtn.className = "waves-effect waves-light btn feedbackBtn";
                         feedbackBtn.style = "font-weight: bold; margin-right: 8px";
                         feedbackBtn.onclick = function () {
                             openFeedbackModal(value.candidate.candidateId);
