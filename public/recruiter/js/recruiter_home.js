@@ -201,7 +201,6 @@ function processDataGetJobPostDetails(returnedData) {
 }
 
 function processDataInterviewToday(returnedData) {
-    console.log(returnedData);
     var parent = $("#tableBody");
     $("#noInterviews").show();
     var interviews = "";

@@ -26,6 +26,7 @@ import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.*;
+import dao.CompanyDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
 import models.entity.Recruiter.RecruiterProfile;
@@ -1291,10 +1292,7 @@ public class Application extends Controller {
     }
 
     public static Result getAllCompanyLogos() {
-        List<Company> companyList = Company.find.where()
-                .ne("CompanyLogo", "https://s3.amazonaws.com/trujobs.in/companyLogos/default_company_logo.png")
-                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
-                .orderBy("companyName").findList();
+        List<Company> companyList = new CompanyDAO().getHiringCompanyLogos();
 
         List<String> logoList = new ArrayList<>();
         for(Company company: companyList){

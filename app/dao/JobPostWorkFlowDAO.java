@@ -4,6 +4,7 @@ import api.ServerConstants;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.RawSql;
 import com.avaje.ebean.RawSqlBuilder;
+import models.entity.Company;
 import models.entity.OM.JobPostWorkflow;
 import play.Logger;
 
@@ -64,5 +65,4 @@ public class JobPostWorkFlowDAO {
                 .setRawSql(rawSql)
                 .findList();
     }
-
 }
