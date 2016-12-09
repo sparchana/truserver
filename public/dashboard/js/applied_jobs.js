@@ -709,7 +709,7 @@ function prePopulateJobSection(jobApplication) {
                         startedOption.appendChild(img);
 
                         text = document.createElement("div");
-                        text.textContent = "Started";
+                        text.textContent = "On the way";
                         startedOption.appendChild(text);
 
 
@@ -762,7 +762,7 @@ function prePopulateJobSection(jobApplication) {
                                 $("#started_" + jobPost.jobPost.jobPostId).show();
                                 $("#reached_" + jobPost.jobPost.jobPostId).show();
                             } else if(jobPost.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED) {
-                                currentStatus.textContent = "Started";
+                                currentStatus.textContent = "On the Way";
                                 currentStatus.style = "font-weight: bold; margin-right: 4px; color: green";
 
                                 $("#not_going_" + jobPost.jobPost.jobPostId).hide();

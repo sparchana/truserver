@@ -771,7 +771,7 @@ function processDataForJobApplications(returnedData) {
                                 candidateCurrentStatusVal.textContent = "Delayed for Interview";
                                 candidateCurrentStatusVal.style = "margin-left: 4px; color: orange; font-weight: bold";
                             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED){
-                                candidateCurrentStatusVal.textContent = "Started for Interview";
+                                candidateCurrentStatusVal.textContent = "On the way";
                                 candidateCurrentStatusVal.style = "margin-left: 4px; color: green; font-weight: bold";
                             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                                 candidateCurrentStatusVal.textContent = "Reached for Interview";
