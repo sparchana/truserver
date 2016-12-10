@@ -200,10 +200,10 @@ function processDataGenerateJobPostView(returnedData) {
                 if(jobPost.jobPost.jobPostStatus != null){
                     if(jobPost.jobPost.jobPostStatus.jobStatusId == 1){
                         colJobStatus.textContent = "Under review";
-                        colJobStatus.style = "color: #F4A407;margin-top:8px;text-align:center";
+                        colJobStatus.style = "color: #F4A407; margin-top:8px; margin-bottom:8px; text-align:center";
                     } else if(jobPost.jobPost.jobPostStatus.jobStatusId == 2){
                         colJobStatus.textContent = "Active";
-                        colJobStatus.style = "color: #69CF37;margin-top:8px;text-align:center";
+                        colJobStatus.style = "color: #69CF37; margin-top:8px; margin-bottom:8px; text-align:center";
                     } else{
                         colJobStatus.textContent = jobPost.jobPost.jobPostStatus.jobStatusName;
                     }
