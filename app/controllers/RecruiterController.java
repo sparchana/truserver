@@ -403,7 +403,6 @@ public class RecruiterController {
                     }
 
                     // sort by last active
-                    // TODO move 1,2,3 to server constant
                     if (Objects.equals(matchingCandidateRequest.getSortBy(), ServerConstants.REC_SORT_LASTEST_ACTIVE)) {
                         // last active, latest on top
                         Collections.sort(listToBeReturned,  new LastActiveComparator());
@@ -577,7 +576,7 @@ public class RecruiterController {
         @Override
         public int compare(CandidateWorkflowData o1, CandidateWorkflowData o2) {
             if (o1.getExtraData().getLastActive() == null) {
-                return (o2.getCandidate().getCandidateLastWithdrawnSalary() == null) ? 0 : 1;
+                return (o2.getExtraData().getLastActive() == null) ? 0 : 1;
             }
             if (o2.getExtraData().getLastActive() == null) {
                 return -1;
