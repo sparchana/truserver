@@ -1210,6 +1210,11 @@ public class JobPostWorkflowEngine {
                 .eq("candidate.candidateId", preScreenRequest.getCandidateId())
                 .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
 
+        if (jobPostWorkflowOld == null) {
+            interviewResponse.setStatus(ServerConstants.ERROR);
+            return interviewResponse;
+        }
+
         // save PreScreen candidate
         JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(preScreenRequest.getCandidateId(), preScreenRequest.getJobPostId(), jobPostWorkflowOld, channel, statusId);
 
@@ -2036,8 +2041,12 @@ public class JobPostWorkflowEngine {
 
     // this methods take the old jobpost uuid and set the new jobpost uuid to old jobpost uuid.
     private static JobPostWorkflow saveNewJobPostWorkflow(Long candidateId, Long jobPostId, JobPostWorkflow jobPostWorkflowOld, int channel, int statusId) {
-        if (statusId > ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED) {
+        if (statusId > ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED ) {
             Logger.warn("saveNewJobPostWorkflow called with unacceptable statusId:");
+            return null;
+        }
+        if(jobPostWorkflowOld == null){
+            Logger.error("job post workflow old is null for cId: " + candidateId + " & jpId: " + jobPostId + " & jpwf_statusId: " + statusId);
             return null;
         }
         JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", statusId).findUnique();
@@ -2789,8 +2798,8 @@ public class JobPostWorkflowEngine {
             jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED;
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_STATUS_DELAYED;
             interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_DELAYED;
-        } else if (val == ServerConstants.CANDIDATE_INTERVIEW_STATUS_STARTED) {
-            jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED;
+        } else if(val == ServerConstants.CANDIDATE_INTERVIEW_STATUS_STARTED){
+            jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY;
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_STATUS_STARTED;
             interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_STARTED;
         } else {

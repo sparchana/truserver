@@ -250,8 +250,7 @@ function processDataForJobApplications(returnedData) {
 
                         //interview date/time slot
                         var feedbackBtnDiv = document.createElement("div");
-                        feedbackBtnDiv.className = "col s12 l3";
-                        feedbackBtnDiv.style = "color: black; text-align: right; margin-top: 4px";
+                        feedbackBtnDiv.className = "col s12 l3 interviewStatusDiv";
                         candidateCardRow.appendChild(feedbackBtnDiv);
 
                         if(value.extraData.workflowStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
@@ -772,7 +771,7 @@ function processDataForJobApplications(returnedData) {
                                 candidateCurrentStatusVal.textContent = "Delayed for Interview";
                                 candidateCurrentStatusVal.style = "margin-left: 4px; color: orange; font-weight: bold";
                             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED){
-                                candidateCurrentStatusVal.textContent = "Started for Interview";
+                                candidateCurrentStatusVal.textContent = "On the way";
                                 candidateCurrentStatusVal.style = "margin-left: 4px; color: green; font-weight: bold";
                             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                                 candidateCurrentStatusVal.textContent = "Reached for Interview";
@@ -795,7 +794,7 @@ function processDataForJobApplications(returnedData) {
 
                         //unlock btn
                         var unlockContactCol = document.createElement("div");
-                        unlockContactCol.className = "col s12 l3";
+                        unlockContactCol.className = "col s12 l3 unlockDiv";
                         unlockDivRow.appendChild(unlockContactCol);
 
                         //unlock candidate div
@@ -804,7 +803,7 @@ function processDataForJobApplications(returnedData) {
                         unlockCandidateBtn.onclick = function () {
                             unlockContact(value.candidate.candidateId);
                         };
-                        unlockCandidateBtn.className = "waves-effect waves-light ascentGreen lighten-1 btn";
+                        unlockCandidateBtn.className = "waves-effect waves-light ascentGreen lighten-1 btn unlockBtn";
                         unlockContactCol.appendChild(unlockCandidateBtn);
 
                         //candidate last active container

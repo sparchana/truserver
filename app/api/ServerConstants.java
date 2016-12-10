@@ -143,7 +143,7 @@ public class ServerConstants {
 
     public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING = 10;
     public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED = 11;
-    public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED = 12;
+    public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY = 12;
     public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED = 13;
 
     public static final int JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED = 14;
@@ -341,6 +341,7 @@ public class ServerConstants {
     public static final int INTERVIEW_REJECT_TYPE_REASON = 1;
     public static final int INTERVIEW_NOT_GOING_TYPE_REASON = 2;
     public static final int INTERVIEW_NOT_SELECED_TYPE_REASON = 3;
+    public static final int CANDIDATE_ETA = 4;
 
     /* android notification intent type */
     public static final int ANDROID_INTENT_ACTIVITY_SEARCH_JOBS = 1;
