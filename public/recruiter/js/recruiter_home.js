@@ -204,6 +204,7 @@ function processDataInterviewToday(returnedData) {
     var parent = $("#tableBody");
     $("#noInterviews").show();
     var interviews = "";
+    var lastUpdate = "";
     if(returnedData != null && Object.keys(returnedData).length > 0){
         returnedData.forEach(function (application) {
             var status = '<td style="color: #5a5a5a"><b>Not Available</b></td>';
@@ -211,12 +212,23 @@ function processDataInterviewToday(returnedData) {
             if(application.candidate.locality != null){
                 homeLocality = application.candidate.locality.localityName;
             }
+            if(application.lastUpdate != null) {
+                var lastUpdateDate = new Date(application.lastUpdate);
+                var timing = "";
+                if(lastUpdateDate.getHours() > 12){
+                    timing = lastUpdateDate.getHours() - 12 + ":" + lastUpdateDate.getMinutes() + " pm";
+                } else{
+                    timing = lastUpdateDate.getHours() + ":" + lastUpdateDate.getMinutes() + " am";
+                }
+                lastUpdate = " (" + lastUpdateDate.getDay() + "-" + getMonthVal(lastUpdateDate.getMonth() + 1) + "-"
+                    + lastUpdateDate.getFullYear() + ", " + timing + ")";
+            }
 
             if(application.currentStatus.statusId > JWF_STATUS_INTERVIEW_CONFIRMED){
                 if(application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING || application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){ //not going or delayed
-                    status = '<td style="color: red"><b>' + application.currentStatus.statusTitle + '</b></td>'
+                    status = '<td style="color: red"><b>' + application.currentStatus.statusTitle + lastUpdate +'</b></td>'
                 } else if(application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED || application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED) {
-                    status = '<td style="color: green"><b>' + application.currentStatus.statusTitle + '</b></td>'
+                    status = '<td style="color: green"><b>' + application.currentStatus.statusTitle + lastUpdate +'</b></td>'
                 } else { // started or reached
                     status = '<td style="color: #5a5a5a"><b>-</b></td>'
                 }
@@ -226,7 +238,7 @@ function processDataInterviewToday(returnedData) {
             if(application.currentStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                 feedback = '<td style="color: red"><b> ' + application.currentStatus.statusTitle + '</b></td>';
                 if(application.currentStatus.statusId == JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
-                    feedback = '<td style="color: green"><b> ' + application.currentStatus.statusTitle + '</b></td>';
+                    feedback = '<td style="color: green"><b> ' + application.currentStatus.statusTitle + lastUpdate +'</b></td>';
                 }
             }
 
@@ -486,5 +498,72 @@ function notifyError(msg){
 
 function notifySuccess(msg){
     Materialize.toastSuccess(msg, 3000, 'rounded');
+}
+
+function getDayVal(month){
+    switch(month) {
+        case 0:
+            return "Sun";
+            break;
+        case 1:
+            return "Mon";
+            break;
+        case 2:
+            return "Tue";
+            break;
+        case 3:
+            return "Wed";
+            break;
+        case 4:
+            return "Thu";
+            break;
+        case 5:
+            return "Fri";
+            break;
+        case 6:
+            return "Sat";
+            break;
+    }
+}
+
+function getMonthVal(month){
+    switch(month) {
+        case 1:
+            return "Jan";
+            break;
+        case 2:
+            return "Feb";
+            break;
+        case 3:
+            return "Mar";
+            break;
+        case 4:
+            return "Apr";
+            break;
+        case 5:
+            return "May";
+            break;
+        case 6:
+            return "Jun";
+            break;
+        case 7:
+            return "Jul";
+            break;
+        case 8:
+            return "Aug";
+            break;
+        case 9:
+            return "Sep";
+            break;
+        case 10:
+            return "Oct";
+            break;
+        case 11:
+            return "Nov";
+            break;
+        case 12:
+            return "Dec";
+            break;
+    }
 }
 

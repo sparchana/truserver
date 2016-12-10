@@ -1641,6 +1641,7 @@ public class JobPostWorkflowEngine {
             InterviewTodayResponse response = new InterviewTodayResponse();
             response.setCandidate(jpWf.getCandidate());
             response.setJobPostWorkflow(jpWf);
+
             JobPostWorkflow jobPostWorkFlow = JobPostWorkflow.find.where()
                     .eq("job_post_id", jpWf.getJobPost().getJobPostId())
                     .eq("candidate_id", jpWf.getCandidate().getCandidateId())
@@ -1649,6 +1650,18 @@ public class JobPostWorkflowEngine {
                     .findUnique();
             response.setCurrentStatus(jobPostWorkFlow.getStatus());
 
+            CandidateInterviewStatusUpdate candidateInterviewStatusUpdate = CandidateInterviewStatusUpdate.find
+                    .where()
+                    .eq("jobPostWorkflow.jobPost.jobPostId", jpWf.getJobPost().getJobPostId())
+                    .eq("CandidateId", jpWf.getCandidate().getCandidateId())
+                    .setMaxRows(1)
+                    .orderBy().desc("create_timestamp")
+                    .findUnique();
+
+            response.setLastUpdate(null);
+            if(candidateInterviewStatusUpdate != null) {
+                response.setLastUpdate(candidateInterviewStatusUpdate.getCreateTimestamp());
+            }
             responseList.add(response);
         }
         return responseList;

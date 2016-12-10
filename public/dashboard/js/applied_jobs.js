@@ -150,6 +150,7 @@ function prePopulateJobSection(jobApplication) {
     var today = new Date();
 
     jobApplication.forEach(function (appliedJob) {
+        console.log(appliedJob);
         if(appliedJob.status.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE){
 
             //rescheduled interviews
