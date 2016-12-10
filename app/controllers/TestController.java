@@ -1,6 +1,7 @@
 package controllers;
 
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import controllers.scheduler.SchedulerMain;
 import models.util.Validator;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -34,5 +35,10 @@ public class TestController extends Controller{
 
     public static Result testMatchingCandidate(Long jpId) {
         return ok(toJson(JobPostWorkflowEngine.getMatchingCandidate(jpId)));
+    }
+
+    public static Result testScheduler() throws InterruptedException {
+        SchedulerMain.testScheduler();
+        return ok();
     }
 }

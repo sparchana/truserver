@@ -285,6 +285,7 @@ GET         /testNotification                                             contro
 GET         /resolveLatLng/:latlng                                        controllers.TrudroidController.mResolveLatLng(latlng: String)
 GET         /support/api/testMatchingCandidate/:jpId                      controllers.TestController.testMatchingCandidate(jpId: Long)
 GET         /api/test/testValidator/                                      controllers.TestController.testValidator(methodId: Integer ?=null, methodValue: String ?=null)
+GET         /api/test/testScheduler/                                      controllers.TestController.testScheduler()
 # Scrap API
 # ~~~~~~~~~~~~~
 GET         /support/administrator/scrapCSV/dashboard                     controllers.Application.scrapArena()
