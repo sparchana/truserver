@@ -371,6 +371,7 @@ function processJobPostAppliedStatus(status) {
 }
 
 function processDataForHotJobPost(returnedData) {
+    /*console.log(" Result" + JSON.stringify(returnedData));*/
     if (returnedData != "Error" && returnedData != "") {
         jobId = returnedData.jobPostId;
         if(returnedData.jobPostPartnerInterviewIncentive != null){
@@ -404,6 +405,9 @@ function processDataForHotJobPost(returnedData) {
         }
         if (returnedData.jobPostIncentives != null && returnedData.jobPostIncentives != "") {
             $("#postedJobIncentives").html(returnedData.jobPostIncentives);
+        }
+        if (returnedData.jobPostVacancies != null && returnedData.jobPostVacancies != 0){
+            $("#postedJobNoOfVacancy").html(returnedData.jobPostVacancies);
         }
         //locality
         if (returnedData.jobPostToLocalityList != null && returnedData.jobPostToLocalityList != "") {
@@ -490,12 +494,41 @@ function processDataForHotJobPost(returnedData) {
         if (returnedData.jobPostMinRequirement != null && returnedData.jobPostMinRequirement != "") {
             $("#postedJobMinRequirement").html(returnedData.jobPostMinRequirement);
         }
-
-        if (returnedData.jobPostExperience != null && returnedData.jobPostExperience != "") {
+        if(returnedData.gender != null){
+            if(returnedData.gender == 0){
+                $("#postedJobGender").html("Male");
+            }
+            else if (returnedData.gender == 1){
+                $("#postedJobGender").html("Female");
+            }
+            else{
+                $("#postedJobGender").html("Any");
+            }
+        }
+        if(returnedData.jobPostMaxAge != null && returnedData.jobPostMaxAge != ""){
+            $("#postedJobMaxAge").html(returnedData.jobPostMaxAge + " Yrs");
+        }
+        /*if(returnedData.language.languageName != null && returnedData.jobPostLanguageRequirements.language.languageName!= ""){
+            $("#postedJobLanguage").html(returnedData.jobPostLanguageRequirements.language.languageName);
+        }*/
+        if (returnedData.jobPostExperience.experienceType!= null && returnedData.jobPostExperience.experienceType!= "") {
             $("#postedJobExperience").html(returnedData.jobPostExperience.experienceType);
         }
         if (returnedData.jobPostEducation != null && returnedData.jobPostEducation != "") {
             $("#postedJobEducation").html(returnedData.jobPostEducation.educationName);
+        }
+        if(returnedData.jobPostLanguageRequirements !=null && returnedData.jobPostLanguageRequirements != ""){
+            var languageArray = [] ;
+            returnedData.jobPostLanguageRequirements.forEach(function (data) {
+                var lengthOfLanguageElement =  returnedData.jobPostLanguageRequirements.length;
+                if(languageArray.length < lengthOfLanguageElement - 1){
+                    languageArray.push(data.language.languageName +" - ");
+                }
+                else{
+                    languageArray.push(data.language.languageName);
+                }
+            });
+            $("#postedJobLanguage").html(languageArray);
         }
         if (returnedData.jobPostDescription != null && returnedData.jobPostDescription != "") {
             $("#postedJobDescription").html(returnedData.jobPostDescription);

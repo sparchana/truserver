@@ -284,7 +284,6 @@ function finalInterviewSlotSubmission(candidateId, jobPostId) {
         });
     }
 }
-ew
 function processInterviewSubmissionResponse(returnData) {
     // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
     if(returnData == "OK"){
