@@ -207,6 +207,9 @@ function processDataForJobApplications(returnedData) {
     var completedCount = 0;
     var approvalCount = 0;
 
+    var interviewTodayCount = 0;
+    var actionNeededCount = 0;
+
     var pendingParent = $("#pendingCandidateContainer");
     var confirmedParent = $("#confirmedCandidateContainer");
     var completedParent = $("#completedCandidateContainer");
@@ -234,6 +237,7 @@ function processDataForJobApplications(returnedData) {
 
                         //awaiting confirmation from recruiter
                         pendingConfirmation.push(value);
+                        actionNeededCount = 1;
                     } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
 
                         //pushing all the rejected applications in rejected list which will come at last
@@ -253,6 +257,7 @@ function processDataForJobApplications(returnedData) {
 
                             //push in todays interview list
                             interviewTodayList.push(value);
+                            interviewTodayCount = 1;
                         } else if(todayDay.getTime() < interviewDate.getTime()){
 
                             //else push in the common list
@@ -271,6 +276,7 @@ function processDataForJobApplications(returnedData) {
                 }
             }
         });
+
 
         acceptInterview.forEach(function (val) {
             candidateList.push(val);
@@ -1071,7 +1077,7 @@ function processDataForJobApplications(returnedData) {
             inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
             var candidateDocumentVal = document.createElement("div");
-            candidateDocumentVal.style = "margin-left: 4px";
+            candidateDocumentVal.style = "margin-left: 4px; margin-bottom: 12px";
             candidateDocumentVal.id = "document_" + value.candidate.candidateId;
 
             var documentList = value.candidate.idProofReferenceList;
@@ -1209,6 +1215,13 @@ function processDataForJobApplications(returnedData) {
         }
 
         $("#loadingIcon").hide();
+
+        //if there is any action need to be taken, activate the confirmed tab
+        if(actionNeededCount > 0){
+            $('ul.tabs').tabs('select_tab', 'pending');
+        } else if(interviewTodayCount > 0){  //if there is any today's interview lined up, activate the confirmed tab
+            $('ul.tabs').tabs('select_tab', 'confirmed');
+        }
     } else{
         logoutRecruiter();
     }

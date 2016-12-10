@@ -11,6 +11,11 @@ var allReasons = [];
 var parentConfirmedCount = 0;
 var parentPendingConfirmationCount = 0;
 var parentCompletedCount = 0;
+
+var interviewsTodayCount = 0;
+var confirmedInterviewCount = 0;
+var rescheduledCount = 0;
+
 var globalLat = null;
 var globalLng = null;
 var candidateLat = null;
@@ -180,6 +185,18 @@ function prePopulateJobSection(jobApplication) {
             completedInterview.push(appliedJob);
         }
     });
+
+    if(rescheduled.length > 0){
+        rescheduledCount = 1;
+    }
+
+    if(todayInterview.length > 0){
+        interviewsTodayCount = 1;
+    }
+
+    if(upcomingInterview.length > 0){
+        confirmedInterviewCount = 1;
+    }
 
     rescheduled.forEach(function (rescheduledInterview) {
         appliedJobList.push(rescheduledInterview);
@@ -796,12 +813,21 @@ function prePopulateJobSection(jobApplication) {
         }
     });
 
+    if(todayInterview)
     if(parentPendingConfirmationCount == 0){
         $("#noPendingConfirmationApplication").show();
         $("#myAppliedJobsPendingConfirmation").hide();
     } else{
         $("#myAppliedJobsPendingConfirmation").show();
         $("#noPendingConfirmationApplication").hide();
+    }
+
+    if(interviewsTodayCount > 0){
+        tabTwo();
+    } else if(rescheduledCount > 0){
+        tabOne();
+    } else if(confirmedInterviewCount > 0){
+        tabTwo();
     }
 }
 

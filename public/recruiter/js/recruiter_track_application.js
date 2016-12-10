@@ -688,7 +688,7 @@ function processDataForJobApplications(returnedData) {
                         inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
                         var candidateDocumentVal = document.createElement("div");
-                        candidateDocumentVal.style = "margin-left: 4px";
+                        candidateDocumentVal.style = "margin-left: 4px; margin-top: 12px";
                         candidateDocumentVal.id = "document_" + value.candidate.candidateId;
 
                         var documentList = value.candidate.idProofReferenceList;
