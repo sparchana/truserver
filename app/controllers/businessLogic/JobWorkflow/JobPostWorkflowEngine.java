@@ -2169,6 +2169,10 @@ public class JobPostWorkflowEngine {
     }
 
     private static RawSql getRawSqlForInteraction(String candidateListString) {
+        /* Last Active is computed by considering candidate data being updated by channel self {web/app}, partner, support
+        * there are certain corner cases ignored as of now like support saving interaction for call connected/not_connected.
+        * Query also tries to match candidateUUId against objectAUUId or objectBUUId.
+        * */
         String interactionChannelString =
                 InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID
                         + ", " + InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE
