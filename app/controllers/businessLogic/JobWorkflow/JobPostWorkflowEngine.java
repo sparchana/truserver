@@ -31,7 +31,6 @@ import models.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 import play.mvc.Result;
-import scala.Int;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -2783,7 +2782,7 @@ public class JobPostWorkflowEngine {
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_STATUS_DELAYED;
             interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_DELAYED;
         } else if(val == ServerConstants.CANDIDATE_INTERVIEW_STATUS_STARTED){
-            jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED;
+            jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY;
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_STATUS_STARTED;
             interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_STARTED;
         } else {
