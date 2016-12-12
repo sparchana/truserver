@@ -1981,7 +1981,7 @@ public class JobPostWorkflowEngine {
                             candidateExtraData.setWorkflowStatus(jobPostWorkflowLatest.getStatus());
                             candidateExtraData.setInterviewDate(jobPostWorkflowLatest.getScheduledInterviewDate());
                             candidateExtraData.setInterviewSlot(jobPostWorkflowLatest.getScheduledInterviewTimeSlot());
-
+                            candidateExtraData.setCreationTimestamp(jobPostWorkflowLatest.getCreationTimestamp());
 
                             CandidateInterviewStatusUpdate candidateInterviewStatusUpdate = CandidateInterviewStatusUpdate.find.where()
                                     .eq("candidateId", candidate.getCandidateId())

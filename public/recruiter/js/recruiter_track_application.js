@@ -764,17 +764,34 @@ function processDataForJobApplications(returnedData) {
                         var candidateCurrentStatusVal = document.createElement("span");
                         candidateCurrentStatusVal.textContent = "Status not available";
                         if(value.extraData.candidateInterviewStatus != null){
+                            var lastUpdate = new Date(value.extraData.creationTimestamp);
+                            var timing = "";
+                            if(lastUpdate.getHours() > 12){
+                                timing = lastUpdate.getHours() - 12 + ":" + lastUpdate.getMinutes() + " pm";
+                            } else{
+                                timing = lastUpdate.getHours() + ":" + lastUpdate.getMinutes() + " am";
+                            }
+
+                            var dateAndTime = "(" + lastUpdate.getDate() + "-" + (lastUpdate.getMonth() + 1) + "-" + lastUpdate.getFullYear() + " " + timing + ')';
+
+                            var today = new Date();
+                            if(lastUpdate.getDate() == today.getDate() && lastUpdate.getMonth() == today.getMonth()){
+                                dateAndTime = " (Today at: " + timing + ")";
+                            } else if(lastUpdate.getDate() == (today.getDate() -1) && lastUpdate.getMonth() == today.getMonth()){
+                                dateAndTime = " (Yesterday at: " + timing + ")";
+                            }
+
                             if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING){
-                                candidateCurrentStatusVal.textContent = "Not going for interview";
+                                candidateCurrentStatusVal.textContent = "Not going for interview " + dateAndTime;
                                 candidateCurrentStatusVal.style = "margin-left: 4px; color: red; font-weight: bold";
                             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){
-                                candidateCurrentStatusVal.textContent = "Delayed for Interview";
+                                candidateCurrentStatusVal.textContent = "Delayed for Interview " + dateAndTime;
                                 candidateCurrentStatusVal.style = "margin-left: 4px; color: orange; font-weight: bold";
                             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED){
-                                candidateCurrentStatusVal.textContent = "On the way";
+                                candidateCurrentStatusVal.textContent = "On the way " + dateAndTime;
                                 candidateCurrentStatusVal.style = "margin-left: 4px; color: green; font-weight: bold";
                             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
-                                candidateCurrentStatusVal.textContent = "Reached for Interview";
+                                candidateCurrentStatusVal.textContent = "Reached for Interview " + dateAndTime;
                                 candidateCurrentStatusVal.style = "margin-left: 4px; color: green; font-weight: bold";
                             }
                         }

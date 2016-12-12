@@ -18,6 +18,7 @@ public class CandidateExtraData {
     public Integer allInteractionCount;
     public String jobApplicationMode;
     public Timestamp preScreenSelectionTimeStamp;
+    public Timestamp creationTimestamp;
     public String workflowUUId;
     public Long workflowId;
     public JobPostWorkflowStatus workflowStatus;
@@ -163,5 +164,13 @@ public class CandidateExtraData {
 
     public void setAllInteractionCount(Integer allInteractionCount) {
         this.allInteractionCount = allInteractionCount;
+    }
+
+    public Timestamp getCreationTimestamp() {
+        return creationTimestamp;
+    }
+
+    public void setCreationTimestamp(Timestamp creationTimestamp) {
+        this.creationTimestamp = creationTimestamp;
     }
 }

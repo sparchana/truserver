@@ -223,6 +223,13 @@ function processDataInterviewToday(returnedData) {
                 }
                 lastUpdate = " (" + lastUpdateDate.getDate() + "-" + getMonthVal(lastUpdateDate.getMonth() + 1) + "-"
                     + lastUpdateDate.getFullYear() + ", " + timing + ")";
+
+                var today = new Date();
+                if(lastUpdateDate.getDate() == today.getDate() && lastUpdateDate.getMonth() == today.getMonth()){
+                    lastUpdate = " (Today at: " + timing + ")";
+                } else if(lastUpdateDate.getDate() == (today.getDate() -1) && lastUpdateDate.getMonth() == today.getMonth()){
+                    lastUpdate = " (Yesterday at: " + timing + ")";
+                }
             }
 
             if(application.currentStatus.statusId > JWF_STATUS_INTERVIEW_CONFIRMED){
