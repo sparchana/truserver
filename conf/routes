@@ -280,6 +280,7 @@ POST        /updateStatusCandidate/:jpId/:value/:reason                   contro
 
 # notification test
 GET         /testNotification                                             controllers.Application.testnotification()
+GET         /testQueue                                                    controllers.Application.testQueue()
 
 # Test API
 # ~~~~~~~~~~~~~

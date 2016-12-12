@@ -1,5 +1,6 @@
 package controllers;
 
+import NotificationService.*;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
@@ -18,8 +19,6 @@ import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.android.gcm.server.Message;
-import com.google.android.gcm.server.Sender;
 import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.*;
@@ -39,6 +38,8 @@ import models.util.ParseCSV;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
+import play.api.GlobalSettings;
+import play.api.GlobalSettings$;
 import play.api.Play;
 import play.data.Form;
 import play.mvc.Controller;
@@ -51,6 +52,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
@@ -2193,5 +2195,12 @@ public class Application extends Controller {
         }
         return ok("Null token!");
 
+    }
+
+    public static Result testQueue() {
+        NotificationEvent notificationEvent = new SMSEvent("+918971739586", "Test message11");
+        Shared.getGlobalSettings().getNotificationHandler().addToQueue(notificationEvent);
+
+        return ok("-");
     }
 }
