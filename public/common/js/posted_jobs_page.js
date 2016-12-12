@@ -371,7 +371,7 @@ function processJobPostAppliedStatus(status) {
 }
 
 function processDataForHotJobPost(returnedData) {
-    /*console.log(" Result" + JSON.stringify(returnedData));*/
+
     if (returnedData != "Error" && returnedData != "") {
         jobId = returnedData.jobPostId;
         if(returnedData.jobPostPartnerInterviewIncentive != null){

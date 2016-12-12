@@ -569,7 +569,16 @@ hr{
 .joiningIncentiveDiv{
     margin-left: 12px;
 }
-
+#divForValue{
+    padding: 0;
+    margin-left:-12px
+}
+@media screen and (max-width: 1200px ){
+    #divForValue{
+        padding: 0 15px;
+        margin-left:-12px
+    }
+}
 @media screen and (max-width: 768px) {
     .joiningIncentiveDiv{
         margin-left: 0;
