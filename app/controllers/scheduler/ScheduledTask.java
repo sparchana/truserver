@@ -14,4 +14,4 @@ public class ScheduledTask extends TimerTask {
         Date now = new Date();
         System.out.println("Time is :" + now); // Display current time
     }
-}j
+}
