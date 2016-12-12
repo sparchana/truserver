@@ -1,6 +1,6 @@
 package controllers;
 
-import NotificationService.*;
+import notificationService.*;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
@@ -38,8 +38,6 @@ import models.util.ParseCSV;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
-import play.api.GlobalSettings;
-import play.api.GlobalSettings$;
 import play.api.Play;
 import play.data.Form;
 import play.mvc.Controller;
@@ -52,7 +50,6 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;

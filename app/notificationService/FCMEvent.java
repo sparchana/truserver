@@ -1,4 +1,4 @@
-package NotificationService;
+package notificationService;
 
 import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.Sender;

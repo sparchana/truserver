@@ -3,11 +3,10 @@ create table scheduler (
   id                            bigint signed auto_increment not null,
   scheduler_type_id             bigint signed,
   scheduler_sub_type_id         bigint signed,
-  recipient                     varchar(255) not null,
-  message                       text null,
+  note                          text null,
   completion_status             tinyint(1) not null,
-  event_start_timestamp         timestamp null,
-  event_end_timestamp           timestamp null,
+  start_timestamp               timestamp null,
+  end_timestamp                 timestamp null,
   constraint pk_scheduler primary key (id)
 );
 

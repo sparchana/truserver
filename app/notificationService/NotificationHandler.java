@@ -1,4 +1,4 @@
-package NotificationService;
+package notificationService;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 

@@ -347,6 +347,33 @@ public class SmsUtil {
         sendSms(candidate.getCandidateMobile(), msg);
     }
 
+    public static String getSameDayInterviewAlertSmsString(JobPostWorkflow jobPostWorkflow){
+
+        String msg = "Hi " + jobPostWorkflow.getCandidate().getCandidateFirstName() + ", your interview for " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() +
+                " is scheduled today, between " + jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Please reach the office on time with your documents. All the best!";
+        if(jobPostWorkflow.getJobPost().getJobPostAddress() != null || !Objects.equals(jobPostWorkflow.getJobPost().getJobPostAddress(), "")){
+            msg += "\n\nAddress: " + jobPostWorkflow.getJobPost().getJobPostAddress();
+        }
+
+        if (jobPostWorkflow.getInterviewLocationLat() != null) {
+            msg += "\nDirections: http://maps.google.com/?q=" + jobPostWorkflow.getInterviewLocationLat() + "," + jobPostWorkflow.getInterviewLocationLng();
+        }
+        return msg;
+    }
+    public static String getNextDayInterviewAlertSmsString(JobPostWorkflow jobPostWorkflow) {
+
+        String msg = "Hi " + jobPostWorkflow.getCandidate().getCandidateFirstName() + ", your interview for " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() +
+                " is scheduled tomorrow, between " + jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Please reach the office on time with your documents. All the best!";
+        if(jobPostWorkflow.getJobPost().getJobPostAddress() != null || !Objects.equals(jobPostWorkflow.getJobPost().getJobPostAddress(), "")){
+            msg += "\n\nAddress: " + jobPostWorkflow.getJobPost().getJobPostAddress();
+        }
+
+        if (jobPostWorkflow.getInterviewLocationLat() != null) {
+            msg += "\nDirections: http://maps.google.com/?q=" + jobPostWorkflow.getInterviewLocationLat() + "," + jobPostWorkflow.getInterviewLocationLng();
+        }
+        return msg;
+    }
+
     public static void sendInterviewConfirmationSmsToPartner(JobPostWorkflow jobApplication, Candidate candidate, Partner partner) {
         Calendar cal = Calendar.getInstance();
         cal.setTime(jobApplication.getScheduledInterviewDate());

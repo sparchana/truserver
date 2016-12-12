@@ -14,22 +14,22 @@ public class SchedulerType extends Model {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "scheduler_type_id", columnDefinition = "bigint signed", unique = true)
-    private long typeId;
+    private long schedulerTypeId;
 
     @Column(name = "scheduler_type_title", columnDefinition = "varchar(255) not null")
-    private String typeTitle;
+    private String schedulerTypeTitle;
 
     public static Model.Finder<String, SchedulerType> find = new Model.Finder(SchedulerType.class);
 
-    public long getTypeId() {
-        return typeId;
+    public long getSchedulerTypeId() {
+        return schedulerTypeId;
     }
 
-    public String getTypeTitle() {
-        return typeTitle;
+    public String getSchedulerTypeTitle() {
+        return schedulerTypeTitle;
     }
 
-    public void setTypeTitle(String typeTitle) {
-        this.typeTitle = typeTitle;
+    public void setSchedulerTypeTitle(String schedulerTypeTitle) {
+        this.schedulerTypeTitle = schedulerTypeTitle;
     }
 }

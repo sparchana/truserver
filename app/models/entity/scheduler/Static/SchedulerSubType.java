@@ -14,22 +14,22 @@ public class SchedulerSubType extends Model {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "scheduler_sub_type_id", columnDefinition = "bigint signed", unique = true)
-    private long subTypeId;
+    private long schedulerSubTypeId;
 
     @Column(name = "scheduler_sub_type_title", columnDefinition = "varchar(255) not null")
-    private String subTypeTitle;
+    private String schedulerSubTypeTitle;
 
     public static Model.Finder<String, SchedulerSubType> find = new Model.Finder(SchedulerSubType.class);
 
-    public long getSubTypeId() {
-        return subTypeId;
+    public long getSchedulerSubTypeId() {
+        return schedulerSubTypeId;
     }
 
-    public String getSubTypeTitle() {
-        return subTypeTitle;
+    public String getSchedulerSubTypeTitle() {
+        return schedulerSubTypeTitle;
     }
 
-    public void setSubTypeTitle(String subTypeTitle) {
-        this.subTypeTitle = subTypeTitle;
+    public void setSchedulerSubTypeTitle(String schedulerSubTypeTitle) {
+        this.schedulerSubTypeTitle = schedulerSubTypeTitle;
     }
 }

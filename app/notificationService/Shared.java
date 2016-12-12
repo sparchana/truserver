@@ -1,6 +1,5 @@
-package NotificationService;
+package notificationService;
 
-import play.*;
 /**
  * Created by dodo on 12/12/16.
  */

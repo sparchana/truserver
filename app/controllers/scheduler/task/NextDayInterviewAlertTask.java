@@ -1,11 +1,15 @@
-package controllers.scheduler.entity;
+package controllers.scheduler.task;
 
-import api.SchedulerConstant;
 import api.ServerConstants;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.scheduler.Scheduler;
 import models.entity.scheduler.Static.SchedulerSubType;
 import models.entity.scheduler.Static.SchedulerType;
+import models.util.SmsUtil;
+import notificationService.NotificationEvent;
+import notificationService.SMSEvent;
+import notificationService.Shared;
+import play.Logger;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -14,7 +18,6 @@ import java.util.List;
 import java.util.TimerTask;
 
 import static api.SchedulerConstant.SCHEDULER_SUB_TYPE_NEXT_DAY_INTERVIEW;
-import static api.SchedulerConstant.SCHEDULER_SUB_TYPE_SAME_DAY_INTERVIEW;
 import static api.SchedulerConstant.SCHEDULER_TYPE_SMS;
 
 /**
@@ -36,14 +39,15 @@ public class NextDayInterviewAlertTask extends TimerTask {
         // Determine if this task is required to launch
         boolean shouldRunThisTask = false;
 
+
         Scheduler scheduler = Scheduler.find.where()
-                .eq("schedulerTypeId", SCHEDULER_TYPE_SMS)
-                .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_NEXT_DAY_INTERVIEW)
-                .orderBy().desc("eventStartTimestamp")
-                .setMaxRows(1).findUnique();
+                .eq("schedulerType.schedulerTypeId", SCHEDULER_TYPE_SMS)
+                .eq("schedulerSubType.schedulerSubTypeId", SCHEDULER_SUB_TYPE_NEXT_DAY_INTERVIEW)
+                .orderBy().desc("startTimestamp").setMaxRows(1).findUnique();
+
 
         if(scheduler == null) {
-            // task has definitely no yet run so run it
+            // task has definitely not yet running so run it
             shouldRunThisTask = true;
 
         } else {
@@ -67,18 +71,25 @@ public class NextDayInterviewAlertTask extends TimerTask {
             // candidate (can have repetitive candidate) who have interview in 'x' hr from now.
             for(JobPostWorkflow jobPostWorkflow: jobPostWorkflowList) {
                 // create sms event and keep appending to the Queue
+
+                Logger.info("next day: adding " +  jobPostWorkflow.getCandidate().getCandidateId() +" to queue");
+                NotificationEvent notificationEvent =
+                        new SMSEvent(jobPostWorkflow.getCandidate().getCandidateMobile(),
+                                SmsUtil.getNextDayInterviewAlertSmsString(jobPostWorkflow));
+
+                Shared.getGlobalSettings().getNotificationHandler().addToQueue(notificationEvent);
             }
 
             // make entry in db for this.
             newScheduler.setCompletionStatus(true);
             newScheduler.setEndTimestamp(new Timestamp(System.currentTimeMillis()));
-            newScheduler.setSchedulerTypeId(SchedulerType.find.where()
+            newScheduler.setSchedulerType(SchedulerType.find.where()
                     .eq("schedulerTypeId", SCHEDULER_TYPE_SMS).findUnique());
-            newScheduler.setSchedulerSubTypeId(SchedulerSubType.find.where()
+            newScheduler.setSchedulerSubType(SchedulerSubType.find.where()
                     .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_NEXT_DAY_INTERVIEW)
                     .findUnique());
 
-            newScheduler.setMessage("Interview SMS alert for next day interview.");
+            newScheduler.setNote("Interview SMS alert for next day interview.");
             newScheduler.save();
         }
     }

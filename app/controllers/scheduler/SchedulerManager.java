@@ -1,7 +1,7 @@
 package controllers.scheduler;
 
-import controllers.scheduler.entity.NextDayInterviewAlertTask;
-import controllers.scheduler.entity.SameDayInterviewAlertTask;
+import controllers.scheduler.task.NextDayInterviewAlertTask;
+import controllers.scheduler.task.SameDayInterviewAlertTask;
 import play.Logger;
 
 import java.util.Date;
@@ -11,18 +11,21 @@ import java.util.TimerTask;
 /**
  * Created by zero on 8/12/16.
  */
-public class SchedulerManager {
+public class SchedulerManager implements Runnable {
     /**
      *
      * Declare property constraints here
      *
      * */
 
-    protected Timer time = new Timer(); // Instantiate Timer Object
+    protected Timer timer = new Timer(); // Instantiate Timer Object
 
-    public void start(){
+
+    @Override
+    public void run() {
         // init required
-
+        createSameDayInterviewAlertEvent(3);
+        createNextDayInterviewAlertEvent();
     }
 
     public void createSameDayInterviewAlertEvent(int hr) {
@@ -32,21 +35,22 @@ public class SchedulerManager {
         long xHr = hr * 1000 * 60 * 60; // 3 hr
 
         SameDayInterviewAlertTask sameDayInterviewTask = new SameDayInterviewAlertTask(hr);
-        time.schedule(sameDayInterviewTask, 0, xHr);
+        timer.schedule(sameDayInterviewTask, 0, xHr);
     }
 
     public void createNextDayInterviewAlertEvent() {
+
         long oneDay = 24 * 1000 * 60 * 60; // 24 hr
 
         NextDayInterviewAlertTask nextDayInterviewAlertTask = new NextDayInterviewAlertTask();
-        time.schedule(nextDayInterviewAlertTask, 0, oneDay);
+        timer.schedule(nextDayInterviewAlertTask, 0, oneDay);
     }
 
 
     // test methods TODO remove the following
     public void testSchedulerSecond() {
         ScheduledTask st = new ScheduledTask(); // Instantiate ScheduledTask class
-        time.schedule(new TimerTask() {
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 Date now = new Date();
@@ -58,7 +62,7 @@ public class SchedulerManager {
 
     public void testScheduler() throws InterruptedException {
         ScheduledTask st = new ScheduledTask(); // Instantiate ScheduledTask class
-        time.schedule(st, 0, 4000); // Create Repetitively task for every 1 secs
+        timer.schedule(st, 0, 4000); // Create Repetitively task for every 1 secs
     }
 
 }

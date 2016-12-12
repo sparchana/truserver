@@ -11,7 +11,7 @@ import java.sql.Timestamp;
  * Created by zero on 12/12/16.
  */
 
-@Entity
+@Entity(name = "scheduler")
 @Table(name = "scheduler")
 public class Scheduler extends Model {
     @Id
@@ -22,18 +22,15 @@ public class Scheduler extends Model {
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "scheduler_type_id", referencedColumnName = "scheduler_type_id")
-    private SchedulerType schedulerTypeId;
+    private SchedulerType schedulerType;
 
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "scheduler_sub_type_id", referencedColumnName = "scheduler_sub_type_id")
-    private SchedulerSubType schedulerSubTypeId;
+    private SchedulerSubType schedulerSubType;
 
-    @Column(name = "recipient", columnDefinition = "varchar(255)", nullable = false)
-    private String recipient;
-
-    @Column(name = "message", columnDefinition = "text null")
-    private String message;
+    @Column(name = "note", columnDefinition = "text null")
+    private String note;
 
     @Column(name = "completion_status", columnDefinition = "tinyint(1)", nullable = false)
     private boolean completionStatus;
@@ -50,36 +47,28 @@ public class Scheduler extends Model {
         return id;
     }
 
-    public SchedulerType getSchedulerTypeId() {
-        return schedulerTypeId;
+    public SchedulerType getSchedulerType() {
+        return schedulerType;
     }
 
-    public void setSchedulerTypeId(SchedulerType schedulerTypeId) {
-        this.schedulerTypeId = schedulerTypeId;
+    public void setSchedulerType(SchedulerType schedulerType) {
+        this.schedulerType = schedulerType;
     }
 
-    public SchedulerSubType getSchedulerSubTypeId() {
-        return schedulerSubTypeId;
+    public SchedulerSubType getSchedulerSubType() {
+        return schedulerSubType;
     }
 
-    public void setSchedulerSubTypeId(SchedulerSubType schedulerSubTypeId) {
-        this.schedulerSubTypeId = schedulerSubTypeId;
+    public void setSchedulerSubType(SchedulerSubType schedulerSubType) {
+        this.schedulerSubType = schedulerSubType;
     }
 
-    public String getRecipient() {
-        return recipient;
+    public String getNote() {
+        return note;
     }
 
-    public void setRecipient(String recipient) {
-        this.recipient = recipient;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
+    public void setNote(String note) {
+        this.note = note;
     }
 
     public boolean isCompletionStatus() {
