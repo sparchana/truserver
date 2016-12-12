@@ -1923,10 +1923,7 @@ public class JobPostWorkflowEngine {
                 Interaction interactionsOfCandidate = lastActiveInteraction.get(candidate.getCandidateUUId());
                 if (interactionsOfCandidate != null) {
                     candidateExtraData.setLastActive(getDateCluster(interactionsOfCandidate.getCreationTimestamp().getTime()));
-                } else {
-                    Logger.info("no interactrion found for candidate: "+candidate.getCandidateId());
-                }
-
+                } 
                 // compute 'has attempted assessment' for this JobPost-JobRole, If yes then this contains assessmentId
                 candidateExtraData.setAssessmentAttemptId(assessmentMap.get(candidate.getCandidateId()));
 
