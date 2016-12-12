@@ -1648,17 +1648,9 @@ public class JobPostWorkflowEngine {
                     .findUnique();
             response.setCurrentStatus(jobPostWorkFlow.getStatus());
 
-            CandidateInterviewStatusUpdate candidateInterviewStatusUpdate = CandidateInterviewStatusUpdate.find
-                    .where()
-                    .eq("jobPostWorkflow.jobPost.jobPostId", jpWf.getJobPost().getJobPostId())
-                    .eq("CandidateId", jpWf.getCandidate().getCandidateId())
-                    .setMaxRows(1)
-                    .orderBy().desc("create_timestamp")
-                    .findUnique();
-
             response.setLastUpdate(null);
-            if(candidateInterviewStatusUpdate != null) {
-                response.setLastUpdate(candidateInterviewStatusUpdate.getCreateTimestamp());
+            if(jobPostWorkFlow.getStatus().getStatusId() > ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED) {
+                response.setLastUpdate(jobPostWorkFlow.getCreationTimestamp());
             }
             responseList.add(response);
         }

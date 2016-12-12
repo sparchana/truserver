@@ -7,6 +7,7 @@ var globalInterviewStatus;
 var rescheduledDate;
 
 var allReasons = [];
+var allEta = [];
 
 var parentConfirmedCount = 0;
 var parentPendingConfirmationCount = 0;
@@ -22,6 +23,7 @@ var candidateLat = null;
 var candidateLng = null;
 var globalStatus = 0;
 var triggerNotGoingModal = false;
+var triggerEtaModal = false;
 
 $(window).load(function () {
     $('html, body').css({
@@ -50,6 +52,20 @@ $(document).ready(function () {
             contentType: false,
             processData: false,
             success: processDataGetAllReason
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllCandidateETA",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetAllEta
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
@@ -114,6 +130,17 @@ function processDataGetAllReason(returnedData) {
     });
 }
 
+function processDataGetAllEta(returnedData) {
+    returnedData.forEach(function(reason) {
+        var id = reason.reasonId;
+        var name = reason.reasonName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        allEta.push(item);
+    });
+}
+
 function processDataAndFetchAppliedJobs(returnedData) {
     var candidateJobApplication = returnedData;
 
@@ -150,7 +177,6 @@ function prePopulateJobSection(jobApplication) {
     var today = new Date();
 
     jobApplication.forEach(function (appliedJob) {
-        console.log(appliedJob);
         if(appliedJob.status.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE){
 
             //rescheduled interviews
@@ -663,9 +689,11 @@ function prePopulateJobSection(jobApplication) {
                         col1.className = "statusOption";
                         col1.id = "not_going_" + jobPost.jobPost.jobPostId;
                         col1.onclick = function () {
+                            globalStatus = 1;
                             globalJpId = jobPost.jobPost.jobPostId;
                             triggerNotGoingModal = true;
-                            updateStatus(1);
+                            triggerEtaModal = false;
+                            updateStatus();
                         };
                         interviewStatusOption.appendChild(col1);
 
@@ -688,9 +716,11 @@ function prePopulateJobSection(jobApplication) {
                         col2.className = "statusOption";
                         col2.id = "delayed_" + jobPost.jobPost.jobPostId;
                         col2.onclick = function () {
+                            globalStatus = 2;
                             globalJpId = jobPost.jobPost.jobPostId;
                             triggerNotGoingModal = false;
-                            updateStatus(2);
+                            triggerEtaModal = true;
+                            updateStatus();
                         };
                         interviewStatusOption.appendChild(col2);
 
@@ -712,9 +742,11 @@ function prePopulateJobSection(jobApplication) {
                         col3.className = "statusOption";
                         col3.id = "started_" + jobPost.jobPost.jobPostId;
                         col3.onclick = function () {
+                            globalStatus = 3;
                             globalJpId = jobPost.jobPost.jobPostId;
                             triggerNotGoingModal = false;
-                            updateStatus(3);
+                            triggerEtaModal = true;
+                            updateStatus();
                         };
                         interviewStatusOption.appendChild(col3);
 
@@ -737,9 +769,11 @@ function prePopulateJobSection(jobApplication) {
                         col4.className = "statusOption";
                         col4.id = "reached_" + jobPost.jobPost.jobPostId;
                         col4.onclick = function () {
+                            globalStatus = 4;
                             globalJpId = jobPost.jobPost.jobPostId;
                             triggerNotGoingModal = false;
-                            updateStatus(4);
+                            triggerEtaModal = false;
+                            updateStatus();
                         };
                         interviewStatusOption.appendChild(col4);
 
@@ -834,14 +868,13 @@ function prePopulateJobSection(jobApplication) {
 
 function confirmUpdateStatusNotGoing(){
     if($("#notGoingReason").val() > 0){
-        updateStatus(1);
+        updateStatus();
     } else{
         alert("Please select a reason for not going for interview");
     }
 }
 
-function updateStatus(val) {
-    globalStatus = val;
+function updateStatus() {
     var notGoingReason = 0;
     if($("#notGoingReason").val() != null && $("#notGoingReason").val() != 0){
         notGoingReason = $("#notGoingReason").val();
@@ -849,7 +882,7 @@ function updateStatus(val) {
     try {
         $.ajax({
             type: "POST",
-            url: "/updateStatusCandidate/" + globalJpId + "/" + val + "/" + notGoingReason,
+            url: "/updateStatusCandidate/" + globalJpId + "/" + globalStatus + "/" + notGoingReason,
             data: false,
             contentType: false,
             processData: false,
@@ -876,7 +909,25 @@ function processDataForUpdateStatus(returnedData) {
                 $('#notGoingReason').append(option);
             });
             $("#notGoingModal").modal("show");
-            globalStatus = null;
+
+            $("#heading").html("Reason for not Going");
+            $("#subHeading").html("Reason for not going for the interview");
+        } else if(triggerEtaModal){
+            triggerEtaModal = false;
+            $('#notGoingReason').html('');
+            var defaultOption = $('<option value="0"></option>').text("Select an option");
+            $('#notGoingReason').append(defaultOption);
+
+            allEta.forEach(function (reason) {
+                var id = reason.id;
+                var name = reason.name;
+                var option = $('<option value=' + id + '></option>').text(name);
+                $('#notGoingReason').append(option);
+            });
+            $("#notGoingModal").modal("show");
+
+            $("#heading").html("Reaching in?");
+            $("#subHeading").html("Reaching the interview location in?");
         } else{
             alert("Status updated successfully");
             location.reload();

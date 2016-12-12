@@ -212,6 +212,7 @@ function processDataInterviewToday(returnedData) {
             if(application.candidate.locality != null){
                 homeLocality = application.candidate.locality.localityName;
             }
+
             if(application.lastUpdate != null) {
                 var lastUpdateDate = new Date(application.lastUpdate);
                 var timing = "";
@@ -220,7 +221,7 @@ function processDataInterviewToday(returnedData) {
                 } else{
                     timing = lastUpdateDate.getHours() + ":" + lastUpdateDate.getMinutes() + " am";
                 }
-                lastUpdate = " (" + lastUpdateDate.getDay() + "-" + getMonthVal(lastUpdateDate.getMonth() + 1) + "-"
+                lastUpdate = " (" + lastUpdateDate.getDate() + "-" + getMonthVal(lastUpdateDate.getMonth() + 1) + "-"
                     + lastUpdateDate.getFullYear() + ", " + timing + ")";
             }
 

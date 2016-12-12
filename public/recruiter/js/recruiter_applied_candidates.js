@@ -1132,7 +1132,9 @@ function processDataForJobApplications(returnedData) {
             var candidateCardRowColTwoFont = document.createElement("font");
             candidateCardRowColTwoFont.setAttribute("size", "3");
 
-            candidateCardRowColTwoFont.textContent = "Last Active: " + value.extraData.lastActive.lastActiveValueName;
+            if(value.extraData.lastActive != null){
+                candidateCardRowColTwoFont.textContent = "Last Active: " + value.extraData.lastActive.lastActiveValueName;
+            }
             candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
 
             var unlockContactCol = document.createElement("div");
