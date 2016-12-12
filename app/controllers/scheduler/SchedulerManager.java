@@ -1,0 +1,64 @@
+package controllers.scheduler;
+
+import controllers.scheduler.entity.NextDayInterviewAlertTask;
+import controllers.scheduler.entity.SameDayInterviewAlertTask;
+import play.Logger;
+
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
+/**
+ * Created by zero on 8/12/16.
+ */
+public class SchedulerManager {
+    /**
+     *
+     * Declare property constraints here
+     *
+     * */
+
+    protected Timer time = new Timer(); // Instantiate Timer Object
+
+    public void start(){
+        // init required
+
+    }
+
+    public void createSameDayInterviewAlertEvent(int hr) {
+
+        if (hr < 1) return;
+
+        long xHr = hr * 1000 * 60 * 60; // 3 hr
+
+        SameDayInterviewAlertTask sameDayInterviewTask = new SameDayInterviewAlertTask(hr);
+        time.schedule(sameDayInterviewTask, 0, xHr);
+    }
+
+    public void createNextDayInterviewAlertEvent() {
+        long oneDay = 24 * 1000 * 60 * 60; // 24 hr
+
+        NextDayInterviewAlertTask nextDayInterviewAlertTask = new NextDayInterviewAlertTask();
+        time.schedule(nextDayInterviewAlertTask, 0, oneDay);
+    }
+
+
+    // test methods TODO remove the following
+    public void testSchedulerSecond() {
+        ScheduledTask st = new ScheduledTask(); // Instantiate ScheduledTask class
+        time.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Date now = new Date();
+
+                Logger.info(" second task Time is :" + now); // Display current time
+            }
+        }, 0, 10000); // Create Repetitively task for every 1 secs
+    }
+
+    public void testScheduler() throws InterruptedException {
+        ScheduledTask st = new ScheduledTask(); // Instantiate ScheduledTask class
+        time.schedule(st, 0, 4000); // Create Repetitively task for every 1 secs
+    }
+
+}

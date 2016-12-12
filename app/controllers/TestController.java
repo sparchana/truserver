@@ -1,7 +1,7 @@
 package controllers;
 
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
-import controllers.scheduler.SchedulerMain;
+import controllers.scheduler.SchedulerManager;
 import models.util.Validator;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -38,7 +38,12 @@ public class TestController extends Controller{
     }
 
     public static Result testScheduler() throws InterruptedException {
-        SchedulerMain.testScheduler();
+
+        SchedulerManager schedulerManager = new SchedulerManager();
+
+        schedulerManager.testScheduler();
+        schedulerManager.testSchedulerSecond();
+
         return ok();
     }
 }

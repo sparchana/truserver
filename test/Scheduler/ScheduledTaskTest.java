@@ -1,19 +1,16 @@
 package Scheduler;
 
 import common.TestConstants;
-import controllers.scheduler.ScheduledTask;
-import controllers.scheduler.SchedulerMain;
+import controllers.scheduler.SchedulerManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import play.Application;
-import play.Logger;
 import play.test.TestServer;
 import java.util.Arrays;
 import java.util.Collection;
-import static play.libs.Json.toJson;
 
 /**
  * Created by zero on 8/12/16.
@@ -24,7 +21,6 @@ import static play.libs.Json.toJson;
  */
 
 
-import static play.libs.Json.toJson;
 import static play.test.Helpers.fakeApplication;
 import static play.test.Helpers.running;
 import static play.test.Helpers.testServer;
@@ -39,10 +35,11 @@ public class ScheduledTaskTest {
     }
 
     private ScheduledTaskTest.MethodType type;
+    private SchedulerManager schedulerManager;
 
     @Before
     public void initialize() {
-
+        schedulerManager = new SchedulerManager();
     }
 
     // Each parameter should be placed as an argument here
@@ -66,7 +63,7 @@ public class ScheduledTaskTest {
             TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
             running(server, () -> {
                 try {
-                    SchedulerMain.testScheduler();
+                    schedulerManager.testScheduler();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
