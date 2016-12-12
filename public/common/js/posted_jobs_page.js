@@ -508,9 +508,32 @@ function processDataForHotJobPost(returnedData) {
         if(returnedData.jobPostMaxAge != null && returnedData.jobPostMaxAge != ""){
             $("#postedJobMaxAge").html(returnedData.jobPostMaxAge + " Yrs");
         }
-        /*if(returnedData.language.languageName != null && returnedData.jobPostLanguageRequirements.language.languageName!= ""){
-            $("#postedJobLanguage").html(returnedData.jobPostLanguageRequirements.language.languageName);
-        }*/
+        if(returnedData.jobPostDocumentRequirements !=null && returnedData.jobPostDocumentRequirements != ""){
+            var documentArray = [] ;
+            returnedData.jobPostDocumentRequirements.forEach(function (data) {
+                var lengthOfDocumentElement =  returnedData.jobPostDocumentRequirements.length;
+                if(documentArray.length < lengthOfDocumentElement - 1){
+                    documentArray.push(data.idProof.idProofName+" - ");
+                }
+                else{
+                    documentArray.push(data.idProof.idProofName);
+                }
+            });
+            $("#postedJobDocuments").html(documentArray);
+        }
+         if(returnedData.jobPostAssetRequirements !=null && returnedData.jobPostAssetRequirements != ""){
+             var assetArray = [] ;
+             returnedData.jobPostAssetRequirements .forEach(function (data) {
+                 var lengthOfAssetsElement =  returnedData.jobPostAssetRequirements .length;
+                 if(assetArray.length < lengthOfAssetsElement - 1){
+                     assetArray.push(data.asset.assetTitle+" - ");
+                 }
+                 else{
+                     assetArray.push(data.asset.assetTitle);
+                 }
+             });
+            $("#postedJobAssets").html(assetArray );
+         }
         if (returnedData.jobPostExperience.experienceType!= null && returnedData.jobPostExperience.experienceType!= "") {
             $("#postedJobExperience").html(returnedData.jobPostExperience.experienceType);
         }
