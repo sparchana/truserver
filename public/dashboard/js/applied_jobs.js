@@ -874,7 +874,7 @@ function confirmUpdateStatusNotGoing(){
     }
 }
 
-function updateStatus() {
+function updateStatus() { //updating current status
     var notGoingReason = 0;
     if($("#notGoingReason").val() != null && $("#notGoingReason").val() != 0){
         notGoingReason = $("#notGoingReason").val();
@@ -896,6 +896,7 @@ function updateStatus() {
 function processDataForUpdateStatus(returnedData) {
     $("#notGoingModal").modal("hide");
     if(returnedData == 1){
+        //checking which modal need to be poped up, not going modal or ETA modal
         if(triggerNotGoingModal){
             triggerNotGoingModal = false;
             $('#notGoingReason').html('');
@@ -929,6 +930,7 @@ function processDataForUpdateStatus(returnedData) {
             $("#heading").html("Reaching in?");
             $("#subHeading").html("Reaching the interview location in?");
         } else{
+            //no modal poping up if status selected was reached
             alert("Status updated successfully");
             location.reload();
         }
@@ -967,9 +969,13 @@ function processDataConfirmInterview(returnedData) {
             divInterviewStatus.textContent = rescheduledDate;
             divInterviewStatus.style = "color: green; font-weight: 600";
             if(globalLat != null){
+
+                //show directions button only if job post latitude and longitude is available
                 dir.className = "navigationBtn";
                 dir.textContent = "Directions";
                 dir.onclick = function () {
+
+                    //checking if candidate home locality is available. If yes, show the source and destination, else just the destination
                     if(candidateLat != null){
                         window.open('https://www.google.com/maps/dir/' + candidateLat + ', ' + candidateLng + '/'+ globalLat + ', ' + globalLng);
                     } else{

@@ -213,6 +213,7 @@ function processDataInterviewToday(returnedData) {
                 homeLocality = application.candidate.locality.localityName;
             }
 
+            //checking if the last update is null ori not. If not, extracting the date and time of the last update
             if(application.lastUpdate != null) {
                 var lastUpdateDate = new Date(application.lastUpdate);
                 var timing = "";
@@ -224,6 +225,7 @@ function processDataInterviewToday(returnedData) {
                 lastUpdate = " (" + lastUpdateDate.getDate() + "-" + getMonthVal(lastUpdateDate.getMonth() + 1) + "-"
                     + lastUpdateDate.getFullYear() + ", " + timing + ")";
 
+                //if the update was done on or one day before the interview, setting the label as 'today' or 'yesterday'.
                 var today = new Date();
                 if(lastUpdateDate.getDate() == today.getDate() && lastUpdateDate.getMonth() == today.getMonth()){
                     lastUpdate = " (Today at: " + timing + ")";
@@ -232,6 +234,7 @@ function processDataInterviewToday(returnedData) {
                 }
             }
 
+            //setting current status here with respective text colours.
             if(application.currentStatus.statusId > JWF_STATUS_INTERVIEW_CONFIRMED){
                 if(application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING || application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){ //not going or delayed
                     status = '<td style="color: red"><b>' + application.currentStatus.statusTitle + lastUpdate +'</b></td>'
@@ -242,6 +245,7 @@ function processDataInterviewToday(returnedData) {
                 }
             }
 
+            //setting feedback button
             var feedback = '<td><a class="waves-effect waves-light btn" onclick="openFeedbackModal(' + application.candidate.candidateId + ', ' + application.jobPostWorkflow.jobPost.jobPostId + ')">Add Feedback</a></td>';
             if(application.currentStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                 feedback = '<td style="color: red"><b> ' + application.currentStatus.statusTitle + '</b></td>';

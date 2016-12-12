@@ -1649,6 +1649,8 @@ public class JobPostWorkflowEngine {
             response.setCurrentStatus(jobPostWorkFlow.getStatus());
 
             response.setLastUpdate(null);
+            //set the last update timestamp only when the candidate has updated their status (Not going, delayed etc.)
+            //if not updated, set as null
             if(jobPostWorkFlow.getStatus().getStatusId() > ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED) {
                 response.setLastUpdate(jobPostWorkFlow.getCreationTimestamp());
             }
