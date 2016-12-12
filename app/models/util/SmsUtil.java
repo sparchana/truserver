@@ -473,7 +473,7 @@ public class SmsUtil {
         switch (status){
             case ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING: currentStatus = "is not going "; break;
             case ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED: currentStatus = "is delayed "; break;
-            case ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED: currentStatus = "has left "; break;
+            case ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY: currentStatus = "has left "; break;
             case ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED: currentStatus = "has reached the office "; break;
         }
 

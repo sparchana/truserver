@@ -68,6 +68,7 @@ public class OngridVerificationResults extends Model {
         this.ongridCommunityId = communitId;
         this.ongridId = ongridId;
         this.updateTimestamp = new Timestamp(System.currentTimeMillis());
+        this.createTimestamp = new Timestamp(System.currentTimeMillis());
         this.resultUUId = UUID.randomUUID().toString();
     }
 

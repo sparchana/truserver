@@ -2091,7 +2091,8 @@ public class TrudroidController {
             newCalendar.get(Calendar.DAY_OF_MONTH);
             Date today = newCalendar.getTime();
 
-            for (int k = 2; k < 9; ++k) {
+            // generate interview slots for next of next 3 days
+            for (int k = 2; k < 5; ++k) {
 
                 Calendar c = Calendar.getInstance();
                 c.setTime(today);
@@ -2182,19 +2183,29 @@ public class TrudroidController {
     }
 
     public static Result mGetAllNotGoingReason() {
+        NotGoingReasonRequest notGoingReasonRequest = null;
         NotGoingReasonResponse.Builder notGoingReasonResponse = NotGoingReasonResponse.newBuilder();
 
-        List<ReasonObject> reasonObjectList = new ArrayList<>();
-        List<RejectReason> reason = new RejectReasonDAO().getByType(ServerConstants.INTERVIEW_NOT_GOING_TYPE_REASON);
+        try {
+            String requestString = request().body().asText();
+            notGoingReasonRequest = NotGoingReasonRequest.parseFrom(Base64.decodeBase64(requestString));
 
-        for (RejectReason rejectReason : reason) {
-            ReasonObject.Builder rejectReasonBuilder = ReasonObject.newBuilder();
-            rejectReasonBuilder.setReasonId(rejectReason.getReasonId());
-            rejectReasonBuilder.setReasonTitle(rejectReason.getReasonName());
-            reasonObjectList.add(rejectReasonBuilder.build());
+            List<ReasonObject> reasonObjectList = new ArrayList<>();
+            List<RejectReason> reason = new RejectReasonDAO().getByType((int) notGoingReasonRequest.getTypeId());
+
+            for (RejectReason rejectReason : reason) {
+                ReasonObject.Builder rejectReasonBuilder = ReasonObject.newBuilder();
+                rejectReasonBuilder.setReasonId(rejectReason.getReasonId());
+                rejectReasonBuilder.setReasonTitle(rejectReason.getReasonName());
+                reasonObjectList.add(rejectReasonBuilder.build());
+            }
+
+            notGoingReasonResponse.addAllReasonObject(reasonObjectList);
+
+
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
         }
-
-        notGoingReasonResponse.addAllReasonObject(reasonObjectList);
         return ok(Base64.encodeBase64String(notGoingReasonResponse.build().toByteArray()));
     }
 
@@ -2214,8 +2225,7 @@ public class TrudroidController {
             JobPost jobPost = JobPost.find.where().eq("jobPostId", checkInterviewSlotRequest.getJobPostId()).findUnique();
             if(jobPost == null) {
                 checkInterviewSlotResponse.setStatus(CheckInterviewSlotResponse.Status.FAILURE);
-            }
-            if(JobPostWorkflowEngine.isInterviewRequired(jobPost).getStatus() == ServerConstants.INTERVIEW_REQUIRED){
+            } else if(JobPostWorkflowEngine.isInterviewRequired(jobPost).getStatus() == ServerConstants.INTERVIEW_REQUIRED){
                 checkInterviewSlotResponse.setShouldShowInterview(true);
             } else {
                 checkInterviewSlotResponse.setShouldShowInterview(false);

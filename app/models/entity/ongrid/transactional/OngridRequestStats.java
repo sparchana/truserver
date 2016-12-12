@@ -47,6 +47,7 @@ public class OngridRequestStats extends Model {
     private String responseStatus;
 
     public OngridRequestStats(String type, String url, String req, String response, String status) {
+        this.createTimestamp = new Timestamp(System.currentTimeMillis());
         this.updateTimestamp = new Timestamp(System.currentTimeMillis());
         verificationType = type;
         requestURL = url;

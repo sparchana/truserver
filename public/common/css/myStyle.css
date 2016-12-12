@@ -1463,6 +1463,7 @@ padding: 0px;
 .btn-group .multiselect{
     width: 206px;
 }
+
 /* job loading spinner */
 
 #loadingSpinner {
@@ -1472,7 +1473,8 @@ padding: 0px;
     -webkit-transform-origin: 50%;
     transform-origin: 50%;
     -webkit-animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
-    animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite; }
+    animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+}
 
 @-webkit-keyframes rotate {
     from {

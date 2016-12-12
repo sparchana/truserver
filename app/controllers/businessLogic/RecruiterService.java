@@ -229,7 +229,7 @@ public class RecruiterService {
 
                 newRecruiter.save();
 
-                //assigning 5 free contact unlock credits for the recruiter
+                //assigning free contact unlock credits for the recruiter
                 addContactCredit(newRecruiter, ServerConstants.RECRUITER_FREE_CONTACT_CREDITS);
 
                 //setting all the credit values

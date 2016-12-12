@@ -7,16 +7,23 @@ var globalInterviewStatus;
 var rescheduledDate;
 
 var allReasons = [];
+var allEta = [];
 
 var parentConfirmedCount = 0;
 var parentPendingConfirmationCount = 0;
 var parentCompletedCount = 0;
+
+var interviewsTodayCount = 0;
+var confirmedInterviewCount = 0;
+var rescheduledCount = 0;
+
 var globalLat = null;
 var globalLng = null;
 var candidateLat = null;
 var candidateLng = null;
 var globalStatus = 0;
 var triggerNotGoingModal = false;
+var triggerEtaModal = false;
 
 $(window).load(function () {
     $('html, body').css({
@@ -45,6 +52,20 @@ $(document).ready(function () {
             contentType: false,
             processData: false,
             success: processDataGetAllReason
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllCandidateETA",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetAllEta
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
@@ -106,6 +127,17 @@ function processDataGetAllReason(returnedData) {
         item ["id"] = id;
         item ["name"] = name;
         allReasons.push(item);
+    });
+}
+
+function processDataGetAllEta(returnedData) {
+    returnedData.forEach(function(reason) {
+        var id = reason.reasonId;
+        var name = reason.reasonName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        allEta.push(item);
     });
 }
 
@@ -180,6 +212,18 @@ function prePopulateJobSection(jobApplication) {
             completedInterview.push(appliedJob);
         }
     });
+
+    if(rescheduled.length > 0){
+        rescheduledCount = 1;
+    }
+
+    if(todayInterview.length > 0){
+        interviewsTodayCount = 1;
+    }
+
+    if(upcomingInterview.length > 0){
+        confirmedInterviewCount = 1;
+    }
 
     rescheduled.forEach(function (rescheduledInterview) {
         appliedJobList.push(rescheduledInterview);
@@ -428,6 +472,9 @@ function prePopulateJobSection(jobApplication) {
                     divInterviewStatus.textContent = "Recruiter has rescheduled your interview on " + new Date(jobPost.scheduledInterviewDate).getDate() + "/" + (new Date(jobPost.scheduledInterviewDate).getMonth() + 1) + "/" + new Date(jobPost.scheduledInterviewDate).getFullYear() + " between " + jobPost.scheduledInterviewTimeSlot.interviewTimeSlotName;
                     divInterviewStatus.style = "padding: 0; color: orange; font-weight: 600";
 
+                    var br = document.createElement("br");
+                    divInterviewStatus.appendChild(br);
+
                     // accept interview
                     var candidateInterviewAccept = document.createElement("span");
                     candidateInterviewAccept.className = "accept";
@@ -642,9 +689,11 @@ function prePopulateJobSection(jobApplication) {
                         col1.className = "statusOption";
                         col1.id = "not_going_" + jobPost.jobPost.jobPostId;
                         col1.onclick = function () {
+                            globalStatus = 1;
                             globalJpId = jobPost.jobPost.jobPostId;
                             triggerNotGoingModal = true;
-                            updateStatus(1);
+                            triggerEtaModal = false;
+                            updateStatus();
                         };
                         interviewStatusOption.appendChild(col1);
 
@@ -667,9 +716,11 @@ function prePopulateJobSection(jobApplication) {
                         col2.className = "statusOption";
                         col2.id = "delayed_" + jobPost.jobPost.jobPostId;
                         col2.onclick = function () {
+                            globalStatus = 2;
                             globalJpId = jobPost.jobPost.jobPostId;
                             triggerNotGoingModal = false;
-                            updateStatus(2);
+                            triggerEtaModal = true;
+                            updateStatus();
                         };
                         interviewStatusOption.appendChild(col2);
 
@@ -691,9 +742,11 @@ function prePopulateJobSection(jobApplication) {
                         col3.className = "statusOption";
                         col3.id = "started_" + jobPost.jobPost.jobPostId;
                         col3.onclick = function () {
+                            globalStatus = 3;
                             globalJpId = jobPost.jobPost.jobPostId;
                             triggerNotGoingModal = false;
-                            updateStatus(3);
+                            triggerEtaModal = true;
+                            updateStatus();
                         };
                         interviewStatusOption.appendChild(col3);
 
@@ -706,7 +759,7 @@ function prePopulateJobSection(jobApplication) {
                         startedOption.appendChild(img);
 
                         text = document.createElement("div");
-                        text.textContent = "Started";
+                        text.textContent = "On the way";
                         startedOption.appendChild(text);
 
 
@@ -716,9 +769,11 @@ function prePopulateJobSection(jobApplication) {
                         col4.className = "statusOption";
                         col4.id = "reached_" + jobPost.jobPost.jobPostId;
                         col4.onclick = function () {
+                            globalStatus = 4;
                             globalJpId = jobPost.jobPost.jobPostId;
                             triggerNotGoingModal = false;
-                            updateStatus(4);
+                            triggerEtaModal = false;
+                            updateStatus();
                         };
                         interviewStatusOption.appendChild(col4);
 
@@ -759,7 +814,7 @@ function prePopulateJobSection(jobApplication) {
                                 $("#started_" + jobPost.jobPost.jobPostId).show();
                                 $("#reached_" + jobPost.jobPost.jobPostId).show();
                             } else if(jobPost.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED) {
-                                currentStatus.textContent = "Started";
+                                currentStatus.textContent = "On the Way";
                                 currentStatus.style = "font-weight: bold; margin-right: 4px; color: green";
 
                                 $("#not_going_" + jobPost.jobPost.jobPostId).hide();
@@ -793,6 +848,7 @@ function prePopulateJobSection(jobApplication) {
         }
     });
 
+    if(todayInterview)
     if(parentPendingConfirmationCount == 0){
         $("#noPendingConfirmationApplication").show();
         $("#myAppliedJobsPendingConfirmation").hide();
@@ -800,18 +856,25 @@ function prePopulateJobSection(jobApplication) {
         $("#myAppliedJobsPendingConfirmation").show();
         $("#noPendingConfirmationApplication").hide();
     }
+
+    if(interviewsTodayCount > 0){
+        tabTwo();
+    } else if(rescheduledCount > 0){
+        tabOne();
+    } else if(confirmedInterviewCount > 0){
+        tabTwo();
+    }
 }
 
 function confirmUpdateStatusNotGoing(){
     if($("#notGoingReason").val() > 0){
-        updateStatus(1);
+        updateStatus();
     } else{
         alert("Please select a reason for not going for interview");
     }
 }
 
-function updateStatus(val) {
-    globalStatus = val;
+function updateStatus() { //updating current status
     var notGoingReason = 0;
     if($("#notGoingReason").val() != null && $("#notGoingReason").val() != 0){
         notGoingReason = $("#notGoingReason").val();
@@ -819,7 +882,7 @@ function updateStatus(val) {
     try {
         $.ajax({
             type: "POST",
-            url: "/updateStatusCandidate/" + globalJpId + "/" + val + "/" + notGoingReason,
+            url: "/updateStatusCandidate/" + globalJpId + "/" + globalStatus + "/" + notGoingReason,
             data: false,
             contentType: false,
             processData: false,
@@ -833,6 +896,7 @@ function updateStatus(val) {
 function processDataForUpdateStatus(returnedData) {
     $("#notGoingModal").modal("hide");
     if(returnedData == 1){
+        //checking which modal need to be poped up, not going modal or ETA modal
         if(triggerNotGoingModal){
             triggerNotGoingModal = false;
             $('#notGoingReason').html('');
@@ -846,8 +910,27 @@ function processDataForUpdateStatus(returnedData) {
                 $('#notGoingReason').append(option);
             });
             $("#notGoingModal").modal("show");
-            globalStatus = null;
+
+            $("#heading").html("Reason for not Going");
+            $("#subHeading").html("Reason for not going for the interview");
+        } else if(triggerEtaModal){
+            triggerEtaModal = false;
+            $('#notGoingReason').html('');
+            var defaultOption = $('<option value="0"></option>').text("Select an option");
+            $('#notGoingReason').append(defaultOption);
+
+            allEta.forEach(function (reason) {
+                var id = reason.id;
+                var name = reason.name;
+                var option = $('<option value=' + id + '></option>').text(name);
+                $('#notGoingReason').append(option);
+            });
+            $("#notGoingModal").modal("show");
+
+            $("#heading").html("Reaching in?");
+            $("#subHeading").html("Reaching the interview location in?");
         } else{
+            //no modal poping up if status selected was reached
             alert("Status updated successfully");
             location.reload();
         }
@@ -886,9 +969,13 @@ function processDataConfirmInterview(returnedData) {
             divInterviewStatus.textContent = rescheduledDate;
             divInterviewStatus.style = "color: green; font-weight: 600";
             if(globalLat != null){
+
+                //show directions button only if job post latitude and longitude is available
                 dir.className = "navigationBtn";
                 dir.textContent = "Directions";
                 dir.onclick = function () {
+
+                    //checking if candidate home locality is available. If yes, show the source and destination, else just the destination
                     if(candidateLat != null){
                         window.open('https://www.google.com/maps/dir/' + candidateLat + ', ' + candidateLng + '/'+ globalLat + ', ' + globalLng);
                     } else{

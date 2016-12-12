@@ -65,7 +65,7 @@ public class EmailUtil {
         String message = MAIL_HEADER + MESSAGE_DIV_START + MESSAGE_HELLO
                 + recruiterProfile.getRecruiterProfileName() + "!<br><br>"
                 + "Welcome to Trujobs recruitment platform!<br>"
-                + "As a welcome gift we have added <b> 5 FREE CONTACT UNLOCK credits</b> to your account!. "
+                + "As a welcome gift we have added <b> 3 FREE CONTACT UNLOCK credits</b> to your account!. "
                 + "Log in at www.trujobs.in/recruiter to start contacting thousands of verified candidates!.<br><br>"
                 + "Happy hiring!"
                 + MESSAGE_THANKYOU +  MESSAGE_DIV_END + MAIL_FOOTER;
@@ -159,7 +159,7 @@ public class EmailUtil {
         sendEmail(devTeamEmail.get("recruiter_support"), internalMessage, internalMailSubject);
         sendEmail(devTeamEmail.get("Avishek"), internalMessage, internalMailSubject);
         sendEmail(devTeamEmail.get("Sandy"), internalMessage, internalMailSubject);
-
+        sendEmail(devTeamEmail.get("Rafik"), internalMessage, internalMailSubject);
     }
 
     public static void sendRecruiterCreditTopupMail(RecruiterProfile recruiterProfile, Integer contactCredits, Integer interviewCredits)
@@ -214,6 +214,5 @@ public class EmailUtil {
                 e.printStackTrace();
             }
         }).start();
-
     }
 }
