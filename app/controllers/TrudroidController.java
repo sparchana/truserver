@@ -2091,7 +2091,8 @@ public class TrudroidController {
             newCalendar.get(Calendar.DAY_OF_MONTH);
             Date today = newCalendar.getTime();
 
-            for (int k = 2; k < 9; ++k) {
+            // generate interview slots for next of next 3 days
+            for (int k = 2; k < 5; ++k) {
 
                 Calendar c = Calendar.getInstance();
                 c.setTime(today);
