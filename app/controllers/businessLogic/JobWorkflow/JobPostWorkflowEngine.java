@@ -1923,6 +1923,8 @@ public class JobPostWorkflowEngine {
                 Interaction interactionsOfCandidate = lastActiveInteraction.get(candidate.getCandidateUUId());
                 if (interactionsOfCandidate != null) {
                     candidateExtraData.setLastActive(getDateCluster(interactionsOfCandidate.getCreationTimestamp().getTime()));
+                } else {
+                    Logger.info("no interactrion found for candidate: "+candidate.getCandidateId());
                 }
 
                 // compute 'has attempted assessment' for this JobPost-JobRole, If yes then this contains assessmentId
@@ -2173,32 +2175,26 @@ public class JobPostWorkflowEngine {
         * there are certain corner cases ignored as of now like support saving interaction for call connected/not_connected.
         * Query also tries to match candidateUUId against objectAUUId or objectBUUId.
         * */
-        String interactionChannelString =
-                InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID
-                        + ", " + InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE
-                        + ", " + InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE
-                        + ", " + InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
+//        String interactionChannelString =
+//                InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID
+//                        + ", " + InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE
+//                        + ", " + InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE
+//                        + ", " + InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE
+//                        + ", " + InteractionConstants.INTERACTION_CHANNEL_UNKNOWN
+//                        + ", " + InteractionConstants.INTERACTION_CHANNEL_KNOWLARITY;
 
-        StringBuilder interactionQueryBuilder = new StringBuilder("select distinct objectauuid, creationtimestamp, interactionchannel from interaction i " +
-                " where " +
-                " (" +
-                " i.objectauuid " +
-                " in ('" + candidateListString + "') " +
-                " or " +
-                " i.objectbuuid  " +
-                " in ('" + candidateListString + "') " +
-                " )" +
-                " and i.interactionchannel " +
-                " in ('" + interactionChannelString + "') " +
+        StringBuilder interactionQueryBuilder = new StringBuilder("select distinct objectauuid, creationtimestamp from interaction i " +
+                " where i.objectauuid " +
+                " in ('"+candidateListString+"') " +
                 " and creationtimestamp = " +
                 " (select max(creationtimestamp) from interaction where i.objectauuid = interaction.objectauuid) " +
                 " order by creationTimestamp desc ");
+
 
         RawSql rawSql = RawSqlBuilder.parse(interactionQueryBuilder.toString())
                 .tableAliasMapping("i", "interaction")
                 .columnMapping("objectauuid", "objectAUUId")
                 .columnMapping("creationtimestamp", "creationTimestamp")
-                .columnMapping("interactionchannel", "interactionChannel")
                 .create();
 
         return rawSql;
