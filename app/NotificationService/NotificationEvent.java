@@ -3,11 +3,10 @@ package NotificationService;
 /**
  * Created by dodo on 8/12/16.
  */
-public abstract class NotificationEvent {
+
+public abstract class NotificationEvent implements BaseSender {
     private String message;
     private String recipient;
-
-    abstract void send();
 
     public String getMessage() {
         return message;

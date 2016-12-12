@@ -4,28 +4,25 @@ package NotificationService;
  * Created by dodo on 8/12/16.
  */
 public class EmailEvent extends NotificationEvent {
+    private String subject;
 
-    private String senderEmail;
-    private String emailSubject;
+    public EmailEvent(String recipient, String message, String subject) {
+        this.setMessage(message);
+        this.setRecipient(recipient);
+        this.subject = subject;
+    }
 
     @Override
-    void send() {
-        //Send email method here
+    public String send() {
+        // understand and send this object
+        return null;
     }
 
-    public String getSenderEmail() {
-        return senderEmail;
+    public String getSubject() {
+        return subject;
     }
 
-    public void setSenderEmail(String senderEmail) {
-        this.senderEmail = senderEmail;
-    }
-
-    public String getEmailSubject() {
-        return emailSubject;
-    }
-
-    public void setEmailSubject(String emailSubject) {
-        this.emailSubject = emailSubject;
+    public void setSubject(String subject) {
+        this.subject = subject;
     }
 }
