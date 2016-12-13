@@ -57,12 +57,12 @@ public class SchedulerManager implements Runnable {
 
                 Logger.info(" second task Time is :" + now); // Display current time
             }
-        }, 0, 10000); // Create Repetitively task for every 1 secs
+        }, 0, 1000); // Create Repetitively task for every 1 secs
     }
 
     public void testScheduler() throws InterruptedException {
         ScheduledTask st = new ScheduledTask(); // Instantiate ScheduledTask class
-        timer.schedule(st, 0, 4000); // Create Repetitively task for every 1 secs
+        timer.schedule(st, 0, 4000); // Create Repetitively task for every 4 secs
     }
 
 }

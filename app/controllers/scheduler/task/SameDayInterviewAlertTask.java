@@ -13,29 +13,31 @@ import notificationService.Shared;
 import play.Logger;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static api.SchedulerConstant.SCHEDULER_SUB_TYPE_SAME_DAY_INTERVIEW;
 import static api.SchedulerConstant.SCHEDULER_TYPE_SMS;
+import static play.libs.Json.toJson;
 
 /**
  * Created by zero on 12/12/16.
  */
 public class SameDayInterviewAlertTask extends TimerTask {
-    private Date xHrBack;
-    private Calendar cal;
-    private int xhr;
+    private final Date xHrBack;
+    private final int xhr;
 
     public SameDayInterviewAlertTask(int x){
-        cal = Calendar.getInstance();
+        Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        cal.add(Calendar.HOUR, - x);
+        cal.add(Calendar.HOUR, cal.getTime().getHours() - x);
         xHrBack = cal.getTime();
         this.xhr = x;
     }
 
     @Override
     public void run() {
+        Logger.info("SDI Alert started...");
         // Determine if this task is required to launch
         boolean shouldRunThisTask = false;
 
@@ -59,11 +61,13 @@ public class SameDayInterviewAlertTask extends TimerTask {
             Scheduler newScheduler = new Scheduler();
             newScheduler.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
 
+            SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
+
             // get all jobpostworkflow items whose interview is today
             List<JobPostWorkflow> jobPostWorkflowList =
                     JobPostWorkflow.find.where()
                             .eq("status.statusId", ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED)
-                            .eq("scheduledInterviewDate", new Date())
+                            .eq("scheduledInterviewDate", sdf.format(new Date()))
                             .eq("scheduledInterviewTimeSlot.interviewTimeSlotId", getSlotIdFromCurrentTime(xhr))
                             .findList();
 
@@ -88,12 +92,13 @@ public class SameDayInterviewAlertTask extends TimerTask {
                     .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_SAME_DAY_INTERVIEW)
                     .findUnique());
 
+            newScheduler.setNote("Interview SMS alert for same day interview.");
 
             newScheduler.save();
         }
     }
 
-    public int getSlotIdFromCurrentTime(int xHr) {
+    private int getSlotIdFromCurrentTime(int xHr) {
 
         // from current time figure out which interview time slot id needs to be returned
         if ((new Date()).getHours() + xHr >= 18){
