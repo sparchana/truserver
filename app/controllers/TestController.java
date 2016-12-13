@@ -40,10 +40,7 @@ public class TestController extends Controller{
     public static Result testScheduler() throws InterruptedException {
 
         SchedulerManager schedulerManager = new SchedulerManager();
-
-        schedulerManager.testScheduler();
-        schedulerManager.testSchedulerSecond();
-
+        schedulerManager.run();
         return ok();
     }
 }

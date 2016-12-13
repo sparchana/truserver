@@ -2,11 +2,8 @@ package controllers.scheduler;
 
 import controllers.scheduler.task.NextDayInterviewAlertTask;
 import controllers.scheduler.task.SameDayInterviewAlertTask;
-import play.Logger;
 
-import java.util.Date;
 import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Created by zero on 8/12/16.
@@ -44,25 +41,6 @@ public class SchedulerManager implements Runnable {
 
         NextDayInterviewAlertTask nextDayInterviewAlertTask = new NextDayInterviewAlertTask();
         timer.schedule(nextDayInterviewAlertTask, 0, oneDay);
-    }
-
-
-    // test methods TODO remove the following
-    public void testSchedulerSecond() {
-        ScheduledTask st = new ScheduledTask(); // Instantiate ScheduledTask class
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                Date now = new Date();
-
-                Logger.info(" second task Time is :" + now); // Display current time
-            }
-        }, 0, 1000); // Create Repetitively task for every 1 secs
-    }
-
-    public void testScheduler() throws InterruptedException {
-        ScheduledTask st = new ScheduledTask(); // Instantiate ScheduledTask class
-        timer.schedule(st, 0, 4000); // Create Repetitively task for every 4 secs
     }
 
 }

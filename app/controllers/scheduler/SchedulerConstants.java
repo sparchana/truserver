@@ -1,9 +1,9 @@
-package api;
+package controllers.scheduler;
 
 /**
  * Created by zero on 12/12/16.
  */
-public class SchedulerConstant {
+public class SchedulerConstants {
     public static int SCHEDULER_TYPE_SMS = 1;
     public static int SCHEDULER_TYPE_EMAIL = 2;
 

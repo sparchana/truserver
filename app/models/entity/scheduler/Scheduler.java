@@ -11,8 +11,8 @@ import java.sql.Timestamp;
  * Created by zero on 12/12/16.
  */
 
-@Entity(name = "scheduler")
-@Table(name = "scheduler")
+@Entity(name = "scheduler_stats")
+@Table(name = "scheduler_stats")
 public class Scheduler extends Model {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)

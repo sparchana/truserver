@@ -18,9 +18,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimerTask;
 
-import static api.SchedulerConstant.SCHEDULER_SUB_TYPE_NEXT_DAY_INTERVIEW;
-import static api.SchedulerConstant.SCHEDULER_TYPE_SMS;
-import static play.libs.Json.toJson;
+import static controllers.scheduler.SchedulerConstants.SCHEDULER_SUB_TYPE_NEXT_DAY_INTERVIEW;
+import static controllers.scheduler.SchedulerConstants.SCHEDULER_TYPE_SMS;
 
 /**
  * Created by zero on 12/12/16.
@@ -66,11 +65,12 @@ public class NextDayInterviewAlertTask extends TimerTask {
         if(shouldRunThisTask) {
 
             Scheduler newScheduler = new Scheduler();
+
             newScheduler.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
 
             SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
 
-            // get all jobpostworkflow items whose interview is today
+            // get all jobpostworkflow items whose interview is next day
             List<JobPostWorkflow> jobPostWorkflowList =
                     JobPostWorkflow.find.where()
                             .eq("status.statusId", ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED)

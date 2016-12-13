@@ -1,6 +1,6 @@
 package controllers.scheduler.task;
 
-import api.SchedulerConstant;
+import controllers.scheduler.SchedulerConstants;
 import api.ServerConstants;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.scheduler.Scheduler;
@@ -16,9 +16,8 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static api.SchedulerConstant.SCHEDULER_SUB_TYPE_SAME_DAY_INTERVIEW;
-import static api.SchedulerConstant.SCHEDULER_TYPE_SMS;
-import static play.libs.Json.toJson;
+import static controllers.scheduler.SchedulerConstants.SCHEDULER_SUB_TYPE_SAME_DAY_INTERVIEW;
+import static controllers.scheduler.SchedulerConstants.SCHEDULER_TYPE_SMS;
 
 /**
  * Created by zero on 12/12/16.
@@ -58,7 +57,9 @@ public class SameDayInterviewAlertTask extends TimerTask {
         }
 
         if(shouldRunThisTask) {
+
             Scheduler newScheduler = new Scheduler();
+
             newScheduler.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
 
             SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
@@ -104,11 +105,11 @@ public class SameDayInterviewAlertTask extends TimerTask {
         if ((new Date()).getHours() + xHr >= 18){
             return 0;
         } else if((new Date()).getHours() + xHr >= 16) {
-            return SchedulerConstant.INTERVIEW_TIME_SLOT_4_PM;
+            return SchedulerConstants.INTERVIEW_TIME_SLOT_4_PM;
         } else if((new Date()).getHours() + xHr >= 13) {
-            return SchedulerConstant.INTERVIEW_TIME_SLOT_1_PM;
+            return SchedulerConstants.INTERVIEW_TIME_SLOT_1_PM;
         } else if((new Date()).getHours() + xHr >= 10) {
-            return SchedulerConstant.INTERVIEW_TIME_SLOT_10_AM;
+            return SchedulerConstants.INTERVIEW_TIME_SLOT_10_AM;
         } else {
             return 0;
         }

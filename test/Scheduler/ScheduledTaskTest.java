@@ -62,11 +62,7 @@ public class ScheduledTaskTest {
             Application fakeApp = fakeApplication();
             TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
             running(server, () -> {
-                try {
-                    schedulerManager.testScheduler();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                schedulerManager.run();
             });
         }
     }
