@@ -1044,10 +1044,14 @@ public class TrudroidController {
                         jobPostObjectBuilder.setJobPostCompanyLogo(jwpf.getJobPost().getCompany().getCompanyLogo());
 
                         jobPostObjectBuilder.setJobPostAddress(jwpf.getJobPost().getJobPostAddress());
+
+                        //recruiter's name
+                        jobPostObjectBuilder.setRecruiterName("Not Available");
                         if(jwpf.getJobPost().getRecruiterProfile() != null){
                             jobPostObjectBuilder.setRecruiterName(jwpf.getJobPost().getRecruiterProfile().getRecruiterProfileName());
                         }
 
+                        //salary
                         jobPostObjectBuilder.setJobPostMinSalary(jwpf.getJobPost().getJobPostMinSalary());
                         if (jwpf.getJobPost().getJobPostMaxSalary() == null || jwpf.getJobPost().getJobPostMaxSalary() == 0) {
                             jobPostObjectBuilder.setJobPostMaxSalary(0);
@@ -1056,24 +1060,27 @@ public class TrudroidController {
                         }
 
                         //experience
+                        ExperienceObject.Builder experienceObjectBuilder = ExperienceObject.newBuilder();
                         if(jwpf.getJobPost().getJobPostExperience() != null){
-                            ExperienceObject.Builder experienceObjectBuilder = ExperienceObject.newBuilder();
                             experienceObjectBuilder.setExperienceId(jwpf.getJobPost().getJobPostExperience().getExperienceId());
                             experienceObjectBuilder.setExperienceType(jwpf.getJobPost().getJobPostExperience().getExperienceType());
-                            jobPostObjectBuilder.setJobPostExperience(experienceObjectBuilder.build());
+                        } else{
+                            experienceObjectBuilder.setExperienceType("Experience not available");
                         }
+                        jobPostObjectBuilder.setJobPostExperience(experienceObjectBuilder.build());
 
 
+                        //education
+                        EducationObject.Builder educationObjectBuilder = EducationObject.newBuilder();
                         if(jwpf.getJobPost().getJobPostEducation() != null){
-                            //education
-                            EducationObject.Builder educationObjectBuilder = EducationObject.newBuilder();
-                            if(jwpf.getJobPost().getJobPostEducation() != null){
-                                educationObjectBuilder.setEducationId(jwpf.getJobPost().getJobPostEducation().getEducationId());
-                                educationObjectBuilder.setEducationName(jwpf.getJobPost().getJobPostEducation().getEducationName());
-                            }
-                            jobPostObjectBuilder.setEducation(educationObjectBuilder.build());
+                            educationObjectBuilder.setEducationId(jwpf.getJobPost().getJobPostEducation().getEducationId());
+                            educationObjectBuilder.setEducationName(jwpf.getJobPost().getJobPostEducation().getEducationName());
+                        } else{
+                            educationObjectBuilder.setEducationName("Education not available");
                         }
+                        jobPostObjectBuilder.setEducation(educationObjectBuilder.build());
 
+                        //setting job post object
                         jobPostWorkFlowObjBuilder.setJobPostObject(jobPostObjectBuilder.build());
                     }
 
