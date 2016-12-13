@@ -15,6 +15,8 @@ import java.net.URLEncoder;
  */
 public class SMSEvent extends NotificationEvent {
 
+    private boolean isDevMode;
+
     public SMSEvent(String recipient, String message) {
         this.setMessage(message);
         this.setRecipient(recipient);
@@ -22,7 +24,7 @@ public class SMSEvent extends NotificationEvent {
 
     @Override
     public String send() {
-        boolean isDevMode = play.api.Play.isDev(play.api.Play.current()) || play.api.Play.isTest(play.api.Play.current());
+        this.isDevMode = play.api.Play.isDev(play.api.Play.current()) || play.api.Play.isTest(play.api.Play.current());
 
         String msg = this.getMessage();
         String recipient = this.getRecipient();
@@ -46,7 +48,7 @@ public class SMSEvent extends NotificationEvent {
 
         String smsResponse = "";
 
-        if(isDevMode){
+        if(isDevMode()){
             Logger.info("DevMode: No sms sent");
             return "DevMode: No sms sent";
         } else {
@@ -60,5 +62,13 @@ public class SMSEvent extends NotificationEvent {
             return smsResponse;
         }
 
+    }
+
+    public boolean isDevMode() {
+        return isDevMode;
+    }
+
+    public void setDevMode(boolean devMode) {
+        isDevMode = devMode;
     }
 }

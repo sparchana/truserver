@@ -1,10 +1,9 @@
-package NotificationService;
+package controllers;
 
-import play.*;
 /**
  * Created by dodo on 12/12/16.
  */
-public class Shared {
+public class SharedSettings {
     private static Global globalSettings;
 
     public static Global getGlobalSettings() {
@@ -12,6 +11,6 @@ public class Shared {
     }
 
     public static void setGlobalSettings(Global globalSettings) {
-        Shared.globalSettings = globalSettings;
+        SharedSettings.globalSettings = globalSettings;
     }
 }

@@ -11,12 +11,14 @@ import java.io.IOException;
  */
 public class FCMEvent extends NotificationEvent {
 
-    private String title;
-    private Integer intentType;
+    private String myTitle;
+    private Integer myIntentType;
 
-    public FCMEvent(String recipient, String message) {
+    public FCMEvent(String recipient, String message, String title, Integer intentType) {
         this.setMessage(message);
         this.setRecipient(recipient);
+        this.setMyTitle(title);
+        this.setMyIntentType(intentType);
     }
 
     @Override
@@ -30,9 +32,9 @@ public class FCMEvent extends NotificationEvent {
 
         final Message message = new Message.Builder().timeToLive(30)
                 .delayWhileIdle(true)
-                .addData("title", title)
+                .addData("title", myTitle)
                 .addData("message", messageText)
-                .addData("type", String.valueOf(intentType))
+                .addData("type", String.valueOf(myIntentType))
                 .build();
 
         try {
@@ -43,19 +45,19 @@ public class FCMEvent extends NotificationEvent {
         return "";
     }
 
-    public String getTitle() {
-        return title;
+    public String getMyTitle() {
+        return myTitle;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setMyTitle(String myTitle) {
+        this.myTitle = myTitle;
     }
 
-    public Integer getIntentType() {
-        return intentType;
+    public Integer getMyIntentType() {
+        return myIntentType;
     }
 
-    public void setIntentType(Integer intentType) {
-        this.intentType = intentType;
+    public void setMyIntentType(Integer myIntentType) {
+        this.myIntentType = myIntentType;
     }
 }

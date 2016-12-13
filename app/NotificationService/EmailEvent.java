@@ -11,17 +11,18 @@ import play.Play;
  * Created by dodo on 8/12/16.
  */
 public class EmailEvent extends NotificationEvent {
-    private String subject;
+    private String mySubject;
+    private boolean isDevMode;
 
     public EmailEvent(String recipient, String message, String subject) {
         this.setMessage(message);
         this.setRecipient(recipient);
-        this.subject = subject;
+        this.setMySubject(subject);
     }
 
     @Override
     public String send() {
-        boolean isDevMode = play.api.Play.isDev(play.api.Play.current()) || play.api.Play.isTest(play.api.Play.current());
+        this.isDevMode = play.api.Play.isDev(play.api.Play.current()) || play.api.Play.isTest(play.api.Play.current());
 
         String message = this.getMessage();
         String recipient = this.getRecipient();
@@ -37,9 +38,9 @@ public class EmailEvent extends NotificationEvent {
                 email.setSSLOnConnect(true);
                 email.setContent(message, "text/html; charset=utf-8");
                 email.setFrom("recruiter.support@trujobs.in", "Trujobs Recruiter");
-                email.setSubject(getSubject());
+                email.setSubject(getMySubject());
                 email.addTo(recipient);
-                if(isDevMode){
+                if(isDevMode()){
                     Logger.info("DevMode: No Email sent");
                 } else {
                     Logger.info("Sending email to " + recipient);
@@ -53,11 +54,19 @@ public class EmailEvent extends NotificationEvent {
         return "";
     }
 
-    public String getSubject() {
-        return subject;
+    public String getMySubject() {
+        return mySubject;
     }
 
-    public void setSubject(String subject) {
-        this.subject = subject;
+    public void setMySubject(String mySubject) {
+        this.mySubject = mySubject;
+    }
+
+    public boolean isDevMode() {
+        return isDevMode;
+    }
+
+    public void setDevMode(boolean devMode) {
+        isDevMode = devMode;
     }
 }
