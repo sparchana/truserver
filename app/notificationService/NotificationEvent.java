@@ -1,4 +1,4 @@
-package NotificationService;
+package notificationService;
 
 /**
  * Created by dodo on 8/12/16.

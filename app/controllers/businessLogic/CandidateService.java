@@ -1,7 +1,5 @@
 package controllers.businessLogic;
 
-import NotificationService.NotificationEvent;
-import NotificationService.SMSEvent;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.CandidateKnownLanguage;
@@ -35,7 +33,6 @@ import play.Logger;
 
 import javax.persistence.NonUniqueResultException;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static api.InteractionConstants.*;
 import static controllers.businessLogic.InteractionService.*;
@@ -1018,7 +1015,7 @@ public class CandidateService
         CandidateProfileStatus candidateProfileStatus =
                 CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique();
 
-        if(candidateProfileStatus != null){
+        if(candidateProfileStatus != null) {
             candidate.setCandidateprofilestatus(candidateProfileStatus);
             candidate.setLead(lead);
             candidate.registerCandidate();

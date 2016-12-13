@@ -6,11 +6,8 @@ package Engine;
  * prod/activator-1.3.9-minimal/bin/activator "test-only Engine.JobPostWorkflowEngineTest"
  */
 
-import Service.AddressResolverServiceTest;
 import common.TestConstants;
-import controllers.businessLogic.AddressResolveService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
-import models.util.LatLng;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -27,7 +24,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 
-import static org.junit.Assert.assertEquals;
 import static play.libs.Json.toJson;
 import static play.test.Helpers.fakeApplication;
 import static play.test.Helpers.running;

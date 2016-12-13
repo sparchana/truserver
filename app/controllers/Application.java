@@ -1,6 +1,6 @@
 package controllers;
 
-import NotificationService.*;
+import notificationService.*;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;

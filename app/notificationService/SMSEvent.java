@@ -1,4 +1,4 @@
-package NotificationService;
+package notificationService;
 
 import play.Logger;
 import play.Play;

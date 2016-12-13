@@ -1250,6 +1250,7 @@ public class JobPostWorkflowEngine {
                 .eq("jobPost.jobPostId", preScreenRequest.getJobPostId())
                 .findList();
 
+        // TODO this will not allow to save prescreen result, hence for those cases we handle it outside the function
         if (preScreenRequirementList == null || preScreenRequirementList.size() == 0) {
             Logger.error("PreScreen Requirement empty for jobPostId:" + preScreenRequest.getJobPostId());
             interviewResponse.setStatus(ServerConstants.ERROR);

@@ -1,6 +1,6 @@
 package controllers;
 
-import NotificationService.NotificationHandler;
+import notificationService.NotificationHandler;
 import play.*;
 import play.Application;
 

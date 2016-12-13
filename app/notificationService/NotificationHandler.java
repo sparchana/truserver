@@ -1,4 +1,4 @@
-package NotificationService;
+package notificationService;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -12,7 +12,7 @@ public class NotificationHandler implements Runnable {
         clq = new ConcurrentLinkedQueue<NotificationEvent>();
     }
 
-    public void addToQueue(NotificationEvent event){
+    public void addToQueue(NotificationEvent event) {
         clq.add(event);
     }
 
