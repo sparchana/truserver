@@ -160,7 +160,9 @@ function createAndAppendDivider(title) {
 }
 
 function processDataAllJobPosts(returnedData) {
-    var jobPostCount = Object.keys(returnedData).length;
+    console.log(returnedData);
+    var jobPostList = returnedData.allJobPost;
+    var jobPostCount = Object.keys(jobPostList).length;
     if(jobPostCount > 0){
         var count = 0;
         var parent = $("#hotJobs");
@@ -168,7 +170,7 @@ function processDataAllJobPosts(returnedData) {
         $("#jobLoaderDiv").hide();
         createAndAppendDivider("Popular Jobs");
         var isDividerPresent = false;
-        returnedData.forEach(function (jobPost){
+        jobPostList.forEach(function (jobPost){
             count++;
             if(count){
                 //!* get all localities of the jobPost *!/

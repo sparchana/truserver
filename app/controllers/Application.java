@@ -13,6 +13,7 @@ import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
+import com.avaje.ebean.PagedList;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -836,13 +837,40 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    public static Result getAllNormalJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
-        return ok(toJson(jobPosts));
+    public static Result getAllNormalJobPosts(Long index) {
+        PagedList<JobPost> pagedList
+                = JobPost.find
+                .where()
+                .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                .setFirstRow(Math.toIntExact(index))
+                .setMaxRows(5)
+                .orderBy().asc("source")
+                .orderBy().desc("jobPostUpdateTimestamp")
+                .findPagedList();
+
+        List<JobPost> jobPostList = pagedList.getList();
+        JobPostResponse jobPostResponse = new JobPostResponse();
+        jobPostResponse.setAllJobPost(jobPostList);
+        jobPostResponse.setTotalJobs(JobPost.find.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).findRowCount());
+        return ok(toJson(jobPostResponse));
     }
-    public static Result getAllHotJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
-        return ok(toJson(jobPosts));
+
+    public static Result getAllHotJobPosts(Long index) {
+        PagedList<JobPost> pagedList
+                = JobPost.find
+                .where().eq("jobPostIsHot", "1")
+                .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                .setFirstRow(Math.toIntExact(index))
+                .setMaxRows(5)
+                .orderBy().asc("source")
+                .orderBy().desc("jobPostUpdateTimestamp")
+                .findPagedList();
+
+        List<JobPost> jobPostList = pagedList.getList();
+        JobPostResponse jobPostResponse = new JobPostResponse();
+        jobPostResponse.setAllJobPost(jobPostList);
+        jobPostResponse.setTotalJobs(JobPost.find.where().eq("jobPostIsHot", "1").eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).findRowCount());
+        return ok(toJson(jobPostResponse));
     }
 
     @Security.Authenticated(Secured.class)
