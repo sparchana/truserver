@@ -66,64 +66,68 @@ function processDataNotSelectedReason(returnedData) {
 }
 
 function processDataForJobPost(returnedData) {
-    $("#job_title").html(returnedData.jobPostTitle);
-    $("#job_role").html(returnedData.jobRole.jobName);
+    if(returnedData != "0"){
+        $("#job_title").html(returnedData.jobPostTitle);
+        $("#job_role").html(returnedData.jobRole.jobName);
 
-    var salary = "₹" + rupeeFormatSalary(returnedData.jobPostMinSalary);
-    if(returnedData.jobPostMaxSalary != null && returnedData.jobPostMaxSalary != 0 && returnedData.jobPostMaxSalary != undefined){
-        salary += " - ₹" + rupeeFormatSalary(returnedData.jobPostMaxSalary);
-    }
-    $("#job_salary").html(salary);
+        var salary = "₹" + rupeeFormatSalary(returnedData.jobPostMinSalary);
+        if(returnedData.jobPostMaxSalary != null && returnedData.jobPostMaxSalary != 0 && returnedData.jobPostMaxSalary != undefined){
+            salary += " - ₹" + rupeeFormatSalary(returnedData.jobPostMaxSalary);
+        }
+        $("#job_salary").html(salary);
 
-    if(returnedData.jobPostEducation != null){
-        $("#job_education").html(returnedData.jobPostEducation.educationName);
-    }
+        if(returnedData.jobPostEducation != null){
+            $("#job_education").html(returnedData.jobPostEducation.educationName);
+        }
 
-    if(returnedData.jobPostExperience != null){
-        $("#job_exp").html(returnedData.jobPostExperience.experienceType);
-    }
+        if(returnedData.jobPostExperience != null){
+            $("#job_exp").html(returnedData.jobPostExperience.experienceType);
+        }
 
-    var jobLocality = "";
-    if(returnedData.jobPostToLocalityList != null){
-        returnedData.jobPostToLocalityList.forEach(function (locality) {
-            jobLocality += locality.locality.localityName + ", ";
-        });
-        $("#job_localities").html(jobLocality.substring(0, (jobLocality.length - 2)));
-    }
-    if (Object.keys(returnedData.interviewDetailsList).length > 0) {
-        //slots
-        $('#select_date').html('');
-        var i;
-        var interviewDetailsList = returnedData.interviewDetailsList;
-        if (interviewDetailsList[0].interviewDays != null) {
+        var jobLocality = "";
+        if(returnedData.jobPostToLocalityList != null){
+            returnedData.jobPostToLocalityList.forEach(function (locality) {
+                jobLocality += locality.locality.localityName + ", ";
+            });
+            $("#job_localities").html(jobLocality.substring(0, (jobLocality.length - 2)));
+        }
+        if (Object.keys(returnedData.interviewDetailsList).length > 0) {
+            //slots
+            $('#select_date').html('');
+            var i;
+            var interviewDetailsList = returnedData.interviewDetailsList;
+            if (interviewDetailsList[0].interviewDays != null) {
 
-            var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
-            /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
-            if (interviewDays.length != 7) {
-                x = 7 - interviewDays.length;
+                var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
+                /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
+                if (interviewDays.length != 7) {
+                    x = 7 - interviewDays.length;
 
-                var modifiedInterviewDays = "";
-                for (i = 0; i < x; i++) {
-                    modifiedInterviewDays += "0";
+                    var modifiedInterviewDays = "";
+                    for (i = 0; i < x; i++) {
+                        modifiedInterviewDays += "0";
+                    }
+                    modifiedInterviewDays += interviewDays;
+                    interviewDays = modifiedInterviewDays;
                 }
-                modifiedInterviewDays += interviewDays;
-                interviewDays = modifiedInterviewDays;
+            }
+            //slots
+            var today = new Date();
+
+            $('#select_date').tokenize().tokenAdd(0, getDayVal(today.getDay()) + ", " + today.getDate() + " " + getMonthVal((today.getMonth() + 1)));
+
+            for (i = -7; i < 9; i++) {
+                // 0 - > sun 1 -> mon ...
+                var x = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+                if (checkSlotAvailability(x, interviewDays)) {
+                    var dateSlotSelectedId = x.getFullYear() + "-" + (x.getMonth() + 1) + "-" + x.getDate();
+                    var option = $('<option value="' + dateSlotSelectedId + '"></option>').text(getDayVal(x.getDay()) + ", " + x.getDate() + " " + getMonthVal((x.getMonth() + 1)));
+                    $('#select_date').append(option);
+                }
             }
         }
-        //slots
-        var today = new Date();
-
-        $('#select_date').tokenize().tokenAdd(0, getDayVal(today.getDay()) + ", " + today.getDate() + " " + getMonthVal((today.getMonth() + 1)));
-
-        for (i = -7; i < 9; i++) {
-            // 0 - > sun 1 -> mon ...
-            var x = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
-            if (checkSlotAvailability(x, interviewDays)) {
-                var dateSlotSelectedId = x.getFullYear() + "-" + (x.getMonth() + 1) + "-" + x.getDate();
-                var option = $('<option value="' + dateSlotSelectedId + '"></option>').text(getDayVal(x.getDay()) + ", " + x.getDate() + " " + getMonthVal((x.getMonth() + 1)));
-                $('#select_date').append(option);
-            }
-        }
+    } else{
+        logoutRecruiter();
     }
 }
 
@@ -766,7 +770,9 @@ function processDataForJobApplications(returnedData) {
                         if(value.extraData.candidateInterviewStatus != null){
                             var lastUpdate = new Date(value.extraData.creationTimestamp);
                             var timing = "";
-                            if(lastUpdate.getHours() > 12){
+                            if(lastUpdate.getHours() == 12){
+                                timing = lastUpdate.getHours() + ":" + lastUpdate.getMinutes() + " pm";
+                            } else if(lastUpdate.getHours() > 12){
                                 timing = lastUpdate.getHours() - 12 + ":" + lastUpdate.getMinutes() + " pm";
                             } else{
                                 timing = lastUpdate.getHours() + ":" + lastUpdate.getMinutes() + " am";
