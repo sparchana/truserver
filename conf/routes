@@ -216,6 +216,7 @@ POST        /getAllTransportation                                         contro
 POST        /getAllAsset                                                  controllers.Application.getAllAsset()
 POST        /getAllInterviewRejectReasons                                 controllers.Application.getAllInterviewRejectReasons()
 POST        /getAllInterviewNotGoingReasons                               controllers.Application.getAllInterviewNotGoingReasons()
+POST        /getAllCandidateETA                                           controllers.Application.getAllCandidateETA()
 POST        /getAllNotSelectedReasons                                     controllers.Application.getAllNotSelectedReasons()
 POST        /getJobPostInfo/:id/:isSupport                                controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
 
@@ -279,12 +280,14 @@ POST        /updateStatusCandidate/:jpId/:value/:reason                   contro
 
 # notification test
 GET         /testNotification                                             controllers.Application.testnotification()
+GET         /testQueue                                                    controllers.Application.testQueue()
 
 # Test API
 # ~~~~~~~~~~~~~
 GET         /resolveLatLng/:latlng                                        controllers.TrudroidController.mResolveLatLng(latlng: String)
 GET         /support/api/testMatchingCandidate/:jpId                      controllers.TestController.testMatchingCandidate(jpId: Long)
 GET         /api/test/testValidator/                                      controllers.TestController.testValidator(methodId: Integer ?=null, methodValue: String ?=null)
+GET         /api/test/testScheduler/                                      controllers.TestController.testScheduler()
 # Scrap API
 # ~~~~~~~~~~~~~
 GET         /support/administrator/scrapCSV/dashboard                     controllers.Application.scrapArena()

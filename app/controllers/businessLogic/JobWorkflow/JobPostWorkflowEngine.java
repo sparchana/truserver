@@ -1250,6 +1250,7 @@ public class JobPostWorkflowEngine {
                 .eq("jobPost.jobPostId", preScreenRequest.getJobPostId())
                 .findList();
 
+        // TODO this will not allow to save prescreen result, hence for those cases we handle it outside the function
         if (preScreenRequirementList == null || preScreenRequirementList.size() == 0) {
             Logger.error("PreScreen Requirement empty for jobPostId:" + preScreenRequest.getJobPostId());
             interviewResponse.setStatus(ServerConstants.ERROR);
@@ -1639,6 +1640,7 @@ public class JobPostWorkflowEngine {
             InterviewTodayResponse response = new InterviewTodayResponse();
             response.setCandidate(jpWf.getCandidate());
             response.setJobPostWorkflow(jpWf);
+
             JobPostWorkflow jobPostWorkFlow = JobPostWorkflow.find.where()
                     .eq("job_post_id", jpWf.getJobPost().getJobPostId())
                     .eq("candidate_id", jpWf.getCandidate().getCandidateId())
@@ -1647,6 +1649,12 @@ public class JobPostWorkflowEngine {
                     .findUnique();
             response.setCurrentStatus(jobPostWorkFlow.getStatus());
 
+            response.setLastUpdate(null);
+            //set the last update timestamp only when the candidate has updated their status (Not going, delayed etc.)
+            //if not updated, set as null
+            if(jobPostWorkFlow.getStatus().getStatusId() > ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED) {
+                response.setLastUpdate(jobPostWorkFlow.getCreationTimestamp());
+            }
             responseList.add(response);
         }
         return responseList;
@@ -1976,7 +1984,7 @@ public class JobPostWorkflowEngine {
                             candidateExtraData.setWorkflowStatus(jobPostWorkflowLatest.getStatus());
                             candidateExtraData.setInterviewDate(jobPostWorkflowLatest.getScheduledInterviewDate());
                             candidateExtraData.setInterviewSlot(jobPostWorkflowLatest.getScheduledInterviewTimeSlot());
-
+                            candidateExtraData.setCreationTimestamp(jobPostWorkflowLatest.getCreationTimestamp());
 
                             CandidateInterviewStatusUpdate candidateInterviewStatusUpdate = CandidateInterviewStatusUpdate.find.where()
                                     .eq("candidateId", candidate.getCandidateId())

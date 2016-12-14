@@ -1,5 +1,6 @@
 package controllers;
 
+import notificationService.*;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
@@ -18,8 +19,6 @@ import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.android.gcm.server.Message;
-import com.google.android.gcm.server.Sender;
 import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.*;
@@ -943,6 +942,10 @@ public class Application extends Controller {
 
     public static Result getAllInterviewNotGoingReasons() {
         return ok(toJson(new RejectReasonDAO().getByType(ServerConstants.INTERVIEW_NOT_GOING_TYPE_REASON)));
+    }
+
+    public static Result getAllCandidateETA() {
+        return ok(toJson(new RejectReasonDAO().getByType(ServerConstants.CANDIDATE_ETA)));
     }
 
     public static Result getAllNotSelectedReasons() {
@@ -2189,5 +2192,12 @@ public class Application extends Controller {
         }
         return ok("Null token!");
 
+    }
+
+    public static Result testQueue() {
+        NotificationEvent notificationEvent = new SMSEvent("+918971739586", "Test message11");
+        SharedSettings.getGlobalSettings().getMyNotificationHandler().addToQueue(notificationEvent);
+
+        return ok("-");
     }
 }
