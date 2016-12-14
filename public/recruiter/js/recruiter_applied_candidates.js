@@ -207,6 +207,9 @@ function processDataForJobApplications(returnedData) {
     var completedCount = 0;
     var approvalCount = 0;
 
+    var interviewTodayCount = 0;
+    var actionNeededCount = 0;
+
     var pendingParent = $("#pendingCandidateContainer");
     var confirmedParent = $("#confirmedCandidateContainer");
     var completedParent = $("#completedCandidateContainer");
@@ -234,6 +237,7 @@ function processDataForJobApplications(returnedData) {
 
                         //awaiting confirmation from recruiter
                         pendingConfirmation.push(value);
+                        actionNeededCount = 1;
                     } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
 
                         //pushing all the rejected applications in rejected list which will come at last
@@ -253,6 +257,7 @@ function processDataForJobApplications(returnedData) {
 
                             //push in todays interview list
                             interviewTodayList.push(value);
+                            interviewTodayCount = 1;
                         } else if(todayDay.getTime() < interviewDate.getTime()){
 
                             //else push in the common list
@@ -271,6 +276,7 @@ function processDataForJobApplications(returnedData) {
                 }
             }
         });
+
 
         acceptInterview.forEach(function (val) {
             candidateList.push(val);
@@ -1071,7 +1077,7 @@ function processDataForJobApplications(returnedData) {
             inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
             var candidateDocumentVal = document.createElement("div");
-            candidateDocumentVal.style = "margin-left: 4px";
+            candidateDocumentVal.style = "margin-left: 4px; margin-bottom: 12px";
             candidateDocumentVal.id = "document_" + value.candidate.candidateId;
 
             var documentList = value.candidate.idProofReferenceList;
@@ -1126,7 +1132,9 @@ function processDataForJobApplications(returnedData) {
             var candidateCardRowColTwoFont = document.createElement("font");
             candidateCardRowColTwoFont.setAttribute("size", "3");
 
-            candidateCardRowColTwoFont.textContent = "Last Active: " + value.extraData.lastActive.lastActiveValueName;
+            if(value.extraData.lastActive != null){
+                candidateCardRowColTwoFont.textContent = "Last Active: " + value.extraData.lastActive.lastActiveValueName;
+            }
             candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
 
             var unlockContactCol = document.createElement("div");
@@ -1209,6 +1217,13 @@ function processDataForJobApplications(returnedData) {
         }
 
         $("#loadingIcon").hide();
+
+        //if there is any action need to be taken, activate the confirmed tab
+        if(actionNeededCount > 0){
+            $('ul.tabs').tabs('select_tab', 'pending');
+        } else if(interviewTodayCount > 0){  //if there is any today's interview lined up, activate the confirmed tab
+            $('ul.tabs').tabs('select_tab', 'confirmed');
+        }
     } else{
         logoutRecruiter();
     }
@@ -1489,12 +1504,19 @@ function submitCredits() {
             if(contactCredits < 1){
                 notifyError("Contact credits cannot be less than 1");
                 contactCreditStatus = 0;
+            } else if(contactCredits > 10000){
+                notifyError("Contact credits cannot be greater than 10000");
+                contactCreditStatus = 0;
             }
         }
+
         if($("#interviewCreditAmount").val() != ""){
             interviewCredits = parseInt($("#interviewCreditAmount").val());
             if(interviewCredits < 1){
                 notifyError("Interview credits cannot be less than 1");
+                interviewCreditStatus = 0;
+            } else if(interviewCredits > 10000){
+                notifyError("Interview credits cannot be greater than 10000");
                 interviewCreditStatus = 0;
             }
         }

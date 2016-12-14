@@ -4,13 +4,16 @@ import models.entity.Candidate;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Static.JobPostWorkflowStatus;
 
+import java.sql.Timestamp;
+
 /**
  * Created by dodo on 22/11/16.
  */
 public class InterviewTodayResponse {
-    JobPostWorkflow jobPostWorkflow;
-    Candidate candidate;
-    JobPostWorkflowStatus currentStatus;
+    private JobPostWorkflow jobPostWorkflow;
+    private Candidate candidate;
+    private JobPostWorkflowStatus currentStatus;
+    private Timestamp lastUpdate;
 
     public JobPostWorkflow getJobPostWorkflow() {
         return jobPostWorkflow;
@@ -34,5 +37,13 @@ public class InterviewTodayResponse {
 
     public void setCurrentStatus(JobPostWorkflowStatus currentStatus) {
         this.currentStatus = currentStatus;
+    }
+
+    public Timestamp getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(Timestamp lastUpdate) {
+        this.lastUpdate = lastUpdate;
     }
 }

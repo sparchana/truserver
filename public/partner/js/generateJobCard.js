@@ -19,7 +19,11 @@ var jobRoleName;
 var companyName;
 
 var allReasons = [];
+var allEta = [];
 var globalStatus = 0;
+
+var triggerNotGoingModal;
+var triggerEtaModal;
 
 $(window).resize(function(){
     var w = window.innerWidth;
@@ -59,6 +63,21 @@ $(document).ready(function(){
 
     try {
         $.ajax({
+            type: "POST",
+            url: "/getAllCandidateETA",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetAllEta
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+
+    try {
+        $.ajax({
             url: "/getCandidateMatchingJobs/" + localStorage.getItem("candidateId"),
             type: "POST",
             data: false,
@@ -85,6 +104,17 @@ function processDataGetAllReason(returnedData) {
         item ["id"] = id;
         item ["name"] = name;
         allReasons.push(item);
+    });
+}
+
+function processDataGetAllEta(returnedData) {
+    returnedData.forEach(function(reason) {
+        var id = reason.reasonId;
+        var name = reason.reasonName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        allEta.push(item);
     });
 }
 
@@ -171,12 +201,12 @@ function getAllAppliedJobs() {
                                                         candidateStatus += '<option value = 1>Not Going</option>';
                                                     }
                                                     candidateStatus += '<option value = 2>Delayed</option>' +
-                                                        '<option value = 3>Started</option>' +
+                                                        '<option value = 3>On the Way</option>' +
                                                         '<option value = 4>Reached</option>';
                                                 } else if(jobApplication.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){
-                                                    candidateStatus += '<option value = 3>Started</option>' +
+                                                    candidateStatus += '<option value = 3>On the Way</option>' +
                                                         '<option value = 4>Reached</option>';
-                                                } else if(jobApplication.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED){
+                                                } else if(jobApplication.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY){
                                                     candidateStatus += '<option value = 2>Delayed</option>' +
                                                         '<option value = 4>Reached</option>';
                                                 }
@@ -266,10 +296,11 @@ function getAllAppliedJobs() {
 
 function confirmUpdateStatusNotGoing(){
     if($("#notGoingReason").val() > 0){
-        globalStatus = 0;
-        updateStatusAjax(localStorage.getItem("candidateId"), globalJpId, 1, $("#notGoingReason").val());
+        triggerEtaModal = false;
+        triggerNotGoingModal = false;
+        updateStatusAjax(localStorage.getItem("candidateId"), globalJpId, globalStatus, $("#notGoingReason").val());
     } else{
-        alert("Please select a reason for not going for interview");
+        alert("Please select an option");
     }
 }
 
@@ -277,6 +308,13 @@ function updateCandidateStatus(jpId) {
     globalJpId = jpId;
     if($("#candidate_interview_status_" + globalJpId).val() > 0){
         globalStatus = $("#candidate_interview_status_" + globalJpId).val();
+        if(globalStatus == 1){
+            triggerNotGoingModal = true;
+            triggerEtaModal = false;
+        } else if(globalStatus == 2 || globalStatus == 3){
+            triggerNotGoingModal = false;
+            triggerEtaModal = true;
+        }
         var notGoingReason = 0;
             if($("#notGoingReason").val() != null && $("#notGoingReason").val() != 0){
             notGoingReason = $("#notGoingReason").val();
@@ -305,7 +343,7 @@ function updateStatusAjax(cid, jpId, val, reason) {
 function processDataForUpdateStatus(returnedData) {
     $("#notGoingModal").modal("hide");
     if(returnedData == 1){
-        if(globalStatus == 1){
+        if(triggerNotGoingModal){
             $('#notGoingReason').html('');
             var defaultOption = $('<option value="0"></option>').text("Select a reason");
             $('#notGoingReason').append(defaultOption);
@@ -317,7 +355,24 @@ function processDataForUpdateStatus(returnedData) {
                 $('#notGoingReason').append(option);
             });
             $("#notGoingModal").modal("show");
-            globalStatus = 0;
+            $("#heading").html("Reason for not Going");
+            $("#subHeading").html("Reason for not going for the interview");
+
+        } else if(triggerEtaModal){
+            $('#notGoingReason').html('');
+            var defaultOption = $('<option value="0"></option>').text("Select an option");
+            $('#notGoingReason').append(defaultOption);
+
+            allEta.forEach(function (reason) {
+                var id = reason.id;
+                var name = reason.name;
+                var option = $('<option value=' + id + '></option>').text(name);
+                $('#notGoingReason').append(option);
+            });
+            $("#notGoingModal").modal("show");
+            $("#heading").html("Reaching in?");
+            $("#subHeading").html("Reaching the interview location in?");
+
         } else{
             alert("Status updated successfully");
             getAllAppliedJobs();
