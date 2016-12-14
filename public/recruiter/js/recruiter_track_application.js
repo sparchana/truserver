@@ -787,7 +787,7 @@ function processDataForJobApplications(returnedData) {
                             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){
                                 candidateCurrentStatusVal.textContent = "Delayed for Interview " + dateAndTime;
                                 candidateCurrentStatusVal.style = "margin-left: 4px; color: orange; font-weight: bold";
-                            } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED){
+                            } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY){
                                 candidateCurrentStatusVal.textContent = "On the way " + dateAndTime;
                                 candidateCurrentStatusVal.style = "margin-left: 4px; color: green; font-weight: bold";
                             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){

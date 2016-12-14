@@ -57,7 +57,7 @@ function processDataForGetStatus(returnedData) {
         if(returnedData.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){ // delayed
             parent.append(option3);
             parent.append(option4);
-        } else if(returnedData.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED){ // started
+        } else if(returnedData.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY){ // started
             parent.append(option4);
         } else if(returnedData.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){ // reached or not going
             alert("You have already reached!");
