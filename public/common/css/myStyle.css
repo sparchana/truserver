@@ -372,10 +372,39 @@ a:hover{
 
 #jobLogo{
     margin-top: 12%;
+    width: 90%;
+    height: 48px;
 }
 
 #hotJobs{
-    overflow: scroll;
+    height: auto;
+}
+.pagination{
+    float: right;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.pagination>li>a, .pagination>li>span{
+    color:rgb(41, 128, 185);
+}
+.pagination>li>a:hover,
+.pagination>li>span:hover,
+.pagination>li>a:focus,
+.pagination>li>span:focus{
+    color: #5d5d5d;
+    background: #fff;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12);
+    transition: opacity 0.5s ease-in-out;
+}
+
+.pagination>.active>a,
+.pagination>.active>span,
+.pagination>.active>a:hover,
+.pagination>.active>span:hover,
+.pagination>.active>a:focus,
+.pagination>.active>span:focus{
+    background-color: rgb(41, 128, 185);
+    border-color: rgb(41, 128, 185);
 }
 
 #hotJobs::-webkit-scrollbar {
@@ -775,7 +804,7 @@ hr{
     #jobLogo{
         margin-top: 4%;
         margin-bottom: 4%;
-        width: 40%;
+        width: 60%;
     }
 
     #hotJobItem{
@@ -1463,6 +1492,7 @@ padding: 0px;
 .btn-group .multiselect{
     width: 206px;
 }
+
 /* job loading spinner */
 
 #loadingSpinner {
@@ -1472,7 +1502,8 @@ padding: 0px;
     -webkit-transform-origin: 50%;
     transform-origin: 50%;
     -webkit-animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
-    animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite; }
+    animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+}
 
 @-webkit-keyframes rotate {
     from {

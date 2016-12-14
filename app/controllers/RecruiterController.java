@@ -17,7 +17,9 @@ import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import controllers.security.SecuredUser;
+import dao.JobPostWorkFlowDAO;
 import models.entity.JobPost;
+import models.entity.OM.JobPostWorkflow;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterProfile;
@@ -223,9 +225,117 @@ public class RecruiterController {
 
     public static Result getAllRecruiterJobPosts() {
         if(session().get("recruiterId") != null){
-            return ok(toJson(JobPost.find.where().eq("JobRecruiterId", session().get("recruiterId")).findList()));
+
+            Map<?, JobPost> recruiterJobPostMap = JobPost.find.where().eq("JobRecruiterId", session().get("recruiterId")).setMapKey("jobPostId").findMap();
+
+            String jpIdList = "";
+
+            for(Map.Entry<?, JobPost> entity: recruiterJobPostMap.entrySet()) {
+                JobPost jobPost = entity.getValue();
+                jpIdList += "'" + jobPost.getJobPostId() + "', ";
+
+            }
+
+            List<JobPostWorkflow> jobPostWorkflowList = new ArrayList<>();
+
+            if(Objects.equals(jpIdList, "")){
+                return ok(toJson(jobPostWorkflowList));
+            }
+            // if candidate who have applied to the jobpost, only those jobpostworkflow obj will be returned
+            jobPostWorkflowList = new JobPostWorkFlowDAO().getJobApplications(jpIdList.substring(0, jpIdList.length()-2));
+
+            Map<Long, RecruiterJobPostObject> recruiterJobPostResponseMap = new LinkedHashMap<>();
+            for(JobPostWorkflow jpwf : jobPostWorkflowList){
+                RecruiterJobPostObject singleObject = recruiterJobPostResponseMap.get(jpwf.getJobPost().getJobPostId());
+
+                if(singleObject == null ){
+                    singleObject = new RecruiterJobPostObject();
+                    recruiterJobPostResponseMap.put(jpwf.getJobPost().getJobPostId(), singleObject);
+                    singleObject.setJobPost(jpwf.getJobPost());
+                }
+
+                // jpwf of one candidate
+                Map<Long, JobPostWorkflow> response = singleObject.getJobPostWorkflowMap();
+                if(response == null){
+                    response = new HashMap<>();
+                }
+                if(response.get(jpwf.getCandidate().getCandidateId()) == null){
+                    response.put(jpwf.getCandidate().getCandidateId(), jpwf);
+                    if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
+                        singleObject.setPendingCount(singleObject.getPendingCount()+1);
+                    }
+                    singleObject.setTotalCount(singleObject.getTotalCount()+1);
+                    singleObject.setJobPostWorkflowMap(response);
+                }
+            }
+
+
+            for(Map.Entry<?, JobPost> entity: recruiterJobPostMap.entrySet()) {
+                // jobpost to which no candidate has applied
+                RecruiterJobPostObject singleObject = recruiterJobPostResponseMap.get(entity.getKey());
+                if(singleObject == null) {
+                    singleObject = new RecruiterJobPostObject();
+                    singleObject.setJobPost(entity.getValue());
+                    singleObject.setTotalCount(0);
+                    singleObject.setPendingCount(0);
+
+                    recruiterJobPostResponseMap.put((Long) entity.getKey(), singleObject);
+                }
+            }
+
+            return ok(toJson(recruiterJobPostResponseMap));
         }
         return ok("0");
+    }
+
+    public static class RecruiterJobPostObject{
+        Map<Long, JobPostWorkflow> jobPostWorkflowMap;
+        int pendingCount;
+        int totalCount;
+        JobPost jobPost;
+
+        public RecruiterJobPostObject() {
+            pendingCount = 0;
+            totalCount = 0;
+        }
+
+        public RecruiterJobPostObject(Map<Long, JobPostWorkflow> jobPostWorkflowMap, int pendingCount, int totalCount) {
+            this.jobPostWorkflowMap = jobPostWorkflowMap;
+            this.pendingCount = pendingCount;
+            this.totalCount = totalCount;
+        }
+
+        public Map<Long, JobPostWorkflow> getJobPostWorkflowMap() {
+            return jobPostWorkflowMap;
+        }
+
+        public void setJobPostWorkflowMap(Map<Long, JobPostWorkflow> jobPostWorkflowMap) {
+            this.jobPostWorkflowMap = jobPostWorkflowMap;
+        }
+
+        public int getPendingCount() {
+            return pendingCount;
+        }
+
+        public void setPendingCount(int pendingCount) {
+            this.pendingCount = pendingCount;
+        }
+
+        public int getTotalCount() {
+            return totalCount;
+        }
+
+        public void setTotalCount(int totalCount) {
+            this.totalCount = totalCount;
+        }
+
+        public JobPost getJobPost() {
+            return jobPost;
+        }
+
+        public void setJobPost(JobPost jobPost) {
+            this.jobPost = jobPost;
+        }
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -293,7 +403,6 @@ public class RecruiterController {
                     }
 
                     // sort by last active
-                    // TODO move 1,2,3 to server constant
                     if (Objects.equals(matchingCandidateRequest.getSortBy(), ServerConstants.REC_SORT_LASTEST_ACTIVE)) {
                         // last active, latest on top
                         Collections.sort(listToBeReturned,  new LastActiveComparator());
@@ -467,7 +576,7 @@ public class RecruiterController {
         @Override
         public int compare(CandidateWorkflowData o1, CandidateWorkflowData o2) {
             if (o1.getExtraData().getLastActive() == null) {
-                return (o2.getCandidate().getCandidateLastWithdrawnSalary() == null) ? 0 : 1;
+                return (o2.getExtraData().getLastActive() == null) ? 0 : 1;
             }
             if (o2.getExtraData().getLastActive() == null) {
                 return -1;

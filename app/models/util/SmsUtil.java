@@ -116,7 +116,7 @@ public class SmsUtil {
     public static void sendWelcomeSmsFromWebsite(String name, String mobile)
     {
         String msg = "Hi " + name + ", Welcome to Trujobs.in! "
-                + "Complete your profile and skill assessment today to begin your job search or download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+                + "Complete your profile today to begin your job search or download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
 
         sendSms(mobile, msg);
     }
@@ -362,7 +362,7 @@ public class SmsUtil {
                 " has been accepted by the recruiter. Please ask your candidate to carry required documents and reach the interview venue on time. ";
 
         if(jobApplication.getInterviewLocationLat() != null){
-            msg += "Address: http://maps.google.com/?q=" + jobApplication.getJobPost().getLatitude() + ", " + jobApplication.getJobPost().getLongitude();
+            msg += "Address: http://maps.google.com/?q=" + jobApplication.getInterviewLocationLat() + ", " + jobApplication.getInterviewLocationLng();
         }
 
         msg += ". Thanks for using www.trujobs.in!";
@@ -473,7 +473,7 @@ public class SmsUtil {
         switch (status){
             case ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING: currentStatus = "is not going "; break;
             case ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED: currentStatus = "is delayed "; break;
-            case ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED: currentStatus = "has left "; break;
+            case ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY: currentStatus = "has left "; break;
             case ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED: currentStatus = "has reached the office "; break;
         }
 

@@ -243,6 +243,14 @@
             </table>
         </div>
 
+        <div id="partnerLoader">
+            <center id="jobLoaderDiv" style="position: relative; text-align: center; width: 100%">
+                <h4>Loading Jobs</h4>
+                <img src="/assets/partner/img/partner_loader.svg" >
+            </center>
+            <div id="job_cards_inc"></div>
+        </div>
+
         <div class="container" id="applyJobs">
             <div id="hotJobs"></div>
             <br>
@@ -254,7 +262,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">Reason for not Going</h4>
+                        <h4 class="modal-title" id="heading">Reason for not Going</h4>
                     </div>
                     <div class="modal-body">
                         <div id="confirmationMsg">
@@ -262,7 +270,7 @@
                                 <img src="/assets/common/img/jobApply.png" width="48px">
                             </center>
                             <center>
-                                <h4><b>Reason for not going for the interview</b></h4>
+                                <h4 id="subHeading"><b>Reason for not going for the interview</b></h4>
                                 <div class="materialDash"></div>
                                 <div class="custom_container" style="margin-top: 16px">
                                     <select id="notGoingReason"></select>

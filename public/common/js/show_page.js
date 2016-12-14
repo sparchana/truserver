@@ -4,6 +4,7 @@ var localityArray = [];
 var jobArray = [];
 var prefLocation;
 var prefLocationName;
+var index = 0;
 
 function getLocality(){
     return localityArray;
@@ -114,11 +115,10 @@ $(document).ready(function(){
 
     $("#sectionOne").css("background-image","linear-gradient(rgba(24, 26, 45, 0.4),rgba(24, 26, 45, 0.4))" +
         ",url(/assets/common/img/"+allJobDetailPageUrlBreak[0]+".png)");
-
     try {
         $.ajax({
             type: "GET",
-            url: "/jobs/" + allJobDetailPageUrlBreak[1] +"/"+ allJobDetailPageUrlBreak[0],
+            url: "/jobs/" + allJobDetailPageUrlBreak[1] +"/"+ allJobDetailPageUrlBreak[0]+"?i=" + index,
             contentType: "application/json; charset=utf-8",
             data: false,
             processData: false,
@@ -137,6 +137,25 @@ $(document).ready(function(){
 
 });
 
+function getAllJobs(index) {
+    var allJobDetailPageUrl = $(location).attr('href');
+    var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
+    allJobDetailPageUrlBreak.reverse();
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/jobs/" + allJobDetailPageUrlBreak[1] +"/"+ allJobDetailPageUrlBreak[0]+"?i=" + index,
+            contentType: "application/json; charset=utf-8",
+            data: false,
+            processData: false,
+            success: processDataForSelectedJobPost
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+    $(".first").hide();
+    $(".last").hide();
+}
 function customDataSuccess(data){
     var content = "";
     data.forEach(function (logo) {
@@ -172,6 +191,7 @@ function createAndAppendDivider(title, ifPrepend) {
 }
 
 function processDataForSelectedJobPost(returnedData) {
+    var jobPostList = returnedData.allJobPost;
     var allJobDetailPageUrl = $(location).attr('href');
     var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
     allJobDetailPageUrlBreak.reverse();
@@ -187,7 +207,32 @@ function processDataForSelectedJobPost(returnedData) {
         $('#jobRoleTitle').html("Register for "+ decodedJobRoleName);
         $('#applyToJobsTitle').html("Apply to "+ decodedJobRoleName);
         if(returnedData != ""){
-        var jobPostCount = Object.keys(returnedData).length;
+        var jobPostCount = Object.keys(jobPostList).length;
+
+            $("#hotJobs").html("");
+            var noOfPages = parseInt(returnedData.totalJobs)/5;
+            var rem = parseInt(returnedData.totalJobs) % 5;
+            if(rem > 0){
+                noOfPages ++;
+            }
+            console.log(parseInt(returnedData.totalJobs)/5);
+            $('#jobCardControl').twbsPagination({
+                totalPages: noOfPages,
+                visiblePages: 5,
+                cssStyle: '',
+                prevText: '<span aria-hidden="true">&laquo;</span>',
+                nextText: '<span aria-hidden="true">&raquo;</span>',
+                onPageClick: function (event, page) {
+                    if(page > 0 ){
+                        index = (page - 1)*5;
+                    }
+                    else{
+                        index = 0;
+                    }
+                    getAllJobs(index);
+                }
+            });
+
             if (jobPostCount > 0) {
                 var count = 0;
                 var popularJobCount = 0;
@@ -196,7 +241,7 @@ function processDataForSelectedJobPost(returnedData) {
                 //returnedData.reverse();
                 $("#jobLoaderDiv").hide();
                 try {
-                    returnedData.forEach(function (jobPost) {
+                    jobPostList.forEach(function (jobPost) {
                         count++;
                         if (count) {
                             /* get all localities of the jobPost */
@@ -492,12 +537,6 @@ function processDataForSelectedJobPost(returnedData) {
                             }
                         }
                     });
-                    if(count<4){
-                        document.getElementById("hotJobs").style.height = "54%";
-                    }
-                    else{
-                        document.getElementById("hotJobs").style.height = "72%";
-                    }
                 } catch (exception) {
                     console.log("exception occured!!" + exception.stack);
                 }

@@ -475,7 +475,7 @@ public class TrudroidController {
                     candidateBuilder.setCandidateTotalExperience(candidate.getCandidateTotalExperience());
                 }
 
-                candidateBuilder.setAppliedJobs(candidate.getJobApplicationList().size());
+                candidateBuilder.setAppliedJobs(new JobPostWorkFlowDAO().candidateAppliedJobs(candidate.getCandidateId()).size());
 
                 //getting candidate DOB
                 if (candidate.getCandidateDOB() != null) {
@@ -771,8 +771,8 @@ public class TrudroidController {
                 //setting other values to the other jobs post builder
                 companyOtherJobPostBuilder.setJobPostId(companyJobPost.getJobPostId());
                 companyOtherJobPostBuilder.setJobPostTitle(companyJobPost.getJobPostTitle());
-                companyOtherJobPostBuilder.setJobPostMinSalary(companyJobPost.getJobPostMinSalary());
-                companyOtherJobPostBuilder.setJobPostMaxSalary(companyJobPost.getJobPostMaxSalary());
+                if(companyJobPost.getJobPostMinSalary()!= null) companyOtherJobPostBuilder.setJobPostMinSalary(companyJobPost.getJobPostMinSalary());
+                if(companyJobPost.getJobPostMaxSalary()!= null) companyOtherJobPostBuilder.setJobPostMaxSalary(companyJobPost.getJobPostMaxSalary());
 
                 // list of all the localities of the job post
                 List<JobPostToLocality> jobPostToLocalityList = companyJobPost.getJobPostToLocalityList();
@@ -1044,10 +1044,14 @@ public class TrudroidController {
                         jobPostObjectBuilder.setJobPostCompanyLogo(jwpf.getJobPost().getCompany().getCompanyLogo());
 
                         jobPostObjectBuilder.setJobPostAddress(jwpf.getJobPost().getJobPostAddress());
+
+                        //recruiter's name
+                        jobPostObjectBuilder.setRecruiterName("Not Available");
                         if(jwpf.getJobPost().getRecruiterProfile() != null){
                             jobPostObjectBuilder.setRecruiterName(jwpf.getJobPost().getRecruiterProfile().getRecruiterProfileName());
                         }
 
+                        //salary
                         jobPostObjectBuilder.setJobPostMinSalary(jwpf.getJobPost().getJobPostMinSalary());
                         if (jwpf.getJobPost().getJobPostMaxSalary() == null || jwpf.getJobPost().getJobPostMaxSalary() == 0) {
                             jobPostObjectBuilder.setJobPostMaxSalary(0);
@@ -1056,24 +1060,27 @@ public class TrudroidController {
                         }
 
                         //experience
+                        ExperienceObject.Builder experienceObjectBuilder = ExperienceObject.newBuilder();
                         if(jwpf.getJobPost().getJobPostExperience() != null){
-                            ExperienceObject.Builder experienceObjectBuilder = ExperienceObject.newBuilder();
                             experienceObjectBuilder.setExperienceId(jwpf.getJobPost().getJobPostExperience().getExperienceId());
                             experienceObjectBuilder.setExperienceType(jwpf.getJobPost().getJobPostExperience().getExperienceType());
-                            jobPostObjectBuilder.setJobPostExperience(experienceObjectBuilder.build());
+                        } else{
+                            experienceObjectBuilder.setExperienceType("Experience not available");
                         }
+                        jobPostObjectBuilder.setJobPostExperience(experienceObjectBuilder.build());
 
 
+                        //education
+                        EducationObject.Builder educationObjectBuilder = EducationObject.newBuilder();
                         if(jwpf.getJobPost().getJobPostEducation() != null){
-                            //education
-                            EducationObject.Builder educationObjectBuilder = EducationObject.newBuilder();
-                            if(jwpf.getJobPost().getJobPostEducation() != null){
-                                educationObjectBuilder.setEducationId(jwpf.getJobPost().getJobPostEducation().getEducationId());
-                                educationObjectBuilder.setEducationName(jwpf.getJobPost().getJobPostEducation().getEducationName());
-                            }
-                            jobPostObjectBuilder.setEducation(educationObjectBuilder.build());
+                            educationObjectBuilder.setEducationId(jwpf.getJobPost().getJobPostEducation().getEducationId());
+                            educationObjectBuilder.setEducationName(jwpf.getJobPost().getJobPostEducation().getEducationName());
+                        } else{
+                            educationObjectBuilder.setEducationName("Education not available");
                         }
+                        jobPostObjectBuilder.setEducation(educationObjectBuilder.build());
 
+                        //setting job post object
                         jobPostWorkFlowObjBuilder.setJobPostObject(jobPostObjectBuilder.build());
                     }
 
@@ -2091,7 +2098,8 @@ public class TrudroidController {
             newCalendar.get(Calendar.DAY_OF_MONTH);
             Date today = newCalendar.getTime();
 
-            for (int k = 2; k < 9; ++k) {
+            // generate interview slots for next of next 3 days
+            for (int k = 2; k < 5; ++k) {
 
                 Calendar c = Calendar.getInstance();
                 c.setTime(today);
@@ -2182,19 +2190,29 @@ public class TrudroidController {
     }
 
     public static Result mGetAllNotGoingReason() {
+        NotGoingReasonRequest notGoingReasonRequest = null;
         NotGoingReasonResponse.Builder notGoingReasonResponse = NotGoingReasonResponse.newBuilder();
 
-        List<ReasonObject> reasonObjectList = new ArrayList<>();
-        List<RejectReason> reason = new RejectReasonDAO().getByType(ServerConstants.INTERVIEW_NOT_GOING_TYPE_REASON);
+        try {
+            String requestString = request().body().asText();
+            notGoingReasonRequest = NotGoingReasonRequest.parseFrom(Base64.decodeBase64(requestString));
 
-        for (RejectReason rejectReason : reason) {
-            ReasonObject.Builder rejectReasonBuilder = ReasonObject.newBuilder();
-            rejectReasonBuilder.setReasonId(rejectReason.getReasonId());
-            rejectReasonBuilder.setReasonTitle(rejectReason.getReasonName());
-            reasonObjectList.add(rejectReasonBuilder.build());
+            List<ReasonObject> reasonObjectList = new ArrayList<>();
+            List<RejectReason> reason = new RejectReasonDAO().getByType((int) notGoingReasonRequest.getTypeId());
+
+            for (RejectReason rejectReason : reason) {
+                ReasonObject.Builder rejectReasonBuilder = ReasonObject.newBuilder();
+                rejectReasonBuilder.setReasonId(rejectReason.getReasonId());
+                rejectReasonBuilder.setReasonTitle(rejectReason.getReasonName());
+                reasonObjectList.add(rejectReasonBuilder.build());
+            }
+
+            notGoingReasonResponse.addAllReasonObject(reasonObjectList);
+
+
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
         }
-
-        notGoingReasonResponse.addAllReasonObject(reasonObjectList);
         return ok(Base64.encodeBase64String(notGoingReasonResponse.build().toByteArray()));
     }
 
@@ -2214,8 +2232,7 @@ public class TrudroidController {
             JobPost jobPost = JobPost.find.where().eq("jobPostId", checkInterviewSlotRequest.getJobPostId()).findUnique();
             if(jobPost == null) {
                 checkInterviewSlotResponse.setStatus(CheckInterviewSlotResponse.Status.FAILURE);
-            }
-            if(JobPostWorkflowEngine.isInterviewRequired(jobPost).getStatus() == ServerConstants.INTERVIEW_REQUIRED){
+            } else if(JobPostWorkflowEngine.isInterviewRequired(jobPost).getStatus() == ServerConstants.INTERVIEW_REQUIRED){
                 checkInterviewSlotResponse.setShouldShowInterview(true);
             } else {
                 checkInterviewSlotResponse.setShouldShowInterview(false);

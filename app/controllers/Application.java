@@ -13,6 +13,7 @@ import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
+import com.avaje.ebean.PagedList;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -26,6 +27,7 @@ import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.*;
+import dao.CompanyDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
 import models.entity.Recruiter.RecruiterProfile;
@@ -835,13 +837,40 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    public static Result getAllNormalJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
-        return ok(toJson(jobPosts));
+    public static Result getAllNormalJobPosts(Long index) {
+        PagedList<JobPost> pagedList
+                = JobPost.find
+                .where()
+                .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                .setFirstRow(Math.toIntExact(index))
+                .setMaxRows(5)
+                .orderBy().asc("source")
+                .orderBy().desc("jobPostUpdateTimestamp")
+                .findPagedList();
+
+        List<JobPost> jobPostList = pagedList.getList();
+        JobPostResponse jobPostResponse = new JobPostResponse();
+        jobPostResponse.setAllJobPost(jobPostList);
+        jobPostResponse.setTotalJobs(JobPost.find.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).findRowCount());
+        return ok(toJson(jobPostResponse));
     }
-    public static Result getAllHotJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
-        return ok(toJson(jobPosts));
+
+    public static Result getAllHotJobPosts(Long index) {
+        PagedList<JobPost> pagedList
+                = JobPost.find
+                .where().eq("jobPostIsHot", "1")
+                .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                .setFirstRow(Math.toIntExact(index))
+                .setMaxRows(5)
+                .orderBy().asc("source")
+                .orderBy().desc("jobPostUpdateTimestamp")
+                .findPagedList();
+
+        List<JobPost> jobPostList = pagedList.getList();
+        JobPostResponse jobPostResponse = new JobPostResponse();
+        jobPostResponse.setAllJobPost(jobPostList);
+        jobPostResponse.setTotalJobs(JobPost.find.where().eq("jobPostIsHot", "1").eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).findRowCount());
+        return ok(toJson(jobPostResponse));
     }
 
     @Security.Authenticated(Secured.class)
@@ -942,6 +971,10 @@ public class Application extends Controller {
 
     public static Result getAllInterviewNotGoingReasons() {
         return ok(toJson(new RejectReasonDAO().getByType(ServerConstants.INTERVIEW_NOT_GOING_TYPE_REASON)));
+    }
+
+    public static Result getAllCandidateETA() {
+        return ok(toJson(new RejectReasonDAO().getByType(ServerConstants.CANDIDATE_ETA)));
     }
 
     public static Result getAllNotSelectedReasons() {
@@ -1285,16 +1318,26 @@ public class Application extends Controller {
         return ok(views.html.Fragment.job_role_page.render(rolePara));
     }
 
-    public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara) {
-        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
-        return ok(toJson(jobPostList));
+    public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara,Long index) {
+        List<JobPost> jobPostList = JobPost.find
+                .where()
+                .eq("jobRole.jobRoleId",idPara)
+                .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                .setFirstRow(Math.toIntExact(index))
+                .setMaxRows(5)
+                .orderBy()
+                .asc("source")
+                .orderBy()
+                .desc("jobPostUpdateTimestamp")
+                .findList();
+        JobPostResponse jobPostResponse = new JobPostResponse();
+        jobPostResponse.setAllJobPost(jobPostList);
+        jobPostResponse.setTotalJobs(JobPost.find.where().eq("jobRole.jobRoleId",idPara).eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).findRowCount());
+        return ok(toJson(jobPostResponse));
     }
 
     public static Result getAllCompanyLogos() {
-        List<Company> companyList = Company.find.where()
-                .ne("CompanyLogo", "https://s3.amazonaws.com/trujobs.in/companyLogos/default_company_logo.png")
-                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
-                .orderBy("companyName").findList();
+        List<Company> companyList = new CompanyDAO().getHiringCompanyLogos();
 
         List<String> logoList = new ArrayList<>();
         for(Company company: companyList){

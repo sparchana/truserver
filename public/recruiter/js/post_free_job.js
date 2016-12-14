@@ -10,6 +10,8 @@ var fullAddress;
 var interviewLat;
 var interviewLng;
 
+var timeSlotTotalCount = 0;
+
 function processDataCheckLocality(returnedData) {
     if (returnedData != null) {
         returnedData.forEach(function (locality) {
@@ -77,6 +79,7 @@ function processDataGetAllLanguage(returnLanguage) {
 function processDataGetAllTimeSlots(returnedData) {
     $('#timeSlotSection').html('');
     returnedData.forEach(function(timeSlot) {
+        timeSlotTotalCount++;
         var id = timeSlot.interviewTimeSlotId;
         var name = timeSlot.interviewTimeSlotName;
         var item = {};
@@ -178,8 +181,6 @@ function renderMap(){
 
 function toJobRequirement(){
     var status = 1;
-
-    renderMap();
     var vacancies = $("#jobPostVacancies").val();
 
     var minSalary = $("#jobPostMinSalary").val();
@@ -274,6 +275,8 @@ function toJobRequirement(){
 
         $('ul.tabs').tabs('select_tab', 'jobRequirement');
         $('body').scrollTop(0);
+
+        renderMap();
     }
 
 }
@@ -511,7 +514,7 @@ $(document).ready(function () {
             var parent = $("#map_parent");
 
             parent.html('');
-            var map = '<div id="jp_map" style="width: 500px; height: 240px"></div>';
+            var map = '<div id="jp_map" class="mapView"></div>';
             parent.append(map);
 
             $('#jp_map').locationpicker({
@@ -701,7 +704,7 @@ function saveJob() {
 
         var timeSlotCount = 0;
         var interviewDayCount = 0;
-        for(i=1; i<=3; i++){
+        for(i=1; i<= timeSlotTotalCount; i++){
             if($("#interview_slot_" + i).is(":checked")){
                 timeSlotCount = timeSlotCount + 1;
             }
@@ -730,7 +733,7 @@ function saveJob() {
     }
 
     var slotArray = [];
-    for(i = 1; i <= 3; i ++){
+    for(i = 1; i <= timeSlotTotalCount; i++){
         if($("#interview_slot_" + i).is(":checked")){
             slotArray.push(parseInt(i));
         }
@@ -894,7 +897,7 @@ function processDataForJobPost(returnedData) {
                     var parent = $("#map_parent");
 
                     parent.html('');
-                    var map = '<div id="jp_map" style="width: 500px; height: 240px"></div>';
+                    var map = '<div id="jp_map" class="mapView"></div>';
                     parent.append(map);
                 } else {
                     $("#jobPostInterviewLocationVal").hide();

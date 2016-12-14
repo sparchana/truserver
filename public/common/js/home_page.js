@@ -6,6 +6,7 @@ var localityArray = [];
 var jobArray = [];
 var prefLocation;
 var prefLocationName;
+var index = 0;
 
 function getLocality(){
     return localityArray;
@@ -160,7 +161,33 @@ function createAndAppendDivider(title) {
 }
 
 function processDataAllJobPosts(returnedData) {
-    var jobPostCount = Object.keys(returnedData).length;
+    console.log(returnedData);
+    var jobPostList = returnedData.allJobPost;
+    var jobPostCount = Object.keys(jobPostList).length;
+    $("#hotJobs").html("");
+    var noOfPages = parseInt(returnedData.totalJobs)/5;
+    var rem = parseInt(returnedData.totalJobs) % 5;
+    if(rem > 0){
+        noOfPages ++;
+    }
+    console.log(parseInt(returnedData.totalJobs)/5);
+    $('#jobCardControl').twbsPagination({
+        totalPages: noOfPages,
+        visiblePages: 5,
+        cssStyle: '',
+        prevText: '<span aria-hidden="true">&laquo;</span>',
+        nextText: '<span aria-hidden="true">&raquo;</span>',
+        onPageClick: function (event, page) {
+            if(page > 0 ){
+                index = (page - 1)*5;
+            }
+            else{
+                 index = 0;
+            }
+            getAllJobs(index);
+        }
+    });
+
     if(jobPostCount > 0){
         var count = 0;
         var parent = $("#hotJobs");
@@ -168,7 +195,7 @@ function processDataAllJobPosts(returnedData) {
         $("#jobLoaderDiv").hide();
         createAndAppendDivider("Popular Jobs");
         var isDividerPresent = false;
-        returnedData.forEach(function (jobPost){
+        jobPostList.forEach(function (jobPost){
             count++;
             if(count){
                 //!* get all localities of the jobPost *!/
@@ -453,12 +480,6 @@ function processDataAllJobPosts(returnedData) {
                 }
             }
         });
-        if(count<4){;
-            document.getElementById("hotJobs").style.height = "54%";
-        }
-        else{
-            document.getElementById("hotJobs").style.height = "72%";
-        }
     }
 
     $('html, body').css({
