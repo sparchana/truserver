@@ -1043,7 +1043,12 @@ public class TrudroidController {
                         jobPostObjectBuilder.setJobPostCompanyName(jwpf.getJobPost().getCompany().getCompanyName());
                         jobPostObjectBuilder.setJobPostCompanyLogo(jwpf.getJobPost().getCompany().getCompanyLogo());
 
-                        jobPostObjectBuilder.setJobPostAddress(jwpf.getJobPost().getJobPostAddress());
+                        //address
+                        if(jwpf.getJobPost().getJobPostAddress() != null){
+                            jobPostObjectBuilder.setJobPostAddress(jwpf.getJobPost().getJobPostAddress());
+                        } else {
+                            jobPostObjectBuilder.setJobPostAddress("Address not Available");
+                        }
 
                         //recruiter's name
                         jobPostObjectBuilder.setRecruiterName("Not Available");
