@@ -688,7 +688,7 @@ function processDataForJobApplications(returnedData) {
                         inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
                         var candidateDocumentVal = document.createElement("div");
-                        candidateDocumentVal.style = "margin-left: 4px";
+                        candidateDocumentVal.style = "margin-left: 4px; margin-top: 12px";
                         candidateDocumentVal.id = "document_" + value.candidate.candidateId;
 
                         var documentList = value.candidate.idProofReferenceList;
@@ -764,17 +764,34 @@ function processDataForJobApplications(returnedData) {
                         var candidateCurrentStatusVal = document.createElement("span");
                         candidateCurrentStatusVal.textContent = "Status not available";
                         if(value.extraData.candidateInterviewStatus != null){
+                            var lastUpdate = new Date(value.extraData.creationTimestamp);
+                            var timing = "";
+                            if(lastUpdate.getHours() > 12){
+                                timing = lastUpdate.getHours() - 12 + ":" + lastUpdate.getMinutes() + " pm";
+                            } else{
+                                timing = lastUpdate.getHours() + ":" + lastUpdate.getMinutes() + " am";
+                            }
+
+                            var dateAndTime = "(" + lastUpdate.getDate() + "-" + (lastUpdate.getMonth() + 1) + "-" + lastUpdate.getFullYear() + " " + timing + ')';
+
+                            var today = new Date();
+                            if(lastUpdate.getDate() == today.getDate() && lastUpdate.getMonth() == today.getMonth()){
+                                dateAndTime = " (Today at: " + timing + ")";
+                            } else if(lastUpdate.getDate() == (today.getDate() -1) && lastUpdate.getMonth() == today.getMonth()){
+                                dateAndTime = " (Yesterday at: " + timing + ")";
+                            }
+
                             if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING){
-                                candidateCurrentStatusVal.textContent = "Not going for interview";
+                                candidateCurrentStatusVal.textContent = "Not going for interview " + dateAndTime;
                                 candidateCurrentStatusVal.style = "margin-left: 4px; color: red; font-weight: bold";
                             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){
-                                candidateCurrentStatusVal.textContent = "Delayed for Interview";
+                                candidateCurrentStatusVal.textContent = "Delayed for Interview " + dateAndTime;
                                 candidateCurrentStatusVal.style = "margin-left: 4px; color: orange; font-weight: bold";
-                            } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED){
-                                candidateCurrentStatusVal.textContent = "On the way";
+                            } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY){
+                                candidateCurrentStatusVal.textContent = "On the way " + dateAndTime;
                                 candidateCurrentStatusVal.style = "margin-left: 4px; color: green; font-weight: bold";
                             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
-                                candidateCurrentStatusVal.textContent = "Reached for Interview";
+                                candidateCurrentStatusVal.textContent = "Reached for Interview " + dateAndTime;
                                 candidateCurrentStatusVal.style = "margin-left: 4px; color: green; font-weight: bold";
                             }
                         }
@@ -788,7 +805,9 @@ function processDataForJobApplications(returnedData) {
                         //candidate last active container
                         var candidateCardRowColTwoFont = document.createElement("font");
                         candidateCardRowColTwoFont.setAttribute("size", "3");
-                        candidateCardRowColTwoFont.textContent = "Last Active: " + value.extraData.lastActive.lastActiveValueName;
+                        if(value.extraData.lastActive != null){
+                            candidateCardRowColTwoFont.textContent = "Last Active: " + value.extraData.lastActive.lastActiveValueName;
+                        }
                         candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
 
 
@@ -877,12 +896,19 @@ function submitCredits() {
             if(contactCredits < 1){
                 notifyError("Contact credits cannot be less than 1");
                 contactCreditStatus = 0;
+            } else if(contactCredits > 10000){
+                notifyError("Contact credits cannot be greater than 10000");
+                contactCreditStatus = 0;
             }
         }
+
         if($("#interviewCreditAmount").val() != ""){
             interviewCredits = parseInt($("#interviewCreditAmount").val());
             if(interviewCredits < 1){
                 notifyError("Interview credits cannot be less than 1");
+                interviewCreditStatus = 0;
+            } else if(interviewCredits > 10000){
+                notifyError("Interview credits cannot be greater than 10000");
                 interviewCreditStatus = 0;
             }
         }
