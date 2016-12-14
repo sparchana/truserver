@@ -766,7 +766,9 @@ function processDataForJobApplications(returnedData) {
                         if(value.extraData.candidateInterviewStatus != null){
                             var lastUpdate = new Date(value.extraData.creationTimestamp);
                             var timing = "";
-                            if(lastUpdate.getHours() > 12){
+                            if(lastUpdate.getHours() == 12){
+                                timing = lastUpdate.getHours() + ":" + lastUpdate.getMinutes() + " pm";
+                            } else if(lastUpdate.getHours() > 12){
                                 timing = lastUpdate.getHours() - 12 + ":" + lastUpdate.getMinutes() + " pm";
                             } else{
                                 timing = lastUpdate.getHours() + ":" + lastUpdate.getMinutes() + " am";
