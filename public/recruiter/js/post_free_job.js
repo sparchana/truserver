@@ -182,6 +182,10 @@ function renderMap(){
             $("#jp_lat").val(currentLocation.latitude);
             $("#jp_lon").val(currentLocation.longitude);
 
+            $("#landmarkDetails").show();
+            $("#interviewBuildingNo").val('');
+            $("#interviewLandmark").val('');
+
             //TODO: address box to capture building name, street name etc
         }
     });
