@@ -680,7 +680,7 @@ public class TrudroidController {
         }
 
         if(nullAddress){
-            if(jobPost.getJobPostAddress() != null){
+            if(jobPost.getJobPostAddress() != null && !Objects.equals(jobPost.getJobPostAddress().trim(), "")){
                 jobPostBuilder.setJobPostAddress(jobPost.getJobPostAddress());
             } else {
                 jobPostBuilder.setJobPostAddress("Address not Available");
@@ -1079,7 +1079,7 @@ public class TrudroidController {
                         }
 
                         if(nullAddress){
-                            if(jwpf.getJobPost().getJobPostAddress() != null){
+                            if(jwpf.getJobPost().getJobPostAddress() != null && !Objects.equals(jwpf.getJobPost().getJobPostAddress().trim(), "")){
                                 jobPostObjectBuilder.setJobPostAddress(jwpf.getJobPost().getJobPostAddress());
                             } else {
                                 jobPostObjectBuilder.setJobPostAddress("Address not Available");
