@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import play.Application;
+import play.Logger;
 import play.test.TestServer;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,7 +17,7 @@ import java.util.Collection;
  * Created by zero on 8/12/16.
  *
  *
- * prod/activator-1.3.9-minimal/bin/activator "test-only SchedulerStats.ScheduledTaskTest"
+ * prod/activator-1.3.9-minimal/bin/activator "test-only Scheduler.ScheduledTaskTest"
  *
  */
 
@@ -28,14 +29,17 @@ import static play.test.Helpers.testServer;
 @RunWith(Parameterized.class)
 public class ScheduledTaskTest {
     enum MethodType {
-        TEST,
         SMS,
         EMAIL,
-        IN_APP_NOTIFICATION
+        IN_APP_NOTIFICATION,
+        COMPUTE_DELAY
     }
 
     private ScheduledTaskTest.MethodType type;
     private SchedulerManager schedulerManager;
+    private int hr;
+    private int min;
+    private int sec;
 
     @Before
     public void initialize() {
@@ -44,26 +48,37 @@ public class ScheduledTaskTest {
 
     // Each parameter should be placed as an argument here
     // Every time runner triggers, it will pass the arguments
-    public ScheduledTaskTest(ScheduledTaskTest.MethodType type) {
+    public ScheduledTaskTest(ScheduledTaskTest.MethodType type,
+                             int hr,
+                             int min,
+                             int sec) {
         this.type = type;
+        this.hr = hr;
+        this.min = min;
+        this.sec = sec;
     }
 
     @Parameterized.Parameters
     public static Collection getTestDataSet() {
         return Arrays.asList(new Object[][]{
-                {MethodType.TEST}
+                {MethodType.COMPUTE_DELAY, 20, 30, 0},
+                {MethodType.COMPUTE_DELAY, 20, 20, 0},
+                {MethodType.COMPUTE_DELAY, 20, 20, 0},
+                {MethodType.COMPUTE_DELAY, 20, 00, 0}
         });
     }
 
 
     @Test
-    public void testSchedulerMainInterviewSMS() {
-        if (type == ScheduledTaskTest.MethodType.TEST) {
+    public void testComputeDelay() {
+        if (type == MethodType.COMPUTE_DELAY) {
             Application fakeApp = fakeApplication();
             TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
-            running(server, () -> {
-                schedulerManager.run();
-            });
+            running(server, () -> Logger.info("delay: " + schedulerManager.computeDelay(
+                    this.hr,
+                    this.min,
+                    this.sec)
+            ));
         }
     }
 }

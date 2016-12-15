@@ -155,7 +155,6 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
                 .columnMapping("createdby", "createdBy")
                 .create();
 
-        Logger.info("workFlowQueryBuilder: " + workFlowQuery);
         List<JobPostWorkflow> jobPostWorkflowList = Ebean.find(JobPostWorkflow.class)
                 .setRawSql(rawSql)
                 .findList();
@@ -209,18 +208,19 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
         SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
 
         StringBuilder htmlTable = new StringBuilder();
-        htmlTable.append("\n\n"
-                + "\n"
-                + "<div>We value your feedback! \n Please login to www.trujobs.in and provide feedback for the candidates that you interviewed today!</div><br> \n\n\n"
-                + "<div><font color=\"#0000ff\">For every feedback you provide we would add an interview credit back to your account!! </font></div><br>\n\n\n"
-        );
 
         if(date == null){
             isReqForToday = true;
             date = mToday;
-            htmlTable.append("<div><b>The following candidates would have walked-in for interviews today ("+sdf.format(date)+"): </b></div><br>\n\n\n");
+            htmlTable.append(
+                      "<div>We value your feedback! \n Please login to www.trujobs.in and provide feedback for the candidates that you interviewed today!</div><br> \n\n\n"
+                    + "<div><font color=\"#0000ff\">For every feedback you provide we would add an interview credit back to your account!! </font></div><br>\n\n\n"
+                    + "<div><b>The following candidates would have walked-in for interviews today ("+sdf.format(date)+"): </b></div><br>\n\n\n");
         } else {
-            htmlTable.append("<div><b>The following candidates would have walked-in for interviews tomorrow ("+sdf.format(date)+"): </b></div><br>\n\n\n");
+            htmlTable.append("" +
+                     "<div><b>The following interviews are confirmed for tomorrow  ("+sdf.format(date)+"): </b></div><br>\n\n\n"
+                    +"<div> You can use http://trujobs.in/recruiter/home to track tomorrow's interviews. </div><br>\n\n\n"
+            );
         }
 
         htmlTable.append(
@@ -300,8 +300,8 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
                 + "\t<thead>\n"
                 + "\t\t<tr>\n"
                 + "\t\t\t<th>Job Post Title</th>\n"
-                + "\t\t\t<th>Total Confirmed</th>\n"
-                + "\t\t\t<th>Total Awaiting</th>\n"
+                + "\t\t\t<th>Confirmed</th>\n"
+                + "\t\t\t<th>Awaiting Confirmation</th>\n"
                 + "\t\t\t<th></th>\n"
                 + "\t\t</tr>\n"
                 + "\t</thead><tbody>");

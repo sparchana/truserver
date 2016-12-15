@@ -6,6 +6,7 @@ import controllers.scheduler.task.SameDayInterviewAlertTask;
 import models.entity.scheduler.SchedulerStats;
 import models.entity.scheduler.Static.SchedulerSubType;
 import models.entity.scheduler.Static.SchedulerType;
+import play.Logger;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -20,23 +21,24 @@ import java.util.Timer;
  * http://stackoverflow.com/questions/20387881/how-to-run-certain-task-every-day-at-a-particular-time-using-scheduledexecutorse
  */
 public class SchedulerManager implements Runnable {
-    /**
-     *
-     * Declare property constraints here
-     *
-     * */
+
 
     private final Timer timer = new Timer(); // Instantiate Timer Object
 
 
     @Override
     public void run() {
+        int mEODTaskStartHr = Integer.parseInt(play.Play.application().configuration().getString("scheduletask.eod.start.hr"));
+        int mEODTaskStartMin = Integer.parseInt(play.Play.application().configuration().getString("scheduletask.eod.start.min"));
+        int mEODTaskStartSec = Integer.parseInt(play.Play.application().configuration().getString("scheduletask.eod.start.sec"));
+
+        long delay = computeDelay(mEODTaskStartHr, mEODTaskStartMin , mEODTaskStartSec);
         // createSameDayInterviewAlertEvent method takes time period (in hrs) as input
         createSameDayInterviewAlertEvent(3);
 
-        createNextDayInterviewAlertEvent();
+        createNextDayInterviewAlertEvent(delay);
 
-        createRecruiterEODEmailAlertEvent();
+        createRecruiterEODEmailAlertEvent(delay);
     }
 
     private void createSameDayInterviewAlertEvent(int hr) {
@@ -49,19 +51,19 @@ public class SchedulerManager implements Runnable {
         timer.schedule(sameDayInterviewTask, 0, xHr);
     }
 
-    private void createNextDayInterviewAlertEvent() {
+    private void createNextDayInterviewAlertEvent(long delay) {
 
         long oneDay = 24 * 1000 * 60 * 60; // 24 hr
 
         NextDayInterviewAlertTask nextDayInterviewAlertTask = new NextDayInterviewAlertTask();
-        timer.schedule(nextDayInterviewAlertTask, 0, oneDay);
+        timer.schedule(nextDayInterviewAlertTask, delay, oneDay);
     }
 
-    private void createRecruiterEODEmailAlertEvent(){
+    private void createRecruiterEODEmailAlertEvent(long delay){
         long oneDay = 24 * 1000 * 60 * 60; // 24 hr
 
         EODRecruiterEmailAlertTask eodRecruiterEmailAlertTask = new EODRecruiterEmailAlertTask();
-        timer.schedule(eodRecruiterEmailAlertTask, 0, oneDay);
+        timer.schedule(eodRecruiterEmailAlertTask, delay, oneDay);
     }
 
 
@@ -97,12 +99,31 @@ public class SchedulerManager implements Runnable {
             shouldRunThisTask = true;
 
         } else {
-
             if(schedulerStats.getStartTimestamp().getDate() < (today).getDate()) {
                 // last run was 'x++' hr back, hence re run
                 shouldRunThisTask = true;
             }
         }
         return shouldRunThisTask;
+    }
+
+    public long computeDelay(int hour, int min, int sec) {
+
+        Calendar cal = Calendar.getInstance();
+
+        min = min - cal.getTime().getMinutes() ;
+        if(min < 0) {
+            --hour;
+            min += 60;
+        }
+
+        hour = hour - cal.getTime().getHours();
+
+        // start time already passed hence delay for a day
+        if(hour < 0) {
+            hour += 24;
+        }
+
+        return hour * 1000 * 60 * 60 + min * 60 + sec;
     }
 }
