@@ -679,6 +679,7 @@ public class TrudroidController {
             }
         }
 
+        //if interview details doesnt have interview address, this logic will fetch the old address(text only + old map resolved address)
         if(nullAddress){
             if(jobPost.getJobPostAddress() != null && !Objects.equals(jobPost.getJobPostAddress().trim(), "")){
                 jobPostBuilder.setJobPostAddress(jobPost.getJobPostAddress());
@@ -1078,6 +1079,7 @@ public class TrudroidController {
                             }
                         }
 
+                        //if interview details doesnt have interview address, this logic will fetch the old address(text only + old map resolved address)
                         if(nullAddress){
                             if(jwpf.getJobPost().getJobPostAddress() != null && !Objects.equals(jwpf.getJobPost().getJobPostAddress().trim(), "")){
                                 jobPostObjectBuilder.setJobPostAddress(jwpf.getJobPost().getJobPostAddress());

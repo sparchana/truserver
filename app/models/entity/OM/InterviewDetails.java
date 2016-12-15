@@ -161,15 +161,22 @@ public class InterviewDetails extends Model {
 
     public String getInterviewFullAddress() {
         String address = null;
+
+        // if interview details doesnt have interview address, it returns null. Once null is returned, we are checking for
+        // old address(free text or old map resolved address)
         if(this.getInterviewAddress() != null){
             address = this.getInterviewAddress();
+
+            //if building No/ office no/ office no is there, prefix it
             if(!Objects.equals(this.getInterviewBuildingNo(), "") && this.getInterviewBuildingNo() != null){
                 address = this.getInterviewBuildingNo() + ", " + address;
 
+                //if landmark is available is there, add it after full address
                 if(!Objects.equals(this.getInterviewLandmark(), "") && this.getInterviewLandmark() != null){
                     address += ", Landmark: " + this.getInterviewLandmark();
                 }
             } else if(!Objects.equals(this.getInterviewLandmark(), "") && this.getInterviewLandmark() != null){
+                //if landmark is available is there, add it after full address
                 address += ", Landmark: " + this.getInterviewLandmark();
             }
         }
