@@ -1,6 +1,5 @@
 package controllers.scheduler;
 
-import api.ServerConstants;
 import controllers.scheduler.task.EODRecruiterEmailAlertTask;
 import controllers.scheduler.task.NextDayInterviewAlertTask;
 import controllers.scheduler.task.SameDayInterviewAlertTask;
@@ -10,13 +9,10 @@ import models.entity.scheduler.Static.SchedulerType;
 import play.Logger;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 
-import static controllers.scheduler.SchedulerConstants.SCHEDULER_SUB_TYPE_SAME_DAY_INTERVIEW;
-import static controllers.scheduler.SchedulerConstants.SCHEDULER_TYPE_SMS;
 
 /**
  * Created by zero on 8/12/16.
@@ -28,7 +24,7 @@ public class SchedulerManager implements Runnable {
      *
      * */
 
-    protected Timer timer = new Timer(); // Instantiate Timer Object
+    private final Timer timer = new Timer(); // Instantiate Timer Object
 
 
     @Override
@@ -67,7 +63,7 @@ public class SchedulerManager implements Runnable {
     }
 
 
-    public static void saveNewSchedularStats(Timestamp startTime, SchedulerType schedulerType,
+    public static void saveNewSchedulerStats(Timestamp startTime, SchedulerType schedulerType,
                                              SchedulerSubType schedulerSubType,
                                              String note, Timestamp endTime, boolean status){
         // make entry in db for this.
@@ -99,8 +95,6 @@ public class SchedulerManager implements Runnable {
             shouldRunThisTask = true;
 
         } else {
-            Logger.info("prev task start date "+ schedulerStats.getStartTimestamp().getDate()
-                    +"current date: " + (today).getDate());
 
             if(schedulerStats.getStartTimestamp().getDate() < (today).getDate()) {
                 // last run was 'x++' hr back, hence re run

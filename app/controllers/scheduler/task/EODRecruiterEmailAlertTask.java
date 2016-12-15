@@ -26,12 +26,12 @@ import static controllers.scheduler.SchedulerConstants.*;
  * Created by zero on 14/12/16.
  */
 public class EODRecruiterEmailAlertTask extends TimerTask{
-    public static String BASE_URL = "http://trujobs.in/recruiter";
+    private static final String BASE_URL = "http://trujobs.in/recruiter";
 
     private Calendar mCalendar = Calendar.getInstance();
-    private Date mToday = mCalendar.getTime();
+    private final Date mToday = mCalendar.getTime();
 
-    private SimpleDateFormat mSdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
+    private final SimpleDateFormat mSdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
 
     private List<JobPostWorkflow> mJobPostWorkflowList;
 
@@ -67,7 +67,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
 
         Timestamp endTime = new Timestamp(System.currentTimeMillis());
 
-        SchedulerManager.saveNewSchedularStats(startTime, type, subType, note, endTime, true);
+        SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
 
     }
 
@@ -105,7 +105,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
 
         Timestamp endTime = new Timestamp(System.currentTimeMillis());
 
-        SchedulerManager.saveNewSchedularStats(startTime, type, subType, note, endTime, true);
+        SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
     }
 
     private void sendEODSummary() {
@@ -197,7 +197,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
 
         Timestamp endTime = new Timestamp(System.currentTimeMillis());
 
-        SchedulerManager.saveNewSchedularStats(startTime, type, subType, note, endTime, true);
+        SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
     }
 
     /* Helper methods */
@@ -211,16 +211,16 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
         StringBuilder htmlTable = new StringBuilder();
         htmlTable.append("\n\n"
                 + "\n"
-                + "We value your feedback! \n Please login to www.trujobs.in and provide feedback for the candidates that you interviewed today! \n\n\n"
-                + "<font color=\"#0000ff\">For every feedback you provide we would add an interview credit back to your account!! </font>\n\n\n"
+                + "<div>We value your feedback! \n Please login to www.trujobs.in and provide feedback for the candidates that you interviewed today!</div><br> \n\n\n"
+                + "<div><font color=\"#0000ff\">For every feedback you provide we would add an interview credit back to your account!! </font></div><br>\n\n\n"
         );
 
         if(date == null){
             isReqForToday = true;
             date = mToday;
-            htmlTable.append("<div><b>The following candidates would have walked-in for interviews today ("+sdf.format(date)+"): </b></div>\n\n\n");
+            htmlTable.append("<div><b>The following candidates would have walked-in for interviews today ("+sdf.format(date)+"): </b></div><br>\n\n\n");
         } else {
-            htmlTable.append("<div><b>The following candidates would have walked-in for interviews tomorrow ("+sdf.format(date)+"): </b></div>\n\n\n");
+            htmlTable.append("<div><b>The following candidates would have walked-in for interviews tomorrow ("+sdf.format(date)+"): </b></div><br>\n\n\n");
         }
 
         htmlTable.append(

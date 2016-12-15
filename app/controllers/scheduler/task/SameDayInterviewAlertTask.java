@@ -97,7 +97,7 @@ public class SameDayInterviewAlertTask extends TimerTask {
 
             Timestamp endTime = new Timestamp(System.currentTimeMillis());
 
-            SchedulerManager.saveNewSchedularStats(startTime, type, subType, note, endTime, true);
+            SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
         }
     }
 

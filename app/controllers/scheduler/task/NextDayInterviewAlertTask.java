@@ -21,7 +21,6 @@ import java.util.TimerTask;
 
 import static api.ServerConstants.SOURCE_INTERNAL;
 import static controllers.scheduler.SchedulerConstants.SCHEDULER_SUB_TYPE_NEXT_DAY_INTERVIEW;
-import static controllers.scheduler.SchedulerConstants.SCHEDULER_SUB_TYPE_SAME_DAY_INTERVIEW;
 import static controllers.scheduler.SchedulerConstants.SCHEDULER_TYPE_SMS;
 
 /**
@@ -86,7 +85,7 @@ public class NextDayInterviewAlertTask extends TimerTask {
 
             Timestamp endTime = new Timestamp(System.currentTimeMillis());
 
-            SchedulerManager.saveNewSchedularStats(startTime, type, subType, note, endTime, true);
+            SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
         }
     }
 }
