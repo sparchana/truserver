@@ -1,7 +1,7 @@
 package models.util;
 
 import api.http.httpRequest.Recruiter.AddCreditRequest;
-import controllers.SharedSettings;
+import controllers.Global;
 import models.entity.JobPost;
 import models.entity.Recruiter.RecruiterProfile;
 import notificationService.EmailEvent;
@@ -182,6 +182,6 @@ public class EmailUtil {
 
         //adding to notificationHandler queue
         NotificationEvent notificationEvent = new EmailEvent(to, message, subject);
-        SharedSettings.getGlobalSettings().getMyNotificationHandler().addToQueue(notificationEvent);
+        Global.getMyNotificationHandler().addToQueue(notificationEvent);
     }
 }

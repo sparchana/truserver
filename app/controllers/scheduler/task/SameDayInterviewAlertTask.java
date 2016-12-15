@@ -1,6 +1,6 @@
 package controllers.scheduler.task;
 
-import controllers.SharedSettings;
+import controllers.Global;
 import controllers.scheduler.SchedulerConstants;
 import api.ServerConstants;
 import models.entity.OM.JobPostWorkflow;
@@ -81,7 +81,7 @@ public class SameDayInterviewAlertTask extends TimerTask {
                         new SMSEvent(jobPostWorkflow.getCandidate().getCandidateMobile(),
                                 SmsUtil.getSameDayInterviewAlertSmsString(jobPostWorkflow));
 
-                SharedSettings.getGlobalSettings().getMyNotificationHandler().addToQueue(notificationEvent);
+                Global.getMyNotificationHandler().addToQueue(notificationEvent);
             }
 
             // make entry in db for this.

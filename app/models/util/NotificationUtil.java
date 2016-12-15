@@ -1,7 +1,7 @@
 package models.util;
 
 import api.ServerConstants;
-import controllers.SharedSettings;
+import controllers.Global;
 import models.entity.Candidate;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Static.InterviewTimeSlot;
@@ -20,7 +20,7 @@ public class NotificationUtil {
 
         //adding to notificationHandler Queue
         NotificationEvent notificationEvent = new FCMEvent(token, messageText, title, intentType);
-        SharedSettings.getGlobalSettings().getMyNotificationHandler().addToQueue(notificationEvent);
+        Global.getMyNotificationHandler().addToQueue(notificationEvent);
     }
 
     public static void sendInterviewSelectionNotification(Candidate candidate, JobPostWorkflow jobPostWorkflow){

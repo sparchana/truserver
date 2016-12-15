@@ -9,7 +9,7 @@ import play.Application;
  */
 public class Global extends GlobalSettings {
 
-    private NotificationHandler myNotificationHandler;
+    private static NotificationHandler myNotificationHandler;
 
     public void onStart(play.Application app) {
         //myNotificationHandler class instantiated
@@ -19,18 +19,17 @@ public class Global extends GlobalSettings {
         new Thread(myNotificationHandler).start();
 
         Logger.info("Application has started");
-        SharedSettings.setGlobalSettings(this);
     }
 
     public void onStop(Application app) {
         Logger.info("Application shutdown...");
     }
 
-    public NotificationHandler getMyNotificationHandler() {
+    public static NotificationHandler getMyNotificationHandler() {
         return myNotificationHandler;
     }
 
-    public void setMyNotificationHandler(NotificationHandler myNotificationHandler) {
-        this.myNotificationHandler = myNotificationHandler;
+    public static void setMyNotificationHandler(NotificationHandler myNotificationHandler) {
+        Global.myNotificationHandler = myNotificationHandler;
     }
 }

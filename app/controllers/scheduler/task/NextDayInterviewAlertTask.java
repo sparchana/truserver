@@ -1,7 +1,7 @@
 package controllers.scheduler.task;
 
 import api.ServerConstants;
-import controllers.SharedSettings;
+import controllers.Global;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.scheduler.Scheduler;
 import models.entity.scheduler.Static.SchedulerSubType;
@@ -86,7 +86,7 @@ public class NextDayInterviewAlertTask extends TimerTask {
                         new SMSEvent(jobPostWorkflow.getCandidate().getCandidateMobile(),
                                 SmsUtil.getNextDayInterviewAlertSmsString(jobPostWorkflow));
 
-                SharedSettings.getGlobalSettings().getMyNotificationHandler().addToQueue(notificationEvent);
+                Global.getMyNotificationHandler().addToQueue(notificationEvent);
             }
 
             // make entry in db for this.

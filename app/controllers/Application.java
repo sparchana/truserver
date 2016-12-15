@@ -2196,7 +2196,7 @@ public class Application extends Controller {
 
     public static Result testQueue() {
         NotificationEvent notificationEvent = new SMSEvent("+918971739586", "Test message11");
-        SharedSettings.getGlobalSettings().getMyNotificationHandler().addToQueue(notificationEvent);
+        Global.getMyNotificationHandler().addToQueue(notificationEvent);
 
         return ok("-");
     }
