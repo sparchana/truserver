@@ -455,7 +455,12 @@
                       </div>
                       <div class="input-field col s12 l8">
 
-                        <input type="text" class="form-control" id="interviewAddress" /> <!-- google autocomplete textbox -->
+                        <input type="text" class="form-control" id="interviewAddress" onclick="clearField()" placeholder="Start typing company / building name or landmark / locality name" /> <!-- google autocomplete textbox -->
+
+                        <div id="landmarkDetails" style="display: none">
+                          <input type="text" class="form-control" id="interviewBuildingNo" /> <!-- google autocomplete textbox -->
+                          <input type="text" class="form-control" id="interviewLandmark" /> <!-- google autocomplete textbox -->
+                        </div>
 
                         <!-- hidden lat/long -->
                         <input type="text" class="form-control" style="width: 110px; display: none" id="jp_lat" />

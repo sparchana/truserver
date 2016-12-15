@@ -154,6 +154,9 @@ function toJobDetail(){
     $('body').scrollTop(0);
 }
 
+function clearField(){
+    $('#interviewAddress').val('');
+}
 
 function renderMap(){
     if(interviewLat == null){
@@ -178,6 +181,7 @@ function renderMap(){
             //add method if we want to perform any action
             $("#jp_lat").val(currentLocation.latitude);
             $("#jp_lon").val(currentLocation.longitude);
+
             //TODO: address box to capture building name, street name etc
         }
     });
@@ -694,9 +698,11 @@ function saveJob() {
     } else if(interviewLat == null){
         notifyError("Please enter interview address");
         status = 0;
+        $('#interviewAddress').val('');
     } else if(interviewLat == 12.975568542471832){ //if address is by default
         notifyError("Please enter interview address");
         status = 0;
+        $('#interviewAddress').val('');
     }
 
     if(status == 1){

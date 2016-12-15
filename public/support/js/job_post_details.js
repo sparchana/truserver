@@ -794,6 +794,10 @@ function processDataForJobPost(returnedData) {
     renderMap();
 }
 
+function clearField(){
+    $('#interviewAddress').val('');
+}
+
 function renderMap(){
     if(interviewLat == null){
 

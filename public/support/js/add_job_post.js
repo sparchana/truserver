@@ -358,13 +358,14 @@ $(function() {
         } else if(interviewLat == null){
             notifyError("Please enter interview address", "danger");
             status = 0;
+            $('#interviewAddress').val('');
         } else if(interviewLat == 12.975568542471832){ //if address is by default
             notifyError("Please enter interview address", "danger");
             status = 0;
+            $('#interviewAddress').val('');
         }
 
-
-    if(status == 1){
+        if(status == 1){
             if($("#jobPostRecruiter").val() != "" && $("#jobPostRecruiter").val() != null && $("#jobPostRecruiter").val() != undefined){
                 recId = $("#jobPostRecruiter").val();
             }
@@ -458,7 +459,6 @@ $(function() {
                 console.log("exception occured!!" + exception);
             }
         }
-
     }); // end of submit
 }); // end of function
 
