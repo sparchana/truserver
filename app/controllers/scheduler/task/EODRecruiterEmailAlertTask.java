@@ -213,7 +213,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
         StringBuilder htmlTable = new StringBuilder();
         htmlTable.append("\n\n"
                 + "\n"
-                + "We value your feedback!  Please login to www.trujobs.in and provide feedback for the candidates that you interviewed today! \n\n\n"
+                + "We value your feedback! \n Please login to www.trujobs.in and provide feedback for the candidates that you interviewed today! \n\n\n"
                 + "<font color=\"#0000ff\">For every feedback you provide we would add an interview credit back to your account!! </font>\n\n\n"
         );
 
@@ -226,22 +226,21 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
         }
 
         htmlTable.append(
-                  "<table border=\"1\" cellpadding=\"5\" style=\"font-size:12.8px\">\n"
-                + "\t<thead>\n"
-                + "\t\t<tr>\n"
-                + "<b><th>No</th>\n"
-                + "<th>Job Post Title</th>\n"
-                + "<th>Name</th>\n"
-                + "<th>Time Slot</th>\n"
+                  " <table border=\"1\" cellpadding=\"5\" style=\"font-size:12.8px\">\n"
+                + " <thead>"
+                + " <tr><b>"
+                + " <th>Job Post Title</th>"
+                + " <th>Name</th>"
+                + " <th>Time Slot</th>"
         );
         if(isReqForToday){
-            htmlTable.append("\t\t\t<th>Add feedback </th>\n");
+            htmlTable.append("<th>Add feedback </th>\n");
         } else {
-            htmlTable.append("\t\t\t<th>Mobile </th>\n");
+            htmlTable.append("<th>Mobile </th>\n");
         }
         htmlTable.append(
-                  "\t\t</b></tr>\n"
-                + "\t</thead><tbody>");
+                  "</b></tr>\n"
+                + "</thead><tbody>");
 
         String feedbackLink;
 
@@ -281,7 +280,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
         if(isReqForToday){
             row.append(
                      "<td>"+ slotTitle +"</td>"
-                    +"<td> <a href="+feedbackLink+" target=\"_blank\">" +"Feedback</td>"
+                    +"<td><a href="+feedbackLink+" target=\"_blank\">" +"Feedback</td>"
             );
         } else {
             row.append(

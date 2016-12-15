@@ -38,7 +38,7 @@ public class EmailUtil {
                 "                <hr style=\"background: #ffffff\">\n" + "<br>";
 
     private static String MESSAGE_DIV_START = "<div style=\" display: inline-block; text-align: left; font-color: #000000; " +
-            " letter-spacing: 1.5px; "+
+            " letter-spacing: 1.5px; color: #000000;"+
             " line-height: 20px; padding-left: 4%; padding-right: 4%; width: 70%; background: #ffffff\">";
 
     private static String MESSAGE_HELLO = "Hello ";
@@ -114,7 +114,6 @@ public class EmailUtil {
 
         return MAIL_HEADER + MESSAGE_DIV_START + MESSAGE_HELLO
                 + recruiterProfile.getRecruiterProfileName() + "!<br><br>"
-                + "Thanks for posting your job on TruJobs! "
                 + message
                 + "Happy hiring!"
                 + MESSAGE_THANKYOU +  MESSAGE_DIV_END + MAIL_FOOTER;
