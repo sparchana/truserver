@@ -337,8 +337,20 @@ public class SmsUtil {
 
         String msg = "Hi " + candidate.getCandidateFirstName() + ", your interview for " + jobApplication.getJobPost().getJobPostTitle() + " at " + jobApplication.getJobPost().getCompany().getCompanyName() +
                 " has been confirmed on " + interviewDate + " between " + jobApplication.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Please reach the office on time with your documents. All the best!";
-        if(jobApplication.getJobPost().getJobPostAddress() != null || !Objects.equals(jobApplication.getJobPost().getJobPostAddress(), "")){
-            msg += "\n\nAddress: " + jobApplication.getJobPost().getJobPostAddress();
+
+        Boolean nullAddress = false;
+        if(jobApplication.getJobPost().getInterviewDetailsList().get(0) != null){
+            if(jobApplication.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress() != null){
+                msg += "\n\nAddress: " + jobApplication.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress();
+            } else{
+                nullAddress = true;
+            }
+        }
+
+        if(nullAddress){
+            if(jobApplication.getJobPost().getJobPostAddress() != null || !Objects.equals(jobApplication.getJobPost().getJobPostAddress(), "")){
+                msg += "\n\nAddress: " + jobApplication.getJobPost().getJobPostAddress();
+            }
         }
 
         if (jobApplication.getInterviewLocationLat() != null) {

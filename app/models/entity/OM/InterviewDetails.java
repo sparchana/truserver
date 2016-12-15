@@ -9,6 +9,7 @@ import models.entity.Static.InterviewTimeSlot;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 /**
  * Created by dodo on 29/9/16.
@@ -156,5 +157,22 @@ public class InterviewDetails extends Model {
 
     public void setInterviewLandmark(String interviewLandmark) {
         this.interviewLandmark = interviewLandmark;
+    }
+
+    public String getInterviewFullAddress() {
+        String address = null;
+        if(this.getInterviewAddress() != null){
+            address = this.getInterviewAddress();
+            if(!Objects.equals(this.getInterviewBuildingNo(), "") && this.getInterviewBuildingNo() != null){
+                address = this.getInterviewBuildingNo() + ", " + address;
+
+                if(!Objects.equals(this.getInterviewLandmark(), "") && this.getInterviewLandmark() != null){
+                    address += ", Landmark: " + this.getInterviewLandmark();
+                }
+            } else if(!Objects.equals(this.getInterviewLandmark(), "") && this.getInterviewLandmark() != null){
+                address += ", Landmark: " + this.getInterviewLandmark();
+            }
+        }
+        return address;
     }
 }

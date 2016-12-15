@@ -215,18 +215,7 @@ public class JobService {
                 interviewDetails.setLat(addJobPostRequest.getJobPostInterviewLocationLat());
                 interviewDetails.setLng(addJobPostRequest.getJobPostInterviewLocationLng());
 
-                String address = addJobPostRequest.getJobPostAddress();
-                if(!Objects.equals(addJobPostRequest.getJobPostAddressBuildingNo(), "") && addJobPostRequest.getJobPostAddressBuildingNo() != null){
-                    address = addJobPostRequest.getJobPostAddressBuildingNo() + ", " + address;
-
-                    if(!Objects.equals(addJobPostRequest.getJobPostAddressLandmark(), "") && addJobPostRequest.getJobPostAddressLandmark() != null){
-                        address += ", Landmark: " + addJobPostRequest.getJobPostAddressLandmark();
-                    }
-                } else if(!Objects.equals(addJobPostRequest.getJobPostAddressLandmark(), "") && addJobPostRequest.getJobPostAddressLandmark() != null){
-                    address += ", Landmark: " + addJobPostRequest.getJobPostAddressLandmark();
-                }
-
-                interviewDetails.setInterviewAddress(address);
+                interviewDetails.setInterviewAddress(addJobPostRequest.getJobPostAddress());
                 interviewDetails.setInterviewBuildingNo(addJobPostRequest.getJobPostAddressBuildingNo());
                 interviewDetails.setInterviewLandmark(addJobPostRequest.getJobPostAddressLandmark());
 

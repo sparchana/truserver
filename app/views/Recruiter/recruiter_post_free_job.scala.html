@@ -450,6 +450,20 @@
                     </div>
 
                     <div class="row" id="jobPostDetails">
+
+                      <div class="input-field col s12 l4" style="margin-top: 20px">
+                        <label>Interview address:<font color="red">*</font></label>
+                      </div>
+
+                      <div class="input-field col s12 l8">
+
+                        <input type="text" class="form-control" id="interviewAddress" onclick="clearField()" placeholder="Start typing company / building name or landmark / locality name" /> <!-- google autocomplete textbox -->
+
+                        <!-- hidden lat/long -->
+                        <input type="text" class="form-control" style="width: 110px; display: none" id="jp_lat" />
+                        <input type="text" class="form-control" style="width: 110px; display: none" id="jp_lon" />
+                      </div>
+
                       <div style="display: none;" id="landmarkDetails">
                           <!-- office/building no -->
                         <div class="input-field col s12 l4" style="margin-top: 16px">
@@ -467,19 +481,6 @@
                         <div class="input-field col s12 l8" style="margin-top: 20px">
                           <input type="text" placeholder="Enter landmark" class="form-control" id="interviewLandmark" />
                         </div>
-                      </div>
-
-                      <div class="input-field col s12 l4" style="margin-top: 20px">
-                        <label>Interview address:<font color="red">*</font></label>
-                      </div>
-
-                      <div class="input-field col s12 l8">
-
-                        <input type="text" class="form-control" id="interviewAddress" onclick="clearField()" placeholder="Start typing company / building name or landmark / locality name" /> <!-- google autocomplete textbox -->
-
-                        <!-- hidden lat/long -->
-                        <input type="text" class="form-control" style="width: 110px; display: none" id="jp_lat" />
-                        <input type="text" class="form-control" style="width: 110px; display: none" id="jp_lon" />
                       </div>
 
                     </div>
