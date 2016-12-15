@@ -185,15 +185,13 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
 
         // fetch, create and append event from map
         String subject = "Your posted job is receiving applications!! ACTION NEEDED!";
-        //TODO remove this counter
-        int i = 0;
         for(Map.Entry<RecruiterProfile, Map<JobPost, SummaryCount>> entry: summaryMap.entrySet()) {
             // send email for every recruiter
             EmailEvent eodSummaryEmailEvent = getHTMLMessageForEODSummary(entry.getKey()
                     , entry.getValue(), subject);
 
             if(eodSummaryEmailEvent != null){
-                if(++i < 2) SharedSettings.getGlobalSettings().getMyNotificationHandler().addToQueue(eodSummaryEmailEvent);
+               SharedSettings.getGlobalSettings().getMyNotificationHandler().addToQueue(eodSummaryEmailEvent);
             }
         }
 
