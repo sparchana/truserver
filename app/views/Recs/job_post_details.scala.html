@@ -59,10 +59,10 @@
         </a>
       </h2>
       <hr>
-            <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block"> : Information visible on website/app
+        <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block"> : Information visible on website/app
             <br> <font color="red">*</font>: Mandatory information
             <hr>
-            <div id="jobPostSection" style="width: 68%">
+            <div id="jobPostSection" style="width: 80%">
                 <form id="job_post_form">
                         <!-- hidden field -->
                     <input id="jobPostId" style="display: none">
@@ -372,19 +372,17 @@
                             <div class="row">
                                 <div class="col-sm-3"><h5>Interview Address:</h5></div>
                                 <div class="col-sm-9">
-                                    <div id="jobPostAddressVal" style="margin-top: 8px">Not Specified</div>
-                                    <input id="jobPostAddress" placeholder="Interview location">
-                                    <span id="interviewLocationUpdate" style="cursor: pointer; color: #0D47A1" onclick="interviewUpdate()"><b>Update</b></span>
+                                    <input type="text" class="form-control" id="interviewAddress" /> <!-- google autocomplete textbox -->
 
-                                    <!-- map view -->
-                                    <div style="display: none">
-                                        <input type="text" id="jp_address_text" style="width: 400px"/>
-                                        <input type="text" id="jp_lat"/>
-                                        <input type="text" id="jp_lon"/>
-                                    </div>
-                                    <div id="map_parent"></div>
+                                    <!-- hidden lat/long -->
+                                    <input type="text" class="form-control" style="width: 110px; display: none" id="jp_lat" />
+                                    <input type="text" class="form-control" style="width: 110px; display: none" id="jp_lon" />
+
                                 </div>
                             </div>
+
+                            <div id="map_parent" style="width: 100%; height: 480px;"></div>
+
                         </div>
                     </div>
 

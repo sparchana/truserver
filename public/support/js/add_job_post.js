@@ -182,6 +182,9 @@ $(function() {
             }
         }
 
+        interviewLat = $("#jp_lat").val();
+        interviewLng = $("#jp_lon").val();
+
         var minSalary = $("#jobPostMinSalary").val();
         var maxSalary = $("#jobPostMaxSalary").val();
 
@@ -353,11 +356,15 @@ $(function() {
             notifyError("Please specify interview slots", 'danger');
             status = 0;
         } else if(interviewLat == null){
-            notifyError("Please enter interview address", 'danger');
+            notifyError("Please enter interview address", "danger");
+            status = 0;
+        } else if(interviewLat == 12.975568542471832){ //if address is by default
+            notifyError("Please enter interview address", "danger");
             status = 0;
         }
 
-        if(status == 1){
+
+    if(status == 1){
             if($("#jobPostRecruiter").val() != "" && $("#jobPostRecruiter").val() != null && $("#jobPostRecruiter").val() != undefined){
                 recId = $("#jobPostRecruiter").val();
             }
@@ -390,9 +397,7 @@ $(function() {
                 }
             }
 
-            fullAddress = $('#jp_address_text').val();
-            interviewLat = $("#jp_lat").val();
-            interviewLng = $("#jp_lon").val();
+            fullAddress = $('#interviewAddress').val();
 
             var reviewApplication;
             if($('#check_applications').is(':checked')){

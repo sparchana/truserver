@@ -454,18 +454,16 @@
                         <label>Interview address:<font color="red">*</font></label>
                       </div>
                       <div class="input-field col s12 l8">
-                        <div id="jobPostInterviewLocationVal" style="display: none; margin-top: 16px">Not Specified</div>
-                        <input id="jobPostInterviewLocation" placeholder="Start typing your address..">
-                        <span id="interviewLocationUpdate" style="cursor: pointer; color: #2ec866" onclick="interviewUpdate()"><b>Update</b></span>
 
-                        <div style="display: none">
-                            <input type="text" id="jp_address_text" style="width: 400px"/>
-                            <input type="text" id="jp_lat"/>
-                            <input type="text" id="jp_lon"/>
-                        </div>
-                        <div id="map_parent"></div>
+                        <input type="text" class="form-control" id="interviewAddress" /> <!-- google autocomplete textbox -->
+
+                        <!-- hidden lat/long -->
+                        <input type="text" class="form-control" style="width: 110px; display: none" id="jp_lat" />
+                        <input type="text" class="form-control" style="width: 110px; display: none" id="jp_lon" />
                       </div>
                     </div>
+
+                    <div id="map_parent" style="width: 100%; height: 480px;"></div>
 
                     <div class="row" style="margin-top: 24px">
                         <a class="waves-effect waves-light ascentGreen btn right" id="saveEdit" onclick="saveJob()"><font style="color: #fff;
