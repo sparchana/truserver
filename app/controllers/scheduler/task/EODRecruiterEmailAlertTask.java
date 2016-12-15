@@ -20,7 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static controllers.scheduler.SchedulerConstants.*;
-import static play.libs.Json.toJson;
 
 /**
  * Created by zero on 14/12/16.
@@ -47,7 +46,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
         SchedulerSubType subType = SchedulerSubType.find.where()
                 .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_RECRUITER_EOD_INTERVIEW_LINEUP)
                 .findUnique();
-        String note = "Interview EMAIL alert for confirm/awaiting interview summary.";
+        String note = "Interview EMAIL alert for today's interview .";
 
 
         // club all interviews that happened today into their respective
@@ -71,58 +70,6 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
 
     }
 
-    private EmailEvent getHTMLMessage(RecruiterProfile recruiterProfile,
-                                      List<JobPostWorkflow> jobPostWorkflows,
-                                      String subject, Date date){
-        StringBuilder htmlTable = new StringBuilder();
-        htmlTable.append(subject +
-                "<table>\n"
-                + "\t<thead>\n"
-                + "\t\t<tr>\n"
-                + "\t\t\t<th>Job Post Title</th>\n"
-                + "\t\t\t<th>Candidate Name</th>\n"
-                + "\t\t\t<th>Interview slot</th>\n"
-                + "\t\t\t<th>Coming from ?</th>\n"
-                + "\t\t\t<th>Feedback</th>\n"
-                + "\t\t</tr>\n"
-                + "\t</thead><tbody>");
-
-        String feedbackLink;
-
-        SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
-
-
-        for(JobPostWorkflow jobPostWorkflow: jobPostWorkflows) {
-            if(date == null) {
-                feedbackLink = BASE_URL + "/home";
-            } else {
-                feedbackLink = BASE_URL + "/job/track/"+jobPostWorkflow.getJobPost().getJobPostId()+"?date="+sdf.format(date);
-            }
-            htmlTable.append(
-                    getHTMLTableRow(
-                            jobPostWorkflow.getJobPost().getJobPostTitle(),
-                            jobPostWorkflow.getCandidate().getCandidateFullName(),
-                            jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName(),
-                            jobPostWorkflow.getCandidate().getLocality() != null ? jobPostWorkflow.getCandidate().getLocality().getLocalityName() : "NA",
-                            feedbackLink));
-        }
-        htmlTable.append("</tbody></table>");
-
-        return new EmailEvent(recruiterProfile.getRecruiterProfileEmail(), EmailUtil.getEmailHTML(recruiterProfile, htmlTable.toString()), subject);
-    }
-
-    private String getHTMLTableRow(String jobTitle, String candidateName, String slotTitle,String locationTitle,
-                                   String feedbackLink) {
-
-        return "<tr>"+
-                "<th>"+ jobTitle +"</th>"+
-                "<th>"+ candidateName +"</th>"+
-                "<th>"+ slotTitle +"</th>"+
-                "<th>"+ locationTitle +"</th>"+
-                "<th> <a href="+feedbackLink+" target=\"_blank\">" +"Feedback</th>"+
-                "</tr>";
-    }
-
     private void sendTomorrowsLineUp() {
         if( !SchedulerManager.checkIfEODTaskShouldRun(SCHEDULER_TYPE_EMAIL,
                 SCHEDULER_SUB_TYPE_RECRUITER_EOD_NEXT_DAY_INTERVIEW_LINEUP)){
@@ -135,9 +82,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
         SchedulerSubType subType = SchedulerSubType.find.where()
                 .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_RECRUITER_EOD_NEXT_DAY_INTERVIEW_LINEUP)
                 .findUnique();
-        String note = "Interview EMAIL alert for confirm/awaiting interview summary.";
-
-
+        String note = "Interview Email alert for tomorrow's interview lineup.";
 
         mCalendar.set(Calendar.DAY_OF_MONTH, mToday.getDate() + 1);
         Date tomorrow = mCalendar.getTime();
@@ -174,7 +119,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
         SchedulerSubType subType = SchedulerSubType.find.where()
                 .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_RECRUITER_EOD_SUMMARY)
                 .findUnique();
-        String note = "Interview EMAIL alert for confirm/awaiting interview summary.";
+        String note = "Interview Email alert for confirm/awaiting interview summary.";
 
         // for all recruiter
         // total confirmed , both auto and byRecruiter, in a day
@@ -208,11 +153,15 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
         List<JobPostWorkflow> jobPostWorkflowList = Ebean.find(JobPostWorkflow.class)
                 .setRawSql(rawSql)
                 .findList();
-        // 24 hr summary
 
-        Logger.info("list: " + toJson(jobPostWorkflowList.get(0)));
-
+        // prep map
         for(JobPostWorkflow jobPostWorkflow: jobPostWorkflowList) {
+            if(jobPostWorkflow.getJobPost() == null
+                    || jobPostWorkflow.getJobPost().getRecruiterProfile() == null
+                    || jobPostWorkflow.getJobPost().getRecruiterProfile().getRecruiterProfileEmail() == null
+                    || jobPostWorkflow.getJobPost().getRecruiterProfile().getRecruiterProfileEmail().trim().isEmpty()) {
+                continue;
+            }
 
             summaryMap.putIfAbsent(jobPostWorkflow.getJobPost().getRecruiterProfile(), new HashMap<>());
 
@@ -228,6 +177,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
             }
         }
 
+        // fetch, create and append event from map
         String subject = "Your Interview Summary !";
         for(Map.Entry<RecruiterProfile, Map<JobPost, SummaryCount>> entry: summaryMap.entrySet()) {
             // send email for every recruiter
@@ -240,6 +190,66 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
 
         SchedulerManager.saveNewSchedularStats(startTime, type, subType, note, endTime, true);
     }
+
+    /* Helper methods */
+    private EmailEvent getHTMLMessage(RecruiterProfile recruiterProfile,
+                                      List<JobPostWorkflow> jobPostWorkflows,
+                                      String subject, Date date){
+        StringBuilder htmlTable = new StringBuilder();
+        htmlTable.append(subject +
+                "<table>\n"
+                + "\t<thead>\n"
+                + "\t\t<tr>\n"
+                + "\t\t\t<th>Job Post Title</th>\n"
+                + "\t\t\t<th>Candidate Name</th>\n"
+                + "\t\t\t<th>Interview slot</th>\n"
+                + "\t\t\t<th>Coming from ?</th>\n"
+                + "\t\t\t<th>Feedback</th>\n"
+                + "\t\t</tr>\n"
+                + "\t</thead><tbody>");
+
+        String feedbackLink;
+
+        SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
+
+
+        for(JobPostWorkflow jobPostWorkflow: jobPostWorkflows) {
+            if(jobPostWorkflow.getJobPost() == null
+                    || jobPostWorkflow.getJobPost().getRecruiterProfile() == null
+                    || jobPostWorkflow.getJobPost().getRecruiterProfile().getRecruiterProfileEmail() == null
+                    || jobPostWorkflow.getJobPost().getRecruiterProfile().getRecruiterProfileEmail().trim().isEmpty()) {
+                continue;
+            }
+            if(date == null) {
+                feedbackLink = BASE_URL + "/home";
+            } else {
+                feedbackLink = BASE_URL + "/job/track/"+jobPostWorkflow.getJobPost().getJobPostId()+"?date="+sdf.format(date);
+            }
+            htmlTable.append(
+                    getHTMLTableRow(
+                            jobPostWorkflow.getJobPost().getJobPostTitle(),
+                            jobPostWorkflow.getCandidate().getCandidateFullName(),
+                            jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName(),
+                            jobPostWorkflow.getCandidate().getLocality() != null ? jobPostWorkflow.getCandidate().getLocality().getLocalityName() : "NA",
+                            feedbackLink));
+        }
+        htmlTable.append("</tbody></table>");
+
+        return new EmailEvent(recruiterProfile.getRecruiterProfileEmail(), EmailUtil.getEmailHTML(recruiterProfile, htmlTable.toString()), subject);
+    }
+
+    private String getHTMLTableRow(String jobTitle, String candidateName, String slotTitle,String locationTitle,
+                                   String feedbackLink) {
+
+        return "<tr>"+
+                "<th>"+ jobTitle +"</th>"+
+                "<th>"+ candidateName +"</th>"+
+                "<th>"+ slotTitle +"</th>"+
+                "<th>"+ locationTitle +"</th>"+
+                "<th> <a href="+feedbackLink+" target=\"_blank\">" +"Feedback</th>"+
+                "</tr>";
+    }
+
 
     private EmailEvent getHTMLMessageForEODSummary(RecruiterProfile recruiterProfile, Map<JobPost, SummaryCount> map, String subject) {
         StringBuilder htmlTable = new StringBuilder();
@@ -294,6 +304,12 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
         Map<Long, List<JobPostWorkflow>> interviewsPerRecruiterMap = new HashMap<>();
 
         for(JobPostWorkflow jobPostWorkflow: mJobPostWorkflowList) {
+            if(jobPostWorkflow.getJobPost() == null
+                    || jobPostWorkflow.getJobPost().getRecruiterProfile() == null
+                    || jobPostWorkflow.getJobPost().getRecruiterProfile().getRecruiterProfileEmail() == null
+                    || jobPostWorkflow.getJobPost().getRecruiterProfile().getRecruiterProfileEmail().trim().isEmpty()) {
+                continue;
+            }
             interviewsPerRecruiterMap
                     .putIfAbsent(jobPostWorkflow.getJobPost().getRecruiterProfile().getRecruiterProfileId(), new ArrayList<>());
 
