@@ -186,10 +186,6 @@ function renderMap(){
             $("#jp_lon").val(currentLocation.longitude);
 
             $("#landmarkDetails").show();
-            $("#interviewBuildingNo").val('');
-            $("#interviewLandmark").val('');
-
-            //TODO: address box to capture building name, street name etc
         }
     });
 }
