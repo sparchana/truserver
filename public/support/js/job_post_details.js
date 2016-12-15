@@ -780,12 +780,22 @@ function processDataForJobPost(returnedData) {
         });
     }
 
-    $("#jobPostAddress").hide();
     if(returnedData.interviewDetailsList != null && Object.keys(returnedData.interviewDetailsList).length){
         if(returnedData.interviewDetailsList[0].lat != null){
             interviewLat = returnedData.interviewDetailsList[0].lat;
             interviewLng = returnedData.interviewDetailsList[0].lng;
         }
+
+        //interview address and landmark
+        $("#landmarkDetails").show();
+        if(returnedData.interviewDetailsList[0].interviewBuildingNo){
+            $("#interviewBuildingNo").val(returnedData.interviewDetailsList[0].interviewBuildingNo);
+        }
+
+        if(returnedData.interviewDetailsList[0].interviewLandmark){
+            $("#interviewLandmark").val(returnedData.interviewDetailsList[0].interviewLandmark);
+        }
+
     }
 
     $("#partnerInterviewIncentive").val(returnedData.jobPostPartnerInterviewIncentive);
@@ -822,6 +832,12 @@ function renderMap(){
             //add method if we want to perform any action
             $("#jp_lat").val(currentLocation.latitude);
             $("#jp_lon").val(currentLocation.longitude);
+
+            $("#landmarkDetails").show();
+            $("#interviewBuildingNo").val('');
+            $("#interviewLandmark").val('');
+
+
             //TODO: address box to capture building name, street name etc
 
         }

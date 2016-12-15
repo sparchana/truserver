@@ -7,6 +7,9 @@ var jpCompanyId;
 var jpRecruiterId;
 
 var fullAddress;
+var addressLandmark;
+var addressBuildingNo;
+
 var interviewLat = null;
 var interviewLng = null;
 
@@ -730,6 +733,8 @@ function saveJob() {
         }
 
         fullAddress = $('#interviewAddress').val();
+        addressLandmark = $('#interviewLandmark').val();
+        addressBuildingNo = $('#interviewBuildingNo').val();
 
         try {
             var d = {
@@ -766,7 +771,9 @@ function saveJob() {
                 jobPostInterviewLocationLat: interviewLat,
                 jobPostInterviewLocationLng: interviewLng,
                 jobPostAddress: fullAddress,
-                reviewApplications: reviewApplication
+                reviewApplications: reviewApplication,
+                jobPostAddressBuildingNo: addressBuildingNo,
+                jobPostAddressLandmark: addressLandmark
             };
 
             $.ajax({
@@ -950,13 +957,22 @@ function processDataForJobPost(returnedData) {
             if(interviewDetailsList[0].interviewDays != null){
 
                 //interview details
-
                 if(returnedData.interviewDetailsList[0].lat != null){
                     interviewLat = returnedData.interviewDetailsList[0].lat;
                     interviewLng = returnedData.interviewDetailsList[0].lng;
-
                 }
 
+                //interview address and landmark
+                $("#landmarkDetails").show();
+                if(returnedData.interviewDetailsList[0].interviewBuildingNo){
+                    $("#interviewBuildingNo").val(returnedData.interviewDetailsList[0].interviewBuildingNo);
+                }
+
+                if(returnedData.interviewDetailsList[0].interviewLandmark){
+                    $("#interviewLandmark").val(returnedData.interviewDetailsList[0].interviewLandmark);
+                }
+
+                //interview days and slots
                 var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
 
                 if(interviewDetailsList[0].reviewApplication == null || interviewDetailsList[0].reviewApplication == 1){

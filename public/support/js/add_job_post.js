@@ -7,6 +7,9 @@ var recId = 0;
 var contactCredits = 0;
 var interviewCredits = 0;
 
+var addressLandmark;
+var addressBuildingNo;
+
 function processDataAddJobPost(returnedData) {
     if(returnedData.status == 1){
         var jobPostLocalities = "";
@@ -399,6 +402,8 @@ $(function() {
             }
 
             fullAddress = $('#interviewAddress').val();
+            addressLandmark = $('#interviewLandmark').val();
+            addressBuildingNo = $('#interviewBuildingNo').val();
 
             var reviewApplication;
             if($('#check_applications').is(':checked')){
@@ -446,7 +451,9 @@ $(function() {
                     jobPostGender: jobPostGender,
                     jobPostInterviewLocationLat: interviewLat,
                     jobPostInterviewLocationLng: interviewLng,
-                    reviewApplications: reviewApplication
+                    reviewApplications: reviewApplication,
+                    jobPostAddressBuildingNo: addressBuildingNo,
+                    jobPostAddressLandmark: addressLandmark
                 };
                 $.ajax({
                     type: "POST",

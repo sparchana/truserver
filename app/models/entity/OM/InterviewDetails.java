@@ -51,6 +51,15 @@ public class InterviewDetails extends Model {
     @Column(name = "ReviewApplication", columnDefinition = "int(1) null")
     private Integer reviewApplication;
 
+    @Column(name = "interview_building_no", columnDefinition = "text null")
+    private String interviewBuildingNo;
+
+    @Column(name = "interview_address", columnDefinition = "text null")
+    private String interviewAddress;
+
+    @Column(name = "interview_landmark", columnDefinition = "text null")
+    private String interviewLandmark;
+
     public static Finder<String, InterviewDetails> find = new Finder(InterviewDetails.class);
 
     public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
@@ -123,5 +132,29 @@ public class InterviewDetails extends Model {
 
     public void setReviewApplication(Integer reviewApplication) {
         this.reviewApplication = reviewApplication;
+    }
+
+    public String getInterviewBuildingNo() {
+        return interviewBuildingNo;
+    }
+
+    public void setInterviewBuildingNo(String interviewBuildingNo) {
+        this.interviewBuildingNo = interviewBuildingNo;
+    }
+
+    public String getInterviewAddress() {
+        return interviewAddress;
+    }
+
+    public void setInterviewAddress(String interviewAddress) {
+        this.interviewAddress = interviewAddress;
+    }
+
+    public String getInterviewLandmark() {
+        return interviewLandmark;
+    }
+
+    public void setInterviewLandmark(String interviewLandmark) {
+        this.interviewLandmark = interviewLandmark;
     }
 }

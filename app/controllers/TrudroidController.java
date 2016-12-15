@@ -1049,7 +1049,6 @@ public class TrudroidController {
                         } else {
                             jobPostObjectBuilder.setJobPostAddress("Address not Available");
                         }
-
                         //recruiter's name
                         jobPostObjectBuilder.setRecruiterName("Not Available");
                         if(jwpf.getJobPost().getRecruiterProfile() != null){
