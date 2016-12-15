@@ -219,10 +219,10 @@ public class JobService {
                 if(!Objects.equals(addJobPostRequest.getJobPostAddressBuildingNo(), "") && addJobPostRequest.getJobPostAddressBuildingNo() != null){
                     address = addJobPostRequest.getJobPostAddressBuildingNo() + ", " + address;
 
-                    if(!Objects.equals(addJobPostRequest.getJobPostAddressLandmark(), "") || addJobPostRequest.getJobPostAddressLandmark() != null){
+                    if(!Objects.equals(addJobPostRequest.getJobPostAddressLandmark(), "") && addJobPostRequest.getJobPostAddressLandmark() != null){
                         address += ", Landmark: " + addJobPostRequest.getJobPostAddressLandmark();
                     }
-                } else if(!Objects.equals(addJobPostRequest.getJobPostAddressLandmark(), "") || addJobPostRequest.getJobPostAddressLandmark() != null){
+                } else if(!Objects.equals(addJobPostRequest.getJobPostAddressLandmark(), "") && addJobPostRequest.getJobPostAddressLandmark() != null){
                     address += ", Landmark: " + addJobPostRequest.getJobPostAddressLandmark();
                 }
 

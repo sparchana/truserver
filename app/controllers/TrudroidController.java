@@ -1044,11 +1044,22 @@ public class TrudroidController {
                         jobPostObjectBuilder.setJobPostCompanyLogo(jwpf.getJobPost().getCompany().getCompanyLogo());
 
                         //address
-                        if(jwpf.getJobPost().getJobPostAddress() != null){
+                        InterviewDetails interviewDetails = InterviewDetails.find.where()
+                                .eq("JobPostId", jwpf.getJobPost().getJobPostId()).setMaxRows(1).findUnique();
+
+                        if(interviewDetails != null){
+                            if(interviewDetails.getInterviewAddress() != null){
+                                //setting con-catinated address
+                                jobPostObjectBuilder.setJobPostAddress(interviewDetails.getInterviewAddress());
+                            } else{
+                                jobPostObjectBuilder.setJobPostAddress("Address not Available");
+                            }
+                        } else if(jwpf.getJobPost().getJobPostAddress() != null){
                             jobPostObjectBuilder.setJobPostAddress(jwpf.getJobPost().getJobPostAddress());
                         } else {
                             jobPostObjectBuilder.setJobPostAddress("Address not Available");
                         }
+
                         //recruiter's name
                         jobPostObjectBuilder.setRecruiterName("Not Available");
                         if(jwpf.getJobPost().getRecruiterProfile() != null){
