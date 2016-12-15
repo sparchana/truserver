@@ -84,6 +84,20 @@ $(document).ready(function(){
         }
     });
 
+    $(window).scroll(function(){
+        if ($(this).scrollTop() > 100) {
+            $('.scrollToTop').fadeIn();
+        } else {
+            $('.scrollToTop').fadeOut();
+        }
+    });
+
+    //Click event to scroll to top
+    $('.scrollToTop').click(function(){
+        $('html, body').animate({scrollTop : 0},800);
+        return false;
+    });
+
     try {
         $.ajax({
             type: "POST",
@@ -155,6 +169,8 @@ function getAllJobs(index) {
     }
     $(".first").hide();
     $(".last").hide();
+    $(".prev a").html("<<");
+    $(".next a").html(">>");
 }
 function customDataSuccess(data){
     var content = "";
@@ -189,9 +205,27 @@ function createAndAppendDivider(title, ifPrepend) {
 
     mainDiv.appendChild(hotJobItem);
 }
-
+function pagination(noOfPages){
+    $('#jobCardControl').twbsPagination({
+        totalPages: noOfPages,
+        visiblePages: 5,
+        onPageClick: function (event, page) {
+            if(page > 0 ){
+                index = (page - 1)*5;
+            }
+            else{
+                index = 0;
+            }
+            getAllJobs(index);
+            $(".page-link").click(function(){
+                $('html, body').animate({scrollTop: $("#job_cards_inc").offset().top - 100}, 800);
+            });
+        }
+    });
+}
 function processDataForSelectedJobPost(returnedData) {
     var jobPostList = returnedData.allJobPost;
+
     var allJobDetailPageUrl = $(location).attr('href');
     var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
     allJobDetailPageUrlBreak.reverse();
@@ -206,34 +240,17 @@ function processDataForSelectedJobPost(returnedData) {
         $('#jobTitleLine').html("Register for "+ decodedJobRoleName);
         $('#jobRoleTitle').html("Register for "+ decodedJobRoleName);
         $('#applyToJobsTitle').html("Apply to "+ decodedJobRoleName);
-        if(returnedData != ""){
         var jobPostCount = Object.keys(jobPostList).length;
-
-            $("#hotJobs").html("");
-            var noOfPages = parseInt(returnedData.totalJobs)/5;
-            var rem = parseInt(returnedData.totalJobs) % 5;
-            if(rem > 0){
-                noOfPages ++;
-            }
-            console.log(parseInt(returnedData.totalJobs)/5);
-            $('#jobCardControl').twbsPagination({
-                totalPages: noOfPages,
-                visiblePages: 5,
-                cssStyle: '',
-                prevText: '<span aria-hidden="true">&laquo;</span>',
-                nextText: '<span aria-hidden="true">&raquo;</span>',
-                onPageClick: function (event, page) {
-                    if(page > 0 ){
-                        index = (page - 1)*5;
-                    }
-                    else{
-                        index = 0;
-                    }
-                    getAllJobs(index);
-                }
-            });
-
             if (jobPostCount > 0) {
+                var numberOfPages = parseInt(returnedData.totalJobs)/5;
+                var rem = parseInt(returnedData.totalJobs) % 5;
+                if(rem > 0){
+                    numberOfPages ++;
+                }
+                if(index == 0){
+                    pagination(numberOfPages);
+                }
+                $("#hotJobs").html("");
                 var count = 0;
                 var popularJobCount = 0;
                 var parent = $("#hotJobs");
@@ -544,7 +561,7 @@ function processDataForSelectedJobPost(returnedData) {
                     createAndAppendDivider("Popular Jobs", true);
                 }
             }
-    } else{
+     else{
             $("#jobLoaderDiv").hide();
             var parent = $("#hotJobs");
             var hotJobItem = document.createElement("div");

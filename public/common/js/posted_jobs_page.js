@@ -513,7 +513,7 @@ function processDataForHotJobPost(returnedData) {
             returnedData.jobPostDocumentRequirements.forEach(function (data) {
                 var lengthOfDocumentElement =  returnedData.jobPostDocumentRequirements.length;
                 if(documentArray.length < lengthOfDocumentElement - 1){
-                    documentArray.push(data.idProof.idProofName+" - ");
+                    documentArray.push(data.idProof.idProofName+" , ");
                 }
                 else{
                     documentArray.push(data.idProof.idProofName);
@@ -526,7 +526,7 @@ function processDataForHotJobPost(returnedData) {
              returnedData.jobPostAssetRequirements .forEach(function (data) {
                  var lengthOfAssetsElement =  returnedData.jobPostAssetRequirements .length;
                  if(assetArray.length < lengthOfAssetsElement - 1){
-                     assetArray.push(data.asset.assetTitle+" - ");
+                     assetArray.push(data.asset.assetTitle+" , ");
                  }
                  else{
                      assetArray.push(data.asset.assetTitle);
@@ -545,7 +545,7 @@ function processDataForHotJobPost(returnedData) {
             returnedData.jobPostLanguageRequirements.forEach(function (data) {
                 var lengthOfLanguageElement =  returnedData.jobPostLanguageRequirements.length;
                 if(languageArray.length < lengthOfLanguageElement - 1){
-                    languageArray.push(data.language.languageName +" - ");
+                    languageArray.push(data.language.languageName +" , ");
                 }
                 else{
                     languageArray.push(data.language.languageName);

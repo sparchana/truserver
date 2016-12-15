@@ -22,4 +22,6 @@ function getAllJobs(index) {
     }
     $(".first").hide();
     $(".last").hide();
+    $(".prev a").html("<<");
+    $(".next a").html(">>");
 }

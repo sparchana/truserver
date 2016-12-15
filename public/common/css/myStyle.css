@@ -327,7 +327,7 @@ a:hover{
 
 #fixed-menu {
     margin-top: 50px;
-    background: rgba(0, 0, 0, 0.175);
+    background: linear-gradient(to left, rgba(0, 159, 219, 0.99), rgb(2, 136, 195));
     position: fixed;
     text-align: left;
     width: 100%;
@@ -339,7 +339,7 @@ a:hover{
 
 #addLeadMobileButton{
     display: inline-block;
-    background-color: #0065a4 ;
+    background-color: rgb(2, 123, 179) ;
     color:#ffffff;
     width: 40%;
     height: 30px;
@@ -380,6 +380,7 @@ a:hover{
     height: auto;
 }
 .pagination{
+    margin-right:8px;
     float: right;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
 }
@@ -403,8 +404,8 @@ a:hover{
 .pagination>.active>span:hover,
 .pagination>.active>a:focus,
 .pagination>.active>span:focus{
-    background-color: rgb(41, 128, 185);
-    border-color: rgb(41, 128, 185);
+    background-color: rgba(0, 159, 219, 0.99);
+    border-color: rgba(0, 159, 219, 0.99);
 }
 
 #hotJobs::-webkit-scrollbar {
@@ -611,10 +612,9 @@ hr{
 
 
 #jobRoleNoBorder:hover, #jobRoleRight:hover, #jobRoleBottom:hover, #jobRole:hover {
-    background: #f8f2f0;
+    background: #ffffff;
     color: #003557;
     cursor: pointer;
-
     /* for slow hove effect*/
 
     -webkit-transition: background 3s;
@@ -661,7 +661,6 @@ hr{
     transition:         background 0.2s;
 
 }
-
 .owl-item{
     text-align: center;
 }
@@ -683,12 +682,54 @@ hr{
     border-bottom: 1px solid #f4eef2;
     background: #ffffff;
 }
+#jobRole:hover{
+    background: #ffffff;
+    -webkit-transition: background 0.2s;
+    -moz-transition:    background 0.2s;
+    -ms-transition:     background 0.2s;
+    -o-transition:      background 0.2s;
+    transition:         background 0.2s;
+}
 
 .showPageAllJobs{
     margin-top: 24px;
 }
+.scrollToTop{
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.3);
+    border-radius: 100px;
+    width:50px;
+    height:50px;
+    text-align:center;
+    font-weight: bold;
+    position:fixed;
+    bottom:20px;
+    right:40px;
+    display:none;
+    background-color: rgba(0, 160, 220, 0.99);
+    background-size: 50%;
+}
+.scrollToTop img{
+    height:49px;
+}
+.scrollToTop:hover{
+    text-decoration:none;
+}
 
 @media screen and (max-width: 768px) {
+    .scrollToTop{
+        width:30px;
+        height:30px;
+        right:25px;
+    }
+    .scrollToTop img{
+        height:29px;
+    }
+    .pagination{
+        float: none;
+    }
+    #jobCardControl{
+        text-align: center;
+    }
     .showPageAllJobs{
         margin-top: 4px;
     }

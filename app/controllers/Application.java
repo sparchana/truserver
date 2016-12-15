@@ -838,39 +838,11 @@ public class Application extends Controller {
     }
 
     public static Result getAllNormalJobPosts(Long index) {
-        PagedList<JobPost> pagedList
-                = JobPost.find
-                .where()
-                .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
-                .setFirstRow(Math.toIntExact(index))
-                .setMaxRows(5)
-                .orderBy().asc("source")
-                .orderBy().desc("jobPostUpdateTimestamp")
-                .findPagedList();
-
-        List<JobPost> jobPostList = pagedList.getList();
-        JobPostResponse jobPostResponse = new JobPostResponse();
-        jobPostResponse.setAllJobPost(jobPostList);
-        jobPostResponse.setTotalJobs(JobPost.find.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).findRowCount());
-        return ok(toJson(jobPostResponse));
+        return ok(toJson(JobSearchService.getAllActiveJobsPaginated(index)));
     }
 
     public static Result getAllHotJobPosts(Long index) {
-        PagedList<JobPost> pagedList
-                = JobPost.find
-                .where().eq("jobPostIsHot", "1")
-                .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
-                .setFirstRow(Math.toIntExact(index))
-                .setMaxRows(5)
-                .orderBy().asc("source")
-                .orderBy().desc("jobPostUpdateTimestamp")
-                .findPagedList();
-
-        List<JobPost> jobPostList = pagedList.getList();
-        JobPostResponse jobPostResponse = new JobPostResponse();
-        jobPostResponse.setAllJobPost(jobPostList);
-        jobPostResponse.setTotalJobs(JobPost.find.where().eq("jobPostIsHot", "1").eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).findRowCount());
-        return ok(toJson(jobPostResponse));
+        return ok(toJson(JobSearchService.getAllHotJobsPaginated(index)));
     }
 
     @Security.Authenticated(Secured.class)
@@ -1319,21 +1291,7 @@ public class Application extends Controller {
     }
 
     public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara,Long index) {
-        List<JobPost> jobPostList = JobPost.find
-                .where()
-                .eq("jobRole.jobRoleId",idPara)
-                .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
-                .setFirstRow(Math.toIntExact(index))
-                .setMaxRows(5)
-                .orderBy()
-                .asc("source")
-                .orderBy()
-                .desc("jobPostUpdateTimestamp")
-                .findList();
-        JobPostResponse jobPostResponse = new JobPostResponse();
-        jobPostResponse.setAllJobPost(jobPostList);
-        jobPostResponse.setTotalJobs(JobPost.find.where().eq("jobRole.jobRoleId",idPara).eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).findRowCount());
-        return ok(toJson(jobPostResponse));
+        return ok(toJson(JobSearchService.getActiveJobsForJobRolePaginated(idPara,index)));
     }
 
     public static Result getAllCompanyLogos() {
