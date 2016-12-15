@@ -17,6 +17,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static api.ServerConstants.SOURCE_INTERNAL;
 import static controllers.scheduler.SchedulerConstants.SCHEDULER_SUB_TYPE_SAME_DAY_INTERVIEW;
 import static controllers.scheduler.SchedulerConstants.SCHEDULER_TYPE_SMS;
 
@@ -30,7 +31,7 @@ public class SameDayInterviewAlertTask extends TimerTask {
     public SameDayInterviewAlertTask(int x){
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
-        cal.add(Calendar.HOUR, cal.getTime().getHours() - x);
+        cal.add(Calendar.HOUR, - x);
         mXHrBack = cal.getTime();
         this.mXHr = x;
     }
@@ -51,7 +52,8 @@ public class SameDayInterviewAlertTask extends TimerTask {
             shouldRunThisTask = true;
 
         } else {
-            if(schedulerStats.getStartTimestamp().before(mXHrBack)) {
+            Logger.warn("prev task start time: " + schedulerStats.getEndTimestamp().getHours() + " xHrs Back starttime: " + mXHrBack.getHours());
+            if(schedulerStats.getEndTimestamp().getHours() < mXHrBack.getHours()) {
                 // last run was 'x++' hr back, hence re run
                 shouldRunThisTask = true;
             }
@@ -79,6 +81,9 @@ public class SameDayInterviewAlertTask extends TimerTask {
 
             // candidate (can have repetitive candidate) who have interview in 'x' hr from now.
             for(JobPostWorkflow jobPostWorkflow: jobPostWorkflowList) {
+                if(jobPostWorkflow.getJobPost().getSource() != SOURCE_INTERNAL){
+                    continue;
+                }
                 // create sms event and keep appending to the Queue
                 Logger.info("same day: adding " +  jobPostWorkflow.getCandidate().getCandidateId() +" to queue");
 

@@ -19,7 +19,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimerTask;
 
+import static api.ServerConstants.SOURCE_INTERNAL;
 import static controllers.scheduler.SchedulerConstants.SCHEDULER_SUB_TYPE_NEXT_DAY_INTERVIEW;
+import static controllers.scheduler.SchedulerConstants.SCHEDULER_SUB_TYPE_SAME_DAY_INTERVIEW;
 import static controllers.scheduler.SchedulerConstants.SCHEDULER_TYPE_SMS;
 
 /**
@@ -46,6 +48,13 @@ public class NextDayInterviewAlertTask extends TimerTask {
 
 
         if(shouldRunThisTask) {
+            Timestamp startTime = new Timestamp(System.currentTimeMillis());
+            SchedulerSubType subType = SchedulerSubType.find.where()
+                    .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_NEXT_DAY_INTERVIEW)
+                    .findUnique();
+            SchedulerType type = SchedulerType.find.where()
+                    .eq("schedulerTypeId", SCHEDULER_TYPE_SMS).findUnique();
+            String note = "Interview SMS alert for next day interview.";
 
             SchedulerStats newSchedulerStats = new SchedulerStats();
 
@@ -62,6 +71,9 @@ public class NextDayInterviewAlertTask extends TimerTask {
 
             // candidate (can have repetitive candidate) who have interview in 'x' hr from now.
             for(JobPostWorkflow jobPostWorkflow: jobPostWorkflowList) {
+                if(jobPostWorkflow.getJobPost().getSource() != SOURCE_INTERNAL){
+                    continue;
+                }
                 // create sms event and keep appending to the Queue
 
                 Logger.info("next day: adding " +  jobPostWorkflow.getCandidate().getCandidateId() +" to queue");
@@ -72,17 +84,9 @@ public class NextDayInterviewAlertTask extends TimerTask {
                 SharedSettings.getGlobalSettings().getMyNotificationHandler().addToQueue(notificationEvent);
             }
 
-            // make entry in db for this.
-            newSchedulerStats.setCompletionStatus(true);
-            newSchedulerStats.setEndTimestamp(new Timestamp(System.currentTimeMillis()));
-            newSchedulerStats.setSchedulerType(SchedulerType.find.where()
-                    .eq("schedulerTypeId", SCHEDULER_TYPE_SMS).findUnique());
-            newSchedulerStats.setSchedulerSubType(SchedulerSubType.find.where()
-                    .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_NEXT_DAY_INTERVIEW)
-                    .findUnique());
+            Timestamp endTime = new Timestamp(System.currentTimeMillis());
 
-            newSchedulerStats.setNote("Interview SMS alert for next day interview.");
-            newSchedulerStats.save();
+            SchedulerManager.saveNewSchedularStats(startTime, type, subType, note, endTime, true);
         }
     }
 }

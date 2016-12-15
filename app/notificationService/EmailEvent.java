@@ -26,6 +26,14 @@ public class EmailEvent extends NotificationEvent {
 
         String message = this.getMessage();
         String recipient = this.getRecipient();
+        if(recipient == null || recipient.trim().isEmpty() ){
+            Logger.error("recipient id is null/empty");
+            return null;
+        }
+        if(message == null || message.trim().isEmpty()){
+            Logger.error("email message is null/empty");
+            return null;
+        }
 
         //new thread
         new Thread(() -> {
@@ -47,6 +55,7 @@ public class EmailEvent extends NotificationEvent {
                     email.send();
                 }
             } catch (EmailException e) {
+                Logger.info("couldn't send mail for mailId: " + recipient);
                 e.printStackTrace();
             }
         }).start();
