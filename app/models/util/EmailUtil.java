@@ -110,6 +110,17 @@ public class EmailUtil {
         sendEmail(recruiterProfile.getRecruiterProfileEmail(), message, subject);
     }
 
+    public static String getEmailHTML(RecruiterProfile recruiterProfile, String message){
+
+        return MAIL_HEADER + MESSAGE_DIV_START + MESSAGE_HELLO
+                + recruiterProfile.getRecruiterProfileName() + "!<br><br>"
+                + "Thanks for posting your job on TruJobs! "
+                + message
+                + "Happy hiring!"
+                + MESSAGE_THANKYOU +  MESSAGE_DIV_END + MAIL_FOOTER;
+
+    }
+
     public static void sendRecruiterJobPostLiveEmail(RecruiterProfile recruiterProfile, JobPost jobPost)
     {
         String subject = "Trujobs.in : Your job is now live on www.trujobs.in!";

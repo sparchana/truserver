@@ -16,7 +16,7 @@ import java.util.Collection;
  * Created by zero on 8/12/16.
  *
  *
- * prod/activator-1.3.9-minimal/bin/activator "test-only Scheduler.ScheduledTaskTest"
+ * prod/activator-1.3.9-minimal/bin/activator "test-only SchedulerStats.ScheduledTaskTest"
  *
  */
 

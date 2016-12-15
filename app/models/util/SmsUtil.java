@@ -513,12 +513,6 @@ public class SmsUtil {
     }
 */
     public static void updateRecruiterWithCandidateStatus(JobPostWorkflow jobApplication, Candidate candidate) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(jobApplication.getScheduledInterviewDate());
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH);
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-
         String msg = "Hi " + jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileName() + ", candidate: " + candidate.getCandidateFirstName() + " has reached the venue " +
                 " for " + jobApplication.getJobPost().getJobPostTitle() +
                 " job which is scheduled today between " + jobApplication.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Log on to www.trujobs.in/recruiter to view status of all scheduled interviews. Thank you!";
@@ -537,6 +531,4 @@ public class SmsUtil {
                 + " at " + jobApplication.getJobPost().getCompany().getCompanyName() + ". You can contact TruJobs at 8880007799 for any queries. www.trujobs.in. Download Trujobs app at http://bit.ly/2d7zDqR";
         sendSms(jobApplication.getCandidate().getCandidateMobile(), msg);
     }
-
-
 }

@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 
 @Entity(name = "scheduler_stats")
 @Table(name = "scheduler_stats")
-public class Scheduler extends Model {
+public class SchedulerStats extends Model {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "id", columnDefinition = "bigint signed")
@@ -41,7 +41,7 @@ public class Scheduler extends Model {
     @Column(name = "end_timestamp", columnDefinition = "timestamp null")
     private Timestamp endTimestamp;
 
-    public static Model.Finder<String, Scheduler> find = new Model.Finder(Scheduler.class);
+    public static Model.Finder<String, SchedulerStats> find = new Model.Finder(SchedulerStats.class);
 
     public long getId() {
         return id;

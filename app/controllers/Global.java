@@ -1,5 +1,6 @@
 package controllers;
 
+import controllers.scheduler.SchedulerManager;
 import notificationService.NotificationHandler;
 import play.*;
 import play.Application;
@@ -10,15 +11,18 @@ import play.Application;
 public class Global extends GlobalSettings {
 
     private NotificationHandler myNotificationHandler;
+    private SchedulerManager mSchedulerManager;
 
     public void onStart(play.Application app) {
         //myNotificationHandler class instantiated
         myNotificationHandler = new NotificationHandler();
+        mSchedulerManager = new SchedulerManager();
 
         //started the thread
         new Thread(myNotificationHandler).start();
+        new Thread(mSchedulerManager).start();
 
-        Logger.info("Application has started");
+        Logger.info("Global settings started");
         SharedSettings.setGlobalSettings(this);
     }
 

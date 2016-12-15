@@ -2,8 +2,9 @@ package controllers.scheduler.task;
 
 import api.ServerConstants;
 import controllers.SharedSettings;
+import controllers.scheduler.SchedulerManager;
 import models.entity.OM.JobPostWorkflow;
-import models.entity.scheduler.Scheduler;
+import models.entity.scheduler.SchedulerStats;
 import models.entity.scheduler.Static.SchedulerSubType;
 import models.entity.scheduler.Static.SchedulerType;
 import models.util.SmsUtil;
@@ -40,33 +41,15 @@ public class NextDayInterviewAlertTask extends TimerTask {
         Logger.info("NDI Alert started...");
 
         // Determine if this task is required to launch
-        boolean shouldRunThisTask = false;
+        boolean shouldRunThisTask = SchedulerManager.checkIfEODTaskShouldRun(SCHEDULER_TYPE_SMS,
+                SCHEDULER_SUB_TYPE_NEXT_DAY_INTERVIEW);
 
-
-        Scheduler scheduler = Scheduler.find.where()
-                .eq("schedulerType.schedulerTypeId", SCHEDULER_TYPE_SMS)
-                .eq("schedulerSubType.schedulerSubTypeId", SCHEDULER_SUB_TYPE_NEXT_DAY_INTERVIEW)
-                .orderBy().desc("startTimestamp").setMaxRows(1).findUnique();
-
-        if(scheduler == null) {
-            // task has definitely not yet running so run it
-            shouldRunThisTask = true;
-
-        } else {
-            Logger.info("prev task start time "+scheduler.getStartTimestamp().getHours()
-                    +"current time: " + (today).getHours());
-
-            if(scheduler.getStartTimestamp().getHours() < (today).getHours()) {
-                // last run was 'x++' hr back, hence re run
-                shouldRunThisTask = true;
-            }
-        }
 
         if(shouldRunThisTask) {
 
-            Scheduler newScheduler = new Scheduler();
+            SchedulerStats newSchedulerStats = new SchedulerStats();
 
-            newScheduler.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
+            newSchedulerStats.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
 
             SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
 
@@ -90,16 +73,16 @@ public class NextDayInterviewAlertTask extends TimerTask {
             }
 
             // make entry in db for this.
-            newScheduler.setCompletionStatus(true);
-            newScheduler.setEndTimestamp(new Timestamp(System.currentTimeMillis()));
-            newScheduler.setSchedulerType(SchedulerType.find.where()
+            newSchedulerStats.setCompletionStatus(true);
+            newSchedulerStats.setEndTimestamp(new Timestamp(System.currentTimeMillis()));
+            newSchedulerStats.setSchedulerType(SchedulerType.find.where()
                     .eq("schedulerTypeId", SCHEDULER_TYPE_SMS).findUnique());
-            newScheduler.setSchedulerSubType(SchedulerSubType.find.where()
+            newSchedulerStats.setSchedulerSubType(SchedulerSubType.find.where()
                     .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_NEXT_DAY_INTERVIEW)
                     .findUnique());
 
-            newScheduler.setNote("Interview SMS alert for next day interview.");
-            newScheduler.save();
+            newSchedulerStats.setNote("Interview SMS alert for next day interview.");
+            newSchedulerStats.save();
         }
     }
 }
