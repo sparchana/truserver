@@ -6,7 +6,6 @@ import controllers.scheduler.task.SameDayInterviewAlertTask;
 import models.entity.scheduler.SchedulerStats;
 import models.entity.scheduler.Static.SchedulerSubType;
 import models.entity.scheduler.Static.SchedulerType;
-import play.Logger;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -16,6 +15,9 @@ import java.util.Timer;
 
 /**
  * Created by zero on 8/12/16.
+ *
+ * TODO Improve this to Implement Java 8 ScheduledExecutorService
+ * http://stackoverflow.com/questions/20387881/how-to-run-certain-task-every-day-at-a-particular-time-using-scheduledexecutorse
  */
 public class SchedulerManager implements Runnable {
     /**
