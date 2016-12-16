@@ -17,7 +17,7 @@ import java.util.Collection;
  * Created by zero on 8/12/16.
  *
  *
- * prod/activator-1.3.9-minimal/bin/activator "test-only Scheduler.ScheduledTaskTest"
+ * prod/activator-1.3.9-minimal/bin/activator "test-only Scheduler.SchedulerManagerTest"
  *
  */
 
@@ -27,7 +27,7 @@ import static play.test.Helpers.running;
 import static play.test.Helpers.testServer;
 
 @RunWith(Parameterized.class)
-public class ScheduledTaskTest {
+public class SchedulerManagerTest {
     enum MethodType {
         SMS,
         EMAIL,
@@ -35,7 +35,7 @@ public class ScheduledTaskTest {
         COMPUTE_DELAY
     }
 
-    private ScheduledTaskTest.MethodType type;
+    private SchedulerManagerTest.MethodType type;
     private SchedulerManager schedulerManager;
     private int hr;
     private int min;
@@ -48,10 +48,10 @@ public class ScheduledTaskTest {
 
     // Each parameter should be placed as an argument here
     // Every time runner triggers, it will pass the arguments
-    public ScheduledTaskTest(ScheduledTaskTest.MethodType type,
-                             int hr,
-                             int min,
-                             int sec) {
+    public SchedulerManagerTest(SchedulerManagerTest.MethodType type,
+                                int hr,
+                                int min,
+                                int sec) {
         this.type = type;
         this.hr = hr;
         this.min = min;

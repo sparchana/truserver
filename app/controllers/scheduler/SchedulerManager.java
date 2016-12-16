@@ -1,5 +1,6 @@
 package controllers.scheduler;
 
+import controllers.scheduler.task.EODAadhaarVerificationTask;
 import controllers.scheduler.task.EODRecruiterEmailAlertTask;
 import controllers.scheduler.task.NextDayInterviewAlertTask;
 import controllers.scheduler.task.SameDayInterviewAlertTask;
@@ -24,25 +25,41 @@ public class SchedulerManager implements Runnable {
 
 
     private final Timer timer = new Timer(); // Instantiate Timer Object
+    private final long oneDay = 24 * 1000 * 60 * 60; // 24 hr
 
 
     @Override
     public void run() {
-        int mEODTaskStartHr = Integer.parseInt(play.Play.application().configuration().getString("scheduletask.eod.start.hr"));
-        int mEODTaskStartMin = Integer.parseInt(play.Play.application().configuration().getString("scheduletask.eod.start.min"));
-        int mEODTaskStartSec = Integer.parseInt(play.Play.application().configuration().getString("scheduletask.eod.start.sec"));
+        int mEODMailTaskStartHr = (play.Play.application().configuration().getInt("schedulertask.eod.mail.start.hr"));
+        int mEODMailTaskStartMin = (play.Play.application().configuration().getInt("schedulertask.eod.mail.start.min"));
+        int mEODMailTaskStartSec = (play.Play.application().configuration().getInt("schedulertask.eod.mail.start.sec"));
 
-        long delay = computeDelay(mEODTaskStartHr, mEODTaskStartMin , mEODTaskStartSec);
+        int mEODNextDayInterviewTaskStartHr = (play.Play.application().configuration().getInt("schedulertask.eod.ndi.start.hr"));
+        int mEODNextDayInterviewStartMin = (play.Play.application().configuration().getInt("schedulertask.eod.ndi.start.min"));
+        int mEODNextDayInterviewStartSec = (play.Play.application().configuration().getInt("schedulertask.eod.ndi.start.sec"));
+
+        int mEODAadhaarTaskStartHr = (play.Play.application().configuration().getInt("schedulertask.eod.aadhaar.verification.start.hr"));
+        int mEODAadhaarTaskStartMin = (play.Play.application().configuration().getInt("schedulertask.eod.aadhaar.verification.start.min"));
+        int mEODAadhaarTaskStartSec = (play.Play.application().configuration().getInt("schedulertask.eod.aadhaar.verification.start.sec"));
+
+        int sameDayInterviewAlertEventPeriod = Integer.parseInt(play.Play.application().configuration().getString("schedulertask.sameDay.alert.period"));
+
+        long eodMailDelay = computeDelay(mEODMailTaskStartHr, mEODMailTaskStartMin , mEODMailTaskStartSec);
+        long ndiMailDelay = computeDelay(mEODNextDayInterviewTaskStartHr, mEODNextDayInterviewStartMin , mEODNextDayInterviewStartSec);
+        long aadhaarVerificationDelay = computeDelay(mEODAadhaarTaskStartHr, mEODAadhaarTaskStartMin , mEODAadhaarTaskStartSec);
+
         // createSameDayInterviewAlertEvent method takes time period (in hrs) as input
-        createSameDayInterviewAlertEvent(3);
+        createSameDayInterviewAlertEvent(sameDayInterviewAlertEventPeriod);
 
-        createNextDayInterviewAlertEvent(delay);
+        createNextDayInterviewAlertEvent(ndiMailDelay);
 
-        createRecruiterEODEmailAlertEvent(delay);
+        createRecruiterEODEmailAlertEvent(eodMailDelay);
+
+        createAadhaarVerificationEvent(aadhaarVerificationDelay);
     }
 
     private void createSameDayInterviewAlertEvent(int hr) {
-
+        Logger.info("Same_Day_Interview_Alert_Event Scheduled!");
         if (hr < 1) return;
 
         long xHr = hr * 1000 * 60 * 60; // 3 hr
@@ -52,18 +69,24 @@ public class SchedulerManager implements Runnable {
     }
 
     private void createNextDayInterviewAlertEvent(long delay) {
-
-        long oneDay = 24 * 1000 * 60 * 60; // 24 hr
+        Logger.info("Next_Day_Interview_Alert_Event Scheduled!");
 
         NextDayInterviewAlertTask nextDayInterviewAlertTask = new NextDayInterviewAlertTask();
         timer.schedule(nextDayInterviewAlertTask, delay, oneDay);
     }
 
     private void createRecruiterEODEmailAlertEvent(long delay){
-        long oneDay = 24 * 1000 * 60 * 60; // 24 hr
+        Logger.info("Recruiter_EOD_Email_Alert_Event Scheduled!");
 
         EODRecruiterEmailAlertTask eodRecruiterEmailAlertTask = new EODRecruiterEmailAlertTask();
         timer.schedule(eodRecruiterEmailAlertTask, delay, oneDay);
+    }
+
+    private void createAadhaarVerificationEvent(long delay){
+        Logger.info("Aadhaar_Verification_Event Scheduled!");
+
+        EODAadhaarVerificationTask eodAadhaarVerificationTask = new EODAadhaarVerificationTask();
+        timer.schedule(eodAadhaarVerificationTask, delay, oneDay);
     }
 
 
@@ -108,6 +131,9 @@ public class SchedulerManager implements Runnable {
     }
 
     public long computeDelay(int hour, int min, int sec) {
+
+        if(min>60) ++hour; min -= 60;
+        if(sec>60) ++min; sec -= 60;
 
         Calendar cal = Calendar.getInstance();
 
