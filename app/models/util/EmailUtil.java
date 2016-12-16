@@ -160,6 +160,7 @@ public class EmailUtil {
         addEmailToNotificationQueue(devTeamEmail.get("Avishek"), internalMessage, internalMailSubject);
         addEmailToNotificationQueue(devTeamEmail.get("Sandy"), internalMessage, internalMailSubject);
         addEmailToNotificationQueue(devTeamEmail.get("Rafik"), internalMessage, internalMailSubject);
+        addEmailToNotificationQueue(devTeamEmail.get("Chillu"), internalMessage, internalMailSubject);
     }
 
     public static void sendRecruiterCreditTopupMail(RecruiterProfile recruiterProfile, Integer contactCredits, Integer interviewCredits)
