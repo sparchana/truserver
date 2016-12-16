@@ -2183,21 +2183,4 @@ public class Application extends Controller {
 
         return ok(toJson(JobPostWorkflowEngine.updateFeedback(addFeedbackRequest, Integer.valueOf(session().get("sessionChannel")))));
     }
-
-    public static Result testnotification(){
-        Candidate candidate = Candidate.find.where().eq("CandidateMobile", "+918971739586").findUnique();
-        if(candidate.getCandidateAndroidToken() != null){
-            NotificationUtil.addFcmToNotificationQueue("Hi", "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
-            return ok("1");
-        }
-        return ok("Null token!");
-
-    }
-
-    public static Result testQueue() {
-        NotificationEvent notificationEvent = new SMSEvent("+918971739586", "Test message11");
-        SharedSettings.getGlobalSettings().getMyNotificationHandler().addToQueue(notificationEvent);
-
-        return ok("-");
-    }
 }

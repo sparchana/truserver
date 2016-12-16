@@ -1,6 +1,6 @@
 package controllers.scheduler.task;
 
-import controllers.SharedSettings;
+import controllers.Global;
 import controllers.scheduler.SchedulerConstants;
 import api.ServerConstants;
 import controllers.scheduler.SchedulerManager;
@@ -52,7 +52,6 @@ public class SameDayInterviewAlertTask extends TimerTask {
             shouldRunThisTask = true;
 
         } else {
-            Logger.warn("prev task start time: " + schedulerStats.getEndTimestamp().getHours() + " xHrs Back starttime: " + mXHrBack.getHours());
             if(schedulerStats.getEndTimestamp().getHours() < mXHrBack.getHours()) {
                 // last run was 'x++' hr back, hence re run
                 shouldRunThisTask = true;
@@ -91,7 +90,7 @@ public class SameDayInterviewAlertTask extends TimerTask {
                         new SMSEvent(jobPostWorkflow.getCandidate().getCandidateMobile(),
                                 SmsUtil.getSameDayInterviewAlertSmsString(jobPostWorkflow));
 
-                SharedSettings.getGlobalSettings().getMyNotificationHandler().addToQueue(notificationEvent);
+                Global.getmNotificationHandler().addToQueue(notificationEvent);
             }
 
 

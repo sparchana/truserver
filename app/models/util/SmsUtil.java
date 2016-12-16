@@ -1,7 +1,7 @@
 package models.util;
 
 import api.http.httpRequest.Recruiter.AddCreditRequest;
-import controllers.SharedSettings;
+import controllers.Global;
 import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.OM.JobPostWorkflow;
@@ -35,7 +35,7 @@ public class SmsUtil {
 
         //adding sms to notificationHandler queue
         NotificationEvent notificationEvent = new SMSEvent(toPhone, msg);
-        SharedSettings.getGlobalSettings().getMyNotificationHandler().addToQueue(notificationEvent);
+        Global.getmNotificationHandler().addToQueue(notificationEvent);
 
         return "";
     }

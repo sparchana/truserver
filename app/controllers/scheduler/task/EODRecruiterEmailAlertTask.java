@@ -4,7 +4,7 @@ import api.ServerConstants;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.RawSql;
 import com.avaje.ebean.RawSqlBuilder;
-import controllers.SharedSettings;
+import controllers.Global;
 import controllers.scheduler.SchedulerManager;
 import models.entity.Candidate;
 import models.entity.JobPost;
@@ -62,7 +62,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
             // send email for every recruiter
             EmailEvent interviewEmailEvent = getHTMLMessage(entry.getValue().get(0).getJobPost().getRecruiterProfile()
                     , entry.getValue(), subject, null);
-            SharedSettings.getGlobalSettings().getMyNotificationHandler().addToQueue(interviewEmailEvent);
+            Global.getmNotificationHandler().addToQueue(interviewEmailEvent);
         }
 
         Timestamp endTime = new Timestamp(System.currentTimeMillis());
@@ -100,7 +100,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
             // send email for every recruiter
             EmailEvent tomorrowsInterviewEmailEvent = getHTMLMessage(entry.getValue().get(0).getJobPost().getRecruiterProfile()
                     , entry.getValue(), subject, tomorrow);
-            SharedSettings.getGlobalSettings().getMyNotificationHandler().addToQueue(tomorrowsInterviewEmailEvent);
+            Global.getmNotificationHandler().addToQueue(tomorrowsInterviewEmailEvent);
         }
 
         Timestamp endTime = new Timestamp(System.currentTimeMillis());
@@ -190,7 +190,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
                     , entry.getValue(), subject);
 
             if(eodSummaryEmailEvent != null){
-               SharedSettings.getGlobalSettings().getMyNotificationHandler().addToQueue(eodSummaryEmailEvent);
+               Global.getmNotificationHandler().addToQueue(eodSummaryEmailEvent);
             }
         }
 

@@ -10,31 +10,30 @@ import play.Application;
  */
 public class Global extends GlobalSettings {
 
-    private NotificationHandler myNotificationHandler;
     private SchedulerManager mSchedulerManager;
+    private static NotificationHandler mNotificationHandler;
 
     public void onStart(play.Application app) {
-        //myNotificationHandler class instantiated
-        myNotificationHandler = new NotificationHandler();
+        //mNotificationHandler class instantiated
+        mNotificationHandler = new NotificationHandler();
         mSchedulerManager = new SchedulerManager();
 
         //started the thread
-        new Thread(myNotificationHandler).start();
+        new Thread(mNotificationHandler).start();
         new Thread(mSchedulerManager).start();
 
         Logger.info("Global settings started");
-        SharedSettings.setGlobalSettings(this);
     }
 
     public void onStop(Application app) {
         Logger.info("Application shutdown...");
     }
 
-    public NotificationHandler getMyNotificationHandler() {
-        return myNotificationHandler;
+    public static NotificationHandler getmNotificationHandler() {
+        return mNotificationHandler;
     }
 
-    public void setMyNotificationHandler(NotificationHandler myNotificationHandler) {
-        this.myNotificationHandler = myNotificationHandler;
+    public static void setmNotificationHandler(NotificationHandler mNotificationHandler) {
+        Global.mNotificationHandler = mNotificationHandler;
     }
 }
