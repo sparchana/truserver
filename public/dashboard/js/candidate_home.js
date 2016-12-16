@@ -276,10 +276,11 @@ function processDataAllJobPosts(returnedData) {
             }
         });
         if(count<4){
-            document.getElementById("hotJobs").style.height = "51%";
+            document.getElementById("hotJobs").style= ("overflow:scroll;height:51%")
         }
         else{
-            document.getElementById("hotJobs").style.height = "72%";
+            document.getElementById("hotJobs").style= ("overflow:scroll;height:100%");
+
         }
     } else {
         $("#jobLoaderDiv").hide();
