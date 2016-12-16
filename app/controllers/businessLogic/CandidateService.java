@@ -1015,7 +1015,7 @@ public class CandidateService
         CandidateProfileStatus candidateProfileStatus =
                 CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique();
 
-        if(candidateProfileStatus != null){
+        if(candidateProfileStatus != null) {
             candidate.setCandidateprofilestatus(candidateProfileStatus);
             candidate.setLead(lead);
             candidate.registerCandidate();

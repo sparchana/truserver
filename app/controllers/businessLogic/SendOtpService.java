@@ -7,7 +7,7 @@ import models.util.SmsUtil;
  */
 
 public class SendOtpService {
-    /*public static void sendSms(String mobile, String msg){
-        SmsUtil.sendSms(mobile, msg);
+    /*public static void addSmsToNotificationQueue(String mobile, String msg){
+        SmsUtil.addSmsToNotificationQueue(mobile, msg);
     }*/
 }
