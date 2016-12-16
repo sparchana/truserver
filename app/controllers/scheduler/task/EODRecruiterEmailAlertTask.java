@@ -300,7 +300,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
                 + "\t<thead>\n"
                 + "\t\t<tr>\n"
                 + "\t\t\t<th>Job Post Title</th>\n"
-                + "\t\t\t<th>Confirmed</th>\n"
+                + "\t\t\t<th>Confirmed Interviews</th>\n"
                 + "\t\t\t<th>Awaiting Confirmation</th>\n"
                 + "\t\t\t<th></th>\n"
                 + "\t\t</tr>\n"

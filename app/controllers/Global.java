@@ -10,13 +10,12 @@ import play.Application;
  */
 public class Global extends GlobalSettings {
 
-    private SchedulerManager mSchedulerManager;
     private static NotificationHandler mNotificationHandler;
 
     public void onStart(play.Application app) {
         //mNotificationHandler class instantiated
         mNotificationHandler = new NotificationHandler();
-        mSchedulerManager = new SchedulerManager();
+        SchedulerManager mSchedulerManager = new SchedulerManager();
 
         //started the thread
         new Thread(mNotificationHandler).start();
