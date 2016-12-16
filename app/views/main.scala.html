@@ -14,12 +14,8 @@
         plumber jobs, electrician jobs, job search, accountant jobs, job vacancy, bangalore vacancy">
 
         <meta name="theme-color" content="#286ab6">
-        <meta name="description" content="driving jobs, fresher jobs, jobs for freshers, job search sites, job posting, sales jobs, beautician jobs,
-        medical transcription jobs, online job search, find jobs, receptionist jobs, admin jobs, office assistant jobs,
-        plumbing work, teacher job, online teaching jobs, jobs in schools, teacher vacancy, teacher recruitment, entry level jobs,
-        delivery boy jobs,call center jobs, BPO jobs, kpo jobs, job job job, data entry jobs, back office jobs,
-        receptionist jobs, beautician jobs, experienced jobs, jobs in Bangalore, cashier jobs, entry level jobs,
-        plumber jobs, electrician jobs, job search, accountant jobs, job vacancy, bangalore vacancy"/>
+        <meta name="description" content="Search and apply for jobs online. Register for FREE and find best fresher and
+        experienced jobs.Give a missed call at 8880007799 for best jobs." />
 
             <!-- Bootstrap Core CSS -->
         <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
@@ -37,6 +33,7 @@
         <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
 
         <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
+        <script type="text/javascript" src="/assets/common/js/jquery.twbsPagination.js"></script>
 
         <script>
             localStorage.clear();
@@ -145,7 +142,7 @@
                     </div>
 
                     <button type="submit" id="registerBtnSubmit" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
-                    <p><font size = 2px> By signing up I agree to <a href='/privacy'>Terms & Conditions</a></font></p>
+                    <p style="padding-top:10px;margin:0"><font size = 2px> By signing up I agree to <a href='/privacy'>Terms & Conditions</a></font></p>
                 </form>
 
                 <div style="text-align: center">
@@ -165,6 +162,7 @@
                 </svg>
             </center>
             <div id="job_cards_inc"></div>
+            <div id="jobCardControl"></div>
         </div>
 
         <!--  Start Job Icons Box -->
@@ -377,7 +375,6 @@
                     </div>
                     <br>
                 </div>
-
                 <div class="col-sm-6">
                     <div id="recruiter_form_section">
                         <div class="reg_input">
@@ -386,11 +383,11 @@
                             </a>
                         </div>
                     </div>
-
                 </div>
             </div>
             </div>
         </div>
+        <a href="#" class="scrollToTop"><img src="/assets/common/img/up.svg"></a>
         <!-- Start Footer-->
         <div id="footer_inc"></div>
         <script>
