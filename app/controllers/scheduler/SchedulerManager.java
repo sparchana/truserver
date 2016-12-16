@@ -10,6 +10,8 @@ import models.entity.scheduler.Static.SchedulerType;
 import play.Logger;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
@@ -59,7 +61,7 @@ public class SchedulerManager implements Runnable {
     }
 
     private void createSameDayInterviewAlertEvent(int hr) {
-        Logger.info("Same_Day_Interview_Alert_Event Scheduled!");
+        Logger.info("Same Day Interview Alert Event Scheduled!");
         if (hr < 1) return;
 
         long xHr = hr * 1000 * 60 * 60; // 3 hr
@@ -69,21 +71,21 @@ public class SchedulerManager implements Runnable {
     }
 
     private void createNextDayInterviewAlertEvent(long delay) {
-        Logger.info("Next_Day_Interview_Alert_Event Scheduled!");
+        Logger.info(" Next Day Interview Alert Event Scheduled!");
 
         NextDayInterviewAlertTask nextDayInterviewAlertTask = new NextDayInterviewAlertTask();
         timer.schedule(nextDayInterviewAlertTask, delay, oneDay);
     }
 
     private void createRecruiterEODEmailAlertEvent(long delay){
-        Logger.info("Recruiter_EOD_Email_Alert_Event Scheduled!");
+        Logger.info("Recruiter EOD Email Alert Event Scheduled!");
 
         EODRecruiterEmailAlertTask eodRecruiterEmailAlertTask = new EODRecruiterEmailAlertTask();
         timer.schedule(eodRecruiterEmailAlertTask, delay, oneDay);
     }
 
     private void createAadhaarVerificationEvent(long delay){
-        Logger.info("Aadhaar_Verification_Event Scheduled!");
+        Logger.info("Aadhaar Verification Event Scheduled!");
 
         EODAadhaarVerificationTask eodAadhaarVerificationTask = new EODAadhaarVerificationTask();
         timer.schedule(eodAadhaarVerificationTask, delay, oneDay);
@@ -132,8 +134,14 @@ public class SchedulerManager implements Runnable {
 
     public long computeDelay(int hour, int min, int sec) {
 
-        if(min>60) ++hour; min -= 60;
-        if(sec>60) ++min; sec -= 60;
+        if(min>60) {
+            ++hour;
+            min -= 60;
+        }
+        if(sec>60) {
+            ++min;
+            sec -= 60;
+        }
 
         Calendar cal = Calendar.getInstance();
 
@@ -150,6 +158,6 @@ public class SchedulerManager implements Runnable {
             hour += 24;
         }
 
-        return hour * 1000 * 60 * 60 + min * 60 + sec;
+        return (hour * 60 * 60 + min * 60 + sec) * 1000;
     }
 }
