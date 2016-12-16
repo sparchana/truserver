@@ -217,7 +217,9 @@ function processDataInterviewToday(returnedData) {
             if(application.lastUpdate != null) {
                 var lastUpdateDate = new Date(application.lastUpdate);
                 var timing = "";
-                if(lastUpdateDate.getHours() > 12){
+                if(lastUpdateDate.getHours() == 12){
+                    timing = lastUpdateDate.getHours() + ":" + lastUpdateDate.getMinutes() + " pm";
+                } else if(lastUpdateDate.getHours() > 12){
                     timing = lastUpdateDate.getHours() - 12 + ":" + lastUpdateDate.getMinutes() + " pm";
                 } else{
                     timing = lastUpdateDate.getHours() + ":" + lastUpdateDate.getMinutes() + " am";
@@ -238,7 +240,7 @@ function processDataInterviewToday(returnedData) {
             if(application.currentStatus.statusId > JWF_STATUS_INTERVIEW_CONFIRMED){
                 if(application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING || application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){ //not going or delayed
                     status = '<td style="color: red"><b>' + application.currentStatus.statusTitle + lastUpdate +'</b></td>'
-                } else if(application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED || application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED) {
+                } else if(application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY || application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED) {
                     status = '<td style="color: green"><b>' + application.currentStatus.statusTitle + lastUpdate +'</b></td>'
                 } else { // started or reached
                     status = '<td style="color: #5a5a5a"><b>-</b></td>'
@@ -452,12 +454,19 @@ function submitCredits() {
             if(contactCredits < 1){
                 notifyError("Contact credits cannot be less than 1");
                 contactCreditStatus = 0;
+            } else if(contactCredits > 10000){
+                notifyError("Contact credits cannot be greater than 10000");
+                contactCreditStatus = 0;
             }
         }
+
         if($("#interviewCreditAmount").val() != ""){
             interviewCredits = parseInt($("#interviewCreditAmount").val());
             if(interviewCredits < 1){
                 notifyError("Interview credits cannot be less than 1");
+                interviewCreditStatus = 0;
+            } else if(interviewCredits > 10000){
+                notifyError("Interview credits cannot be greater than 10000");
                 interviewCreditStatus = 0;
             }
         }

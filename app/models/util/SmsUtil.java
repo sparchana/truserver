@@ -495,13 +495,13 @@ public class SmsUtil {
 
 
     public static void sendSelectedSmsToCandidate(JobPostWorkflow jobApplication) {
-        String msg = "Hi " + jobApplication.getCandidate().getCandidateMobile() + ", Congratulations! You have been selected for the job: " + jobApplication.getJobPost().getJobPostTitle()
+        String msg = "Hi " + jobApplication.getCandidate().getCandidateFirstName() + ", Congratulations! You have been selected for the job: " + jobApplication.getJobPost().getJobPostTitle()
                 + " at " + jobApplication.getJobPost().getCompany().getCompanyName() + ". The recruiter will contact you for further details. You can contact TruJobs at 8880007799 for any queries. www.trujobs.in. Download Trujobs app at http://bit.ly/2d7zDqR";
         addSmsToNotificationQueue(jobApplication.getCandidate().getCandidateMobile(), msg);
     }
 
     public static void sendRejectedSmsToCandidate(JobPostWorkflow jobApplication) {
-        String msg = "Hi " + jobApplication.getCandidate().getCandidateMobile() + ", Unfortunately the recruiter has rejected your application for the job: " + jobApplication.getJobPost().getJobPostTitle()
+        String msg = "Hi " + jobApplication.getCandidate().getCandidateFirstName() + ", Unfortunately the recruiter has rejected your application for the job: " + jobApplication.getJobPost().getJobPostTitle()
                 + " at " + jobApplication.getJobPost().getCompany().getCompanyName() + ". You can contact TruJobs at 8880007799 for any queries. www.trujobs.in. Download Trujobs app at http://bit.ly/2d7zDqR";
         addSmsToNotificationQueue(jobApplication.getCandidate().getCandidateMobile(), msg);
     }

@@ -6,6 +6,7 @@ var localityArray = [];
 var jobArray = [];
 var prefLocation;
 var prefLocationName;
+var index = 0;
 
 function getLocality(){
     return localityArray;
@@ -88,6 +89,20 @@ $(document).ready(function(){
         }
     });
 
+    $(window).scroll(function(){
+        if ($(this).scrollTop() > 100) {
+            $('.scrollToTop').fadeIn();
+        } else {
+            $('.scrollToTop').fadeOut();
+        }
+    });
+
+    //Click event to scroll to top
+    $('.scrollToTop').click(function(){
+        $('html, body').animate({scrollTop : 0},800);
+        return false;
+    });
+
     try {
         $.ajax({
             type: "POST",
@@ -158,17 +173,46 @@ function createAndAppendDivider(title) {
 
     mainDiv.appendChild(hotJobItem);
 }
+function pagination(noOfPages){
+    $('#jobCardControl').twbsPagination({
+        totalPages: noOfPages,
+        visiblePages: 5,
+        onPageClick: function (event, page) {
+            if(page > 0 ){
+                index = (page - 1)*5;
+            }
+            else{
+                index = 0;
+            }
+            getAllJobs(index);
+            $(".page-link").click(function(){
+                $('html, body').animate({scrollTop: $("#job_cards_inc").offset().top - 100}, 800);
+            });
+        }
+    });
+}
 
 function processDataAllJobPosts(returnedData) {
-    var jobPostCount = Object.keys(returnedData).length;
+    var jobPostList = returnedData.allJobPost;
+    var jobPostCount = Object.keys(jobPostList).length;
     if(jobPostCount > 0){
+        var numberOfPages = parseInt(returnedData.totalJobs)/5;
+        var rem = parseInt(returnedData.totalJobs) % 5;
+        if(rem > 0){
+            numberOfPages ++;
+        }
+        if(index == 0){
+            pagination(numberOfPages);
+        }
+
+        $("#hotJobs").html("");
         var count = 0;
         var parent = $("#hotJobs");
         //returnedData.reverse();
         $("#jobLoaderDiv").hide();
         createAndAppendDivider("Popular Jobs");
         var isDividerPresent = false;
-        returnedData.forEach(function (jobPost){
+        jobPostList.forEach(function (jobPost){
             count++;
             if(count){
                 //!* get all localities of the jobPost *!/
@@ -453,12 +497,42 @@ function processDataAllJobPosts(returnedData) {
                 }
             }
         });
-        if(count<4){;
-            document.getElementById("hotJobs").style.height = "54%";
-        }
-        else{
-            document.getElementById("hotJobs").style.height = "72%";
-        }
+    }else{
+        $("#jobLoaderDiv").hide();
+        var parent = $("#hotJobs");
+        var hotJobItem = document.createElement("div");
+        hotJobItem.id = "hotJobItem";
+        parent.append(hotJobItem);
+
+        var centreTag = document.createElement("center");
+        hotJobItem.appendChild(centreTag);
+
+        var rowDiv = document.createElement("div");
+        rowDiv.className = "row";
+        centreTag.appendChild(rowDiv);
+
+        var col = document.createElement("div");
+        col.className = "col-sm-12";
+        rowDiv.appendChild(col);
+
+        var jobImage = document.createElement("div");
+        jobImage.id = "jobImage";
+        col.appendChild(jobImage);
+
+        var jobImageSrc = document.createElement("img");
+        jobImageSrc.id = "jobImageSrc";
+        jobImage.appendChild(jobImageSrc);
+        $("#jobImageSrc").attr('src', '/assets/common/img/empty-search.svg');
+
+        var jobMsgLine1 = document.createElement("div");
+        jobMsgLine1.id = "jobMsgLine1";
+        col.appendChild(jobMsgLine1);
+        $("#jobMsgLine1").html("Oops!! No relevant jobs found at this moment");
+
+        var jobMsgLine2 = document.createElement("div");
+        jobMsgLine2.id = "jobMsgLine2";
+        col.appendChild(jobMsgLine2);
+        $("#jobMsgLine2").html("Register yourself to get updates when new jobs are posted");
     }
 
     $('html, body').css({

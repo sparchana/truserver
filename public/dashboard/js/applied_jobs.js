@@ -813,7 +813,7 @@ function prePopulateJobSection(jobApplication) {
                                 $("#delayed_" + jobPost.jobPost.jobPostId).hide();
                                 $("#started_" + jobPost.jobPost.jobPostId).show();
                                 $("#reached_" + jobPost.jobPost.jobPostId).show();
-                            } else if(jobPost.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED) {
+                            } else if(jobPost.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY) {
                                 currentStatus.textContent = "On the Way";
                                 currentStatus.style = "font-weight: bold; margin-right: 4px; color: green";
 

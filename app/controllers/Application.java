@@ -14,6 +14,7 @@ import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
+import com.avaje.ebean.PagedList;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -835,13 +836,12 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    public static Result getAllNormalJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
-        return ok(toJson(jobPosts));
+    public static Result getAllNormalJobPosts(Long index) {
+        return ok(toJson(JobSearchService.getAllActiveJobsPaginated(index)));
     }
-    public static Result getAllHotJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
-        return ok(toJson(jobPosts));
+
+    public static Result getAllHotJobPosts(Long index) {
+        return ok(toJson(JobSearchService.getAllHotJobsPaginated(index)));
     }
 
     @Security.Authenticated(Secured.class)
@@ -1289,9 +1289,8 @@ public class Application extends Controller {
         return ok(views.html.Fragment.job_role_page.render(rolePara));
     }
 
-    public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara) {
-        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
-        return ok(toJson(jobPostList));
+    public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara,Long index) {
+        return ok(toJson(JobSearchService.getActiveJobsForJobRolePaginated(idPara,index)));
     }
 
     public static Result getAllCompanyLogos() {

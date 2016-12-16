@@ -1504,12 +1504,19 @@ function submitCredits() {
             if(contactCredits < 1){
                 notifyError("Contact credits cannot be less than 1");
                 contactCreditStatus = 0;
+            } else if(contactCredits > 10000){
+                notifyError("Contact credits cannot be greater than 10000");
+                contactCreditStatus = 0;
             }
         }
+
         if($("#interviewCreditAmount").val() != ""){
             interviewCredits = parseInt($("#interviewCreditAmount").val());
             if(interviewCredits < 1){
                 notifyError("Interview credits cannot be less than 1");
+                interviewCreditStatus = 0;
+            } else if(interviewCredits > 10000){
+                notifyError("Interview credits cannot be greater than 10000");
                 interviewCreditStatus = 0;
             }
         }
