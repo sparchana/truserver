@@ -61,9 +61,10 @@ public class TestController extends Controller{
     }
 
     public static Result testQueue() {
-        NotificationEvent notificationEvent = new SMSEvent("+918971739586", "Test message11");
-        Global.getmNotificationHandler().addToQueue(notificationEvent);
-
+        for(int i =0; i<5; ++i){
+            NotificationEvent notificationEvent = new SMSEvent("+918971739586", "Test Queue message " + i);
+            Global.getmNotificationHandler().addToQueue(notificationEvent);
+        }
         return ok("-");
     }
 }
