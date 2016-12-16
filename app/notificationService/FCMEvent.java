@@ -2,6 +2,7 @@ package notificationService;
 
 import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.Sender;
+import play.Logger;
 import play.Play;
 
 import java.io.IOException;
