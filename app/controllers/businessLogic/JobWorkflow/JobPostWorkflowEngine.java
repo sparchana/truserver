@@ -2778,8 +2778,7 @@ public class JobPostWorkflowEngine {
 
         return 1;
     }
-
-
+    
     public static Integer updateCandidateInterviewStatus(Candidate candidate, JobPost jobPost, Long val, Long reason, int channel) {
         // fetch existing workflow old
         JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()

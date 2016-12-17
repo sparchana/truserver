@@ -49,7 +49,7 @@ public class EmailEvent extends NotificationEvent {
                 email.setSubject(getMySubject());
                 email.addTo(recipient);
                 if(isDevMode()){
-                    Logger.info("DevMode: No Email sent");
+                    Logger.info("DevMode: No Email sent [Subject] " + mySubject + "] [Message] " + message + " [Recipient] " + recipient);
                 } else {
                     Logger.info("Sending email to " + recipient);
                     email.send();

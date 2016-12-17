@@ -49,7 +49,7 @@ public class SMSEvent extends NotificationEvent {
         String smsResponse = "";
 
         if(isDevMode()){
-            Logger.info("DevMode: No sms sent");
+            Logger.info("DevMode: No sms sent [" + requestString + "]");
             return "DevMode: No sms sent";
         } else {
             try {
