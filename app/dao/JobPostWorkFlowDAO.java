@@ -14,6 +14,11 @@ import java.util.List;
  * Created by dodo on 29/11/16.
  */
 public class JobPostWorkFlowDAO {
+    /**
+     *
+     * @param candidateId , accepts candidateId
+     * @return List<JobPostWorkflow> containing all jobPost to which a candidate with id: 'candidateId', has applied to.
+     */
     public static List<JobPostWorkflow> candidateAppliedJobs(Long candidateId) {
         List<JobPostWorkflow> appliedJobsList;
 
@@ -39,6 +44,10 @@ public class JobPostWorkFlowDAO {
         return appliedJobsList;
     }
 
+    /**
+     * @param jobPostId, accepts a 'JobPostId'
+     * @return List<JobPostWorkflow>, workflow equivalent of all the candidate who has applied to a Job Post with id: 'jobPostId'
+     */
     public static List<JobPostWorkflow> getJobApplications(String jobPostId) {
         String statusSql = " and (status_id NOT IN ( '" + ServerConstants.JWF_STATUS_PRESCREEN_FAILED + "')) ";
         String workFlowQueryBuilder = "select createdby, candidate_id, job_post_workflow_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
