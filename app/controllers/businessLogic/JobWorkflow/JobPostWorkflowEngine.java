@@ -22,6 +22,7 @@ import com.avaje.ebean.RawSqlBuilder;
 import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.InteractionService;
 import controllers.businessLogic.MatchingEngineService;
+import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
 import models.entity.*;
 import models.entity.OM.*;
@@ -455,41 +456,13 @@ public class JobPostWorkflowEngine {
     public static Map<Long, CandidateWorkflowData> getSelectedCandidates(Long jobPostId) {
 
         Integer status = ServerConstants.JWF_STATUS_SELECTED;
-        StringBuilder workFlowQueryBuilder = new StringBuilder("select createdby, candidate_id, job_post_workflow_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
-                " where i.job_post_id " +
-                " = ('" + jobPostId + "') " +
-                " and (status_id = '" + ServerConstants.JWF_STATUS_SELECTED + "' or status_id = '" + ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED + "') " +
-                " and job_post_workflow_id = " +
-                " (select max(job_post_workflow_id) from job_post_workflow " +
-                "     where i.candidate_id = job_post_workflow.candidate_id " +
-                "     and i.job_post_id = job_post_workflow.job_post_id)  " +
-                " order by job_post_workflow_id desc ");
+        List<Integer> statusList = new ArrayList<>(Arrays.asList(ServerConstants.JWF_STATUS_SELECTED, ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED ));
 
-
-        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
-                .columnMapping("creation_timestamp", "creationTimestamp")
-                .columnMapping("job_post_id", "jobPost.jobPostId")
-                .columnMapping("status_id", "status.statusId")
-                .columnMapping("candidate_id", "candidate.candidateId")
-                .columnMapping("createdby", "createdBy")
-                .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
-                .create();
-
-        List<JobPostWorkflow> jobPostWorkflowList = Ebean.find(JobPostWorkflow.class)
-                .setRawSql(rawSql)
-                .findList();
-
-//        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
-//                .eq("jobPost.jobPostId", jobPostId)
-//                .or(eq("status.statusId", ServerConstants.JWF_STATUS_SELECTED), eq("status.statusId", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED))
-//                .setDistinct(true)
-//                .orderBy().desc("creation_timestamp").findList();
+        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkFlowDAO.getLatestRecords(jobPostId, statusList, true);
 
         List<Candidate> candidateList = new ArrayList<>();
 
         Map<Long, CandidateWorkflowData> selectedCandidateMap = new LinkedHashMap<>();
-
-
         // until view is not available over this table, this loop get the distinct candidate who
         // got selected for a job post recently
         for (JobPostWorkflow jpwf : jobPostWorkflowList) {
@@ -509,8 +482,18 @@ public class JobPostWorkflowEngine {
             localityIdList.add(jobPostToLocality.getLocality().getLocalityId());
         }
 
+        return getSelectedCandidateMap(candidateList, localityIdList, jobPostId, new ArrayList<>(Arrays.asList(status)));
+    }
+
+    public static Map<Long, CandidateWorkflowData> getSelectedCandidateMap(List<Candidate> candidateList,
+                                                                           List<Long> localityIdList,
+                                                                           long jobPostId,
+                                                                           List<Integer> statusList){
+        Map<Long, CandidateWorkflowData> selectedCandidateMap = new LinkedHashMap<>();
+
         candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
-        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), new ArrayList<Integer>(Arrays.asList(status)));
+
+        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), statusList);
 
         for (Candidate candidate : candidateList) {
             CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
@@ -542,13 +525,11 @@ public class JobPostWorkflowEngine {
         JobPost jobPost = JobPost.find.where().eq("jobPostId", request.getJobPostId()).findUnique();
         JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_SELECTED).findUnique();
 
-        Map<?, JobPostWorkflow> workflowMap = JobPostWorkflow.find
-                .where()
-                .eq("job_post_id", request.getJobPostId())
-                .eq("status_id", status.getStatusId())
-                .in("candidate_id", selectedCandidateIdList)
-                .setMapKey("candidate_id")
-                .findMap();
+        Map<?, JobPostWorkflow> workflowMap =
+                                JobPostWorkFlowDAO.getJobPostWorkflowMapByCandidateId(
+                                        request.getJobPostId(),
+                                        status.getStatusId(),
+                                        selectedCandidateIdList);
 
         for (Candidate candidate : selectedCandidateList) {
             JobPostWorkflow jobPostWorkflow = workflowMap.get(candidate.getCandidateId());
@@ -1146,13 +1127,12 @@ public class JobPostWorkflowEngine {
         String interactionResult;
         boolean responseMsg = false;
 
-        Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
+        Candidate candidate =
+                  Candidate.find.where().eq("candidateId", candidateId).findUnique();
 
         // fetch existing workflow old
-        JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
-                .eq("jobPost.jobPostId", jobPostId)
-                .eq("candidate.candidateId", candidateId)
-                .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
+        JobPostWorkflow jobPostWorkflowOld =
+                        JobPostWorkFlowDAO.getJobPostWorkflowOld(jobPostId, candidateId);
 
         // A value is for overriding leadStatus is also there in Lead Model setLeadStatus
         if (candidate != null && jobPostWorkflowOld != null) {
@@ -1182,7 +1162,7 @@ public class JobPostWorkflowEngine {
             }
 
             // Setting the existing jobpostworkflow status to attempted
-            JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(candidate.getCandidateId(), jobPostId, jobPostWorkflowOld, channel, ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED);
+            JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(jobPostWorkflowOld, channel, ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED);
 
             JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED).findUnique();
             jobPostWorkflowNew.setStatus(status);
@@ -1205,19 +1185,25 @@ public class JobPostWorkflowEngine {
     public static InterviewResponse savePreScreenResult(PreScreenRequest preScreenRequest, int channel, int statusId) {
         InterviewResponse interviewResponse = new InterviewResponse();
 
-        // fetch existing workflow old
-        JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
-                .eq("jobPost.jobPostId", preScreenRequest.getJobPostId())
-                .eq("candidate.candidateId", preScreenRequest.getCandidateId())
-                .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
+        // null check
+        if(preScreenRequest.getJobPostId() == null || preScreenRequest.getCandidateId() == null) {
+            interviewResponse.setStatus(ServerConstants.ERROR);
+            return interviewResponse;
+        }
 
+        // fetch existing workflow old
+        JobPostWorkflow jobPostWorkflowOld = JobPostWorkFlowDAO.getJobPostWorkflowOld(
+                preScreenRequest.getJobPostId(),
+                preScreenRequest.getCandidateId() );
+
+        // null check
         if (jobPostWorkflowOld == null) {
             interviewResponse.setStatus(ServerConstants.ERROR);
             return interviewResponse;
         }
 
         // save PreScreen candidate
-        JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(preScreenRequest.getCandidateId(), preScreenRequest.getJobPostId(), jobPostWorkflowOld, channel, statusId);
+        JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(jobPostWorkflowOld, channel, statusId);
 
         if (jobPostWorkflowNew == null) {
             interviewResponse.setStatus(ServerConstants.ERROR);
@@ -1373,44 +1359,21 @@ public class JobPostWorkflowEngine {
 
 
     public static Map<Long, CandidateWorkflowData> getPendingInterviewScheduleCandidates(Long jobPostId) {
-        String statusSql;
-        Integer jpwfStatus;
+        Integer jpwfStatus = ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED;
 
-        jpwfStatus = ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED;
-        statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED + ")) ";
+        List<Integer> statusList = new ArrayList<>(Collections.singletonList(ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED));
 
-        StringBuilder workFlowQueryBuilder = new StringBuilder("select createdby, candidate_id, job_post_workflow_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
-                " where i.job_post_id " +
-                " = ('" + jobPostId + "') " +
-                statusSql +
-                " and job_post_workflow_id = " +
-                " (select max(job_post_workflow_id) from job_post_workflow " +
-                "       where i.candidate_id = job_post_workflow.candidate_id " +
-                "       and i.job_post_id = job_post_workflow.job_post_id) " +
-                " order by job_post_workflow_id desc ");
-
-        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
-                .columnMapping("creation_timestamp", "creationTimestamp")
-                .columnMapping("job_post_id", "jobPost.jobPostId")
-                .columnMapping("status_id", "status.statusId")
-                .columnMapping("candidate_id", "candidate.candidateId")
-                .columnMapping("createdby", "createdBy")
-                .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
-                .create();
-
-        List<JobPostWorkflow> jobPostWorkflowList = Ebean.find(JobPostWorkflow.class)
-                .setRawSql(rawSql)
-                .findList();
+        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkFlowDAO.getLatestRecords(jobPostId, statusList, true);
 
         List<Candidate> candidateList = new ArrayList<>();
 
-        Map<Long, CandidateWorkflowData> selectedCandidateMap = new LinkedHashMap<>();
         // until view is not available over this table, this loop get the distinct candidate who
         // got selected for a job post recently
-
         for (JobPostWorkflow jpwf : jobPostWorkflowList) {
             candidateList.add(jpwf.getCandidate());
         }
+
+
         // prep params for a jobPost
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
 
@@ -1420,70 +1383,41 @@ public class JobPostWorkflowEngine {
             localityIdList.add(jobPostToLocality.getLocality().getLocalityId());
         }
 
-        candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
-        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), new ArrayList<Integer>(Arrays.asList(jpwfStatus)));
-
-        for (Candidate candidate : candidateList) {
-            CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
-            candidateWorkflowData.setCandidate(candidate);
-            candidateWorkflowData.setExtraData(candidateExtraDataMap.get(candidate.getCandidateId()));
-            selectedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
-        }
-
-        return selectedCandidateMap;
+        return getSelectedCandidateMap(candidateList, localityIdList, jobPostId, statusList);
     }
 
 
     public static Map<Long, CandidateWorkflowData> getAllPendingInterviewAndRescheduleConfirmation(Long jobPostId, Long status) {
-        String statusSql;
         Integer jpwfStatus;
+        List<Integer> statusList = new ArrayList<>();
         if (status == 1) { //all
             jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED;
-            statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED + ", " + ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE + ", "
-                    + ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT + ", " + ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE + ")) ";
+            statusList.addAll(
+                    Arrays.asList(
+                            ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED,
+                            ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE,
+                            ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT,
+                            ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE));
+
         } else if (status == 2) {
             jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED;
-            statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED + ", "
-                    + ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED + ")) ";
+            statusList.addAll(
+                    Arrays.asList(
+                            ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED,
+                            ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED));
         } else if (status == 3) {
             jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE;
-            statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE + ")) ";
+            statusList.add(ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE);
         } else if (status == 4) {
             jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT;
-            statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT + ")) ";
+            statusList.add(ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT);
         } else {
             jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE;
-            statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE + ")) ";
+            statusList.add( ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE);
         }
 
-        StringBuilder workFlowQueryBuilder = new StringBuilder("select createdby, candidate_id, job_post_workflow_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
-                " where i.job_post_id " +
-                " = ('" + jobPostId + "') " +
-                statusSql +
-                " and job_post_workflow_id = " +
-                " (select max(job_post_workflow_id) from job_post_workflow " +
-                "       where i.candidate_id = job_post_workflow.candidate_id " +
-                "       and i.job_post_id = job_post_workflow.job_post_id) " +
-                " order by job_post_workflow_id desc ");
+        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkFlowDAO.getLatestRecords(jobPostId, statusList, true);
 
-        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
-                .columnMapping("creation_timestamp", "creationTimestamp")
-                .columnMapping("job_post_id", "jobPost.jobPostId")
-                .columnMapping("status_id", "status.statusId")
-                .columnMapping("candidate_id", "candidate.candidateId")
-                .columnMapping("createdby", "createdBy")
-                .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
-                .create();
-
-        List<JobPostWorkflow> jobPostWorkflowList = Ebean.find(JobPostWorkflow.class)
-                .setRawSql(rawSql)
-                .findList();
-
-//        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
-//                .eq("jobPost.jobPostId", jobPostId)
-//                .or(eq("status.statusId", ServerConstants.JWF_STATUS_SELECTED), eq("status.statusId", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED))
-//                .setDistinct(true)
-//                .orderBy().desc("creation_timestamp").findList();
 
         List<Candidate> candidateList = new ArrayList<>();
 
@@ -1503,17 +1437,7 @@ public class JobPostWorkflowEngine {
             localityIdList.add(jobPostToLocality.getLocality().getLocalityId());
         }
 
-        candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
-        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), new ArrayList<Integer>(Arrays.asList(jpwfStatus)));
-
-        for (Candidate candidate : candidateList) {
-            CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
-            candidateWorkflowData.setCandidate(candidate);
-            candidateWorkflowData.setExtraData(candidateExtraDataMap.get(candidate.getCandidateId()));
-            selectedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
-        }
-
-        return selectedCandidateMap;
+        return  getSelectedCandidateMap(candidateList, localityIdList, jobPostId, statusList);
     }
 
     public static Map<Long, CandidateWorkflowData> getConfirmedInterviewCandidates(Long jobPostId, String start, String end) {
@@ -1522,10 +1446,7 @@ public class JobPostWorkflowEngine {
         List<JobPostWorkflow> jobPostWorkflowList;
 
         if (Objects.equals(start, "null")) { //checking if there is any date filter or not
-            jobPostWorkflowList = JobPostWorkflow.find.where()
-                    .eq("jobPost.jobPostId", jobPostId)
-                    .eq("status_id", status)
-                    .findList();
+            jobPostWorkflowList = JobPostWorkFlowDAO.getRecords(jobPostId, new ArrayList<>(Collections.singletonList(status)));
 
         } else {
             jobPostWorkflowList = JobPostWorkflow.find.where()
@@ -1554,17 +1475,7 @@ public class JobPostWorkflowEngine {
             localityIdList.add(jobPostToLocality.getLocality().getLocalityId());
         }
 
-        candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
-        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), new ArrayList<Integer>(Arrays.asList(status)));
-
-        for (Candidate candidate : candidateList) {
-            CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
-            candidateWorkflowData.setCandidate(candidate);
-            candidateWorkflowData.setExtraData(candidateExtraDataMap.get(candidate.getCandidateId()));
-            selectedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
-        }
-
-        return selectedCandidateMap;
+        return getSelectedCandidateMap(candidateList, localityIdList, jobPostId, new ArrayList<>(Arrays.asList(status)));
     }
 
     public static Map<Long, CandidateWorkflowData> getAllCompletedInterviews(Long jobPostId) {
@@ -1575,10 +1486,7 @@ public class JobPostWorkflowEngine {
         statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW);
 
         List<JobPostWorkflow> jobPostWorkflowList;
-        jobPostWorkflowList = JobPostWorkflow.find.where()
-                .eq("jobPost.jobPostId", jobPostId)
-                .in("status_id", statusList)
-                .findList();
+        jobPostWorkflowList = JobPostWorkFlowDAO.getRecords(jobPostId, statusList);
 
         List<Candidate> candidateList = new ArrayList<>();
 
@@ -1596,18 +1504,8 @@ public class JobPostWorkflowEngine {
             localityIdList.add(jobPostToLocality.getLocality().getLocalityId());
         }
 
-        candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
-        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId)
-                .findUnique(), statusList);
 
-        for (Candidate candidate : candidateList) {
-            CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
-            candidateWorkflowData.setCandidate(candidate);
-            candidateWorkflowData.setExtraData(candidateExtraDataMap.get(candidate.getCandidateId()));
-            selectedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
-        }
-
-        return selectedCandidateMap;
+        return getSelectedCandidateMap(candidateList, localityIdList, jobPostId, statusList);
     }
 
     public static List<InterviewTodayResponse> getTodaysInterviewDetails(InterviewTodayRequest interviewTodayRequest) {
@@ -1615,48 +1513,27 @@ public class JobPostWorkflowEngine {
         List<InterviewTodayResponse> responseList = new ArrayList<>();
 
         Calendar now = Calendar.getInstance();
-        int mMonth = (now.get(Calendar.MONTH) + 1);
-        int mDay = now.get(Calendar.DAY_OF_MONTH);
-        int mYear = now.get(Calendar.YEAR);
+        Date today = now.getTime();
 
-        String cDay = String.valueOf(mDay);
-        String cMonth = String.valueOf(mMonth);
-
-        if(mDay < 10){
-            cDay = "0" + mDay;
-        }
-
-        if(mMonth < 10){
-            cMonth = "0" + mMonth;
-        }
-
-        String todaysDate = mYear + "-" + cMonth + "-" + cDay;
-
-        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
-                .in("job_post_id", interviewTodayRequest.getJpId())
-                .eq("status_id", status)
-                .eq("scheduled_interview_date", todaysDate)
-                .orderBy().asc("job_post_id")
-                .findList();
+        // get records for specific jobPostid with status and exact scheduleDate
+        List<JobPostWorkflow> jobPostWorkflowList =
+                              JobPostWorkFlowDAO.getTodayInterview(
+                                      interviewTodayRequest.getJpId(),
+                                      status,
+                                      today);
 
         for (JobPostWorkflow jpWf : jobPostWorkflowList) {
             InterviewTodayResponse response = new InterviewTodayResponse();
             response.setCandidate(jpWf.getCandidate());
             response.setJobPostWorkflow(jpWf);
 
-            JobPostWorkflow jobPostWorkFlow = JobPostWorkflow.find.where()
-                    .eq("job_post_id", jpWf.getJobPost().getJobPostId())
-                    .eq("candidate_id", jpWf.getCandidate().getCandidateId())
-                    .orderBy().desc("creation_timestamp")
-                    .setMaxRows(1)
-                    .findUnique();
-            response.setCurrentStatus(jobPostWorkFlow.getStatus());
+            response.setCurrentStatus(jpWf.getStatus());
 
             response.setLastUpdate(null);
             //set the last update timestamp only when the candidate has updated their status (Not going, delayed etc.)
             //if not updated, set as null
-            if(jobPostWorkFlow.getStatus().getStatusId() > ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED) {
-                response.setLastUpdate(jobPostWorkFlow.getCreationTimestamp());
+            if(jpWf.getStatus().getStatusId() > ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED) {
+                response.setLastUpdate(jpWf.getCreationTimestamp());
             }
             responseList.add(response);
         }
@@ -1670,19 +1547,14 @@ public class JobPostWorkflowEngine {
 
         Integer count = 0;
 
-        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
-                .in("job_post_id", interviewTodayRequest.getJpId())
-                .eq("status_id", ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED)
-                .findList();
+        List<JobPostWorkflow> jobPostWorkflowList =
+                              JobPostWorkFlowDAO.getPendingInterviewApproval(
+                                      interviewTodayRequest.getJpId(),
+                                      ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED
+                              );
 
         for (JobPostWorkflow jpWf : jobPostWorkflowList) {
-            JobPostWorkflow jobPostWorkFlow = JobPostWorkflow.find.where()
-                    .eq("job_post_id", jpWf.getJobPost().getJobPostId())
-                    .eq("candidate_id", jpWf.getCandidate().getCandidateId())
-                    .orderBy().desc("creation_timestamp")
-                    .setMaxRows(1)
-                    .findUnique();
-            if (jobPostWorkFlow.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED) {
+            if (jpWf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED) {
                 count++;
             }
         }
@@ -1869,20 +1741,6 @@ public class JobPostWorkflowEngine {
 
         String candidateListString = String.join("', '", candidateUUIdList);
 
-//
-//        StringBuilder interactionQueryBuilder = new StringBuilder("select distinct objectauuid, creationtimestamp from interaction i " +
-//                " where i.objectauuid " +
-//                " in ('" + candidateListString + "') " +
-//                " and creationtimestamp = " +
-//                " (select max(creationtimestamp) from interaction where i.objectauuid = interaction.objectauuid) " +
-//                " order by creationTimestamp desc ");
-//
-//        RawSql rawSql = RawSqlBuilder.parse(interactionQueryBuilder.toString())
-//                .tableAliasMapping("i", "interaction")
-//                .columnMapping("objectauuid", "objectAUUId")
-//                .columnMapping("creationtimestamp", "creationTimestamp")
-//                .create();
-
 
         Map<String, Interaction> lastActiveInteraction = Ebean.find(Interaction.class)
                 .setRawSql(getRawSqlForInteraction(candidateListString))
@@ -2050,19 +1908,22 @@ public class JobPostWorkflowEngine {
     }
 
     // this methods take the old jobpost uuid and set the new jobpost uuid to old jobpost uuid.
-    private static JobPostWorkflow saveNewJobPostWorkflow(Long candidateId, Long jobPostId, JobPostWorkflow jobPostWorkflowOld, int channel, int statusId) {
+    private static JobPostWorkflow saveNewJobPostWorkflow(JobPostWorkflow jobPostWorkflowOld,
+                                                          int channel,
+                                                          int statusId)
+    {
         if (statusId > ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED ) {
             Logger.warn("saveNewJobPostWorkflow called with unacceptable statusId:");
             return null;
         }
         if(jobPostWorkflowOld == null){
-            Logger.error("job post workflow old is null for cId: " + candidateId + " & jpId: " + jobPostId + " & jpwf_statusId: " + statusId);
+            Logger.error("job post workflow old is null jpwf_statusId: " + statusId);
             return null;
         }
         JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", statusId).findUnique();
 
-        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
-        Candidate candidate = Candidate.find.where().in("candidateId", candidateId).findUnique();
+        JobPost jobPost = jobPostWorkflowOld.getJobPost();
+        Candidate candidate = jobPostWorkflowOld.getCandidate();
         String toBePreservedUUId = jobPostWorkflowOld.getJobPostWorkflowUUId();
 
         // check if status is already selected or pre_screen_attempted, throw error if not
@@ -2086,12 +1947,17 @@ public class JobPostWorkflowEngine {
     }
 
     // this methods take the old jobpost uuid and set the new jobpost uuid to old jobpost uuid.
-    public static JobPostWorkflow saveNewJobPostWorkflow(Long candidateId, Long jobPostId, JobPostWorkflow jobPostWorkflowOld,
-                                                         Integer oldStatus, Integer newStatus, Integer interviewSlot, Date interviewDate, int channel) {
+    private static JobPostWorkflow saveNewJobPostWorkflow(JobPostWorkflow jobPostWorkflowOld,
+                                                          Integer oldStatus,
+                                                          Integer newStatus,
+                                                          Integer interviewSlot,
+                                                          Date interviewDate,
+                                                          int channel)
+    {
 
         JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", newStatus).findUnique();
-        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
-        Candidate candidate = Candidate.find.where().in("candidateId", candidateId).findUnique();
+        JobPost jobPost = jobPostWorkflowOld.getJobPost();
+        Candidate candidate = jobPostWorkflowOld.getCandidate();
         String toBePreservedUUId = jobPostWorkflowOld.getJobPostWorkflowUUId();
 
         // interview validation
@@ -2234,10 +2100,11 @@ public class JobPostWorkflowEngine {
                     .findUnique();
 
             // fetch existing workflow old
-            JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
-                    .eq("jobPost.jobPostId", interviewStatusRequest.getJobPostId())
-                    .eq("candidate.candidateId", candidate.getCandidateId())
-                    .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
+            JobPostWorkflow jobPostWorkflowOld =
+                            JobPostWorkFlowDAO.getJobPostWorkflowOld(
+                                    interviewStatusRequest.getJobPostId(),
+                                    candidate.getCandidateId()
+                            );
 
             if (interviewStatusRequest.getInterviewStatus() == ServerConstants.INTERVIEW_STATUS_ACCEPTED) { // accept
                 Logger.info("Sending interview confirm sms to candidate");
@@ -2307,9 +2174,7 @@ public class JobPostWorkflowEngine {
             }
 
             // Setting the existing jobpostworkflow status to confirmed
-            JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(candidate.getCandidateId(),
-                    Long.valueOf(interviewStatusRequest.getJobPostId()),
-                    jobPostWorkflowOld, jobPostWorkflowOld.getStatus().getStatusId(),
+            JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(jobPostWorkflowOld, jobPostWorkflowOld.getStatus().getStatusId(),
                     jwStatus, interviewStatusRequest.getRescheduledSlot(), date, channel);
 
             if (jobPostWorkflowNew != null) {
@@ -2349,10 +2214,13 @@ public class JobPostWorkflowEngine {
 
         // fetch existing workflow old
 
-        JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
-                .eq("jobPost.jobPostId", jpId)
-                .eq("candidate.candidateId", candidate.getCandidateId())
-                .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
+        JobPostWorkflow jobPostWorkflowOld =
+                        JobPostWorkFlowDAO.getJobPostWorkflowOld(jpId, candidate.getCandidateId());
+
+//        JobPostWorkflow.find.where()
+//                .eq("jobPost.jobPostId", jpId)
+//                .eq("candidate.candidateId", candidate.getCandidateId())
+//                .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
 
         if (value == ServerConstants.RESCHEULED_INTERVIEW_STATUS_ACCEPTED) { // accept
             interactionResult = " interview accepted by candidate";
@@ -2379,7 +2247,7 @@ public class JobPostWorkflowEngine {
         }
 
         // Setting the existing jobpostworkflow status to confirmed
-        JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(candidate.getCandidateId(), jpId,
+        JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(
                 jobPostWorkflowOld, jobPostWorkflowOld.getStatus().getStatusId(), jwStatus,
                 jobPostWorkflowOld.getScheduledInterviewTimeSlot().getInterviewTimeSlotId(),
                 jobPostWorkflowOld.getScheduledInterviewDate(), channel);
@@ -2413,29 +2281,11 @@ public class JobPostWorkflowEngine {
     }
 
     public static Map<Long, CandidateWorkflowData> getRecruiterJobLinedUpCandidates(Long jobPostId) {
-        String statusSql = " and (status_id NOT IN ( '" + ServerConstants.JWF_STATUS_PRESCREEN_FAILED + "')) ";
-        StringBuilder workFlowQueryBuilder = new StringBuilder("select createdby, candidate_id, job_post_workflow_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
-                " where i.job_post_id " +
-                " = ('" + jobPostId + "') " +
-                statusSql +
-                " and job_post_workflow_id = " +
-                " (select max(job_post_workflow_id) from job_post_workflow " +
-                "       where i.candidate_id = job_post_workflow.candidate_id " +
-                "       and i.job_post_id = job_post_workflow.job_post_id) " +
-                " order by job_post_workflow_id desc ");
-
-        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
-                .columnMapping("creation_timestamp", "creationTimestamp")
-                .columnMapping("job_post_id", "jobPost.jobPostId")
-                .columnMapping("status_id", "status.statusId")
-                .columnMapping("candidate_id", "candidate.candidateId")
-                .columnMapping("createdby", "createdBy")
-                .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
-                .create();
-
-        List<JobPostWorkflow> jobPostWorkflowList = Ebean.find(JobPostWorkflow.class)
-                .setRawSql(rawSql)
-                .findList();
+        List<JobPostWorkflow> jobPostWorkflowList =
+                              JobPostWorkFlowDAO.getLatestRecords(
+                                      jobPostId,
+                                      new ArrayList<>(Collections.singletonList(ServerConstants.JWF_STATUS_PRESCREEN_FAILED)),
+                                      false);
 
         List<Candidate> candidateList = new ArrayList<>();
         Integer status = ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED;
@@ -2566,10 +2416,8 @@ public class JobPostWorkflowEngine {
         }
 
         // fetch existing workflow old
-        JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
-                .eq("jobPost.jobPostId", jobPostId)
-                .eq("candidate.candidateId", candidateId)
-                .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
+        JobPostWorkflow jobPostWorkflowOld =
+                        JobPostWorkFlowDAO.getJobPostWorkflowOld(jobPostId, candidateId);
 
         if (jobPostWorkflowOld == null) {
             Logger.info("jobPostWorkflow old is null");
@@ -2584,8 +2432,8 @@ public class JobPostWorkflowEngine {
                 || (channel == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE)
                 || (channel == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE))
                 && (jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_SELECTED)) {
-            JobPostWorkflow jobPostWorkflowNew = JobPostWorkflowEngine.saveNewJobPostWorkflow(candidateId,
-                    jobPostId, jobPostWorkflowOld, ServerConstants.JWF_STATUS_SELECTED,
+            JobPostWorkflow jobPostWorkflowNew = JobPostWorkflowEngine.saveNewJobPostWorkflow(
+                    jobPostWorkflowOld, ServerConstants.JWF_STATUS_SELECTED,
                     ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED, interviewSlotDetail.getTimeSlot(),
                     interviewSlotDetail.getScheduledInterviewDate(), channel);
             jobPostWorkflowOld = jobPostWorkflowNew;
@@ -2598,8 +2446,8 @@ public class JobPostWorkflowEngine {
         Integer jwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED;
 
         if (jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED) {
-            JobPostWorkflow jobPostWorkflowNew = JobPostWorkflowEngine.saveNewJobPostWorkflow(candidateId,
-                    jobPostId, jobPostWorkflowOld, ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED,
+            JobPostWorkflow jobPostWorkflowNew = JobPostWorkflowEngine.saveNewJobPostWorkflow(
+                    jobPostWorkflowOld, ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED,
                     jwfStatus, interviewSlotDetail.getTimeSlot(),
                     interviewSlotDetail.getScheduledInterviewDate(), channel);
 
@@ -2621,13 +2469,12 @@ public class JobPostWorkflowEngine {
 
         if (jobPostWorkflowOld.getJobPost().getInterviewDetailsList() != null && jobPostWorkflowOld.getJobPost().getInterviewDetailsList().size() > 0) {
             if (jobPostWorkflowOld.getJobPost().getInterviewDetailsList().get(0).getReviewApplication() != null
-                    && jobPostWorkflowOld.getJobPost().getInterviewDetailsList().get(0).getReviewApplication() == 1) { // dont review applications, confirm it directly
+                    && jobPostWorkflowOld.getJobPost().getInterviewDetailsList().get(0).getReviewApplication() == 1)
+            { // dont review applications, confirm it directly
                 jwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
-                try {
-
-                    Thread.sleep(1000);
-                    JobPostWorkflow jobPostWorkflowNew = JobPostWorkflowEngine.saveNewJobPostWorkflow(candidateId,
-                            jobPostId, jobPostWorkflowOld, ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED,
+//                   Thread.sleep(1000); // everywhere now we use max job_post_workflow_id to find the latest record, hence this wont be required
+                    JobPostWorkflow jobPostWorkflowNew = JobPostWorkflowEngine.saveNewJobPostWorkflow(
+                            jobPostWorkflowOld, ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED,
                             jwfStatus, interviewSlotDetail.getTimeSlot(),
                             interviewSlotDetail.getScheduledInterviewDate(), channel);
 
@@ -2649,10 +2496,6 @@ public class JobPostWorkflowEngine {
                             interactionResult,
                             channel
                     );
-
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             }
         }
 
@@ -2662,18 +2505,15 @@ public class JobPostWorkflowEngine {
     public static JobPostWorkflow getCandidateLatestStatus(Candidate candidate, JobPost jobPost) {
         // fetch existing workflow old
 
-        return JobPostWorkflow.find.where()
-                .eq("jobPost.jobPostId", jobPost.getJobPostId())
-                .eq("candidate.candidateId", candidate.getCandidateId())
-                .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
+        return JobPostWorkFlowDAO.getJobPostWorkflowOld(jobPost.getJobPostId(), candidate.getCandidateId());
     }
 
     public static Integer updateFeedback(AddFeedbackRequest addFeedbackRequest, int channel) {
-        // fetch existing workflow old
-        JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
-                .eq("jobPost.jobPostId", addFeedbackRequest.getJobPostId())
-                .eq("candidate.candidateId", addFeedbackRequest.getCandidateId())
-                .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
+        // fetch existing workflow old for a specific candidate associated with a specific jobPost
+        JobPostWorkflow jobPostWorkflowOld =
+                        JobPostWorkFlowDAO.getJobPostWorkflowOld(
+                                addFeedbackRequest.getJobPostId(),
+                                addFeedbackRequest.getCandidateId());
 
         if (jobPostWorkflowOld == null) {
             return 0;
@@ -2734,27 +2574,27 @@ public class JobPostWorkflowEngine {
         }
 
         // Setting the existing jobpostworkflow status to confirmed
-        JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(addFeedbackRequest.getCandidateId(), addFeedbackRequest.getJobPostId(),
+        JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(
                 jobPostWorkflowOld, jobPostWorkflowOld.getStatus().getStatusId(), jwStatus,
                 jobPostWorkflowOld.getScheduledInterviewTimeSlot().getInterviewTimeSlotId(),
                 jobPostWorkflowOld.getScheduledInterviewDate(), channel);
 
         if (jobPostWorkflowNew != null) {
             jobPostWorkflowNew.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", jwStatus).findUnique());
+            jobPostWorkflowNew.update();
         }
-        jobPostWorkflowNew.update();
 
         InterviewFeedbackUpdate interviewFeedbackUpdate = new InterviewFeedbackUpdate();
         interviewFeedbackUpdate.setJobPostWorkflow(jobPostWorkflowNew);
         interviewFeedbackUpdate.setJobPost(jobPostWorkflowOld.getJobPost());
-        interviewFeedbackUpdate.setCandidate(Candidate.find.where().eq("candidateId", addFeedbackRequest.getCandidateId()).findUnique());
-        interviewFeedbackUpdate.setStatus(JobPostWorkflowStatus.find.where().eq("status_id", jwStatus).findUnique());
+        interviewFeedbackUpdate.setCandidate(jobPostWorkflowNew.getCandidate());
+        interviewFeedbackUpdate.setStatus(jobPostWorkflowNew.getStatus());
         interviewFeedbackUpdate.setCandidateInterviewStatusUpdateNote(addFeedbackRequest.getFeedbackComment());
         interviewFeedbackUpdate.setRejectReason(new RejectReasonDAO().getById(addFeedbackRequest.getRejectReason()));
 
         interviewFeedbackUpdate.save();
 
-        Candidate candidate = Candidate.find.where().eq("candidateId", addFeedbackRequest.getCandidateId()).findUnique();
+        Candidate candidate = jobPostWorkflowOld.getCandidate();
 
         if (jwStatus == ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED) {
             //sending notification
@@ -2786,10 +2626,10 @@ public class JobPostWorkflowEngine {
 
     public static Integer updateCandidateInterviewStatus(Candidate candidate, JobPost jobPost, Long val, Long reason, int channel) {
         // fetch existing workflow old
-        JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
-                .eq("jobPost.jobPostId", jobPost.getJobPostId())
-                .eq("candidate.candidateId", candidate.getCandidateId())
-                .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
+        JobPostWorkflow jobPostWorkflowOld =
+                        JobPostWorkFlowDAO.getJobPostWorkflowOld(
+                                jobPost.getJobPostId(),
+                                candidate.getCandidateId());
 
         if (jobPostWorkflowOld == null) {
             return 0;
@@ -2818,7 +2658,7 @@ public class JobPostWorkflowEngine {
         }
 
         // Setting the existing jobpostworkflow status to confirmed
-        JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(candidate.getCandidateId(), jobPost.getJobPostId(),
+        JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(
                 jobPostWorkflowOld, jobPostWorkflowOld.getStatus().getStatusId(), jwStatus,
                 jobPostWorkflowOld.getScheduledInterviewTimeSlot().getInterviewTimeSlotId(),
                 jobPostWorkflowOld.getScheduledInterviewDate(), channel);
@@ -2875,34 +2715,12 @@ public class JobPostWorkflowEngine {
             return appliedJobsList;
         }
 
-        String jobPostIdString = "";
         List<Long> jobPostIdList = new ArrayList<>();
         for (JobApplication jobApplication : jobApplicationList) {
             jobPostIdList.add(jobApplication.getJobPost().getJobPostId());
-            jobPostIdString += jobApplication.getJobPost().getJobPostId() + ", ";
         }
 
-        jobPostIdString = jobPostIdString.substring(0, jobPostIdString.length() - 2);
-
-        String candidateAppliedJobsSql = "select job_post_id, status_id, job_post_workflow_id, scheduled_interview_time_slot, scheduled_interview_date, interview_location_lat, interview_location_lng " +
-                "from job_post_workflow jwf where jwf.job_post_workflow_id = (select max(job_post_workflow_id)\n" +
-                " from job_post_workflow where jwf.job_post_id = job_post_workflow.job_post_id and job_post_workflow.candidate_id = " + candidate.getCandidateId() + ") " +
-                "and jwf.job_post_id in (" + jobPostIdString + ")";
-
-        RawSql rawSql = RawSqlBuilder.parse(candidateAppliedJobsSql)
-                .tableAliasMapping("jwf", "job_post_workflow")
-                .columnMapping("job_post_id", "jobPost.jobPostId")
-                .columnMapping("status_id", "status.statusId")
-                .columnMapping("scheduled_interview_time_slot", "scheduledInterviewTimeSlot.interviewTimeSlotId")
-                .columnMapping("scheduled_interview_date", "scheduledInterviewDate")
-                .columnMapping("interview_location_lat", "interviewLocationLat")
-                .columnMapping("interview_location_lng", "interviewLocationLng")
-                .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
-                .create();
-
-        appliedJobsList = Ebean.find(JobPostWorkflow.class)
-                .setRawSql(rawSql)
-                .findList();
+        appliedJobsList = JobPostWorkFlowDAO.partnerAppliedJobsForCandidate(candidate.getCandidateId(), jobPostIdList);
 
         List<PreScreenRequirement> preScreenRequirementList = PreScreenRequirement.find.where().in("job_post_id", jobPostIdList).findList();
 

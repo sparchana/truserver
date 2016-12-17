@@ -6,13 +6,13 @@ import java.util.List;
  * Created by dodo on 22/11/16.
  */
 public class InterviewTodayRequest {
-    List<Integer> jpId;
+    List<Long> jpId;
 
-    public List<Integer> getJpId() {
+    public List<Long> getJpId() {
         return jpId;
     }
 
-    public void setJpId(List<Integer> jpId) {
+    public void setJpId(List<Long> jpId) {
         this.jpId = jpId;
     }
 }
