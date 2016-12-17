@@ -100,21 +100,66 @@ public class JobSearchService {
                         ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
 
                 if (sortBy == ServerConstants.SORT_DEFAULT) {
-                    resultJobPosts.addAll(sortByDistance(exactJobsWithinDistance));
-                    resultJobPosts.addAll(sortByDistance(relatedJobsWithinDistance));
+                    exactJobRoleJobs= sortByDistance(exactJobsWithinDistance);
+                    relatedJobRoleJobs = sortByDistance(relatedJobsWithinDistance);
+
+                    //segregation
+                    resultJobPosts = sortJobPostListAccordingToHotJobs(exactJobRoleJobs, relatedJobRoleJobs);
+
                 }
                 else {
-                    resultJobPosts.addAll(exactJobsWithinDistance);
-                    resultJobPosts.addAll(relatedJobsWithinDistance);
+                    exactJobRoleJobs.addAll(exactJobsWithinDistance);
+                    relatedJobRoleJobs.addAll(relatedJobsWithinDistance);
+
+                    //segregation
+                    resultJobPosts = sortJobPostListAccordingToHotJobs(exactJobRoleJobs, relatedJobRoleJobs);
+
                 }
             }
             else {
-                resultJobPosts.addAll(exactJobRoleJobs);
-                resultJobPosts.addAll(relatedJobRoleJobs);
+                exactJobRoleJobs.addAll(exactJobRoleJobs);
+                relatedJobRoleJobs.addAll(relatedJobRoleJobs);
+
+                //segregation
+                resultJobPosts = sortJobPostListAccordingToHotJobs(exactJobRoleJobs, relatedJobRoleJobs);
             }
         }
 
         return resultJobPosts;
+    }
+
+    public static List<JobPost> sortJobPostListAccordingToHotJobs(List<JobPost> exactJobPostList, List<JobPost> relevantJobPostList){
+        List<JobPost> finalList = new ArrayList<>();
+
+        List<JobPost> exactHotJobs = new ArrayList<>();
+        List<JobPost> exactOtherJobs = new ArrayList<>();
+
+        List<JobPost> relevantHotJobs = new ArrayList<>();
+        List<JobPost> relevantOtherJobs = new ArrayList<>();
+
+        //segregation
+        for(JobPost jobPost : exactJobPostList){
+            if(jobPost.getJobPostIsHot()){
+                exactHotJobs.add(jobPost);
+            } else{
+                exactOtherJobs.add(jobPost);
+            }
+        }
+
+        for(JobPost jobPost : relevantJobPostList){
+            if(jobPost.getJobPostIsHot()){
+                relevantHotJobs.add(jobPost);
+            } else{
+                relevantOtherJobs.add(jobPost);
+            }
+        }
+
+        finalList.addAll(exactHotJobs);
+        finalList.addAll(exactOtherJobs);
+        finalList.addAll(relevantHotJobs);
+        finalList.addAll(relevantOtherJobs);
+
+        return finalList;
     }
 
 
@@ -366,6 +411,8 @@ public class JobSearchService {
                 }
             }
         }
+
+        query = query.orderBy().desc("JobPostIsHot");
 
         if(sortBy != null){
             if (sortBy == SORT_BY_DATE_POSTED) {
