@@ -725,23 +725,7 @@ public class JobService {
                     Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " already applied to jobPost with jobId:" + existingJobPost.getJobPostId());
                 }
 
-                // also create entry in jobPostWorkflow table
-                JobPostWorkflow jobPostWorkflow = JobPostWorkflow.find
-                        .where()
-                        .eq("candidate_id", existingCandidate.getCandidateId())
-                        .eq("job_post_id", existingJobPost.getJobPostId()).setMaxRows(1).findUnique();
-
-                if (jobPostWorkflow == null) {
-                    jobPostWorkflow = new JobPostWorkflow();
-                    jobPostWorkflow.setCandidate(existingCandidate);
-                    jobPostWorkflow.setJobPost(existingJobPost);
-                    jobPostWorkflow.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_SELECTED).findUnique());
-
-
-                    jobPostWorkflow.setCreatedBy(session().get("sessionUsername") == null ?InteractionConstants.INTERACTION_CHANNEL_MAP.get(channelType) : session().get("sessionUsername") );
-                    jobPostWorkflow.setChannel(channelType);
-                    jobPostWorkflow.save();
-                }
+                createJobPostWorkflowEntry(existingCandidate, existingJobPost, channelType, ServerConstants.JWF_STATUS_SELECTED);
             }
             PreScreenPopulateResponse populateResponse = JobPostWorkflowEngine.getJobPostVsCandidate(Long.valueOf(applyJobRequest.getJobId()),
                     existingCandidate.getCandidateId(), false);
@@ -749,6 +733,21 @@ public class JobService {
                 applyJobResponse.setPreScreenAvailable(true);
             } else {
                 applyJobResponse.setPreScreenAvailable(false);
+
+                // if there is no pre_screen_requirement with the jobpost then create entry ()
+                // with prescreen completed, for this candidate
+                // also create entry in jobPostWorkflow table
+                JobPostWorkflow jobPostWorkflow = JobPostWorkflow.find
+                        .where()
+                        .eq("candidate_id", existingCandidate.getCandidateId())
+                        .eq("status_id", ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED)
+                        .eq("job_post_id", existingJobPost.getJobPostId()).setMaxRows(1).findUnique();
+
+                if(jobPostWorkflow == null) {
+                    JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(existingCandidate.getCandidateId(),
+                            existingJobPost.getJobPostId(),
+                            channelType);
+                }
             }
             InterviewResponse interviewResponse = JobPostWorkflowEngine.isInterviewRequired(existingJobPost);
             if(interviewResponse.getStatus() < ServerConstants.INTERVIEW_REQUIRED){
@@ -756,6 +755,7 @@ public class JobService {
             } else {
                 applyJobResponse.setInterviewAvailable(true);
             }
+
             // adding only those field that are req by interview UI messaging
             applyJobResponse.setJobRoleTitle(existingJobPost.getJobRole().getJobName());
             applyJobResponse.setJobTitle(existingJobPost.getJobPostTitle());
@@ -767,6 +767,28 @@ public class JobService {
         }
 
         return applyJobResponse;
+    }
+
+    private static void createJobPostWorkflowEntry(Candidate existingCandidate, JobPost existingJobPost, int channelType, int status) {
+        // also create entry in jobPostWorkflow table
+        JobPostWorkflow jobPostWorkflow = JobPostWorkflow.find
+                .where()
+                .eq("candidate_id", existingCandidate.getCandidateId())
+                .eq("status_id", status)
+                .eq("job_post_id", existingJobPost.getJobPostId()).setMaxRows(1).findUnique();
+
+        // if no entry for the given status then create entry
+        if (jobPostWorkflow == null) {
+            jobPostWorkflow = new JobPostWorkflow();
+            jobPostWorkflow.setCandidate(existingCandidate);
+            jobPostWorkflow.setJobPost(existingJobPost);
+            jobPostWorkflow.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", status).findUnique());
+
+
+            jobPostWorkflow.setCreatedBy(session().get("sessionUsername") == null ?InteractionConstants.INTERACTION_CHANNEL_MAP.get(channelType) : session().get("sessionUsername") );
+            jobPostWorkflow.setChannel(channelType);
+            jobPostWorkflow.save();
+        }
     }
 
     public static void writeJobApplicationToGoogleSheet(Long jobPostId, String candidateMobile, int channelType, Integer localityId, Partner partner, ApplyJobRequest applyJobRequest) throws UnsupportedEncodingException {

@@ -1,7 +1,13 @@
 package controllers;
 
+import api.ServerConstants;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import controllers.scheduler.SchedulerManager;
+import models.entity.Candidate;
+import models.util.NotificationUtil;
 import models.util.Validator;
+import notificationService.NotificationEvent;
+import notificationService.SMSEvent;
 import play.mvc.Controller;
 import play.mvc.Result;
 
@@ -34,5 +40,31 @@ public class TestController extends Controller{
 
     public static Result testMatchingCandidate(Long jpId) {
         return ok(toJson(JobPostWorkflowEngine.getMatchingCandidate(jpId)));
+    }
+
+    public static Result testScheduler() throws InterruptedException {
+
+        SchedulerManager schedulerManager = new SchedulerManager();
+        schedulerManager.run();
+        return ok();
+    }
+
+
+    public static Result testnotification(){
+        Candidate candidate = Candidate.find.where().eq("CandidateMobile", "+918971739586").findUnique();
+        if(candidate.getCandidateAndroidToken() != null){
+            NotificationUtil.addFcmToNotificationQueue("Hi", "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
+            return ok("1");
+        }
+        return ok("Null token!");
+
+    }
+
+    public static Result testQueue() {
+        for(int i =0; i<5; ++i){
+            NotificationEvent notificationEvent = new SMSEvent("+918971739586", "Test Queue message " + i);
+            Global.getmNotificationHandler().addToQueue(notificationEvent);
+        }
+        return ok("-");
     }
 }

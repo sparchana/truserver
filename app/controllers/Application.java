@@ -1,5 +1,6 @@
 package controllers;
 
+import notificationService.*;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
@@ -19,8 +20,6 @@ import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.android.gcm.server.Message;
-import com.google.android.gcm.server.Sender;
 import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.*;
@@ -2182,15 +2181,5 @@ public class Application extends Controller {
         }
 
         return ok(toJson(JobPostWorkflowEngine.updateFeedback(addFeedbackRequest, Integer.valueOf(session().get("sessionChannel")))));
-    }
-
-    public static Result testnotification(){
-        Candidate candidate = Candidate.find.where().eq("CandidateMobile", "+918971739586").findUnique();
-        if(candidate.getCandidateAndroidToken() != null){
-            NotificationUtil.sendNotification("Hi", "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
-            return ok("1");
-        }
-        return ok("Null token!");
-
     }
 }

@@ -184,6 +184,7 @@ public class ServerConstants {
         devTeamEmail.put("Adarsh", "adarsh.raj@trujobs.in");
         devTeamEmail.put("Sandy", "sandeep.kumar@trujobs.in");
         devTeamEmail.put("Rafik", "rafik.khadar@trujobs.in");
+        devTeamEmail.put("Chillu", "sandeep@trujobs.in");
     }
 
     public static final Double DEFAULT_MATCHING_ENGINE_RADIUS = 10.0; // In Kilometers
