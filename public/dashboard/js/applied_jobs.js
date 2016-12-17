@@ -653,14 +653,10 @@ function prePopulateJobSection(jobApplication) {
                 var address = "";
 
                 //computing Address
-                if(Object.keys(jobPost.jobPost.interviewDetailsList).length > 0){
-                    address = jobPost.jobPost.interviewDetailsList[0].interviewFullAddress;
+                if(jobPost.jobPost.interviewFullAddress != null && jobPost.jobPost.interviewFullAddress != ""){
+                    address = jobPost.jobPost.interviewFullAddress;
                 } else {
-                    if(jobPost.jobPost.jobPostAddress != null && jobPost.jobPost.jobPostAddress != ""){
-                        address = jobPost.jobPost.jobPostAddress;
-                    } else {
-                        address = "";
-                    }
+                    address = "";
                 }
 
                 addressBody.textContent = "Interview Address : " + address;

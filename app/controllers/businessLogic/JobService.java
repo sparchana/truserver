@@ -180,8 +180,6 @@ public class JobService {
     private static void createInterviewDetails(AddJobPostRequest addJobPostRequest, JobPost jobPost){
         List<Integer> interviewSlots = addJobPostRequest.getInterviewTimeSlot();
 
-        //setting lat lng of the address
-
         if(interviewSlots != null){
             Boolean flag = false;
             String interviewDays = addJobPostRequest.getJobPostInterviewDays();
@@ -212,14 +210,6 @@ public class JobService {
                     Byte interviewDaysByte = Byte.parseByte(addJobPostRequest.getJobPostInterviewDays(), 2);
                     interviewDetails.setInterviewDays(interviewDaysByte);
                 }
-                interviewDetails.setLat(addJobPostRequest.getJobPostInterviewLocationLat());
-                interviewDetails.setLng(addJobPostRequest.getJobPostInterviewLocationLng());
-
-                interviewDetails.setInterviewAddress(addJobPostRequest.getJobPostAddress());
-                interviewDetails.setInterviewBuildingNo(addJobPostRequest.getJobPostAddressBuildingNo());
-                interviewDetails.setInterviewLandmark(addJobPostRequest.getJobPostAddressLandmark());
-
-                interviewDetails.setReviewApplication(addJobPostRequest.getReviewApplications());
 
                 interviewDetails.save();
             }
@@ -246,8 +236,16 @@ public class JobService {
         newJobPost.setJobPostIncentives(addJobPostRequest.getJobPostIncentives());
         newJobPost.setJobPostMinRequirement(addJobPostRequest.getJobPostMinRequirement());
 
+        newJobPost.setLatitude(addJobPostRequest.getJobPostInterviewLocationLat());
+        newJobPost.setLongitude(addJobPostRequest.getJobPostInterviewLocationLng());
+
+        newJobPost.setReviewApplication(addJobPostRequest.getReviewApplications());
+
         newJobPost.setJobPostAddress(addJobPostRequest.getJobPostAddress());
         newJobPost.setJobPostPinCode(addJobPostRequest.getJobPostPinCode());
+
+        newJobPost.setInterviewBuildingNo(addJobPostRequest.getJobPostAddressBuildingNo());
+        newJobPost.setInterviewLandmark(addJobPostRequest.getJobPostAddressLandmark());
 
         newJobPost.setJobPostVacancies(addJobPostRequest.getJobPostVacancies());
         newJobPost.setJobPostDescriptionAudio(addJobPostRequest.getJobPostDescriptionAudio());

@@ -667,18 +667,11 @@ public class TrudroidController {
             jobPostBuilder.setJobPostMinRequirements(jobPost.getJobPostMinRequirement());
 
         //address
-        InterviewDetails interviewDetails = InterviewDetails.find.where()
-                .eq("JobPostId", jobPost.getJobPostId()).setMaxRows(1).findUnique();
-
         String address;
-        if (interviewDetails != null) {
-            address = interviewDetails.getInterviewFullAddress();
-        } else{
-            if(jobPost.getJobPostAddress() != null && !Objects.equals(jobPost.getJobPostAddress().trim(), "")){
-                address = jobPost.getJobPostAddress();
-            } else {
-                address = "";
-            }
+        if(jobPost.getInterviewFullAddress() != null && !Objects.equals(jobPost.getInterviewFullAddress().trim(), "")){
+            address = jobPost.getInterviewFullAddress();
+        } else {
+            address = "";
         }
 
         jobPostBuilder.setJobPostAddress(address);
@@ -1065,18 +1058,11 @@ public class TrudroidController {
                         jobPostObjectBuilder.setJobPostCompanyLogo(jwpf.getJobPost().getCompany().getCompanyLogo());
 
                         //address
-                        InterviewDetails interviewDetails = InterviewDetails.find.where()
-                                .eq("JobPostId", jwpf.getJobPost().getJobPostId()).setMaxRows(1).findUnique();
-
                         String address;
-                        if (interviewDetails != null) {
-                            address = interviewDetails.getInterviewFullAddress();
-                        } else{
-                            if(jwpf.getJobPost().getJobPostAddress() != null && !Objects.equals(jwpf.getJobPost().getJobPostAddress().trim(), "")){
-                                address = jwpf.getJobPost().getJobPostAddress();
-                            } else {
-                                address = "";
-                            }
+                        if(jwpf.getJobPost().getInterviewFullAddress() != null && !Objects.equals(jwpf.getJobPost().getInterviewFullAddress().trim(), "")){
+                            address = jwpf.getJobPost().getInterviewFullAddress();
+                        } else {
+                            address = "";
                         }
 
                         jobPostObjectBuilder.setJobPostAddress(address);

@@ -2108,9 +2108,9 @@ public class JobPostWorkflowEngine {
             jobPostWorkflowOld.setJobPost(jobPost);
             jobPostWorkflowOld.setInterviewLocationLat(null);
             jobPostWorkflowOld.setInterviewLocationLng(null);
-            if (jobPost.getInterviewDetailsList() != null) {
-                jobPostWorkflowOld.setInterviewLocationLat(jobPost.getInterviewDetailsList().get(0).getLat());
-                jobPostWorkflowOld.setInterviewLocationLng(jobPost.getInterviewDetailsList().get(0).getLng());
+            if (jobPost.getLatitude() != null) {
+                jobPostWorkflowOld.setInterviewLocationLat(jobPost.getLatitude());
+                jobPostWorkflowOld.setInterviewLocationLng(jobPost.getLongitude());
             }
             jobPostWorkflowOld.setCandidate(candidate);
 
@@ -2579,7 +2579,7 @@ public class JobPostWorkflowEngine {
         JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
                 .eq("jobPost.jobPostId", jobPostId)
                 .eq("candidate.candidateId", candidateId)
-                .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
+                .orderBy().desc("job_post_workflow_id").setMaxRows(1).findUnique();
 
         if (jobPostWorkflowOld == null) {
             Logger.info("jobPostWorkflow old is null");
@@ -2630,8 +2630,8 @@ public class JobPostWorkflowEngine {
         );
 
         if (jobPostWorkflowOld.getJobPost().getInterviewDetailsList() != null && jobPostWorkflowOld.getJobPost().getInterviewDetailsList().size() > 0) {
-            if (jobPostWorkflowOld.getJobPost().getInterviewDetailsList().get(0).getReviewApplication() != null
-                    && jobPostWorkflowOld.getJobPost().getInterviewDetailsList().get(0).getReviewApplication() == 1) { // dont review applications, confirm it directly
+            if (jobPostWorkflowOld.getJobPost().getReviewApplication() != null
+                    && jobPostWorkflowOld.getJobPost().getReviewApplication() == 1) { // dont review applications, confirm it directly
                 jwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
                 try {
 

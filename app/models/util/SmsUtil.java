@@ -315,12 +315,8 @@ public class SmsUtil {
 
         //address
         String address = "";
-        if (jobApplication.getJobPost().getInterviewDetailsList().size() > 0) {
-            address = jobApplication.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress();
-        } else{
-            if(jobApplication.getJobPost().getJobPostAddress() != null || !Objects.equals(jobApplication.getJobPost().getJobPostAddress(), "")){
-                address = jobApplication.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress();
-            }
+        if(jobApplication.getJobPost().getInterviewFullAddress() != null && !Objects.equals(jobApplication.getJobPost().getInterviewFullAddress(), "")){
+            address = jobApplication.getJobPost().getInterviewFullAddress();
         }
 
         if(!Objects.equals(address.trim(), "")){
@@ -340,12 +336,8 @@ public class SmsUtil {
 
         //address
         String address = "";
-        if (jobPostWorkflow.getJobPost().getInterviewDetailsList().size() > 0) {
-            address = jobPostWorkflow.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress();
-        } else{
-            if(jobPostWorkflow.getJobPost().getJobPostAddress() != null || !Objects.equals(jobPostWorkflow.getJobPost().getJobPostAddress(), "")){
-                address = jobPostWorkflow.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress();
-            }
+        if(jobPostWorkflow.getJobPost().getInterviewFullAddress() != null && !Objects.equals(jobPostWorkflow.getJobPost().getInterviewFullAddress(), "")){
+            address = jobPostWorkflow.getJobPost().getInterviewFullAddress();
         }
 
         if(!Objects.equals(address.trim(), "")){
@@ -364,12 +356,8 @@ public class SmsUtil {
 
         //address
         String address = "";
-        if (jobPostWorkflow.getJobPost().getInterviewDetailsList().size() > 0) {
-            address = jobPostWorkflow.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress();
-        } else{
-            if(jobPostWorkflow.getJobPost().getJobPostAddress() != null || !Objects.equals(jobPostWorkflow.getJobPost().getJobPostAddress(), "")){
-                address = jobPostWorkflow.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress();
-            }
+        if(jobPostWorkflow.getJobPost().getInterviewFullAddress() != null && !Objects.equals(jobPostWorkflow.getJobPost().getInterviewFullAddress(), "")){
+            address = jobPostWorkflow.getJobPost().getInterviewFullAddress();
         }
 
         if(!Objects.equals(address.trim(), "")){
@@ -398,12 +386,8 @@ public class SmsUtil {
 
         //address
         String address = "";
-        if (jobApplication.getJobPost().getInterviewDetailsList().size() > 0) {
-            address = jobApplication.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress();
-        } else{
-            if(jobApplication.getJobPost().getJobPostAddress() != null || !Objects.equals(jobApplication.getJobPost().getJobPostAddress(), "")){
-                address = jobApplication.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress();
-            }
+        if(jobApplication.getJobPost().getInterviewFullAddress() != null && !Objects.equals(jobApplication.getJobPost().getInterviewFullAddress(), "")){
+            address = jobApplication.getJobPost().getJobPostAddress();
         }
 
         if(!Objects.equals(address.trim(), "")){
