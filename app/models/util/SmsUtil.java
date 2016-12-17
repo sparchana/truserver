@@ -323,7 +323,7 @@ public class SmsUtil {
 
         //if interview details doesnt have interview address, this logic will fetch the old address(text only + old map resolved address)
         if(nullAddress){
-            if(jobApplication.getJobPost().getJobPostAddress() != null || !Objects.equals(jobApplication.getJobPost().getJobPostAddress(), "")){
+            if(jobApplication.getJobPost().getJobPostAddress() != null && !Objects.equals(jobApplication.getJobPost().getJobPostAddress(), "")){
                 msg += "\n\nAddress: " + jobApplication.getJobPost().getJobPostAddress();
             }
         }

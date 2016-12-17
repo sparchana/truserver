@@ -667,7 +667,7 @@ function prePopulateJobSection(jobApplication) {
 
                 //if isAddress is null, get the default(old) address withput landmark
                 if(isAddressNull){
-                    if(jobPost.jobPost.jobPostAddress != null || jobPost.jobPost.jobPostAddress != ""){
+                    if(jobPost.jobPost.jobPostAddress != null && jobPost.jobPost.jobPostAddress != ""){
                         address = "Interview Address : " + jobPost.jobPost.jobPostAddress;
                     } else {
                         address = "Interview Address : Not available";

@@ -1625,7 +1625,7 @@ $(function () {
 
         //if isAddress is null, get the default(old) address withput landmark
         if(isAddressNull){
-            if(returnedData.jobPostAddress != null || returnedData.jobPostAddress != ""){
+            if(returnedData.jobPostAddress != null && returnedData.jobPostAddress != ""){
                 jobPostInterviewAddress = returnedData.jobPostAddress;
             } else {
                 jobPostInterviewAddress = "Not available";
