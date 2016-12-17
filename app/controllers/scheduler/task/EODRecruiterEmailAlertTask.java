@@ -54,7 +54,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
         // recruiters (map<RecruiterId, List<JobPostWorkflow>)
 
         Map<Long, List<JobPostWorkflow>> interviewsPerRecruiterMap = getInterviewMap(mToday);
-        String subject = " TruJobs.in : Today's interviews details inside! ";
+        String subject = " TruJobs.in : Provide feedback for today's interviews and earn credits!! ";
 
         // from map, create email event and append it to the Queue
         // email desc: html table with columns {candidate name: schedule time slot, feedback}
@@ -138,14 +138,14 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
         String statusSql;
         statusSql = " (status_id in (" + ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED+ " , "+ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED+")) ";
 
-        String workFlowQuery = "select job_post_id, createdby, candidate_id, creation_timestamp, status_id from job_post_workflow i " +
+        String workFlowQuery = "select job_post_id, createdby, candidate_id, job_post_workflow_id, creation_timestamp, status_id from job_post_workflow i " +
                 " where " +
                 statusSql +
-                " and creation_timestamp = " +
-                " (select max(creation_timestamp) from job_post_workflow " +
+                " and job_post_workflow_id = " +
+                " (select max(job_post_workflow_id) from job_post_workflow " +
                 " where i.candidate_id = job_post_workflow.candidate_id )" +
                 " and creation_timestamp >= '" +mSdf.format(yesterday) +"'"+
-                " order by creation_timestamp desc ";
+                " order by job_post_workflow_id desc ";
 
         RawSql rawSql = RawSqlBuilder.parse(workFlowQuery)
                 .columnMapping("creation_timestamp", "creationTimestamp")
@@ -153,6 +153,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
                 .columnMapping("job_post_id", "jobPost.jobPostId")
                 .columnMapping("candidate_id", "candidate.candidateId")
                 .columnMapping("createdby", "createdBy")
+                .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
                 .create();
 
         List<JobPostWorkflow> jobPostWorkflowList = Ebean.find(JobPostWorkflow.class)
@@ -213,8 +214,8 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
             isReqForToday = true;
             date = mToday;
             htmlTable.append(
-                      "<div>We value your feedback! \n Please login to www.trujobs.in and provide feedback for the candidates that you interviewed today!</div><br> \n\n\n"
-                    + "<div><font color=\"#0000ff\">For every feedback you provide we would add an interview credit back to your account!! </font></div><br>\n\n\n"
+                      "<div>We value your feedback! \n Please login to www.trujobs.in/recruiter and provide feedback for the candidates that you interviewed today!</div><br> \n\n\n"
+                    + "<div><font color=\"#0000ff\"><b>For every feedback you provide we would add an interview credit back to your account!! </b></font></div><br>\n\n\n"
                     + "<div><b>The following candidates would have walked-in for interviews today ("+sdf.format(date)+"): </b></div><br>\n\n\n");
         } else {
             htmlTable.append("" +
@@ -261,9 +262,10 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
                             feedbackLink,
                             isReqForToday));
         }
-        htmlTable.append("</tbody></table>");
+        htmlTable.append("</tbody></table><br>");
 
-        return new EmailEvent(recruiterProfile.getRecruiterProfileEmail(), EmailUtil.getEmailHTML(recruiterProfile, htmlTable.toString()), subject);
+        return new EmailEvent(recruiterProfile.getRecruiterProfileEmail(),
+                EmailUtil.getEmailHTML(recruiterProfile, htmlTable.toString()), subject);
     }
 
     private String getHTMLTableRow(int slno, String jobTitle, Candidate candidate, String slotTitle,
@@ -323,7 +325,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
 
         htmlTable.append(
                   " <div> Your Job has received "+totalApplications+" applications in the last 24 hrs. Below is a summary of new applications received in the last 24 hrs.</div> "
-                + " <div>Login now at www.trujobs.in to view more details about all applicants!</div>\n\n");
+                + " <div>Login now at www.trujobs.in to view more details about all applicants!</div><br>\n\n");
 
         htmlTable.append(tableContent);
         htmlTable.append("</tbody></table>");

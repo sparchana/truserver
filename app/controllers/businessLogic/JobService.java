@@ -725,7 +725,20 @@ public class JobService {
                     Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " already applied to jobPost with jobId:" + existingJobPost.getJobPostId());
                 }
 
-                createJobPostWorkflowEntry(existingCandidate, existingJobPost, channelType, ServerConstants.JWF_STATUS_SELECTED);
+                // assuming job apply to a particular jobpost is a one time event, this will push candidate into selected state
+                String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_SELECTED_FOR_PRESCREEN;
+                interactionResult += existingJobPost.getJobPostId() + ": " + existingJobPost.getJobRole().getJobName();
+                if (existingJobPost.getCompany() != null) {
+                    interactionResult += "@" + existingJobPost.getCompany().getCompanyName();
+                }
+
+
+                //  Each initial application should also have initial job post workflow entry, this methods takes care
+                //  of job Post workflow entry + corresponding interaction
+                createJobPostWorkflowEntry( existingCandidate, existingJobPost, channelType,
+                                            ServerConstants.JWF_STATUS_SELECTED,
+                                            InteractionConstants.INTERACTION_TYPE_CANDIDATE_SELECTED_FOR_PRESCREEN,
+                                            interactionResult);
             }
             PreScreenPopulateResponse populateResponse = JobPostWorkflowEngine.getJobPostVsCandidate(Long.valueOf(applyJobRequest.getJobId()),
                     existingCandidate.getCandidateId(), false);
@@ -769,7 +782,9 @@ public class JobService {
         return applyJobResponse;
     }
 
-    private static void createJobPostWorkflowEntry(Candidate existingCandidate, JobPost existingJobPost, int channelType, int status) {
+    private static void createJobPostWorkflowEntry(Candidate existingCandidate, JobPost existingJobPost,
+                                                   int channelType, int status,
+                                                   int interactionType, String interactionResult ) {
         // also create entry in jobPostWorkflow table
         JobPostWorkflow jobPostWorkflow = JobPostWorkflow.find
                 .where()
@@ -788,6 +803,16 @@ public class JobService {
             jobPostWorkflow.setCreatedBy(session().get("sessionUsername") == null ?InteractionConstants.INTERACTION_CHANNEL_MAP.get(channelType) : session().get("sessionUsername") );
             jobPostWorkflow.setChannel(channelType);
             jobPostWorkflow.save();
+
+            // save the interaction
+            InteractionService.createWorkflowInteraction(
+                    jobPostWorkflow.getJobPostWorkflowUUId(),
+                    existingCandidate.getCandidateUUId(),
+                    interactionType,
+                    null,
+                    interactionResult,
+                    channelType
+            );
         }
     }
 
