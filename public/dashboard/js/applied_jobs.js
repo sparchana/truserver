@@ -650,11 +650,32 @@ function prePopulateJobSection(jobApplication) {
 
             if(jobPost.status.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && jobPost.status.statusId <= JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                 var addressBody = document.createElement("div");
-                if(jobPost.jobPost.jobPostAddress != null || jobPost.jobPost.jobPostAddress != ""){
-                    addressBody.textContent = "Interview Address : " + jobPost.jobPost.jobPostAddress;
+                var address = "";
+                var isAddressNull = false;
+
+                //computingAddress
+                if(Object.keys(jobPost.jobPost.interviewDetailsList).length > 0){
+                    if(jobPost.jobPost.interviewDetailsList[0].interviewFullAddress != null){
+                        address = "Interview Address : " + jobPost.jobPost.interviewDetailsList[0].interviewFullAddress;
+                    } else{
+                        isAddressNull = true;
+                    }
                 } else {
-                    addressBody.textContent = "Interview Address : Not available";
+                    address = "Interview Address : Not available";
+                    isAddressNull = true;
                 }
+
+                //if isAddress is null, get the default(old) address withput landmark
+                if(isAddressNull){
+                    if(jobPost.jobPost.jobPostAddress != null || jobPost.jobPost.jobPostAddress != ""){
+                        address = "Interview Address : " + jobPost.jobPost.jobPostAddress;
+                    } else {
+                        address = "Interview Address : Not available";
+                    }
+                }
+
+                addressBody.textContent = address;
+
                 addressBody.style = "margin-top: 8px; margin-right: 12px";
                 titleRowStatus.appendChild(addressBody);
             }

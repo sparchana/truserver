@@ -1608,12 +1608,36 @@ $(function () {
         var jobRoleTitle = returnedData.jobRole.jobName;
         var jobRoleId = returnedData.jobPostId;
 
+        var jobPostInterviewAddress = "Not Available";
+        var isAddressNull = false;
+
+        //computingAddress
+        if(Object.keys(returnedData.interviewDetailsList).length > 0){
+            if(returnedData.interviewDetailsList[0].interviewFullAddress != null){
+                jobPostInterviewAddress = returnedData.interviewDetailsList[0].interviewFullAddress;
+            } else{
+                isAddressNull = true;
+            }
+        } else {
+            jobPostInterviewAddress = "Not available";
+            isAddressNull = true;
+        }
+
+        //if isAddress is null, get the default(old) address withput landmark
+        if(isAddressNull){
+            if(returnedData.jobPostAddress != null || returnedData.jobPostAddress != ""){
+                jobPostInterviewAddress = returnedData.jobPostAddress;
+            } else {
+                jobPostInterviewAddress = "Not available";
+            }
+        }
+
         app.renderJobCard(jobPostTitle, jobPostCompany, jobPostSalary, jobRoleTitle, jobRoleId,
-            jobPostLocalityNameList, jobPostEducation, jpExperience);
+            jobPostLocalityNameList, jobPostEducation, jpExperience, jobPostInterviewAddress);
     };
 
     app.renderJobCard = function (jobPostTitle, jobPostCompany, jobPostSalary, jobRoleTitle, jobRoleId,
-                                  jobPostLocalityNameList, jobPostEducation, jpExperience) {
+                                  jobPostLocalityNameList, jobPostEducation, jpExperience, jobPostInterviewAddress) {
         $('#job_post_title').text(jobPostTitle);
         $('#job_post_company_title').text(jobPostCompany);
         $('#job_post_salary').text(jobPostSalary);
@@ -1622,6 +1646,7 @@ $(function () {
         $('#job_post_experience').text(jpExperience);
         $('#job_post_locality').text(jobPostLocalityNameList);
         $('#job_role_id').text("Job Details");
+        $('#job_post_interview_address').text(jobPostInterviewAddress);
         gJobRoleId = jobRoleId;
     };
 
