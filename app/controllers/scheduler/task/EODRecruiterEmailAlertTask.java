@@ -138,14 +138,14 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
         String statusSql;
         statusSql = " (status_id in (" + ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED+ " , "+ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED+")) ";
 
-        String workFlowQuery = "select job_post_id, createdby, candidate_id, creation_timestamp, status_id from job_post_workflow i " +
+        String workFlowQuery = "select job_post_id, createdby, candidate_id, job_post_workflow_id, creation_timestamp, status_id from job_post_workflow i " +
                 " where " +
                 statusSql +
-                " and creation_timestamp = " +
-                " (select max(creation_timestamp) from job_post_workflow " +
+                " and job_post_workflow_id = " +
+                " (select max(job_post_workflow_id) from job_post_workflow " +
                 " where i.candidate_id = job_post_workflow.candidate_id )" +
                 " and creation_timestamp >= '" +mSdf.format(yesterday) +"'"+
-                " order by creation_timestamp desc ";
+                " order by job_post_workflow_id desc ";
 
         RawSql rawSql = RawSqlBuilder.parse(workFlowQuery)
                 .columnMapping("creation_timestamp", "creationTimestamp")
@@ -153,6 +153,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
                 .columnMapping("job_post_id", "jobPost.jobPostId")
                 .columnMapping("candidate_id", "candidate.candidateId")
                 .columnMapping("createdby", "createdBy")
+                .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
                 .create();
 
         List<JobPostWorkflow> jobPostWorkflowList = Ebean.find(JobPostWorkflow.class)
