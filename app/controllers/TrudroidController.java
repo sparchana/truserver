@@ -670,22 +670,20 @@ public class TrudroidController {
         InterviewDetails interviewDetails = InterviewDetails.find.where()
                 .eq("JobPostId", jobPost.getJobPostId()).setMaxRows(1).findUnique();
 
-        Boolean nullAddress = false;
+        String address;
         if (interviewDetails != null) {
-            if (interviewDetails.getInterviewFullAddress() != null) {
-                jobPostBuilder.setJobPostAddress(interviewDetails.getInterviewFullAddress());
-            } else{
-                nullAddress = true;
+            address = interviewDetails.getInterviewFullAddress();
+        } else{
+            if(jobPost.getJobPostAddress() != null && !Objects.equals(jobPost.getJobPostAddress().trim(), "")){
+                address = jobPost.getJobPostAddress();
+            } else {
+                address = "";
             }
         }
 
-        //if interview details doesnt have interview address, this logic will fetch the old address(text only + old map resolved address)
-        if(nullAddress){
-            if(jobPost.getJobPostAddress() != null && !Objects.equals(jobPost.getJobPostAddress().trim(), "")){
-                jobPostBuilder.setJobPostAddress(jobPost.getJobPostAddress());
-            } else {
-                jobPostBuilder.setJobPostAddress("Address not Available");
-            }
+        jobPostBuilder.setJobPostAddress(address);
+        if(Objects.equals(address.trim(), "")){
+            jobPostBuilder.setJobPostAddress("Address not available");
         }
 
         //working days
@@ -1070,22 +1068,20 @@ public class TrudroidController {
                         InterviewDetails interviewDetails = InterviewDetails.find.where()
                                 .eq("JobPostId", jwpf.getJobPost().getJobPostId()).setMaxRows(1).findUnique();
 
-                        Boolean nullAddress = false;
+                        String address;
                         if (interviewDetails != null) {
-                            if (interviewDetails.getInterviewFullAddress() != null) {
-                                jobPostObjectBuilder.setJobPostAddress(interviewDetails.getInterviewFullAddress());
-                            } else{
-                                nullAddress = true;
+                            address = interviewDetails.getInterviewFullAddress();
+                        } else{
+                            if(jwpf.getJobPost().getJobPostAddress() != null && !Objects.equals(jwpf.getJobPost().getJobPostAddress().trim(), "")){
+                                address = jwpf.getJobPost().getJobPostAddress();
+                            } else {
+                                address = "";
                             }
                         }
 
-                        //if interview details doesnt have interview address, this logic will fetch the old address(text only + old map resolved address)
-                        if(nullAddress){
-                            if(jwpf.getJobPost().getJobPostAddress() != null && !Objects.equals(jwpf.getJobPost().getJobPostAddress().trim(), "")){
-                                jobPostObjectBuilder.setJobPostAddress(jwpf.getJobPost().getJobPostAddress());
-                            } else {
-                                jobPostObjectBuilder.setJobPostAddress("Address not Available");
-                            }
+                        jobPostObjectBuilder.setJobPostAddress(address);
+                        if(Objects.equals(address.trim(), "")){
+                            jobPostObjectBuilder.setJobPostAddress("Address not available");
                         }
 
                         //recruiter's name

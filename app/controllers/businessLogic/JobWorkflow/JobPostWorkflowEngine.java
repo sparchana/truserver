@@ -2358,8 +2358,18 @@ public class JobPostWorkflowEngine {
 
             //sms to recruiter
             sendInterviewCandidateConfirmation(jobPostWorkflowOld, candidate);
+
             //sms to candidate
             sendInterviewConfirmationSms(jobPostWorkflowOld, candidate);
+
+            JobApplication jobApplication = JobApplication.find.where()
+                    .eq("candidateId", candidate.getCandidateId())
+                    .eq("jobPostId", jobPostWorkflowOld.getJobPost().getJobPostId())
+                    .findUnique();
+
+            if (jobApplication != null && jobApplication.getPartner() != null) {
+                sendInterviewConfirmationSmsToPartner(jobPostWorkflowOld, candidate, jobApplication.getPartner());
+            }
 
             //sending notification
             NotificationUtil.sendInterviewConfirmationNotification(candidate, jobPostWorkflowOld);
@@ -2632,7 +2642,18 @@ public class JobPostWorkflowEngine {
                     candidateInterviewStatusUpdate.setJobPost(jobPostWorkflowOld.getJobPost());
                     candidateInterviewStatusUpdate.setCandidate(candidate);
 
+                    //sms to candidate
                     sendInterviewConfirmationSms(jobPostWorkflowNew, candidate);
+
+                    JobApplication jobApplication = JobApplication.find.where()
+                            .eq("candidateId", candidate.getCandidateId())
+                            .eq("jobPostId", jobPostWorkflowNew.getJobPost().getJobPostId())
+                            .findUnique();
+
+                    //sms to partner if applicable
+                    if (jobApplication != null && jobApplication.getPartner() != null) {
+                        sendInterviewConfirmationSmsToPartner(jobPostWorkflowNew, candidate, jobApplication.getPartner());
+                    }
 
                     interactionResult = InteractionConstants.INTERACTION_RESULT_RECRUITER_AUTO_ACCEPT_JOB_INTERVIEW_DATE;
 

@@ -4,6 +4,7 @@ import api.http.httpRequest.Recruiter.AddCreditRequest;
 import controllers.Global;
 import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.OM.InterviewDetails;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Partner;
 import models.entity.Recruiter.RecruiterProfile;
@@ -312,24 +313,22 @@ public class SmsUtil {
         String msg = "Hi " + candidate.getCandidateFirstName() + ", your interview for " + jobApplication.getJobPost().getJobPostTitle() + " at " + jobApplication.getJobPost().getCompany().getCompanyName() +
                 " has been confirmed on " + interviewDate + " between " + jobApplication.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Please reach the office on time with your documents. All the best!";
 
-        Boolean nullAddress = false;
-        if(jobApplication.getJobPost().getInterviewDetailsList().get(0) != null){
-            if(jobApplication.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress() != null){
-                msg += "\n\nAddress: " + jobApplication.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress();
-            } else{
-                nullAddress = true;
+        //address
+        String address = "";
+        if (jobApplication.getJobPost().getInterviewDetailsList().size() > 0) {
+            address = jobApplication.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress();
+        } else{
+            if(jobApplication.getJobPost().getJobPostAddress() != null || !Objects.equals(jobApplication.getJobPost().getJobPostAddress(), "")){
+                address = jobApplication.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress();
             }
         }
 
-        //if interview details doesnt have interview address, this logic will fetch the old address(text only + old map resolved address)
-        if(nullAddress){
-            if(jobApplication.getJobPost().getJobPostAddress() != null && !Objects.equals(jobApplication.getJobPost().getJobPostAddress(), "")){
-                msg += "\n\nAddress: " + jobApplication.getJobPost().getJobPostAddress();
-            }
+        if(!Objects.equals(address.trim(), "")){
+            msg += "\n\nAddress: " + address;
         }
 
         if (jobApplication.getInterviewLocationLat() != null) {
-            msg += "\nDirections: http://maps.google.com/?q=" + jobApplication.getInterviewLocationLat() + "," + jobApplication.getInterviewLocationLng();
+            msg += "\n\nDirections: http://maps.google.com/?q=" + jobApplication.getInterviewLocationLat() + "," + jobApplication.getInterviewLocationLng();
         }
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
     }
@@ -338,12 +337,23 @@ public class SmsUtil {
 
         String msg = "Hi " + jobPostWorkflow.getCandidate().getCandidateFirstName() + ", your interview for " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() +
                 " is scheduled today, between " + jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Please reach the office on time with your documents. All the best!";
-        if(jobPostWorkflow.getJobPost().getJobPostAddress() != null || !Objects.equals(jobPostWorkflow.getJobPost().getJobPostAddress(), "")){
-            msg += "\n\nAddress: " + jobPostWorkflow.getJobPost().getJobPostAddress();
+
+        //address
+        String address = "";
+        if (jobPostWorkflow.getJobPost().getInterviewDetailsList().size() > 0) {
+            address = jobPostWorkflow.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress();
+        } else{
+            if(jobPostWorkflow.getJobPost().getJobPostAddress() != null || !Objects.equals(jobPostWorkflow.getJobPost().getJobPostAddress(), "")){
+                address = jobPostWorkflow.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress();
+            }
+        }
+
+        if(!Objects.equals(address.trim(), "")){
+            msg += "\n\nAddress: " + address;
         }
 
         if (jobPostWorkflow.getInterviewLocationLat() != null) {
-            msg += "\nDirections: http://maps.google.com/?q=" + jobPostWorkflow.getInterviewLocationLat() + "," + jobPostWorkflow.getInterviewLocationLng();
+            msg += "\n\nDirections: http://maps.google.com/?q=" + jobPostWorkflow.getInterviewLocationLat() + "," + jobPostWorkflow.getInterviewLocationLng();
         }
         return msg;
     }
@@ -351,12 +361,23 @@ public class SmsUtil {
 
         String msg = "Hi " + jobPostWorkflow.getCandidate().getCandidateFirstName() + ", your interview for " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() +
                 " is scheduled tomorrow, between " + jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Please reach the office on time with your documents. All the best!";
-        if(jobPostWorkflow.getJobPost().getJobPostAddress() != null || !Objects.equals(jobPostWorkflow.getJobPost().getJobPostAddress(), "")){
-            msg += "\n\nAddress: " + jobPostWorkflow.getJobPost().getJobPostAddress();
+
+        //address
+        String address = "";
+        if (jobPostWorkflow.getJobPost().getInterviewDetailsList().size() > 0) {
+            address = jobPostWorkflow.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress();
+        } else{
+            if(jobPostWorkflow.getJobPost().getJobPostAddress() != null || !Objects.equals(jobPostWorkflow.getJobPost().getJobPostAddress(), "")){
+                address = jobPostWorkflow.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress();
+            }
+        }
+
+        if(!Objects.equals(address.trim(), "")){
+            msg += "\n\nAddress: " + address;
         }
 
         if (jobPostWorkflow.getInterviewLocationLat() != null) {
-            msg += "\nDirections: http://maps.google.com/?q=" + jobPostWorkflow.getInterviewLocationLat() + "," + jobPostWorkflow.getInterviewLocationLng();
+            msg += "\n\nDirections: http://maps.google.com/?q=" + jobPostWorkflow.getInterviewLocationLat() + "," + jobPostWorkflow.getInterviewLocationLng();
         }
         return msg;
     }
@@ -375,8 +396,22 @@ public class SmsUtil {
                 " at " + jobApplication.getJobPost().getCompany().getCompanyName() +
                 " has been accepted by the recruiter. Please ask your candidate to carry required documents and reach the interview venue on time. ";
 
+        //address
+        String address = "";
+        if (jobApplication.getJobPost().getInterviewDetailsList().size() > 0) {
+            address = jobApplication.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress();
+        } else{
+            if(jobApplication.getJobPost().getJobPostAddress() != null || !Objects.equals(jobApplication.getJobPost().getJobPostAddress(), "")){
+                address = jobApplication.getJobPost().getInterviewDetailsList().get(0).getInterviewFullAddress();
+            }
+        }
+
+        if(!Objects.equals(address.trim(), "")){
+            msg += "\n\nAddress: " + address;
+        }
+
         if(jobApplication.getInterviewLocationLat() != null){
-            msg += "Address: http://maps.google.com/?q=" + jobApplication.getInterviewLocationLat() + ", " + jobApplication.getInterviewLocationLng();
+            msg += "\n\nDirections: http://maps.google.com/?q=" + jobApplication.getInterviewLocationLat() + ", " + jobApplication.getInterviewLocationLng();
         }
 
         msg += ". Thanks for using www.trujobs.in!";

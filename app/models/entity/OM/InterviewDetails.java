@@ -1,5 +1,6 @@
 package models.entity.OM;
 
+import com.amazonaws.services.importexport.model.Job;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -160,7 +161,8 @@ public class InterviewDetails extends Model {
     }
 
     public String getInterviewFullAddress() {
-        String address = null;
+        String address = "";
+        Boolean nullAddress = false;
 
         // if interview details doesnt have interview address, it returns null. Once null is returned, we are checking for
         // old address(free text or old map resolved address)
@@ -179,7 +181,19 @@ public class InterviewDetails extends Model {
                 //if landmark is available is there, add it after full address
                 address += ", Landmark: " + this.getInterviewLandmark();
             }
+        } else{
+            nullAddress = true;
         }
+
+        if(nullAddress){
+            JobPost jobPost = JobPost.find.where().eq("JobPostId", this.getJobPost().getJobPostId()).findUnique();
+            if(jobPost != null){
+                if(jobPost.getJobPostAddress() != null && !Objects.equals(jobPost.getJobPostAddress(), "")){
+                    address = jobPost.getJobPostAddress();
+                }
+            }
+        }
+
         return address;
     }
 }
