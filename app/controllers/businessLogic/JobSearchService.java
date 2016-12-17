@@ -492,6 +492,7 @@ public class JobSearchService {
                                           .setFirstRow(Math.toIntExact(index))
                                           .setMaxRows(5)
                                           .orderBy().asc("source")
+                                          .orderBy().desc("jobPostIsHot")
                                           .orderBy().desc("jobPostUpdateTimestamp")
                                           .findPagedList();
             List<JobPost> jobPostList = pagedList.getList();
