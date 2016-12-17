@@ -1,4 +1,5 @@
 # --- !Ups
+
 create table scheduler_stats (
   id                            bigint signed auto_increment not null,
   scheduler_type_id             bigint signed,
@@ -28,7 +29,15 @@ create index ix_scheduler_stats_scheduler_type_id on scheduler_stats (scheduler_
 alter table scheduler_stats add constraint fk_scheduler_stats_scheduler_sub_type_id foreign key (scheduler_sub_type_id) references scheduler_sub_type (scheduler_sub_type_id) on delete restrict on update restrict;
 create index ix_scheduler_stats_scheduler_sub_type_id on scheduler_stats (scheduler_sub_type_id);
 
+alter table interview_details add column interview_building_no text null;
+alter table interview_details add column interview_address text null;
+alter table interview_details add column interview_landmark text null;
+
 # --- !Downs
+
+alter table interview_details drop column interview_building_no;
+alter table interview_details drop column interview_address;
+alter table interview_details drop column interview_landmark;
 
 alter table scheduler_stats drop foreign key fk_scheduler_stats_scheduler_type_id;
 drop index ix_scheduler_stats_scheduler_type_id on scheduler_stats;
@@ -41,4 +50,3 @@ drop table if exists scheduler_stats;
 drop table if exists scheduler_sub_type;
 
 drop table if exists scheduler_type;
-

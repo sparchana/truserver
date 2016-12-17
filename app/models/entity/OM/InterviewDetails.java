@@ -9,6 +9,7 @@ import models.entity.Static.InterviewTimeSlot;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 /**
  * Created by dodo on 29/9/16.
@@ -50,6 +51,15 @@ public class InterviewDetails extends Model {
 
     @Column(name = "ReviewApplication", columnDefinition = "int(1) null")
     private Integer reviewApplication;
+
+    @Column(name = "interview_building_no", columnDefinition = "text null")
+    private String interviewBuildingNo;
+
+    @Column(name = "interview_address", columnDefinition = "text null")
+    private String interviewAddress;
+
+    @Column(name = "interview_landmark", columnDefinition = "text null")
+    private String interviewLandmark;
 
     public static Finder<String, InterviewDetails> find = new Finder(InterviewDetails.class);
 
@@ -123,5 +133,53 @@ public class InterviewDetails extends Model {
 
     public void setReviewApplication(Integer reviewApplication) {
         this.reviewApplication = reviewApplication;
+    }
+
+    public String getInterviewBuildingNo() {
+        return interviewBuildingNo;
+    }
+
+    public void setInterviewBuildingNo(String interviewBuildingNo) {
+        this.interviewBuildingNo = interviewBuildingNo;
+    }
+
+    public String getInterviewAddress() {
+        return interviewAddress;
+    }
+
+    public void setInterviewAddress(String interviewAddress) {
+        this.interviewAddress = interviewAddress;
+    }
+
+    public String getInterviewLandmark() {
+        return interviewLandmark;
+    }
+
+    public void setInterviewLandmark(String interviewLandmark) {
+        this.interviewLandmark = interviewLandmark;
+    }
+
+    public String getInterviewFullAddress() {
+        String address = null;
+
+        // if interview details doesnt have interview address, it returns null. Once null is returned, we are checking for
+        // old address(free text or old map resolved address)
+        if(this.getInterviewAddress() != null){
+            address = this.getInterviewAddress();
+
+            //if building No/ office no/ office no is there, prefix it
+            if(!Objects.equals(this.getInterviewBuildingNo(), "") && this.getInterviewBuildingNo() != null){
+                address = this.getInterviewBuildingNo() + ", " + address;
+
+                //if landmark is available is there, add it after full address
+                if(!Objects.equals(this.getInterviewLandmark(), "") && this.getInterviewLandmark() != null){
+                    address += ", Landmark: " + this.getInterviewLandmark();
+                }
+            } else if(!Objects.equals(this.getInterviewLandmark(), "") && this.getInterviewLandmark() != null){
+                //if landmark is available is there, add it after full address
+                address += ", Landmark: " + this.getInterviewLandmark();
+            }
+        }
+        return address;
     }
 }

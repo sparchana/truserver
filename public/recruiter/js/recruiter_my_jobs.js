@@ -136,10 +136,8 @@ function processDataGenerateJobPostView(returnedData) {
                 colJobSalary.style = 'margin-top:8px';
                 outerRow.appendChild(colJobSalary);
 
-                if(jobPost.jobPost.jobPostMaxSalary != 0 || jobPost.jobPost.jobPostMaxSalary != null){
+                if(jobPost.jobPost.jobPostMaxSalary == 0 || jobPost.jobPost.jobPostMaxSalary == null){
                     colJobSalary.textContent = "₹" + rupeeFormatSalary(jobPost.jobPost.jobPostMinSalary);
-                } else if(jobPost.jobPost.jobPostMinSalary != 0 || jobPost.jobPost.jobPostMinSalary != null) {
-                    colJobSalary.textContent = "₹" + rupeeFormatSalary(jobPost.jobPost.jobPostMaxSalary);
                 } else{
                     colJobSalary.textContent = "₹" + rupeeFormatSalary(jobPost.jobPost.jobPostMinSalary) + " - ₹" + rupeeFormatSalary(jobPost.jobPost.jobPostMaxSalary);
                 }

@@ -217,7 +217,7 @@ public class JobSearchService {
                 }
             }
 
-            return getRelevantJobPostsWithinDistance(lat, lng, jobRoleIds, null, ServerConstants.SORT_DEFAULT, false, false);
+            return getRelevantJobPostsWithinDistance(lat, lng, jobRoleIds, null, ServerConstants.SORT_BY_DATE_POSTED, true, false);
         }
 
         return getAllJobPosts();
@@ -248,12 +248,12 @@ public class JobSearchService {
             }
 
             List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, null, SORT_BY_DATE_POSTED,
-                    true, ServerConstants.SOURCE_INTERNAL);
+                    false, ServerConstants.SOURCE_INTERNAL);
 
             List<Long> relevantJobRoleIds = JobRelevancyEngine.getRelatedJobRoleIds(jobRoleIds);
 
             List<JobPost> relevantJobRoleJobs = queryAndReturnJobPosts(relevantJobRoleIds, null, SORT_BY_DATE_POSTED,
-                    true, ServerConstants.SOURCE_INTERNAL);
+                    false, ServerConstants.SOURCE_INTERNAL);
 
             List<Long> finalJobRoleIdList = new ArrayList<>();
             finalJobRoleIdList.addAll(jobRoleIds);
@@ -463,10 +463,8 @@ public class JobSearchService {
                     .eq("Source", ServerConstants.SOURCE_INTERNAL)
                     .setFirstRow(Math.toIntExact(index))
                     .setMaxRows(5)
-                    .orderBy()
-                    .asc("source")
-                    .orderBy()
-                    .desc("jobPostUpdateTimestamp")
+                    .orderBy().asc("source")
+                    .orderBy().desc("jobPostUpdateTimestamp")
                     .findList();
             jobPostResponse.setAllJobPost(jobPostList);
             jobPostResponse.setTotalJobs(JobPost.find.where().eq("jobRole.jobRoleId",jobRoleId).eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).eq("Source", ServerConstants.SOURCE_INTERNAL).findRowCount());

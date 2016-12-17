@@ -215,6 +215,10 @@ public class JobService {
                 interviewDetails.setLat(addJobPostRequest.getJobPostInterviewLocationLat());
                 interviewDetails.setLng(addJobPostRequest.getJobPostInterviewLocationLng());
 
+                interviewDetails.setInterviewAddress(addJobPostRequest.getJobPostAddress());
+                interviewDetails.setInterviewBuildingNo(addJobPostRequest.getJobPostAddressBuildingNo());
+                interviewDetails.setInterviewLandmark(addJobPostRequest.getJobPostAddressLandmark());
+
                 interviewDetails.setReviewApplication(addJobPostRequest.getReviewApplications());
 
                 interviewDetails.save();
