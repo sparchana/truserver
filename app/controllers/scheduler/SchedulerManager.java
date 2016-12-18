@@ -50,6 +50,7 @@ public class SchedulerManager implements Runnable {
         long ndiMailDelay = computeDelay(mEODNextDayInterviewTaskStartHr, mEODNextDayInterviewStartMin , mEODNextDayInterviewStartSec);
         long aadhaarVerificationDelay = computeDelay(mEODAadhaarTaskStartHr, mEODAadhaarTaskStartMin , mEODAadhaarTaskStartSec);
 
+
         // createSameDayInterviewAlertEvent method takes time period (in hrs) as input
         createSameDayInterviewAlertEvent(sameDayInterviewAlertEventPeriod);
 
@@ -66,14 +67,18 @@ public class SchedulerManager implements Runnable {
 
         long xHr = hr * 1000 * 60 * 60; // 3 hr
 
-        SameDayInterviewAlertTask sameDayInterviewTask = new SameDayInterviewAlertTask(hr);
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        SameDayInterviewAlertTask sameDayInterviewTask = new SameDayInterviewAlertTask(hr, classLoader);
         timer.schedule(sameDayInterviewTask, 0, xHr);
     }
 
     private void createNextDayInterviewAlertEvent(long delay) {
         Logger.info(" Next Day Interview Alert Event Scheduled!");
 
-        NextDayInterviewAlertTask nextDayInterviewAlertTask = new NextDayInterviewAlertTask();
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        NextDayInterviewAlertTask nextDayInterviewAlertTask = new NextDayInterviewAlertTask(classLoader);
         timer.schedule(nextDayInterviewAlertTask, delay, oneDay);
     }
 
