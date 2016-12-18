@@ -13,6 +13,7 @@ import api.http.httpResponse.interview.InterviewResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Model;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import dao.JobPostDAO;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.OM.*;
@@ -57,7 +58,7 @@ public class JobService {
         Integer interactionType;
         boolean isSendJobActivationAlert = false;
 
-        JobPost existingJobPost = JobPost.find.where().eq("jobPostId", addJobPostRequest.getJobPostId()).findUnique();
+        JobPost existingJobPost = JobPostDAO.findById(addJobPostRequest.getJobPostId());
         if(existingJobPost == null){
             Logger.info("Job post does not exists. Creating a new job Post");
             existingJobPost = new JobPost();
@@ -649,7 +650,7 @@ public class JobService {
         ApplyJobResponse applyJobResponse = new ApplyJobResponse();
         Candidate existingCandidate = CandidateService.isCandidateExists(applyJobRequest.getCandidateMobile());
         if(existingCandidate != null){
-            JobPost existingJobPost = JobPost.find.where().eq("jobPostId",applyJobRequest.getJobId()).findUnique();
+            JobPost existingJobPost = JobPostDAO.findById(Long.valueOf(applyJobRequest.getJobId()));
             if(existingJobPost == null ){
                 applyJobResponse.setStatus(ApplyJobResponse.STATUS_NO_JOB);
                 Logger.info("JobPost with jobId: " + applyJobRequest.getJobId() + " does not exists");
@@ -762,7 +763,7 @@ public class JobService {
                             channelType);
                 }
             }
-            InterviewResponse interviewResponse = JobPostWorkflowEngine.isInterviewRequired(existingJobPost);
+            InterviewResponse interviewResponse = RecruiterService.isInterviewRequired(existingJobPost);
             if(interviewResponse.getStatus() < ServerConstants.INTERVIEW_REQUIRED){
                 applyJobResponse.setInterviewAvailable(false);
             } else {
@@ -860,7 +861,7 @@ public class JobService {
             candidatePrescreenLocationVal = preScreenLocality.getLocalityName();
         }
 
-        JobPost jobpost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        JobPost jobpost = JobPostDAO.findById(jobPostId);
         if(jobpost != null){
             jobIdVal = String.valueOf(jobpost.getJobPostId());
             jobPostNameVal = jobpost.getJobPostTitle();

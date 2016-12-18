@@ -49,7 +49,7 @@ public class JobPostWorkFlowDAO {
         return appliedJobsList;
     }
 
-    public static List<JobPostWorkflow> partnerAppliedJobsForCandidate(long candidateId, List<Long> jobPostIdList){
+    public static List<JobPostWorkflow> getPartnerAppliedJobsForCandidate(long candidateId, List<Long> jobPostIdList){
         String candidateAppliedJobsSql = "select job_post_id, status_id, job_post_workflow_id, scheduled_interview_time_slot, scheduled_interview_date, interview_location_lat, interview_location_lng " +
                 "from job_post_workflow jwf where jwf.job_post_workflow_id = (select max(job_post_workflow_id)\n" +
                 " from job_post_workflow where jwf.job_post_id = job_post_workflow.job_post_id and job_post_workflow.candidate_id = " + candidateId + ") " +
@@ -156,7 +156,7 @@ public class JobPostWorkFlowDAO {
                         " where i.job_post_id " +
                         " in (" + StringUtils.join(jobPostIdList, ", ")+ ") " +
                         " and scheduled_interview_date = '"+sdf.format(today) + "' "+
-                        " and status_id = "+status +
+                        " and status_id >= "+status +
                         " and job_post_workflow_id = " +
                         " (select max(job_post_workflow_id) from job_post_workflow " +
                         "       where i.candidate_id = job_post_workflow.candidate_id " +
@@ -165,6 +165,8 @@ public class JobPostWorkFlowDAO {
 
         workFlowQueryBuilder.append(
                 " order by job_post_workflow_id desc ");
+
+        Logger.info("sql: " + workFlowQueryBuilder);
 
         RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
                 .columnMapping("creation_timestamp", "creationTimestamp")
@@ -220,7 +222,7 @@ public class JobPostWorkFlowDAO {
                 .findList();
     }
 
-    public static JobPostWorkflow getJobPostWorkflowOld(long jobPostId, long candidateId){
+    public static JobPostWorkflow getJobPostWorkflowCurrent(long jobPostId, long candidateId){
         // fetch existing workflow old
         return  JobPostWorkflow.find.where()
                 .eq("jobPost.jobPostId",  jobPostId)
