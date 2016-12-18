@@ -1608,12 +1608,19 @@ $(function () {
         var jobRoleTitle = returnedData.jobRole.jobName;
         var jobRoleId = returnedData.jobPostId;
 
+        var jobPostInterviewAddress = "Not Available";
+
+        //computing Address
+        if(returnedData.interviewFullAddress != null && returnedData.interviewFullAddress != ""){
+            jobPostInterviewAddress = returnedData.interviewFullAddress;
+        }
+
         app.renderJobCard(jobPostTitle, jobPostCompany, jobPostSalary, jobRoleTitle, jobRoleId,
-            jobPostLocalityNameList, jobPostEducation, jpExperience);
+            jobPostLocalityNameList, jobPostEducation, jpExperience, jobPostInterviewAddress);
     };
 
     app.renderJobCard = function (jobPostTitle, jobPostCompany, jobPostSalary, jobRoleTitle, jobRoleId,
-                                  jobPostLocalityNameList, jobPostEducation, jpExperience) {
+                                  jobPostLocalityNameList, jobPostEducation, jpExperience, jobPostInterviewAddress) {
         $('#job_post_title').text(jobPostTitle);
         $('#job_post_company_title').text(jobPostCompany);
         $('#job_post_salary').text(jobPostSalary);
@@ -1622,6 +1629,7 @@ $(function () {
         $('#job_post_experience').text(jpExperience);
         $('#job_post_locality').text(jobPostLocalityNameList);
         $('#job_role_id').text("Job Details");
+        $('#job_post_interview_address').text(jobPostInterviewAddress);
         gJobRoleId = jobRoleId;
     };
 

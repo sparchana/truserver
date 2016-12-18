@@ -709,7 +709,6 @@ function saveJob() {
     }
 
     if(status == 1){
-        console.log("Submitting: " + interviewLat + " --- " + interviewLng);
         var i;
         var workingDays = "";
 
@@ -948,36 +947,37 @@ function processDataForJobPost(returnedData) {
             });
         }
 
+        if(returnedData.latitude != null){
+            interviewLat = returnedData.latitude;
+        }
+
+        if(returnedData.longitude != null){
+            interviewLng = returnedData.longitude;
+        }
+
+        $("#landmarkDetails").show();
+        if(returnedData.interviewBuildingNo != null){
+            $("#interviewBuildingNo").val(returnedData.interviewBuildingNo);
+        }
+
+        if(returnedData.interviewLandmark != null){
+            $("#interviewLandmark").val(returnedData.interviewLandmark);
+        }
+
+        if(returnedData.reviewApplication == null || returnedData.reviewApplication == 1){
+            $("#check_applications" ).prop( "checked", true);
+            $("#reviewApplicationLabel").html('Confirm interviews for all applications (uncheck this option if you want to review applications before confirming interviews)');
+        } else{
+            $("#check_applications" ).prop( "checked", false);
+            $("#reviewApplicationLabel").html('Confirm interviews for all applications');
+        }
+
         if(Object.keys(returnedData.interviewDetailsList).length > 0){
             var interviewDetailsList = returnedData.interviewDetailsList;
             if(interviewDetailsList[0].interviewDays != null){
 
-                //interview details
-                if(returnedData.interviewDetailsList[0].lat != null){
-                    interviewLat = returnedData.interviewDetailsList[0].lat;
-                    interviewLng = returnedData.interviewDetailsList[0].lng;
-                }
-
-                //interview address and landmark
-                $("#landmarkDetails").show();
-                if(returnedData.interviewDetailsList[0].interviewBuildingNo){
-                    $("#interviewBuildingNo").val(returnedData.interviewDetailsList[0].interviewBuildingNo);
-                }
-
-                if(returnedData.interviewDetailsList[0].interviewLandmark){
-                    $("#interviewLandmark").val(returnedData.interviewDetailsList[0].interviewLandmark);
-                }
-
                 //interview days and slots
                 var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
-
-                if(interviewDetailsList[0].reviewApplication == null || interviewDetailsList[0].reviewApplication == 1){
-                    $("#check_applications" ).prop( "checked", true);
-                    $("#reviewApplicationLabel").html('Confirm interviews for all applications (uncheck this option if you want to review applications before confirming interviews)');
-                } else{
-                    $("#check_applications" ).prop( "checked", false);
-                    $("#reviewApplicationLabel").html('Confirm interviews for all applications');
-                }
 
                 /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
                 if(interviewDays.length != 7){

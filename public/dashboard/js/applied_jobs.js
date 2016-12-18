@@ -32,7 +32,7 @@ $(window).load(function () {
     });
     $("#status").fadeOut();
     $("#loaderLogo").fadeOut();
-    $("#preloader").delay(1000).fadeOut("slow");
+    $("#preloader").fadeOut();
 });
 
 $(document).ready(function () {
@@ -650,11 +650,20 @@ function prePopulateJobSection(jobApplication) {
 
             if(jobPost.status.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && jobPost.status.statusId <= JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                 var addressBody = document.createElement("div");
-                if(jobPost.jobPost.jobPostAddress != null || jobPost.jobPost.jobPostAddress != ""){
-                    addressBody.textContent = "Interview Address : " + jobPost.jobPost.jobPostAddress;
+                var address = "";
+
+                //computing Address
+                if(jobPost.jobPost.interviewFullAddress != null && jobPost.jobPost.interviewFullAddress != ""){
+                    address = jobPost.jobPost.interviewFullAddress;
                 } else {
-                    addressBody.textContent = "Interview Address : Not available";
+                    address = "";
                 }
+
+                addressBody.textContent = "Interview Address : " + address;
+                if(address == ""){
+                    addressBody.textContent = "Interview Address : " + "Address not available";
+                }
+
                 addressBody.style = "margin-top: 8px; margin-right: 12px";
                 titleRowStatus.appendChild(addressBody);
             }

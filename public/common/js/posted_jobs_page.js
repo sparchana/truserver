@@ -319,8 +319,8 @@ function checkSlotAvailability(x, interviewDays) {
 
 function openLogin() {
     $("#signInPopup").html("Sign In");
-    document.getElementById("resetCheckUserBtn").disabled = false;
-    document.getElementById("resetNewPasswordBtn").disabled = false;
+    try{ document.getElementById("resetCheckUserBtn").disabled = false; } catch (e){}
+    try{ document.getElementById("resetNewPasswordBtn").disabled = false; } catch (e){}
     $('#form_login_candidate').show();
     $('#noUserLogin').hide();
     $('#incorrectMsgLogin').hide();

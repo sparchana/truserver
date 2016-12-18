@@ -2108,9 +2108,9 @@ public class JobPostWorkflowEngine {
             jobPostWorkflowOld.setJobPost(jobPost);
             jobPostWorkflowOld.setInterviewLocationLat(null);
             jobPostWorkflowOld.setInterviewLocationLng(null);
-            if (jobPost.getInterviewDetailsList() != null) {
-                jobPostWorkflowOld.setInterviewLocationLat(jobPost.getInterviewDetailsList().get(0).getLat());
-                jobPostWorkflowOld.setInterviewLocationLng(jobPost.getInterviewDetailsList().get(0).getLng());
+            if (jobPost.getLatitude() != null) {
+                jobPostWorkflowOld.setInterviewLocationLat(jobPost.getLatitude());
+                jobPostWorkflowOld.setInterviewLocationLng(jobPost.getLongitude());
             }
             jobPostWorkflowOld.setCandidate(candidate);
 
@@ -2361,8 +2361,18 @@ public class JobPostWorkflowEngine {
 
             //sms to recruiter
             sendInterviewCandidateConfirmation(jobPostWorkflowOld, candidate);
+
             //sms to candidate
             sendInterviewConfirmationSms(jobPostWorkflowOld, candidate);
+
+            JobApplication jobApplication = JobApplication.find.where()
+                    .eq("candidateId", candidate.getCandidateId())
+                    .eq("jobPostId", jobPostWorkflowOld.getJobPost().getJobPostId())
+                    .findUnique();
+
+            if (jobApplication != null && jobApplication.getPartner() != null) {
+                sendInterviewConfirmationSmsToPartner(jobPostWorkflowOld, candidate, jobApplication.getPartner());
+            }
 
             //sending notification
             NotificationUtil.sendInterviewConfirmationNotification(candidate, jobPostWorkflowOld);
@@ -2569,7 +2579,7 @@ public class JobPostWorkflowEngine {
         JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
                 .eq("jobPost.jobPostId", jobPostId)
                 .eq("candidate.candidateId", candidateId)
-                .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
+                .orderBy().desc("job_post_workflow_id").setMaxRows(1).findUnique();
 
         if (jobPostWorkflowOld == null) {
             Logger.info("jobPostWorkflow old is null");
@@ -2620,8 +2630,8 @@ public class JobPostWorkflowEngine {
         );
 
         if (jobPostWorkflowOld.getJobPost().getInterviewDetailsList() != null && jobPostWorkflowOld.getJobPost().getInterviewDetailsList().size() > 0) {
-            if (jobPostWorkflowOld.getJobPost().getInterviewDetailsList().get(0).getReviewApplication() != null
-                    && jobPostWorkflowOld.getJobPost().getInterviewDetailsList().get(0).getReviewApplication() == 1) { // dont review applications, confirm it directly
+            if (jobPostWorkflowOld.getJobPost().getReviewApplication() != null
+                    && jobPostWorkflowOld.getJobPost().getReviewApplication() == 1) { // dont review applications, confirm it directly
                 jwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
                 try {
 
@@ -2636,7 +2646,18 @@ public class JobPostWorkflowEngine {
                     candidateInterviewStatusUpdate.setJobPost(jobPostWorkflowOld.getJobPost());
                     candidateInterviewStatusUpdate.setCandidate(candidate);
 
+                    //sms to candidate
                     sendInterviewConfirmationSms(jobPostWorkflowNew, candidate);
+
+                    JobApplication jobApplication = JobApplication.find.where()
+                            .eq("candidateId", candidate.getCandidateId())
+                            .eq("jobPostId", jobPostWorkflowNew.getJobPost().getJobPostId())
+                            .findUnique();
+
+                    //sms to partner if applicable
+                    if (jobApplication != null && jobApplication.getPartner() != null) {
+                        sendInterviewConfirmationSmsToPartner(jobPostWorkflowNew, candidate, jobApplication.getPartner());
+                    }
 
                     interactionResult = InteractionConstants.INTERACTION_RESULT_RECRUITER_AUTO_ACCEPT_JOB_INTERVIEW_DATE;
 
