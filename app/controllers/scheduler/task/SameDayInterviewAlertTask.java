@@ -27,13 +27,15 @@ import static controllers.scheduler.SchedulerConstants.SCHEDULER_TYPE_SMS;
 public class SameDayInterviewAlertTask extends TimerTask {
     private final Date mXHrBack;
     private final int mXHr;
+    private final ClassLoader classLoader;
 
-    public SameDayInterviewAlertTask(int x){
+    public SameDayInterviewAlertTask(int x, ClassLoader classLoader){
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
         cal.add(Calendar.HOUR, - x);
         mXHrBack = cal.getTime();
         this.mXHr = x;
+        this.classLoader = classLoader;
     }
 
     @Override
@@ -41,6 +43,10 @@ public class SameDayInterviewAlertTask extends TimerTask {
         Logger.info("SDI Alert started...");
         // Determine if this task is required to launch
         boolean shouldRunThisTask = false;
+
+        // ebean already has loaded all the classes we are trying to access. and when we try to get access to that
+        // class from a different thread that has a different class loader, it is throwing issues
+        Thread.currentThread().setContextClassLoader(classLoader);
 
         SchedulerStats schedulerStats = SchedulerStats.find.where()
                 .eq("schedulerType.schedulerTypeId", SCHEDULER_TYPE_SMS)

@@ -29,17 +29,23 @@ import static controllers.scheduler.SchedulerConstants.SCHEDULER_TYPE_SMS;
 public class NextDayInterviewAlertTask extends TimerTask {
     private Date today;
     private Date tomorrow;
+    private ClassLoader classLoader;
 
-    public NextDayInterviewAlertTask(){
+    public NextDayInterviewAlertTask(ClassLoader classLoader){
         Calendar newCalendar = Calendar.getInstance();
         today = newCalendar.getTime();
         newCalendar.set(Calendar.DAY_OF_MONTH, today.getDate() + 1);
         tomorrow = newCalendar.getTime();
+        this.classLoader = classLoader;
     }
 
     @Override
     public void run() {
         Logger.info("NDI Alert started...");
+
+        // ebean already has loaded all the classes we are trying to access. and when we try to get access to that
+        // class from a different thread that has a different class loader, it is throwing issues
+        Thread.currentThread().setContextClassLoader(classLoader);
 
         // Determine if this task is required to launch
         boolean shouldRunThisTask = SchedulerManager.checkIfEODTaskShouldRun(SCHEDULER_TYPE_SMS,
