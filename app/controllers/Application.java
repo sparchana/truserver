@@ -1,5 +1,6 @@
 package controllers;
 
+import dao.JobPostDAO;
 import notificationService.*;
 import api.InteractionConstants;
 import api.ServerConstants;
@@ -568,7 +569,7 @@ public class Application extends Controller {
     }
 
     public static Result getJobPostInfo(long jobPostId, Integer isSupport) {
-        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
         if(jobPost!=null){
             if(isSupport == 0){
                 String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
@@ -1279,7 +1280,7 @@ public class Application extends Controller {
     }
 
     public static Result getJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
-        JobPost jobPost = JobPost.find.where().eq("JobPostId",jobId).findUnique();
+        JobPost jobPost = JobPostDAO.findById(jobId);
         if (jobPost != null) {
             return ok(toJson(jobPost));
         }
@@ -1362,7 +1363,7 @@ public class Application extends Controller {
                             jobPostIdList.add(Long.parseLong(jobPostId));
                         }
                     }
-                    List<JobPost> jobPostList = JobPost.find.where().in("jobPostId", jobPostIdList).findList();
+                    List<JobPost> jobPostList = JobPostDAO.findByIdList(jobPostIdList);
                     for (JobPost jobPost : jobPostList) {
                         if (!jobRoleIdList.contains(jobPost.getJobRole().getJobRoleId())){
                             jobRoleIdList.add(jobPost.getJobRole().getJobRoleId());
@@ -1606,7 +1607,7 @@ public class Application extends Controller {
 
     @Security.Authenticated(RecSecured.class)
     public static Result getJobPostMatchingParams(long jobPostId) {
-        return ok(toJson(JobPost.find.where().eq("jobPostId", jobPostId).findUnique()));
+        return ok(toJson(JobPostDAO.findById(jobPostId)));
     }
 
     @Security.Authenticated(RecSecured.class)
@@ -1689,7 +1690,7 @@ public class Application extends Controller {
             return badRequest();
         }
         if(jobRoleId == null && jobPostId !=null && jobPostId != 0) {
-            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+            JobPost jobPost = JobPostDAO.findById(jobPostId);
             jobRoleId = jobPost.getJobRole().getJobRoleId();
         }
 
@@ -1731,7 +1732,7 @@ public class Application extends Controller {
         List<String> jobRoleIdList = new ArrayList<>();
 
         if(jobRoleIds == null && jobRoleId == null && jobPostId !=null && jobPostId != 0) {
-            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+            JobPost jobPost = JobPostDAO.findById(jobPostId);
             if(jobPost == null) {
                 return badRequest();
             }
@@ -1996,7 +1997,7 @@ public class Application extends Controller {
     public static Result updateInterviewStatus(long cId, long jpId, long val, long reason) {
         Candidate candidate = Candidate.find.where().eq("candidateId", cId).findUnique();
         if(candidate != null){
-            JobPost jobPost = JobPost.find.where().eq("JobPostId", jpId).findUnique();
+            JobPost jobPost = JobPostDAO.findById(jpId);
             if(jobPost != null){
                 return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val, reason, Integer.valueOf(session().get("sessionChannel")))));
             }
@@ -2009,7 +2010,7 @@ public class Application extends Controller {
         if(session().get("candidateId") != null){
             Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")).findUnique();
             if(candidate != null){
-                JobPost jobPost = JobPost.find.where().eq("JobPostId", jpId).findUnique();
+                JobPost jobPost = JobPostDAO.findById(jpId);
                 if(jobPost != null){
                     return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val, reason, Integer.valueOf(session().get("sessionChannel")))));
                 }
@@ -2021,7 +2022,7 @@ public class Application extends Controller {
     public static Result getJpWfStatus(long cId, long jpId) {
         Candidate candidate = Candidate.find.where().eq("candidateId", cId).findUnique();
         if(candidate != null){
-            JobPost jobPost = JobPost.find.where().eq("JobPostId", jpId).findUnique();
+            JobPost jobPost = JobPostDAO.findById(jpId);
             if(jobPost != null){
                 return ok(toJson(JobPostWorkflowEngine.getCandidateLatestStatus(candidate, jobPost)));
             }
@@ -2057,12 +2058,12 @@ public class Application extends Controller {
             Logger.info("null jobPostId received in GET");
             return badRequest();
         }
-        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
         if(jobPost == null) {
             Logger.info("No JobPost Found for jobPostId: " + jobPostId);
             return badRequest();
         }
-        return ok(toJson(JobPostWorkflowEngine.isInterviewRequired(jobPost)));
+        return ok(toJson(RecruiterService.isInterviewRequired(jobPost)));
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -2162,9 +2163,9 @@ public class Application extends Controller {
 
             // make entry into prescreen result/response table
             JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), jobPostId, Integer.valueOf(session().get("sessionChannel")));
-            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+            JobPost jobPost = JobPostDAO.findById(jobPostId);
 
-            return ok(toJson(JobPostWorkflowEngine.isInterviewRequired(jobPost)));
+            return ok(toJson(RecruiterService.isInterviewRequired(jobPost)));
         }
         return badRequest();
     }

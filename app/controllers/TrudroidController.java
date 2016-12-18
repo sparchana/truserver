@@ -16,6 +16,7 @@ import com.google.api.client.util.Base64;
 import com.google.protobuf.InvalidProtocolBufferException;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
 import dao.staticdao.TrudroidFeedbackReasonDAO;
@@ -816,7 +817,7 @@ public class TrudroidController {
             pGetJobPostDetailsRequest = GetJobPostDetailsRequest.parseFrom(Base64.decodeBase64(requestString));
 
             //getting jobPost model object
-            JobPost jobPost = JobPost.find.where().eq("jobPostId", pGetJobPostDetailsRequest.getJobPostId()).findUnique();
+            JobPost jobPost = JobPostDAO.findById(pGetJobPostDetailsRequest.getJobPostId());
             if (jobPost != null) {
                 getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.SUCCESS);
                 getJobPostDetailsResponse.setJobPost(getJobPostInformationFromJobPostObject(jobPost));
@@ -1702,7 +1703,7 @@ public class TrudroidController {
         PreScreenPopulateResponse populateResponse = JobPostWorkflowEngine.getJobPostVsCandidate(preScreenPopulateRequest.getJobPostId(),
                 candidate.getCandidateId(), false);
 
-        JobPost jobPost = JobPost.find.where().eq("jobPostId", preScreenPopulateRequest.getJobPostId()).findUnique();
+        JobPost jobPost = JobPostDAO.findById(preScreenPopulateRequest.getJobPostId());
         if (jobPost == null) {
             return badRequest();
         } else {
@@ -2109,7 +2110,7 @@ public class TrudroidController {
                 return badRequest();
             }
 
-            JobPost jobPost = JobPost.find.where().eq("jobPostId", interviewSlotsRequest.getJobPostId()).findUnique();
+            JobPost jobPost = JobPostDAO.findById(interviewSlotsRequest.getJobPostId());
 
             if (jobPost == null) {
                 return badRequest();
@@ -2200,7 +2201,7 @@ public class TrudroidController {
 
         Candidate candidate = Candidate.find.where().eq("CandidateMobile", FormValidator.convertToIndianMobileFormat(updateCandidateStatusRequest.getCandidateMobile())).findUnique();
         if (candidate != null) {
-            JobPost jobPost = JobPost.find.where().eq("JobPostId", updateCandidateStatusRequest.getJpId()).findUnique();
+            JobPost jobPost = JobPostDAO.findById(updateCandidateStatusRequest.getJpId());
             if (JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost,
                     Long.valueOf(updateCandidateStatusRequest.getCandidateStatus()),
                     updateCandidateStatusRequest.getNotGoingReason(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID) == 1) {
@@ -2254,10 +2255,10 @@ public class TrudroidController {
         checkInterviewSlotResponse.setStatus(CheckInterviewSlotResponse.Status.SUCCESS);
 
         if(checkInterviewSlotRequest.getJobPostId() > 0) {
-            JobPost jobPost = JobPost.find.where().eq("jobPostId", checkInterviewSlotRequest.getJobPostId()).findUnique();
+            JobPost jobPost = JobPostDAO.findById(checkInterviewSlotRequest.getJobPostId());
             if(jobPost == null) {
                 checkInterviewSlotResponse.setStatus(CheckInterviewSlotResponse.Status.FAILURE);
-            } else if(JobPostWorkflowEngine.isInterviewRequired(jobPost).getStatus() == ServerConstants.INTERVIEW_REQUIRED){
+            } else if(RecruiterService.isInterviewRequired(jobPost).getStatus() == ServerConstants.INTERVIEW_REQUIRED){
                 checkInterviewSlotResponse.setShouldShowInterview(true);
             } else {
                 checkInterviewSlotResponse.setShouldShowInterview(false);

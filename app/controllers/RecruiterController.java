@@ -17,6 +17,7 @@ import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import controllers.security.SecuredUser;
+import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import models.entity.JobPost;
 import models.entity.OM.JobPostWorkflow;
@@ -209,7 +210,7 @@ public class RecruiterController {
     }
 
     public static Result getAllJobApplicants(long jobPostId) {
-        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
         if(jobPost != null){
             if(session().get("recruiterId") != null){
                 RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
@@ -472,7 +473,7 @@ public class RecruiterController {
     }
 
     public static Result getRecruiterJobPostInfo(long jpId) {
-        JobPost jobPost = JobPost.find.where().eq("jobPostId", jpId).findUnique();
+        JobPost jobPost = JobPostDAO.findById(jpId);
         if(jobPost != null){
             if(session().get("recruiterId") != null){
                 RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
@@ -547,6 +548,7 @@ public class RecruiterController {
     public static Result getTodayInterviewDetails() {
         JsonNode req = request().body().asJson();
 
+        Logger.info("testing");
         InterviewTodayRequest interviewTodayRequest = new InterviewTodayRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
