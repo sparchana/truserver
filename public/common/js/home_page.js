@@ -78,7 +78,7 @@ $(document).ready(function(){
     if(w < 440){
         $(".navbar-default").css('background-color', 'white');
     }
-    $(window).scroll(function() {
+    /*$(window).scroll(function() {
         if ($(document).scrollTop() > 150) {
             $("#fixed-menu").css('background-color', '#2980b9');
             $("#fixed-menu").fadeIn();
@@ -87,7 +87,7 @@ $(document).ready(function(){
             $("#fixed-menu").css('background-color', 'rgba(0, 0, 0, 0.175)');
             $("#fixed-menu").fadeOut();
         }
-    });
+    });*/
 
     $(window).scroll(function(){
         if ($(this).scrollTop() > 100) {
@@ -130,7 +130,7 @@ $(document).ready(function(){
     }
 
     $("#hiringCompanyLogo").owlCarousel({
-        items : 3,
+        items : 4,
         itemsMobile : true,
         jsonPath : '/getAllCompanyLogos',
         jsonSuccess : customDataSuccess
@@ -141,7 +141,7 @@ function customDataSuccess(data){
     var content = "";
     data.forEach(function (logo) {
         var img = logo;
-        content += "<img width='228px' height='76px' src=\"" +img+ "\">"
+        content += "<img width='150px' height='50px' src=\"" +img+ "\">"
     });
     $("#hiringCompanyLogo").html(content);
 

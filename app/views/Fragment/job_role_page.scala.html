@@ -26,7 +26,7 @@
         <link rel="stylesheet" type="text/css" href="/assets/owl-carousel/owl.transitions.css">
 
         <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
-        <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/materialDashboard.css">
+        @*<link rel="stylesheet" type="text/css" href="/assets/dashboard/css/materialDashboard.css">*@
         <link rel="stylesheet" type="text/css" href="/assets/common/css/selected_jobroles.css">
 
         <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
@@ -263,13 +263,16 @@
                 $('#job_cards_inc').load('/jobPostCardView');
             });
         </script>
-
-        <div class="container">
-            <center>
-                <div class="company_class">Companies Hiring From Us</div>
-                <div class="materialDash"></div>
-                <div id="hiringCompanyLogo" class="owl-carousel" style="margin: 36px 0 48px 0"></div>
-            </center>
+        <div class="conrtainer-fluid" style="background-color: #fff">
+            <div class="container">
+                <div class="row">
+                    <center>
+                        <div class="company_class">Companies Hiring From Us</div>
+                        <div class="materialDash"></div>
+                        <div id="hiringCompanyLogo" class="owl-carousel" style="margin: 36px 0 48px 0"></div>
+                    </center>
+                </div>
+            </div>
         </div>
 
         <!--  Start Job Icons Box -->

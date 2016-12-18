@@ -142,14 +142,14 @@
                     </button>
                     <div itemscope itemtype ="http://schema.org/logo">
                         <a class="navbar-brand" href="/dashboard"><img id="navLogo" itemprop="Brand" src="/assets/common/img/logo-main.gif" alt="TruJobs Logo" height="32px"></a>
-                        <a class="hidden-xs" href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" style="padding: 0px">
+                        <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" style="padding: 0px">
                             <img id="playStoreLogoNavBar" src="/assets/common/img/download_btn.png" alt="PlayStore Logo" height="54%"></a>
                     </div>
                 </div>
 
                 <div class="collapse navbar-collapse" id="navigationbar">
                     <ul class="nav navbar-nav navbar-right">
-                        <li class="hidden-xs">
+                        <li class="hidden-sm">
                             <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank">
                                 <img src="/assets/common/img/download_btn.png" style="height: 30px;
                                     margin-top: -6px;
@@ -173,23 +173,45 @@
         </div>
 
         <div id="sectionHead" class="container profileBody">
-            <div class="col-sm-12">
-                <img src="/assets/dashboard/img/userMale.svg" id="userImg">
-                <h4>
-                    <b>
-                        <div id="userName" style="display: inline-block"></div>
-                        <div id="userAge" style="display: inline-block"></div>
-                        <div id="userGender" style="display: inline-block"></div>
-                    </b>
-                </h4>
-                <h5><div id="userMobile" style="display: inline-block"></div>, Bangalore</h5>
-                <div style="margin-top: 0;">
-                    <div class="inblockDiv" style="margin-left: 16px">
+            <div class="row" id="profileBox">
+                <div class="col-sm-2" id="userImageDiv">
+                    <img src="/assets/dashboard/img/userMale.svg" id="userImg">
+                </div>
+                <div class="col-sm-6" id="profileInfoDiv">
+                    <h4>
+                        <b>
+                            <div id="userName" style="display: inline-block;font-size:28px"></div>
+                            <div id="userAge" style="display: inline-block"></div>
+                            <div id="userGender" style="display: inline-block"></div>
+                        </b>
+                    </h4>
+                    <h5>
+                        <img src="/assets/dashboard/img/phone.svg" style="margin:-3px 3px 0 5px" height="18px">
+                        <div id="userMobile" style="display: inline-block"></div>
+                        <img src="/assets/dashboard/img/location-point.svg" style="margin:-3px 3px 0 5px" height="18px">
+                        <div style="display: inline-block;">Bangalore</div>
+                    </h5>
+                </div>
+                <div class="col-sm-3 col-sm-offset-1" id="profileProgressDiv" >
+                    <div class="row">
+                        <h4 style="margin: 8px 0 0 0">Profile Status</h4>
+                    </div>
+                    <div class="row inblockDiv">
                         <a href="/dashboard/editProfile">
-                            <div class="profileIncomplete indicatorBtnRed"><b><font color="#fff">Incomplete</font></b></div>
+                            <div class="profileIncomplete indicatorBtnRed">
+                                <img src="/assets/dashboard/img/incomplete.svg" height="18px">
+                                <img src="/assets/dashboard/img/incomplete.svg" height="18px">
+                                <img src="/assets/dashboard/img/incomplete.svg" height="18px">
+                                <div style="margin-top: 6px"><b><font style="color:#ffffff">Incomplete</font></b></div>
+                            </div>
                         </a>
-                        <div class="profileComplete" style="display: none"><b>Complete</b></div>
-                    </div>Profile Status
+                        <div class="profileComplete" style="display: none">
+                            <img src="/assets/dashboard/img/complete.svg" height="18px">
+                            <img src="/assets/dashboard/img/complete.svg" height="18px">
+                            <img src="/assets/dashboard/img/complete.svg" height="18px">
+                            <div style="margin-top: 6px"><b>Complete</b></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

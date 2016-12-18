@@ -64,15 +64,15 @@
               $('#nav_bar_inc').load('/navBar');
             });
         </script>
-
-        <div id="fixed-menu" style="padding-bottom: 12px; padding-top: 8px; display: none" >
+        <!-- Navbav bar lead box disabled -->
+        @*<div id="fixed-menu" style="padding-bottom: 12px; padding-top: 8px; display: none" >
             <div class="custom_container">
                 <div id="leadFormBox" class="input-group">
                     <input type="text" class="form-control" placeholder="Enter mobile number" id="addLeadMobile" pattern="[7-9]{1}[0-9]{9}" maxlength="10">
                     <button class="btn btn-default" type="button" onclick="addLead()" id="addLeadMobileButton">Find Job Now</button>
                 </div>
             </div>
-        </div>
+        </div>*@
         <div class="container-fluid" style="padding:0%">
             <div id="sectionOne">
                 <div class="container hidden-xs">
@@ -82,7 +82,7 @@
                                 <img src="/assets/common/img/image4.png" style="display: inline-block; margin-left: -136px" width="150px">
                                 <div style="display: inline-block; width: auto;">
                                     <h1 style="letter-spacing: 2px; text-align: left; margin: 10px;"><b><font size="5">Find Entry Level and Experienced Jobs </font></b></h1>
-                                    <h2 style="letter-spacing: 2px; margin: 10px; text-align: left"><font size="5">Call 8880007799 to find jobs in top companies!</font></h2>
+                                    <h2 style="letter-spacing: 2px; margin: 10px; text-align: left"><font size="5">Schedule interviews for interested jobs</font></h2>
                                     <h4 style="letter-spacing: 2px; margin: 10px; text-align: left; display: inline-block; float: left">Download app from</h4>
                                     <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank" style="padding-top: 2px; float: left">
                                         <img src="/assets/common/img/download_btn.png" alt="PlayStore Logo" height="40px"></a>
@@ -106,9 +106,7 @@
                             <input id="candidateSecondName" placeholder="Last name" type="text" maxLength="49" class="form-control input-md candidateSecondNameMain" >
                         </div>
                     </div>
-
                     <input id="candidateMobile" style="margin-top: 8px" placeholder="What is your mobile no.?" name="candidateMobile" type="text" maxlength="10" class="form-control input-md" >
-
                     <div style="margin-top: 8px">
                         <input type="text" id="candidateJobPref" placeholder="What jobs you are Interested in?">
                         <script type="text/javascript">
@@ -124,7 +122,6 @@
                     });
                     </script>
                     </div>
-
                     <div style="margin-top: 8px">
                         <input type="text" id="candidateHomeLocality" style="margin-top: 4px">
                         <script type="text/javascript">
@@ -176,18 +173,21 @@
                 <div id="jobRoleGrid" style="width: auto"></div>
             </div>
         </div>
-
-        <div class="container">
-            <center>
-                <div class="company_class">Companies Hiring From Us</div>
-                <div class="materialDash"></div>
-                <div id="hiringCompanyLogo" class="owl-carousel" style="margin: 36px 0 48px 0"></div>
-            </center>
+        <div class="conrtainer-fluid" style="background-color: #fff">
+            <div class="container">
+                <div class="row">
+                    <center>
+                        <div class="company_class">Companies Hiring From Us</div>
+                        <div class="materialDash"></div>
+                        <div id="hiringCompanyLogo" class="owl-carousel" style="margin: 36px 0 48px 0"></div>
+                    </center>
+                </div>
+            </div>
         </div>
 
         <!-- App section -->
         <div class="container-fluid" id="appStoreContainer">
-            <div class="row">
+            <div class="row" style="margin: 0">
                 <div class="col-xs-6" style="padding-left: 4%">
                     <img id="appImg1" src="/assets/common/img/image1.png">
                     <img id="appImg2" src="/assets/common/img/image2.png">
@@ -196,24 +196,24 @@
                 <div class="col-xs-6" id="playStore">
                     <h2>TruJobs Android App</h2>
                     <h4>Download TruJobs app from Google Play Store and apply to 1000+ jobs.</h4>
-                    <div class="row" id="stepContainer">
-                        <div class="col-sm-4">
-                            <img id="step_image" src="/assets/common/img/step1.svg" style="height: 20px;">
-                            <p>Download TruJobs app </p>
+                    <div class="col-sm-7" id="stepContainer">
+                        <div class="row" id="step_div">
+                            <img id="step_image" src="/assets/common/img/step1.svg">
+                            <font style="font-size: 17px;font-weight: bold">Download TruJobs app </font>
                         </div>
-                        <div class="col-xs-4">
-                            <img id="step_image" src="/assets/common/img/step2.svg" style="height: 20px;">
-                            <p>Register in less than a minute</p>
+                        <div class="row" id="step_div">
+                            <img id="step_image" src="/assets/common/img/step2.svg">
+                            <font style="font-size: 17px;font-weight: bold">Register in less than a minute</font>
                         </div>
-                        <div class="col-xs-4" >
-                            <img id="step_image" src="/assets/common/img/step3.svg" style="height: 20px;">
-                            <p>Apply to jobs and attend Interviews</p>
+                        <div class="row" id="step_div">
+                            <img id="step_image" src="/assets/common/img/step3.svg">
+                            <font style="font-size: 17px;font-weight: bold">Apply to jobs and attend Interviews</font>
                         </div>
                     </div>
-                    <div class="row" id="playStoreDownloadButtonContainer">
-                        <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank">
-                            <img src="/assets/common/img/download_btn.png" id="playStoreDownloadButton">
-                        </a>
+                    <div class="col-sm-4" id="playStoreDownloadButtonContainer">
+                            <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank">
+                                <img src="/assets/common/img/download_btn.png" id="playStoreDownloadButton">
+                            </a>
                     </div>
                 </div>
             </div>
@@ -227,30 +227,35 @@
                         <br>
                         <center>
                             <div class="row">
-                                <div class="col-sm-2"></div>
-                                <div class="col-sm-1">
-                                    <img src="/assets/common/img/circle_1.svg" width="52px" alt="Free Registration">
+                                <div class="col-sm-1 col-sm-offset-2">
+                                    <img src="/assets/common/img/new/register.svg" width=38px" alt="Free Registration">
                                 </div>
-                                <div class="col-sm-1"></div>
-                                <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Give a missed call to 8880007799</h4></div>
+                                <div class="col-sm-1 "></div>
+                                <div class="col-sm-8" id="steps" ><h4>Sign Up with your mobile number</h4></div>
                             </div>
                             <br>
                             <div class="row">
-                                <div class="col-sm-2"></div>
-                                <div class="col-sm-1">
-                                    <img src="/assets/common/img/circle_2.svg" width="52px" alt="Create Profile">
+                                <div class="col-sm-1 col-sm-offset-2">
+                                    <img src="/assets/common/img/new/register_emp.svg" width=38px" alt="Free Registration">
                                 </div>
                                 <div class="col-sm-1"></div>
-                                <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Create your Online Profile</h4></div>
+                                <div class="col-sm-8" id="steps" ><h4>Sign Up via - <a style="cursor: pointer;" data-toggle="modal" data-target="#mySignUpModal" onClick="openSignUp()">Website</a> | <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank">Download App </a></h4></div>
                             </div>
                             <br>
                             <div class="row">
-                                <div class="col-sm-2"></div>
-                                <div class="col-sm-1">
-                                    <img src="/assets/common/img/circle_3.svg" width="52px" alt="Job Interview">
+                                <div class="col-sm-1 col-sm-offset-2">
+                                    <img src="/assets/common/img/new/search_job.svg" width=38px" alt="Create Profile">
                                 </div>
                                 <div class="col-sm-1"></div>
-                                <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Attend interviews and get job offers!</h4></div>
+                                <div class="col-sm-8" id="steps" ><h4>Search Jobs</h4></div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-sm-1 col-sm-offset-2">
+                                    <img src="/assets/common/img/new/calendar.svg" width=38px" alt="Job Interview">
+                                </div>
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-8" id="steps" ><h4>Schedule your interview !</h4></div>
                             </div>
                             <br>
                             <a href="#sectionOne"><button id="registerBtn" class="btn btn-primary" style="padding: 2%"><font color="#ffffff">Register for FREE</font></button></a>
@@ -266,16 +271,16 @@
         <div class="container-fluid" id="sectionStats">
                     <div class="row">
                         <div class="col-sm-4">
-                            <p><img class="hov" src="/assets/common/img/job_seeker.svg" width="80px"></p>
+                            <p><img class="hov" src="/assets/common/img/details/jobseeker.svg" width="120px"></p>
                             <h3><b>40000+</b> Job Seekers</h3>
                         </div>
                         <div id="stats" class="col-sm-4">
-                            <p><img class="hov" src="/assets/common/img/recruiter.svg" width="80px"></p>
+                            <p><img class="hov" src="/assets/common/img/details/company.svg" width="120px"></p>
                             <h3><b>150+</b> Companies </h3>
                         </div>
                         <div id="stats" class="col-sm-4">
-                            <p><img class="hov" src="/assets/common/img/rupee.svg" width="80px"></p>
-                            <h3>Find a job and earn upto <b>30k</b>!</h3>
+                            <p><img class="hov" src="/assets/common/img/details/jobroles.svg" width="120px"></p>
+                            <h3><b>50+</b> Job Roles</h3>
                         </div>
                     </div>
         </div>
@@ -289,30 +294,31 @@
                         <h3>Are you an Employer?</h3>
                         <br>
                         <div class="row">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-1">
-                                <img src="/assets/common/img/circle_2_3.svg" width="52px">
+                            <div class="col-sm-1 col-sm-offset-2">
+                                <img src="/assets/common/img/new/register_emp.svg" width=38px">
                             </div>
-                            <div class="col-sm-1"></div>
-                            <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Call 9980293925 to specify requirement</h4></div>
+                            <div class="col-sm-8 col-sm-offset-1" id="steps" ><h4>Register for FREE -<a href="/recruiter"> Register Now </a> </h4></div>
                         </div>
                         <br>
                         <div class="row">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-1">
-                                <img src="/assets/common/img/circle_2_2.svg" width="52px">
+                            <div class="col-sm-1 col-sm-offset-2">
+                                <img src="/assets/common/img/new/stopwatch.svg" width=38px">
                             </div>
-                            <div class="col-sm-1"></div>
-                            <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>We will schedule interviews for you with pre-screened Candidates</h4></div>
+                            <div class="col-sm-8 col-sm-offset-1" id="steps" ><h4>Post job in less then 30 secs</h4></div>
                         </div>
                         <br>
                         <div class="row">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-1">
-                                <img src="/assets/common/img/circle_2_1.svg" width="52px">
+                            <div class="col-sm-1 col-sm-offset-2">
+                                <img src="/assets/common/img/new/resume.svg" width=38px">
                             </div>
-                            <div class="col-sm-1"></div>
-                            <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Conduct interviews and make Offers!</h4></div>
+                            <div class="col-sm-8 col-sm-offset-1" id="steps" ><h4>Receive application with interview schedule</h4></div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-sm-1 col-sm-offset-2">
+                                <img src="/assets/common/img/new/tracking-map.svg" width=38px">
+                            </div>
+                            <div class="col-sm-8 col-sm-offset-1" id="steps" ><h4>Track candidates online until interview completion</h4></div>
                         </div>
                         <br>
                     </div>
@@ -341,37 +347,37 @@
                     <div class="row">
                         <div class="col-sm-2"></div>
                         <div class="col-sm-1">
-                            <img src="/assets/common/img/circle_2_1.svg" width="52px">
+                            <img src="/assets/common/img/new/register_emp.svg" width=38px">
                         </div>
                         <div class="col-sm-1"></div>
-                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Register yourself as a partner with TruJobs</h4></div>
+                        <div class="col-sm-8" id="steps" ><h4>Register yourself as a partner with TruJobs</h4></div>
                     </div>
                     <br>
                     <div class="row">
                         <div class="col-sm-2"></div>
                         <div class="col-sm-1">
-                            <img src="/assets/common/img/name.svg" width="52px">
+                            <img src="/assets/common/img/new/user.svg" width=38px">
                         </div>
                         <div class="col-sm-1"></div>
-                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Add your candidates and create their profile</h4></div>
+                        <div class="col-sm-8" id="steps" ><h4>Add your candidates and create their profile</h4></div>
                     </div>
                     <br>
                     <div class="row">
                         <div class="col-sm-2"></div>
                         <div class="col-sm-1">
-                            <img src="/assets/common/img/apply.svg" width="52px">
+                            <img src="/assets/common/img/new/search.svg" width=38px">
                         </div>
                         <div class="col-sm-1"></div>
-                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Browse jobs and apply on behalf of your candidates</h4></div>
+                        <div class="col-sm-8" id="steps" ><h4>Browse jobs and apply on behalf of your candidates</h4></div>
                     </div>
                     <br>
                     <div class="row">
                         <div class="col-sm-2"></div>
                         <div class="col-sm-1">
-                            <img src="/assets/common/img/salary_min.svg" width="52px">
+                            <img src="/assets/common/img/new/rupee.svg" width=38px">
                         </div>
                         <div class="col-sm-1"></div>
-                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Earn money when your candidates are hired</h4></div>
+                        <div class="col-sm-8" id="steps" ><h4>Earn money when your candidates are hired</h4></div>
                     </div>
                     <br>
                 </div>
