@@ -153,7 +153,6 @@ public class AddressResolverServiceTest {
     public void testToBounds() {
         if (latitude != null && longitude != null) {
             LatLng latLng = new LatLng(latitude, longitude);
-            System.out.println("--testing ToBounds for LatLng" + latitude + "," + longitude + " : " + toJson(addressResolveService.toBounds(latLng, 2)));
         }
     }
 

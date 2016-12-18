@@ -166,8 +166,6 @@ public class JobPostWorkFlowDAO {
         workFlowQueryBuilder.append(
                 " order by job_post_workflow_id desc ");
 
-        Logger.info("sql: " + workFlowQueryBuilder);
-
         RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
                 .columnMapping("creation_timestamp", "creationTimestamp")
                 .columnMapping("job_post_id", "jobPost.jobPostId")
