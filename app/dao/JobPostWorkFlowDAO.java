@@ -183,14 +183,14 @@ public class JobPostWorkFlowDAO {
                 .findList();
     }
 
-    public static List<JobPostWorkflow> getPendingInterviewApproval(List<Long> jobPostIdList, int status){
+    public static List<JobPostWorkflow> getInterviewsPendingApproval(List<Long> jobPostIdList){
 
         StringBuilder workFlowQueryBuilder = new StringBuilder(
                 " select createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
                         " job_post_id, status_id from job_post_workflow i " +
                         " where i.job_post_id " +
                         " in (" + StringUtils.join(jobPostIdList, ", ")+ ") " +
-                        " and status_id = "+status +
+                        " and status_id = "+ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED +
                         " and job_post_workflow_id = " +
                         " (select max(job_post_workflow_id) from job_post_workflow " +
                         "       where i.candidate_id = job_post_workflow.candidate_id " +

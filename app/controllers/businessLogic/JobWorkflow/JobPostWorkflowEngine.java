@@ -471,13 +471,13 @@ public class JobPostWorkflowEngine {
             candidateList.add(jpwf.getCandidate());
         }
 
-        return getSelectedCandidateMap(candidateList, jobPostId, new ArrayList<>(Arrays.asList(status)), false);
+        return geCandidateMap(candidateList, jobPostId, new ArrayList<>(Arrays.asList(status)), false);
     }
 
-    public static Map<Long, CandidateWorkflowData> getSelectedCandidateMap(List<Candidate> candidateList,
-                                                                           long jobPostId,
-                                                                           List<Integer> statusList,
-                                                                           boolean shouldComputeScoreData){
+    public static Map<Long, CandidateWorkflowData> geCandidateMap(List<Candidate> candidateList,
+                                                                  long jobPostId,
+                                                                  List<Integer> statusList,
+                                                                  boolean shouldComputeScoreData){
 
         Map<Long, CandidateWorkflowData> selectedCandidateMap = new LinkedHashMap<>();
 
@@ -1339,7 +1339,7 @@ public class JobPostWorkflowEngine {
             candidateList.add(jpwf.getCandidate());
         }
 
-        return getSelectedCandidateMap(candidateList, jobPostId, statusList, false);
+        return geCandidateMap(candidateList, jobPostId, statusList, false);
     }
 
 
@@ -1384,7 +1384,7 @@ public class JobPostWorkflowEngine {
             candidateList.add(jpwf.getCandidate());
         }
 
-        return  getSelectedCandidateMap(candidateList, jobPostId, new ArrayList<>(Collections.singletonList(jpwfStatus)), false);
+        return  geCandidateMap(candidateList, jobPostId, new ArrayList<>(Collections.singletonList(jpwfStatus)), false);
     }
 
     public static Map<Long, CandidateWorkflowData> getConfirmedInterviewCandidates(Long jobPostId, String start, String end) {
@@ -1414,7 +1414,7 @@ public class JobPostWorkflowEngine {
             candidateList.add(jpwf.getCandidate());
         }
 
-        return getSelectedCandidateMap(candidateList, jobPostId, new ArrayList<>(Arrays.asList(status)), false);
+        return geCandidateMap(candidateList, jobPostId, new ArrayList<>(Arrays.asList(status)), false);
     }
 
     public static Map<Long, CandidateWorkflowData> getAllCompletedInterviews(Long jobPostId) {
@@ -1429,13 +1429,11 @@ public class JobPostWorkflowEngine {
 
         List<Candidate> candidateList = new ArrayList<>();
 
-        Map<Long, CandidateWorkflowData> selectedCandidateMap = new LinkedHashMap<>();
-
         for (JobPostWorkflow jpwf : jobPostWorkflowList) {
             candidateList.add(jpwf.getCandidate());
         }
 
-        return getSelectedCandidateMap(candidateList, jobPostId, statusList, false);
+        return geCandidateMap(candidateList, jobPostId, statusList, false);
     }
 
     public static List<InterviewTodayResponse> getTodaysInterviewDetails(InterviewTodayRequest interviewTodayRequest) {
@@ -1478,9 +1476,8 @@ public class JobPostWorkflowEngine {
         Integer count = 0;
 
         List<JobPostWorkflow> jobPostWorkflowList =
-                              JobPostWorkFlowDAO.getPendingInterviewApproval(
-                                      interviewTodayRequest.getJpId(),
-                                      ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED
+                              JobPostWorkFlowDAO.getInterviewsPendingApproval(
+                                      interviewTodayRequest.getJpId()
                               );
 
         for (JobPostWorkflow jpWf : jobPostWorkflowList) {
@@ -2217,7 +2214,7 @@ public class JobPostWorkflowEngine {
             candidateList.add(jpwf.getCandidate());
         }
 
-        return getSelectedCandidateMap(candidateList, jobPostId, new ArrayList<>(Collections.singletonList(status)), true);
+        return geCandidateMap(candidateList, jobPostId, new ArrayList<>(Collections.singletonList(status)), true);
     }
 
     private static Map<Long, CandidateScoreData> computeScoreData(List<Candidate> candidateList, Long jobPostId) {
