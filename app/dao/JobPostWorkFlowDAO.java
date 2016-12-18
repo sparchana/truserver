@@ -220,6 +220,15 @@ public class JobPostWorkFlowDAO {
                 .findList();
     }
 
+    public static List<JobPostWorkflow> getRecords(long jobPostId, int status, String startDate, String endDate){
+        return JobPostWorkflow.find.where()
+                .eq("jobPost.jobPostId", jobPostId)
+                .eq("status_id", status)
+                .ge("scheduled_interview_date", startDate)
+                .le("scheduled_interview_date", endDate)
+                .findList();
+    }
+
     public static JobPostWorkflow getJobPostWorkflowCurrent(long jobPostId, long candidateId){
         // fetch existing workflow old
         return  JobPostWorkflow.find.where()

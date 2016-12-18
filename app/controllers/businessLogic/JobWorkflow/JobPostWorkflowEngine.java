@@ -1396,12 +1396,7 @@ public class JobPostWorkflowEngine {
             jobPostWorkflowList = JobPostWorkFlowDAO.getRecords(jobPostId, new ArrayList<>(Collections.singletonList(status)));
 
         } else {
-            jobPostWorkflowList = JobPostWorkflow.find.where()
-                    .eq("jobPost.jobPostId", jobPostId)
-                    .eq("status_id", status)
-                    .ge("scheduled_interview_date", start)
-                    .le("scheduled_interview_date", end)
-                    .findList();
+            jobPostWorkflowList = JobPostWorkFlowDAO.getRecords(jobPostId, status, start, end);
         }
 
         List<Candidate> candidateList = new ArrayList<>();
