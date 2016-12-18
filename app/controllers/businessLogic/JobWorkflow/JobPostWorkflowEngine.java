@@ -1901,9 +1901,9 @@ public class JobPostWorkflowEngine {
             jobPostWorkflowCurrent.setJobPost(jobPost);
             jobPostWorkflowCurrent.setInterviewLocationLat(null);
             jobPostWorkflowCurrent.setInterviewLocationLng(null);
-            if (jobPost.getInterviewDetailsList() != null) {
-                jobPostWorkflowCurrent.setInterviewLocationLat(jobPost.getInterviewDetailsList().get(0).getLat());
-                jobPostWorkflowCurrent.setInterviewLocationLng(jobPost.getInterviewDetailsList().get(0).getLng());
+            if (jobPost.getLatitude() != null) {
+                jobPostWorkflowCurrent.setInterviewLocationLat(jobPost.getLatitude());
+                jobPostWorkflowCurrent.setInterviewLocationLng(jobPost.getLongitude());
             }
             jobPostWorkflowCurrent.setCandidate(candidate);
 
@@ -2148,6 +2148,15 @@ public class JobPostWorkflowEngine {
             //sms to candidate
             sendInterviewConfirmationSms(jobPostWorkflowCurrent, candidate);
 
+            JobApplication jobApplication = JobApplication.find.where()
+                    .eq("candidateId", candidate.getCandidateId())
+                    .eq("jobPostId", jobPostWorkflowCurrent.getJobPost().getJobPostId())
+                    .findUnique();
+
+            if (jobApplication != null && jobApplication.getPartner() != null) {
+                sendInterviewConfirmationSmsToPartner(jobPostWorkflowCurrent, candidate, jobApplication.getPartner());
+            }
+
             //sending notification
             NotificationUtil.sendInterviewConfirmationNotification(candidate, jobPostWorkflowCurrent);
 
@@ -2359,9 +2368,10 @@ public class JobPostWorkflowEngine {
         );
 
         if (jobPostWorkflowCurrent.getJobPost().getInterviewDetailsList() != null && jobPostWorkflowCurrent.getJobPost().getInterviewDetailsList().size() > 0) {
-            if (jobPostWorkflowCurrent.getJobPost().getInterviewDetailsList().get(0).getReviewApplication() != null
-                    && jobPostWorkflowCurrent.getJobPost().getInterviewDetailsList().get(0).getReviewApplication() == 1)
+            if (jobPostWorkflowCurrent.getJobPost().getReviewApplication() != null
+                    && jobPostWorkflowCurrent.getJobPost().getReviewApplication() == 1)
             { // dont review applications, confirm it directly
+
                 jwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
                     JobPostWorkflow jobPostWorkflowNew = JobPostWorkflowEngine.saveNewJobPostWorkflow(
                             jobPostWorkflowCurrent, ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED,
@@ -2373,7 +2383,18 @@ public class JobPostWorkflowEngine {
                     candidateInterviewStatusUpdate.setJobPost(jobPostWorkflowCurrent.getJobPost());
                     candidateInterviewStatusUpdate.setCandidate(candidate);
 
+                    //sms to candidate
                     sendInterviewConfirmationSms(jobPostWorkflowNew, candidate);
+
+                    JobApplication jobApplication = JobApplication.find.where()
+                            .eq("candidateId", candidate.getCandidateId())
+                            .eq("jobPostId", jobPostWorkflowNew.getJobPost().getJobPostId())
+                            .findUnique();
+
+                    //sms to partner if applicable
+                    if (jobApplication != null && jobApplication.getPartner() != null) {
+                        sendInterviewConfirmationSmsToPartner(jobPostWorkflowNew, candidate, jobApplication.getPartner());
+                    }
 
                     interactionResult = InteractionConstants.INTERACTION_RESULT_RECRUITER_AUTO_ACCEPT_JOB_INTERVIEW_DATE;
 
@@ -2512,8 +2533,7 @@ public class JobPostWorkflowEngine {
 
         return 1;
     }
-
-
+    
     public static Integer updateCandidateInterviewStatus(Candidate candidate, JobPost jobPost, Long val, Long reason, int channel) {
         // fetch existing workflow old
         JobPostWorkflow jobPostWorkflowCurrent =

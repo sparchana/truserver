@@ -740,16 +740,16 @@ function processDataForJobPost(returnedData) {
         $("#jobPostStatus").val(returnedData.jobPostStatus.jobStatusId);
     }
 
+    if(returnedData.reviewApplication == null || returnedData.reviewApplication == 1){
+        $( "#check_applications" ).prop( "checked", true);
+    } else{
+        $( "#check_applications" ).prop( "checked", false);
+    }
+
     if(Object.keys(returnedData.interviewDetailsList).length > 0){
         var interviewDetailsList = returnedData.interviewDetailsList;
         if(interviewDetailsList[0].interviewDays != null){
             var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
-
-            if(interviewDetailsList[0].reviewApplication == null || interviewDetailsList[0].reviewApplication == 1){
-                $( "#check_applications" ).prop( "checked", true);
-            } else{
-                $( "#check_applications" ).prop( "checked", false);
-            }
 
             /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
             if(interviewDays.length != 7){
@@ -780,22 +780,21 @@ function processDataForJobPost(returnedData) {
         });
     }
 
-    if(returnedData.interviewDetailsList != null && Object.keys(returnedData.interviewDetailsList).length){
-        if(returnedData.interviewDetailsList[0].lat != null){
-            interviewLat = returnedData.interviewDetailsList[0].lat;
-            interviewLng = returnedData.interviewDetailsList[0].lng;
-        }
+    if(returnedData.latitude != null){
+        interviewLat = returnedData.latitude;
+    }
 
-        //interview address and landmark
-        $("#landmarkDetails").show();
-        if(returnedData.interviewDetailsList[0].interviewBuildingNo){
-            $("#interviewBuildingNo").val(returnedData.interviewDetailsList[0].interviewBuildingNo);
-        }
+    if(returnedData.longitude != null){
+        interviewLng = returnedData.longitude;
+    }
 
-        if(returnedData.interviewDetailsList[0].interviewLandmark){
-            $("#interviewLandmark").val(returnedData.interviewDetailsList[0].interviewLandmark);
-        }
+    $("#landmarkDetails").show();
+    if(returnedData.interviewBuildingNo != null){
+        $("#interviewBuildingNo").val(returnedData.interviewBuildingNo);
+    }
 
+    if(returnedData.interviewLandmark != null){
+        $("#interviewLandmark").val(returnedData.interviewLandmark);
     }
 
     $("#partnerInterviewIncentive").val(returnedData.jobPostPartnerInterviewIncentive);
