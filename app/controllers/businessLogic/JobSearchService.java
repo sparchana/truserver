@@ -3,6 +3,7 @@ package controllers.businessLogic;
 import api.ServerConstants;
 import api.http.FormValidator;
 import com.avaje.ebean.Expr;
+import com.avaje.ebean.PagedList;
 import com.avaje.ebean.Query;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import in.trujobs.proto.*;
@@ -12,6 +13,7 @@ import models.entity.OM.JobPreference;
 import models.entity.Static.JobRole;
 import play.Logger;
 
+import api.http.httpResponse.JobPostResponse;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -215,7 +217,7 @@ public class JobSearchService {
                 }
             }
 
-            return getRelevantJobPostsWithinDistance(lat, lng, jobRoleIds, null, ServerConstants.SORT_DEFAULT, false, false);
+            return getRelevantJobPostsWithinDistance(lat, lng, jobRoleIds, null, ServerConstants.SORT_BY_DATE_POSTED, true, false);
         }
 
         return getAllJobPosts();
@@ -246,12 +248,12 @@ public class JobSearchService {
             }
 
             List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, null, SORT_BY_DATE_POSTED,
-                    true, ServerConstants.SOURCE_INTERNAL);
+                    false, ServerConstants.SOURCE_INTERNAL);
 
             List<Long> relevantJobRoleIds = JobRelevancyEngine.getRelatedJobRoleIds(jobRoleIds);
 
             List<JobPost> relevantJobRoleJobs = queryAndReturnJobPosts(relevantJobRoleIds, null, SORT_BY_DATE_POSTED,
-                    true, ServerConstants.SOURCE_INTERNAL);
+                    false, ServerConstants.SOURCE_INTERNAL);
 
             List<Long> finalJobRoleIdList = new ArrayList<>();
             finalJobRoleIdList.addAll(jobRoleIds);
@@ -402,4 +404,72 @@ public class JobSearchService {
 
         return jobPostsResponseList;
     }
+
+    /** return all available Hot jobs in Active state
+     * @param index index from where the set of jobs to be shown
+     * @return hot jobs w.r.t index value and total number of hot jobs
+     */
+    public static JobPostResponse getAllHotJobsPaginated(Long index) {
+        JobPostResponse jobPostResponse = new JobPostResponse();
+        if (index != null) {
+            PagedList<JobPost> pagedList = JobPost.find
+                    .where()
+                    .eq("jobPostIsHot", "1")
+                    .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                    .eq("Source", ServerConstants.SOURCE_INTERNAL)
+                    .setFirstRow(Math.toIntExact(index))
+                    .setMaxRows(5)
+                    .orderBy().asc("source")
+                    .orderBy().desc("jobPostUpdateTimestamp")
+                    .findPagedList();
+            List<JobPost> jobPostList = pagedList.getList();
+            jobPostResponse.setAllJobPost(jobPostList);
+            jobPostResponse.setTotalJobs(JobPost.find.where().eq("jobPostIsHot", "1").eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).eq("Source", ServerConstants.SOURCE_INTERNAL).findRowCount());
+
+        }
+        return jobPostResponse;
+
+    }
+
+    /** return all available jobs in Active state
+     * @param index index form where the set of jobs to be shown
+     * @return all jobs with active state w.r.t index value and also total number of active jobs
+     */
+    public static JobPostResponse getAllActiveJobsPaginated(Long index){
+        JobPostResponse jobPostResponse = new JobPostResponse();
+        if(index != null){
+            PagedList<JobPost> pagedList = JobPost.find
+                                          .where()
+                                          .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                                          .eq("Source", ServerConstants.SOURCE_INTERNAL)
+                                          .setFirstRow(Math.toIntExact(index))
+                                          .setMaxRows(5)
+                                          .orderBy().asc("source")
+                                          .orderBy().desc("jobPostUpdateTimestamp")
+                                          .findPagedList();
+            List<JobPost> jobPostList = pagedList.getList();
+            jobPostResponse.setAllJobPost(jobPostList);
+            jobPostResponse.setTotalJobs(JobPost.find.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).eq("Source", ServerConstants.SOURCE_INTERNAL).findRowCount());
+        }
+     return jobPostResponse;
+    }
+
+    public static JobPostResponse getActiveJobsForJobRolePaginated(Long jobRoleId, Long index){
+        JobPostResponse jobPostResponse = new JobPostResponse();
+        if(index!=null){
+            List<JobPost> jobPostList = JobPost.find.where()
+                    .eq("jobRole.jobRoleId",jobRoleId)
+                    .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                    .eq("Source", ServerConstants.SOURCE_INTERNAL)
+                    .setFirstRow(Math.toIntExact(index))
+                    .setMaxRows(5)
+                    .orderBy().asc("source")
+                    .orderBy().desc("jobPostUpdateTimestamp")
+                    .findList();
+            jobPostResponse.setAllJobPost(jobPostList);
+            jobPostResponse.setTotalJobs(JobPost.find.where().eq("jobRole.jobRoleId",jobRoleId).eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).eq("Source", ServerConstants.SOURCE_INTERNAL).findRowCount());
+        }
+    return jobPostResponse;
+    }
+
 }

@@ -7,6 +7,9 @@ var recId = 0;
 var contactCredits = 0;
 var interviewCredits = 0;
 
+var addressLandmark;
+var addressBuildingNo;
+
 function processDataAddJobPost(returnedData) {
     if(returnedData.status == 1){
         var jobPostLocalities = "";
@@ -182,6 +185,9 @@ $(function() {
             }
         }
 
+        interviewLat = $("#jp_lat").val();
+        interviewLng = $("#jp_lon").val();
+
         var minSalary = $("#jobPostMinSalary").val();
         var maxSalary = $("#jobPostMaxSalary").val();
 
@@ -353,8 +359,13 @@ $(function() {
             notifyError("Please specify interview slots", 'danger');
             status = 0;
         } else if(interviewLat == null){
-            notifyError("Please enter interview address", 'danger');
+            notifyError("Please enter interview address", "danger");
             status = 0;
+            $('#interviewAddress').val('');
+        } else if(interviewLat == 12.975568542471832){ //if address is by default
+            notifyError("Please enter interview address", "danger");
+            status = 0;
+            $('#interviewAddress').val('');
         }
 
         if(status == 1){
@@ -390,9 +401,9 @@ $(function() {
                 }
             }
 
-            fullAddress = $('#jp_address_text').val();
-            interviewLat = $("#jp_lat").val();
-            interviewLng = $("#jp_lon").val();
+            fullAddress = $('#interviewAddress').val();
+            addressLandmark = $('#interviewLandmark').val();
+            addressBuildingNo = $('#interviewBuildingNo').val();
 
             var reviewApplication;
             if($('#check_applications').is(':checked')){
@@ -440,7 +451,9 @@ $(function() {
                     jobPostGender: jobPostGender,
                     jobPostInterviewLocationLat: interviewLat,
                     jobPostInterviewLocationLng: interviewLng,
-                    reviewApplications: reviewApplication
+                    reviewApplications: reviewApplication,
+                    jobPostAddressBuildingNo: addressBuildingNo,
+                    jobPostAddressLandmark: addressLandmark
                 };
                 $.ajax({
                     type: "POST",
@@ -453,7 +466,6 @@ $(function() {
                 console.log("exception occured!!" + exception);
             }
         }
-
     }); // end of submit
 }); // end of function
 

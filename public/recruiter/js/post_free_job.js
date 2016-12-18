@@ -7,8 +7,11 @@ var jpCompanyId;
 var jpRecruiterId;
 
 var fullAddress;
-var interviewLat;
-var interviewLng;
+var addressLandmark;
+var addressBuildingNo;
+
+var interviewLat = null;
+var interviewLng = null;
 
 var timeSlotTotalCount = 0;
 
@@ -154,29 +157,37 @@ function toJobDetail(){
     $('body').scrollTop(0);
 }
 
+function clearField(){
+    $('#interviewAddress').val('');
+}
 
 function renderMap(){
-    if(interviewLat != undefined && interviewLat != null){
-        $('#jp_map').locationpicker({
-            location: {
-                latitude: interviewLat,
-                longitude: interviewLng
-            },
-            radius: 100,
-            inputBinding: {
-                latitudeInput: $('#jp_lat'),
-                longitudeInput: $('#jp_lon'),
-                radiusInput: $('#jp_address_text'),
-                locationNameInput: $('#jp_address_text')
-            },
-            enableAutocomplete: true,
-            onchanged: function () {
-                interviewLat = $('#jp_lat').val();
-                interviewLng = $('#jp_lon').val();
-                $("#jobPostInterviewLocationVal").html($('#jp_address_text').val());
-            }
-        });
+    if(interviewLat == null){
+        //default values of MG Road
+        interviewLat = 12.975568542471832;
+        interviewLng = 77.60660031434168;
     }
+
+    $('#map_parent').locationpicker({
+        location: {
+            latitude: interviewLat,
+            longitude: interviewLng
+        },
+        radius: 80,
+        inputBinding: {
+            latitudeInput: $('#jp_lat'),
+            longitudeInput: $('#jp_lon'),
+            locationNameInput: $('#interviewAddress')
+        },
+        enableAutocomplete: true,
+        onchanged: function (currentLocation, radius, isMarkerDropped) {
+            //add method if we want to perform any action
+            $("#jp_lat").val(currentLocation.latitude);
+            $("#jp_lon").val(currentLocation.longitude);
+
+            $("#landmarkDetails").show();
+        }
+    });
 }
 
 function toJobRequirement(){
@@ -483,62 +494,6 @@ $(document).ready(function () {
         }
     });
 
-    google.maps.event.addDomListener(window, 'load', function () {
-        var defaultBounds = new google.maps.LatLngBounds(
-            new google.maps.LatLng(12.97232, 77.59480),
-            new google.maps.LatLng(12.89201, 77.58905)
-        );
-
-        var options = {
-            bounds: defaultBounds,
-            componentRestrictions: {country: 'in'}
-        };
-
-        var places = new google.maps.places.Autocomplete(document.getElementById('jobPostInterviewLocation'), options);
-        google.maps.event.addListener(places, 'place_changed', function () {
-            var place = places.getPlace();
-            var address = place.formatted_address;
-            var latitude = place.geometry.location.lat();
-            var longitude = place.geometry.location.lng();
-            fullAddress = address;
-            interviewLat = latitude;
-            interviewLng = longitude;
-            $("#jobPostInterviewLocationVal").show();
-            $("#jobPostInterviewLocation").hide();
-
-            $('#jp_lat').val(latitude);
-            $('#jp_lon').val(longitude);
-            $("#jobPostInterviewLocationVal").html(fullAddress);
-
-            //initializing map
-            var parent = $("#map_parent");
-
-            parent.html('');
-            var map = '<div id="jp_map" class="mapView"></div>';
-            parent.append(map);
-
-            $('#jp_map').locationpicker({
-                location: {
-                    latitude: latitude,
-                    longitude: longitude
-                },
-                radius: 100,
-                inputBinding: {
-                    latitudeInput: $('#jp_lat'),
-                    longitudeInput: $('#jp_lon'),
-                    radiusInput: $('#jp_address_text'),
-                    locationNameInput: $('#jp_address_text')
-                },
-                enableAutocomplete: true,
-                onchanged: function () {
-                    interviewLat = $('#jp_lat').val();
-                    interviewLng = $('#jp_lon').val();
-                    $("#jobPostInterviewLocationVal").html($('#jp_address_text').val());
-                }
-            });
-        });
-    });
-
     //checkbox change action
     $('#check_applications').change(function() {
         if($(this).is(":checked")) {
@@ -548,11 +503,6 @@ $(document).ready(function () {
         }
     });
 });
-
-function interviewUpdate() {
-    $("#jobPostInterviewLocationVal").hide();
-    $("#jobPostInterviewLocation").show();
-}
 
 function saveJob() {
     var status;
@@ -570,6 +520,9 @@ function saveJob() {
     var jobPostWorkShift = $("#jobPostShift").val();
     var jobPostEducation = $("#jobPostEducation").val();
     var jobPostExperience = $("#jobPostExperience").val();
+
+    interviewLat = $("#jp_lat").val();
+    interviewLng = $("#jp_lon").val();
 
     //experience conversion
     if (jobPostExperience != null) {
@@ -748,6 +701,11 @@ function saveJob() {
     } else if(interviewLat == null){
         notifyError("Please enter interview address");
         status = 0;
+        $('#interviewAddress').val('');
+    } else if(interviewLat == 12.975568542471832){ //if address is by default
+        notifyError("Please enter interview address");
+        status = 0;
+        $('#interviewAddress').val('');
     }
 
     if(status == 1){
@@ -769,9 +727,9 @@ function saveJob() {
             reviewApplication = 0;
         }
 
-        fullAddress = $('#jp_address_text').val();
-        interviewLat = $("#jp_lat").val();
-        interviewLng = $("#jp_lon").val();
+        fullAddress = $('#interviewAddress').val();
+        addressLandmark = $('#interviewLandmark').val();
+        addressBuildingNo = $('#interviewBuildingNo').val();
 
         try {
             var d = {
@@ -808,7 +766,9 @@ function saveJob() {
                 jobPostInterviewLocationLat: interviewLat,
                 jobPostInterviewLocationLng: interviewLng,
                 jobPostAddress: fullAddress,
-                reviewApplications: reviewApplication
+                reviewApplications: reviewApplication,
+                jobPostAddressBuildingNo: addressBuildingNo,
+                jobPostAddressLandmark: addressLandmark
             };
 
             $.ajax({
@@ -877,33 +837,6 @@ function processDataForJobPost(returnedData) {
                     $('#jobPostLanguage').tokenize().tokenAdd(languageRequirement.language.languageId, languageRequirement.language.languageName);
                 }
             });
-        }
-
-        $("#jobPostInterviewLocation").hide();
-        if(returnedData.interviewDetailsList != null && Object.keys(returnedData.interviewDetailsList).length){
-            if(returnedData.interviewDetailsList[0].lat != null){
-                interviewLat = returnedData.interviewDetailsList[0].lat;
-                interviewLng = returnedData.interviewDetailsList[0].lng;
-                if(returnedData.jobPostAddress != null){
-                    fullAddress = returnedData.jobPostAddress;
-                    $("#jobPostInterviewLocation").hide();
-                    $("#jobPostInterviewLocationVal").html(returnedData.jobPostAddress);
-                    $("#jobPostInterviewLocationVal").show();
-
-                    $('#jp_lat').val(returnedData.interviewDetailsList[0].lat);
-                    $('#jp_lat').val(returnedData.interviewDetailsList[0].lng);
-
-                    //initializing map
-                    var parent = $("#map_parent");
-
-                    parent.html('');
-                    var map = '<div id="jp_map" class="mapView"></div>';
-                    parent.append(map);
-                } else {
-                    $("#jobPostInterviewLocationVal").hide();
-                    $("#jobPostInterviewLocation").show();
-                }
-            }
         }
 
         $("#jobPostMinSalary").val(returnedData.jobPostMinSalary);
@@ -1014,19 +947,37 @@ function processDataForJobPost(returnedData) {
             });
         }
 
+        if(returnedData.latitude != null){
+            interviewLat = returnedData.latitude;
+        }
+
+        if(returnedData.longitude != null){
+            interviewLng = returnedData.longitude;
+        }
+
+        $("#landmarkDetails").show();
+        if(returnedData.interviewBuildingNo != null){
+            $("#interviewBuildingNo").val(returnedData.interviewBuildingNo);
+        }
+
+        if(returnedData.interviewLandmark != null){
+            $("#interviewLandmark").val(returnedData.interviewLandmark);
+        }
+
+        if(returnedData.reviewApplication == null || returnedData.reviewApplication == 1){
+            $("#check_applications" ).prop( "checked", true);
+            $("#reviewApplicationLabel").html('Confirm interviews for all applications (uncheck this option if you want to review applications before confirming interviews)');
+        } else{
+            $("#check_applications" ).prop( "checked", false);
+            $("#reviewApplicationLabel").html('Confirm interviews for all applications');
+        }
+
         if(Object.keys(returnedData.interviewDetailsList).length > 0){
             var interviewDetailsList = returnedData.interviewDetailsList;
             if(interviewDetailsList[0].interviewDays != null){
-                //interview details
-                var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
 
-                if(interviewDetailsList[0].reviewApplication == null || interviewDetailsList[0].reviewApplication == 1){
-                    $("#check_applications" ).prop( "checked", true);
-                    $("#reviewApplicationLabel").html('Confirm interviews for all applications (uncheck this option if you want to review applications before confirming interviews)');
-                } else{
-                    $("#check_applications" ).prop( "checked", false);
-                    $("#reviewApplicationLabel").html('Confirm interviews for all applications');
-                }
+                //interview days and slots
+                var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
 
                 /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
                 if(interviewDays.length != 7){

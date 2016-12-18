@@ -1,5 +1,7 @@
 package controllers;
 
+import dao.JobPostDAO;
+import notificationService.*;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
@@ -13,13 +15,12 @@ import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
+import com.avaje.ebean.PagedList;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.android.gcm.server.Message;
-import com.google.android.gcm.server.Sender;
 import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.*;
@@ -568,7 +569,7 @@ public class Application extends Controller {
     }
 
     public static Result getJobPostInfo(long jobPostId, Integer isSupport) {
-        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
         if(jobPost!=null){
             if(isSupport == 0){
                 String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
@@ -836,13 +837,12 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    public static Result getAllNormalJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
-        return ok(toJson(jobPosts));
+    public static Result getAllNormalJobPosts(Long index) {
+        return ok(toJson(JobSearchService.getAllActiveJobsPaginated(index)));
     }
-    public static Result getAllHotJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
-        return ok(toJson(jobPosts));
+
+    public static Result getAllHotJobPosts(Long index) {
+        return ok(toJson(JobSearchService.getAllHotJobsPaginated(index)));
     }
 
     @Security.Authenticated(Secured.class)
@@ -1280,7 +1280,7 @@ public class Application extends Controller {
     }
 
     public static Result getJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
-        JobPost jobPost = JobPost.find.where().eq("JobPostId",jobId).findUnique();
+        JobPost jobPost = JobPostDAO.findById(jobId);
         if (jobPost != null) {
             return ok(toJson(jobPost));
         }
@@ -1290,9 +1290,8 @@ public class Application extends Controller {
         return ok(views.html.Fragment.job_role_page.render(rolePara));
     }
 
-    public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara) {
-        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
-        return ok(toJson(jobPostList));
+    public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara,Long index) {
+        return ok(toJson(JobSearchService.getActiveJobsForJobRolePaginated(idPara,index)));
     }
 
     public static Result getAllCompanyLogos() {
@@ -1364,7 +1363,7 @@ public class Application extends Controller {
                             jobPostIdList.add(Long.parseLong(jobPostId));
                         }
                     }
-                    List<JobPost> jobPostList = JobPost.find.where().in("jobPostId", jobPostIdList).findList();
+                    List<JobPost> jobPostList = JobPostDAO.findByIdList(jobPostIdList);
                     for (JobPost jobPost : jobPostList) {
                         if (!jobRoleIdList.contains(jobPost.getJobRole().getJobRoleId())){
                             jobRoleIdList.add(jobPost.getJobRole().getJobRoleId());
@@ -1608,7 +1607,7 @@ public class Application extends Controller {
 
     @Security.Authenticated(RecSecured.class)
     public static Result getJobPostMatchingParams(long jobPostId) {
-        return ok(toJson(JobPost.find.where().eq("jobPostId", jobPostId).findUnique()));
+        return ok(toJson(JobPostDAO.findById(jobPostId)));
     }
 
     @Security.Authenticated(RecSecured.class)
@@ -1691,7 +1690,7 @@ public class Application extends Controller {
             return badRequest();
         }
         if(jobRoleId == null && jobPostId !=null && jobPostId != 0) {
-            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+            JobPost jobPost = JobPostDAO.findById(jobPostId);
             jobRoleId = jobPost.getJobRole().getJobRoleId();
         }
 
@@ -1733,7 +1732,7 @@ public class Application extends Controller {
         List<String> jobRoleIdList = new ArrayList<>();
 
         if(jobRoleIds == null && jobRoleId == null && jobPostId !=null && jobPostId != 0) {
-            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+            JobPost jobPost = JobPostDAO.findById(jobPostId);
             if(jobPost == null) {
                 return badRequest();
             }
@@ -1998,7 +1997,7 @@ public class Application extends Controller {
     public static Result updateInterviewStatus(long cId, long jpId, long val, long reason) {
         Candidate candidate = Candidate.find.where().eq("candidateId", cId).findUnique();
         if(candidate != null){
-            JobPost jobPost = JobPost.find.where().eq("JobPostId", jpId).findUnique();
+            JobPost jobPost = JobPostDAO.findById(jpId);
             if(jobPost != null){
                 return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val, reason, Integer.valueOf(session().get("sessionChannel")))));
             }
@@ -2011,7 +2010,7 @@ public class Application extends Controller {
         if(session().get("candidateId") != null){
             Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")).findUnique();
             if(candidate != null){
-                JobPost jobPost = JobPost.find.where().eq("JobPostId", jpId).findUnique();
+                JobPost jobPost = JobPostDAO.findById(jpId);
                 if(jobPost != null){
                     return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val, reason, Integer.valueOf(session().get("sessionChannel")))));
                 }
@@ -2023,7 +2022,7 @@ public class Application extends Controller {
     public static Result getJpWfStatus(long cId, long jpId) {
         Candidate candidate = Candidate.find.where().eq("candidateId", cId).findUnique();
         if(candidate != null){
-            JobPost jobPost = JobPost.find.where().eq("JobPostId", jpId).findUnique();
+            JobPost jobPost = JobPostDAO.findById(jpId);
             if(jobPost != null){
                 return ok(toJson(JobPostWorkflowEngine.getCandidateLatestStatus(candidate, jobPost)));
             }
@@ -2059,12 +2058,12 @@ public class Application extends Controller {
             Logger.info("null jobPostId received in GET");
             return badRequest();
         }
-        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
         if(jobPost == null) {
             Logger.info("No JobPost Found for jobPostId: " + jobPostId);
             return badRequest();
         }
-        return ok(toJson(JobPostWorkflowEngine.isInterviewRequired(jobPost)));
+        return ok(toJson(RecruiterService.isInterviewRequired(jobPost)));
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -2164,9 +2163,9 @@ public class Application extends Controller {
 
             // make entry into prescreen result/response table
             JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), jobPostId, Integer.valueOf(session().get("sessionChannel")));
-            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+            JobPost jobPost = JobPostDAO.findById(jobPostId);
 
-            return ok(toJson(JobPostWorkflowEngine.isInterviewRequired(jobPost)));
+            return ok(toJson(RecruiterService.isInterviewRequired(jobPost)));
         }
         return badRequest();
     }
@@ -2183,15 +2182,5 @@ public class Application extends Controller {
         }
 
         return ok(toJson(JobPostWorkflowEngine.updateFeedback(addFeedbackRequest, Integer.valueOf(session().get("sessionChannel")))));
-    }
-
-    public static Result testnotification(){
-        Candidate candidate = Candidate.find.where().eq("CandidateMobile", "+918971739586").findUnique();
-        if(candidate.getCandidateAndroidToken() != null){
-            NotificationUtil.sendNotification("Hi", "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
-            return ok("1");
-        }
-        return ok("Null token!");
-
     }
 }

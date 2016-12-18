@@ -16,6 +16,7 @@ import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.SecuredUser;
+import dao.JobPostDAO;
 import models.entity.*;
 import models.entity.OM.JobApplication;
 import models.entity.OM.JobPostWorkflow;
@@ -382,7 +383,7 @@ public class PartnerController {
     }
 
     public static Result getJobPostInfoViaPartner(long jobPostId, long candidateId) {
-        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
         if(jobPost !=null){
             String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
             String objAUUID = "";

@@ -189,7 +189,7 @@ GET         /pageNotFound                                                 contro
 GET         /jobs/:jobTitle/:jobLocation/:jobCompany/:jobId               controllers.Application.renderJobPostDetails( jobTitle: String , jobLocation : String , jobCompany :String , jobId : Long )
 GET         /job/:jobTitle/:jobLocation/:jobCompany/:jobId                controllers.Application.getJobPostDetails( jobTitle: String , jobLocation : String , jobCompany :String , jobId : Long )
 GET         /job/:rolePara/:idPara                                        controllers.Application.renderJobRoleJobPage( rolePara: String, idPara:Long)
-GET         /jobs/:rolePara/:idPara                                       controllers.Application.getJobRoleWiseJobPosts( rolePara: String, idPara:Long)
+GET         /jobs/:rolePara/:idPara                                       controllers.Application.getJobRoleWiseJobPosts( rolePara: String, idPara:Long ,i:java.lang.Long ?=null)
 
 # Both support and user
 # ~~~~~~~~~~~~~~~~~~~~~
@@ -204,8 +204,8 @@ GET         /getAllCompanyLogos                                           contro
 POST        /getAllDegree                                                 controllers.Application.getAllDegree()
 POST        /getAllEducation                                              controllers.Application.getAllEducation()
 POST        /getAllJobsRolesWithJobs                                      controllers.Application.getAllJobsRolesWithJobs()
-POST        /getAllNormalJobPosts                                         controllers.Application.getAllNormalJobPosts()
-POST        /getAllHotJobPosts                                            controllers.Application.getAllHotJobPosts()
+POST        /getAllNormalJobPosts/                                        controllers.Application.getAllNormalJobPosts(i: java.lang.Long ?= null)
+POST        /getAllHotJobPosts/                                           controllers.Application.getAllHotJobPosts(i: java.lang.Long ?= null)
 POST        /getAllIdProof                                                controllers.Application.getAllIdProof()
 POST        /getAllJobs                                                   controllers.Application.getAllJobs()
 POST        /getAllLeadSource                                             controllers.Application.getAllLeadSource()
@@ -279,13 +279,17 @@ POST        /updateStatusCandidate/:jpId/:value/:reason                   contro
 
 
 # notification test
-GET         /testNotification                                             controllers.Application.testnotification()
 
 # Test API
 # ~~~~~~~~~~~~~
 GET         /resolveLatLng/:latlng                                        controllers.TrudroidController.mResolveLatLng(latlng: String)
 GET         /support/api/testMatchingCandidate/:jpId                      controllers.TestController.testMatchingCandidate(jpId: Long)
 GET         /api/test/testValidator/                                      controllers.TestController.testValidator(methodId: Integer ?=null, methodValue: String ?=null)
+GET         /api/test/testScheduler/                                      controllers.TestController.testScheduler()
+
+GET         /testNotification                                             controllers.TestController.testnotification()
+GET         /testQueue                                                    controllers.TestController.testQueue()
+
 # Scrap API
 # ~~~~~~~~~~~~~
 GET         /support/administrator/scrapCSV/dashboard                     controllers.Application.scrapArena()

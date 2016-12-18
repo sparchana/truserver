@@ -319,8 +319,8 @@ function checkSlotAvailability(x, interviewDays) {
 
 function openLogin() {
     $("#signInPopup").html("Sign In");
-    document.getElementById("resetCheckUserBtn").disabled = false;
-    document.getElementById("resetNewPasswordBtn").disabled = false;
+    try{ document.getElementById("resetCheckUserBtn").disabled = false; } catch (e){}
+    try{ document.getElementById("resetNewPasswordBtn").disabled = false; } catch (e){}
     $('#form_login_candidate').show();
     $('#noUserLogin').hide();
     $('#incorrectMsgLogin').hide();
@@ -371,6 +371,7 @@ function processJobPostAppliedStatus(status) {
 }
 
 function processDataForHotJobPost(returnedData) {
+
     if (returnedData != "Error" && returnedData != "") {
         jobId = returnedData.jobPostId;
         if(returnedData.jobPostPartnerInterviewIncentive != null){
@@ -404,6 +405,9 @@ function processDataForHotJobPost(returnedData) {
         }
         if (returnedData.jobPostIncentives != null && returnedData.jobPostIncentives != "") {
             $("#postedJobIncentives").html(returnedData.jobPostIncentives);
+        }
+        if (returnedData.jobPostVacancies != null && returnedData.jobPostVacancies != 0){
+            $("#postedJobNoOfVacancy").html(returnedData.jobPostVacancies);
         }
         //locality
         if (returnedData.jobPostToLocalityList != null && returnedData.jobPostToLocalityList != "") {
@@ -490,12 +494,64 @@ function processDataForHotJobPost(returnedData) {
         if (returnedData.jobPostMinRequirement != null && returnedData.jobPostMinRequirement != "") {
             $("#postedJobMinRequirement").html(returnedData.jobPostMinRequirement);
         }
-
-        if (returnedData.jobPostExperience != null && returnedData.jobPostExperience != "") {
+        if(returnedData.gender != null){
+            if(returnedData.gender == 0){
+                $("#postedJobGender").html("Male");
+            }
+            else if (returnedData.gender == 1){
+                $("#postedJobGender").html("Female");
+            }
+            else{
+                $("#postedJobGender").html("Any");
+            }
+        }
+        if(returnedData.jobPostMaxAge != null && returnedData.jobPostMaxAge != ""){
+            $("#postedJobMaxAge").html(returnedData.jobPostMaxAge + " Yrs");
+        }
+        if(returnedData.jobPostDocumentRequirements !=null && returnedData.jobPostDocumentRequirements != ""){
+            var documentArray = [] ;
+            returnedData.jobPostDocumentRequirements.forEach(function (data) {
+                var lengthOfDocumentElement =  returnedData.jobPostDocumentRequirements.length;
+                if(documentArray.length < lengthOfDocumentElement - 1){
+                    documentArray.push(data.idProof.idProofName+" , ");
+                }
+                else{
+                    documentArray.push(data.idProof.idProofName);
+                }
+            });
+            $("#postedJobDocuments").html(documentArray);
+        }
+         if(returnedData.jobPostAssetRequirements !=null && returnedData.jobPostAssetRequirements != ""){
+             var assetArray = [] ;
+             returnedData.jobPostAssetRequirements .forEach(function (data) {
+                 var lengthOfAssetsElement =  returnedData.jobPostAssetRequirements .length;
+                 if(assetArray.length < lengthOfAssetsElement - 1){
+                     assetArray.push(data.asset.assetTitle+" , ");
+                 }
+                 else{
+                     assetArray.push(data.asset.assetTitle);
+                 }
+             });
+            $("#postedJobAssets").html(assetArray );
+         }
+        if (returnedData.jobPostExperience.experienceType!= null && returnedData.jobPostExperience.experienceType!= "") {
             $("#postedJobExperience").html(returnedData.jobPostExperience.experienceType);
         }
         if (returnedData.jobPostEducation != null && returnedData.jobPostEducation != "") {
             $("#postedJobEducation").html(returnedData.jobPostEducation.educationName);
+        }
+        if(returnedData.jobPostLanguageRequirements !=null && returnedData.jobPostLanguageRequirements != ""){
+            var languageArray = [] ;
+            returnedData.jobPostLanguageRequirements.forEach(function (data) {
+                var lengthOfLanguageElement =  returnedData.jobPostLanguageRequirements.length;
+                if(languageArray.length < lengthOfLanguageElement - 1){
+                    languageArray.push(data.language.languageName +" , ");
+                }
+                else{
+                    languageArray.push(data.language.languageName);
+                }
+            });
+            $("#postedJobLanguage").html(languageArray);
         }
         if (returnedData.jobPostDescription != null && returnedData.jobPostDescription != "") {
             $("#postedJobDescription").html(returnedData.jobPostDescription);

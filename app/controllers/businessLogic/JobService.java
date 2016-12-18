@@ -13,6 +13,7 @@ import api.http.httpResponse.interview.InterviewResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Model;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import dao.JobPostDAO;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.OM.*;
@@ -57,7 +58,7 @@ public class JobService {
         Integer interactionType;
         boolean isSendJobActivationAlert = false;
 
-        JobPost existingJobPost = JobPost.find.where().eq("jobPostId", addJobPostRequest.getJobPostId()).findUnique();
+        JobPost existingJobPost = JobPostDAO.findById(addJobPostRequest.getJobPostId());
         if(existingJobPost == null){
             Logger.info("Job post does not exists. Creating a new job Post");
             existingJobPost = new JobPost();
@@ -180,8 +181,6 @@ public class JobService {
     private static void createInterviewDetails(AddJobPostRequest addJobPostRequest, JobPost jobPost){
         List<Integer> interviewSlots = addJobPostRequest.getInterviewTimeSlot();
 
-        //setting lat lng of the address
-
         if(interviewSlots != null){
             Boolean flag = false;
             String interviewDays = addJobPostRequest.getJobPostInterviewDays();
@@ -212,10 +211,6 @@ public class JobService {
                     Byte interviewDaysByte = Byte.parseByte(addJobPostRequest.getJobPostInterviewDays(), 2);
                     interviewDetails.setInterviewDays(interviewDaysByte);
                 }
-                interviewDetails.setLat(addJobPostRequest.getJobPostInterviewLocationLat());
-                interviewDetails.setLng(addJobPostRequest.getJobPostInterviewLocationLng());
-
-                interviewDetails.setReviewApplication(addJobPostRequest.getReviewApplications());
 
                 interviewDetails.save();
             }
@@ -242,8 +237,16 @@ public class JobService {
         newJobPost.setJobPostIncentives(addJobPostRequest.getJobPostIncentives());
         newJobPost.setJobPostMinRequirement(addJobPostRequest.getJobPostMinRequirement());
 
+        newJobPost.setLatitude(addJobPostRequest.getJobPostInterviewLocationLat());
+        newJobPost.setLongitude(addJobPostRequest.getJobPostInterviewLocationLng());
+
+        newJobPost.setReviewApplication(addJobPostRequest.getReviewApplications());
+
         newJobPost.setJobPostAddress(addJobPostRequest.getJobPostAddress());
         newJobPost.setJobPostPinCode(addJobPostRequest.getJobPostPinCode());
+
+        newJobPost.setInterviewBuildingNo(addJobPostRequest.getJobPostAddressBuildingNo());
+        newJobPost.setInterviewLandmark(addJobPostRequest.getJobPostAddressLandmark());
 
         newJobPost.setJobPostVacancies(addJobPostRequest.getJobPostVacancies());
         newJobPost.setJobPostDescriptionAudio(addJobPostRequest.getJobPostDescriptionAudio());
@@ -645,7 +648,7 @@ public class JobService {
         ApplyJobResponse applyJobResponse = new ApplyJobResponse();
         Candidate existingCandidate = CandidateService.isCandidateExists(applyJobRequest.getCandidateMobile());
         if(existingCandidate != null){
-            JobPost existingJobPost = JobPost.find.where().eq("jobPostId",applyJobRequest.getJobId()).findUnique();
+            JobPost existingJobPost = JobPostDAO.findById(Long.valueOf(applyJobRequest.getJobId()));
             if(existingJobPost == null ){
                 applyJobResponse.setStatus(ApplyJobResponse.STATUS_NO_JOB);
                 Logger.info("JobPost with jobId: " + applyJobRequest.getJobId() + " does not exists");
@@ -721,23 +724,20 @@ public class JobService {
                     Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " already applied to jobPost with jobId:" + existingJobPost.getJobPostId());
                 }
 
-                // also create entry in jobPostWorkflow table
-                JobPostWorkflow jobPostWorkflow = JobPostWorkflow.find
-                        .where()
-                        .eq("candidate_id", existingCandidate.getCandidateId())
-                        .eq("job_post_id", existingJobPost.getJobPostId()).setMaxRows(1).findUnique();
-
-                if (jobPostWorkflow == null) {
-                    jobPostWorkflow = new JobPostWorkflow();
-                    jobPostWorkflow.setCandidate(existingCandidate);
-                    jobPostWorkflow.setJobPost(existingJobPost);
-                    jobPostWorkflow.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_SELECTED).findUnique());
-
-
-                    jobPostWorkflow.setCreatedBy(session().get("sessionUsername") == null ?InteractionConstants.INTERACTION_CHANNEL_MAP.get(channelType) : session().get("sessionUsername") );
-                    jobPostWorkflow.setChannel(channelType);
-                    jobPostWorkflow.save();
+                // assuming job apply to a particular jobpost is a one time event, this will push candidate into selected state
+                String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_SELECTED_FOR_PRESCREEN;
+                interactionResult += existingJobPost.getJobPostId() + ": " + existingJobPost.getJobRole().getJobName();
+                if (existingJobPost.getCompany() != null) {
+                    interactionResult += "@" + existingJobPost.getCompany().getCompanyName();
                 }
+
+
+                //  Each initial application should also have initial job post workflow entry, this methods takes care
+                //  of job Post workflow entry + corresponding interaction
+                createJobPostWorkflowEntry( existingCandidate, existingJobPost, channelType,
+                                            ServerConstants.JWF_STATUS_SELECTED,
+                                            InteractionConstants.INTERACTION_TYPE_CANDIDATE_SELECTED_FOR_PRESCREEN,
+                                            interactionResult);
             }
             PreScreenPopulateResponse populateResponse = JobPostWorkflowEngine.getJobPostVsCandidate(Long.valueOf(applyJobRequest.getJobId()),
                     existingCandidate.getCandidateId(), false);
@@ -745,13 +745,29 @@ public class JobService {
                 applyJobResponse.setPreScreenAvailable(true);
             } else {
                 applyJobResponse.setPreScreenAvailable(false);
+
+                // if there is no pre_screen_requirement with the jobpost then create entry ()
+                // with prescreen completed, for this candidate
+                // also create entry in jobPostWorkflow table
+                JobPostWorkflow jobPostWorkflow = JobPostWorkflow.find
+                        .where()
+                        .eq("candidate_id", existingCandidate.getCandidateId())
+                        .eq("status_id", ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED)
+                        .eq("job_post_id", existingJobPost.getJobPostId()).setMaxRows(1).findUnique();
+
+                if(jobPostWorkflow == null) {
+                    JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(existingCandidate.getCandidateId(),
+                            existingJobPost.getJobPostId(),
+                            channelType);
+                }
             }
-            InterviewResponse interviewResponse = JobPostWorkflowEngine.isInterviewRequired(existingJobPost);
+            InterviewResponse interviewResponse = RecruiterService.isInterviewRequired(existingJobPost);
             if(interviewResponse.getStatus() < ServerConstants.INTERVIEW_REQUIRED){
                 applyJobResponse.setInterviewAvailable(false);
             } else {
                 applyJobResponse.setInterviewAvailable(true);
             }
+
             // adding only those field that are req by interview UI messaging
             applyJobResponse.setJobRoleTitle(existingJobPost.getJobRole().getJobName());
             applyJobResponse.setJobTitle(existingJobPost.getJobPostTitle());
@@ -763,6 +779,40 @@ public class JobService {
         }
 
         return applyJobResponse;
+    }
+
+    private static void createJobPostWorkflowEntry(Candidate existingCandidate, JobPost existingJobPost,
+                                                   int channelType, int status,
+                                                   int interactionType, String interactionResult ) {
+        // also create entry in jobPostWorkflow table
+        JobPostWorkflow jobPostWorkflow = JobPostWorkflow.find
+                .where()
+                .eq("candidate_id", existingCandidate.getCandidateId())
+                .eq("status_id", status)
+                .eq("job_post_id", existingJobPost.getJobPostId()).setMaxRows(1).findUnique();
+
+        // if no entry for the given status then create entry
+        if (jobPostWorkflow == null) {
+            jobPostWorkflow = new JobPostWorkflow();
+            jobPostWorkflow.setCandidate(existingCandidate);
+            jobPostWorkflow.setJobPost(existingJobPost);
+            jobPostWorkflow.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", status).findUnique());
+
+
+            jobPostWorkflow.setCreatedBy(session().get("sessionUsername") == null ?InteractionConstants.INTERACTION_CHANNEL_MAP.get(channelType) : session().get("sessionUsername") );
+            jobPostWorkflow.setChannel(channelType);
+            jobPostWorkflow.save();
+
+            // save the interaction
+            InteractionService.createWorkflowInteraction(
+                    jobPostWorkflow.getJobPostWorkflowUUId(),
+                    existingCandidate.getCandidateUUId(),
+                    interactionType,
+                    null,
+                    interactionResult,
+                    channelType
+            );
+        }
     }
 
     public static void writeJobApplicationToGoogleSheet(Long jobPostId, String candidateMobile, int channelType, Integer localityId, Partner partner, ApplyJobRequest applyJobRequest) throws UnsupportedEncodingException {
@@ -809,7 +859,7 @@ public class JobService {
             candidatePrescreenLocationVal = preScreenLocality.getLocalityName();
         }
 
-        JobPost jobpost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        JobPost jobpost = JobPostDAO.findById(jobPostId);
         if(jobpost != null){
             jobIdVal = String.valueOf(jobpost.getJobPostId());
             jobPostNameVal = jobpost.getJobPostTitle();

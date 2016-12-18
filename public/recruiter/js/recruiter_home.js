@@ -138,47 +138,10 @@ function processDataGetJobPostDetails(returnedData) {
         $("#noInterviews").show();
     }
 
-    var interviews = "";
-    var x, i;
     var jpId = [];
     jobPostList.forEach(function (jobPost) {
-        var interviewDays;
-
         newCount += jobPost.pendingCount;
-        if (Object.keys(jobPost.jobPost.interviewDetailsList).length > 0) {
-            var interviewDetailsList = jobPost.jobPost.interviewDetailsList;
-            if (interviewDetailsList[0].interviewDays != null) {
-                interviewDays = interviewDetailsList[0].interviewDays.toString(2);
-
-                /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
-                if (interviewDays.length != 7) {
-                    x = 7 - interviewDays.length;
-                    var modifiedInterviewDays = "";
-
-                    for (i = 0; i < x; i++) {
-                        modifiedInterviewDays += "0";
-                    }
-                    modifiedInterviewDays += interviewDays;
-                    interviewDays = modifiedInterviewDays;
-                }
-            }
-
-            var today = new Date();
-            if(interviewDays.charAt(today.getDay() - 1) == 1){ // today's schedule
-                jpId.push(parseInt(jobPost.jobPost.jobPostId));
-                var slotsToday = "";
-                interviewDetailsList.forEach(function (slots) {
-                    slotsToday += slots.interviewTimeSlot.interviewTimeSlotName + ", ";
-                });
-
-                interviews += '<div class="row" style="padding: 0 24px 0 24px">' +
-                    '<div class="col s12 m5" style="font-size: 16px"><b>' + jobPost.jobPost.jobPostTitle + '</b></div>' +
-                    '<div class="col s12 m4">' + slotsToday.substring(0, (slotsToday.length) -2 ) + '</div>' +
-                    '<div class="col s12 m3"><a href="/recruiter/job/track/' + jobPost.jobPost.jobPostId + '" target="_blank">' +
-                    '<button class="btn waves-effect waves-light" style="margin-top: -6px" type="submit" name="action">Track<i class="material-icons right">send</i></button>' +
-                    '</a></div></div>';
-            }
-        }
+        jpId.push(parseInt(jobPost.jobPost.jobPostId));
     });
 
     if(jpId.length > 0){

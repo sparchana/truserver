@@ -862,7 +862,7 @@ function processDataForJobApplications(returnedData) {
         } else{
             notifySuccess(candidateCount + " application(s) found!");
         }
-    } else{
+    } else {
         logoutRecruiter();
     }
 }

@@ -177,8 +177,8 @@ public class SupportSearchService {
     {
         String message = "TRUJOBS SUPPORT SEARCH ALERT: Support user " + userName
                 + " has exhausted daily search limit of " + limit + " records";
-        SmsUtil.sendSms(ServerConstants.devTeamMobile.get("Archana"), message);
-        SmsUtil.sendSms(ServerConstants.devTeamMobile.get("Avishek"), message);
-        SmsUtil.sendSms(ServerConstants.devTeamMobile.get("Chillu"), message);
+        SmsUtil.addSmsToNotificationQueue(ServerConstants.devTeamMobile.get("Archana"), message);
+        SmsUtil.addSmsToNotificationQueue(ServerConstants.devTeamMobile.get("Avishek"), message);
+        SmsUtil.addSmsToNotificationQueue(ServerConstants.devTeamMobile.get("Chillu"), message);
     }
 }
