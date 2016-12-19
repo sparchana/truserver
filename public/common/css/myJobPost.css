@@ -64,7 +64,7 @@ input::-webkit-inner-spin-button {
     background: #2980b9;
 }
 body{
-    background: #fcfcfc;
+    background: rgba(231, 231, 231, 0.36);
     font-family: Lato;
     color: #3a3c3b;
 }

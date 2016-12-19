@@ -64,13 +64,19 @@ input::-webkit-inner-spin-button {
     background: #2980b9;
 }
 body{
-    background: #fcfcfc;
+    background: rgba(231, 231, 231, 0.36);
     font-family: Lato;
     color: #3a3c3b;
     width: auto;
 
 }
-
+a{
+    color: rgba(0, 145, 203, 0.99);
+}
+a:hover, a:focus{
+    color: rgba(0, 85, 119, 0.99);
+    text-decoration: none;
+}
 #preloader  {
     position: absolute;
     height: auto;
@@ -177,7 +183,7 @@ body{
 }
 
 #recruiter_form_section {
-    margin-top: 18%;
+    margin-top: 24%;
     margin-left: 30%;
     margin-right: 30%;
     padding: 36px 10px;
@@ -199,10 +205,8 @@ body{
 }
 
 #sectionStats {
-    background: linear-gradient(
-            rgba(24, 26, 45, 0.7),
-            rgba(24, 26, 45, 0.7)
-    ), url(../img/home-banner-3.jpg) no-repeat;
+    box-shadow:0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
+    background-color:  rgb(2, 123, 179);
     background-size: 100%;
     color: #ffffff;
     padding: 5% 8%;
@@ -246,8 +250,8 @@ body{
 }
 
 .custom_container{
-    margin-left: 14%;
-    margin-right: 14%;
+    margin-left: 8%;
+    margin-right: 8%;
 }
 
 .sectionThree {
@@ -367,6 +371,7 @@ a:hover{
 }
 
 #steps{
+    padding-left: 0;
     text-align: left;
 }
 
@@ -520,8 +525,13 @@ hr{
     background-size:100% ;
     padding: 2% 2%;
 }
+#step_Div {
+    margin: 2%;
+}
 #step_image{
-    margin-bottom:4%;
+    height: 24px;
+    margin-top:-8px;
+    margin-right:10px;
 }
 #playStore{
     color:white;
@@ -530,8 +540,8 @@ hr{
 }
 #stepContainer{
     display: block;
-    text-align:center;
     margin-top:5%;
+    padding:0;
 }
 #navLogo{
     height: 65%;
@@ -577,7 +587,7 @@ hr{
 }
 #playStoreDownloadButtonContainer{
     text-align:center;
-    padding-bottom: 18px;
+    padding-top: 54px;
 }
 #playStoreDownloadButton{
     height: 50px;
@@ -662,6 +672,7 @@ hr{
 
 }
 .owl-item{
+    width: 150px;
     text-align: center;
 }
 
@@ -676,19 +687,22 @@ hr{
     text-align: left;
 }
 #jobRole{
-    padding-top: 20%;
-    padding-bottom: 20%;
+    margin: 1px;
+    padding-top: 16%;
+    padding-bottom: 16%;
     border-right: 1px solid #f4eef2;
     border-bottom: 1px solid #f4eef2;
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.69);
 }
 #jobRole:hover{
+    box-shadow: 0 1px 8px rgba(0,0,0,0.22), 0 4px 4px rgba(0,0,0,0.12);
     background: #ffffff;
-    -webkit-transition: background 0.2s;
-    -moz-transition:    background 0.2s;
-    -ms-transition:     background 0.2s;
-    -o-transition:      background 0.2s;
-    transition:         background 0.2s;
+    transition: opacity 0.5s ease-in-out;
+    -webkit-transition: background 0.4s;
+    -moz-transition:    background 0.4s;
+    -ms-transition:     background 0.4s;
+    -o-transition:      background 0.4s;
+    transition:         background 0.4s;
 }
 
 .showPageAllJobs{
@@ -736,8 +750,7 @@ hr{
 
     #hotJobs{
         margin-top: 24px;
-        height: 66%;
-        overflow: scroll;
+        height: auto;
     }
     .custom_container{
         margin: 0;
@@ -783,8 +796,9 @@ hr{
     }
     #playStoreDownloadButtonContainer{
         text-align:left;
-        padding-left: 8%;
+        padding-left: 0;
         padding-bottom: 18px;
+        padding-top: 0;
     }
     #playStoreDownloadButton{
         height: 5%;
@@ -1172,12 +1186,15 @@ padding: 0px;
 	margin-left: -2px;
 }
 .navbar-default {
+    box-shadow: 0px 1px 5px 1px rgba(0, 0, 0, 0.18);
     height: 50px;
     border: none;
 }
 
-.navbar-default .navbar-nav>li>a{
-    color: #ffffff;
+.navbar-default .navbar-nav>li>a:hover{
+    -webkit-transition: all 1s cubic-bezier(0.165, 0.84, 0.44, 1);
+    transition: all 1s cubic-bezier(0.165, 0.84, 0.44, 1);
+    background: rgba(0, 0, 0, 0.09);
 }
 
 .navbar-brand{
