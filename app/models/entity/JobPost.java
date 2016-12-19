@@ -6,16 +6,16 @@ import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import dao.JobPostWorkFlowDAO;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.OM.*;
 import models.entity.Static.*;
 import play.Logger;
+import play.core.server.Server;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by batcoder1 on 15/6/16.
@@ -659,4 +659,64 @@ public class JobPost extends Model {
 
         return address;
     }
+
+    public Integer getAwaitingInterviewScheduleCount() {
+        List<Long> jobIdList = new ArrayList<>();
+        jobIdList.add(this.getJobPostId());
+
+        // get records for specific jobPostid with status and exact scheduleDate
+        List<JobPostWorkflow> jobPostWorkflowList =
+                JobPostWorkFlowDAO.getApplicationCountAccordingToStatus(
+                        jobIdList,
+                        ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED
+                );
+
+        return jobPostWorkflowList.size();
+    }
+
+    public Integer getAwaitingRecruiterConfirmationCount() {
+        List<Long> jobIdList = new ArrayList<>();
+        jobIdList.add(this.getJobPostId());
+
+        // get records for specific jobPostid with status and exact scheduleDate
+        List<JobPostWorkflow> jobPostWorkflowList =
+                JobPostWorkFlowDAO.getApplicationCountAccordingToStatus(
+                        jobIdList,
+                        ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED
+                );
+
+        return jobPostWorkflowList.size();
+    }
+
+    public Integer getConfirmedInterviewsCount() {
+        List<Long> jobIdList = new ArrayList<>();
+        jobIdList.add(this.getJobPostId());
+
+        // get records for specific jobPostid with status and exact scheduleDate
+        List<JobPostWorkflow> jobPostWorkflowList =
+                JobPostWorkFlowDAO.getConfirmedInterviewApplications(
+                        jobIdList,
+                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED
+                );
+
+        return jobPostWorkflowList.size();
+    }
+
+    public Integer getTodaysInterviewCount() {
+        Calendar now = Calendar.getInstance();
+        Date today = now.getTime();
+
+        List<Long> jobIdList = new ArrayList<>();
+        jobIdList.add(this.getJobPostId());
+
+        // get records for specific jobPostid with status and exact scheduleDate
+        List<JobPostWorkflow> jobPostWorkflowList =
+                JobPostWorkFlowDAO.getTodayInterview(
+                        jobIdList,
+                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED,
+                        today);
+
+        return jobPostWorkflowList.size();
+    }
+
 }

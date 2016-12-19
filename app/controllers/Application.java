@@ -852,7 +852,7 @@ public class Application extends Controller {
                                              .orderBy().desc("jobPostUpdateTimestamp")
                                              .findList();
 
-        // get all jobpost uuiids
+        // get all jobpost uuids
         List<String> jobpostUUIDs = new ArrayList<>();
         for (JobPost jobPost : jobPosts) {
             jobpostUUIDs.add(jobPost.getJobPostUUId());
