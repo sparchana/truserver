@@ -100,26 +100,16 @@ public class JobSearchService {
                         ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
 
                 if (sortBy == ServerConstants.SORT_DEFAULT) {
-                    exactJobRoleJobs= sortByDistance(exactJobsWithinDistance);
-                    relatedJobRoleJobs = sortByDistance(relatedJobsWithinDistance);
-
                     //segregation
-                    resultJobPosts = sortJobPostListAccordingToHotJobs(exactJobRoleJobs, relatedJobRoleJobs);
+                    resultJobPosts = sortJobPostListAccordingToHotJobs(sortByDistance(exactJobsWithinDistance), sortByDistance(relatedJobsWithinDistance));
 
                 }
                 else {
-                    exactJobRoleJobs.addAll(exactJobsWithinDistance);
-                    relatedJobRoleJobs.addAll(relatedJobsWithinDistance);
-
                     //segregation
-                    resultJobPosts = sortJobPostListAccordingToHotJobs(exactJobRoleJobs, relatedJobRoleJobs);
-
+                    resultJobPosts = sortJobPostListAccordingToHotJobs(exactJobsWithinDistance, relatedJobsWithinDistance);
                 }
             }
             else {
-                exactJobRoleJobs.addAll(exactJobRoleJobs);
-                relatedJobRoleJobs.addAll(relatedJobRoleJobs);
-
                 //segregation
                 resultJobPosts = sortJobPostListAccordingToHotJobs(exactJobRoleJobs, relatedJobRoleJobs);
             }
