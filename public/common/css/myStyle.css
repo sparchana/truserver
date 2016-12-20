@@ -64,7 +64,7 @@ input::-webkit-inner-spin-button {
     background: #2980b9;
 }
 body{
-    background: rgba(231, 231, 231, 0.36);
+    background: #fbfbfb;
     font-family: Lato;
     color: #3a3c3b;
     width: auto;
@@ -621,7 +621,7 @@ hr{
 }
 
 
-#jobRoleNoBorder:hover, #jobRoleRight:hover, #jobRoleBottom:hover, #jobRole:hover {
+#jobRoleNoBorder:hover, #jobRoleRight:hover, #jobRoleBottom:hover{
     background: #ffffff;
     color: #003557;
     cursor: pointer;

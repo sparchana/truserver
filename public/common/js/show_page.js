@@ -126,13 +126,14 @@ $(document).ready(function(){
     var allJobDetailPageUrl = $(location).attr('href');
     var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
     allJobDetailPageUrlBreak.reverse();
-
+    var splitString = allJobDetailPageUrlBreak[0].split("-");
     $("#sectionOne").css("background-image","linear-gradient(rgba(24, 26, 45, 0.4),rgba(24, 26, 45, 0.4))" +
-        ",url(/assets/common/img/"+allJobDetailPageUrlBreak[0]+".png)");
+        ",url(/assets/common/img/"+splitString[1]+".png)");
     try {
+        console.log("")
         $.ajax({
             type: "GET",
-            url: "/jobs/" + allJobDetailPageUrlBreak[1] +"/"+ allJobDetailPageUrlBreak[0]+"?i=" + index,
+            url: "/jobs/" + splitString[0] +"/"+ splitString[1]+"?i=" + index,
             contentType: "application/json; charset=utf-8",
             data: false,
             processData: false,
@@ -155,10 +156,11 @@ function getAllJobs(index) {
     var allJobDetailPageUrl = $(location).attr('href');
     var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
     allJobDetailPageUrlBreak.reverse();
+    var splitString = allJobDetailPageUrlBreak[0].split("-");
     try {
         $.ajax({
             type: "GET",
-            url: "/jobs/" + allJobDetailPageUrlBreak[1] +"/"+ allJobDetailPageUrlBreak[0]+"?i=" + index,
+            url: "/jobs/" + splitString[0] +"/"+ splitString[1]+"?i=" + index,
             contentType: "application/json; charset=utf-8",
             data: false,
             processData: false,
@@ -229,14 +231,15 @@ function processDataForSelectedJobPost(returnedData) {
     var allJobDetailPageUrl = $(location).attr('href');
     var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
     allJobDetailPageUrlBreak.reverse();
-    var conTitle = allJobDetailPageUrlBreak[1].split("_");
+    var conTitle = allJobDetailPageUrlBreak[0].split("_");
     var showTitle = [""];
     var temp;
     for(var i=0;i<conTitle.length;i++){
         temp = conTitle[i].charAt(0).toUpperCase() + conTitle[i].substring(1);
         showTitle +=temp + " ";
     }
-    var decodedJobRoleName = showTitle.replace(/%20/g, " ");
+    var splitString = showTitle.split("-")
+    var decodedJobRoleName = splitString[0].replace(/%20/g, " ");
         $('#jobTitleLine').html("Register for "+ decodedJobRoleName);
         $('#jobRoleTitle').html("Register for "+ decodedJobRoleName);
         $('#applyToJobsTitle').html("Apply to "+ decodedJobRoleName);
@@ -544,7 +547,7 @@ function processDataForSelectedJobPost(returnedData) {
                                 var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
                                 jobCompany = jobCompany.toLowerCase();
                                 try {
-                                    window.location.href = "/jobs/" + jobPostBreak + "/bengaluru/" + jobCompany + "/" + jobPost.jobPostId;
+                                    window.location.href = "/jobs/" + jobPostBreak + "-bengaluru-" + jobCompany + "-" + jobPost.jobPostId;
                                 } catch (exception) {
                                     console.log("exception occured!!" + exception.stack);
                                 }

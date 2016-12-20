@@ -1275,7 +1275,10 @@ public class Application extends Controller {
     public static Result renderJobPostCards() { return ok(views.html.Fragment.hot_jobs_card_view.render());}
     public static Result renderShowAllJobs() { return ok(views.html.Fragment.show_all_jobs_page.render());}
     public static Result pageNotFound() { return ok(views.html.page_not_found.render());}
-    public static Result renderJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
+    public static Result renderJobPostDetails(String jobTitleString) {
+        String[] mainString = jobTitleString.split("-");
+        String jobCompany = mainString[2];
+        String jobTitle = mainString[0];
         return ok(views.html.Fragment.posted_job_details.render(jobCompany,jobTitle));
     }
 
@@ -1286,7 +1289,9 @@ public class Application extends Controller {
         }
         return ok("Error");
     }
-    public static Result renderJobRoleJobPage(String rolePara, Long idPara) {
+    public static Result renderJobRoleJobPage(String jobTitleString) {
+        String[] mainString = jobTitleString.split("-");
+        String rolePara = mainString[0];
         return ok(views.html.Fragment.job_role_page.render(rolePara));
     }
 

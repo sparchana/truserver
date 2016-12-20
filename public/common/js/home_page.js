@@ -490,7 +490,7 @@ function processDataAllJobPosts(returnedData) {
                     var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
                     jobCompany = jobCompany.toLowerCase();
                     try {
-                        window.location.href = "/jobs/" + jobPostBreak + "/bengaluru/" + jobCompany + "/" + jobPost.jobPostId;
+                        window.location.href = "/jobs/" + jobPostBreak + "-bengaluru-" + jobCompany + "-" + jobPost.jobPostId;
                     } catch (exception) {
                         console.log("exception occured!!" + exception);
                     }

@@ -88,10 +88,11 @@ $(document).ready(function(){
     var jobDetailPageUrl = $(location).attr('href');
     var jobDetailPageUrlBreak = jobDetailPageUrl.split("/");
     jobDetailPageUrlBreak.reverse();
+    var splitString = jobDetailPageUrlBreak[0].split("-");
     try {
             $.ajax({
                 type: "GET",
-                url: "/job/" + jobDetailPageUrlBreak[3] + "/"+ jobDetailPageUrlBreak[2] + "/"+jobDetailPageUrlBreak[1] +"/"+jobDetailPageUrlBreak[0],
+                url: "/job/"+ splitString[0] + "/"+splitString[1] +"/"+splitString[2]+"/"+splitString[3],
                 contentType: "application/json; charset=utf-8",
                 data: false,
                 processData: false,

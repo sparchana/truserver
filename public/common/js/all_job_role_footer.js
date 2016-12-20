@@ -36,7 +36,7 @@ function processDataCheckAllJobRoles(jobPostJobRoles) {
                         var jobRoleId = jobRoleItem.jobRoleId;
                         var jobPostBreak = jobRoleName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
                         jobPostBreak = jobPostBreak.toLowerCase();
-                        window.location.href = "/job/" + jobPostBreak + "_jobs" + "/" + jobRoleId;
+                        window.location.href = "/job/" + jobPostBreak + "_jobs" + "-" + jobRoleId;
                     };
                     var jobRoleNameFooter = document.createElement("div");
                     jobRoleNameFooter.id = "jobRoleNameFooter";
