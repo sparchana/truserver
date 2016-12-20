@@ -910,7 +910,7 @@ function processDataForJobApplications(returnedData) {
                             var feedbackBtnStatus = document.createElement("div");
                             feedbackBtnStatus.className = "feedbackVal";
                             if(value.extraData.workflowStatus.statusId == JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
-                                feedbackBtnStatus.style = "background: green";
+                                feedbackBtnStatus.style = "background: rgb(46, 200, 102)";
                             }
                             feedbackBtnStatus.textContent = value.extraData.workflowStatus.statusTitle;
                             unlockContactCol.appendChild(feedbackBtnStatus);
@@ -927,6 +927,7 @@ function processDataForJobApplications(returnedData) {
                                     openFeedbackModal(value.candidate.candidateId);
                                 };
                                 feedbackBtn.textContent = "ADD FEEDBACK";
+                                feedbackBtn.style = "font-size: 12px";
                                 unlockContactCol.appendChild(feedbackBtn);
 
                             }
