@@ -189,7 +189,6 @@ function processDataForJobApplications(returnedData) {
 
                         var candidateCard = document.createElement("div");
                         candidateCard.className = "card";
-                        candidateCard.style = "border-radius: 6px";
                         parent.append(candidateCard);
 
                         var candidateCardContent = document.createElement("div");
@@ -199,24 +198,97 @@ function processDataForJobApplications(returnedData) {
 
                         var candidateCardRow = document.createElement("div");
                         candidateCardRow.className = "row";
-                        candidateCardRow.style = "padding: 6px 0 6px 0; margin: 0 2%";
+                        candidateCardRow.style = "padding: 0; margin: 0 8px 0 8px";
                         candidateCardContent.appendChild(candidateCardRow);
 
                         var candidateCardRowColOne = document.createElement("div");
-                        candidateCardRowColOne.className = "col s12 l4";
-                        candidateCardRowColOne.style = "padding-top:2px";
+                        candidateCardRowColOne.className = "col s12 l6";
+                        candidateCardRowColOne.style = "padding: 8px; margin-top: 8px";
                         candidateCardRow.appendChild(candidateCardRowColOne);
+
+                        var userAvatar = document.createElement("img");
+                        userAvatar.className = "tooltipped";
+                        userAvatar.style = "margin: -6px 8px 0 -6px; cursor: pointer; text-decoration: none";
+                        userAvatar.setAttribute("data-postiton", "top");
+                        userAvatar.setAttribute("data-delay", "50");
+
+                        userAvatar.setAttribute('height', '36px');
+                        if(value.candidate.candidateGender != null){
+                            if(value.candidate.candidateGender == 0){
+                                userAvatar.src = "/assets/recruiter/img/icons/male.svg";
+                                userAvatar.setAttribute("data-tooltip", "Male");
+                            } else if(value.candidate.candidateGender == 1){
+                                userAvatar.src = "/assets/recruiter/img/icons/female.svg";
+                                userAvatar.setAttribute("data-tooltip", "Female");
+                            } else{
+                                userAvatar.src = "/assets/recruiter/img/icons/user.svg";
+                                userAvatar.setAttribute("data-tooltip", "Male");
+                            }
+                        }
+
+                        candidateCardRowColOne.appendChild(userAvatar);
 
                         //candidate name container
                         var candidateCardRowColOneFont = document.createElement("font");
                         candidateCardRowColOneFont.setAttribute("size", "5");
+                        candidateCardRowColOneFont.style = "font-size: 18px; font-weight: bold";
                         candidateCardRowColOneFont.textContent = toTitleCase(value.candidate.candidateFullName);
                         candidateCardRowColOne.appendChild(candidateCardRowColOneFont);
 
+                        var ageVal;
+                        if (value.candidate.candidateDOB != null) {
+                            var date = JSON.parse(value.candidate.candidateDOB);
+                            var yr = new Date(date).getFullYear();
+                            var month = ('0' + parseInt(new Date(date).getMonth() + 1)).slice(-2);
+                            d = ('0' + new Date(date).getDate()).slice(-2);
+                            var today = new Date();
+                            var birthDate = new Date(yr + "-" + month + "-" + d);
+                            var age = today.getFullYear() - birthDate.getFullYear();
+                            var m = today.getMonth() - birthDate.getMonth();
+                            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                                age--;
+                            }
+                            ageVal = age + " years";
+                        } else{
+                            ageVal = "age not available";
+                        }
+
+                        var candidateAge = document.createElement("font");
+                        candidateAge.style = "font-size: 14px";
+                        candidateAge.textContent = ", " + ageVal;
+                        candidateCardRowColOne.appendChild(candidateAge);
+
+                        //calculating experience
+                        var expVal = "";
+                        if(value.candidate.candidateTotalExperience != null){
+                            if(value.candidate.candidateTotalExperience == 0){
+                                expVal = "Fresher";
+                            } else{
+                                var yrs = parseInt(value.candidate.candidateTotalExperience/12);
+                                var mnths = (value.candidate.candidateTotalExperience) % 12;
+
+                                if(yrs == 0){
+                                    expVal = "Experienced (" + mnths + " months)";
+                                } else if(mnths == 0){
+                                    expVal = "Experienced (" + + yrs + " year(s))";
+                                } else{
+                                    expVal = "Experienced (" + + yrs + " year(s) and " + mnths + " months)";
+                                }
+                            }
+                        } else{
+                            expVal = "Experience not specified";
+                        }
+
+                        var candidateExperience = document.createElement("font");
+                        candidateExperience.style = "font-size: 14px";
+                        candidateExperience.textContent = ", " + expVal;
+                        candidateCardRowColOne.appendChild(candidateExperience);
+
+
                         //interview date/time slot
                         var scheduledInterviewDate = document.createElement("div");
-                        scheduledInterviewDate.className = "col s12 l5";
-                        scheduledInterviewDate.style = "color: black; text-align: left";
+                        scheduledInterviewDate.className = "col s12 l4";
+                        scheduledInterviewDate.style = "color: black; text-align: left; padding: 8px 0 8px 8px; font-size: 12px";
                         candidateCardRow.appendChild(scheduledInterviewDate);
 
                         inlineBlockDiv = document.createElement("div");
@@ -226,7 +298,7 @@ function processDataForJobApplications(returnedData) {
                         iconImg = document.createElement("img");
                         iconImg.src = "/assets/recruiter/img/icons/calender.svg";
                         iconImg.style = "margin-top: -4px";
-                        iconImg.setAttribute('height', '24px');
+                        iconImg.setAttribute('height', '18px');
                         inlineBlockDiv.appendChild(iconImg);
 
                         inlineBlockDiv = document.createElement("div");
@@ -235,7 +307,7 @@ function processDataForJobApplications(returnedData) {
                         scheduledInterviewDate.appendChild(inlineBlockDiv);
 
                         innerInlineBlockDiv = document.createElement("div");
-                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
+                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 10px";
                         innerInlineBlockDiv.textContent = "Interview Details";
                         inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
@@ -248,50 +320,48 @@ function processDataForJobApplications(returnedData) {
 
                         var candidateInterviewStatusVal = document.createElement("span");
                         candidateInterviewStatusVal.textContent = "Interview Confirmed";
-                        candidateInterviewStatusVal.style = "color: green; font-weight: bold";
+                        candidateInterviewStatusVal.style = "color: green; font-weight: bold; font-size: 12px";
 
                         inlineBlockDiv.appendChild(candidateInterviewStatusVal);
 
-                        //interview date/time slot
-                        var feedbackBtnDiv = document.createElement("div");
-                        feedbackBtnDiv.className = "col s12 l3 interviewStatusDiv";
-                        candidateCardRow.appendChild(feedbackBtnDiv);
+                        //match score col
+                        var candidateScoreCol = document.createElement("div");
+                        candidateScoreCol.className = "col s12 l2";
+                        candidateScoreCol.style = "color: black; margin-top: 9px; text-align: right; padding: 8px 0 8px 8px";
+                        candidateCardRow.appendChild(candidateScoreCol);
 
-                        if(value.extraData.workflowStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
-                            var feedbackBtnStatus = document.createElement("span");
-                            feedbackBtnStatus.className = "feedbackVal";
-                            if(value.extraData.workflowStatus.statusId == JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
-                                feedbackBtnStatus.style = "background: green";
-                            }
-                            feedbackBtnStatus.textContent = value.extraData.workflowStatus.statusTitle;
-                            feedbackBtnDiv.appendChild(feedbackBtnStatus);
-                            feedbackBtnDiv.style = "color: black; text-align: right; margin-top: 12px";
-                            candidateInterviewStatusVal.textContent = "Interview Completed";
-                            candidateInterviewStatusVal.style = "color: green; font-weight: bold";
-                        } else{
-                            var today = new Date();
-                            var interviewDate = new Date(value.extraData.interviewDate);
-                            if(interviewDate.getTime() <= today.getTime()) { // today's schedule
-                                //interview for this job is scheduled today, hence allow to update status
-                                var feedbackBtn = document.createElement("a");
-                                feedbackBtn.className = "waves-effect waves-light btn";
-                                feedbackBtn.style = "font-weight: bold";
-                                feedbackBtn.onclick = function () {
-                                    openFeedbackModal(value.candidate.candidateId);
-                                };
-                                feedbackBtn.textContent = "Add feedback";
-                                feedbackBtnDiv.appendChild(feedbackBtn);
+                        var matchVal = document.createElement("span");
 
+                        if(value.scoreData != null){
+                            matchVal.className = "tooltipped matchDiv";
+                            matchVal.setAttribute("data-postiton", "top");
+                            matchVal.setAttribute("data-delay", "50");
+                            matchVal.setAttribute("data-html", true);
+                            matchVal.setAttribute("data-tooltip", value.scoreData.reason);
+
+                            if(value.scoreData.band == 1){
+                                matchVal.style = "background: #2ec866";
+                                matchVal.textContent = "Good Match";
+                            } else if(value.scoreData.band == 2){
+                                matchVal.style = "background: orange";
+                                matchVal.textContent = "Moderate Match";
+                            } else{
+                                matchVal.style = "background: red";
+                                matchVal.textContent = "Poor Match";
                             }
                         }
 
+                        candidateScoreCol.appendChild(matchVal);
+
+
+                        // divider
                         var candidateCardDivider = document.createElement("div");
                         candidateCardDivider.className = "divider";
                         candidateCardContent.appendChild(candidateCardDivider);
 
                         candidateCardRow = document.createElement("div");
                         candidateCardRow.className = "row";
-                        candidateCardRow.style = "padding: 10px 2%;margin: 0";
+                        candidateCardRow.style = "margin: 4px";
                         candidateCardContent.appendChild(candidateCardRow);
 
                         candidateCardRowColOne = document.createElement("div");
@@ -306,7 +376,7 @@ function processDataForJobApplications(returnedData) {
                         var iconImg = document.createElement("img");
                         iconImg.src = "/assets/recruiter/img/icons/locality.svg";
                         iconImg.style = "margin-top: -4px";
-                        iconImg.setAttribute('height', '24px');
+                        iconImg.setAttribute('height', '18px');
                         inlineBlockDiv.appendChild(iconImg);
 
                         inlineBlockDiv = document.createElement("div");
@@ -314,12 +384,12 @@ function processDataForJobApplications(returnedData) {
                         candidateCardRowColOne.appendChild(inlineBlockDiv);
 
                         var innerInlineBlockDiv = document.createElement("div");
-                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
+                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 10px";
                         innerInlineBlockDiv.textContent = "Home Locality";
                         inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
                         var candidateLocalityVal = document.createElement("div");
-                        candidateLocalityVal.style = "margin-left: 4px";
+                        candidateLocalityVal.style = "margin-left: 4px; font-size: 12px";
                         if(value.candidate.locality != null){
                             candidateLocalityVal.textContent = value.candidate.locality.localityName;
                         } else{
@@ -340,7 +410,7 @@ function processDataForJobApplications(returnedData) {
                         iconImg = document.createElement("img");
                         iconImg.src = "/assets/recruiter/img/icons/gender.svg";
                         iconImg.style = "margin-top: -4px";
-                        iconImg.setAttribute('height', '24px');
+                        iconImg.setAttribute('height', '18px');
                         inlineBlockDiv.appendChild(iconImg);
 
                         inlineBlockDiv = document.createElement("div");
@@ -348,12 +418,12 @@ function processDataForJobApplications(returnedData) {
                         candidateCardRowColOne.appendChild(inlineBlockDiv);
 
                         innerInlineBlockDiv = document.createElement("div");
-                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
+                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 10px";
                         innerInlineBlockDiv.textContent = "Gender";
                         inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
                         candidateLocalityVal = document.createElement("div");
-                        candidateLocalityVal.style = "margin-left: 4px";
+                        candidateLocalityVal.style = "margin-left: 4px; font-size: 12px";
                         if(value.candidate.candidateGender != null){
                             if(value.candidate.candidateGender == 0){
                                 candidateLocalityVal.textContent = "Male";
@@ -378,7 +448,7 @@ function processDataForJobApplications(returnedData) {
                         iconImg = document.createElement("img");
                         iconImg.src = "/assets/recruiter/img/icons/age.svg";
                         iconImg.style = "margin-top: -4px";
-                        iconImg.setAttribute('height', '24px');
+                        iconImg.setAttribute('height', '18px');
                         inlineBlockDiv.appendChild(iconImg);
 
                         inlineBlockDiv = document.createElement("div");
@@ -386,12 +456,12 @@ function processDataForJobApplications(returnedData) {
                         candidateCardRowColOne.appendChild(inlineBlockDiv);
 
                         innerInlineBlockDiv = document.createElement("div");
-                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
+                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 10px";
                         innerInlineBlockDiv.textContent = "Age";
                         inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
                         var candidateAgeVal = document.createElement("div");
-                        candidateAgeVal.style = "margin-left: 4px";
+                        candidateAgeVal.style = "margin-left: 4px; font-size: 12px";
                         if (value.candidate.candidateDOB != null) {
                             var date = JSON.parse(value.candidate.candidateDOB);
                             var yr = new Date(date).getFullYear();
@@ -412,7 +482,7 @@ function processDataForJobApplications(returnedData) {
 
                         candidateCardRow = document.createElement("div");
                         candidateCardRow.className = "row";
-                        candidateCardRow.style = "padding: 10px 2%;margin: 0";
+                        candidateCardRow.style = "margin: 4px";
                         candidateCardContent.appendChild(candidateCardRow);
 
                         candidateCardRowColOne = document.createElement("div");
@@ -427,7 +497,7 @@ function processDataForJobApplications(returnedData) {
                         iconImg = document.createElement("img");
                         iconImg.src = "/assets/recruiter/img/icons/education.svg";
                         iconImg.style = "margin-top: -4px";
-                        iconImg.setAttribute('height', '24px');
+                        iconImg.setAttribute('height', '18px');
                         inlineBlockDiv.appendChild(iconImg);
 
                         inlineBlockDiv = document.createElement("div");
@@ -435,12 +505,12 @@ function processDataForJobApplications(returnedData) {
                         candidateCardRowColOne.appendChild(inlineBlockDiv);
 
                         innerInlineBlockDiv = document.createElement("div");
-                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
+                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 10px";
                         innerInlineBlockDiv.textContent = "Education";
                         inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
                         var candidateEducationVal = document.createElement("div");
-                        candidateEducationVal.style = "margin-left: 4px";
+                        candidateEducationVal.style = "margin-left: 4px; font-size: 12px";
                         candidateEducationVal.textContent = "Not Specified";
                         if(value.candidate.candidateEducation){
                             if(value.candidate.candidateEducation.education != null){
@@ -479,7 +549,7 @@ function processDataForJobApplications(returnedData) {
                         iconImg = document.createElement("img");
                         iconImg.src = "/assets/recruiter/img/icons/exp.svg";
                         iconImg.style = "margin-top: -4px";
-                        iconImg.setAttribute('height', '24px');
+                        iconImg.setAttribute('height', '18px');
                         inlineBlockDiv.appendChild(iconImg);
 
                         inlineBlockDiv = document.createElement("div");
@@ -487,12 +557,12 @@ function processDataForJobApplications(returnedData) {
                         candidateCardRowColOne.appendChild(inlineBlockDiv);
 
                         innerInlineBlockDiv = document.createElement("div");
-                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
+                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 10px";
                         innerInlineBlockDiv.textContent = "Experience";
                         inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
                         var candidateExperienceVal = document.createElement("div");
-                        candidateExperienceVal.style = "margin-left: 4px";
+                        candidateExperienceVal.style = "margin-left: 4px; font-size: 12px";
                         if(value.candidate.candidateTotalExperience != null){
                             if(value.candidate.candidateTotalExperience == 0){
                                 candidateExperienceVal.textContent = "Fresher";
@@ -526,7 +596,7 @@ function processDataForJobApplications(returnedData) {
                         iconImg = document.createElement("img");
                         iconImg.src = "/assets/recruiter/img/icons/salary.svg";
                         iconImg.style = "margin-top: -4px";
-                        iconImg.setAttribute('height', '24px');
+                        iconImg.setAttribute('height', '18px');
                         inlineBlockDiv.appendChild(iconImg);
 
                         inlineBlockDiv = document.createElement("div");
@@ -534,12 +604,12 @@ function processDataForJobApplications(returnedData) {
                         candidateCardRowColOne.appendChild(inlineBlockDiv);
 
                         innerInlineBlockDiv = document.createElement("div");
-                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
+                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 10px";
                         innerInlineBlockDiv.textContent = "Last Withdrawn Salary";
                         inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
                         var candidateLastWithdrawnSalaryVal = document.createElement("div");
-                        candidateLastWithdrawnSalaryVal.style = "margin-left: 4px";
+                        candidateLastWithdrawnSalaryVal.style = "margin-left: 4px; font-size: 12px";
                         if(value.candidate.candidateLastWithdrawnSalary != null){
                             if(value.candidate.candidateLastWithdrawnSalary == 0){
                                 if(value.candidate.candidateTotalExperience != null){
@@ -559,7 +629,7 @@ function processDataForJobApplications(returnedData) {
 
                         candidateCardRow = document.createElement("div");
                         candidateCardRow.className = "row";
-                        candidateCardRow.style = "padding: 10px 2%;margin: 0";
+                        candidateCardRow.style = "margin: 4px";
                         candidateCardContent.appendChild(candidateCardRow);
 
                         candidateCardRowColOne = document.createElement("div");
@@ -574,7 +644,7 @@ function processDataForJobApplications(returnedData) {
                         iconImg = document.createElement("img");
                         iconImg.src = "/assets/recruiter/img/icons/language.svg";
                         iconImg.style = "margin-top: -4px";
-                        iconImg.setAttribute('height', '24px');
+                        iconImg.setAttribute('height', '18px');
                         inlineBlockDiv.appendChild(iconImg);
 
                         inlineBlockDiv = document.createElement("div");
@@ -582,12 +652,12 @@ function processDataForJobApplications(returnedData) {
                         candidateCardRowColOne.appendChild(inlineBlockDiv);
 
                         innerInlineBlockDiv = document.createElement("div");
-                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
+                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 10px";
                         innerInlineBlockDiv.textContent = "Language(s)";
                         inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
                         var candidateLanguageVal = document.createElement("div");
-                        candidateLanguageVal.style = "margin-left: 4px";
+                        candidateLanguageVal.style = "margin-left: 4px; font-size: 12px";
                         var langList = value.candidate.languageKnownList;
                         var langListCount = Object.keys(langList).length;
                         if(langListCount > null){
@@ -614,7 +684,7 @@ function processDataForJobApplications(returnedData) {
                         iconImg = document.createElement("img");
                         iconImg.src = "/assets/recruiter/img/icons/skills.svg";
                         iconImg.style = "margin-top: -4px";
-                        iconImg.setAttribute('height', '24px');
+                        iconImg.setAttribute('height', '18px');
                         inlineBlockDiv.appendChild(iconImg);
 
                         inlineBlockDiv = document.createElement("div");
@@ -622,15 +692,16 @@ function processDataForJobApplications(returnedData) {
                         candidateCardRowColTwo.appendChild(inlineBlockDiv);
 
                         innerInlineBlockDiv = document.createElement("div");
-                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
+                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 10px";
                         innerInlineBlockDiv.textContent = "Skills(s)";
                         inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
                         var candidateSkillVal = document.createElement("div");
-                        candidateSkillVal.style = "margin-left: 4px";
+                        candidateSkillVal.style = "margin-left: 4px; font-size: 12px";
                         candidateSkillVal.id = "skill_" + value.candidate.candidateId;
                         var skillList = value.candidate.candidateSkillList;
                         var skillListCount = Object.keys(skillList).length;
+                        var toolTipReq = false;
                         if(skillListCount > 0){
                             var skillVal = "";
                             var allSkillVal = "";
@@ -650,12 +721,17 @@ function processDataForJobApplications(returnedData) {
                                 }
                             });
                             candidateSkillVal.textContent = skillVal.substring(0, skillVal.length - 2);
+                            if(skillVal.length > 30){
+                                toolTipReq = true;
+                                candidateSkillVal.textContent = skillVal.substring(0, 27) + "...";
+                            }
+
                         } else{
                             candidateSkillVal.textContent = "Not specified";
                         }
                         inlineBlockDiv.appendChild(candidateSkillVal);
 
-                        if(skillListCount > 3){
+                        if(skillListCount > 3 || toolTipReq){
                             var toolTip = document.createElement("a");
                             toolTip.className = "tooltipped";
                             toolTip.style = "cursor: pointer; text-decoration: none";
@@ -679,7 +755,7 @@ function processDataForJobApplications(returnedData) {
                         iconImg = document.createElement("img");
                         iconImg.src = "/assets/recruiter/img/icons/document.svg";
                         iconImg.style = "margin-top: -4px";
-                        iconImg.setAttribute('height', '24px');
+                        iconImg.setAttribute('height', '18px');
                         inlineBlockDiv.appendChild(iconImg);
 
                         inlineBlockDiv = document.createElement("div");
@@ -687,16 +763,17 @@ function processDataForJobApplications(returnedData) {
                         candidateCardRowColThree.appendChild(inlineBlockDiv);
 
                         innerInlineBlockDiv = document.createElement("div");
-                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
+                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 10px";
                         innerInlineBlockDiv.textContent = "Documents(s)";
                         inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
                         var candidateDocumentVal = document.createElement("div");
-                        candidateDocumentVal.style = "margin-left: 4px; margin-top: 12px";
+                        candidateDocumentVal.style = "margin-left: 4px; font-size: 12px";
                         candidateDocumentVal.id = "document_" + value.candidate.candidateId;
 
                         var documentList = value.candidate.idProofReferenceList;
                         var documentListCount = Object.keys(documentList).length;
+                        toolTipReq = false;
 
                         if(documentListCount > 0){
                             var allDocumentVal = "";
@@ -715,12 +792,16 @@ function processDataForJobApplications(returnedData) {
                                 }
                             });
                             candidateDocumentVal.textContent = documentVal.substring(0, documentVal.length - 2);
+                            if(documentVal.length > 30){
+                                toolTipReq = true;
+                                candidateDocumentVal.textContent = documentVal.substring(0, 27) + "...";
+                            }
                         } else{
                             candidateDocumentVal.textContent = "Not specified";
                         }
                         inlineBlockDiv.appendChild(candidateDocumentVal);
 
-                        if(documentListCount > 3){
+                        if(documentListCount > 3 || toolTipReq){
                             var toolTip = document.createElement("a");
                             toolTip.className = "tooltipped";
                             toolTip.style = "cursor: pointer; text-decoration: none";
@@ -732,12 +813,12 @@ function processDataForJobApplications(returnedData) {
                         }
 
                         var hr = document.createElement("hr");
-                        hr.style = "margin: 12px";
+                        hr.style = "margin: 8px";
                         candidateCardContent.appendChild(hr);
 
                         var unlockDivRow = document.createElement("div");
                         unlockDivRow.className = "row";
-                        unlockDivRow.style = "padding: 0 2% 1% 2%; margin: 0; text-align: right; color: #fff";
+                        unlockDivRow.style = "padding: 0px 0px 8px; margin: 0; text-align: right; color: #fff";
                         candidateCardContent.appendChild(unlockDivRow);
 
                         // candidate interview status
@@ -753,7 +834,7 @@ function processDataForJobApplications(returnedData) {
                         iconImg = document.createElement("img");
                         iconImg.src = "/assets/recruiter/img/icons/status.svg";
                         iconImg.style = "margin-top: -4px";
-                        iconImg.setAttribute('height', '24px');
+                        iconImg.setAttribute('height', '18px');
                         inlineBlockDiv.appendChild(iconImg);
 
                         inlineBlockDiv = document.createElement("div");
@@ -761,7 +842,7 @@ function processDataForJobApplications(returnedData) {
                         candidateCurrentStatus.appendChild(inlineBlockDiv);
 
                         innerInlineBlockDiv = document.createElement("div");
-                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
+                        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 10px";
                         innerInlineBlockDiv.textContent = "Candidate status";
                         inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
@@ -789,28 +870,29 @@ function processDataForJobApplications(returnedData) {
 
                             if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING){
                                 candidateCurrentStatusVal.textContent = "Not going for interview " + dateAndTime;
-                                candidateCurrentStatusVal.style = "margin-left: 4px; color: red; font-weight: bold";
+                                candidateCurrentStatusVal.style = "margin-left: 4px; color: red; font-weight: bold; font-size: 12px";
                             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){
                                 candidateCurrentStatusVal.textContent = "Delayed for Interview " + dateAndTime;
-                                candidateCurrentStatusVal.style = "margin-left: 4px; color: orange; font-weight: bold";
+                                candidateCurrentStatusVal.style = "margin-left: 4px; color: orange; font-weight: bold; font-size: 12px";
                             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY){
                                 candidateCurrentStatusVal.textContent = "On the way " + dateAndTime;
-                                candidateCurrentStatusVal.style = "margin-left: 4px; color: green; font-weight: bold";
+                                candidateCurrentStatusVal.style = "margin-left: 4px; color: green; font-weight: bold; font-size: 12px";
                             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                                 candidateCurrentStatusVal.textContent = "Reached for Interview " + dateAndTime;
-                                candidateCurrentStatusVal.style = "margin-left: 4px; color: green; font-weight: bold";
+                                candidateCurrentStatusVal.style = "margin-left: 4px; color: green; font-weight: bold; font-size: 12px";
                             }
                         }
                         inlineBlockDiv.appendChild(candidateCurrentStatusVal);
 
                         var candidateCardRowColTwo = document.createElement("div");
-                        candidateCardRowColTwo.className = "col s12 l5";
+                        candidateCardRowColTwo.className = "col s12 l3";
                         candidateCardRowColTwo.style = "padding-top:10px; color: black; text-align: left";
                         unlockDivRow.appendChild(candidateCardRowColTwo);
 
                         //candidate last active container
                         var candidateCardRowColTwoFont = document.createElement("font");
                         candidateCardRowColTwoFont.setAttribute("size", "3");
+                        candidateCardRowColTwoFont.style = "font-size: 12px";
                         if(value.extraData.lastActive != null){
                             candidateCardRowColTwoFont.textContent = "Last Active: " + value.extraData.lastActive.lastActiveValueName;
                         }
@@ -819,8 +901,36 @@ function processDataForJobApplications(returnedData) {
 
                         //unlock btn
                         var unlockContactCol = document.createElement("div");
-                        unlockContactCol.className = "col s12 l3 unlockDiv";
+                        unlockContactCol.className = "col s12 l5 unlockDiv";
+                        unlockContactCol.style = "padding-left: 0";
                         unlockDivRow.appendChild(unlockContactCol);
+
+
+                        if(value.extraData.workflowStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
+                            var feedbackBtnStatus = document.createElement("div");
+                            feedbackBtnStatus.className = "feedbackVal";
+                            if(value.extraData.workflowStatus.statusId == JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+                                feedbackBtnStatus.style = "background: green";
+                            }
+                            feedbackBtnStatus.textContent = value.extraData.workflowStatus.statusTitle;
+                            unlockContactCol.appendChild(feedbackBtnStatus);
+                            candidateInterviewStatusVal.textContent = "Interview Completed";
+                            candidateInterviewStatusVal.style = "color: green; font-weight: bold";
+                        } else{
+                            var today = new Date();
+                            var interviewDate = new Date(value.extraData.interviewDate);
+                            if(interviewDate.getTime() <= today.getTime()) { // today's schedule
+                                //interview for this job is scheduled today, hence allow to update status
+                                var feedbackBtn = document.createElement("a");
+                                feedbackBtn.className = "waves-effect waves-light customFeedbackBtn";
+                                feedbackBtn.onclick = function () {
+                                    openFeedbackModal(value.candidate.candidateId);
+                                };
+                                feedbackBtn.textContent = "ADD FEEDBACK";
+                                unlockContactCol.appendChild(feedbackBtn);
+
+                            }
+                        }
 
                         //unlock candidate div
                         var unlockCandidateBtn = document.createElement("div");
@@ -835,7 +945,7 @@ function processDataForJobApplications(returnedData) {
                         var candidateUnlockFont = document.createElement("font");
                         candidateUnlockFont.id = "candidate_" + value.candidate.candidateId;
                         candidateUnlockFont.textContent = "Unlock Contact";
-                        candidateUnlockFont.style = "font-weight: bold; font-size: 14px";
+                        candidateUnlockFont.style = "font-weight: bold; font-size: 12px";
                         unlockCandidateBtn.appendChild(candidateUnlockFont);
                     }
                     $('.tooltipped').tooltip({delay: 50});
