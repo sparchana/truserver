@@ -1080,19 +1080,14 @@ $(function () {
                                 + (lastUpdate.getMonth() + 1) + "-" + lastUpdate.getFullYear() + " " + timing + ')';
                         }
 
-                        var today = new Date();
-                        var interviewDate = new Date(newCandidate.extraData.interviewDate);
-                        if(interviewDate.getDate() == today.getDate() && interviewDate.getMonth() == today.getMonth() && interviewDate.getFullYear() == today.getFullYear()) { // today's schedule
-                            //interview for this job is scheduled today, hence allow to update status
-                            candidateStatus +=  '<select style="margin-left: 8px" id="interview_status_' + newCandidate.candidate.candidateId +'">' +
-                                '<option value="0">Select a Status</option>' +
-                                '<option value="1">Not Going</option>' +
-                                '<option value="2">Delayed</option>' +
-                                '<option value="3">On the Way</option>' +
-                                '<option value="4">Reached</option>' +
-                                '</select>' +
-                                '<input style="margin-left: 6px" type="button" value="Update" onclick="updateStatus('+ newCandidate.candidate.candidateId + ')">';
-                        }
+                        candidateStatus +=  '<select style="margin-left: 8px" id="interview_status_' + newCandidate.candidate.candidateId +'">' +
+                            '<option value="0">Select a Status</option>' +
+                            '<option value="1">Not Going</option>' +
+                            '<option value="2">Delayed</option>' +
+                            '<option value="3">On the Way</option>' +
+                            '<option value="4">Reached</option>' +
+                            '</select>' +
+                            '<input style="margin-left: 6px" type="button" value="Update" onclick="updateStatus('+ newCandidate.candidate.candidateId + ')">';
 
                         return candidateStatus;
                     } else if(app.currentView == "pending_interview_schedule"){
@@ -1148,12 +1143,7 @@ $(function () {
                             }
                         }
                         if(app.currentView == "confirmed_interview_view"){
-                            var today = new Date();
-                            var interviewDate = new Date(newCandidate.extraData.interviewDate);
-                            if(interviewDate.getTime() <= today.getTime()) { // today's schedule
-                                //interview for this job is scheduled today, hence allow to update status
-                                candidateStatus += '<input style="margin-left: 6px" type="button" value="Update" onclick="openFeedbackModal('+ newCandidate.candidate.candidateId + ')">';
-                            }
+                            candidateStatus += '<input style="margin-left: 6px" type="button" value="Update" onclick="openFeedbackModal('+ newCandidate.candidate.candidateId + ')">';
                         }
                         return candidateStatus;
                     } else {
