@@ -159,6 +159,8 @@ public class ServerConstants {
     public static final String PROFILE_REQUIREMENT_TABLE_GENDER = "gender";
     public static final String PROFILE_REQUIREMENT_TABLE_LOCATION = "locality";
     public static final String PROFILE_REQUIREMENT_TABLE_WORKTIMINGS = "worktimings";
+    public static final int REVIEW_APPLICATION_MANUAL = 0;
+    public static final int REVIEW_APPLICATION_AUTO = 1;
     public static Map<String, String> devTeamMobile;
 
     // rec sorting keys

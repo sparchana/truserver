@@ -2364,7 +2364,7 @@ public class JobPostWorkflowEngine {
 
         if (jobPostWorkflowCurrent.getJobPost().getInterviewDetailsList() != null && jobPostWorkflowCurrent.getJobPost().getInterviewDetailsList().size() > 0) {
             if (jobPostWorkflowCurrent.getJobPost().getReviewApplication() != null
-                    && jobPostWorkflowCurrent.getJobPost().getReviewApplication() == 1)
+                    && jobPostWorkflowCurrent.getJobPost().getReviewApplication() == ServerConstants.REVIEW_APPLICATION_AUTO)
             { // dont review applications, confirm it directly
 
                 jwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;

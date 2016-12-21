@@ -59,7 +59,13 @@ function processJobPostInterviewSlot(returnedData, isSupport) {
         if(isSupport) {
             i =1;
         } else {
-            i =2;
+            // for those jobpost in which the auto confirm is marked as checked or is null, we start line up from the next day
+            if(returnedData.reviewApplication == null || returnedData.reviewApplication == 1){
+                i =1;
+            } else{
+                i =2;
+            }
+
         }
         for (; i < 9; i++) {
             // 0 - > sun 1 -> mon ...
