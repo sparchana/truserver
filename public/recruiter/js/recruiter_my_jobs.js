@@ -7,11 +7,11 @@ var newCount = 0;
 $(window).load(function() {
     setTimeout(function(){
         if(newCount == 0){
-            $(".badge").hide();
+            $(".newNotification").hide();
         } else{
-            $(".badge").show();
-            $("#pendingApproval").addClass("newNotification").html(newCount);
-            $("#pendingApprovalMobile").addClass("newNotification").html(newCount);
+            $(".newNotification").show();
+            $("#pendingApproval").html(newCount);
+            $("#pendingApprovalMobile").html(newCount);
         }
         $(".jobNav").addClass("active");
         $(".jobNavMobile").addClass("active");
@@ -148,25 +148,8 @@ function processDataGenerateJobPostView(returnedData) {
                 spanSalary.style = "font-weight: 600;font-size:12px";
                 colJobSalary.appendChild(spanSalary);
 
-                var colJobWorkShift = document.createElement("div");
-                colJobWorkShift.className = 'col s12 m2 l2';
-                colJobWorkShift.style = 'margin-top:8px';
-                outerRow.appendChild(colJobWorkShift);
-
-                if(jobPost.jobPost.jobPostShift != null){
-                    colJobWorkShift.textContent = jobPost.jobPost.jobPostShift.timeShiftName;
-                } else{
-                    colJobWorkShift.textContent = "Not Specified";
-                }
-
-                var spanShift  = document.createElement("div");
-                spanShift.className = "col s4 hide-on-med-and-up right-align";
-                spanShift.textContent= "Time Shift :";
-                spanShift.style = "font-weight: 600;font-size:12px";
-                colJobWorkShift.appendChild(spanShift);
-
                 var colApplicant = document.createElement("div");
-                colApplicant.className = 'col s12 m1 l1';
+                colApplicant.className = 'col s12 m2 l2';
                 outerRow.appendChild(colApplicant);
 
                 var spanApplications  = document.createElement("div");
@@ -190,7 +173,7 @@ function processDataGenerateJobPostView(returnedData) {
                 colApplicant.appendChild(upcomingCounter);
 
                 var colJobStatus = document.createElement("div");
-                colJobStatus.className = 'col s12 m1 l1';
+                colJobStatus.className = 'col s12 m2 l2';
                 colJobStatus.style = 'margin-top:8px';
                 outerRow.appendChild(colJobStatus);
 

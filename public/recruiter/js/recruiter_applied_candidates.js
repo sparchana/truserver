@@ -110,6 +110,48 @@ $(document).ready(function(){
     });
 });
 
+$(window).load(function(){
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllRecruiterJobPosts",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetJobPostDetails
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+});
+
+function processDataGetJobPostDetails(returnedData){
+    var jobPostList = [];
+    $.each(returnedData, function (key, value) {
+        jobPostList.push(value);
+    });
+    var newCount = 0;
+
+    if(jobPostList.length == 0){
+        $("#noInterviews").show();
+    }
+
+    jobPostList.forEach(function (jobPost) {
+        newCount += jobPost.pendingCount;
+        newCount += jobPost.upcomingCount;
+    });
+
+    if(newCount == 0){
+        $(".newNotification").hide();
+    } else {
+        $(".newNotification").show();
+        $("#pendingApproval").html(newCount);
+        $("#pendingApprovalMobile").html(newCount);
+    }
+
+}
+
 function processDataNotSelectedReason(returnedData) {
     returnedData.forEach(function(reason) {
         var id = reason.reasonId;
@@ -328,30 +370,28 @@ function processDataForJobApplications(returnedData) {
 
         $('.tooltipped').tooltip({delay: 50});
 
-        if(approvalCount == 0){
-            $(".badge").hide();
-        } else {
-            $(".badge").show();
-            $("#pendingApproval").addClass("newNotification").html(approvalCount);
-            $("#pendingApprovalMobile").addClass("newNotification").html(approvalCount);
-        }
-
         if(pendingCount == 0){
             $("#noPendingApplication").show();
         } else{
             $("#noPendingApplication").hide();
+            $("#pendingCount").html(pendingCount);
+            $("#pendingCount").show();
         }
 
         if(confirmedCount == 0){
             $("#noConfirmedApplication").show();
         } else{
             $("#noConfirmedApplication").hide();
+            $("#confirmedCount").html(confirmedCount/2);
+            $("#confirmedCount").show();
         }
 
         if(completedCount == 0){
             $("#noCompletedApplication").show();
         } else{
             $("#noCompletedApplication").hide();
+            $("#completedCount").html(completedCount);
+            $("#completedCount").show();
         }
 
         try {
@@ -373,6 +413,8 @@ function processDataForJobApplications(returnedData) {
         if(actionNeededCount > 0){
             $('ul.tabs').tabs('select_tab', 'pending');
         } else if(interviewTodayCount > 0){  //if there is any today's interview lined up, activate the confirmed tab
+            $('ul.tabs').tabs('select_tab', 'confirmed');
+        } else if(pendingCount == 0 && confirmedCount > 0){
             $('ul.tabs').tabs('select_tab', 'confirmed');
         }
     } else{

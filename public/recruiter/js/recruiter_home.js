@@ -16,11 +16,11 @@ $(window).load(function() {
         $(".homeNavMobile").addClass("active");
 
         if(newCount == 0){
-            $(".badge").hide();
+            $(".newNotification").hide();
         } else{
-            $(".badge").show();
-            $("#pendingApproval").addClass("newNotification").html(newCount);
-            $("#pendingApprovalMobile").addClass("newNotification").html(newCount);
+            $(".newNotification").show();
+            $("#pendingApproval").html(newCount);
+            $("#pendingApprovalMobile").html(newCount);
         }
     }, 100);
 });
