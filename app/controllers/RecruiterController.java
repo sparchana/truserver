@@ -599,7 +599,6 @@ public class RecruiterController {
     public static Result getTodayInterviewDetails() {
         JsonNode req = request().body().asJson();
 
-        Logger.info("testing");
         InterviewTodayRequest interviewTodayRequest = new InterviewTodayRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {

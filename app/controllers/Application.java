@@ -2024,7 +2024,9 @@ public class Application extends Controller {
         if(candidate != null){
             JobPost jobPost = JobPostDAO.findById(jpId);
             if(jobPost != null){
-                return ok(toJson(JobPostWorkflowEngine.getCandidateLatestStatus(candidate, jobPost)));
+                if(JobPostWorkflowEngine.getCandidateLatestStatus(candidate, jobPost) != null){
+                    return ok(toJson(JobPostWorkflowEngine.getCandidateLatestStatus(candidate, jobPost)));
+                }
             }
         }
         return ok("0");

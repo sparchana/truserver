@@ -2411,7 +2411,23 @@ public class JobPostWorkflowEngine {
     public static JobPostWorkflow getCandidateLatestStatus(Candidate candidate, JobPost jobPost) {
         // fetch existing workflow old
 
-        return JobPostWorkFlowDAO.getJobPostWorkflowCurrent(jobPost.getJobPostId(), candidate.getCandidateId());
+        JobPostWorkflow jobPostWorkflow = JobPostWorkFlowDAO.getJobPostWorkflowCurrent(jobPost.getJobPostId(), candidate.getCandidateId());
+
+        Date interviewDate = jobPostWorkflow.getScheduledInterviewDate();
+        Calendar now = Calendar.getInstance();
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(interviewDate);
+
+        if(now.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && (now.get(Calendar.MONTH) + 1) == (cal.get(Calendar.MONTH) + 1)
+                && now.get(Calendar.DATE) == cal.get(Calendar.DATE)){
+
+            return JobPostWorkFlowDAO.getJobPostWorkflowCurrent(jobPost.getJobPostId(), candidate.getCandidateId());
+        }
+
+
+        return null;
+
     }
 
     public static Integer updateFeedback(AddFeedbackRequest addFeedbackRequest, int channel) {

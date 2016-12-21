@@ -29,9 +29,6 @@ var confirmedCount = 0;
 var completedCount = 0;
 var approvalCount = 0;
 
-var interviewTodayCount = 0;
-var actionNeededCount = 0;
-
 // Method to generate individual candidate card
 function renderIndividualCandidateCard(value, parent, view) {
 

@@ -22,7 +22,7 @@ function openTrackInterview() {
 }
 
 $(document).scroll(function(){
-    if ($(this).scrollTop() > 80) {
+    if ($(this).scrollTop() > 40) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
     }
     else{
@@ -244,40 +244,40 @@ function tabChange3() {
 }
 
 function processDataForJobApplications(returnedData) {
+    var candidateList = [];
+
+    var acceptInterview = [];
+    var contactCandidates = [];
+    var pendingConfirmation = [];
+    var rejectedList = [];
+    var interviewTodayList = [];
+    var upcomingInterviews = [];
+    var pastInterviews = [];
+    var completedInterviews = [];
+
+
     pendingCount = 0;
     confirmedCount = 0;
     completedCount = 0;
     approvalCount = 0;
 
-    interviewTodayCount = 0;
-    actionNeededCount = 0;
+    var upcomingInterviewCount = 0;
+    var interviewTodayCount = 0;
+    var actionNeededCount = 0;
 
     pendingParent.html('');
     confirmedParent.html('');
     completedParent.html('');
 
     if(returnedData != "0"){
-        var candidateList = [];
-
-        var acceptInterview = [];
-        var contactCandidates = [];
-        var pendingConfirmation = [];
-        var rejectedList = [];
-        var interviewTodayList = [];
-        var upcomingInterviews = [];
-        var pastInterviews = [];
-        var completedInterviews = [];
 
         $.each(returnedData, function (key, value) {
-            var actionNeededCount;
             if (value != null) {
                 if (value.extraData.workflowStatus != null) {
                     if (value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE) {
 
                         //awaiting confirmation from recruiter
                         pendingConfirmation.push(value);
-                        actionNeededCount = 1;
-                        console.log(actionNeededCount);
                     } else if (value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE) {
 
                         //pushing all the rejected applications in rejected list which will come at last
@@ -286,6 +286,8 @@ function processDataForJobApplications(returnedData) {
 
                         //pushing all the action needed applications which will come on top
                         acceptInterview.push(value);
+                        actionNeededCount++;
+
                     } else if (value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && value.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED) {
                         var todayDay = new Date();
                         var interviewDate = new Date(value.extraData.interviewDate);
@@ -297,11 +299,12 @@ function processDataForJobApplications(returnedData) {
 
                             //push in todays interview list
                             interviewTodayList.push(value);
-                            interviewTodayCount = 1;
+                            interviewTodayCount++;
                         } else if (todayDay.getTime() < interviewDate.getTime()) {
 
                             //else push in the common list
                             upcomingInterviews.push(value);
+                            upcomingInterviewCount++;
                         } else {
                             //else push in the common list
                             pastInterviews.push(value);
@@ -368,30 +371,39 @@ function processDataForJobApplications(returnedData) {
             renderIndividualCandidateCard(value, null, view_applied_candidate);
         });
 
+
         $('.tooltipped').tooltip({delay: 50});
 
         if(pendingCount == 0){
+            $("#pendingCount").hide();
             $("#noPendingApplication").show();
         } else{
             $("#noPendingApplication").hide();
-            $("#pendingCount").html(pendingCount);
-            $("#pendingCount").show();
+            if(actionNeededCount > 0){
+                $("#pendingCount").html(actionNeededCount);
+                $("#pendingCount").show();
+            } else{
+                $("#pendingCount").hide();
+            }
         }
 
         if(confirmedCount == 0){
+            $("#confirmedCount").hide();
             $("#noConfirmedApplication").show();
         } else{
             $("#noConfirmedApplication").hide();
-            $("#confirmedCount").html(confirmedCount/2);
-            $("#confirmedCount").show();
+            if((interviewTodayCount + upcomingInterviewCount) > 0){
+                $("#confirmedCount").html((interviewTodayCount + upcomingInterviewCount));
+                $("#confirmedCount").show();
+            } else{
+                $("#confirmedCount").show();
+            }
         }
 
         if(completedCount == 0){
             $("#noCompletedApplication").show();
         } else{
             $("#noCompletedApplication").hide();
-            $("#completedCount").html(completedCount);
-            $("#completedCount").show();
         }
 
         try {
