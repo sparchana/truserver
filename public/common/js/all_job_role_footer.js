@@ -32,11 +32,10 @@ function processDataCheckAllJobRoles(jobPostJobRoles) {
                     jobAnchorFooter.style = "font-size: 12px";
                     jobAnchorFooter.onclick = function () {
                         var jobRoleName = jobRoleItem.jobName;
-
                         var jobRoleId = jobRoleItem.jobRoleId;
-                        var jobPostBreak = jobRoleName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
+                        var jobPostBreak = jobRoleName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '-');
                         jobPostBreak = jobPostBreak.toLowerCase();
-                        window.location.href = "/job/" + jobPostBreak + "_jobs" + "-" + jobRoleId;
+                        window.location.href = "/jobs/" + jobPostBreak + "-jobs-"+ jobRoleId;
                     };
                     var jobRoleNameFooter = document.createElement("div");
                     jobRoleNameFooter.id = "jobRoleNameFooter";

@@ -39,7 +39,6 @@ function processDataCheckJobs(returnedData) {
         jobArray.push(item);
     });
 }
-
 $(function() {
     $('a[href*="#"]:not([href="#"])').click(function() {
         if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
@@ -485,12 +484,12 @@ function processDataAllJobPosts(returnedData) {
                 applyBtn.textContent = "View & Apply";
                 applyBtnDiv.appendChild(applyBtn);
                 applyBtn.onclick=function(){
-                    var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
+                    var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
                     jobPostBreak = jobPostBreak.toLowerCase();
-                    var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
+                    var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
                     jobCompany = jobCompany.toLowerCase();
                     try {
-                        window.location.href = "/jobs/" + jobPostBreak + "-bengaluru-" + jobCompany + "-" + jobPost.jobPostId;
+                        window.location.href = "/jobs/" + jobPostBreak + "-jobs-in-bengaluru-at-" + jobCompany + "-" + jobPost.jobPostId;
                     } catch (exception) {
                         console.log("exception occured!!" + exception);
                     }

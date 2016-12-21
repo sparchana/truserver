@@ -3,7 +3,15 @@
 <script type="text/javascript" src="/assets/common/js/reset_password.js"></script>
 <script type="text/javascript" src="/assets/common/js/validation.js"></script>
 <script type="text/javascript" src="/assets/common/js/login.js"></script>
-
+<script>
+    function renderShowJobsPage(){
+        try {
+            window.location.href = "/jobs/" +"jobs-in-bangalore";
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+</script>
 
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container">
@@ -29,7 +37,7 @@
                         </a>
                     </li>
                     <li> <a href="/"><font id="navItem1" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">HOME</font></a></li>
-                    <li> <a href="/showJobs"><font id="navItem2" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">APPLY TO JOBS</font></a></li>
+                    <li> <a href="#" onclick="renderShowJobsPage()"><font id="navItem2" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">APPLY TO JOBS</font></a></li>
                     <li> <a href="/recruiter" target="_blank">
                         <font id="navItem4" color="#0065a4"  style="font-size: 12px; letter-spacing: 1px;">FOR EMPLOYERS</font></a></li>
                     <li> <a href="/partner">

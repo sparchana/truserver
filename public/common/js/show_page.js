@@ -127,13 +127,13 @@ $(document).ready(function(){
     var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
     allJobDetailPageUrlBreak.reverse();
     var splitString = allJobDetailPageUrlBreak[0].split("-");
+
     $("#sectionOne").css("background-image","linear-gradient(rgba(24, 26, 45, 0.4),rgba(24, 26, 45, 0.4))" +
-        ",url(/assets/common/img/"+splitString[1]+".png)");
+        ",url(/assets/common/img/"+splitString[splitString.length-1]+".png)");
     try {
-        console.log("")
         $.ajax({
             type: "GET",
-            url: "/jobs/" + splitString[0] +"/"+ splitString[1]+"?i=" + index,
+            url: "/jobs/" + splitString[0] +"/"+ splitString[splitString.length-1]+"?i=" + index,
             contentType: "application/json; charset=utf-8",
             data: false,
             processData: false,
@@ -160,7 +160,7 @@ function getAllJobs(index) {
     try {
         $.ajax({
             type: "GET",
-            url: "/jobs/" + splitString[0] +"/"+ splitString[1]+"?i=" + index,
+            url: "/jobs/" + splitString[0] +"/"+ splitString[splitString.length-1]+"?i=" + index,
             contentType: "application/json; charset=utf-8",
             data: false,
             processData: false,
@@ -238,11 +238,10 @@ function processDataForSelectedJobPost(returnedData) {
         temp = conTitle[i].charAt(0).toUpperCase() + conTitle[i].substring(1);
         showTitle +=temp + " ";
     }
-    var splitString = showTitle.split("-")
-    var decodedJobRoleName = splitString[0].replace(/%20/g, " ");
-        $('#jobTitleLine').html("Register for "+ decodedJobRoleName);
-        $('#jobRoleTitle').html("Register for "+ decodedJobRoleName);
-        $('#applyToJobsTitle').html("Apply to "+ decodedJobRoleName);
+    var splitString = showTitle.split("-");
+        $('#jobTitleLine').html("Register for "+ splitString[0]);
+        $('#jobRoleTitle').html("Register for "+ splitString[0]);
+        $('#applyToJobsTitle').html("Apply to "+ splitString[0]);
         var jobPostCount = Object.keys(jobPostList).length;
             if (jobPostCount > 0) {
                 var numberOfPages = parseInt(returnedData.totalJobs)/5;
@@ -547,7 +546,7 @@ function processDataForSelectedJobPost(returnedData) {
                                 var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
                                 jobCompany = jobCompany.toLowerCase();
                                 try {
-                                    window.location.href = "/jobs/" + jobPostBreak + "-bengaluru-" + jobCompany + "-" + jobPost.jobPostId;
+                                    window.location.href = "/jobs/" + jobPostBreak + "-jobs-in-bengaluru-at-" + jobCompany + "-" + jobPost.jobPostId;
                                 } catch (exception) {
                                     console.log("exception occured!!" + exception.stack);
                                 }

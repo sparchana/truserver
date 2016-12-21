@@ -184,11 +184,9 @@ GET         /navBar                                                       contro
 GET         /navBarLoggedIn                                               controllers.Application.renderPageNavBarLoggedIn()
 GET         /footer                                                       controllers.Application.renderPageFooter()
 GET         /jobPostCardView                                              controllers.Application.renderJobPostCards()
-GET         /showJobs                                                     controllers.Application.renderShowAllJobs()
 GET         /pageNotFound                                                 controllers.Application.pageNotFound()
-GET         /jobs/:jobTitleString                                         controllers.Application.renderJobPostDetails( jobTitleString: String)
+GET         /jobs/:jobTitleString                                         controllers.Application.renderJobRelatedPages( jobTitleString: String)
 GET         /job/:jobTitle/:jobLocation/:jobCompany/:jobId                controllers.Application.getJobPostDetails( jobTitle: String , jobLocation : String , jobCompany :String , jobId : Long )
-GET         /job/:jobTitleString                                          controllers.Application.renderJobRoleJobPage(jobTitleString : String)
 GET         /jobs/:rolePara/:idPara                                       controllers.Application.getJobRoleWiseJobPosts( rolePara: String, idPara:Long ,i:java.lang.Long ?=null)
 
 # Both support and user

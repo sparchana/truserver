@@ -92,7 +92,7 @@ $(document).ready(function(){
     try {
             $.ajax({
                 type: "GET",
-                url: "/job/"+ splitString[0] + "/"+splitString[1] +"/"+splitString[2]+"/"+splitString[3],
+                url: "/job/"+ splitString[0]  + "/"+splitString[1] +"/"+splitString[2]+"/"+ jobPostIdRender,
                 contentType: "application/json; charset=utf-8",
                 data: false,
                 processData: false,
