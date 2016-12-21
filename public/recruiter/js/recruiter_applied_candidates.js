@@ -919,3 +919,7 @@ function notifyError(msg){
 function notifySuccess(msg){
     Materialize.toastSuccess(msg, 3000, 'rounded');
 }
+
+function closeFeedbackModal() {
+    $("#addFeedback").closeModal();
+}

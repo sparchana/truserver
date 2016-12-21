@@ -382,7 +382,6 @@ function closeFeedbackModal() {
     $("#addFeedback").closeModal();
 }
 
-
 function checkRecruiterLogin() {
     try {
         $.ajax({
