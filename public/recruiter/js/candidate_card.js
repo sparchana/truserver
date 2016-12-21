@@ -7,11 +7,40 @@ var view_unlocked_candidate = 2;
 var view_applied_candidate = 3;
 var view_tracking_candidate = 4;
 
+/* variables, flags and lists for applied candidate use case */
+var pendingParent = $("#pendingCandidateContainer");
+var confirmedParent = $("#confirmedCandidateContainer");
+var completedParent = $("#completedCandidateContainer");
+
+var acceptInterviewFlag = false;
+var contactCandidatesFlag = false;
+var pendingConfirmationFlag = false;
+var rejectedListFlag = false;
+var interviewTodayListFlag = false;
+var upcomingInterviewsFlag = false;
+var pastInterviewsFlag = false;
+var completedInterviewsFlag = false;
+
+var actionNeeded = false;
+var showStatusFlag = false;
+
+var pendingCount = 0;
+var confirmedCount = 0;
+var completedCount = 0;
+var approvalCount = 0;
+
+var interviewTodayCount = 0;
+var actionNeededCount = 0;
+
+// Method to generate individual candidate card
 function renderIndividualCandidateCard(value, parent, view) {
+
+    //candidate card
     var candidateCard = document.createElement("div");
     candidateCard.className = "card";
-    parent.append(candidateCard);
-/*
+
+    showStatusFlag = view == view_tracking_candidate;
+
     //since applied candidate has 3 different parent to append to, we are computing the parent inside this method only, so else part is for applied candidates
     if(view != view_applied_candidate){
 
@@ -19,11 +48,14 @@ function renderIndividualCandidateCard(value, parent, view) {
         parent.append(candidateCard);
     } else{
 
-        //segregation
+        //since we have 3 parents for applied candidate card, we are computing it inside this else part
+        //segregation of applications
         actionNeeded = false;
         if(value.extraData.workflowStatus != null){
             if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED){
-                if(!acceptInterviewFlag){
+
+                // actionNeeded section [pending tab]
+                if(!acceptInterviewFlag){ //checking if the accept reject hearderRibbon exists or not
                     var actionNeededHeader = document.createElement("div");
                     actionNeededHeader.textContent = "Application(s) awaiting your confirmation : Please confirm below application(s)";
                     actionNeededHeader.className = "headerRibbon";
@@ -35,8 +67,11 @@ function renderIndividualCandidateCard(value, parent, view) {
                 pendingCount++;
                 approvalCount++;
                 actionNeeded = true;
+
             } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE) {
-                if(!pendingConfirmationFlag){
+
+                // pending candidate confirmation for all rescheduled applications [pending tab]
+                if(!pendingConfirmationFlag){ //checking if the rescheduled hearderRibbon exists or not
                     var pendingConfirmationHeader = document.createElement("div");
                     pendingConfirmationHeader.textContent = "You have rescheduled below application(s) : Awaiting candidate's response";
                     pendingConfirmationHeader.className = "headerRibbon";
@@ -55,6 +90,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                 var interviewMonth = interviewDate.getMonth() + 1;
 
                 //checking today's interview, if yes, it should be on top
+                // today's lined up applications/interview [confirmed tab]
                 if((todayDay.getDate() == interviewDay) && ((todayDay.getMonth() + 1) == interviewMonth)){
 
                     if(!interviewTodayListFlag){
@@ -65,10 +101,13 @@ function renderIndividualCandidateCard(value, parent, view) {
                         confirmedParent.append(interviewTodayHeader);
                         interviewTodayListFlag = true;
                     }
+
+                    showStatusFlag = true;
                     confirmedParent.append(candidateCard);
                     confirmedCount++;
                 } else if(todayDay.getTime() < interviewDate.getTime()){
 
+                    // upcoming interviews [confirmed tab]
                     if(!upcomingInterviewsFlag){
                         var upcomingInterviewHeader = document.createElement("div");
                         upcomingInterviewHeader.textContent = "Upcoming interview(s)";
@@ -80,6 +119,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                     confirmedParent.append(candidateCard);
                     confirmedCount++;
                 } else{
+                    // past interviews interviews [confirmed tab]
                     if(!pastInterviewsFlag){
                         var pastInterviewHeader = document.createElement("div");
                         pastInterviewHeader.textContent = "Past interview(s) : Please update your feedback";
@@ -95,6 +135,8 @@ function renderIndividualCandidateCard(value, parent, view) {
                 confirmedParent.append(candidateCard);
                 confirmedCount++;
             } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT || value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
+
+                // rejected/not shortlisted applications [pending tab]
                 if(!rejectedListFlag){
                     var rejectedHeader = document.createElement("div");
                     rejectedHeader.textContent = "You have not shortlisted the below candidates for interview";
@@ -107,6 +149,8 @@ function renderIndividualCandidateCard(value, parent, view) {
                 pendingParent.append(candidateCard);
                 pendingCount++;
             } else if(value.extraData.workflowStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
+
+                // completed interviews [completed tab]
                 if(!completedInterviewsFlag){
                     var completedHeader = document.createElement("div");
                     completedHeader.textContent = "Completed Interview(s)";
@@ -118,6 +162,8 @@ function renderIndividualCandidateCard(value, parent, view) {
                 completedParent.append(candidateCard);
                 completedCount++;
             } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_PRESCREEN_COMPLETED){
+
+                // interview not scheduled applications. Manual contact section [pending tab]
                 if(!contactCandidatesFlag){
                     contactCandidateHeader = document.createElement("div");
                     contactCandidateHeader.textContent = "Candidate has not scheduled interview for below applications: Unlock contact to talk to the candidate(s)";
@@ -129,6 +175,8 @@ function renderIndividualCandidateCard(value, parent, view) {
                 pendingParent.append(candidateCard);
                 pendingCount++;
             } else {
+
+                // [Default applications] interview not scheduled applications. Manual contact section [pending tab]
                 if(!contactCandidatesFlag){
                     contactCandidateHeader = document.createElement("div");
                     contactCandidateHeader.textContent = "Candidate has not scheduled interview for below applications: Unlock contact to talk to the candidate(s)";
@@ -143,6 +191,8 @@ function renderIndividualCandidateCard(value, parent, view) {
                 actionNeeded = true;
             }
         } else{
+
+            // [Default applications] interview not scheduled applications. Manual contact section [pending tab]
             if(!contactCandidatesFlag){
                 var contactCandidateHeader = document.createElement("div");
                 contactCandidateHeader.textContent = "Candidate has not scheduled interview for below applications: Unlock contact to talk to the candidate(s)";
@@ -154,9 +204,7 @@ function renderIndividualCandidateCard(value, parent, view) {
             pendingParent.append(candidateCard);
             pendingCount++;
         }
-
     }
-*/
 
 
     var candidateCardContent = document.createElement("div");
@@ -233,14 +281,14 @@ function renderIndividualCandidateCard(value, parent, view) {
             expVal = "Fresher";
         } else{
             var yrs = parseInt(value.candidate.candidateTotalExperience/12);
-            var mnths = (value.candidate.candidateTotalExperience) % 12;
+            var months = (value.candidate.candidateTotalExperience) % 12;
 
             if(yrs == 0){
-                expVal = "Experienced [" + mnths + " months]";
-            } else if(mnths == 0){
+                expVal = "Experienced [" + months + " months]";
+            } else if(months == 0){
                 expVal = "Experienced [" + + yrs + " year(s)]";
             } else{
-                expVal = "Experienced [" + + yrs + " year(s) and " + mnths + " months]";
+                expVal = "Experienced [" + + yrs + " year(s) and " + months + " months]";
             }
         }
     } else{
@@ -791,7 +839,7 @@ function renderIndividualCandidateCard(value, parent, view) {
 
     inlineBlockDiv.appendChild(candidateShiftPref);
 
-    var hr = document.createElement("hr");
+    hr = document.createElement("hr");
     hr.style = "margin: 8px";
     candidateCardContent.appendChild(hr);
 
@@ -826,11 +874,11 @@ function renderIndividualCandidateCard(value, parent, view) {
         innerInlineBlockDiv = document.createElement("div");
         innerInlineBlockDiv.style = "color: #9f9f9f; font-size: 10px";
         innerInlineBlockDiv.textContent = "Interview Details";
-        /*if(actionNeeded){
-            innerInlineBlockDiv.style = "margin-left: 4px; color: red; font-size: 10px; font-weight: bold; margin-bottom: 6px";
+        if(actionNeeded){
+            innerInlineBlockDiv.style = "color: red; font-size: 10px; font-weight: bold; margin-bottom: 6px";
             innerInlineBlockDiv.textContent = "Interview Details (Action Needed)";
 
-        }*/
+        }
         inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
         var candidateInterviewDateVal = document.createElement("span");
@@ -872,9 +920,8 @@ function renderIndividualCandidateCard(value, parent, view) {
                 candidateInterviewAcceptParent.appendChild(candidateInterviewAccept);
 
                 iconImg = document.createElement("img");
-                iconImg.src = "/assets/recruiter/img/icons/accept.svg";
-                iconImg.setAttribute('height', '18px');
-                iconImg.setAttribute('width', '14px');
+                iconImg.src = "/assets/dashboard/img/reached.svg";
+                iconImg.setAttribute('height', '24px');
                 candidateInterviewAccept.appendChild(iconImg);
 
                 var actionText = document.createElement("span");
@@ -897,9 +944,8 @@ function renderIndividualCandidateCard(value, parent, view) {
                 candidateInterviewRejectParent.appendChild(candidateInterviewReject);
 
                 iconImg = document.createElement("img");
-                iconImg.src = "/assets/recruiter/img/icons/reject.svg";
-                iconImg.setAttribute('height', '18px');
-                iconImg.setAttribute('width', '14px');
+                iconImg.src = "/assets/dashboard/img/not_going.svg";
+                iconImg.setAttribute('height', '24px');
                 candidateInterviewReject.appendChild(iconImg);
 
                 actionText = document.createElement("span");
@@ -924,9 +970,8 @@ function renderIndividualCandidateCard(value, parent, view) {
                 candidateInterviewRescheduleParent.appendChild(candidateInterviewReschedule);
 
                 iconImg = document.createElement("img");
-                iconImg.src = "/assets/recruiter/img/icons/reschedule.svg";
-                iconImg.setAttribute('height', '18px');
-                iconImg.setAttribute('width', '16px');
+                iconImg.src = "/assets/dashboard/img/reschedule.svg";
+                iconImg.setAttribute('height', '24px');
                 candidateInterviewReschedule.appendChild(iconImg);
 
                 actionText = document.createElement("span");
@@ -1027,7 +1072,8 @@ function renderIndividualCandidateCard(value, parent, view) {
     inlineBlockDiv.style = "display: inline-block; margin-right: 4px;";
     candidateCurrentStatus.appendChild(inlineBlockDiv);
 
-    if(view == view_tracking_candidate || view == view_applied_candidate){
+    //we are using this flag because we want to show candidate status only in todays interview and track interview. Hence in both these cases, we are setting the showStatusFlag as true
+    if(showStatusFlag){
         iconImg = document.createElement("img");
         iconImg.src = "/assets/recruiter/img/icons/status.svg";
         iconImg.style = "margin-top: -4px";
@@ -1091,31 +1137,33 @@ function renderIndividualCandidateCard(value, parent, view) {
     unlockContactCol.style = "text-align: right";
     unlockDivRow.appendChild(unlockContactCol);
 
-    if(view == view_tracking_candidate){
-        if(value.extraData.workflowStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
-            var feedbackBtnStatus = document.createElement("div");
-            feedbackBtnStatus.className = "feedbackVal";
-            if(value.extraData.workflowStatus.statusId == JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
-                feedbackBtnStatus.style = "background: rgb(46, 200, 102)";
-            }
-            feedbackBtnStatus.textContent = value.extraData.workflowStatus.statusTitle;
-            unlockContactCol.appendChild(feedbackBtnStatus);
-            candidateInterviewStatusVal.textContent = "Interview Completed";
-            candidateInterviewStatusVal.style = "color: green; font-weight: bold";
-        } else{
-            var today = new Date();
-            var interviewDate = new Date(value.extraData.interviewDate);
-            if(interviewDate.getTime() <= today.getTime()) { // today's schedule
-                //interview for this job is scheduled today, hence allow to update status
-                var feedbackBtn = document.createElement("a");
-                feedbackBtn.className = "waves-effect waves-light customFeedbackBtn";
-                feedbackBtn.onclick = function () {
-                    openFeedbackModal(value.candidate.candidateId);
-                };
-                feedbackBtn.textContent = "ADD FEEDBACK";
-                feedbackBtn.style = "font-size: 12px";
-                unlockContactCol.appendChild(feedbackBtn);
+    if(view == view_tracking_candidate || view == view_applied_candidate){
+        if(value.extraData.workflowStatus != null){
+            if(value.extraData.workflowStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
+                var feedbackBtnStatus = document.createElement("div");
+                feedbackBtnStatus.className = "feedbackVal";
+                if(value.extraData.workflowStatus.statusId == JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+                    feedbackBtnStatus.style = "background: rgb(46, 200, 102)";
+                }
+                feedbackBtnStatus.textContent = value.extraData.workflowStatus.statusTitle;
+                unlockContactCol.appendChild(feedbackBtnStatus);
+                candidateInterviewStatusVal.textContent = "Interview Completed";
+                candidateInterviewStatusVal.style = "color: green; font-weight: bold";
+            } else{
+                var today = new Date();
+                var interviewDate = new Date(value.extraData.interviewDate);
+                if(interviewDate.getTime() <= today.getTime()) { // today's schedule
+                    //interview for this job is scheduled today, hence allow to update status
+                    var feedbackBtn = document.createElement("a");
+                    feedbackBtn.className = "waves-effect waves-light customFeedbackBtn";
+                    feedbackBtn.onclick = function () {
+                        openFeedbackModal(value.candidate.candidateId);
+                    };
+                    feedbackBtn.textContent = "ADD FEEDBACK";
+                    feedbackBtn.style = "font-size: 12px";
+                    unlockContactCol.appendChild(feedbackBtn);
 
+                }
             }
         }
     }
@@ -1127,7 +1175,7 @@ function renderIndividualCandidateCard(value, parent, view) {
         unlockCandidateBtn.onclick = function () {
             unlockContact(value.candidate.candidateId);
         };
-        unlockCandidateBtn.style = "margin-top: -4px";
+        unlockCandidateBtn.style = "margin-top: -1px";
         unlockCandidateBtn.className = "waves-effect waves-light ascentGreen lighten-1 btn unlockBtn";
     } else if(view == view_unlocked_candidate){
         unlockCandidateBtn.className = "contactUnlocked right";
