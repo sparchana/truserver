@@ -1181,8 +1181,8 @@ function processDataForJobApplications(returnedData) {
             $(".badge").hide();
         } else {
             $(".badge").show();
-            $("#pendingApproval").addClass("newNotification").html(approvalCount + " new");
-            $("#pendingApprovalMobile").addClass("newNotification").html(approvalCount + " new");
+            $("#pendingApproval").addClass("newNotification").html(approvalCount);
+            $("#pendingApprovalMobile").addClass("newNotification").html(approvalCount);
         }
 
         if(pendingCount == 0){

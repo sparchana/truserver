@@ -273,26 +273,38 @@ public class RecruiterController {
                     // if the job post has review application set as auto-confirm the applications automatically, we will count the no. of upcoming interviews and today's interviews,
                     // else we will calculate all the scheduled application which needs action (accept, reject, reschedule)
 
+                    Date yesterday = new Date(System.currentTimeMillis() - 1000L * 60L * 60L * 24L);
+                    Date interviewDate = jpwf.getScheduledInterviewDate();
+
                     if(jpwf.getJobPost().getReviewApplication() != null){
                         if(jpwf.getJobPost().getReviewApplication() == 1){
                             if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED){
-                                Date yesterday = new Date(System.currentTimeMillis() - 1000L * 60L * 60L * 24L);
-                                Date interviewDate = jpwf.getScheduledInterviewDate();
 
                                 if(interviewDate.after(yesterday)){
                                     //here the interview upcoming and today's
                                     //we are comparing this with yesterday's date as the Date function 'date.after()' new day result
-                                    singleObject.setPendingCount(singleObject.getPendingCount()+1);
+                                    singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
                                 }
+                            } else if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
+                                singleObject.setPendingCount(singleObject.getPendingCount()+1);
                             }
                         } else{
                             if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
                                 singleObject.setPendingCount(singleObject.getPendingCount()+1);
+                            } else if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED){
+
+                                if(interviewDate.after(yesterday)){
+                                    singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
+                                }
                             }
                         }
                     } else{
                         if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
                             singleObject.setPendingCount(singleObject.getPendingCount()+1);
+                        } else if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED){
+                            if(interviewDate.after(yesterday)){
+                                singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
+                            }
                         }
                     }
                     singleObject.setTotalCount(singleObject.getTotalCount()+1);
@@ -322,17 +334,20 @@ public class RecruiterController {
     public static class RecruiterJobPostObject{
         Map<Long, JobPostWorkflow> jobPostWorkflowMap;
         int pendingCount;
+        int upcomingCount;
         int totalCount;
         JobPost jobPost;
 
         public RecruiterJobPostObject() {
             pendingCount = 0;
             totalCount = 0;
+            upcomingCount = 0;
         }
 
-        public RecruiterJobPostObject(Map<Long, JobPostWorkflow> jobPostWorkflowMap, int pendingCount, int totalCount) {
+        public RecruiterJobPostObject(Map<Long, JobPostWorkflow> jobPostWorkflowMap, int pendingCount, int totalCount, int upcomingCount) {
             this.jobPostWorkflowMap = jobPostWorkflowMap;
             this.pendingCount = pendingCount;
+            this.upcomingCount = upcomingCount;
             this.totalCount = totalCount;
         }
 
@@ -366,6 +381,14 @@ public class RecruiterController {
 
         public void setJobPost(JobPost jobPost) {
             this.jobPost = jobPost;
+        }
+
+        public int getUpcomingCount() {
+            return upcomingCount;
+        }
+
+        public void setUpcomingCount(int upcomingCount) {
+            this.upcomingCount = upcomingCount;
         }
     }
 
