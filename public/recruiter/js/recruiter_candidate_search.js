@@ -22,6 +22,8 @@ var jobPostLocalityIdList = null;
 var jobPostLanguageIdList = [];
 var distanceRadius = 10;
 
+var resultCount = 10;
+
 var counter = 0;
 
 var sortByVal = 1;
@@ -47,7 +49,7 @@ $(document).scroll(function(){
             blockApiTrigger = true;
             $("#endOfResultsDiv").hide();
             $("#loadingIcon").show();
-            counter = counter +10;
+            counter = counter + resultCount;
 
             requestServerSearchCall(sortByVal);
         }
@@ -289,7 +291,7 @@ function processDataEducation(returnedData) {
         mainDiv.appendChild(educationInput);
 
         var educationLabel = document.createElement("label");
-        educationLabel.style = "font-size: 14px";
+        educationLabel.style = "font-size: 12px";
         educationLabel.setAttribute("for", "edu_" + education.educationId);
         educationLabel.textContent = education.educationName;
         mainDiv.appendChild(educationLabel);
@@ -310,7 +312,7 @@ function processDataExperience(returnedData) {
         mainDiv.appendChild(experienceInput);
 
         var experienceLabel = document.createElement("label");
-        experienceLabel.style = "font-size: 14px";
+        experienceLabel.style = "font-size: 12px";
         experienceLabel.setAttribute("for", "exp_" + experience.experienceId);
         experienceLabel.textContent = experience.experienceType;
         mainDiv.appendChild(experienceLabel);
@@ -406,6 +408,13 @@ function resetFilters() {
     $("#filterDistance").val(10);
     $("#filterSalary").val(0);
 
+    $("#gender_filter").hide();
+    $("#experience_filter").hide();
+    $("#distance_filter").hide();
+    $("#salary_filter").hide();
+    $("#education_filter").hide();
+    $("#language_filter").hide();
+
     //resetting global variables
     maxAge = "";
     minSalary = 0;
@@ -488,7 +497,6 @@ function performSearch() {
 
         counter = 0;
         candidateSearchResultAll = [];
-        sortByVal
 
         NProgress.start();
         var d = {
@@ -534,10 +542,12 @@ function performSearch() {
 }
 
 function updateSliderVal(distanceSlider) {
+    $("#distance_filter").show();
     $("#distanceRadius").html("Within " + parseFloat(distanceSlider.value) + "kms");
 }
 
 function updateSalarySliderVal(maxSalarySelected) {
+    $("#salary_filter").show();
     $("#maxSalaryVal").html("Max Salary: ₹" + rupeeFormatSalary(parseFloat(maxSalarySelected.value)));
 }
 
@@ -559,7 +569,7 @@ function processDataMatchCandidate(returnedData) {
     if(returnedData != "0"){
         var candidateCount = Object.keys(returnedData).length;
         if(candidateCount > 0){
-            if(candidateCount < 10){
+            if(candidateCount < resultCount){
                 endOfResult = true;
                 $("#endOfResultsDiv").show();
             }
@@ -602,521 +612,9 @@ function generateCandidateCards(candidateSearchResult) {
     var parent = $("#candidateResultContainer");
 
     candidateSearchResult.forEach(function (value){
-        var candidateCard = document.createElement("div");
-        candidateCard.className = "card";
-        parent.append(candidateCard);
 
-        var candidateCardContent = document.createElement("div");
-        candidateCardContent.className = "card-content";
-        candidateCardContent.style = "padding: 0";
-        candidateCard.appendChild(candidateCardContent);
-
-        var candidateCardRow = document.createElement("div");
-        candidateCardRow.className = "row";
-        candidateCardRow.style = "padding: 6px 0 6px 0; margin: 0 2%";
-        candidateCardContent.appendChild(candidateCardRow);
-
-        var candidateCardRowColOne = document.createElement("div");
-        candidateCardRowColOne.className = "col s12 l8";
-        candidateCardRowColOne.style = "padding-top:2px";
-        candidateCardRow.appendChild(candidateCardRowColOne);
-
-        //candidate name container
-        var candidateCardRowColOneFont = document.createElement("font");
-        candidateCardRowColOneFont.setAttribute("size", "5");
-        candidateCardRowColOneFont.textContent = toTitleCase(value.candidate.candidateFullName);
-        candidateCardRowColOne.appendChild(candidateCardRowColOneFont);
-
-        var candidateCardRowColTwo = document.createElement("div");
-        candidateCardRowColTwo.className = "col s12 l4";
-        candidateCardRowColTwo.style = "padding-top:10px";
-        candidateCardRow.appendChild(candidateCardRowColTwo);
-
-        //candidate last active container
-        var candidateCardRowColTwoFont = document.createElement("font");
-        candidateCardRowColTwoFont.setAttribute("size", "3");
-        if(value.extraData.lastActive != null){
-            if(value.extraData.lastActive.lastActiveValueName != null){
-                candidateCardRowColTwoFont.textContent = "Active: " + value.extraData.lastActive.lastActiveValueName;
-            }
-        } else{
-            candidateCardRowColTwoFont.textContent = "Not Specified";
-        }
-        candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
-
-        //end of candidateCardRow
-
-        var candidateCardDivider = document.createElement("div");
-        candidateCardDivider.className = "divider";
-        candidateCardContent.appendChild(candidateCardDivider);
-
-        candidateCardRow = document.createElement("div");
-        candidateCardRow.style = "padding: 10px 2%;margin: 0";
-        candidateCardContent.appendChild(candidateCardRow);
-
-        candidateCardRowColOne = document.createElement("div");
-        candidateCardRowColOne.className = "col s12 l4";
-        candidateCardRowColOne.style = "margin-top: 4px";
-        candidateCardRow.appendChild(candidateCardRowColOne);
-
-        var inlineBlockDiv = document.createElement("div");
-        inlineBlockDiv.style = "display: inline-block; margin: 4px;";
-        candidateCardRowColOne.appendChild(inlineBlockDiv);
-
-        var iconImg = document.createElement("img");
-        iconImg.src = "/assets/recruiter/img/icons/locality.svg";
-        iconImg.style = "margin-top: -4px";
-        iconImg.setAttribute('height', '16px');
-        inlineBlockDiv.appendChild(iconImg);
-
-        inlineBlockDiv = document.createElement("div");
-        inlineBlockDiv.style = "display: inline-block;";
-        candidateCardRowColOne.appendChild(inlineBlockDiv);
-
-        var innerInlineBlockDiv = document.createElement("div");
-        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
-        innerInlineBlockDiv.textContent = "Home Locality";
-        inlineBlockDiv.appendChild(innerInlineBlockDiv);
-
-        var candidateLocalityVal = document.createElement("div");
-        candidateLocalityVal.style = "margin-left: 4px";
-        if(value.candidate.locality != null){
-            candidateLocalityVal.textContent = value.candidate.locality.localityName;
-        } else{
-            candidateLocalityVal.textContent = "Not Specified";
-        }
-        inlineBlockDiv.appendChild(candidateLocalityVal);
-
-        /* second col */
-        candidateCardRowColOne = document.createElement("div");
-        candidateCardRowColOne.className = "col s12 l4";
-        candidateCardRowColOne.style = "margin-top: 4px";
-        candidateCardRow.appendChild(candidateCardRowColOne);
-
-        inlineBlockDiv = document.createElement("div");
-        inlineBlockDiv.style = "display: inline-block; margin: 4px;";
-        candidateCardRowColOne.appendChild(inlineBlockDiv);
-
-        iconImg = document.createElement("img");
-        iconImg.src = "/assets/recruiter/img/icons/gender.svg";
-        iconImg.style = "margin-top: -4px";
-        iconImg.setAttribute('height', '16px');
-        inlineBlockDiv.appendChild(iconImg);
-
-        inlineBlockDiv = document.createElement("div");
-        inlineBlockDiv.style = "display: inline-block;";
-        candidateCardRowColOne.appendChild(inlineBlockDiv);
-
-        innerInlineBlockDiv = document.createElement("div");
-        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
-        innerInlineBlockDiv.textContent = "Gender";
-        inlineBlockDiv.appendChild(innerInlineBlockDiv);
-
-        candidateLocalityVal = document.createElement("div");
-        candidateLocalityVal.style = "margin-left: 4px";
-        if(value.candidate.candidateGender != null){
-            if(value.candidate.candidateGender == 0){
-                candidateLocalityVal.textContent = "Male";
-            } else{
-                candidateLocalityVal.textContent = "Female";
-            }
-        } else{
-            candidateLocalityVal.textContent = "Not Specified";
-        }
-        inlineBlockDiv.appendChild(candidateLocalityVal);
-
-        /* second col */
-        candidateCardRowColOne = document.createElement("div");
-        candidateCardRowColOne.className = "col s12 l4";
-        candidateCardRowColOne.style = "margin-top: 4px";
-        candidateCardRow.appendChild(candidateCardRowColOne);
-
-        inlineBlockDiv = document.createElement("div");
-        inlineBlockDiv.style = "display: inline-block; margin: 4px;";
-        candidateCardRowColOne.appendChild(inlineBlockDiv);
-
-        iconImg = document.createElement("img");
-        iconImg.src = "/assets/recruiter/img/icons/age.svg";
-        iconImg.style = "margin-top: -4px";
-        iconImg.setAttribute('height', '16px');
-        inlineBlockDiv.appendChild(iconImg);
-
-        inlineBlockDiv = document.createElement("div");
-        inlineBlockDiv.style = "display: inline-block;";
-        candidateCardRowColOne.appendChild(inlineBlockDiv);
-
-        innerInlineBlockDiv = document.createElement("div");
-        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
-        innerInlineBlockDiv.textContent = "Age";
-        inlineBlockDiv.appendChild(innerInlineBlockDiv);
-
-        var candidateAgeVal = document.createElement("div");
-        candidateAgeVal.style = "margin-left: 4px";
-        if (value.candidate.candidateDOB != null) {
-            var date = JSON.parse(value.candidate.candidateDOB);
-            var yr = new Date(date).getFullYear();
-            var month = ('0' + parseInt(new Date(date).getMonth() + 1)).slice(-2);
-            var d = ('0' + new Date(date).getDate()).slice(-2);
-            var today = new Date();
-            var birthDate = new Date(yr + "-" + month + "-" + d);
-            var age = today.getFullYear() - birthDate.getFullYear();
-            var m = today.getMonth() - birthDate.getMonth();
-            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-                age--;
-            }
-            candidateAgeVal.textContent = age + " years";
-        } else{
-            candidateAgeVal.textContent = "Not Specified";
-        }
-        inlineBlockDiv.appendChild(candidateAgeVal);
-
-        candidateCardRow = document.createElement("div");
-        candidateCardRow.style = "padding: 10px 2%;margin: 0";
-        candidateCardContent.appendChild(candidateCardRow);
-
-        candidateCardRowColOne = document.createElement("div");
-        candidateCardRowColOne.className = "col s12 l4";
-        candidateCardRowColOne.style = "margin-top: 4px";
-        candidateCardRow.appendChild(candidateCardRowColOne);
-
-        inlineBlockDiv = document.createElement("div");
-        inlineBlockDiv.style = "display: inline-block; margin: 4px;";
-        candidateCardRowColOne.appendChild(inlineBlockDiv);
-
-        iconImg = document.createElement("img");
-        iconImg.src = "/assets/recruiter/img/icons/education.svg";
-        iconImg.style = "margin-top: -4px";
-        iconImg.setAttribute('height', '16px');
-        inlineBlockDiv.appendChild(iconImg);
-
-        inlineBlockDiv = document.createElement("div");
-        inlineBlockDiv.style = "display: inline-block;";
-        candidateCardRowColOne.appendChild(inlineBlockDiv);
-
-        innerInlineBlockDiv = document.createElement("div");
-        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
-        innerInlineBlockDiv.textContent = "Education";
-        inlineBlockDiv.appendChild(innerInlineBlockDiv);
-
-        var candidateEducationVal = document.createElement("div");
-        candidateEducationVal.style = "margin-left: 4px";
-        candidateEducationVal.textContent = "Not Specified";
-        if(value.candidate.candidateEducation){
-            if(value.candidate.candidateEducation.education != null){
-                if(candidateEducationVal.textContent = value.candidate.candidateEducation.education.educationId > 3){
-                    var eduVal = value.candidate.candidateEducation.education.educationName;
-                    if(value.candidate.candidateEducation.degree != null){
-                        eduVal = eduVal + " (" + value.candidate.candidateEducation.degree.degreeName;
-                        if(value.candidate.candidateEducation.candidateEducationCompletionStatus != null){
-                            if(value.candidate.candidateEducation.candidateEducationCompletionStatus == 1){
-                                eduVal = eduVal + ", Completed)";
-                            } else{
-                                eduVal = eduVal + ", Incomplete)";
-                            }
-                        } else{
-                            eduVal = eduVal + ", Not specified)";
-                        }
-                    }
-                    candidateEducationVal.textContent = eduVal;
-                } else{
-                    candidateEducationVal.textContent = value.candidate.candidateEducation.education.educationName;
-                }
-
-            }
-        }
-        inlineBlockDiv.appendChild(candidateEducationVal);
-
-        /* second col */
-        candidateCardRowColOne = document.createElement("div");
-        candidateCardRowColOne.className = "col s12 l4";
-        candidateCardRowColOne.style = "margin-top: 4px";
-        candidateCardRow.appendChild(candidateCardRowColOne);
-
-        inlineBlockDiv = document.createElement("div");
-        inlineBlockDiv.style = "display: inline-block; margin: 4px;";
-        candidateCardRowColOne.appendChild(inlineBlockDiv);
-
-        iconImg = document.createElement("img");
-        iconImg.src = "/assets/recruiter/img/icons/exp.svg";
-        iconImg.style = "margin-top: -4px";
-        iconImg.setAttribute('height', '16px');
-        inlineBlockDiv.appendChild(iconImg);
-
-        inlineBlockDiv = document.createElement("div");
-        inlineBlockDiv.style = "display: inline-block;";
-        candidateCardRowColOne.appendChild(inlineBlockDiv);
-
-        innerInlineBlockDiv = document.createElement("div");
-        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
-        innerInlineBlockDiv.textContent = "Experience";
-        inlineBlockDiv.appendChild(innerInlineBlockDiv);
-
-        var candidateExperienceVal = document.createElement("div");
-        candidateExperienceVal.style = "margin-left: 4px";
-        if(value.candidate.candidateTotalExperience != null){
-            if(value.candidate.candidateTotalExperience == 0){
-                candidateExperienceVal.textContent = "Fresher";
-            } else{
-                var yrs = parseInt(value.candidate.candidateTotalExperience/12);
-                var mnths = (value.candidate.candidateTotalExperience) % 12;
-
-                if(yrs == 0){
-                    candidateExperienceVal.textContent = mnths + " months";
-                } else if(mnths == 0){
-                    candidateExperienceVal.textContent = yrs + " years";
-                } else{
-                    candidateExperienceVal.textContent = yrs + " years and " + mnths + " months";
-                }
-            }
-        } else{
-            candidateExperienceVal.textContent = "Not Specified";
-        }
-        inlineBlockDiv.appendChild(candidateExperienceVal);
-
-        /* second col */
-        candidateCardRowColOne = document.createElement("div");
-        candidateCardRowColOne.className = "col s12 l4";
-        candidateCardRowColOne.style = "margin-top: 4px";
-        candidateCardRow.appendChild(candidateCardRowColOne);
-
-        inlineBlockDiv = document.createElement("div");
-        inlineBlockDiv.style = "display: inline-block; margin: 4px;";
-        candidateCardRowColOne.appendChild(inlineBlockDiv);
-
-        iconImg = document.createElement("img");
-        iconImg.src = "/assets/recruiter/img/icons/salary.svg";
-        iconImg.style = "margin-top: -4px";
-        iconImg.setAttribute('height', '16px');
-        inlineBlockDiv.appendChild(iconImg);
-
-        inlineBlockDiv = document.createElement("div");
-        inlineBlockDiv.style = "display: inline-block;";
-        candidateCardRowColOne.appendChild(inlineBlockDiv);
-
-        innerInlineBlockDiv = document.createElement("div");
-        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
-        innerInlineBlockDiv.textContent = "Last Withdrawn Salary";
-        inlineBlockDiv.appendChild(innerInlineBlockDiv);
-
-        var candidateLastWithdrawnSalaryVal = document.createElement("div");
-        candidateLastWithdrawnSalaryVal.style = "margin-left: 4px";
-        if(value.candidate.candidateLastWithdrawnSalary != null){
-            if(value.candidate.candidateLastWithdrawnSalary == 0){
-                if(value.candidate.candidateTotalExperience != null){
-                    if(value.candidate.candidateTotalExperience == 0){
-                        candidateLastWithdrawnSalaryVal.textContent = " - (Fresher)";
-                    } else {
-                        candidateLastWithdrawnSalaryVal.textContent = "Not Specified";
-                    }
-                } else{
-                    candidateLastWithdrawnSalaryVal.textContent = "Not Specified";
-                }
-            } else{
-                candidateLastWithdrawnSalaryVal.textContent = "₹" + rupeeFormatSalary(value.candidate.candidateLastWithdrawnSalary);
-            }
-        } else{
-            candidateLastWithdrawnSalaryVal.textContent = "Not Specified";
-        }
-        inlineBlockDiv.appendChild(candidateLastWithdrawnSalaryVal);
-
-        candidateCardRow = document.createElement("div");
-        candidateCardRow.style = "padding: 10px 2%;margin: 0";
-        candidateCardContent.appendChild(candidateCardRow);
-
-        candidateCardRowColOne = document.createElement("div");
-        candidateCardRowColOne.className = "col s12 l4";
-        candidateCardRowColOne.style = "margin-top: 4px";
-        candidateCardRow.appendChild(candidateCardRowColOne);
-
-        inlineBlockDiv = document.createElement("div");
-        inlineBlockDiv.style = "display: inline-block; margin: 4px;";
-        candidateCardRowColOne.appendChild(inlineBlockDiv);
-
-        iconImg = document.createElement("img");
-        iconImg.src = "/assets/recruiter/img/icons/language.svg";
-        iconImg.style = "margin-top: -4px";
-        iconImg.setAttribute('height', '16px');
-        inlineBlockDiv.appendChild(iconImg);
-
-        inlineBlockDiv = document.createElement("div");
-        inlineBlockDiv.style = "display: inline-block;";
-        candidateCardRowColOne.appendChild(inlineBlockDiv);
-
-        innerInlineBlockDiv = document.createElement("div");
-        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
-        innerInlineBlockDiv.textContent = "Language(s)";
-        inlineBlockDiv.appendChild(innerInlineBlockDiv);
-
-        var candidateLanguageVal = document.createElement("div");
-        candidateLanguageVal.style = "margin-left: 4px";
-        var langList = value.candidate.languageKnownList;
-        var langListCount = Object.keys(langList).length;
-        if(langListCount > null){
-            var langVal = "";
-            langList.forEach(function (language){
-                langVal += language.language.languageName + ", ";
-            });
-            candidateLanguageVal.textContent = langVal.substring(0, langVal.length - 2);
-        } else{
-            candidateLanguageVal.textContent = "Not specified";
-        }
-        inlineBlockDiv.appendChild(candidateLanguageVal);
-
-        //skills
-        candidateCardRowColTwo = document.createElement("div");
-        candidateCardRowColTwo.className = "col s12 l4";
-        candidateCardRowColTwo.style = "margin-top: 4px";
-        candidateCardRow.appendChild(candidateCardRowColTwo);
-
-        inlineBlockDiv = document.createElement("div");
-        inlineBlockDiv.style = "display: inline-block; margin: 4px;";
-        candidateCardRowColTwo.appendChild(inlineBlockDiv);
-
-        iconImg = document.createElement("img");
-        iconImg.src = "/assets/recruiter/img/icons/skills.svg";
-        iconImg.style = "margin-top: -4px";
-        iconImg.setAttribute('height', '16px');
-        inlineBlockDiv.appendChild(iconImg);
-
-        inlineBlockDiv = document.createElement("div");
-        inlineBlockDiv.style = "display: inline-block;";
-        candidateCardRowColTwo.appendChild(inlineBlockDiv);
-
-        innerInlineBlockDiv = document.createElement("div");
-        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
-        innerInlineBlockDiv.textContent = "Skill(s)";
-        inlineBlockDiv.appendChild(innerInlineBlockDiv);
-
-        var candidateSkillVal = document.createElement("div");
-        candidateSkillVal.style = "margin-left: 4px";
-        candidateSkillVal.id = "skill_" + value.candidate.candidateId;
-        var skillList = value.candidate.candidateSkillList;
-        var skillListCount = Object.keys(skillList).length;
-        if(skillListCount > 0){
-            var skillVal = "";
-            var allSkillVal = "";
-            var count = 0;
-            var skillCount = 0;
-            skillList.forEach(function (skill){
-                count = count + 1;
-                if(count < 4){
-                    if(skill.candidateSkillResponse == true){
-                        skillVal += skill.skill.skillName + ", ";
-                        allSkillVal += skill.skill.skillName + ", ";
-                        skillCount ++;
-                    }
-                } else{
-                    if(skill.candidateSkillResponse == true){
-                        allSkillVal += skill.skill.skillName + ", ";
-                    }
-                }
-            });
-            candidateSkillVal.textContent = skillVal.substring(0, skillVal.length - 2);
-        } else{
-            candidateSkillVal.textContent = "Not specified";
-        }
-        inlineBlockDiv.appendChild(candidateSkillVal);
-
-        if(skillCount > 3){
-            var toolTip = document.createElement("a");
-            toolTip.className = "tooltipped";
-            toolTip.style = "cursor: pointer; text-decoration: none";
-            toolTip.setAttribute("data-postiton", "top");
-            toolTip.setAttribute("data-delay", "50");
-            toolTip.setAttribute("data-tooltip", allSkillVal.substring(0, allSkillVal.length - 2));
-            toolTip.textContent = ", more";
-            candidateSkillVal.appendChild(toolTip);
-        }
-
-        if(skillCount == 0){
-            candidateSkillVal.textContent = "Not specified";
-        }
-
-        //documents
-        var candidateCardRowColThree = document.createElement("div");
-        candidateCardRowColThree.className = "col s12 l4";
-        candidateCardRowColThree.style = "margin-top: 4px";
-        candidateCardRow.appendChild(candidateCardRowColThree);
-
-        inlineBlockDiv = document.createElement("div");
-        inlineBlockDiv.style = "display: inline-block; margin: 4px;";
-        candidateCardRowColThree.appendChild(inlineBlockDiv);
-
-        iconImg = document.createElement("img");
-        iconImg.src = "/assets/recruiter/img/icons/document.svg";
-        iconImg.style = "margin-top: -4px";
-        iconImg.setAttribute('height', '16px');
-        inlineBlockDiv.appendChild(iconImg);
-
-        inlineBlockDiv = document.createElement("div");
-        inlineBlockDiv.style = "display: inline-block;";
-        candidateCardRowColThree.appendChild(inlineBlockDiv);
-
-        innerInlineBlockDiv = document.createElement("div");
-        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
-        innerInlineBlockDiv.textContent = "Documents(s)";
-        inlineBlockDiv.appendChild(innerInlineBlockDiv);
-
-        var candidateDocumentVal = document.createElement("div");
-        candidateDocumentVal.style = "margin-left: 4px; margin-bottom: 12px";
-        candidateDocumentVal.id = "document_" + value.candidate.candidateId;
-
-        var documentList = value.candidate.idProofReferenceList;
-        var documentListCount = Object.keys(documentList).length;
-
-        if(documentListCount > 0){
-            var allDocumentVal = "";
-            var documentVal = "";
-            var count = 0;
-            documentList.forEach(function (document){
-                count = count +1;
-                if(count < 4){
-                    if(document.idProof != null){
-                        documentVal += document.idProof.idProofName + ", ";
-                        allDocumentVal += document.idProof.idProofName + ", ";
-                    }
-                } else{
-                    allDocumentVal += document.idProof.idProofName + ", ";
-                }
-            });
-            candidateDocumentVal.textContent = documentVal.substring(0, documentVal.length - 2);
-        } else{
-            candidateDocumentVal.textContent = "Not specified";
-        }
-        inlineBlockDiv.appendChild(candidateDocumentVal);
-
-        if(documentListCount > 3){
-            var toolTip = document.createElement("a");
-            toolTip.className = "tooltipped";
-            toolTip.style = "cursor: pointer; text-decoration: none";
-            toolTip.setAttribute("data-postiton", "top");
-            toolTip.setAttribute("data-delay", "50");
-            toolTip.setAttribute("data-tooltip", allDocumentVal.substring(0, allDocumentVal.length - 2));
-            toolTip.textContent = ", more";
-            candidateSkillVal.appendChild(toolTip);
-        }
-
-
-        var unlockDivRow = document.createElement("div");
-        unlockDivRow.className = "row";
-        unlockDivRow.style = "margin: 2%; padding: 1%; text-align: right; color: #fff";
-        candidateCardContent.appendChild(unlockDivRow);
-
-        //unlock candidate div
-        var unlockCandidateBtn = document.createElement("div");
-        unlockCandidateBtn.id = "unlock_candidate_" + value.candidate.candidateId;
-        unlockCandidateBtn.onclick = function () {
-            unlockContact(value.candidate.candidateId);
-        };
-        unlockCandidateBtn.className = "waves-effect waves-light ascentGreen lighten-1 btn";
-        unlockDivRow.appendChild(unlockCandidateBtn);
-
-        //candidate last active container
-        var candidateUnlockFont = document.createElement("font");
-        candidateUnlockFont.id = "candidate_" + value.candidate.candidateId;
-        candidateUnlockFont.textContent = "Unlock Contact";
-        candidateUnlockFont.style = "font-weight: bold; font-size: 14px";
-        unlockCandidateBtn.appendChild(candidateUnlockFont);
+        //calling render candidate card method to render candidate card
+        renderIndividualCandidateCard(value, parent, view_search_candidate);
     });
     $('.tooltipped').tooltip({delay: 50});
 
@@ -1320,5 +818,53 @@ function showFilter() {
         $('#sortMainBox').hide();
         countFilter = 0;
     }
+
+}
+
+//onchange filter to update filter marker
+jQuery(function($){
+    $("input[name=filterGender]:radio").change(function () {
+        $("#gender_filter").show();
+    });
+});
+
+function checkOnFilterChange(){
+    //education filter
+    var selectedEducation = [];
+    $('#educationFilterDiv input:checked').each(function() {
+        selectedEducation.push(parseInt($(this).attr('value')));
+    });
+    if(selectedEducation.length > 0){
+        console.log("Here");
+        $("#education_filter").show();
+    } else{
+        console.log("there");
+
+        $("#education_filter").hide();
+    }
+
+    //experience filter
+    var selectedExperience = [];
+    $('#experienceFilterDiv input:checked').each(function() {
+        selectedExperience.push(parseInt($(this).attr('value')));
+    });
+    if(selectedExperience.length > 0){
+        $("#experience_filter").show();
+    } else{
+        $("#experience_filter").hide();
+    }
+
+
+    //language filter
+    var selectedLanguage = [];
+    $('#languageFilterDiv input:checked').each(function() {
+        selectedLanguage.push(parseInt($(this).attr('value')));
+    });
+    if(selectedLanguage.length > 0){
+        $("#language_filter").show();
+    } else{
+        $("#language_filter").hide();
+    }
+
 
 }
