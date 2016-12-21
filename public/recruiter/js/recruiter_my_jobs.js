@@ -10,8 +10,8 @@ $(window).load(function() {
             $(".badge").hide();
         } else{
             $(".badge").show();
-            $("#pendingApproval").addClass("newNotification").html(newCount + " new");
-            $("#pendingApprovalMobile").addClass("newNotification").html(newCount + " new");
+            $("#pendingApproval").addClass("newNotification").html(newCount);
+            $("#pendingApprovalMobile").addClass("newNotification").html(newCount);
         }
         $(".jobNav").addClass("active");
         $(".jobNavMobile").addClass("active");
@@ -184,6 +184,11 @@ function processDataGenerateJobPostView(returnedData) {
                 newApplication.className = "newCounter";
                 colApplicant.appendChild(newApplication);
 
+                var upcomingCounter = document.createElement('div');
+                upcomingCounter.style = "margin-top: 4px";
+                upcomingCounter.className = "newCounter";
+                colApplicant.appendChild(upcomingCounter);
+
                 var colJobStatus = document.createElement("div");
                 colJobStatus.className = 'col s12 m1 l1';
                 colJobStatus.style = 'margin-top:8px';
@@ -213,7 +218,11 @@ function processDataGenerateJobPostView(returnedData) {
                 if(jobPost.pendingCount > 0){
                     newApplication.textContent = " (" + jobPost.pendingCount + " new)";
                 }
+                if(jobPost.upcomingCount > 0){
+                    upcomingCounter.textContent = " (" + jobPost.upcomingCount + " upcoming)";
+                }
                 newCount += jobPost.pendingCount;
+                newCount += jobPost.upcomingCount;
                 applicantBtn.style = 'text-align: center; font-weight: bold';
                 if(jobPost.totalCount > 0){
                     applicantBtn.className = 'btn-floating btn-small waves-effect waves-light green accent-3';

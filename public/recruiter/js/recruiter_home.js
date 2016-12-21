@@ -19,8 +19,8 @@ $(window).load(function() {
             $(".badge").hide();
         } else{
             $(".badge").show();
-            $("#pendingApproval").addClass("newNotification").html(newCount + " new");
-            $("#pendingApprovalMobile").addClass("newNotification").html(newCount + " new");
+            $("#pendingApproval").addClass("newNotification").html(newCount);
+            $("#pendingApprovalMobile").addClass("newNotification").html(newCount);
         }
     }, 100);
 });
@@ -141,6 +141,7 @@ function processDataGetJobPostDetails(returnedData) {
     var jpId = [];
     jobPostList.forEach(function (jobPost) {
         newCount += jobPost.pendingCount;
+        newCount += jobPost.upcomingCount;
         jpId.push(parseInt(jobPost.jobPost.jobPostId));
     });
 
