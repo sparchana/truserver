@@ -471,7 +471,7 @@ public class RecruiterController {
                     //getting limited results
                     for (CandidateWorkflowData val : listToBeReturned) {
                         if(count >= matchingCandidateRequest.getInitialValue()){
-                            if(count < (matchingCandidateRequest.getInitialValue()+10) ){
+                            if(count < (matchingCandidateRequest.getInitialValue() + 10) ){
                                 val.getCandidate().setCandidateMobile("");
                                 val.getCandidate().setCandidateEmail("");
                                 finalListToBeReturned.add(val);
