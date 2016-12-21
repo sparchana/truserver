@@ -288,6 +288,18 @@ public class CandidateService
                             candidate.setLocality(locality);
                             resetLocalityAndJobPref(candidate, getCandidateLocalityPreferenceList(localityList, candidate), getCandidateJobPreferenceList(jobsList, candidate));
                         }
+                    } else {
+                        if(candidateSignUpRequest.getCandidateHomeLocality() != null){
+                            Locality locality = Locality.find.where().eq("localityId", candidateSignUpRequest.getCandidateHomeLocality()).findUnique();
+                            if(locality != null){
+                                candidate.setLocality(locality);
+                                candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
+                            }
+                        }
+                        if(jobsList != null){
+                            candidate.setJobPreferencesList(getCandidateJobPreferenceList(jobsList, candidate));
+                        }
+
                     }
 
                     // triggers when candidate is self created
