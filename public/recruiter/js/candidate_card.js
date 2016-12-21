@@ -105,6 +105,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                     showStatusFlag = true;
                     confirmedParent.append(candidateCard);
                     confirmedCount++;
+                    approvalCount++;
                 } else if(todayDay.getTime() < interviewDate.getTime()){
 
                     // upcoming interviews [confirmed tab]
@@ -118,6 +119,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                     }
                     confirmedParent.append(candidateCard);
                     confirmedCount++;
+                    approvalCount++;
                 } else{
                     // past interviews interviews [confirmed tab]
                     if(!pastInterviewsFlag){
