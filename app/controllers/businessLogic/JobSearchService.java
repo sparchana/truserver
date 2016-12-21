@@ -100,21 +100,56 @@ public class JobSearchService {
                         ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
 
                 if (sortBy == ServerConstants.SORT_DEFAULT) {
-                    resultJobPosts.addAll(sortByDistance(exactJobsWithinDistance));
-                    resultJobPosts.addAll(sortByDistance(relatedJobsWithinDistance));
+                    //segregation
+                    resultJobPosts = sortJobPostListAccordingToHotJobs(sortByDistance(exactJobsWithinDistance), sortByDistance(relatedJobsWithinDistance));
+
                 }
                 else {
-                    resultJobPosts.addAll(exactJobsWithinDistance);
-                    resultJobPosts.addAll(relatedJobsWithinDistance);
+                    //segregation
+                    resultJobPosts = sortJobPostListAccordingToHotJobs(exactJobsWithinDistance, relatedJobsWithinDistance);
                 }
             }
             else {
-                resultJobPosts.addAll(exactJobRoleJobs);
-                resultJobPosts.addAll(relatedJobRoleJobs);
+                //segregation
+                resultJobPosts = sortJobPostListAccordingToHotJobs(exactJobRoleJobs, relatedJobRoleJobs);
             }
         }
 
         return resultJobPosts;
+    }
+
+    public static List<JobPost> sortJobPostListAccordingToHotJobs(List<JobPost> exactJobPostList, List<JobPost> relevantJobPostList){
+        List<JobPost> finalList = new ArrayList<>();
+
+        List<JobPost> exactHotJobs = new ArrayList<>();
+        List<JobPost> exactOtherJobs = new ArrayList<>();
+
+        List<JobPost> relevantHotJobs = new ArrayList<>();
+        List<JobPost> relevantOtherJobs = new ArrayList<>();
+
+        //segregation
+        for(JobPost jobPost : exactJobPostList){
+            if(jobPost.getJobPostIsHot()){
+                exactHotJobs.add(jobPost);
+            } else{
+                exactOtherJobs.add(jobPost);
+            }
+        }
+
+        for(JobPost jobPost : relevantJobPostList){
+            if(jobPost.getJobPostIsHot()){
+                relevantHotJobs.add(jobPost);
+            } else{
+                relevantOtherJobs.add(jobPost);
+            }
+        }
+
+        finalList.addAll(exactHotJobs);
+        finalList.addAll(exactOtherJobs);
+        finalList.addAll(relevantHotJobs);
+        finalList.addAll(relevantOtherJobs);
+
+        return finalList;
     }
 
 
@@ -367,6 +402,8 @@ public class JobSearchService {
             }
         }
 
+        query = query.orderBy().desc("JobPostIsHot");
+
         if(sortBy != null){
             if (sortBy == SORT_BY_DATE_POSTED) {
                 query = query.orderBy().desc("jobPostCreateTimestamp");
@@ -445,6 +482,7 @@ public class JobSearchService {
                                           .setFirstRow(Math.toIntExact(index))
                                           .setMaxRows(5)
                                           .orderBy().asc("source")
+                                          .orderBy().desc("jobPostIsHot")
                                           .orderBy().desc("jobPostUpdateTimestamp")
                                           .findPagedList();
             List<JobPost> jobPostList = pagedList.getList();
