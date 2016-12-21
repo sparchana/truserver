@@ -40,7 +40,9 @@ function processDataForUnlockedCandidates(returnedData) {
             returnedData.reverse();
 
             returnedData.forEach(function (value){
-                renderIndividualCandidateCard(value, parent, 2);
+
+                //calling render candidate card method to render candidate card
+                renderIndividualCandidateCard(value, parent, view_unlocked_candidate);
             });
             $('.tooltipped').tooltip({delay: 50});
         }

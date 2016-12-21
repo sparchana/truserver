@@ -319,7 +319,11 @@ function processDataForJobApplications(returnedData) {
         actionNeeded = false;
 
         candidateList.forEach(function (value){
-            renderIndividualCandidateCard(value, null, 3);
+
+            //calling render candidate card method to render candidate card
+
+            //passing parent as null here because in this case we have 3 different parents. The parent is computed in the method itself
+            renderIndividualCandidateCard(value, null, view_applied_candidate);
         });
 
         $('.tooltipped').tooltip({delay: 50});

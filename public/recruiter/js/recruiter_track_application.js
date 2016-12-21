@@ -186,7 +186,9 @@ function processDataForJobApplications(returnedData) {
                 if((todayDay.getDate() == interviewDay) && ((todayDay.getMonth() + 1) == interviewMonth)){
                     if(value.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE){
                         candidateCount ++;
-                        renderIndividualCandidateCard(value, parent, 4);
+
+                        //calling render candidate card method to render candidate card
+                        renderIndividualCandidateCard(value, parent, view_tracking_candidate);
                     }
                     $('.tooltipped').tooltip({delay: 50});
                 }

@@ -612,7 +612,9 @@ function generateCandidateCards(candidateSearchResult) {
     var parent = $("#candidateResultContainer");
 
     candidateSearchResult.forEach(function (value){
-        renderIndividualCandidateCard(value, parent, 1);
+
+        //calling render candidate card method to render candidate card
+        renderIndividualCandidateCard(value, parent, view_search_candidate);
     });
     $('.tooltipped').tooltip({delay: 50});
 
