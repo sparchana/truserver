@@ -159,6 +159,8 @@ public class ServerConstants {
     public static final String PROFILE_REQUIREMENT_TABLE_GENDER = "gender";
     public static final String PROFILE_REQUIREMENT_TABLE_LOCATION = "locality";
     public static final String PROFILE_REQUIREMENT_TABLE_WORKTIMINGS = "worktimings";
+    public static final int REVIEW_APPLICATION_MANUAL = 0;
+    public static final int REVIEW_APPLICATION_AUTO = 1;
     public static Map<String, String> devTeamMobile;
 
     // rec sorting keys
@@ -185,6 +187,7 @@ public class ServerConstants {
         devTeamEmail.put("Sandy", "sandeep.kumar@trujobs.in");
         devTeamEmail.put("Rafik", "rafik.khadar@trujobs.in");
         devTeamEmail.put("Chillu", "sandeep@trujobs.in");
+        devTeamEmail.put("techAdmin", "techadmin@trujobs.in");
     }
 
     public static final Double DEFAULT_MATCHING_ENGINE_RADIUS = 10.0; // In Kilometers

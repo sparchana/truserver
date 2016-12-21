@@ -653,12 +653,14 @@ function saveEditedResponses(candidateId, propId, jobPostId, isSupport) {
         var c_dob = String(selectedDob);
         var selectedDate = new Date(c_dob);
         var toDate = new Date();
-        var pastDate= new Date(toDate.setFullYear(toDate.getFullYear() - 18));
-        var zombieYear = new Date(toDate.setFullYear(toDate.getFullYear() - 70));
+        var pastDate= new Date(toDate.setFullYear(toDate.getFullYear() - 18)); // ex: if current year: 2016 || pastDate: 1998
+        toDate =  new Date(); //reset toDate to current Date
+        var zombieYear = new Date(toDate.setFullYear(toDate.getFullYear() - 70)); // ex: if current year: 2016  || zombieYear: 1928
+        toDate =  new Date(); //reset toDate to current Date
         if (selectedDate >= pastDate) {
             dobCheck = 0;
         }
-        if(zombieYear <= selectedDate) {
+        if(selectedDate <= zombieYear ) {
             dobCheck = 0;
         }
         d = {

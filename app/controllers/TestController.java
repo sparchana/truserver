@@ -6,6 +6,7 @@ import controllers.scheduler.SchedulerManager;
 import models.entity.Candidate;
 import models.util.NotificationUtil;
 import models.util.Validator;
+import notificationService.EmailEvent;
 import notificationService.NotificationEvent;
 import notificationService.SMSEvent;
 import play.mvc.Controller;
@@ -63,7 +64,9 @@ public class TestController extends Controller{
     public static Result testQueue() {
         for(int i =0; i<5; ++i){
             NotificationEvent notificationEvent = new SMSEvent("+918971739586", "Test Queue message " + i);
+            NotificationEvent n2 = new EmailEvent("sandeep.kumar@trujobs.in", "Test Queue message ", "testing email queue");
             Global.getmNotificationHandler().addToQueue(notificationEvent);
+            Global.getmNotificationHandler().addToQueue(n2);
         }
         return ok("-");
     }

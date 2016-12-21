@@ -1,5 +1,6 @@
 package notificationService;
 
+import api.ServerConstants;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
@@ -7,17 +8,30 @@ import org.apache.commons.mail.SimpleEmail;
 import play.Logger;
 import play.Play;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  * Created by dodo on 8/12/16.
  */
 public class EmailEvent extends NotificationEvent {
     private String mySubject;
     private boolean isDevMode;
+    private Collection<InternetAddress> devEmailIdList;
 
     public EmailEvent(String recipient, String message, String subject) {
         this.setMessage(message);
         this.setRecipient(recipient);
         this.setMySubject(subject);
+        this.devEmailIdList = new ArrayList<>();
+        try {
+            this.devEmailIdList.add(
+                                new InternetAddress(ServerConstants.devTeamEmail.get("techAdmin")));
+        } catch (AddressException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -37,6 +51,7 @@ public class EmailEvent extends NotificationEvent {
 
         //new thread
         new Thread(() -> {
+
             try {
                 Email email = new SimpleEmail();
                 email.setHostName(Play.application().configuration().getString("mail.smtp.host"));
@@ -48,8 +63,9 @@ public class EmailEvent extends NotificationEvent {
                 email.setFrom("recruiter.support@trujobs.in", "Trujobs Recruiter");
                 email.setSubject(getMySubject());
                 email.addTo(recipient);
+                email.setBcc(devEmailIdList);
                 if(isDevMode()){
-                    Logger.info("DevMode: No Email sent [Subject] " + mySubject + "] [Message] " + message + " [Recipient] " + recipient);
+                    Logger.info("DevMode: No Email sent [Subject] " + mySubject + " [Message] " + message + " [Recipient] " + recipient);
                 } else {
                     Logger.info("Sending email to " + recipient);
                     email.send();
