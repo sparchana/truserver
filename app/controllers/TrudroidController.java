@@ -39,7 +39,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static api.ServerConstants.*;
-import static controllers.businessLogic.JobSearchService.*;
+import static controllers.businessLogic.JobSearchService.getAllJobPosts;
 import static models.util.InterviewUtil.getDayVal;
 import static models.util.InterviewUtil.getMonthVal;
 import static models.util.Util.generateOtp;
@@ -2124,8 +2124,15 @@ public class TrudroidController {
             newCalendar.get(Calendar.DAY_OF_MONTH);
             Date today = newCalendar.getTime();
 
-            // generate interview slots for next of next 3 days
-            for (int k = 2; k < 5; ++k) {
+            int k;
+            // for those jobpost in which the auto confirm is marked as checked, we start line up from the next day
+            if(jobPost.getReviewApplication() == null || jobPost.getReviewApplication() == ServerConstants.REVIEW_APPLICATION_AUTO){
+                k = 1;
+            } else {
+                k = 2;
+            }
+            // generate interview slots for next 3 days
+            for (; k < 5; ++k) {
 
                 Calendar c = Calendar.getInstance();
                 c.setTime(today);
