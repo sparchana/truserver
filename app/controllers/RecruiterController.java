@@ -269,65 +269,39 @@ public class RecruiterController {
                 if(response.get(jpwf.getCandidate().getCandidateId()) == null){
                     response.put(jpwf.getCandidate().getCandidateId(), jpwf);
 
-                    //here we are enhancing the 'new application' interview count. We are checking if the job has reviewApplication option or not
-                    // if the job post has review application set as auto-confirm the applications automatically, we will count the no. of upcoming interviews and today's interviews,
-                    // else we will calculate all the scheduled application which needs action (accept, reject, reschedule)
+                    //here we are enhancing the 'new application' interview count. We have two variables now.
+                    // pendingCount: contains all the application whose status is 'Scheduled'
+                    // upcoming count: contains all the application whose status is confirmed and feedback is not set
 
                     Date today = new Date();
                     Calendar now = Calendar.getInstance();
                     Calendar cal = Calendar.getInstance();
 
-                    if(jpwf.getJobPost().getReviewApplication() != null){
-                        if(jpwf.getJobPost().getReviewApplication() == 1){
+                    //checking all the pendingConfirmation applications
+                    if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
+                        singleObject.setPendingCount(singleObject.getPendingCount() + 1);
+                    } else if(jpwf.getStatus().getStatusId() >= ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED
+                            && jpwf.getStatus().getStatusId() < ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
 
-                            if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED){
-                                Date interviewDate = jpwf.getScheduledInterviewDate();
-                                cal.setTime(interviewDate);
+                        //checking all the todays and upcoming interview applications
 
-                                if(now.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && (now.get(Calendar.MONTH) + 1) == (cal.get(Calendar.MONTH) + 1)
-                                        && now.get(Calendar.DATE) == cal.get(Calendar.DATE)){
 
-                                    singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
-                                } else if(interviewDate.after(today)){
-                                    singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
-                                }
+                        Date interviewDate = jpwf.getScheduledInterviewDate();
+                        cal.setTime(interviewDate);
 
-                            } else if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
-                                singleObject.setPendingCount(singleObject.getPendingCount()+1);
-                            }
-                        } else{
-                            if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
-                                singleObject.setPendingCount(singleObject.getPendingCount() + 1);
-                            } else if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED){
+                        //today's interviews
+                        if(now.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && (now.get(Calendar.MONTH) + 1) == (cal.get(Calendar.MONTH) + 1)
+                                && now.get(Calendar.DATE) == cal.get(Calendar.DATE)){
 
-                                Date interviewDate = jpwf.getScheduledInterviewDate();
-                                cal.setTime(interviewDate);
-
-                                if(now.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && (now.get(Calendar.MONTH) + 1) == (cal.get(Calendar.MONTH) + 1)
-                                        && now.get(Calendar.DATE) == cal.get(Calendar.DATE)){
-
-                                    singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
-                                } else if(interviewDate.after(today)){
-                                    singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
-                                }
-                            }
+                            singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
+                        } else if(interviewDate.after(today)){
+                            //future interviews
+                            singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
                         }
-                    } else{
-                        if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
-                            singleObject.setPendingCount(singleObject.getPendingCount()+1);
-                        } else if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED){
-                            Date interviewDate = jpwf.getScheduledInterviewDate();
-                            cal.setTime(interviewDate);
 
-                            if(now.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && (now.get(Calendar.MONTH) + 1) == (cal.get(Calendar.MONTH) + 1)
-                                    && now.get(Calendar.DATE) == cal.get(Calendar.DATE)){
-
-                                singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
-                            } else if(interviewDate.after(today)){
-                                singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
-                            }
-                        }
+                        //rest all the applications are past interviews, hence we are not counting
                     }
+
                     singleObject.setTotalCount(singleObject.getTotalCount()+1);
                     singleObject.setJobPostWorkflowMap(response);
                 }
