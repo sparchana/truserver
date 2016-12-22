@@ -410,10 +410,12 @@ function resetFilters() {
 
     $("#gender_filter").hide();
     $("#experience_filter").hide();
-    $("#distance_filter").hide();
     $("#salary_filter").hide();
     $("#education_filter").hide();
     $("#language_filter").hide();
+
+    $("#distance_filter").show();
+    $("#distanceRadius").html("Within 10kms");
 
     //resetting global variables
     maxAge = "";
@@ -544,11 +546,17 @@ function performSearch() {
 function updateSliderVal(distanceSlider) {
     $("#distance_filter").show();
     $("#distanceRadius").html("Within " + parseFloat(distanceSlider.value) + "kms");
+
+    //perform search
+    performSearch();
 }
 
 function updateSalarySliderVal(maxSalarySelected) {
     $("#salary_filter").show();
     $("#maxSalaryVal").html("Max Salary: ₹" + rupeeFormatSalary(parseFloat(maxSalarySelected.value)));
+
+    //perform search
+    performSearch();
 }
 
 function processDataUnlockedCandidates(returnedData) {
@@ -822,11 +830,13 @@ function showFilter() {
 }
 
 //onchange filter to update filter marker
-jQuery(function($){
+function updateGenderFilter() {
     $("input[name=filterGender]:radio").change(function () {
         $("#gender_filter").show();
     });
-});
+
+    performSearch();
+}
 
 function checkOnFilterChange(){
     //education filter
@@ -866,5 +876,6 @@ function checkOnFilterChange(){
         $("#language_filter").hide();
     }
 
-
+    //start search
+    performSearch();
 }

@@ -199,10 +199,10 @@ function processDataGenerateJobPostView(returnedData) {
 
                 applicantBtn.textContent = jobPost.totalCount;
                 if(jobPost.pendingCount > 0){
-                    newApplication.textContent = " (" + jobPost.pendingCount + " new)";
+                    newApplication.textContent = " (" + jobPost.pendingCount + " Action Required)";
                 }
                 if(jobPost.upcomingCount > 0){
-                    upcomingCounter.textContent = " (" + jobPost.upcomingCount + " upcoming)";
+                    upcomingCounter.textContent = " (" + jobPost.upcomingCount + " Upcoming)";
                 }
                 newCount += jobPost.pendingCount;
                 newCount += jobPost.upcomingCount;

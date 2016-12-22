@@ -181,12 +181,13 @@ function processDataInterviewToday(returnedData) {
             if(application.lastUpdate != null) {
                 var lastUpdateDate = new Date(application.lastUpdate);
                 var timing = "";
+
                 if(lastUpdateDate.getHours() == 12){
-                    timing = lastUpdateDate.getHours() + ":" + lastUpdateDate.getMinutes() + " pm";
+                    timing = minuteHourFormat(lastUpdateDate.getHours()) + ":" + minuteHourFormat(lastUpdateDate.getMinutes()) + " pm";
                 } else if(lastUpdateDate.getHours() > 12){
-                    timing = lastUpdateDate.getHours() - 12 + ":" + lastUpdateDate.getMinutes() + " pm";
+                    timing = minuteHourFormat(lastUpdateDate.getHours() - 12) + ":" + minuteHourFormat(lastUpdateDate.getMinutes()) + " pm";
                 } else{
-                    timing = lastUpdateDate.getHours() + ":" + lastUpdateDate.getMinutes() + " am";
+                    timing = minuteHourFormat(lastUpdateDate.getHours()) + ":" + minuteHourFormat(lastUpdateDate.getMinutes()) + " am";
                 }
                 lastUpdate = " (" + lastUpdateDate.getDate() + "-" + getMonthVal(lastUpdateDate.getMonth() + 1) + "-"
                     + lastUpdateDate.getFullYear() + ", " + timing + ")";

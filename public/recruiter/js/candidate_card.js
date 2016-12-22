@@ -509,33 +509,24 @@ function renderIndividualCandidateCard(value, parent, view) {
 
     innerInlineBlockDiv = document.createElement("div");
     innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 10px";
-    innerInlineBlockDiv.textContent = "Current Company";
+    innerInlineBlockDiv.textContent = "Companies Worked";
     inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
     var currentCompanyVal = document.createElement("div");
     currentCompanyVal.style = "margin-left: 4px; font-size: 12px";
 
     var companyList = "";
-    var currentCompany = "";
     currentCompanyVal.textContent = "Not Specified";
     if(Object.keys(value.candidate.jobHistoryList).length > 0){
         var pastCompanyList = value.candidate.jobHistoryList;
         pastCompanyList.forEach(function (jobHistory){
-            if(jobHistory.currentJob){
-                currentCompany = jobHistory.candidatePastCompany + "*";
-            } else{
-                companyList += jobHistory.candidatePastCompany + ", ";
-            }
+            companyList += jobHistory.candidatePastCompany + ", ";
         });
+        currentCompanyVal.textContent = companyList.substring(0, (companyList.length - 2));
+    } else{
+        currentCompanyVal.textContent = "Not specified";
     }
 
-    if(currentCompany == ""){
-        currentCompanyVal.textContent = "Not specified";
-    } else if(companyList == ""){
-        currentCompanyVal.textContent = currentCompany;
-    } else{
-        currentCompanyVal.textContent = currentCompany + ", " + companyList.substring(0, (companyList.length - 2));
-    }
     inlineBlockDiv.appendChild(currentCompanyVal);
 
     /* second col */
@@ -1095,11 +1086,11 @@ function renderIndividualCandidateCard(value, parent, view) {
             var lastUpdate = new Date(value.extraData.creationTimestamp);
             var timing = "";
             if(lastUpdate.getHours() == 12){
-                timing = lastUpdate.getHours() + ":" + lastUpdate.getMinutes() + " pm";
+                timing = minuteHourFormat(lastUpdate.getHours()) + ":" + minuteHourFormat(lastUpdate.getMinutes()) + " pm";
             } else if(lastUpdate.getHours() > 12){
-                timing = lastUpdate.getHours() - 12 + ":" + lastUpdate.getMinutes() + " pm";
+                timing = minuteHourFormat(lastUpdate.getHours() - 12) + ":" + minuteHourFormat(lastUpdate.getMinutes()) + " pm";
             } else{
-                timing = lastUpdate.getHours() + ":" + lastUpdate.getMinutes() + " am";
+                timing = minuteHourFormat(lastUpdate.getHours()) + ":" + minuteHourFormat(lastUpdate.getMinutes()) + " am";
             }
 
             var dateAndTime = "(" + lastUpdate.getDate() + "-" + (lastUpdate.getMonth() + 1) + "-" + lastUpdate.getFullYear() + " " + timing + ')';
