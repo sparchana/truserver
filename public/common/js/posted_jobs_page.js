@@ -87,7 +87,7 @@ $(document).ready(function(){
     try {
             $.ajax({
                 type: "GET",
-                url: "/job/"+ jobRoleNameRender  + "/"+ jobLocationRender +"/"+ jobCompanyRender +"/"+ jobPostIdRender,
+                url: "/job/"+ jobRoleNameRender  + "-jobs-in-"+ jobLocationRender +"-at-"+ jobCompanyRender +"-"+ jobPostIdRender,
                 contentType: "application/json; charset=utf-8",
                 data: false,
                 processData: false,

@@ -129,7 +129,7 @@ $(document).ready(function(){
     try {
         $.ajax({
             type: "GET",
-            url: "/jobs/" + jobRoleNameRender +"/"+ jobRoleIdRender+"?i=" + index,
+            url: "/job/" + jobRoleNameRender +"-jobs-"+ jobRoleIdRender+"?i=" + index,
             contentType: "application/json; charset=utf-8",
             data: false,
             processData: false,
@@ -153,7 +153,7 @@ function getAllJobs(index) {
         console.log();
         $.ajax({
             type: "GET",
-            url: "/jobs/" + jobRoleNameRender +"/"+ jobRoleIdRender +"?i=" + index,
+            url: "/job/" + jobRoleNameRender +"-jobs-"+ jobRoleIdRender +"?i=" + index,
             contentType: "application/json; charset=utf-8",
             data: false,
             processData: false,

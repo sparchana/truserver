@@ -186,8 +186,7 @@ GET         /footer                                                       contro
 GET         /jobPostCardView                                              controllers.Application.renderJobPostCards()
 GET         /pageNotFound                                                 controllers.Application.pageNotFound()
 GET         /jobs/:jobTitleString                                         controllers.Application.renderJobRelatedPages( jobTitleString: String)
-GET         /job/:jobTitle/:jobLocation/:jobCompany/:jobId                controllers.Application.getJobPostDetails( jobTitle: String , jobLocation : String , jobCompany :String , jobId : Long )
-GET         /jobs/:rolePara/:idPara                                       controllers.Application.getJobRoleWiseJobPosts( rolePara: String, idPara:Long ,i:java.lang.Long ?=null)
+GET         /job/:jobTitleString                                          controllers.Application.getJobPostDetails( jobTitleString: String,i:java.lang.Long ?=null)
 
 # Both support and user
 # ~~~~~~~~~~~~~~~~~~~~~
