@@ -10,8 +10,6 @@ import models.entity.scheduler.Static.SchedulerType;
 import play.Logger;
 
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
@@ -74,7 +72,7 @@ public class SchedulerManager implements Runnable {
     }
 
     private void createNextDayInterviewAlertEvent(long delay) {
-        Logger.info(" Next Day Interview Alert Event Scheduled!");
+        Logger.info("Next Day Interview Alert Event Scheduled!");
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
@@ -129,7 +127,7 @@ public class SchedulerManager implements Runnable {
             shouldRunThisTask = true;
 
         } else {
-            if(schedulerStats.getStartTimestamp().getDate() < (today).getDate()) {
+            if((schedulerStats.getStartTimestamp().getDate() < (today).getDate())) {
                 // last run was 'x++' hr back, hence re run
                 shouldRunThisTask = true;
             }

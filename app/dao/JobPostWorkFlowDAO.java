@@ -4,13 +4,10 @@ import api.ServerConstants;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.RawSql;
 import com.avaje.ebean.RawSqlBuilder;
-import models.entity.Company;
 import models.entity.OM.JobPostWorkflow;
 import org.apache.commons.lang3.StringUtils;
-import play.Logger;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -245,5 +242,41 @@ public class JobPostWorkFlowDAO {
                 .in("candidate_id", selectedCandidateIdList)
                 .setMapKey("candidate_id")
                 .findMap();
+    }
+
+
+    public static List<JobPostWorkflow> getAllInterviewScheduledFor(Date date){
+
+
+        SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
+
+        StringBuilder workFlowQueryBuilder = new StringBuilder(
+                " select createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
+                        " job_post_id, status_id from job_post_workflow i " +
+                        " where " +
+                        " scheduled_interview_date = '"+sdf.format(date) + "' "+
+                        " and status_id = "+ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED +
+                        " and job_post_workflow_id = " +
+                        " (select max(job_post_workflow_id) from job_post_workflow " +
+                        "       where i.candidate_id = job_post_workflow.candidate_id " +
+                        "       and i.scheduled_interview_date = job_post_workflow.scheduled_interview_date " +
+                        "       and i.job_post_id = job_post_workflow.job_post_id) ");
+
+        workFlowQueryBuilder.append(
+                " order by job_post_id desc ");
+
+        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
+                .columnMapping("creation_timestamp", "creationTimestamp")
+                .columnMapping("job_post_id", "jobPost.jobPostId")
+                .columnMapping("status_id", "status.statusId")
+                .columnMapping("candidate_id", "candidate.candidateId")
+                .columnMapping("createdby", "createdBy")
+                .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
+                .columnMapping("scheduled_interview_date", "scheduledInterviewDate")
+                .create();
+
+        return Ebean.find(JobPostWorkflow.class)
+                .setRawSql(rawSql)
+                .findList();
     }
 }
