@@ -1391,7 +1391,10 @@ function processDataInterviewStatus(returnedData) {
         $("#interview_div_" + globalCandidateId).append(candidateInterviewStatusVal);
         getAllCandidates();
     } else{
-        notifyError("Something went wrong. Please try again later");
+        notifyError("Something went wrong. Please try again later. Refreshing page..");
+        setTimeout(function(){
+            location.reload(true); // hard refresh set 'ture' for current page to reload latest js, css
+        }, 2000);
     }
 }
 

@@ -1,5 +1,6 @@
 package models.util;
 
+import api.ServerConstants;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
 import controllers.Global;
 import models.entity.JobPost;
@@ -55,7 +56,7 @@ public class EmailUtil {
         String message = MAIL_HEADER + MESSAGE_DIV_START + MESSAGE_HELLO
                 + recruiterProfile.getRecruiterProfileName() + "!<br><br>"
                 + "Welcome to Trujobs recruitment platform!<br>"
-                + "As a welcome gift we have added <b> 3 FREE CONTACT UNLOCK credits</b> to your account!. "
+                + "As a welcome gift we have added <b> "+ ServerConstants.RECRUITER_FREE_CONTACT_CREDITS+" FREE CONTACT UNLOCK credits</b> to your account!. "
                 + "Log in at www.trujobs.in/recruiter to start contacting thousands of verified candidates!.<br><br>"
                 + "Happy hiring!"
                 + MESSAGE_THANKYOU +  MESSAGE_DIV_END + MAIL_FOOTER;
@@ -74,7 +75,7 @@ public class EmailUtil {
                 + "Your TruJobs business account is now setup. Your login details are: <br>"
                 + " <b> Username: </b> " + recruiterProfile.getRecruiterProfileMobile().substring(3, 13) + "<br>"
                 + " <b> Password: </b> " + dummyPassword + "<br><br>"
-                + "As a welcome gift we have added <b> 5 FREE candidate contact credits </b>to your account!. "
+                + "As a welcome gift we have added <b> "+ServerConstants.RECRUITER_FREE_CONTACT_CREDITS+" FREE candidate contact credits </b>to your account!. "
                 + "Log in at www.trujobs.in/recruiter to start contacting thousands of verified candidates!.<br><br>"
                 + "Happy hiring!"
                 + MESSAGE_THANKYOU +  MESSAGE_DIV_END + MAIL_FOOTER;

@@ -1050,7 +1050,6 @@ public class JobPostWorkflowEngine {
                                             preScreenElement.isMatching = false;
                                         }
 
-
                                         // set final candidate placeholders here
                                         preScreenElement.candidatePlaceHolder = (candidateList.get(0).getMatchedLocation());
 
@@ -1560,8 +1559,8 @@ public class JobPostWorkflowEngine {
                 int localityIncludeCount = 0;
 
                 // candidate home locality matches with the job post locality
-                Double candidateLat;
-                Double candidateLng;
+                Double candidateLat = null;
+                Double candidateLng = null;
                 StringBuilder matchedLocation = new StringBuilder();
 
                 if ((candidate.getCandidateLocalityLat() != null && candidate.getCandidateLocalityLng() != null)) {
@@ -1573,8 +1572,10 @@ public class JobPostWorkflowEngine {
                     candidateLat = candidate.getLocality().getLat();
                     candidateLng = candidate.getLocality().getLng();
                 } else {
-                    if (shouldRemoveCandidate) filteredCandidateList.remove(candidate);
-                    continue;
+                    if (shouldRemoveCandidate) {
+                        filteredCandidateList.remove(candidate);
+                        continue;
+                    }
                 }
 
                 for (Locality locality : jobPostLocalityList) {
@@ -2016,7 +2017,10 @@ public class JobPostWorkflowEngine {
                                     interviewStatusRequest.getJobPostId(),
                                     candidate.getCandidateId()
                             );
-
+            // TODO Check if interview is already confirmed,if yes then return '0' , 0 will trigger hard refresh on client side for the current page
+            if(jobPostWorkflowCurrent.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED){
+                return ok("0");
+            }
             if (interviewStatusRequest.getInterviewStatus() == ServerConstants.INTERVIEW_STATUS_ACCEPTED) { // accept
                 Logger.info("Sending interview confirm sms to candidate");
                 jwStatus = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
@@ -2087,11 +2091,6 @@ public class JobPostWorkflowEngine {
             // Setting the existing jobpostworkflow status to confirmed
             JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(jobPostWorkflowCurrent, jobPostWorkflowCurrent.getStatus().getStatusId(),
                     jwStatus, interviewStatusRequest.getRescheduledSlot(), date, channel);
-
-            if (jobPostWorkflowNew != null) {
-                jobPostWorkflowNew.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", jwStatus).findUnique());
-            }
-            jobPostWorkflowNew.update();
 
             InterviewScheduleStatusUpdate interviewScheduleStatusUpdate = new InterviewScheduleStatusUpdate();
             interviewScheduleStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);

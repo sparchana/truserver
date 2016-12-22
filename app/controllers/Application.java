@@ -1876,11 +1876,17 @@ public class Application extends Controller {
             if(candidate.getCandidateLastWithdrawnSalary() != null) {
                 return  ok(toJson(candidate.getCandidateLastWithdrawnSalary()));
             }
-            return  ok();
+            return ok();
         } else if (ServerConstants.PROPERTY_TYPE_LOCALITY == propertyId) {
-            return  ok(toJson(candidate.getLocality()));
+            if(candidate.getLocality() != null){
+                return  ok(toJson(candidate.getLocality()));
+            }
+            return ok();
         } else if (ServerConstants.PROPERTY_TYPE_WORK_SHIFT == propertyId) {
-            return  ok(toJson(candidate.getTimeShiftPreference()));
+            if(candidate.getTimeShiftPreference() != null){
+                return  ok(toJson(candidate.getTimeShiftPreference()));
+            }
+            return ok();
         }
 
         return badRequest("Error");
