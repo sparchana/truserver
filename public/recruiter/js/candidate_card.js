@@ -114,6 +114,8 @@ function renderIndividualCandidateCard(value, parent, view) {
                         confirmedParent.append(upcomingInterviewHeader);
                         upcomingInterviewsFlag = true;
                     }
+
+                    showStatusFlag = true;
                     confirmedParent.append(candidateCard);
                     confirmedCount++;
                     approvalCount++;
@@ -127,9 +129,10 @@ function renderIndividualCandidateCard(value, parent, view) {
                         confirmedParent.append(pastInterviewHeader);
                         pastInterviewsFlag = true;
                     }
+
+                    showStatusFlag = true;
                     confirmedParent.append(candidateCard);
                     confirmedCount++;
-
                 }
                 confirmedParent.append(candidateCard);
                 confirmedCount++;
@@ -1122,7 +1125,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                 candidateCurrentStatusVal.textContent = "Delayed for Interview " + reason ;
                 candidateCurrentStatusVal.style = "margin-left: 4px; color: orange; font-weight: bold; font-size: 12px";
             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY){
-                candidateCurrentStatusVal.textContent = "On the way " + reason ;
+                candidateCurrentStatusVal.textContent = "On the way for interview" + reason ;
                 candidateCurrentStatusVal.style = "margin-left: 4px; color: green; font-weight: bold; font-size: 12px";
             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                 candidateCurrentStatusVal.textContent = "Reached for Interview " + reason ;
@@ -1166,10 +1169,9 @@ function renderIndividualCandidateCard(value, parent, view) {
                     feedbackBtn.onclick = function () {
                         openFeedbackModal(value.candidate.candidateId);
                     };
-                    feedbackBtn.textContent = "ADD FEEDBACK";
+                    feedbackBtn.textContent = "Add Feedback";
                     feedbackBtn.style = "font-size: 12px";
                     unlockContactCol.appendChild(feedbackBtn);
-
                 }
             }
         }
@@ -1183,7 +1185,8 @@ function renderIndividualCandidateCard(value, parent, view) {
             unlockContact(value.candidate.candidateId);
         };
         unlockCandidateBtn.style = "margin-top: -1px";
-        unlockCandidateBtn.className = "waves-effect waves-light ascentGreen lighten-1 btn unlockBtn";
+
+        unlockCandidateBtn.className = "waves-effect waves-light customUnlockBtn";
     } else if(view == view_unlocked_candidate){
         unlockCandidateBtn.className = "contactUnlocked right";
         unlockCandidateBtn.style = "margin-right: 8px";

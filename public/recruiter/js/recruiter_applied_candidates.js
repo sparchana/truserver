@@ -208,7 +208,7 @@ function processDataUnlockedCandidates(returnedData) {
     returnedData.forEach(function (unlockedCandidate){
         try {
             $("#candidate_" + unlockedCandidate.candidate.candidateId).html(unlockedCandidate.candidate.candidateMobile);
-            $("#unlock_candidate_" + unlockedCandidate.candidate.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 btn").addClass("contactUnlocked right").removeAttr('onclick');
+            $("#unlock_candidate_" + unlockedCandidate.candidate.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 customUnlockBtn").addClass("contactUnlocked right").removeAttr('onclick');
         } catch (err){}
     });
 }
@@ -271,7 +271,7 @@ function processDataForJobApplications(returnedData) {
 
     if(returnedData != "0"){
 
-        $.each(returnedData, function (key, value) {
+        returnedData.forEach(function (value) {
             if (value != null) {
                 if (value.extraData.workflowStatus != null) {
                     if (value.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE) {
@@ -780,11 +780,11 @@ function processDataUnlockCandidate(returnedData) {
         notifySuccess("Contact successfully unlocked");
         getRecruiterInfo();
         $("#candidate_" + candidateIdVal).html(returnedData.candidateMobile);
-        $("#unlock_candidate_" + returnedData.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 btn").addClass("contactUnlocked right").removeAttr('onclick');
+        $("#unlock_candidate_" + returnedData.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 customUnlockBtn").addClass("contactUnlocked right").removeAttr('onclick');
     } else if(returnedData.status == 2){
         notifySuccess("You have already unlocked the candidate");
         getRecruiterInfo();
-        $("#unlock_candidate_" + returnedData.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 btn").addClass("contactUnlocked right").removeAttr('onclick');
+        $("#unlock_candidate_" + returnedData.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 customUnlockBtn").addClass("contactUnlocked right").removeAttr('onclick');
         $("#candidate_" + candidateIdVal).html(returnedData.candidateMobile);
     } else if(returnedData.status == 3){
         notifyError("Out of credits! Please recharge");

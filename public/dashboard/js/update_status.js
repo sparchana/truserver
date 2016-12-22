@@ -70,6 +70,13 @@ function processDataForGetStatus(returnedData) {
     parent.append(defaultOption);
 
     if(returnedData != 0 && returnedData != null){
+        $("#validInterview").show();
+        $("#invalidInterview").hide();
+
+        $("#interviewName").html(returnedData.jobPost.jobPostTitle + " @ " + returnedData.jobPost.company.companyName);
+
+        $("#actionOptions").show();
+        $("#customMsg").hide();
         if(returnedData.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){ // delayed
             parent.append(option3);
             parent.append(option4);
@@ -77,7 +84,9 @@ function processDataForGetStatus(returnedData) {
             parent.append(option2);
             parent.append(option4);
         } else if(returnedData.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){ // reached or not going
-            alert("You have already reached!");
+            $("#actionOptions").hide();
+            $("#customMsg").show();
+            $("#customMsg").html('You have already reached for the interview. All the best! ');
         } else {
             parent.append(option1);
             parent.append(option2);
@@ -85,7 +94,9 @@ function processDataForGetStatus(returnedData) {
             parent.append(option4);
         }
     } else{
-        alert("Not allowed");
+        $("#validInterview").hide();
+        $("#invalidInterview").show();
+        $("#errorMsg").html("Oops. This interview has expired! Status update is not allowed at this point");
     }
 }
 
@@ -160,6 +171,7 @@ function processDataGetAllEta(returnedData) {
 
 function processDataForUpdateStatus(returnedData) {
     if(returnedData == 1){
+
         $("#status_val").val();
         //disabling button
         document.getElementById("updateStatusBtn").disabled = true;
@@ -197,12 +209,13 @@ function processDataForUpdateStatus(returnedData) {
             $("#subHeading").html("Reaching the interview location in?");
 
         } else{
-            alert("Status updated");
+            alert("Status updated successfully and communicated to the recruiter");
             $("#notGoingModal").modal("hide");
             setTimeout(function(){
                 location.reload();
             }, 2000);
         }
+
     } else{
         alert("Something went wrong");
     }

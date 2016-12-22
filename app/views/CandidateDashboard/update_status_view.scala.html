@@ -29,14 +29,36 @@
         <meta name="theme-color" content="#286ab6">
         <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
 
+        <style>
+            .submit-btn{
+                margin-top: 12px;
+                display: block;
+                background: #5095ff;
+                border: none;
+                padding: 8px;
+                border-radius: 4px;
+                color: white;
+                font-weight: bold;}
+        </style>
     </head>
     <body>
         <center style="margin-top: 16px">
             <img src="/assets/common/img/logo-color.gif" height="36px">
-            <h4 style="margin-top: 24px">Update your status</h4>
-            <br>
-            <select id="status_val"></select>
-            <input style="margin-top: 12px; display: block" type="button" id="updateStatusBtn" value="Update Status" onclick="updateStatus()">
+            <div id="validInterview" style="display: none">
+                <div style="margin-top: 28px; font-size: 22px">Update status for your interview today!</div>
+                <div style="margin-top: 8px; font-size: 16px" id="interviewName"></div>
+                <br>
+
+                <h3 style="color: limegreen" id="customMsg"></h3>
+                <div id="actionOptions">
+                    <select id="status_val"></select>
+                    <input type="button" id="updateStatusBtn" value="Update Status" class="submit-btn" onclick="updateStatus()">
+                </div>
+            </div>
+            <div id="invalidInterview" style="display: none">
+                <h3 style="color: red" id="errorMsg"></h3>
+            </div>
+
         </center>
 
             <!-- not going modal -->
@@ -58,7 +80,7 @@
                                 <div class="custom_container" style="margin-top: 16px">
                                     <select id="notGoingReason"></select>
                                 </div>
-                                <button type="submit" onclick="confirmUpdateStatusNotGoing()" id="updateNotGoingReasonBtn" style="margin: 6px">Submit</button>
+                                <button type="submit" onclick="confirmUpdateStatusNotGoing()" id="updateNotGoingReasonBtn" class="submit-btn">Submit</button>
                             </center>
                         </div>
                     </div>

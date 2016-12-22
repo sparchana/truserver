@@ -128,7 +128,7 @@ public class JobPostWorkFlowDAO {
         }
 
         workFlowQueryBuilder.append(
-                " order by job_post_workflow_id desc ");
+                " order by scheduled_interview_date ");
 
         RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
                 .columnMapping("creation_timestamp", "creationTimestamp")

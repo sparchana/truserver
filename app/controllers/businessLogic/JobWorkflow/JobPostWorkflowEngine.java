@@ -45,6 +45,7 @@ import java.util.*;
 import static api.ServerConstants.*;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
 import static models.util.SmsUtil.*;
+import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 import static play.mvc.Results.ok;
 
@@ -2449,18 +2450,19 @@ public class JobPostWorkflowEngine {
 
         JobPostWorkflow jobPostWorkflow = JobPostWorkFlowDAO.getJobPostWorkflowCurrent(jobPost.getJobPostId(), candidate.getCandidateId());
 
-        Date interviewDate = jobPostWorkflow.getScheduledInterviewDate();
-        Calendar now = Calendar.getInstance();
+        if(jobPostWorkflow != null){
+            Date interviewDate = jobPostWorkflow.getScheduledInterviewDate();
+            Calendar now = Calendar.getInstance();
 
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(interviewDate);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(interviewDate);
 
-        if(now.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && (now.get(Calendar.MONTH) + 1) == (cal.get(Calendar.MONTH) + 1)
-                && now.get(Calendar.DATE) == cal.get(Calendar.DATE)){
+            if(now.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && (now.get(Calendar.MONTH) + 1) == (cal.get(Calendar.MONTH) + 1)
+                    && now.get(Calendar.DATE) == cal.get(Calendar.DATE)){
 
-            return JobPostWorkFlowDAO.getJobPostWorkflowCurrent(jobPost.getJobPostId(), candidate.getCandidateId());
+                return JobPostWorkFlowDAO.getJobPostWorkflowCurrent(jobPost.getJobPostId(), candidate.getCandidateId());
+            }
         }
-
 
         return null;
 

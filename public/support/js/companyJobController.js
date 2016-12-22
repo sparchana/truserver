@@ -162,6 +162,13 @@ function renderDashboard() {
                                     return "NA";
                                 }
                             },
+                            'completedInterview' : function(){
+                                if(jobPost.completedInterviewCount != null) {
+                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=completed_interview_view" style="cursor:pointer;" target="_blank">'+jobPost.completedInterviewCount+'</a>';
+                                } else {
+                                    return "NA";
+                                }
+                            },
                             'match' : function () {
                                 return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=match_view" style="cursor:pointer;" target="_blank"><button class="btn btn-success">Match</button></a>'
                             }
@@ -191,6 +198,7 @@ function renderDashboard() {
                 { "data": "awaitingRecruiterConfirmation" },
                 { "data": "confirmedInterviews" },
                 { "data": "todaysInterview" },
+                { "data": "completedInterview" },
                 { "data": "match" }
             ],
             "order": [[0, "desc"]],

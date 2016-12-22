@@ -719,4 +719,19 @@ public class JobPost extends Model {
         return jobPostWorkflowList.size();
     }
 
+    public Integer getCompletedInterviewCount() {
+        List<Long> jobIdList = new ArrayList<>();
+        jobIdList.add(this.getJobPostId());
+
+        // get records for specific jobPostid with status and exact scheduleDate
+        List<JobPostWorkflow> jobPostWorkflowList =
+                JobPostWorkFlowDAO.getConfirmedInterviewApplications(
+                        jobIdList,
+                        ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED
+                );
+
+        return jobPostWorkflowList.size();
+
+    }
+
 }

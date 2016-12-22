@@ -221,7 +221,20 @@ public class RecruiterController {
                 if(recruiterProfile != null){
                     if(jobPost.getRecruiterProfile() != null){
                         if(Objects.equals(jobPost.getRecruiterProfile().getRecruiterProfileId(), recruiterProfile.getRecruiterProfileId())){
-                            return ok(toJson(JobPostWorkflowEngine.getRecruiterJobLinedUpCandidates(jobPostId)));
+
+                            //initially we were returning the returned map directly. Since we need the list of candidate in ascending order of the interview date,
+                            //  we are adding the values of the map in a list. This is being done because the order of map vales was getting sorted in ascending value
+                            // with respect to the key valus. Hence using a list here
+
+                            Map<Long, CandidateWorkflowData> selectedCandidateMap =
+                                                             JobPostWorkflowEngine.getRecruiterJobLinedUpCandidates(jobPostId);
+
+                            List<CandidateWorkflowData> jobApplicantList = new LinkedList<>();
+                            for (Map.Entry<Long, CandidateWorkflowData> entry : selectedCandidateMap.entrySet()) {
+                                jobApplicantList.add(entry.getValue());
+                            }
+
+                            return ok(toJson(jobApplicantList));
                         }
                     }
                 }

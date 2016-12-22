@@ -467,11 +467,6 @@ a:hover{
     width: 24px;
     padding: 5px 3px 0 3px;
     text-align: center;
-
-/*    padding: 4px;
-    color: white;
-    height: 20px;
-    margin-top: 9px;*/
 }
 
 @media screen and (max-width: 600px) {
