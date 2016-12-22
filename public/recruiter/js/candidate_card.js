@@ -1083,6 +1083,15 @@ function renderIndividualCandidateCard(value, parent, view) {
         candidateCurrentStatusVal.textContent = "Status not available";
         candidateCurrentStatusVal.style = "font-size: 12px";
         if(value.extraData.candidateInterviewStatus != null){
+            var reason = "";
+            if(value.extraData.reason != null){
+                if(value.extraData.workflowStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING) { //not going
+                    reason = ' [reason: ' + value.extraData.reason.reasonName + ']';
+                } else{
+                    reason = ' [reaching: ' + value.extraData.reason.reasonName + ']';
+                }
+            }
+
             var lastUpdate = new Date(value.extraData.creationTimestamp);
             var timing = "";
             if(lastUpdate.getHours() == 12){
@@ -1103,16 +1112,16 @@ function renderIndividualCandidateCard(value, parent, view) {
             }
 
             if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING){
-                candidateCurrentStatusVal.textContent = "Not going for interview " + dateAndTime;
+                candidateCurrentStatusVal.textContent = "Not going for interview " + reason + dateAndTime;
                 candidateCurrentStatusVal.style = "margin-left: 4px; color: red; font-weight: bold; font-size: 12px";
             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){
-                candidateCurrentStatusVal.textContent = "Delayed for Interview " + dateAndTime;
+                candidateCurrentStatusVal.textContent = "Delayed for Interview " + reason + dateAndTime;
                 candidateCurrentStatusVal.style = "margin-left: 4px; color: orange; font-weight: bold; font-size: 12px";
             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY){
-                candidateCurrentStatusVal.textContent = "On the way " + dateAndTime;
+                candidateCurrentStatusVal.textContent = "On the way " + reason + dateAndTime;
                 candidateCurrentStatusVal.style = "margin-left: 4px; color: green; font-weight: bold; font-size: 12px";
             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
-                candidateCurrentStatusVal.textContent = "Reached for Interview " + dateAndTime;
+                candidateCurrentStatusVal.textContent = "Reached for Interview " + reason + dateAndTime;
                 candidateCurrentStatusVal.style = "margin-left: 4px; color: green; font-weight: bold; font-size: 12px";
             }
         }

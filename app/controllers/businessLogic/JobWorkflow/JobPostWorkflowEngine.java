@@ -1652,6 +1652,7 @@ public class JobPostWorkflowEngine {
             candidateIdList.add(candidate.getCandidateId());
         }
         /* */
+
         List<JobApplication> allJobApplication = JobApplication.find.where().in("candidateId", candidateIdList).eq("jobPostId", jobPost.getJobPostId()).findList();
 
 //        List<CandidateAssessmentAttempt> allAssessmentAttempt
@@ -1709,6 +1710,15 @@ public class JobPostWorkflowEngine {
                 .desc("objectBUUId")
                 .findList();
         Map<String, Integer> candidateWithPreScreenAttemptCountMap = new TreeMap<>();
+
+        List<CandidateInterviewStatusUpdate> interviewStatusUpdateList = CandidateInterviewStatusUpdate.find.where()
+                .eq("JobPostId", jobPost.getJobPostId())
+                .findList();
+
+        Map<Long, CandidateInterviewStatusUpdate> candidateStatusMap = new HashMap<>();
+        for (CandidateInterviewStatusUpdate statusUpdate : interviewStatusUpdateList) {
+            candidateStatusMap.put(statusUpdate.getCandidate().getCandidateId(), statusUpdate);
+        }
 
         for (Interaction interaction : allPreScreenCallAttemptInteractions) {
             Integer count = candidateWithPreScreenAttemptCountMap.get(interaction.getObjectBUUId());
@@ -1800,6 +1810,10 @@ public class JobPostWorkflowEngine {
                                 candidateExtraData.setCandidateInterviewStatus(candidateInterviewStatusUpdate.getJobPostWorkflow().getStatus());
                                 candidateExtraData.setInterviewDate(candidateInterviewStatusUpdate.getJobPostWorkflow().getScheduledInterviewDate());
                                 candidateExtraData.setInterviewSlot(candidateInterviewStatusUpdate.getJobPostWorkflow().getScheduledInterviewTimeSlot());
+                            }
+                            candidateExtraData.setReason(null);
+                            if(candidateStatusMap.get(candidate.getCandidateId()) != null){
+                                candidateExtraData.setReason(candidateStatusMap.get(candidate.getCandidateId()).getRejectReason());
                             }
                         }
                     }

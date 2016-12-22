@@ -1066,6 +1066,16 @@ $(function () {
                     } else if (app.currentView == "confirmed_interview_view") {
                         var candidateStatus = '<b id="current_status_' + newCandidate.candidate.candidateId + '">' + "Data not available" + '</b>';
                         if(newCandidate.extraData.candidateInterviewStatus != null){
+
+                            var reason = "";
+                            if(newCandidate.extraData.reason != null){
+                                if(newCandidate.extraData.workflowStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING) { //not going
+                                    reason = ' [reason: ' + newCandidate.extraData.reason.reasonName + ']';
+                                } else{
+                                    reason = ' [reaching: ' + newCandidate.extraData.reason.reasonName + ']';
+                                }
+                            }
+
                             var lastUpdate = new Date(newCandidate.extraData.creationTimestamp);
                             var timing = "";
                             if(lastUpdate.getHours() == 12){
@@ -1076,7 +1086,7 @@ $(function () {
                                 timing = lastUpdate.getHours() + ":" + lastUpdate.getMinutes() + " am";
                             }
                             candidateStatus = '<b id="current_status_' + newCandidate.candidate.candidateId + '">'
-                                + newCandidate.extraData.candidateInterviewStatus.statusTitle + '</b>' + '('+ lastUpdate.getDate() + "-"
+                                + newCandidate.extraData.candidateInterviewStatus.statusTitle + '</b>' + reason + '('+ lastUpdate.getDate() + "-"
                                 + (lastUpdate.getMonth() + 1) + "-" + lastUpdate.getFullYear() + " " + timing + ')';
                         }
 
