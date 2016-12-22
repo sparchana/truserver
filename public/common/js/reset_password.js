@@ -13,6 +13,13 @@ function processDataResetCheckUser(returnedData) {
         $('#noUserLogin').hide();
     }
 
+    else if(returnedData.status == 5){
+        $('#noPasswordLogin').show();
+        $('#noUserLogin').hide();
+        $('#incorrectMsgLogin').hide();
+        document.getElementById("resetCheckUserBtn").disabled = false;
+    }
+
     else {
         document.getElementById("resetCheckUserBtn").disabled = false;
         $('#noUserLogin').show();

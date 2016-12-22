@@ -23,6 +23,16 @@ function toTitleCase(str) {
     });
 }
 
+function minuteHourFormat(time) {
+    var newTimeVal = "";
+    if((""+ time).length == 1){
+        newTimeVal = "0" + time;
+    } else{
+        newTimeVal = time;
+    }
+    return newTimeVal;
+}
+
 function rupeeFormatSalary(sal){
     if(sal != null){
         sal = sal.toString();

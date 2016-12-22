@@ -603,6 +603,7 @@ function openLogin() {
     $('#errorMsgReset').hide();
     $('#form_password_reset_otp').hide();
     $('#form_password_reset_new').hide();
+    $('#noPasswordLogin').hide();
 }
 
 function openSignUp() {

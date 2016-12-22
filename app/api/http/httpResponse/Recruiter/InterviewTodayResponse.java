@@ -3,6 +3,7 @@ package api.http.httpResponse.Recruiter;
 import models.entity.Candidate;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Static.JobPostWorkflowStatus;
+import models.entity.Static.RejectReason;
 
 import java.sql.Timestamp;
 
@@ -14,6 +15,7 @@ public class InterviewTodayResponse {
     private Candidate candidate;
     private JobPostWorkflowStatus currentStatus;
     private Timestamp lastUpdate;
+    private RejectReason reason;
 
     public JobPostWorkflow getJobPostWorkflow() {
         return jobPostWorkflow;
@@ -45,5 +47,13 @@ public class InterviewTodayResponse {
 
     public void setLastUpdate(Timestamp lastUpdate) {
         this.lastUpdate = lastUpdate;
+    }
+
+    public RejectReason getReason() {
+        return reason;
+    }
+
+    public void setReason(RejectReason reason) {
+        this.reason = reason;
     }
 }

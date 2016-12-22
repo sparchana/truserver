@@ -3,6 +3,7 @@ package api.http.httpResponse;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import models.entity.Static.InterviewTimeSlot;
 import models.entity.Static.JobPostWorkflowStatus;
+import models.entity.Static.RejectReason;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -29,6 +30,7 @@ public class CandidateExtraData {
     public Double interviewLat;
     public Double interviewLng;
     public JobPostWorkflowStatus candidateInterviewStatus;
+    public RejectReason reason;
 
     public String getAppliedOn() {
         return appliedOn;
@@ -172,5 +174,13 @@ public class CandidateExtraData {
 
     public void setCreationTimestamp(Timestamp creationTimestamp) {
         this.creationTimestamp = creationTimestamp;
+    }
+
+    public RejectReason getReason() {
+        return reason;
+    }
+
+    public void setReason(RejectReason reason) {
+        this.reason = reason;
     }
 }
