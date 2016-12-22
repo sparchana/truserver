@@ -332,7 +332,8 @@ public class SmsUtil {
     public static String getSameDayInterviewAlertSmsString(JobPostWorkflow jobPostWorkflow){
 
         String msg = "Hi " + jobPostWorkflow.getCandidate().getCandidateFirstName() + ", your interview for " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() +
-                " is scheduled today, between " + jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Please reach the office on time with your documents. All the best!";
+                " is scheduled today, between " + jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Please reach the office on time with your documents. All the best!" +
+                "\n\nPlease update your interview status by clicking on this link: www.trujobs.in/u/" + jobPostWorkflow.getJobPost().getJobPostId() + "/" + jobPostWorkflow.getCandidate().getCandidateId();
 
         //address
         String address = "";

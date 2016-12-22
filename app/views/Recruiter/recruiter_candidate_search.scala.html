@@ -26,6 +26,7 @@
 
         <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
         <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
+        <script type="text/javascript" src="/assets/recruiter/js/candidate_card.js"></script>
         <script type="text/javascript" src="/assets/recruiter/js/recruiter_candidate_search.js"></script>
 
         <style>
@@ -161,22 +162,22 @@
                     <div class="card-content">
                         <font size="4">Sort by</font>
                     </div>
-                    <ul class="collapsible" data-collapsible="accordion">
+                    <ul class="collapsible" data-collapsible="expandable">
                         <li>
                             <div class="collapsible-header active"><i class="material-icons">repeat</i>
                                 Sort by</div>
                             <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
                                 <div>
                                     <input name="sortBy" type="radio" value="0" id="sortByMinSalary" />
-                                    <label style="font-size: 14px" for="sortByMinSalary">Salary (Low to High)</label>
+                                    <label style="font-size: 12px" for="sortByMinSalary">Salary (Low to High)</label>
                                 </div>
                                 <div>
                                     <input name="sortBy" type="radio" value="1" id="sortByMaxSalary" />
-                                    <label style="font-size: 14px" for="sortByMaxSalary">Salary (High to Low)</label>
+                                    <label style="font-size: 12px" for="sortByMaxSalary">Salary (High to Low)</label>
                                 </div>
                                 <div>
                                     <input name="sortBy" type="radio" value="2" id="latestActive" />
-                                    <label style="font-size: 14px" for="latestActive">Last Active (Newest to oldest)</label>
+                                    <label style="font-size: 12px" for="latestActive">Last Active (Newest to oldest)</label>
                                 </div>
                             </div>
                         </li>
@@ -186,37 +187,60 @@
                         <div id="filterMainBox">
                             <div class="card-content">
                                 <font size="4">Filters</font>
+                                <div class="waves-effect waves-light orange lighten-1" onclick="resetFilters()" style="padding: 4px 8px 4px 8px;
+                                    float: right; display: inline-block; border-radius: 4px;">
+                                    <font style="color: #fff;font-weight: 400; font-size: 12px"><b>
+                                        <center>
+                                            RESET FILTERS
+                                        </center>
+                                    </b></font>
+                                </div>
                             </div>
                             <div class="card-content" style="padding: 0">
                             <div class="row">
                                 <div class="col s12 l12">
-                                    <ul class="collapsible" data-collapsible="accordion">
+                                    <ul class="collapsible" data-collapsible="expandable">
                                         <li>
-                                            <div class="collapsible-header"><img src="/assets/recruiter/img/icons/gender.svg" height="18px" style="margin: 0 18px 0 6px">
-                                                Gender</div>
+                                            <div class="collapsible-header active">
+                                                <img src="/assets/recruiter/img/icons/gender.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                Gender
+                                                <span style="float: right; display: none" id="gender_filter">
+                                                    <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                </span>
+                                            </div>
+
                                             <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
                                                 <div>
-                                                    <input name="filterGender" type="radio" value="0" id="gender_0" />
-                                                    <label style="font-size: 14px" for="gender_0">Male</label>
+                                                    <input name="filterGender" type="radio" onchange="updateGenderFilter()" value="0" id="gender_0" />
+                                                    <label style="font-size: 12px" for="gender_0">Male</label>
                                                 </div>
                                                 <div>
-                                                    <input name="filterGender" type="radio" value="1" id="gender_1" />
-                                                    <label style="font-size: 14px" for="gender_1">Female</label>
+                                                    <input name="filterGender" type="radio" onchange="updateGenderFilter()" value="1" id="gender_1" />
+                                                    <label style="font-size: 12px" for="gender_1">Female</label>
                                                 </div>
                                             </div>
                                         </li>
                                         <li>
-                                            <div class="collapsible-header"><img src="/assets/recruiter/img/icons/exp.svg" height="18px" style="margin: 0 18px 0 6px">
-                                                Experience</div>
-                                            <div class="collapsible-body" id="experienceFilterDiv" style="padding: 8px 18px 8px 18px"></div>
+                                            <div class="collapsible-header active">
+                                                <img src="/assets/recruiter/img/icons/exp.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                Experience
+                                                <span style="float: right; display: none" id="experience_filter">
+                                                    <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                </span>
+                                            </div>
+                                            <div class="collapsible-body" id="experienceFilterDiv" onclick="checkOnFilterChange()" style="padding: 8px 18px 8px 18px"></div>
                                         </li>
                                         <li>
-                                            <div class="collapsible-header"><i class="material-icons">place</i>
-                                                Distance</div>
+                                            <div class="collapsible-header active"><i class="material-icons">place</i>
+                                                Distance
+                                                <span style="float: right" id="distance_filter">
+                                                    <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                </span>
+                                            </div>
                                             <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
                                                 <div>
                                                     <center>
-                                                        <div style="font-size: 14px; font-weight: 600;" id="distanceRadius">
+                                                        <div style="font-size: 12px; font-weight: 600;" id="distanceRadius">
                                                             <b>Within 10kms</b>
                                                         </div>
                                                     </center>
@@ -227,12 +251,17 @@
                                             </div>
                                         </li>
                                         <li>
-                                            <div class="collapsible-header"><img src="/assets/recruiter/img/icons/salary.svg" height="18px" style="margin: 0 18px 0 6px">
-                                                Max Salary</div>
+                                            <div class="collapsible-header active">
+                                                <img src="/assets/recruiter/img/icons/salary.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                Max Salary
+                                                <span style="float: right; display: none" id="salary_filter">
+                                                    <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                </span>
+                                            </div>
                                             <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
                                                 <div>
                                                     <center>
-                                                        <div style="font-size: 14px; font-weight: 600;" id="maxSalaryVal">
+                                                        <div style="font-size: 12px; font-weight: 600;" id="maxSalaryVal">
                                                             <b>Max Salary: Not Specified</b>
                                                         </div>
                                                     </center>
@@ -243,39 +272,42 @@
                                             </div>
                                         </li>
                                         <li>
-                                            <div class="collapsible-header"><img src="/assets/recruiter/img/icons/education.svg" height="18px" style="margin: 0 18px 0 6px">
-                                                Education</div>
-                                            <div class="collapsible-body" id="educationFilterDiv"  style="padding: 8px 18px 8px 18px"></div>
+                                            <div class="collapsible-header active">
+                                                <img src="/assets/recruiter/img/icons/education.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                Education
+                                                <span style="float: right; display: none" id="education_filter">
+                                                    <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                </span>
+                                            </div>
+                                            <div class="collapsible-body" id="educationFilterDiv" onclick="checkOnFilterChange()" style="padding: 8px 18px 8px 18px"></div>
 
                                         </li>
                                         <li>
-                                            <div class="collapsible-header"><img src="/assets/recruiter/img/icons/language.svg" height="18px" style="margin: 0 18px 0 6px">
-                                                Language</div>
-                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px" id="languageFilterDiv"></div>
+                                            <div class="collapsible-header active ">
+                                                <img src="/assets/recruiter/img/icons/language.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                Language
+                                                <span style="float: right; display: none" id="language_filter">
+                                                    <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                </span>
+                                            </div>
+
+                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px" id="languageFilterDiv" onclick="checkOnFilterChange()"></div>
                                         </li>
                                     </ul>
+
                                     <div class="row">
-                                        <div class="col s8 l8" style="padding-right: 4px;">
-                                            <center>
-                                                <div class="waves-effect waves-light ascentGreen lighten-1 btn" id="filterBtn" onclick="performSearch()" style="padding: 0 9px; width: 100%; display: inline-block">
-                                                    <font style="color: #fff;font-weight: 400; font-size: 12px"><b>
-                                                        <center>
-                                                            Apply Filter
-                                                        </center>
-                                                    </b></font>
-                                                </div>
-                                            </center>
-                                        </div>
-                                        <div class="col s4 l4" style="padding-left: 0; margin: 0">
+                                        <div class="col s8 l7" style="padding-right: 4px;"></div>
+                                        <div class="col s4 l5" style="padding-left: 0; margin: 0">
                                             <center>
                                                 <div class="waves-effect waves-light orange lighten-1 btn" onclick="resetFilters()" style="padding: 0 9px; width: 100%; display: inline-block">
                                                     <font style="color: #fff;font-weight: 400; font-size: 12px"><b>
                                                         <center>
-                                                            Reset
+                                                            Reset Filters
                                                         </center>
                                                     </b></font>
                                                 </div>
                                             </center>
+
                                         </div>
                                     </div>
 
@@ -298,8 +330,8 @@
                     </div>
                     <div id="loadingIcon" style="display: none; padding-top: 6%">
                         <center>
-                            <h5>Searching Candidates</h5>
-                            <svg viewBox="0 0 32 32" width="32" height="32">
+                            <h6>Searching Candidates</h6>
+                            <svg viewBox="0 0 32 32" width="24" height="24">
                                 <circle id="loadingSpinner" cx="16" cy="16" r="14" fill="none"></circle>
                             </svg>
                         </center>
@@ -402,4 +434,5 @@
     <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
     <script type="text/javascript" src="/assets/common/js/validation.js"></script>
     <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/recruiter_notifier.js"></script>
 </html>

@@ -392,45 +392,18 @@ input[type=text]:disabled{
 .accept{
     margin-left: 8px;
     cursor: pointer;
-    padding: 3px 6px 6px 6px;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: #c0c8b6;
     transition: 0.2s;
 }
-.accept:hover{
-    background: #06c840;
-}
-
 .reject{
     margin-left: 8px;
     cursor: pointer;
-    padding: 3px 6px 6px 6px;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: #c0c8b6;
     transition: 0.2s;
-}
-
-.reject:hover{
-    background: #f66624;
 }
 
 .reschedule{
     margin-left: 8px;
     cursor: pointer;
-    padding: 3px 6px 6px 6px;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: #c0c8b6;
     transition: 0.2s;
-}
-
-.reschedule:hover{
-    background: #edc63a;
 }
 
 #hasCredit{
@@ -484,14 +457,16 @@ a:hover{
 }
 
 .newNotification{
-    padding: 4px;
+    margin-left: 8px;
+    display: inline-block;
+    background-color: #a42e35;
+    border-radius: 50%;
     color: white;
-    height: 20px;
-    margin-top: 9px;
-}
-
-nav ul a span.badge{
-    background: #a42e35;
+    font: bold 12px/15px Helvetica, Verdana, Tahoma;
+    height: 24px;
+    width: 24px;
+    padding: 5px 3px 0 3px;
+    text-align: center;
 }
 
 @media screen and (max-width: 600px) {

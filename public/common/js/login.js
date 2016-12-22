@@ -45,11 +45,19 @@ function processDataLogin(returnedData) {
 
     else if(returnedData.status == 3){
         $('#noUserLogin').show();
+        $('#noPasswordLogin').hide();
+        $('#incorrectMsgLogin').hide();
+    }
+
+    else if(returnedData.status == 5){
+        $('#noPasswordLogin').show();
+        $('#noUserLogin').hide();
         $('#incorrectMsgLogin').hide();
     }
 
     else {
         $('#noUserLogin').hide();
+        $('#noPasswordLogin').hide();
         $('#incorrectMsgLogin').show();
     }
 }
