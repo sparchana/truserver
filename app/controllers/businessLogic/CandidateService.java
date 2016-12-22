@@ -282,24 +282,15 @@ public class CandidateService
                     candidate.setCandidateFirstName(candidateSignUpRequest.getCandidateFirstName());
                     candidate.setCandidateLastName(candidateSignUpRequest.getCandidateSecondName());
 
-                    if(candidate.getLocality() != null){
+                    if(candidateSignUpRequest.getCandidateHomeLocality() != null){
                         Locality locality = Locality.find.where().eq("localityId", candidateSignUpRequest.getCandidateHomeLocality()).findUnique();
                         if(locality != null){
                             candidate.setLocality(locality);
-                            resetLocalityAndJobPref(candidate, getCandidateLocalityPreferenceList(localityList, candidate), getCandidateJobPreferenceList(jobsList, candidate));
+                            candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
                         }
-                    } else {
-                        if(candidateSignUpRequest.getCandidateHomeLocality() != null){
-                            Locality locality = Locality.find.where().eq("localityId", candidateSignUpRequest.getCandidateHomeLocality()).findUnique();
-                            if(locality != null){
-                                candidate.setLocality(locality);
-                                candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
-                            }
-                        }
-                        if(jobsList != null){
-                            candidate.setJobPreferencesList(getCandidateJobPreferenceList(jobsList, candidate));
-                        }
-
+                    }
+                    if(jobsList != null){
+                        candidate.setJobPreferencesList(getCandidateJobPreferenceList(jobsList, candidate));
                     }
 
                     // triggers when candidate is self created
