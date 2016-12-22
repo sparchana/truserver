@@ -52,7 +52,7 @@ public class CandidateService
         Logger.info(" login mobile: " + loginMobile);
         Candidate existingCandidate = CandidateService.isCandidateExists(loginMobile);
         if(existingCandidate == null){
-            loginResponse.setStatus(loginResponse.STATUS_NO_USER);
+            loginResponse.setStatus(LoginResponse.STATUS_NO_USER);
             Logger.info("User Does not Exists");
         }
         else {
@@ -101,7 +101,7 @@ public class CandidateService
                     if(existingCandidate.getLocality()!= null && existingCandidate.getLocality().getLocalityName()!=null){
                         loginResponse.setCandidateHomeLocalityName(existingCandidate.getLocality().getLocalityName());
                     }
-                    loginResponse.setStatus(loginResponse.STATUS_SUCCESS);
+                    loginResponse.setStatus(LoginResponse.STATUS_SUCCESS);
 
                     existingAuth.setAuthSessionId(UUID.randomUUID().toString());
                     existingAuth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
@@ -123,12 +123,12 @@ public class CandidateService
                     Logger.info("Login Successful for " + loginMobile);
                 }
                 else {
-                    loginResponse.setStatus(loginResponse.STATUS_WRONG_PASSWORD);
+                    loginResponse.setStatus(LoginResponse.STATUS_WRONG_PASSWORD);
                     Logger.info("Incorrect Password " + loginMobile);
                 }
             }
             else {
-                loginResponse.setStatus(loginResponse.STATUS_NO_USER);
+                loginResponse.setStatus(LoginResponse.STATUS_NO_PASSWORD);
                 Logger.info("No User " + loginMobile);
             }
         }
@@ -142,7 +142,7 @@ public class CandidateService
             Logger.info("Candidate Exists " + candidateMobile);
             Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
             if(existingAuth == null){
-                resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
+                resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_PASSWORD);
                 Logger.info("reset password not allowed as Auth doesnt exist");
             } else {
                 int randomPIN = generateOtp();
