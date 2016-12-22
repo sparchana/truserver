@@ -16,6 +16,7 @@ import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
+import controllers.security.RecruiterSecured;
 import controllers.security.SecuredUser;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
@@ -53,7 +54,7 @@ public class RecruiterController {
         return ok(views.html.Recruiter.recruiter_index.render());
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result recruiterHome() {
         return ok(views.html.Recruiter.recruiter_home.render());
     }
@@ -140,7 +141,7 @@ public class RecruiterController {
                 ServerConstants.LEAD_CHANNEL_RECRUITER)));
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result getRecruiterProfileInfo() {
         RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
         if(recruiterProfile != null) {
@@ -149,12 +150,12 @@ public class RecruiterController {
         return ok("0");
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result recruiterCandidateSearch(){
         return ok(views.html.Recruiter.recruiter_candidate_search.render());
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result recruiterEditProfile() {
         return ok(views.html.Recruiter.recruiter_edit_profile.render());
     }
@@ -183,7 +184,7 @@ public class RecruiterController {
         return ok("0");
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result addRecruiter() {
         JsonNode req = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
@@ -341,7 +342,7 @@ public class RecruiterController {
         }
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result getMatchingCandidate() {
         JsonNode matchingCandidateRequestJson = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + matchingCandidateRequestJson);
@@ -439,7 +440,7 @@ public class RecruiterController {
         return ok("0");
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result getUnlockedCandidates() {
         if(session().get("recruiterId") != null){
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
@@ -452,7 +453,7 @@ public class RecruiterController {
         return ok("0");
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result requestCredits() {
         JsonNode req = request().body().asJson();
         Logger.info("req JSON: " + req );
@@ -467,7 +468,7 @@ public class RecruiterController {
         return ok(toJson(RecruiterService.requestCreditForRecruiter(addCreditRequest)));
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result recruiterJobPost(Long id) {
         return ok(views.html.Recruiter.recruiter_post_free_job.render());
     }
@@ -489,7 +490,7 @@ public class RecruiterController {
         return ok("0");
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result addJobPost() {
         JsonNode req = request().body().asJson();
         Logger.info("Browser: " + request().getHeader("User-Agent") + "; Req JSON : " + req);

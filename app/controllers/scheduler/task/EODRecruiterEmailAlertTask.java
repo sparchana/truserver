@@ -343,7 +343,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
                     .compareTo(o1.getRecruiterCreditHistoryId()));
 
             if(creditHistoryList.get(0).getRecruiterCreditsAvailable() < 1 ){
-                htmlTable.append("<div>Did you know? - Recharging your TruJobs account with interview credits" +
+                htmlTable.append("<div style=\"color: #4CAF50; font-size: 15px; font-weight: bold;\">Did you know? - Recharging your TruJobs account with interview credits" +
                         " will let interested candidates directly schedule interviews. Login at www.trujobs.in/recruiter to request interview credits now!!\n</div><br>");
             }
         }

@@ -2092,11 +2092,6 @@ public class JobPostWorkflowEngine {
             JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(jobPostWorkflowCurrent, jobPostWorkflowCurrent.getStatus().getStatusId(),
                     jwStatus, interviewStatusRequest.getRescheduledSlot(), date, channel);
 
-//            if (jobPostWorkflowNew != null) {
-//                jobPostWorkflowNew.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", jwStatus).findUnique());
-//            }
-//            jobPostWorkflowNew.update();
-
             InterviewScheduleStatusUpdate interviewScheduleStatusUpdate = new InterviewScheduleStatusUpdate();
             interviewScheduleStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
             interviewScheduleStatusUpdate.setStatus(JobPostWorkflowStatus.find.where().eq("status_id", jwStatus).findUnique());
