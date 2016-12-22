@@ -698,11 +698,6 @@ hr{
     box-shadow: 0 1px 8px rgba(0,0,0,0.22), 0 4px 4px rgba(0,0,0,0.12);
     background: #ffffff;
     transition: opacity 0.5s ease-in-out;
-    -webkit-transition: background 0.4s;
-    -moz-transition:    background 0.4s;
-    -ms-transition:     background 0.4s;
-    -o-transition:      background 0.4s;
-    transition:         background 0.4s;
 }
 
 .showPageAllJobs{

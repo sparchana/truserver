@@ -1,4 +1,4 @@
-@(jobRoleCompanyName: String, jobRoleName: String, jobPostId: String)
+@(jobLocation:String, jobRoleCompanyName: String, jobRoleName: String, jobPostId: String)
 <html>
     <head>
         <meta charset="utf-8">
@@ -38,6 +38,9 @@
 
         <script>
             var jobPostIdRender = @jobPostId;
+            var jobCompanyRender = "@jobRoleCompanyName";
+            var jobRoleNameRender = "@jobRoleName";
+            var jobLocationRender = "@jobLocation";
                 $('html, body').css({
                     'overflow': 'hidden',
                     'height': '100%'

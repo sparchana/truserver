@@ -123,17 +123,13 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-    var allJobDetailPageUrl = $(location).attr('href');
-    var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
-    allJobDetailPageUrlBreak.reverse();
-    var splitString = allJobDetailPageUrlBreak[0].split("-");
 
     $("#sectionOne").css("background-image","linear-gradient(rgba(24, 26, 45, 0.4),rgba(24, 26, 45, 0.4))" +
-        ",url(/assets/common/img/"+splitString[splitString.length-1]+".png)");
+        ",url(/assets/common/img/"+jobRoleIdRender +".png)");
     try {
         $.ajax({
             type: "GET",
-            url: "/jobs/" + splitString[0] +"/"+ splitString[splitString.length-1]+"?i=" + index,
+            url: "/jobs/" + jobRoleNameRender +"/"+ jobRoleIdRender+"?i=" + index,
             contentType: "application/json; charset=utf-8",
             data: false,
             processData: false,
@@ -153,14 +149,11 @@ $(document).ready(function(){
 });
 
 function getAllJobs(index) {
-    var allJobDetailPageUrl = $(location).attr('href');
-    var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
-    allJobDetailPageUrlBreak.reverse();
-    var splitString = allJobDetailPageUrlBreak[0].split("-");
     try {
+        console.log();
         $.ajax({
             type: "GET",
-            url: "/jobs/" + splitString[0] +"/"+ splitString[splitString.length-1]+"?i=" + index,
+            url: "/jobs/" + jobRoleNameRender +"/"+ jobRoleIdRender +"?i=" + index,
             contentType: "application/json; charset=utf-8",
             data: false,
             processData: false,
@@ -227,21 +220,6 @@ function pagination(noOfPages){
 }
 function processDataForSelectedJobPost(returnedData) {
     var jobPostList = returnedData.allJobPost;
-
-    var allJobDetailPageUrl = $(location).attr('href');
-    var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
-    allJobDetailPageUrlBreak.reverse();
-    var conTitle = allJobDetailPageUrlBreak[0].split("_");
-    var showTitle = [""];
-    var temp;
-    for(var i=0;i<conTitle.length;i++){
-        temp = conTitle[i].charAt(0).toUpperCase() + conTitle[i].substring(1);
-        showTitle +=temp + " ";
-    }
-    var splitString = showTitle.split("-");
-        $('#jobTitleLine').html("Register for "+ splitString[0]);
-        $('#jobRoleTitle').html("Register for "+ splitString[0]);
-        $('#applyToJobsTitle').html("Apply to "+ splitString[0]);
         var jobPostCount = Object.keys(jobPostList).length;
             if (jobPostCount > 0) {
                 var numberOfPages = parseInt(returnedData.totalJobs)/5;
@@ -541,9 +519,9 @@ function processDataForSelectedJobPost(returnedData) {
 
                             applyBtnDiv.appendChild(applyBtn);
                             applyBtn.onclick=function(){
-                                var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
+                                var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
                                 jobPostBreak = jobPostBreak.toLowerCase();
-                                var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
+                                var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
                                 jobCompany = jobCompany.toLowerCase();
                                 try {
                                     window.location.href = "/jobs/" + jobPostBreak + "-jobs-in-bengaluru-at-" + jobCompany + "-" + jobPost.jobPostId;
