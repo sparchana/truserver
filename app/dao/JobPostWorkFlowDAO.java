@@ -4,13 +4,12 @@ import api.ServerConstants;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.RawSql;
 import com.avaje.ebean.RawSqlBuilder;
-import models.entity.Company;
+import models.entity.OM.CandidateInterviewStatusUpdate;
 import models.entity.OM.JobPostWorkflow;
 import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -303,6 +302,14 @@ public class JobPostWorkFlowDAO {
         return Ebean.find(JobPostWorkflow.class)
                 .setRawSql(rawSql)
                 .findList();
+    }
+
+    public static Map<?, CandidateInterviewStatusUpdate> getCandidateLatestInterviewStatus(List<Long> jobPostIdList){
+        return CandidateInterviewStatusUpdate.find
+                .where()
+                .in("JobPostId", jobPostIdList)
+                .setMapKey("candidate_id")
+                .findMap();
     }
 
 }

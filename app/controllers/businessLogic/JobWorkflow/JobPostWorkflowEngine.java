@@ -1445,6 +1445,15 @@ public class JobPostWorkflowEngine {
                                       status,
                                       today);
 
+        List<CandidateInterviewStatusUpdate> interviewStatusUpdateList = CandidateInterviewStatusUpdate.find.where()
+                .in("JobPostId", interviewTodayRequest.getJpId())
+                .findList();
+
+        Map<Long, CandidateInterviewStatusUpdate> candidateStatusMap = new HashMap<>();
+        for (CandidateInterviewStatusUpdate statusUpdate : interviewStatusUpdateList) {
+            candidateStatusMap.put(statusUpdate.getCandidate().getCandidateId(), statusUpdate);
+        }
+
         for (JobPostWorkflow jpWf : jobPostWorkflowList) {
             InterviewTodayResponse response = new InterviewTodayResponse();
             response.setCandidate(jpWf.getCandidate());
@@ -1453,6 +1462,17 @@ public class JobPostWorkflowEngine {
             response.setCurrentStatus(jpWf.getStatus());
 
             response.setLastUpdate(null);
+
+            if(candidateStatusMap.size() > 0){
+                if(candidateStatusMap.get(jpWf.getCandidate().getCandidateId()) != null){
+                    response.setReason(candidateStatusMap.get(jpWf.getCandidate().getCandidateId()).getRejectReason());
+                } else{
+                    response.setReason(null);
+                }
+            } else{
+                response.setReason(null);
+            }
+
             //set the last update timestamp only when the candidate has updated their status (Not going, delayed etc.)
             //if not updated, set as null
             if(jpWf.getStatus().getStatusId() > ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED) {

@@ -273,27 +273,41 @@ public class RecruiterController {
                     // if the job post has review application set as auto-confirm the applications automatically, we will count the no. of upcoming interviews and today's interviews,
                     // else we will calculate all the scheduled application which needs action (accept, reject, reschedule)
 
-                    Date yesterday = new Date(System.currentTimeMillis() - 1000L * 60L * 60L * 24L);
-                    Date interviewDate = jpwf.getScheduledInterviewDate();
+                    Date today = new Date();
+                    Calendar now = Calendar.getInstance();
+                    Calendar cal = Calendar.getInstance();
 
                     if(jpwf.getJobPost().getReviewApplication() != null){
                         if(jpwf.getJobPost().getReviewApplication() == 1){
-                            if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED){
 
-                                if(interviewDate.after(yesterday)){
-                                    //here the interview upcoming and today's
-                                    //we are comparing this with yesterday's date as the Date function 'date.after()' new day result
+                            if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED){
+                                Date interviewDate = jpwf.getScheduledInterviewDate();
+                                cal.setTime(interviewDate);
+
+                                if(now.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && (now.get(Calendar.MONTH) + 1) == (cal.get(Calendar.MONTH) + 1)
+                                        && now.get(Calendar.DATE) == cal.get(Calendar.DATE)){
+
+                                    singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
+                                } else if(interviewDate.after(today)){
                                     singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
                                 }
+
                             } else if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
                                 singleObject.setPendingCount(singleObject.getPendingCount()+1);
                             }
                         } else{
                             if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
-                                singleObject.setPendingCount(singleObject.getPendingCount()+1);
+                                singleObject.setPendingCount(singleObject.getPendingCount() + 1);
                             } else if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED){
 
-                                if(interviewDate.after(yesterday)){
+                                Date interviewDate = jpwf.getScheduledInterviewDate();
+                                cal.setTime(interviewDate);
+
+                                if(now.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && (now.get(Calendar.MONTH) + 1) == (cal.get(Calendar.MONTH) + 1)
+                                        && now.get(Calendar.DATE) == cal.get(Calendar.DATE)){
+
+                                    singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
+                                } else if(interviewDate.after(today)){
                                     singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
                                 }
                             }
@@ -302,7 +316,14 @@ public class RecruiterController {
                         if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
                             singleObject.setPendingCount(singleObject.getPendingCount()+1);
                         } else if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED){
-                            if(interviewDate.after(yesterday)){
+                            Date interviewDate = jpwf.getScheduledInterviewDate();
+                            cal.setTime(interviewDate);
+
+                            if(now.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && (now.get(Calendar.MONTH) + 1) == (cal.get(Calendar.MONTH) + 1)
+                                    && now.get(Calendar.DATE) == cal.get(Calendar.DATE)){
+
+                                singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
+                            } else if(interviewDate.after(today)){
                                 singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
                             }
                         }
