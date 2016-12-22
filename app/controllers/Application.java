@@ -1993,13 +1993,18 @@ public class Application extends Controller {
         return ok(views.html.CandidateDashboard.update_status_view.render());
     }
 
-    @Security.Authenticated(SecuredUser.class)
     public static Result updateInterviewStatus(long cId, long jpId, long val, long reason) {
         Candidate candidate = Candidate.find.where().eq("candidateId", cId).findUnique();
+        Integer channel;
+        if(session().get("sessionChannel") != null){
+            channel = Integer.valueOf(session().get("sessionChannel"));
+        } else{
+            channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
+        }
         if(candidate != null){
             JobPost jobPost = JobPostDAO.findById(jpId);
             if(jobPost != null){
-                return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val, reason, Integer.valueOf(session().get("sessionChannel")))));
+                return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val, reason, channel)));
             }
         }
         return ok("0");

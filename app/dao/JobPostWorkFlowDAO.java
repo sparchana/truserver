@@ -303,13 +303,4 @@ public class JobPostWorkFlowDAO {
                 .setRawSql(rawSql)
                 .findList();
     }
-
-    public static Map<?, CandidateInterviewStatusUpdate> getCandidateLatestInterviewStatus(List<Long> jobPostIdList){
-        return CandidateInterviewStatusUpdate.find
-                .where()
-                .in("JobPostId", jobPostIdList)
-                .setMapKey("candidate_id")
-                .findMap();
-    }
-
 }

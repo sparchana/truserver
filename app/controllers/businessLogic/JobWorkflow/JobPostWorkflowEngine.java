@@ -1711,10 +1711,12 @@ public class JobPostWorkflowEngine {
                 .findList();
         Map<String, Integer> candidateWithPreScreenAttemptCountMap = new TreeMap<>();
 
+        //getting all the status of candidate with respect of the job post
         List<CandidateInterviewStatusUpdate> interviewStatusUpdateList = CandidateInterviewStatusUpdate.find.where()
                 .eq("JobPostId", jobPost.getJobPostId())
                 .findList();
 
+        //putting it in the map
         Map<Long, CandidateInterviewStatusUpdate> candidateStatusMap = new HashMap<>();
         for (CandidateInterviewStatusUpdate statusUpdate : interviewStatusUpdateList) {
             candidateStatusMap.put(statusUpdate.getCandidate().getCandidateId(), statusUpdate);

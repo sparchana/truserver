@@ -190,32 +190,32 @@ function processDataInterviewToday(returnedData) {
                 } else{
                     timing = minuteHourFormat(lastUpdateDate.getHours()) + ":" + minuteHourFormat(lastUpdateDate.getMinutes()) + " am";
                 }
-                lastUpdate = " (" + lastUpdateDate.getDate() + "-" + getMonthVal(lastUpdateDate.getMonth() + 1) + "-"
+                lastUpdate = " (Reported - " + lastUpdateDate.getDate() + "-" + getMonthVal(lastUpdateDate.getMonth() + 1) + "-"
                     + lastUpdateDate.getFullYear() + ", " + timing + ")";
 
                 //if the update was done on or one day before the interview, setting the label as 'today' or 'yesterday'.
                 var today = new Date();
                 if(lastUpdateDate.getDate() == today.getDate() && lastUpdateDate.getMonth() == today.getMonth()){
-                    lastUpdate = " (Today at: " + timing + ")";
+                    lastUpdate = " (Reported - Today at: " + timing + ")";
                 } else if(lastUpdateDate.getDate() == (today.getDate() -1) && lastUpdateDate.getMonth() == today.getMonth()){
-                    lastUpdate = " (Yesterday at: " + timing + ")";
+                    lastUpdate = " (Reported - Yesterday at: " + timing + ")";
                 }
             }
 
             if(application.reason != null){
                 if(application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING) { //not going
-                    reason = ' [reason: ' + application.reason.reasonName + ']';
+                    reason = ' [Reason: ' + application.reason.reasonName + ']';
                 } else{
-                    reason = ' [reaching: ' + application.reason.reasonName + ']';
+                    reason = ' [Reaching: ' + application.reason.reasonName + ']';
                 }
             }
 
             //setting current status here with respective text colours.
             if(application.currentStatus.statusId > JWF_STATUS_INTERVIEW_CONFIRMED){
                 if(application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING || application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){ //not going or delayed
-                    status = '<td style="color: red"><b>' + application.currentStatus.statusTitle + reason + lastUpdate +'</b></td>'
+                    status = '<td style="color: red"><b>' + application.currentStatus.statusTitle + reason +'</b><br><font style="font-size: 12px">' + lastUpdate + '</font></td>'
                 } else if(application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY || application.currentStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED) {
-                    status = '<td style="color: green"><b>' + application.currentStatus.statusTitle + reason + lastUpdate +'</b></td>'
+                    status = '<td style="color: green"><b>' + application.currentStatus.statusTitle + reason +'</b><br><font style="font-size: 12px">' + lastUpdate + '</font></td>'
                 } else { // started or reached
                     status = '<td style="color: #5a5a5a"><b>-</b></td>'
                 }

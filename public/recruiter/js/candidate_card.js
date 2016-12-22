@@ -1075,20 +1075,24 @@ function renderIndividualCandidateCard(value, parent, view) {
         candidateCurrentStatus.appendChild(inlineBlockDiv);
 
         innerInlineBlockDiv = document.createElement("div");
-        innerInlineBlockDiv.style = "color: #9f9f9f; font-size: 10px";
+        innerInlineBlockDiv.style = "color: #9f9f9f; font-size: 10px; margin-left: 4px";
         innerInlineBlockDiv.textContent = "Candidate status";
         inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
         var candidateCurrentStatusVal = document.createElement("span");
         candidateCurrentStatusVal.textContent = "Status not available";
-        candidateCurrentStatusVal.style = "font-size: 12px";
+        candidateCurrentStatusVal.style = "margin-left: 4px; font-size: 12px";
+
+        var candidateCurrentLastUpdateVal = document.createElement("div");
+        candidateCurrentLastUpdateVal.style = "font-size: 10px; margin-left: 4px";
+
         if(value.extraData.candidateInterviewStatus != null){
             var reason = "";
             if(value.extraData.reason != null){
                 if(value.extraData.workflowStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING) { //not going
-                    reason = ' [reason: ' + value.extraData.reason.reasonName + ']';
+                    reason = ' [Reason: ' + value.extraData.reason.reasonName + ']';
                 } else{
-                    reason = ' [reaching: ' + value.extraData.reason.reasonName + ']';
+                    reason = ' [Reaching: ' + value.extraData.reason.reasonName + ']';
                 }
             }
 
@@ -1102,31 +1106,35 @@ function renderIndividualCandidateCard(value, parent, view) {
                 timing = minuteHourFormat(lastUpdate.getHours()) + ":" + minuteHourFormat(lastUpdate.getMinutes()) + " am";
             }
 
-            var dateAndTime = "(" + lastUpdate.getDate() + "-" + (lastUpdate.getMonth() + 1) + "-" + lastUpdate.getFullYear() + " " + timing + ')';
+            var dateAndTime = "(Reported - " + lastUpdate.getDate() + "-" + (lastUpdate.getMonth() + 1) + "-" + lastUpdate.getFullYear() + " " + timing + ')';
 
             var today = new Date();
             if(lastUpdate.getDate() == today.getDate() && lastUpdate.getMonth() == today.getMonth()){
-                dateAndTime = " (Today at: " + timing + ")";
+                dateAndTime = " (Reported - Today at: " + timing + ")";
             } else if(lastUpdate.getDate() == (today.getDate() -1) && lastUpdate.getMonth() == today.getMonth()){
-                dateAndTime = " (Yesterday at: " + timing + ")";
+                dateAndTime = " (Reported - Yesterday at: " + timing + ")";
             }
 
             if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING){
-                candidateCurrentStatusVal.textContent = "Not going for interview " + reason + dateAndTime;
+                candidateCurrentStatusVal.textContent = "Not going for interview " + reason ;
                 candidateCurrentStatusVal.style = "margin-left: 4px; color: red; font-weight: bold; font-size: 12px";
             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){
-                candidateCurrentStatusVal.textContent = "Delayed for Interview " + reason + dateAndTime;
+                candidateCurrentStatusVal.textContent = "Delayed for Interview " + reason ;
                 candidateCurrentStatusVal.style = "margin-left: 4px; color: orange; font-weight: bold; font-size: 12px";
             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY){
-                candidateCurrentStatusVal.textContent = "On the way " + reason + dateAndTime;
+                candidateCurrentStatusVal.textContent = "On the way " + reason ;
                 candidateCurrentStatusVal.style = "margin-left: 4px; color: green; font-weight: bold; font-size: 12px";
             } else if(value.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
-                candidateCurrentStatusVal.textContent = "Reached for Interview " + reason + dateAndTime;
+                candidateCurrentStatusVal.textContent = "Reached for Interview " + reason ;
                 candidateCurrentStatusVal.style = "margin-left: 4px; color: green; font-weight: bold; font-size: 12px";
             }
+
+            iconImg.style = "margin-top: -4px; margin-top: -32px";
+            candidateCurrentLastUpdateVal.textContent = dateAndTime;
         }
 
         inlineBlockDiv.appendChild(candidateCurrentStatusVal);
+        inlineBlockDiv.appendChild(candidateCurrentLastUpdateVal);
 
     }
 
