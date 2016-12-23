@@ -5,6 +5,8 @@
 var f;
 var companyId;
 
+var logoTitle = "";
+
 $(document).scroll(function(){
     if ($(this).scrollTop() > 20) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
@@ -67,27 +69,20 @@ $('input[type=file]').change(function () {
 });
 
 function uploadLogo(){
-    var x = document.getElementById("companyLogo");
-    if ('files' in x) {
-        if (x.files.length == 0) {
-        } else {
-            for (var i = 0; i < x.files.length; i++) {
-                var file = x.files[i];
+    var file = $('#companyLogo')[0].files[0];
+    var formData = new FormData();
+    formData.append('file', file, logoTitle);
+    console.log(formData);
 
-                var data = new FormData();
-                data.append('picture', file);
-                $.ajax({
-                    type: "POST",
-                    url: "/addCompanyLogo",
-                    async: true,
-                    data: data,
-                    cache: false,
-                    contentType: false,
-                    processData: false
-                });
-            }
-        }
-    }
+    $.ajax({
+        type: "POST",
+        url: "/addCompanyLogo",
+        async: true,
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false
+    });
 }
 
 function processDataCheckLocality(returnedData) {
@@ -279,7 +274,12 @@ function saveForm() {
             notifyError("Please select a logo smaller than 2 MBs");
             companyStatus = 0;
         } else{
-            logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
+            var companyName = $("#rec_company_name").val();
+            var combinedName = companyName.split(' ').join('_');
+            var ext = "." + f.type.substring(6, f.type.length);
+            logoTitle = "TJ_" + combinedName + ext;
+
+            logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + logoTitle;
             companyStatus = 1;
         }
     } else {

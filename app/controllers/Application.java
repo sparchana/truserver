@@ -383,6 +383,23 @@ public class Application extends Controller {
         return ok(toJson(ParseCSV.parseCSV(file)));
     }
 
+    public static Result uploadLogo() {
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart companyLogo = body.getFile("file");
+
+        if (companyLogo != null) {
+            String fileName = companyLogo.getFilename();
+
+            File file = (File) companyLogo.getFile();
+            Logger.info("uploaded! " + file);
+            CompanyService.uploadCompanyLogo(file, fileName);
+            return ok("File uploaded");
+        } else {
+            flash("error", "Missing file");
+            return redirect(routes.Application.index());
+        }
+    }
+
     @Security.Authenticated(SuperAdminSecured.class)
     public static Result processBabaJCSV() {
         java.io.File file = (File) request().body().asMultipartFormData().getFile("file").getFile();
