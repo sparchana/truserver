@@ -8,6 +8,7 @@ import api.http.httpRequest.ApplyJobRequest;
 import api.GoogleSheetHttpRequest;
 import api.http.httpResponse.AddJobPostResponse;
 import api.http.httpResponse.ApplyJobResponse;
+import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import api.http.httpResponse.interview.InterviewResponse;
 import com.amazonaws.util.json.JSONException;
@@ -140,8 +141,16 @@ public class JobService {
             sendRecruiterJobPostActivationSms(existingJobPost.getRecruiterProfile(), existingJobPost);
 
             //send email to recruiter
-            JobPost finalExistingJobPost = existingJobPost;
-            sendRecruiterJobPostLiveEmail(finalExistingJobPost.getRecruiterProfile(), finalExistingJobPost);
+            sendRecruiterJobPostLiveEmail(existingJobPost.getRecruiterProfile(), existingJobPost);
+
+            //send sms to all the matching candidate
+            JobPost jobPost = existingJobPost;
+
+            new Thread(() -> {
+                sendSmsToCandidateMatchingWithJobPost(jobPost);
+            }).start();
+
+
         }
 
         if(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE){
@@ -1124,6 +1133,55 @@ public class JobService {
             jobPostToLocalityList.add(jobPostToLocality);
         }
         return jobPostToLocalityList;
+    }
+
+    public static List<JobPost> getAllJobPostWithRecruitersWithInterviewCredits() {
+        List<JobPost> jobPostListToReturn = new ArrayList<>();
+
+        List<JobPost> jobPostList = JobPost.find.where()
+                .isNotNull("JobRecruiterId")
+                .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                .eq("Source", ServerConstants.SOURCE_INTERNAL)
+                .findList();
+
+        for(JobPost j: jobPostList){
+            if(j.getRecruiterProfile().totalInterviewCredits() > 0){
+                jobPostListToReturn.add(j);
+            }
+        }
+        return jobPostListToReturn;
+    }
+
+    public static void sendSmsToCandidateMatchingWithJobPost(JobPost jobPost){
+        Map<Long, CandidateWorkflowData> candidateSearchMap = JobPostWorkflowEngine.getCandidateForRecruiterSearch(
+                null, //age
+                null, //min salary
+                null, //max salary
+                jobPost.getGender(), //gender
+                null, //experience
+                jobPost.getJobRole().getJobRoleId(), //jobRole
+                null, //education
+                null, //locality
+                null, //language list
+                20.00);
+
+        if(candidateSearchMap != null){
+            Logger.info("Sending notification to " + candidateSearchMap.size() + " candidates regarding the jobPost: " + jobPost.getJobPostTitle());
+
+            //adding to notification Handler queue
+            for (Map.Entry<Long, CandidateWorkflowData> candidate : candidateSearchMap.entrySet()) {
+                if(jobPost.getRecruiterProfile().totalInterviewCredits() > 0){
+                    //recruiter has interview credits
+                    SmsUtil.sendJobPostSmsToCandidate(jobPost, candidate.getValue().getCandidate());
+                    NotificationUtil.sendJobPostNotificationToCandidate(jobPost, candidate.getValue().getCandidate());
+
+                } else{
+                    //recruiter doesn't have interview credits
+                    SmsUtil.sendJobPostSmsToCandidate(jobPost, candidate.getValue().getCandidate());
+                    NotificationUtil.sendJobPostNotificationToCandidate(jobPost, candidate.getValue().getCandidate());
+                }
+            }
+        }
     }
 
 }

@@ -3,6 +3,7 @@ package models.util;
 import api.ServerConstants;
 import controllers.Global;
 import models.entity.Candidate;
+import models.entity.JobPost;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Static.InterviewTimeSlot;
 import notificationService.FCMEvent;
@@ -112,4 +113,16 @@ public class NotificationUtil {
             Logger.info("Token not available");
         }
     }
+
+    public static void sendJobPostNotificationToCandidate(JobPost jobPost, Candidate candidate) {
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", Smaple msg";
+
+        if(candidate.getCandidateAndroidToken() != null){
+            addFcmToNotificationQueue(msg, "title of the notification", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+        } else{
+            Logger.info("Token not available");
+        }
+
+    }
+
 }

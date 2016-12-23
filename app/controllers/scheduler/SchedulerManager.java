@@ -1,9 +1,6 @@
 package controllers.scheduler;
 
-import controllers.scheduler.task.EODAadhaarVerificationTask;
-import controllers.scheduler.task.EODRecruiterEmailAlertTask;
-import controllers.scheduler.task.NextDayInterviewAlertTask;
-import controllers.scheduler.task.SameDayInterviewAlertTask;
+import controllers.scheduler.task.*;
 import models.entity.scheduler.SchedulerStats;
 import models.entity.scheduler.Static.SchedulerSubType;
 import models.entity.scheduler.Static.SchedulerType;
@@ -42,11 +39,17 @@ public class SchedulerManager implements Runnable {
         int mEODAadhaarTaskStartMin = (play.Play.application().configuration().getInt("schedulertask.eod.aadhaar.verification.start.min"));
         int mEODAadhaarTaskStartSec = (play.Play.application().configuration().getInt("schedulertask.eod.aadhaar.verification.start.sec"));
 
+        int mSODJobPostInfoStartHr = (play.Play.application().configuration().getInt("schedulertask.sod.jobpost.notifier.start.hr"));
+        int mSODJobPostInfoStartMin = (play.Play.application().configuration().getInt("schedulertask.sod.jobpost.notifier.start.min"));
+        int mSODJobPostInfoStartSec = (play.Play.application().configuration().getInt("schedulertask.sod.jobpost.notifier.start.sec"));
+
         int sameDayInterviewAlertEventPeriod = Integer.parseInt(play.Play.application().configuration().getString("schedulertask.sameDay.alert.period"));
 
         long eodMailDelay = computeDelay(mEODMailTaskStartHr, mEODMailTaskStartMin , mEODMailTaskStartSec);
         long ndiMailDelay = computeDelay(mEODNextDayInterviewTaskStartHr, mEODNextDayInterviewStartMin , mEODNextDayInterviewStartSec);
         long aadhaarVerificationDelay = computeDelay(mEODAadhaarTaskStartHr, mEODAadhaarTaskStartMin , mEODAadhaarTaskStartSec);
+
+        long jobPostInfoDelay = computeDelay(mSODJobPostInfoStartHr, mSODJobPostInfoStartMin , mSODJobPostInfoStartSec);
 
 
         // createSameDayInterviewAlertEvent method takes time period (in hrs) as input
@@ -57,6 +60,8 @@ public class SchedulerManager implements Runnable {
         createRecruiterEODEmailAlertEvent(eodMailDelay);
 
         createAadhaarVerificationEvent(aadhaarVerificationDelay);
+
+        //createStartOfTheDayJobPostEvent(jobPostInfoDelay);
     }
 
     private void createSameDayInterviewAlertEvent(int hr) {
@@ -92,6 +97,13 @@ public class SchedulerManager implements Runnable {
 
         EODAadhaarVerificationTask eodAadhaarVerificationTask = new EODAadhaarVerificationTask();
         timer.schedule(eodAadhaarVerificationTask, delay, oneDay);
+    }
+
+    private void createStartOfTheDayJobPostEvent(long delay){
+        Logger.info("Send job post message to candidate!");
+
+        SODNotifyCandidateAboutJobPostTask sodNotifyCandidateAboutJobPostTask = new SODNotifyCandidateAboutJobPostTask();
+        timer.schedule(sodNotifyCandidateAboutJobPostTask, delay, oneDay);
     }
 
 

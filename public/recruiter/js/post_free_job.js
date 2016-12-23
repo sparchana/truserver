@@ -739,7 +739,7 @@ function saveJob() {
                 jobPostStartTime: startTime,
                 jobPostEndTime: endTime,
                 jobPostWorkingDays: workingDays,
-                jobPostIsHot: 1,
+                jobPostIsHot: 0,
                 jobPostDescription: $("#jobPostDescription").val(),
                 jobPostTitle: $("#jobPostTitle").val(),
                 jobPostMinRequirement: $("#jobPostMinRequirement").val(),

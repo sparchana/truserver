@@ -5,6 +5,8 @@
 var f;
 var companyId;
 
+var logoTitle = "";
+
 $(document).scroll(function(){
     if ($(this).scrollTop() > 20) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
@@ -66,28 +68,26 @@ $('input[type=file]').change(function () {
     f = this.files[0];
 });
 
-function uploadLogo(){
-    var x = document.getElementById("companyLogo");
-    if ('files' in x) {
-        if (x.files.length == 0) {
-        } else {
-            for (var i = 0; i < x.files.length; i++) {
-                var file = x.files[i];
+function uploadLogo(companyId){
+    var file = $('#companyLogo')[0].files[0];
+    var formData = new FormData();
 
-                var data = new FormData();
-                data.append('picture', file);
-                $.ajax({
-                    type: "POST",
-                    url: "/addCompanyLogo",
-                    async: true,
-                    data: data,
-                    cache: false,
-                    contentType: false,
-                    processData: false
-                });
-            }
-        }
-    }
+    var companyName = $("#rec_company_name").val();
+    var combinedName = companyName.split(' ').join('_');
+    var ext = "." + f.type.substring(6, f.type.length);
+    logoTitle = "TJ_" + companyId + "_" + combinedName + ext;
+
+    formData.append('file', file, logoTitle);
+
+    $.ajax({
+        type: "POST",
+        url: "/addCompanyLogo",
+        async: true,
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false
+    });
 }
 
 function processDataCheckLocality(returnedData) {
@@ -279,7 +279,7 @@ function saveForm() {
             notifyError("Please select a logo smaller than 2 MBs");
             companyStatus = 0;
         } else{
-            logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
+            logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/default_company_logo.png";
             companyStatus = 1;
         }
     } else {
@@ -334,9 +334,6 @@ function saveForm() {
             } catch (exception) {
                 console.log("exception occured!!" + exception);
             }
-            if(document.getElementById("companyLogo").value != "") {
-                uploadLogo();
-            }
         } catch (err){}
     }
 }
@@ -365,6 +362,12 @@ function processDataUpdateCompany(returnedData) {
             data: JSON.stringify(rec),
             success: processDataAddRecruiter
         });
+
+        if(document.getElementById("companyLogo").value != "") {
+            //uploading logo
+            uploadLogo(companyId);
+        }
+
     } else{
         alert("Something went wrong! Please try again later");
     }

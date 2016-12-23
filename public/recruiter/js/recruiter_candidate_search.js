@@ -288,6 +288,7 @@ function processDataEducation(returnedData) {
         educationInput.name = "filterEducation";
         educationInput.id = "edu_" + education.educationId;
         educationInput.setAttribute("value", education.educationId);
+        educationInput.setAttribute("onchange", "checkOnFilterChange()");
         mainDiv.appendChild(educationInput);
 
         var educationLabel = document.createElement("label");
@@ -308,6 +309,7 @@ function processDataExperience(returnedData) {
         experienceInput.type = "checkbox";
         experienceInput.name = "filterExperience";
         experienceInput.id = "exp_" + experience.experienceId;
+        experienceInput.setAttribute("onchange", "checkOnFilterChange()");
         experienceInput.setAttribute("value", experience.experienceId);
         mainDiv.appendChild(experienceInput);
 
@@ -330,6 +332,7 @@ function processDataLanguages(returnedData) {
         languageInput.type = "checkbox";
         languageInput.id = "lang_" + language.languageId;
         languageInput.setAttribute("value", language.languageId);
+        languageInput.setAttribute("onchange", "checkOnFilterChange()");
         mainDiv.appendChild(languageInput);
 
         var languageLabel = document.createElement("label");
@@ -845,11 +848,8 @@ function checkOnFilterChange(){
         selectedEducation.push(parseInt($(this).attr('value')));
     });
     if(selectedEducation.length > 0){
-        console.log("Here");
         $("#education_filter").show();
     } else{
-        console.log("there");
-
         $("#education_filter").hide();
     }
 

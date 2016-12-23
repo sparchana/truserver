@@ -105,7 +105,7 @@
     display: inline-block;
     background-color: #cecece;
     border-radius: 50%;
-    color: white;
+    color: black;
     font: bold 12px/15px Helvetica, Verdana, Tahoma;
     height: 24px;
     width: 24px;
@@ -168,6 +168,10 @@
 }
 
 @media screen and (max-width:1000px){
+
+    #tab1, #tab2, #tab3, #tab4{
+        font-size: 9px;
+    }
 
     .interviewStatusDiv{
         color: black;
