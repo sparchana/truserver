@@ -375,7 +375,7 @@ public class Application extends Controller {
             String fileName = companyLogo.getFilename();
 
             File file = (File) companyLogo.getFile();
-            Logger.info("uploaded! " + file);
+            Logger.info("uploaded! " + fileName);
             CompanyService.uploadCompanyLogo(file, fileName);
 
             List<String> companyId = Arrays.asList(fileName.split("\\s*_\\s*"));
