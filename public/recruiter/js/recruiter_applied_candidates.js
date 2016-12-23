@@ -396,7 +396,7 @@ function processDataForJobApplications(returnedData) {
                 $("#confirmedCount").html((interviewTodayCount + upcomingInterviewCount));
                 $("#confirmedCount").show();
             } else{
-                $("#confirmedCount").show();
+                $("#confirmedCount").hide();
             }
         }
 
