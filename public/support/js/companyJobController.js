@@ -101,10 +101,11 @@ function renderDashboard() {
                             },
 
                             'jobInterviewAddress' : function () {
-                                if(jobPost.jobPostAddress != null && jobPost.jobPostAddress != ''){
-                                    return jobPost.jobPostAddress;
+                                if(jobPost.interviewFullAddress != null && jobPost.interviewFullAddress != ""){
+                                    return jobPost.interviewFullAddress;
+                                } else{
+                                    return "Not Available";
                                 }
-                                return "Not Specified";
                             },
                             'jobIsHot' : function () {
                                 if(jobPost.jobPostIsHot == true){
@@ -133,6 +134,41 @@ function renderDashboard() {
                                     return "Not Specified";
                                 }
                             },
+                            'awaitingInterviewSchedule' : function(){
+                                if(jobPost.awaitingInterviewScheduleCount != null) {
+                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=pending_interview_schedule" style="cursor:pointer;" target="_blank">'+jobPost.awaitingInterviewScheduleCount+'</a>';
+                                } else {
+                                    return "NA";
+                                }
+                            },
+                            'awaitingRecruiterConfirmation' : function(){
+                                if(jobPost.awaitingRecruiterConfirmationCount != null) {
+                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=pre_screen_completed_view" style="cursor:pointer;" target="_blank">'+jobPost.awaitingRecruiterConfirmationCount+'</a>';
+                                } else {
+                                    return "NA";
+                                }
+                            },
+                            'confirmedInterviews' : function(){
+                                if(jobPost.confirmedInterviewsCount != null) {
+                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=confirmed_interview_view" style="cursor:pointer;" target="_blank">'+jobPost.confirmedInterviewsCount+'</a>';
+                                } else {
+                                    return "NA";
+                                }
+                            },
+                            'todaysInterview' : function(){
+                                if(jobPost.todaysInterviewCount != null) {
+                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=confirmed_interview_view" style="cursor:pointer;" target="_blank">'+jobPost.todaysInterviewCount+'</a>';
+                                } else {
+                                    return "NA";
+                                }
+                            },
+                            'completedInterview' : function(){
+                                if(jobPost.completedInterviewCount != null) {
+                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=completed_interview_view" style="cursor:pointer;" target="_blank">'+jobPost.completedInterviewCount+'</a>';
+                                } else {
+                                    return "NA";
+                                }
+                            },
                             'match' : function () {
                                 return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=match_view" style="cursor:pointer;" target="_blank"><button class="btn btn-success">Match</button></a>'
                             }
@@ -158,6 +194,11 @@ function renderDashboard() {
                 { "data": "jobType" },
                 { "data": "jobStatus" },
                 { "data": "createdBy" },
+                { "data": "awaitingInterviewSchedule" },
+                { "data": "awaitingRecruiterConfirmation" },
+                { "data": "confirmedInterviews" },
+                { "data": "todaysInterview" },
+                { "data": "completedInterview" },
                 { "data": "match" }
             ],
             "order": [[0, "desc"]],

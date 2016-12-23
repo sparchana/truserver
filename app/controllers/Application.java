@@ -852,7 +852,7 @@ public class Application extends Controller {
                                              .orderBy().desc("jobPostUpdateTimestamp")
                                              .findList();
 
-        // get all jobpost uuiids
+        // get all jobpost uuids
         List<String> jobpostUUIDs = new ArrayList<>();
         for (JobPost jobPost : jobPosts) {
             jobpostUUIDs.add(jobPost.getJobPostUUId());
@@ -1876,11 +1876,17 @@ public class Application extends Controller {
             if(candidate.getCandidateLastWithdrawnSalary() != null) {
                 return  ok(toJson(candidate.getCandidateLastWithdrawnSalary()));
             }
-            return  ok();
+            return ok();
         } else if (ServerConstants.PROPERTY_TYPE_LOCALITY == propertyId) {
-            return  ok(toJson(candidate.getLocality()));
+            if(candidate.getLocality() != null){
+                return  ok(toJson(candidate.getLocality()));
+            }
+            return ok();
         } else if (ServerConstants.PROPERTY_TYPE_WORK_SHIFT == propertyId) {
-            return  ok(toJson(candidate.getTimeShiftPreference()));
+            if(candidate.getTimeShiftPreference() != null){
+                return  ok(toJson(candidate.getTimeShiftPreference()));
+            }
+            return ok();
         }
 
         return badRequest("Error");
@@ -1993,13 +1999,18 @@ public class Application extends Controller {
         return ok(views.html.CandidateDashboard.update_status_view.render());
     }
 
-    @Security.Authenticated(SecuredUser.class)
     public static Result updateInterviewStatus(long cId, long jpId, long val, long reason) {
         Candidate candidate = Candidate.find.where().eq("candidateId", cId).findUnique();
+        Integer channel;
+        if(session().get("sessionChannel") != null){
+            channel = Integer.valueOf(session().get("sessionChannel"));
+        } else{
+            channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
+        }
         if(candidate != null){
             JobPost jobPost = JobPostDAO.findById(jpId);
             if(jobPost != null){
-                return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val, reason, Integer.valueOf(session().get("sessionChannel")))));
+                return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val, reason, channel)));
             }
         }
         return ok("0");
@@ -2024,7 +2035,9 @@ public class Application extends Controller {
         if(candidate != null){
             JobPost jobPost = JobPostDAO.findById(jpId);
             if(jobPost != null){
-                return ok(toJson(JobPostWorkflowEngine.getCandidateLatestStatus(candidate, jobPost)));
+                if(JobPostWorkflowEngine.getCandidateLatestStatus(candidate, jobPost) != null){
+                    return ok(toJson(JobPostWorkflowEngine.getCandidateLatestStatus(candidate, jobPost)));
+                }
             }
         }
         return ok("0");

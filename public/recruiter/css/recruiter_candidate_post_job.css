@@ -155,6 +155,19 @@ div.Tokenize ul.TokensContainer li.TokenSearch input{
     height: 240px;
 }
 
+.newNotification{
+    margin-left: 8px;
+    display: inline-block;
+    background-color: #a42e35;
+    border-radius: 50%;
+    color: white;
+    font: bold 12px/15px Helvetica, Verdana, Tahoma;
+    height: 24px;
+    width: 24px;
+    padding: 5px 3px 0 3px;
+    text-align: center;
+}
+
 @media screen and (max-width: 768px){
     .mapView{
         width: 100%;

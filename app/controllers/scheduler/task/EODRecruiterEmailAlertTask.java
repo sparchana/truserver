@@ -6,10 +6,12 @@ import com.avaje.ebean.RawSql;
 import com.avaje.ebean.RawSqlBuilder;
 import controllers.Global;
 import controllers.scheduler.SchedulerManager;
+import dao.JobPostWorkFlowDAO;
 import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Recruiter.RecruiterProfile;
+import models.entity.RecruiterCreditHistory;
 import models.entity.scheduler.Static.SchedulerSubType;
 import models.entity.scheduler.Static.SchedulerType;
 import models.util.EmailUtil;
@@ -33,11 +35,10 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
 
     private final SimpleDateFormat mSdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
 
-    private List<JobPostWorkflow> mJobPostWorkflowList;
-
     private void sendTodaysInterview(){
         if( !SchedulerManager.checkIfEODTaskShouldRun(SCHEDULER_TYPE_EMAIL,
                 SCHEDULER_SUB_TYPE_RECRUITER_EOD_INTERVIEW_LINEUP)){
+            Logger.info("EOD_Today's Interview should not run. i.e this task has already been triggered today");
             return;
         }
 
@@ -74,6 +75,8 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
     private void sendTomorrowsLineUp() {
         if( !SchedulerManager.checkIfEODTaskShouldRun(SCHEDULER_TYPE_EMAIL,
                 SCHEDULER_SUB_TYPE_RECRUITER_EOD_NEXT_DAY_INTERVIEW_LINEUP)){
+            Logger.info("EOD Tomorrow's LineUp should not run. i.e this task has already been triggered today");
+
             return;
         }
 
@@ -111,6 +114,8 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
     private void sendEODSummary() {
         if( !SchedulerManager.checkIfEODTaskShouldRun(SCHEDULER_TYPE_EMAIL,
                 SCHEDULER_SUB_TYPE_RECRUITER_EOD_SUMMARY)){
+            Logger.info("EOD summary should not run. i.e this task has already been triggered today");
+
             return;
         }
 
@@ -216,10 +221,10 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
             htmlTable.append(
                       "<div>We value your feedback! \n Please login to www.trujobs.in/recruiter and provide feedback for the candidates that you interviewed today!</div><br> \n\n\n"
                     + "<div><font color=\"#0000ff\"><b>For every feedback you provide we would add an interview credit back to your account!! </b></font></div><br>\n\n\n"
-                    + "<div><b>The following candidates would have walked-in for interviews today ("+sdf.format(date)+"): </b></div><br>\n\n\n");
+                    + "<div><b>The following candidates had booked for interviews today ("+sdf.format(date)+"): </b></div><br>\n\n\n");
         } else {
             htmlTable.append("" +
-                     "<div><b>The following interviews are confirmed for tomorrow  ("+sdf.format(date)+"): </b></div><br>\n\n\n"
+                     "<div><b>The following interviews are booked for tomorrow  ("+sdf.format(date)+"): </b></div><br>\n\n\n"
                     +"<div> You can use http://trujobs.in/recruiter/home to track tomorrow's interviews. </div><br>\n\n\n"
             );
         }
@@ -304,7 +309,6 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
                 + "\t\t\t<th>Job Post Title</th>\n"
                 + "\t\t\t<th>Confirmed Interviews</th>\n"
                 + "\t\t\t<th>Awaiting Confirmation</th>\n"
-                + "\t\t\t<th></th>\n"
                 + "\t\t</tr>\n"
                 + "\t</thead><tbody>");
 
@@ -325,10 +329,26 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
 
         htmlTable.append(
                   " <div> Your Job has received "+totalApplications+" applications in the last 24 hrs. Below is a summary of new applications received in the last 24 hrs.</div> "
-                + " <div>Login now at www.trujobs.in to view more details about all applicants!</div><br>\n\n");
+                + " <div>Login now at www.trujobs.in/recruiter to view more details and contact the applicants!</div><br>\n\n");
 
         htmlTable.append(tableContent);
         htmlTable.append("</tbody></table>");
+
+        htmlTable.append("<br><div>You can track all applications from your <a href=\"www.trujobs.in/recruiter\" target=\"_blank\">TruJobs dashboard!</a></div><br>");
+
+        // figure out if recruiter has credit or not, order by history id desc
+        List<RecruiterCreditHistory> creditHistoryList = recruiterProfile.getRecruiterCreditHistoryList();
+        if(creditHistoryList != null && creditHistoryList.size()>0){
+            Collections.sort(creditHistoryList, (o1, o2) -> ((Long) o2.getRecruiterCreditHistoryId())
+                    .compareTo(o1.getRecruiterCreditHistoryId()));
+
+            if(creditHistoryList.get(0).getRecruiterCreditsAvailable() < 1 ){
+                htmlTable.append("<div style=\"color: #4CAF50; font-size: 15px; font-weight: bold;\">Did you know? - Recharging your TruJobs account with interview credits" +
+                        " will let interested candidates directly schedule interviews. Login at www.trujobs.in/recruiter to request interview credits now!!\n</div><br>");
+            }
+        }
+
+
 
         return new EmailEvent(recruiterProfile.getRecruiterProfileEmail(), EmailUtil.getEmailHTML(recruiterProfile, htmlTable.toString()), subject);
     }
@@ -336,24 +356,33 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
     private String getHTMLTableRowForEODSummary(String jobPostTitle, Long jobPostId, SummaryCount summaryCount) {
 
         String link = BASE_URL + "/jobApplicants/"+jobPostId;
-        return "<tr>"+
-                "<td><a href="+link+" target=\"_blank\">"+ jobPostTitle +"</td>"+
-                "<td><a href="+link+"#confirmed"+" target=\"_blank\">"+ summaryCount.getTotalConfirmed() +"</td>"+
-                "<td><a href="+link+"#pendingConfirmation"+" target=\"_blank\">"+ summaryCount.getTotalAwaitingConformation() +"</td>"+
-                "<td><a href="+link+"#pendingConfirmation"+" target=\"_blank\"> View and Confirm Now!</td>"+
-                "</tr>";
+        StringBuilder row = new StringBuilder();
+        row.append("<tr>"+
+                "<td><a href="+link+" target=\"_blank\">"+ jobPostTitle +"</td>");
+
+        // manipulate confirm
+        if(summaryCount.getTotalConfirmed() == 0){
+            row.append("<td>"+ summaryCount.getTotalConfirmed() +"</td>");
+        } else {
+            row.append("<td><a href="+link+"#confirmed"+" target=\"_blank\">"+ summaryCount.getTotalConfirmed() +" (Click to view)</td>");
+        }
+
+
+        // manipulate awaiting
+        if(summaryCount.getTotalAwaitingConformation() == 0){
+            row.append("<td>"+ summaryCount.getTotalAwaitingConformation() +"</td>");
+        } else {
+            row.append("<td><a href="+link+"#pendingConfirmation"+" target=\"_blank\">"+ summaryCount.getTotalAwaitingConformation() +" (Click to view)</td>");
+        }
+
+        row.append("</tr>");
+        return row.toString();
     }
 
     private Map<Long, List<JobPostWorkflow>> getInterviewMap(Date date) {
         // Get all interview that were scheduled for today, inorder to get feedback on each on of it.
-        if(mJobPostWorkflowList == null) {
 
-            mJobPostWorkflowList = JobPostWorkflow.find.where()
-                    .eq("scheduled_interview_date", mSdf.format(date))
-                    .eq("status_id", ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED)
-                    .orderBy().asc("job_post_id")
-                    .findList();
-        }
+        List<JobPostWorkflow> mJobPostWorkflowList = JobPostWorkFlowDAO.getAllInterviewScheduledFor(date);
 
         // prepare map of recruiters and their pending jobPostWorkflow list
         Map<Long, List<JobPostWorkflow>> interviewsPerRecruiterMap = new HashMap<>();

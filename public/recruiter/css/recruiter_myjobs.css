@@ -72,12 +72,14 @@
 }
 
 .feedbackVal{
+    display: inline-block;
+    margin-right: 4px;
     border-radius: 4px;
     background: #ff853b;
     color: white;
     font-size: 12px;
     font-weight: bold;
-    padding: 6px;
+    padding: 7px;
 }
 
 .matchDiv{
@@ -99,13 +101,54 @@
     display: block;
 }
 
+.applicationCount{
+    display: inline-block;
+    background-color: #cecece;
+    border-radius: 50%;
+    color: white;
+    font: bold 12px/15px Helvetica, Verdana, Tahoma;
+    height: 24px;
+    width: 24px;
+    padding: 5px 3px 0 3px;
+    text-align: center;
+    margin-left: 4px;
+}
+
 .headerRibbon{
     border-radius: 4px;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 14px;
     color: white;
     background: rgb(31, 128, 123);
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+.customFeedbackBtn{
+    background: #26a69a;
+    font-weight: bold;
+    margin-right: 8px;
+    color: white;
+    padding: 6px 12px 6px 12px;
+    border-radius: 3px;
+}
+
+.customFeedbackBtn:hover{
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    color: white;
+}
+
+.customUnlockBtn{
+    background: #2aae5e;
+    font-weight: bold;
+    margin-right: 8px;
+    color: white;
+    padding: 6px 12px 6px 12px;
+    border-radius: 3px;
+}
+
+.customUnlockBtn:hover{
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    color: white;
 }
 
 .feedbackBtn{
