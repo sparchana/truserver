@@ -179,6 +179,42 @@ public class JobPostWorkFlowDAO {
                 .findList();
     }
 
+    public static List<JobPostWorkflow> getTomorrowsInterview(List<Long> jobPostIdList, int status, Date today){
+
+
+        SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
+
+        StringBuilder workFlowQueryBuilder = new StringBuilder(
+                " select createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
+                        " job_post_id, status_id from job_post_workflow i " +
+                        " where i.job_post_id " +
+                        " in (" + StringUtils.join(jobPostIdList, ", ")+ ") " +
+                        " and DATE(scheduled_interview_date) = curdate()+1"+
+                        " and status_id >= "+status +
+                        " and job_post_workflow_id = " +
+                        " (select max(job_post_workflow_id) from job_post_workflow " +
+                        "       where i.candidate_id = job_post_workflow.candidate_id " +
+                        "       and i.scheduled_interview_date = job_post_workflow.scheduled_interview_date " +
+                        "       and i.job_post_id = job_post_workflow.job_post_id) ");
+
+        workFlowQueryBuilder.append(
+                " order by job_post_workflow_id desc ");
+
+        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
+                .columnMapping("creation_timestamp", "creationTimestamp")
+                .columnMapping("job_post_id", "jobPost.jobPostId")
+                .columnMapping("status_id", "status.statusId")
+                .columnMapping("candidate_id", "candidate.candidateId")
+                .columnMapping("createdby", "createdBy")
+                .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
+                .columnMapping("scheduled_interview_date", "scheduledInterviewDate")
+                .create();
+
+        return Ebean.find(JobPostWorkflow.class)
+                .setRawSql(rawSql)
+                .findList();
+    }
+
     public static List<JobPostWorkflow> getInterviewsPendingApproval(List<Long> jobPostIdList){
 
         StringBuilder workFlowQueryBuilder = new StringBuilder(

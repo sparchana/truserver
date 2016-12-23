@@ -162,6 +162,14 @@ function renderDashboard() {
                                     return "NA";
                                 }
                             },
+                            'tomorrowsInterview' : function(){
+                                if(jobPost.tomorrowsInterviewCount != null) {
+                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=confirmed_interview_view" style="cursor:pointer;" target="_blank">'+jobPost.tomorrowsInterviewCount+'</a>';
+                                } else {
+                                    return "NA";
+                                }
+                            },
+
                             'completedInterview' : function(){
                                 if(jobPost.completedInterviewCount != null) {
                                     return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=completed_interview_view" style="cursor:pointer;" target="_blank">'+jobPost.completedInterviewCount+'</a>';
@@ -170,7 +178,7 @@ function renderDashboard() {
                                 }
                             },
                             'match' : function () {
-                                return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=match_view" style="cursor:pointer;" target="_blank"><button class="btn btn-success">Match</button></a>'
+                                return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=match_view" style="cursor:pointer;" target="_blank"><button class="btn btn-success">Dashboard</button></a>'
                             }
                         })
                     });
@@ -180,6 +188,7 @@ function renderDashboard() {
             "deferRender": true,
             "columns": [
                 { "data": "jobId" },
+                { "data": "match" },
                 { "data": "jobCreationTimestamp" },
                 { "data": "company" },
                 { "data": "jobTitle" },
@@ -187,19 +196,19 @@ function renderDashboard() {
                 { "data": "jobSalary" },
                 { "data": "jobLocation" },
                 { "data": "jobRole" },
-                { "data": "jobExperience" },
-                { "data": "jobInterviewSchedule" },
-                { "data": "jobInterviewAddress" },
-                { "data": "jobIsHot" },
-                { "data": "jobType" },
                 { "data": "jobStatus" },
+                { "data": "jobIsHot" },
                 { "data": "createdBy" },
                 { "data": "awaitingInterviewSchedule" },
                 { "data": "awaitingRecruiterConfirmation" },
                 { "data": "confirmedInterviews" },
                 { "data": "todaysInterview" },
+                { "data": "tomorrowsInterview" },
                 { "data": "completedInterview" },
-                { "data": "match" }
+                { "data": "jobExperience" },
+                { "data": "jobInterviewSchedule" },
+                { "data": "jobInterviewAddress" },
+                { "data": "jobType" }
             ],
             "order": [[0, "desc"]],
             "language": {
