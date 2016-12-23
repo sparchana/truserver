@@ -118,7 +118,7 @@ public class NotificationUtil {
         String msg = "Hi " + candidate.getCandidateFirstName() + ", Smaple msg";
 
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "title of th enotification", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+            addFcmToNotificationQueue(msg, "title of the notification", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
         } else{
             Logger.info("Token not available");
         }
