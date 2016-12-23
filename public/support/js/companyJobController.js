@@ -35,6 +35,44 @@ function renderDashboard() {
                     var returned_data = new Array();
                     returnedData.forEach(function (jobPost) {
 
+                        var remainingContactCredits = 0;
+                        var remainingInterviewCredits = 0;
+                        if(jobPost.recruiterProfile != null){
+                            var creditHistoryList = jobPost.recruiterProfile.recruiterCreditHistoryList;
+                            creditHistoryList.reverse();
+                            var toCheckContactCreditCount = true;
+                            var toCheckInterviewCreditCount = true;
+                            creditHistoryList.forEach(function (creditHistory){
+                                try{
+                                    if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
+                                        if(toCheckContactCreditCount){
+                                            remainingContactCredits = parseInt(creditHistory.recruiterCreditsAvailable);
+                                            toCheckContactCreditCount = false;
+                                        }
+                                    } else{
+                                        if(toCheckInterviewCreditCount){
+                                            if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
+                                                remainingInterviewCredits = parseInt(creditHistory.recruiterCreditsAvailable);
+                                                toCheckInterviewCreditCount = false;
+                                            }
+                                        }
+                                    }
+                                    if((toCheckContactCreditCount == false) && (toCheckInterviewCreditCount ==false)){
+                                        return false;
+                                    }
+                                } catch(err){}
+                            });
+                        }
+
+                        if(remainingContactCredits > 0){
+                            $("#contactCreditCount").html(remainingContactCredits);
+                            $("#hasCredit").show();
+                            $("#hasNoCredit").hide();
+                        } else{
+                            $("#hasCredit").hide();
+                            $("#hasNoCredit").show();
+                        }
+
                         //addFooter();
                         returned_data.push({
                             'jobId': '<a href="'+"/jobPostDetails/"+jobPost.jobPostId+'" id="'+jobPost.jobPostId+'" style="cursor:pointer;" target="_blank">'+jobPost.jobPostId+'</a>',
@@ -179,7 +217,9 @@ function renderDashboard() {
                             },
                             'match' : function () {
                                 return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=match_view" style="cursor:pointer;" target="_blank"><button class="btn btn-success">Dashboard</button></a>'
-                            }
+                            },
+                            'contactCredits' : remainingContactCredits,
+                            'interviewCredits' : remainingInterviewCredits
                         })
                     });
                     return returned_data;
@@ -193,6 +233,8 @@ function renderDashboard() {
                 { "data": "company" },
                 { "data": "jobTitle" },
                 { "data": "jobRecruiter" },
+                { "data": "contactCredits" },
+                { "data": "interviewCredits" },
                 { "data": "jobSalary" },
                 { "data": "jobLocation" },
                 { "data": "jobRole" },

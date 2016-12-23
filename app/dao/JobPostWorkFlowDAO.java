@@ -181,9 +181,6 @@ public class JobPostWorkFlowDAO {
 
     public static List<JobPostWorkflow> getTomorrowsInterview(List<Long> jobPostIdList, int status, Date today){
 
-
-        SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
-
         StringBuilder workFlowQueryBuilder = new StringBuilder(
                 " select createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
                         " job_post_id, status_id from job_post_workflow i " +
