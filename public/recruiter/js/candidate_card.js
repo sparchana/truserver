@@ -23,6 +23,7 @@ var completedInterviewsFlag = false;
 
 var actionNeeded = false;
 var showStatusFlag = false;
+var showContact = false;
 
 var pendingCount = 0;
 var confirmedCount = 0;
@@ -103,6 +104,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                     confirmedParent.append(candidateCard);
                     confirmedCount++;
                     approvalCount++;
+                    showContact = true;
                 } else if(todayDay.getTime() < interviewDate.getTime()){
 
                     // upcoming interviews [confirmed tab]
@@ -119,6 +121,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                     confirmedParent.append(candidateCard);
                     confirmedCount++;
                     approvalCount++;
+                    showContact = true;
                 } else{
                     // past interviews interviews [confirmed tab]
                     if(!pastInterviewsFlag){
@@ -133,6 +136,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                     showStatusFlag = true;
                     confirmedParent.append(candidateCard);
                     confirmedCount++;
+                    showContact = true;
                 }
                 confirmedParent.append(candidateCard);
                 confirmedCount++;
@@ -163,6 +167,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                 }
                 completedParent.append(candidateCard);
                 completedCount++;
+                showContact = true;
             } else if(value.extraData.workflowStatus.statusId == JWF_STATUS_PRESCREEN_COMPLETED){
 
                 // interview not scheduled applications. Manual contact section [pending tab]
@@ -1198,6 +1203,11 @@ function renderIndividualCandidateCard(value, parent, view) {
     candidateUnlockFont.id = "candidate_" + value.candidate.candidateId;
     if(view == view_search_candidate || view == view_applied_candidate || view == view_tracking_candidate){
         candidateUnlockFont.textContent = "Unlock Contact";
+        if(showContact){
+            unlockCandidateBtn.className = "contactUnlocked right";
+            unlockCandidateBtn.style = "margin-right: 8px";
+            candidateUnlockFont.textContent = value.candidate.candidateMobile;
+        }
     } else if(view == view_unlocked_candidate){
         candidateUnlockFont.textContent = value.candidate.candidateMobile;
     }

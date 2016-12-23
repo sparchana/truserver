@@ -649,10 +649,29 @@ function prePopulateJobSection(jobApplication) {
             jobBodyCol.appendChild(titleRowStatus);
 
             if(jobPost.status.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && jobPost.status.statusId <= JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
+
+                var recruiterBody = document.createElement("div");
+                var recruiterInfo = "";
+
+                //computing recruiter info
+                if(jobPost.jobPost.recruiterProfile != null){
+                    recruiterInfo = jobPost.jobPost.recruiterProfile.recruiterProfileName + " (" + jobPost.jobPost.recruiterProfile.recruiterProfileMobile + ")";
+                } else {
+                    recruiterInfo = "";
+                }
+
+                recruiterBody.textContent = "Recruiter Name: " + recruiterInfo;
+                if(recruiterInfo == ""){
+                    recruiterBody.textContent = "Recruiter Info: " + "Information not available";
+                }
+
+                recruiterBody.style = "margin-top: 8px; margin-right: 12px";
+                titleRowStatus.appendChild(recruiterBody);
+
+                //computing Address
                 var addressBody = document.createElement("div");
                 var address = "";
 
-                //computing Address
                 if(jobPost.jobPost.interviewFullAddress != null && jobPost.jobPost.interviewFullAddress != ""){
                     address = jobPost.jobPost.interviewFullAddress;
                 } else {

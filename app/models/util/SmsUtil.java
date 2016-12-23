@@ -335,6 +335,16 @@ public class SmsUtil {
                 " is scheduled today, between " + jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Please reach the office on time with your documents. All the best!" +
                 "\n\nPlease update your interview status by clicking on this link: www.trujobs.in/u/" + jobPostWorkflow.getJobPost().getJobPostId() + "/" + jobPostWorkflow.getCandidate().getCandidateId();
 
+        //recruiter info
+        String recruiterInfo = null;
+        if(jobPostWorkflow.getJobPost().getRecruiterProfile() != null){
+            recruiterInfo = "Recruiter Name: " + jobPostWorkflow.getJobPost().getRecruiterProfile().getRecruiterProfileName() + "\nContact: "
+                    + jobPostWorkflow.getJobPost().getRecruiterProfile().getRecruiterProfileMobile();
+        }
+        if(recruiterInfo != null){
+            msg += "\n\n" + recruiterInfo;
+        }
+
         //address
         String address = "";
         if(jobPostWorkflow.getJobPost().getInterviewFullAddress() != null && !Objects.equals(jobPostWorkflow.getJobPost().getInterviewFullAddress(), "")){
@@ -354,6 +364,16 @@ public class SmsUtil {
 
         String msg = "Hi " + jobPostWorkflow.getCandidate().getCandidateFirstName() + ", your interview for " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() +
                 " is scheduled tomorrow, between " + jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Please reach the office on time with your documents. All the best!";
+
+        //recruiter info
+        String recruiterInfo = null;
+        if(jobPostWorkflow.getJobPost().getRecruiterProfile() != null){
+            recruiterInfo = "Recruiter Name: " + jobPostWorkflow.getJobPost().getRecruiterProfile().getRecruiterProfileName() + "\nContact: "
+                    + jobPostWorkflow.getJobPost().getRecruiterProfile().getRecruiterProfileMobile();
+        }
+        if(recruiterInfo != null){
+            msg += "\n\n" + recruiterInfo;
+        }
 
         //address
         String address = "";
