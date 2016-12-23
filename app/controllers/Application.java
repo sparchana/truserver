@@ -286,22 +286,6 @@ public class Application extends Controller {
         return ok(toJson(JobService.addJobPost(addJobPostRequest, InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE)));
     }
 
-    public static Result addCompanyLogo() {
-        Http.MultipartFormData body = request().body().asMultipartFormData();
-        Http.MultipartFormData.FilePart picture = body.getFile("picture");
-        if (picture != null) {
-            String fileName = picture.getFilename();
-            String contentType = picture.getContentType();
-            File file = (File) picture.getFile();
-            Logger.info("uploaded! " + file);
-            CompanyService.uploadCompanyLogo(file, fileName);
-            return ok("File uploaded");
-        } else {
-            flash("error", "Missing file");
-            return redirect(routes.Application.index());
-        }
-    }
-
     @Security.Authenticated(SecuredUser.class)
     public static Result addRecruiter() {
         JsonNode req = request().body().asJson();
@@ -393,7 +377,18 @@ public class Application extends Controller {
             File file = (File) companyLogo.getFile();
             Logger.info("uploaded! " + file);
             CompanyService.uploadCompanyLogo(file, fileName);
+
+            List<String> companyId = Arrays.asList(fileName.split("\\s*_\\s*"));
+            if(companyId.get(1) != null){
+                Company company = Company.find.where().eq("CompanyId", companyId.get(1)).findUnique();
+                if(company != null){
+                    company.setCompanyLogo("https://s3.amazonaws.com/trujobs.in/companyLogos/" + fileName);
+                    company.update();
+                }
+            }
             return ok("File uploaded");
+
+
         } else {
             flash("error", "Missing file");
             return redirect(routes.Application.index());
