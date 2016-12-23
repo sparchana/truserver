@@ -35,10 +35,7 @@ import models.entity.*;
 import models.entity.Intelligence.RelatedJobRole;
 import models.entity.OM.*;
 import models.entity.Static.*;
-import models.util.NotificationUtil;
-import models.util.ParseCSV;
-import models.util.SmsUtil;
-import models.util.Util;
+import models.util.*;
 import play.Logger;
 import play.api.Play;
 import play.data.Form;
@@ -1276,95 +1273,11 @@ public class Application extends Controller {
 
     public static Result renderJobPostCards() { return ok(views.html.Fragment.hot_jobs_card_view.render());}
     public static Result pageNotFound() { return ok(views.html.page_not_found.render());}
-    public static Result renderJobRelatedPages(String jobTitleString){
-        String jobPostTitle;
-        String jobCompany;
-        String jobLocation;
-        Long jobPostId;
-        String jobRoleName;
-        Long jobRoleId;
-
-        Pattern patternAllWithPostId = Pattern.compile("(.*)(-jobs)(.*)(-in-)(.*)(-at-)(.*)(\\d)");
-        Matcher mAllWithPostId = patternAllWithPostId.matcher(jobTitleString);
-        if(mAllWithPostId.find()){
-            jobLocation = mAllWithPostId.group(5);
-            String[] splitJobCompany = mAllWithPostId.group(7).split("-");
-            jobCompany = splitJobCompany[0];
-            jobPostTitle = mAllWithPostId.group(1);
-            String[] splitJobPostId = (mAllWithPostId.group(7)).split("-");
-            //condition for single digit Job-Post-Id
-            if(!splitJobPostId[splitJobPostId.length-1].matches("(.*)(\\d)")){
-                jobPostId = Long.valueOf(mAllWithPostId.group(8));
-            }
-            else{
-                jobPostId = Long.valueOf(splitJobPostId[splitJobPostId.length-1] + mAllWithPostId.group(8));
-            }
-            return ok(views.html.Fragment.posted_job_details.render(jobLocation,jobCompany,jobPostTitle,jobPostId));
-        }
-
-        Pattern patternAll = Pattern.compile("(.*)(-jobs)(.*)(-in-)(.*)(-at-)(.*)(\\D)");
-        Matcher mAll = patternAll.matcher(jobTitleString);
-        if(mAll.find()){
-            return ok("Job Role in Location at Company");
-        }
-
-        Pattern patternCompany = Pattern.compile("(^)(jobs-at-)(.*)");
-        Matcher mCompany = patternCompany.matcher(jobTitleString);
-        if(mCompany.find()){
-            return ok("Jobs at Company");
-        }
-
-        Pattern patternLocationCompany = Pattern.compile("(^)(jobs)(.*)(-in-)(.*)(-at-)(.*)");
-        Matcher mLocationCompany = patternLocationCompany.matcher(jobTitleString);
-        if(mLocationCompany.find()){
-            return ok("Jobs in Location at Company");
-        }
-
-        Pattern patternLocation = Pattern.compile("(^)(jobs-in-)(.*)");
-        Matcher mLocation = patternLocation.matcher(jobTitleString);
-        if(mLocation.find()){
-            return ok(views.html.Fragment.show_all_jobs_page.render());
-        }
-
-        Pattern patternJobRole = Pattern.compile("(.*)(-jobs-)(.*)(\\d)");
-        Matcher mJobRole = patternJobRole.matcher(jobTitleString);
-        if(mJobRole.find()){
-            jobRoleName = mJobRole.group(1);
-            String[] splitJobRoleId = (mJobRole.group(3)).split("-");
-            //condition for single digit Job-Role-Id
-            if(!splitJobRoleId[splitJobRoleId.length-1].matches("(.*)(\\d)")){
-                jobRoleId = Long.valueOf(mJobRole.group(4));
-            }
-            else{
-                jobRoleId = Long.valueOf(splitJobRoleId[splitJobRoleId.length-1] + mJobRole.group(4));
-            }
-            return ok(views.html.Fragment.job_role_page.render(jobRoleName,jobRoleId));
-        }
-
-        Pattern patternJobRoleCompany = Pattern.compile("(.*)(-jobs)(.*)(-at-)(.*)");
-        Matcher mJobRoleCompany = patternJobRoleCompany.matcher(jobTitleString);
-        if(mJobRoleCompany.find()){
-            return ok("Job Role at Company");
-        }
-
-        Pattern patternJobRoleLocation = Pattern.compile("(.*)(-jobs)(.*)(-in-)(.*)(\\d)");
-        Matcher mJobRoleLocation = patternJobRoleLocation.matcher(jobTitleString);
-        if(mJobRoleLocation.find()){
-            jobRoleName = mJobRoleLocation.group(1);
-            String[] splitJobRoleId = (mJobRoleLocation.group(5)).split("-");
-            //condition for single digit Job-Role-Id
-            if(!splitJobRoleId[splitJobRoleId.length-1].matches("(.*)(\\d)")){
-                jobRoleId = Long.valueOf(mJobRoleLocation.group(6));
-            }
-            else{
-                jobRoleId = Long.valueOf(splitJobRoleId[splitJobRoleId.length-1] + mJobRoleLocation.group(6));
-            }
-            return ok(views.html.Fragment.job_role_page.render(jobRoleName,jobRoleId));
-        }
-        return ok("ERROR");
+    public static Result renderJobRelatedPages(String urlString){
+        UrlValidatorUtil urlValidatorUtil = new UrlValidatorUtil();
+        return (urlValidatorUtil.URLValidator(urlString));
     }
-
-    public static Result getJobPostDetails(String jobTitleSting,Long index) {
+    public static Result getJobPostDetails(String jobTitleSting,Long index){
         String jobPostTitle;
         String jobCompany;
         String jobLocation;

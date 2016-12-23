@@ -278,6 +278,11 @@ function processDataAllJobPosts(returnedData) {
                 jobTitle.textContent = jobPost.jobPostTitle + " | " + jobPost.company.companyName;
                 jobBodyCol.appendChild(jobTitle);
 
+                var jobRole = document.createElement("h5");
+                jobRole.style = "color:rgba(0, 159, 219, 0.99)";
+                jobRole.textContent = jobPost.jobRole.jobName + " Job";
+                jobBodyCol.appendChild(jobRole);
+
                 var hr = document.createElement("hr");
                 jobBodyCol.appendChild(hr);
 
