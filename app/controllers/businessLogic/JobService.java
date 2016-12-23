@@ -147,37 +147,7 @@ public class JobService {
             JobPost jobPost = existingJobPost;
 
             new Thread(() -> {
-
-                Map<Long, CandidateWorkflowData> candidateSearchMap = JobPostWorkflowEngine.getCandidateForRecruiterSearch(
-                        null, //age
-                        null, //min salary
-                        null, //max salary
-                        jobPost.getGender(), //gender
-                        null, //experience
-                        jobPost.getJobRole().getJobRoleId(), //jobRole
-                        null, //education
-                        null, //locality
-                        null, //language list
-                        20.00);
-
-                if(candidateSearchMap != null){
-                    Logger.info("Sending notification to " + candidateSearchMap.size() + " candidates regarding the jobPost: " + jobPost.getJobPostTitle());
-
-                    //adding to notification Handler queue
-                    for (Map.Entry<Long, CandidateWorkflowData> candidate : candidateSearchMap.entrySet()) {
-                        if(jobPost.getRecruiterProfile().totalInterviewCredits() > 0){
-                            //recruiter has interview credits
-                            SmsUtil.sendJobPostSmsToCandidate(jobPost, candidate.getValue().getCandidate());
-                            NotificationUtil.sendJobPostNotificationToCandidate(jobPost, candidate.getValue().getCandidate());
-
-                        } else{
-                            //recruiter doesn't have interview credits
-                            SmsUtil.sendJobPostSmsToCandidate(jobPost, candidate.getValue().getCandidate());
-                            NotificationUtil.sendJobPostNotificationToCandidate(jobPost, candidate.getValue().getCandidate());
-                        }
-                    }
-                }
-
+                sendSmsToCandidateMatchingWithJobPost(jobPost);
             }).start();
 
 
@@ -1163,6 +1133,55 @@ public class JobService {
             jobPostToLocalityList.add(jobPostToLocality);
         }
         return jobPostToLocalityList;
+    }
+
+    public static List<JobPost> getAllJobPostWithRecruitersWithInterviewCredits() {
+        List<JobPost> jobPostListToReturn = new ArrayList<>();
+
+        List<JobPost> jobPostList = JobPost.find.where()
+                .isNotNull("JobRecruiterId")
+                .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                .eq("Source", ServerConstants.SOURCE_INTERNAL)
+                .findList();
+
+        for(JobPost j: jobPostList){
+            if(j.getRecruiterProfile().totalInterviewCredits() > 0){
+                jobPostListToReturn.add(j);
+            }
+        }
+        return jobPostListToReturn;
+    }
+
+    public static void sendSmsToCandidateMatchingWithJobPost(JobPost jobPost){
+        Map<Long, CandidateWorkflowData> candidateSearchMap = JobPostWorkflowEngine.getCandidateForRecruiterSearch(
+                null, //age
+                null, //min salary
+                null, //max salary
+                jobPost.getGender(), //gender
+                null, //experience
+                jobPost.getJobRole().getJobRoleId(), //jobRole
+                null, //education
+                null, //locality
+                null, //language list
+                20.00);
+
+        if(candidateSearchMap != null){
+            Logger.info("Sending notification to " + candidateSearchMap.size() + " candidates regarding the jobPost: " + jobPost.getJobPostTitle());
+
+            //adding to notification Handler queue
+            for (Map.Entry<Long, CandidateWorkflowData> candidate : candidateSearchMap.entrySet()) {
+                if(jobPost.getRecruiterProfile().totalInterviewCredits() > 0){
+                    //recruiter has interview credits
+                    SmsUtil.sendJobPostSmsToCandidate(jobPost, candidate.getValue().getCandidate());
+                    NotificationUtil.sendJobPostNotificationToCandidate(jobPost, candidate.getValue().getCandidate());
+
+                } else{
+                    //recruiter doesn't have interview credits
+                    SmsUtil.sendJobPostSmsToCandidate(jobPost, candidate.getValue().getCandidate());
+                    NotificationUtil.sendJobPostNotificationToCandidate(jobPost, candidate.getValue().getCandidate());
+                }
+            }
+        }
     }
 
 }
