@@ -64,15 +64,6 @@ function renderDashboard() {
                             });
                         }
 
-                        if(remainingContactCredits > 0){
-                            $("#contactCreditCount").html(remainingContactCredits);
-                            $("#hasCredit").show();
-                            $("#hasNoCredit").hide();
-                        } else{
-                            $("#hasCredit").hide();
-                            $("#hasNoCredit").show();
-                        }
-
                         //addFooter();
                         returned_data.push({
                             'jobId': '<a href="'+"/jobPostDetails/"+jobPost.jobPostId+'" id="'+jobPost.jobPostId+'" style="cursor:pointer;" target="_blank">'+jobPost.jobPostId+'</a>',

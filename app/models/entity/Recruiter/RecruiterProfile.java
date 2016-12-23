@@ -1,5 +1,6 @@
 package models.entity.Recruiter;
 
+import api.ServerConstants;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.PrivateOwned;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -13,9 +14,11 @@ import models.entity.RecruiterCreditHistory;
 import models.entity.JobPost;
 import models.entity.Recruiter.Static.RecruiterProfileStatus;
 import models.entity.Recruiter.Static.RecruiterStatus;
+import play.Logger;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -299,4 +302,27 @@ public class RecruiterProfile extends Model {
     public void setRecruiterAuth(RecruiterAuth recruiterAuth) {
         this.recruiterAuth = recruiterAuth;
     }
+
+    public Integer totalContactCredits() {
+        List<RecruiterCreditHistory> creditHistoryList = this.getRecruiterCreditHistoryList();
+        Collections.reverse(creditHistoryList);
+        for(RecruiterCreditHistory creditHistory : creditHistoryList){
+            if(creditHistory.getRecruiterCreditCategory().getRecruiterCreditCategoryId() == ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK){
+                return creditHistory.getRecruiterCreditsAvailable();
+            }
+        }
+        return 0;
+    }
+
+    public Integer totalInterviewCredits() {
+        List<RecruiterCreditHistory> creditHistoryList = this.getRecruiterCreditHistoryList();
+        Collections.reverse(creditHistoryList);
+        for(RecruiterCreditHistory creditHistory : creditHistoryList){
+            if(creditHistory.getRecruiterCreditCategory().getRecruiterCreditCategoryId() == ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK){
+                return creditHistory.getRecruiterCreditsAvailable();
+            }
+        }
+        return 0;
+    }
+
 }

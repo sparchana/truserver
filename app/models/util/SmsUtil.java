@@ -558,4 +558,9 @@ public class SmsUtil {
                 + " at " + jobApplication.getJobPost().getCompany().getCompanyName() + ". You can contact TruJobs at 8880007799 for any queries. www.trujobs.in. Download Trujobs app at http://bit.ly/2d7zDqR";
         addSmsToNotificationQueue(jobApplication.getCandidate().getCandidateMobile(), msg);
     }
+
+    public static void sendJobPostSmsToCandidate(JobPost jobPost, Candidate candidate) {
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", Smaple msg";
+        addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
+    }
 }
