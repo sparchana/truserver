@@ -164,7 +164,7 @@ public class NotificationUtil {
         }
     }
 
-    public static void SODNotificationToCandidateRecHasCredits(JobPost jobPost, Candidate candidate) {
+    public static void sendSODNotificationToCandidateRecHasCredits(JobPost jobPost, Candidate candidate) {
         String jobLocalities = "";
         String salary;
         if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
@@ -188,7 +188,7 @@ public class NotificationUtil {
         }
     }
 
-    public static void EODNotificationToCandidatePostInterview(JobPost jobPost, Candidate candidate) {
+    public static void sendEODNotificationToCandidatePostInterview(JobPost jobPost, Candidate candidate) {
         String msg = "Hi " + candidate.getCandidateFirstName() + ", you had an interview today for " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". " +
                 "How would you rate your experience with TruJobs? Please rate us on bit.ly/trujobsapp";
 

@@ -3,16 +3,21 @@ package controllers.scheduler.task;
 import api.http.httpResponse.CandidateWorkflowData;
 import controllers.businessLogic.JobService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import controllers.scheduler.SchedulerManager;
 import models.entity.JobPost;
+import models.entity.scheduler.SchedulerStats;
+import models.entity.scheduler.Static.SchedulerSubType;
+import models.entity.scheduler.Static.SchedulerType;
 import models.util.NotificationUtil;
 import models.util.SmsUtil;
 import play.Logger;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
 
-import static controllers.businessLogic.JobService.sendSmsToCandidateMatchingWithJobPost;
+import static controllers.scheduler.SchedulerConstants.*;
 
 /**
  * Created by dodo on 23/12/16.
@@ -51,9 +56,46 @@ public class SODNotifyCandidateAboutJobPostTask extends TimerTask {
                     //adding to notification Handler queue
                     for (Map.Entry<Long, CandidateWorkflowData> candidate : candidateSearchMap.entrySet()) {
                         if(hasCredit){
+
                             //recruiter has interview credits
-                            SmsUtil.SODSmsToCandidateRecHasCredits(jobPost, candidate.getValue().getCandidate());
-                            NotificationUtil.SODNotificationToCandidateRecHasCredits(jobPost, candidate.getValue().getCandidate());
+                            Timestamp startTime = new Timestamp(System.currentTimeMillis());
+                            SchedulerSubType subType = SchedulerSubType.find.where()
+                                    .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_SOD_JOB_ALERT)
+                                    .findUnique();
+
+                            SchedulerType type = SchedulerType.find.where()
+                                    .eq("schedulerTypeId", SCHEDULER_TYPE_SMS).findUnique();
+
+                            String note = "SMS alert for New Job alert.";
+
+                            SchedulerStats newSchedulerStats = new SchedulerStats();
+                            newSchedulerStats.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
+
+                            //sending sms
+                            SmsUtil.sendSODSmsToCandidateRecHasCredits(jobPost, candidate.getValue().getCandidate());
+
+                            Timestamp endTime = new Timestamp(System.currentTimeMillis());
+                            SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
+
+                            /* Notification part */
+                            startTime = new Timestamp(System.currentTimeMillis());
+                            subType = SchedulerSubType.find.where()
+                                    .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_SOD_JOB_ALERT)
+                                    .findUnique();
+
+                            type = SchedulerType.find.where()
+                                    .eq("schedulerTypeId", SCHEDULER_TYPE_FCM).findUnique();
+
+                            note = "Android notification alert for New Job alert.";
+
+                            newSchedulerStats = new SchedulerStats();
+                            newSchedulerStats.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
+
+                            //sending notification
+                            NotificationUtil.sendSODNotificationToCandidateRecHasCredits(jobPost, candidate.getValue().getCandidate());
+
+                            endTime = new Timestamp(System.currentTimeMillis());
+                            SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
                         }
                     }
                 }

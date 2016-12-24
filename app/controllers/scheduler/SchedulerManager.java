@@ -66,9 +66,9 @@ public class SchedulerManager implements Runnable {
 
         createAadhaarVerificationEvent(aadhaarVerificationDelay);
 
-        //createStartOfTheDayJobPostEvent(jobPostInfoDelay);
+//        createStartOfTheDayJobPostEvent(jobPostInfoDelay);
 
-        //createEODRateUsPostInterview(jobPostInfoDelay);
+//        createEODRateUsPostInterview(rateUsPostInterviewDelay);
     }
 
     private void createSameDayInterviewAlertEvent(int hr) {
