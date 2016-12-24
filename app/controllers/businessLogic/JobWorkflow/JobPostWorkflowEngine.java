@@ -45,6 +45,7 @@ import java.util.*;
 import static api.ServerConstants.*;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
 import static models.util.SmsUtil.*;
+import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 import static play.mvc.Results.ok;
 
@@ -1444,6 +1445,15 @@ public class JobPostWorkflowEngine {
                                       status,
                                       today);
 
+        List<CandidateInterviewStatusUpdate> interviewStatusUpdateList = CandidateInterviewStatusUpdate.find.where()
+                .in("JobPostId", interviewTodayRequest.getJpId())
+                .findList();
+
+        Map<Long, CandidateInterviewStatusUpdate> candidateStatusMap = new HashMap<>();
+        for (CandidateInterviewStatusUpdate statusUpdate : interviewStatusUpdateList) {
+            candidateStatusMap.put(statusUpdate.getCandidate().getCandidateId(), statusUpdate);
+        }
+
         for (JobPostWorkflow jpWf : jobPostWorkflowList) {
             InterviewTodayResponse response = new InterviewTodayResponse();
             response.setCandidate(jpWf.getCandidate());
@@ -1452,6 +1462,17 @@ public class JobPostWorkflowEngine {
             response.setCurrentStatus(jpWf.getStatus());
 
             response.setLastUpdate(null);
+
+            if(candidateStatusMap.size() > 0){
+                if(candidateStatusMap.get(jpWf.getCandidate().getCandidateId()) != null){
+                    response.setReason(candidateStatusMap.get(jpWf.getCandidate().getCandidateId()).getRejectReason());
+                } else{
+                    response.setReason(null);
+                }
+            } else{
+                response.setReason(null);
+            }
+
             //set the last update timestamp only when the candidate has updated their status (Not going, delayed etc.)
             //if not updated, set as null
             if(jpWf.getStatus().getStatusId() > ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED) {
@@ -1633,6 +1654,7 @@ public class JobPostWorkflowEngine {
             candidateIdList.add(candidate.getCandidateId());
         }
         /* */
+
         List<JobApplication> allJobApplication = JobApplication.find.where().in("candidateId", candidateIdList).eq("jobPostId", jobPost.getJobPostId()).findList();
 
 //        List<CandidateAssessmentAttempt> allAssessmentAttempt
@@ -1690,6 +1712,17 @@ public class JobPostWorkflowEngine {
                 .desc("objectBUUId")
                 .findList();
         Map<String, Integer> candidateWithPreScreenAttemptCountMap = new TreeMap<>();
+
+        //getting all the status of candidate with respect of the job post
+        List<CandidateInterviewStatusUpdate> interviewStatusUpdateList = CandidateInterviewStatusUpdate.find.where()
+                .eq("JobPostId", jobPost.getJobPostId())
+                .findList();
+
+        //putting it in the map
+        Map<Long, CandidateInterviewStatusUpdate> candidateStatusMap = new HashMap<>();
+        for (CandidateInterviewStatusUpdate statusUpdate : interviewStatusUpdateList) {
+            candidateStatusMap.put(statusUpdate.getCandidate().getCandidateId(), statusUpdate);
+        }
 
         for (Interaction interaction : allPreScreenCallAttemptInteractions) {
             Integer count = candidateWithPreScreenAttemptCountMap.get(interaction.getObjectBUUId());
@@ -1763,7 +1796,7 @@ public class JobPostWorkflowEngine {
                             JobPostWorkflow jobPostWorkflowLatest = JobPostWorkflow.find.where()
                                     .eq("candidate_id", candidate.getCandidateId())
                                     .eq("Job_post_id", jobPostWorkflow.getJobPost().getJobPostId())
-                                    .orderBy().desc("creation_timestamp").setMaxRows(1).findUnique();
+                                    .orderBy().desc("job_post_workflow_id").setMaxRows(1).findUnique();
 
                             candidateExtraData.setWorkflowStatus(jobPostWorkflowLatest.getStatus());
                             candidateExtraData.setInterviewDate(jobPostWorkflowLatest.getScheduledInterviewDate());
@@ -1781,6 +1814,10 @@ public class JobPostWorkflowEngine {
                                 candidateExtraData.setCandidateInterviewStatus(candidateInterviewStatusUpdate.getJobPostWorkflow().getStatus());
                                 candidateExtraData.setInterviewDate(candidateInterviewStatusUpdate.getJobPostWorkflow().getScheduledInterviewDate());
                                 candidateExtraData.setInterviewSlot(candidateInterviewStatusUpdate.getJobPostWorkflow().getScheduledInterviewTimeSlot());
+                            }
+                            candidateExtraData.setReason(null);
+                            if(candidateStatusMap.get(candidate.getCandidateId()) != null){
+                                candidateExtraData.setReason(candidateStatusMap.get(candidate.getCandidateId()).getRejectReason());
                             }
                         }
                     }
@@ -2410,7 +2447,24 @@ public class JobPostWorkflowEngine {
     public static JobPostWorkflow getCandidateLatestStatus(Candidate candidate, JobPost jobPost) {
         // fetch existing workflow old
 
-        return JobPostWorkFlowDAO.getJobPostWorkflowCurrent(jobPost.getJobPostId(), candidate.getCandidateId());
+        JobPostWorkflow jobPostWorkflow = JobPostWorkFlowDAO.getJobPostWorkflowCurrent(jobPost.getJobPostId(), candidate.getCandidateId());
+
+        if(jobPostWorkflow != null){
+            Date interviewDate = jobPostWorkflow.getScheduledInterviewDate();
+            Calendar now = Calendar.getInstance();
+
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(interviewDate);
+
+            if(now.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && (now.get(Calendar.MONTH) + 1) == (cal.get(Calendar.MONTH) + 1)
+                    && now.get(Calendar.DATE) == cal.get(Calendar.DATE)){
+
+                return JobPostWorkFlowDAO.getJobPostWorkflowCurrent(jobPost.getJobPostId(), candidate.getCandidateId());
+            }
+        }
+
+        return null;
+
     }
 
     public static Integer updateFeedback(AddFeedbackRequest addFeedbackRequest, int channel) {

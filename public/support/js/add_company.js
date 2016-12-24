@@ -13,7 +13,9 @@ var interviewCredits = 0;
 var candidateCreditTypeStatus = 1;
 var interviewCreditTypeStatus = 1;
 
-    $('input[type=file]').change(function () {
+var logoTitle = "";
+
+$('input[type=file]').change(function () {
     f = this.files[0];
 });
 
@@ -30,28 +32,26 @@ function readURL(input) {
     }
 }
 
-function uploadLogo(){
-    var x = document.getElementById("companyLogo");
-    if ('files' in x) {
-        if (x.files.length == 0) {
-        } else {
-            for (var i = 0; i < x.files.length; i++) {
-                var file = x.files[i];
+function uploadLogo(returnedCompanyId){
+    var file = $('#companyLogo')[0].files[0];
+    var formData = new FormData();
 
-                var data = new FormData();
-                data.append('picture', file);
-                $.ajax({
-                    type: "POST",
-                    url: "/addCompanyLogo",
-                    async: true,
-                    data: data,
-                    cache: false,
-                    contentType: false,
-                    processData: false
-                });
-            }
-        }
-    }
+    var companyName = $("#companyName").val();
+    var combinedName = companyName.split(' ').join('_');
+    var ext = "." + f.type.substring(6, f.type.length);
+    logoTitle = "TJ_" + returnedCompanyId + "_" + combinedName + ext;
+
+    formData.append('file', file, logoTitle);
+
+    $.ajax({
+        type: "POST",
+        url: "/addCompanyLogo",
+        async: true,
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false
+    });
 }
 
 function closeCreditModal() {
@@ -59,9 +59,19 @@ function closeCreditModal() {
 }
 
 function processDataAddCompany(returnedData) {
-    console.log(returnedData);
+
     companyId = returnedData.companyId;
     companyStatus = returnedData.status;
+    if(companyStatus == 4){
+        companyStatus = -1;
+        $("#recruiterCompany").prop('disabled', false);
+        $("#recruiterCompany").val(companyId);
+        $("#companySection").hide();
+    } else {
+        if(document.getElementById("companyLogo").value != "") {
+            uploadLogo(companyId);
+        }
+    }
 }
 
 $(document).ready(function() {
@@ -113,7 +123,7 @@ function updateForm() {
             status=0;
         }
         else{
-            logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
+            logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/default_company_logo.png";
             status = 1;
         }
     } else {
@@ -147,9 +157,6 @@ function updateForm() {
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
-        if(document.getElementById("companyLogo").value != "") {
-            uploadLogo();
-        }
     }
 }
 
@@ -159,6 +166,10 @@ function processDataAddRecruiter(returnedData) {
 
 function processDataUpdateCompany(returnedData) {
     if(returnedData.status == 2){
+        if(document.getElementById("companyLogo").value != "") {
+            uploadLogo(returnedData.companyId);
+        }
+
         alert("Company successfully updated");
         window.close();
     } else{
@@ -174,10 +185,14 @@ function saveForm(){
         if($("#companyName").val() == ""){
             alert("Please Enter company Name");
             status=0;
-        } else if(document.getElementById("companyLogo").value != "" && (f.type).substring(0,1) != "i"){
+        } else if((f.type).substring(0,1) != "i"){
             alert("Please select a valid image for logo");
             status=0;
+        } else{
+            logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/default_company_logo.png";
+            status = 1;
         }
+
         if(status == 1){
             var d;
             var logo;
@@ -185,8 +200,6 @@ function saveForm(){
             if ($("#companyLogo").val() != "") {
                 if (($("#companyLogo").val()).substring(0, 4) == "http") {
                     logo = $("#companyLogo").val();
-                } else {
-                    logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
                 }
             }
             else {
@@ -217,15 +230,6 @@ function saveForm(){
                 });
             } catch (exception) {
                 console.log("exception occured!!" + exception);
-            }
-
-            if(companyStatus == 4){
-                companyStatus = -1;
-                $("#recruiterCompany").prop('disabled', false);
-                $("#recruiterCompany").val(companyId);
-                $("#companySection").hide();
-            } else {
-                uploadLogo();
             }
         }
     }

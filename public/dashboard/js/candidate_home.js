@@ -333,12 +333,12 @@ function processDataAndFillMinProfile(returnedData) {
         localStorage.setItem("gender", returnedData.candidateGender);
         if (returnedData.candidateGender == 0) {
             try{
-                document.getElementById("userGender").innerHTML = ", Male";
+                document.getElementById("userGender").innerHTML = " , Male";
                 $("#userImg").attr('src', '/assets/dashboard/img/userMale.svg');
             } catch(err){}
         } else {
             try{
-                document.getElementById("userGender").innerHTML = ", Female";
+                document.getElementById("userGender").innerHTML = " , Female";
                 $("#userImg").attr('src', '/assets/dashboard/img/userFemale.svg');
             } catch(err){}
         }
@@ -359,7 +359,7 @@ function processDataAndFillMinProfile(returnedData) {
         if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
             age--;
         }
-        document.getElementById("userAge").innerHTML = ", " + age + " years";
+        document.getElementById("userAge").innerHTML = " , " + age + " years";
     }
     try {
         var jobRoles = "";

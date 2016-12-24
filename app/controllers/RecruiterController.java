@@ -12,6 +12,7 @@ import api.http.httpResponse.CandidateWorkflowData;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
@@ -27,11 +28,14 @@ import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
+import org.apache.commons.logging.Log;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
@@ -218,7 +222,20 @@ public class RecruiterController {
                 if(recruiterProfile != null){
                     if(jobPost.getRecruiterProfile() != null){
                         if(Objects.equals(jobPost.getRecruiterProfile().getRecruiterProfileId(), recruiterProfile.getRecruiterProfileId())){
-                            return ok(toJson(JobPostWorkflowEngine.getRecruiterJobLinedUpCandidates(jobPostId)));
+
+                            //initially we were returning the returned map directly. Since we need the list of candidate in ascending order of the interview date,
+                            //  we are adding the values of the map in a list. This is being done because the order of map vales was getting sorted in ascending value
+                            // with respect to the key valus. Hence using a list here
+
+                            Map<Long, CandidateWorkflowData> selectedCandidateMap =
+                                                             JobPostWorkflowEngine.getRecruiterJobLinedUpCandidates(jobPostId);
+
+                            List<CandidateWorkflowData> jobApplicantList = new LinkedList<>();
+                            for (Map.Entry<Long, CandidateWorkflowData> entry : selectedCandidateMap.entrySet()) {
+                                jobApplicantList.add(entry.getValue());
+                            }
+
+                            return ok(toJson(jobApplicantList));
                         }
                     }
                 }
@@ -246,7 +263,7 @@ public class RecruiterController {
                 return ok(toJson(jobPostWorkflowList));
             }
             // if candidate who have applied to the jobpost, only those jobpostworkflow obj will be returned
-            jobPostWorkflowList = new JobPostWorkFlowDAO().getJobApplications(jpIdList.substring(0, jpIdList.length()-2));
+            jobPostWorkflowList = JobPostWorkFlowDAO.getJobApplications(jpIdList.substring(0, jpIdList.length()-2));
 
             Map<Long, RecruiterJobPostObject> recruiterJobPostResponseMap = new LinkedHashMap<>();
             for(JobPostWorkflow jpwf : jobPostWorkflowList){
@@ -265,9 +282,40 @@ public class RecruiterController {
                 }
                 if(response.get(jpwf.getCandidate().getCandidateId()) == null){
                     response.put(jpwf.getCandidate().getCandidateId(), jpwf);
+
+                    //here we are enhancing the 'new application' interview count. We have two variables now.
+                    // pendingCount: contains all the application whose status is 'Scheduled'
+                    // upcoming count: contains all the application whose status is confirmed and feedback is not set
+
+                    Date today = new Date();
+                    Calendar now = Calendar.getInstance();
+                    Calendar cal = Calendar.getInstance();
+
+                    //checking all the pendingConfirmation applications
                     if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
-                        singleObject.setPendingCount(singleObject.getPendingCount()+1);
+                        singleObject.setPendingCount(singleObject.getPendingCount() + 1);
+                    } else if(jpwf.getStatus().getStatusId() >= ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED
+                            && jpwf.getStatus().getStatusId() < ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+
+                        //checking all the todays and upcoming interview applications
+
+
+                        Date interviewDate = jpwf.getScheduledInterviewDate();
+                        cal.setTime(interviewDate);
+
+                        //today's interviews
+                        if(now.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && (now.get(Calendar.MONTH) + 1) == (cal.get(Calendar.MONTH) + 1)
+                                && now.get(Calendar.DATE) == cal.get(Calendar.DATE)){
+
+                            singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
+                        } else if(interviewDate.after(today)){
+                            //future interviews
+                            singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
+                        }
+
+                        //rest all the applications are past interviews, hence we are not counting
                     }
+
                     singleObject.setTotalCount(singleObject.getTotalCount()+1);
                     singleObject.setJobPostWorkflowMap(response);
                 }
@@ -295,17 +343,20 @@ public class RecruiterController {
     public static class RecruiterJobPostObject{
         Map<Long, JobPostWorkflow> jobPostWorkflowMap;
         int pendingCount;
+        int upcomingCount;
         int totalCount;
         JobPost jobPost;
 
         public RecruiterJobPostObject() {
             pendingCount = 0;
             totalCount = 0;
+            upcomingCount = 0;
         }
 
-        public RecruiterJobPostObject(Map<Long, JobPostWorkflow> jobPostWorkflowMap, int pendingCount, int totalCount) {
+        public RecruiterJobPostObject(Map<Long, JobPostWorkflow> jobPostWorkflowMap, int pendingCount, int totalCount, int upcomingCount) {
             this.jobPostWorkflowMap = jobPostWorkflowMap;
             this.pendingCount = pendingCount;
+            this.upcomingCount = upcomingCount;
             this.totalCount = totalCount;
         }
 
@@ -339,6 +390,14 @@ public class RecruiterController {
 
         public void setJobPost(JobPost jobPost) {
             this.jobPost = jobPost;
+        }
+
+        public int getUpcomingCount() {
+            return upcomingCount;
+        }
+
+        public void setUpcomingCount(int upcomingCount) {
+            this.upcomingCount = upcomingCount;
         }
     }
 
@@ -421,7 +480,7 @@ public class RecruiterController {
                     //getting limited results
                     for (CandidateWorkflowData val : listToBeReturned) {
                         if(count >= matchingCandidateRequest.getInitialValue()){
-                            if(count < (matchingCandidateRequest.getInitialValue()+10) ){
+                            if(count < (matchingCandidateRequest.getInitialValue() + 10) ){
                                 val.getCandidate().setCandidateMobile("");
                                 val.getCandidate().setCandidateEmail("");
                                 finalListToBeReturned.add(val);

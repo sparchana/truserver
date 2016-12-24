@@ -5,6 +5,7 @@ import controllers.Global;
 import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.OM.InterviewDetails;
+import models.entity.OM.JobPostToLocality;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Partner;
 import models.entity.Recruiter.RecruiterProfile;
@@ -332,7 +333,18 @@ public class SmsUtil {
     public static String getSameDayInterviewAlertSmsString(JobPostWorkflow jobPostWorkflow){
 
         String msg = "Hi " + jobPostWorkflow.getCandidate().getCandidateFirstName() + ", your interview for " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() +
-                " is scheduled today, between " + jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Please reach the office on time with your documents. All the best!";
+                " is scheduled today, between " + jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Please reach the office on time with your documents. All the best!" +
+                "\n\nPlease update your interview status by clicking on this link: www.trujobs.in/u/" + jobPostWorkflow.getJobPost().getJobPostId() + "/" + jobPostWorkflow.getCandidate().getCandidateId();
+
+        //recruiter info
+        String recruiterInfo = null;
+        if(jobPostWorkflow.getJobPost().getRecruiterProfile() != null){
+            recruiterInfo = "Recruiter Name: " + jobPostWorkflow.getJobPost().getRecruiterProfile().getRecruiterProfileName() + "\nContact: "
+                    + jobPostWorkflow.getJobPost().getRecruiterProfile().getRecruiterProfileMobile();
+        }
+        if(recruiterInfo != null){
+            msg += "\n\n" + recruiterInfo;
+        }
 
         //address
         String address = "";
@@ -353,6 +365,16 @@ public class SmsUtil {
 
         String msg = "Hi " + jobPostWorkflow.getCandidate().getCandidateFirstName() + ", your interview for " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() +
                 " is scheduled tomorrow, between " + jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Please reach the office on time with your documents. All the best!";
+
+        //recruiter info
+        String recruiterInfo = null;
+        if(jobPostWorkflow.getJobPost().getRecruiterProfile() != null){
+            recruiterInfo = "Recruiter Name: " + jobPostWorkflow.getJobPost().getRecruiterProfile().getRecruiterProfileName() + "\nContact: "
+                    + jobPostWorkflow.getJobPost().getRecruiterProfile().getRecruiterProfileMobile();
+        }
+        if(recruiterInfo != null){
+            msg += "\n\n" + recruiterInfo;
+        }
 
         //address
         String address = "";
@@ -536,5 +558,68 @@ public class SmsUtil {
         String msg = "Hi " + jobApplication.getCandidate().getCandidateFirstName() + ", Unfortunately the recruiter has rejected your application for the job: " + jobApplication.getJobPost().getJobPostTitle()
                 + " at " + jobApplication.getJobPost().getCompany().getCompanyName() + ". You can contact TruJobs at 8880007799 for any queries. www.trujobs.in. Download Trujobs app at http://bit.ly/2d7zDqR";
         addSmsToNotificationQueue(jobApplication.getCandidate().getCandidateMobile(), msg);
+    }
+
+    public static void sendJobPostSmsToCandidateRecHasCredits(JobPost jobPost, Candidate candidate) {
+        String jobLocalities = "";
+        String salary;
+        if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
+            salary = jobPost.getJobPostMinSalary() + " - " + jobPost.getJobPostMaxSalary();
+        } else {
+            salary = String.valueOf(jobPost.getJobPostMinSalary());
+        }
+
+        if(jobPost.getJobPostToLocalityList() != null){
+            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
+                jobLocalities += jobPostToLocality.getLocality().getLocalityName() + ", ";
+            }
+        }
+        String msg = "New Job Alert! " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
+               jobLocalities.substring(0, jobLocalities.length() - 2) + ". Book your interview at www.trujobs.in or download app at bit.ly/trujobsapp";
+        addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
+    }
+
+    public static void sendJobPostSmsToCandidateRecHasNoCredits(JobPost jobPost, Candidate candidate) {
+        String jobLocalities = "";
+        String salary;
+        if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
+            salary = jobPost.getJobPostMinSalary() + " - " + jobPost.getJobPostMaxSalary();
+        } else {
+            salary = String.valueOf(jobPost.getJobPostMinSalary());
+        }
+
+        if(jobPost.getJobPostToLocalityList() != null){
+            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
+                jobLocalities += jobPostToLocality.getLocality().getLocalityName() + ", ";
+            }
+        }
+        String msg = "New Job Alert! " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
+                jobLocalities.substring(0, jobLocalities.length() - 2) + ". Apply Now at www.trujobs.in or download app at bit.ly/trujobsapp";
+        addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
+    }
+
+    public static void sendSODSmsToCandidateRecHasCredits(JobPost jobPost, Candidate candidate) {
+        String jobLocalities = "";
+        String salary;
+        if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
+            salary = jobPost.getJobPostMinSalary() + " - " + jobPost.getJobPostMaxSalary();
+        } else {
+            salary = String.valueOf(jobPost.getJobPostMinSalary());
+        }
+
+        if(jobPost.getJobPostToLocalityList() != null){
+            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
+                jobLocalities += jobPostToLocality.getLocality().getLocalityName() + ", ";
+            }
+        }
+        String msg = "Book job interviews on TruJobs! " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
+                jobLocalities.substring(0, jobLocalities.length() - 2) + ". Book your interview at www.trujobs.in or download app at bit.ly/trujobsapp";
+        addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
+    }
+
+    public static void sendEODSmsToCandidatePostInterview(JobPost jobPost, Candidate candidate) {
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", you had an interview today for " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". " +
+                "How would you rate your experience with TruJobs? Please rate us on bit.ly/trujobsapp";
+        addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
     }
 }

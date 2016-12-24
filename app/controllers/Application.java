@@ -286,22 +286,6 @@ public class Application extends Controller {
         return ok(toJson(JobService.addJobPost(addJobPostRequest, InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE)));
     }
 
-    public static Result addCompanyLogo() {
-        Http.MultipartFormData body = request().body().asMultipartFormData();
-        Http.MultipartFormData.FilePart picture = body.getFile("picture");
-        if (picture != null) {
-            String fileName = picture.getFilename();
-            String contentType = picture.getContentType();
-            File file = (File) picture.getFile();
-            Logger.info("uploaded! " + file);
-            CompanyService.uploadCompanyLogo(file, fileName);
-            return ok("File uploaded");
-        } else {
-            flash("error", "Missing file");
-            return redirect(routes.Application.index());
-        }
-    }
-
     @Security.Authenticated(SecuredUser.class)
     public static Result addRecruiter() {
         JsonNode req = request().body().asJson();
@@ -381,6 +365,34 @@ public class Application extends Controller {
             return badRequest("error uploading file. Check file type");
         }
         return ok(toJson(ParseCSV.parseCSV(file)));
+    }
+
+    public static Result uploadLogo() {
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart companyLogo = body.getFile("file");
+
+        if (companyLogo != null) {
+            String fileName = companyLogo.getFilename();
+
+            File file = (File) companyLogo.getFile();
+            Logger.info("uploaded! " + fileName);
+            CompanyService.uploadCompanyLogo(file, fileName);
+
+            List<String> companyId = Arrays.asList(fileName.split("\\s*_\\s*"));
+            if(companyId.get(1) != null){
+                Company company = Company.find.where().eq("CompanyId", companyId.get(1)).findUnique();
+                if(company != null){
+                    company.setCompanyLogo("https://s3.amazonaws.com/trujobs.in/companyLogos/" + fileName);
+                    company.update();
+                }
+            }
+            return ok("File uploaded");
+
+
+        } else {
+            flash("error", "Missing file");
+            return redirect(routes.Application.index());
+        }
     }
 
     @Security.Authenticated(SuperAdminSecured.class)
@@ -852,7 +864,7 @@ public class Application extends Controller {
                                              .orderBy().desc("jobPostUpdateTimestamp")
                                              .findList();
 
-        // get all jobpost uuiids
+        // get all jobpost uuids
         List<String> jobpostUUIDs = new ArrayList<>();
         for (JobPost jobPost : jobPosts) {
             jobpostUUIDs.add(jobPost.getJobPostUUId());
@@ -889,7 +901,12 @@ public class Application extends Controller {
         List<JobRole> jobs = JobRole.find.setUseQueryCache(!isDevMode).orderBy("jobName").findList();
         List<JobRole> jobRolesToReturn = new ArrayList<JobRole>();
         for(JobRole jobRole : jobs){
-            List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",jobRole.getJobRoleId()).findList();
+            List<JobPost> jobPostList = JobPost.find.where()
+                    .eq("jobRole.jobRoleId",jobRole.getJobRoleId())
+                    .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                    .eq("Source", ServerConstants.SOURCE_INTERNAL)
+                    .findList();
+
             if(jobPostList.size() > 0){
                 jobRolesToReturn.add(jobRole);
             }
@@ -1999,13 +2016,18 @@ public class Application extends Controller {
         return ok(views.html.CandidateDashboard.update_status_view.render());
     }
 
-    @Security.Authenticated(SecuredUser.class)
     public static Result updateInterviewStatus(long cId, long jpId, long val, long reason) {
         Candidate candidate = Candidate.find.where().eq("candidateId", cId).findUnique();
+        Integer channel;
+        if(session().get("sessionChannel") != null){
+            channel = Integer.valueOf(session().get("sessionChannel"));
+        } else{
+            channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
+        }
         if(candidate != null){
             JobPost jobPost = JobPostDAO.findById(jpId);
             if(jobPost != null){
-                return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val, reason, Integer.valueOf(session().get("sessionChannel")))));
+                return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val, reason, channel)));
             }
         }
         return ok("0");
@@ -2030,7 +2052,9 @@ public class Application extends Controller {
         if(candidate != null){
             JobPost jobPost = JobPostDAO.findById(jpId);
             if(jobPost != null){
-                return ok(toJson(JobPostWorkflowEngine.getCandidateLatestStatus(candidate, jobPost)));
+                if(JobPostWorkflowEngine.getCandidateLatestStatus(candidate, jobPost) != null){
+                    return ok(toJson(JobPostWorkflowEngine.getCandidateLatestStatus(candidate, jobPost)));
+                }
             }
         }
         return ok("0");
