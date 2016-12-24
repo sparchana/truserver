@@ -33,6 +33,8 @@ var approvalCount = 0;
 // Method to generate individual candidate card
 function renderIndividualCandidateCard(value, parent, view) {
 
+    showContact = false;
+
     //candidate card
     var candidateCard = document.createElement("div");
     candidateCard.className = "card";
