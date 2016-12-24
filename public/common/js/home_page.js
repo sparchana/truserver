@@ -87,7 +87,20 @@ $(document).ready(function(){
             $("#fixed-menu").fadeOut();
         }
     });*/
-
+    $(window).scroll(function(){
+        if ($(this).scrollTop() > 350) {
+            $('.registerBox').fadeIn();
+            if(w > 400){
+                $('.registerBox').css("width","150px");
+            }
+            else{
+                $('.registerBox').css("width","100%");
+            }
+        } else {
+            $('.registerBox').fadeOut();
+            $('.registerBox').css("width","50px");
+        }
+    });
     $(window).scroll(function(){
         if ($(this).scrollTop() > 100) {
             $('.scrollToTop').fadeIn();

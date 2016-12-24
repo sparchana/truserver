@@ -83,7 +83,20 @@ $(document).ready(function(){
             $("#fixed-menu").fadeOut();
         }
     });
-
+    $(window).scroll(function(){
+        if ($(this).scrollTop() > 350) {
+            $('.registerBox').fadeIn();
+            if(w > 400){
+                $('.registerBox').css("width","150px");
+            }
+            else{
+                $('.registerBox').css("width","100%");
+            }
+        } else {
+            $('.registerBox').fadeOut();
+            $('.registerBox').css("width","50px");
+        }
+    });
     $(window).scroll(function(){
         if ($(this).scrollTop() > 100) {
             $('.scrollToTop').fadeIn();
@@ -133,7 +146,13 @@ $(document).ready(function(){
             contentType: "application/json; charset=utf-8",
             data: false,
             processData: false,
-            success: processDataForSelectedJobPost
+            success: processDataForSelectedJobPost,
+            error: function (xhr, ajaxOption, throwError) {
+                console.log(xhr.status);
+                if(xhr.status == 400){
+                    window.location = '/pageNotFound';
+                }
+            }
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);

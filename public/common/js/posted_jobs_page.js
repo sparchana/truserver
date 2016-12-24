@@ -91,7 +91,13 @@ $(document).ready(function(){
                 contentType: "application/json; charset=utf-8",
                 data: false,
                 processData: false,
-                success: processDataForHotJobPost
+                success: processDataForHotJobPost,
+                error: function (xhr, ajaxOption, throwError) {
+                    console.log(xhr.status);
+                    if(xhr.status == 400){
+                        window.location = '/pageNotFound';
+                    }
+                }
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);
@@ -367,8 +373,7 @@ function processJobPostAppliedStatus(status) {
 }
 
 function processDataForHotJobPost(returnedData) {
-
-    if (returnedData != "Error" && returnedData != "") {
+    if (returnedData != "") {
         jobId = returnedData.jobPostId;
         if(returnedData.jobPostPartnerInterviewIncentive != null){
             $("#interviewIncentiveVal").html("₹" + returnedData.jobPostPartnerInterviewIncentive + " interview incentive");
@@ -590,7 +595,6 @@ function processDataForHotJobPost(returnedData) {
             console.log("exception occured!!" + exception);
         }
     } else {
-        console.log("#404 No Page Found");
         window.location.href = "/pageNotFound";
     }
 }

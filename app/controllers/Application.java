@@ -13,14 +13,11 @@ import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
-import com.avaje.ebean.PagedList;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.android.gcm.server.Message;
-import com.google.android.gcm.server.Sender;
 import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.*;
@@ -49,8 +46,6 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
@@ -1274,51 +1269,73 @@ public class Application extends Controller {
     public static Result renderJobPostCards() { return ok(views.html.Fragment.hot_jobs_card_view.render());}
     public static Result pageNotFound() { return ok(views.html.page_not_found.render());}
     public static Result renderJobRelatedPages(String urlString){
+        
         UrlValidatorUtil urlValidatorUtil = new UrlValidatorUtil();
-        return (urlValidatorUtil.URLValidator(urlString));
-    }
-    public static Result getJobPostDetails(String jobTitleSting,Long index){
-        String jobPostTitle;
-        String jobCompany;
-        String jobLocation;
-        Long jobPostId;
-        String jobRoleName;
-        Long jobRoleId;
+        UrlParameters urlParameters = urlValidatorUtil.parseURL(urlString);
 
-        Pattern patternJobDetails = Pattern.compile("(.*)(-jobs)(.*)(-in-)(.*)(-at-)(.*)(\\d)");
-        Matcher mJobDetails = patternJobDetails.matcher(jobTitleSting);
-        if(mJobDetails.find()){
-            String[] splitJobPostId = (mJobDetails.group(7)).split("-");
-            //condition for single digit Job-Post-Id
-            if(!splitJobPostId[splitJobPostId.length-1].matches("(.*)(\\d)")){
-                jobPostId = Long.valueOf(mJobDetails.group(8));
+        if(urlParameters.getUrlType() == UrlParameters.TYPE.A) {
+            String jobLocation = urlParameters.getJobLocation();
+            String jobCompany = urlParameters.getJobCompany();
+            String jobPostTile = urlParameters.getJobPostTitle();
+            Long jobPostId = urlParameters.getJobPostId();
+            return ok(views.html.Fragment.posted_job_details.render(jobLocation,jobCompany,jobPostTile,jobPostId));
             }
-            else{
-                jobPostId = Long.valueOf(splitJobPostId[splitJobPostId.length-1] + mJobDetails.group(8));
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.B) {
+                return ok("All Post");
             }
-            JobPost jobPost = JobPost.find.where().eq("JobPostId",jobPostId).findUnique();
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.C) {
+                return ok("Job Post at Company");
+            }
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.D) {
+               return ok(views.html.Fragment.job_role_page.render(urlParameters.getJobRoleName(),
+                       urlParameters.getJobRoleId()));
+            }
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.E) {
+                return ok("All Jobs in Location at Company");
+            }
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.F) {
+                return ok("All Jobs at Company");
+            }
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.G) {
+                return ok(views.html.Fragment.show_all_jobs_page.render());
+            }
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.H) {
+                String jobRoleName = urlParameters.getJobRoleName();
+                Long jobRoleId = urlParameters.getJobRoleId();
+                return ok(views.html.Fragment.job_role_page.render(jobRoleName,jobRoleId));
+            }
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.InValidRequest){
+                return ok(views.html.page_not_found.render());
+            }
+
+        return ok(views.html.page_not_found.render());
+    }
+
+    public static Result getJobsPageContent(String urlString,Long index) {
+
+        UrlValidatorUtil urlValidatorUtil = new UrlValidatorUtil();
+        UrlParameters urlParameters = urlValidatorUtil.jobCommonDetailsRequest(urlString);
+
+        if(urlParameters.getUrlType() == UrlParameters.TYPE.A){
+            JobPost jobPost = JobPost.find.where().eq("JobPostId", urlParameters.getJobPostId()).findUnique();
             if (jobPost != null) {
                 return ok(toJson(jobPost));
             }
-            else{
-                return ok("ERROR");
+            else {
+                Logger.error(" Job post with id " + urlParameters.getJobPostId() + " not found!. Forwarding user to page not found");
+                return badRequest();
             }
         }
-
-        Pattern patternJobRoleWiseJobPosts = Pattern.compile("(.*)(-jobs-)(.*)(\\d)");
-        Matcher mJobRoleWiseJobPosts = patternJobRoleWiseJobPosts.matcher(jobTitleSting);
-        if(mJobRoleWiseJobPosts.find()){
-            String[] splitJobRoleId = (mJobRoleWiseJobPosts.group(3)).split("-");
-            //condition for single digit Job-Role-Id
-            if(!splitJobRoleId[splitJobRoleId.length-1].matches("(.*)(\\d)")){
-                jobRoleId = Long.valueOf((mJobRoleWiseJobPosts.group(4)));
+        else if(urlParameters.getUrlType() == UrlParameters.TYPE.B) {
+            // query jobrole table for the given id. if it doesnt exist, fwd to page not found
+            JobSearchService jobSearchService = new JobSearchService();
+            JobPostResponse jobPostResponse = jobSearchService.getActiveJobsForJobRolePaginated(urlParameters.getJobRoleId(),index);
+            if(jobPostResponse != null && jobPostResponse.getTotalJobs() > 0){
+                return ok(toJson(jobPostResponse));
             }
-            else{
-                jobRoleId = Long.valueOf(splitJobRoleId[splitJobRoleId.length-1] + mJobRoleWiseJobPosts.group(4));
-            }
-            return ok(toJson(JobSearchService.getActiveJobsForJobRolePaginated(jobRoleId,index)));
         }
-        return ok("Error");
+        Logger.error("Unrecognized URL pattern detected " + urlString + ". Forwarding user to page not found");
+        return badRequest();
     }
 
     public static Result getAllCompanyLogos() {
