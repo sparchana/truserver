@@ -12,6 +12,7 @@ import java.io.IOException;
  */
 public class FCMEvent extends NotificationEvent {
 
+    private boolean isDevMode;
     private String myTitle;
     private Integer myIntentType;
 
@@ -24,6 +25,7 @@ public class FCMEvent extends NotificationEvent {
 
     @Override
     public String send() {
+        this.isDevMode = play.api.Play.isDev(play.api.Play.current()) || play.api.Play.isTest(play.api.Play.current());
         String messageText = this.getMessage();
         String recipient = this.getRecipient();
 
@@ -39,7 +41,12 @@ public class FCMEvent extends NotificationEvent {
                 .build();
 
         try {
-            result = sender.send(message, recipient, 1);
+            if(isDevMode()){
+                Logger.info("DevMode: No Notification sent");
+            } else{
+                result = sender.send(message, recipient, 1);
+            }
+
         } catch (final IOException e) {
             e.printStackTrace();
         }
@@ -60,5 +67,9 @@ public class FCMEvent extends NotificationEvent {
 
     public void setMyIntentType(Integer myIntentType) {
         this.myIntentType = myIntentType;
+    }
+
+    public boolean isDevMode() {
+        return isDevMode;
     }
 }

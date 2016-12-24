@@ -43,6 +43,10 @@ public class SchedulerManager implements Runnable {
         int mSODJobPostInfoStartMin = (play.Play.application().configuration().getInt("schedulertask.sod.jobpost.notifier.start.min"));
         int mSODJobPostInfoStartSec = (play.Play.application().configuration().getInt("schedulertask.sod.jobpost.notifier.start.sec"));
 
+        int mEODRateUsPostInterviewHr = (play.Play.application().configuration().getInt("schedulertask.eod.rateus.notifier.start.hr"));
+        int mEODRateUsPostInterviewMin = (play.Play.application().configuration().getInt("schedulertask.eod.rateus.notifier.start.min"));
+        int mEODRateUsPostInterviewSec = (play.Play.application().configuration().getInt("schedulertask.eod.rateus.notifier.start.sec"));
+
         int sameDayInterviewAlertEventPeriod = Integer.parseInt(play.Play.application().configuration().getString("schedulertask.sameDay.alert.period"));
 
         long eodMailDelay = computeDelay(mEODMailTaskStartHr, mEODMailTaskStartMin , mEODMailTaskStartSec);
@@ -50,6 +54,7 @@ public class SchedulerManager implements Runnable {
         long aadhaarVerificationDelay = computeDelay(mEODAadhaarTaskStartHr, mEODAadhaarTaskStartMin , mEODAadhaarTaskStartSec);
 
         long jobPostInfoDelay = computeDelay(mSODJobPostInfoStartHr, mSODJobPostInfoStartMin , mSODJobPostInfoStartSec);
+        long rateUsPostInterviewDelay = computeDelay(mEODRateUsPostInterviewHr, mEODRateUsPostInterviewMin , mEODRateUsPostInterviewSec);
 
 
         // createSameDayInterviewAlertEvent method takes time period (in hrs) as input
@@ -61,7 +66,9 @@ public class SchedulerManager implements Runnable {
 
         createAadhaarVerificationEvent(aadhaarVerificationDelay);
 
-        //createStartOfTheDayJobPostEvent(jobPostInfoDelay);
+//        createStartOfTheDayJobPostEvent(jobPostInfoDelay);
+
+//        createEODRateUsPostInterview(rateUsPostInterviewDelay);
     }
 
     private void createSameDayInterviewAlertEvent(int hr) {
@@ -104,6 +111,13 @@ public class SchedulerManager implements Runnable {
 
         SODNotifyCandidateAboutJobPostTask sodNotifyCandidateAboutJobPostTask = new SODNotifyCandidateAboutJobPostTask();
         timer.schedule(sodNotifyCandidateAboutJobPostTask, delay, oneDay);
+    }
+
+    private void createEODRateUsPostInterview(long delay){
+        Logger.info("Send alert to rate on play store after interview to candidate!");
+
+        EODCandidateCompletedInterviewTask eodCandidateCompletedInterviewTask = new EODCandidateCompletedInterviewTask();
+        timer.schedule(eodCandidateCompletedInterviewTask, delay, oneDay);
     }
 
 
