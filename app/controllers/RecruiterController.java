@@ -6,6 +6,7 @@ import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpRequest.LoginRequest;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
+import api.http.httpRequest.Recruiter.RecruiterLeadToLocalityRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.ResetPasswordResquest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
@@ -18,6 +19,7 @@ import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
+import controllers.businessLogic.Recruiter.RecruiterLeadStatusService;
 import controllers.security.SecuredUser;
 import models.entity.JobPost;
 import models.entity.OM.JobApplication;
@@ -40,6 +42,7 @@ import static play.mvc.Controller.session;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 import static play.mvc.Results.redirect;
+
 /**
  * Created by dodo on 4/10/16.
  */
@@ -134,9 +137,19 @@ public class RecruiterController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.info("req JSON: " + req );
-        return ok(toJson(RecruiterLeadService.createLeadWithOtherDetails(recruiterLeadRequest,
-                ServerConstants.LEAD_CHANNEL_RECRUITER)));
+        Logger.info("req JSON: " + req);
+        //Logger.info("recruiterLeadRequest object: " + recruiterLeadRequest.toString(recruiterLeadRequest));
+        //Logger.info("CompanyLeadRequest object: " + recruiterLeadRequest.getCompanyLeadRequest().toString(recruiterLeadRequest.getCompanyLeadRequest()));
+        //Logger.info("RecruiterLeadToJobRoleRequest object: " + recruiterLeadRequest.getRecruiterLeadToJobRoleRequestList().get(0).toString(recruiterLeadRequest.getRecruiterLeadToJobRoleRequestList().get(0)));
+
+        /*return ok(toJson(RecruiterLeadService.createLeadWithOtherDetails(recruiterLeadRequest,
+                ServerConstants.LEAD_CHANNEL_RECRUITER)));*/
+        RecruiterLeadService recruiterLeadService = new RecruiterLeadService();
+        JsonNode res = toJson(recruiterLeadService.create(recruiterLeadRequest));
+        Logger.info("res JSON: " + res);
+        //Logger.info("res.get(\"entity\").get(\"recruiterLeadId\").asLong(): " + res.get("entity").get("recruiterLeadId").asLong());
+        //return redirect("/showRecruiterLead/"+res.get("entity").get("recruiterLeadId").asLong());
+        return ok(res);
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -486,6 +499,67 @@ public class RecruiterController {
 
     public static Result renderAllUnlockedCandidates() {
         return ok(views.html.Recruiter.recruiter_unlocked_candidate.render());
+    }
+
+    //@Security.Authenticated(SecuredUser.class)
+    public static Result showRecruiterLead(Long id) {
+        return ok(views.html.Recruiter.recruiter_lead_details.render());
+    }
+
+    public static Result readRecruiterLead(Long id) {
+        RecruiterLeadService recruiterLeadService = new RecruiterLeadService();
+        List<Long> ids = new ArrayList<Long>();
+        ids.add(id);
+        JsonNode res = toJson(recruiterLeadService.readById(ids));
+        Logger.info("res JSON: " + res);
+        return ok(res);
+    }
+
+    public static Result showRecruiterLeadStatus() {
+        RecruiterLeadStatusService recruiterLeadStatusService = new RecruiterLeadStatusService();
+        JsonNode res = toJson(recruiterLeadStatusService.readAll());
+        Logger.info("res JSON: " + res);
+        return ok(res);
+    }
+
+    public static Result updateWebsiteLead() {
+        JsonNode req = request().body().asJson();
+        RecruiterLeadRequest recruiterLeadRequest = new RecruiterLeadRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            recruiterLeadRequest = newMapper.readValue(req.toString(), RecruiterLeadRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info("req JSON: " + req);
+        //Logger.info("recruiterLeadRequest object: " + recruiterLeadRequest.toString(recruiterLeadRequest));
+        //Logger.info("CompanyLeadRequest object: " + recruiterLeadRequest.getCompanyLeadRequest().toString(recruiterLeadRequest.getCompanyLeadRequest()));
+        //Logger.info("RecruiterLeadToJobRoleRequest object: " + recruiterLeadRequest.getRecruiterLeadToJobRoleRequestList().get(0).toString(recruiterLeadRequest.getRecruiterLeadToJobRoleRequestList().get(0)));
+
+        RecruiterLeadService recruiterLeadService = new RecruiterLeadService();
+        JsonNode res = toJson(recruiterLeadService.update(recruiterLeadRequest));
+        Logger.info("res JSON: " + res);
+        return ok(res);
+    }
+
+    public static Result deleteWebsiteLead() {
+        JsonNode req = request().body().asJson();
+        RecruiterLeadRequest recruiterLeadRequest = new RecruiterLeadRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            recruiterLeadRequest = newMapper.readValue(req.toString(), RecruiterLeadRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info("req JSON: " + req);
+        //Logger.info("recruiterLeadRequest object: " + recruiterLeadRequest.toString(recruiterLeadRequest));
+        //Logger.info("CompanyLeadRequest object: " + recruiterLeadRequest.getCompanyLeadRequest().toString(recruiterLeadRequest.getCompanyLeadRequest()));
+        //Logger.info("RecruiterLeadToJobRoleRequest object: " + recruiterLeadRequest.getRecruiterLeadToJobRoleRequestList().get(0).toString(recruiterLeadRequest.getRecruiterLeadToJobRoleRequestList().get(0)));
+
+        RecruiterLeadService recruiterLeadService = new RecruiterLeadService();
+        JsonNode res = toJson(recruiterLeadService.delete(recruiterLeadRequest));
+        Logger.info("res JSON: " + res);
+        return ok(res);
     }
 
 }

@@ -4,8 +4,21 @@
 var returnedOtp;
 var recruiterMobileVal;
 
+const message_info = 'I';
+const message_warning = 'W';
+const message_error = 'E';
+
 function processDataLeadSubmit(returnedData) {
-    if(returnedData.status = 1){
+
+	if(returnedData.hasOwnProperty("messages")) {
+		returnedData.messages.forEach(function (message) {
+			if(message.type == message_error) {notifyError(message.text);}
+			else if(message.type == message_info) {notifySuccess(message.text);}
+			else if(message.type == message_warning) {notifyWarning(message.text);}
+		});
+	}
+
+    if(returnedData.status == 1){
         notifySuccess("Thanks! Our business team will get in touch with you within 24 hours!");
 
         //for mobile inputs
@@ -23,8 +36,6 @@ function processDataLeadSubmit(returnedData) {
         $('#jobLocationOption').tokenize().clear();
         $('#recruiterRequirement').tokenize().clear();
 
-    } else{
-        notifyError("Oops! Looks like something went wrong! Please try again after some time!");
     }
 }
 
@@ -193,7 +204,7 @@ $(function() {
         var jobRoleSelected = $("#jobRoleOption").val();
 
         var statusCheck = 1;
-        var res = validateMobile(recruiterLeadMobile);
+        var res = 2;//validateMobile(recruiterLeadMobile);
 
         if(res == 0){
             notifyError("Enter a valid mobile number");
@@ -208,8 +219,8 @@ $(function() {
             notifyError("Please enter the localities where you are looking for employees");
             statusCheck=0;
         } else if(Object.keys(recruiterLeadRequirement).length == 0) {
-            notifyError("Please specify work shift");
-            statusCheck=0;
+            //notifyError("Please specify work shift");
+            //statusCheck=0;
         }
 
         if(statusCheck == 1){
@@ -253,23 +264,24 @@ function requestModalLead(){
 
 function processLeadRequest(jobRoleSelected, jobLocalitySelected, recruiterLeadMobile, recruiterLeadRequirement) {
     var preferredJobRoleList = [];
-    var preferredJobLocationList = [];
+    var preferredJobLocationList = {};
 
     var i;
-    /* job role preferences  */
     for (i = 0; i < Object.keys(jobRoleSelected).length; i++) {
+        /* job role preferences */
         preferredJobRoleList.push(parseInt(jobRoleSelected[i]));
-    }
-
-    /* job locality preferences  */
-    for (i = 0; i < Object.keys(jobLocalitySelected).length; i++) {
-        preferredJobLocationList.push(parseInt(jobLocalitySelected[i]));
+        /* job locality preferences */
+        var array = [];
+        array = Object.keys(jobRoleSelected)
+        preferredJobLocationList[jobRoleSelected[i]] = array;
     }
 
     var d = {
-        recruiterMobile : recruiterLeadMobile,
+        recruiterLeadMobile : recruiterLeadMobile,
         recruiterRequirement : recruiterLeadRequirement[0],
-        recruiterJobLocality : preferredJobLocationList,
+        recruiterJobLocality : [preferredJobLocationList],
+        recruiterLeadSourceType : 0,
+        recruiterLeadSourceName : 0,
         recruiterJobRole : preferredJobRoleList
     };
 
@@ -284,6 +296,10 @@ function processLeadRequest(jobRoleSelected, jobLocalitySelected, recruiterLeadM
 
 function notifyError(msg){
     Materialize.toastError(msg, 3000, 'rounded');
+}
+
+function notifyWarning(msg) {
+	Materialize.toast(msg, 3000, 'rounded', null, '#f7a000');
 }
 
 function notifySuccess(msg){

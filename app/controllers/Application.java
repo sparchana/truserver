@@ -18,14 +18,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
-import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
+import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.*;
-import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.Intelligence.RelatedJobRole;
-import models.entity.OM.*;
+import models.entity.OM.JobApplication;
+import models.entity.OM.JobPreference;
+import models.entity.OM.JobToSkill;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
 import models.util.ParseCSV;
 import models.util.SmsUtil;
@@ -1758,4 +1760,33 @@ public class Application extends Controller {
     public static Result getPreScreenedCandidate(Long jobPostId, Boolean isPass) {
         return ok(toJson(JobPostWorkflowEngine.getPreScreenedPassFailCandidates(jobPostId, isPass)));
     }
+
+    public static Result showResumeUpload() {
+        return ok(views.html.resumeUpload.render());
+    }
+
+    public static Result doResumeUpload(){
+
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart resume = body.getFile("resume");
+        if (resume != null) {
+            String fileName = resume.getFilename();
+            Logger.info("fileName="+fileName);
+            File file = (File) resume.getFile();
+            Logger.info("Uploading! " + file);
+            if(CandidateService.uploadResume(file, fileName)){ return ok("Resume uploaded"); }
+            else{ return internalServerError("Resume upload failed due to an internal error"); }
+        } else {
+            flash("error", "Missing file");
+            return redirect(routes.Application.index());
+        }
+
+    }
+
+    public static Result receiveParsedResume() {
+
+        return ok();
+    }
+
 }
+
