@@ -165,7 +165,6 @@ function processDataAddRecruiter(returnedData) {
 }
 
 function processDataUpdateCompany(returnedData) {
-    console.log(returnedData);
     if(returnedData.status == 2){
         if(document.getElementById("companyLogo").value != "") {
             uploadLogo(returnedData.companyId);
