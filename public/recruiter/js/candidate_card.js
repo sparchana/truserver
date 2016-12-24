@@ -24,6 +24,7 @@ var completedInterviewsFlag = false;
 var actionNeeded = false;
 var showStatusFlag = false;
 var showContact = false;
+var showFeedback = false;
 
 var pendingCount = 0;
 var confirmedCount = 0;
@@ -34,12 +35,17 @@ var approvalCount = 0;
 function renderIndividualCandidateCard(value, parent, view) {
 
     showContact = false;
+    showFeedback = false;
 
     //candidate card
     var candidateCard = document.createElement("div");
     candidateCard.className = "card";
 
     showStatusFlag = view == view_tracking_candidate;
+
+    if(view == view_tracking_candidate){
+        showFeedback = true;
+    }
 
     //since applied candidate has 3 different parent to append to, we are computing the parent inside this method only, so else part is for applied candidates
     if(view != view_applied_candidate){
@@ -106,6 +112,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                     confirmedCount++;
                     approvalCount++;
                     showContact = true;
+                    showFeedback = true;
                 } else if(todayDay.getTime() < interviewDate.getTime()){
 
                     // upcoming interviews [confirmed tab]
@@ -132,6 +139,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                         pastInterviewHeader.style = "padding: 8px; text-align: center";
                         confirmedParent.append(pastInterviewHeader);
                         pastInterviewsFlag = true;
+                        showFeedback = true;
                     }
 
                     showStatusFlag = true;
@@ -1168,28 +1176,37 @@ function renderIndividualCandidateCard(value, parent, view) {
             } else{
                 var today = new Date();
                 var interviewDate = new Date(value.extraData.interviewDate);
-                if(interviewDate.getTime() <= today.getTime()) { // today's schedule
-                    //interview for this job is scheduled today, hence allow to update status
-                    var feedbackBtn = document.createElement("a");
-                    feedbackBtn.className = "waves-effect waves-light customFeedbackBtn";
-                    feedbackBtn.onclick = function () {
-                        openFeedbackModal(value.candidate.candidateId);
-                    };
-                    feedbackBtn.textContent = "Add Feedback";
-                    feedbackBtn.style = "font-size: 12px";
-                    unlockContactCol.appendChild(feedbackBtn);
+                if(showFeedback){
+                    if(interviewDate.getTime() <= today.getTime()) { // today's schedule
+                        //interview for this job is scheduled today, hence allow to update status
+                        var feedbackBtn = document.createElement("a");
+                        feedbackBtn.className = "customFeedbackBtn feedbackVal";
+                        feedbackBtn.onclick = function () {
+                            openFeedbackModal(value.candidate.candidateId);
+                        };
+                        feedbackBtn.textContent = "Add Feedback";
+                        feedbackBtn.style = "font-size: 12px; background: rgb(46, 200, 102)";
+                        unlockContactCol.appendChild(feedbackBtn);
+                    }
                 }
             }
         }
+    }
+
+    if(view == view_unlocked_candidate){
+        showContact = false;
     }
 
     //unlock candidate div
     var unlockCandidateBtn = document.createElement("div");
     unlockCandidateBtn.id = "unlock_candidate_" + value.candidate.candidateId;
     if(view == view_search_candidate || view == view_applied_candidate || view == view_tracking_candidate){
-        unlockCandidateBtn.onclick = function () {
-            unlockContact(value.candidate.candidateId);
-        };
+        if(!showContact){
+            unlockCandidateBtn.onclick = function () {
+                unlockContact(value.candidate.candidateId);
+            };
+        }
+
         unlockCandidateBtn.style = "margin-top: -1px";
 
         unlockCandidateBtn.className = "waves-effect waves-light customUnlockBtn";
