@@ -5,6 +5,7 @@ import controllers.Global;
 import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.OM.InterviewDetails;
+import models.entity.OM.JobPostToLocality;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Partner;
 import models.entity.Recruiter.RecruiterProfile;
@@ -559,8 +560,66 @@ public class SmsUtil {
         addSmsToNotificationQueue(jobApplication.getCandidate().getCandidateMobile(), msg);
     }
 
-    public static void sendJobPostSmsToCandidate(JobPost jobPost, Candidate candidate) {
-        String msg = "Hi " + candidate.getCandidateFirstName() + ", Smaple msg";
+    public static void sendJobPostSmsToCandidateRecHasCredits(JobPost jobPost, Candidate candidate) {
+        String jobLocalities = "";
+        String salary;
+        if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
+            salary = jobPost.getJobPostMinSalary() + " - " + jobPost.getJobPostMaxSalary();
+        } else {
+            salary = String.valueOf(jobPost.getJobPostMinSalary());
+        }
+
+        if(jobPost.getJobPostToLocalityList() != null){
+            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
+                jobLocalities += jobPostToLocality.getLocality().getLocalityName() + ", ";
+            }
+        }
+        String msg = "New Job Alert! " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
+               jobLocalities.substring(0, jobLocalities.length() - 2) + ". Book your interview at www.trujobs.in or download app at bit.ly/trujobsapp";
+        addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
+    }
+
+    public static void sendJobPostSmsToCandidateRecHasNoCredits(JobPost jobPost, Candidate candidate) {
+        String jobLocalities = "";
+        String salary;
+        if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
+            salary = jobPost.getJobPostMinSalary() + " - " + jobPost.getJobPostMaxSalary();
+        } else {
+            salary = String.valueOf(jobPost.getJobPostMinSalary());
+        }
+
+        if(jobPost.getJobPostToLocalityList() != null){
+            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
+                jobLocalities += jobPostToLocality.getLocality().getLocalityName() + ", ";
+            }
+        }
+        String msg = "New Job Alert! " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
+                jobLocalities.substring(0, jobLocalities.length() - 2) + ". Apply Now at www.trujobs.in or download app at bit.ly/trujobsapp";
+        addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
+    }
+
+    public static void SODSmsToCandidateRecHasCredits(JobPost jobPost, Candidate candidate) {
+        String jobLocalities = "";
+        String salary;
+        if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
+            salary = jobPost.getJobPostMinSalary() + " - " + jobPost.getJobPostMaxSalary();
+        } else {
+            salary = String.valueOf(jobPost.getJobPostMinSalary());
+        }
+
+        if(jobPost.getJobPostToLocalityList() != null){
+            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
+                jobLocalities += jobPostToLocality.getLocality().getLocalityName() + ", ";
+            }
+        }
+        String msg = "Book job interviews on TruJobs! " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
+                jobLocalities.substring(0, jobLocalities.length() - 2) + ". Book your interview at www.trujobs.in or download app at bit.ly/trujobsapp";
+        addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
+    }
+
+    public static void EODSmsToCandidatePostInterview(JobPost jobPost, Candidate candidate) {
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", you had an interview today for " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". " +
+                "How would you rate your experience with TruJobs? Please rate us on bit.ly/trujobsapp";
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
     }
 }
