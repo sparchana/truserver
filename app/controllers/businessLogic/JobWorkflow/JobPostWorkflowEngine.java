@@ -1796,7 +1796,7 @@ public class JobPostWorkflowEngine {
                             JobPostWorkflow jobPostWorkflowLatest = JobPostWorkflow.find.where()
                                     .eq("candidate_id", candidate.getCandidateId())
                                     .eq("Job_post_id", jobPostWorkflow.getJobPost().getJobPostId())
-                                    .orderBy().desc("creation_timestamp").setMaxRows(1).findUnique();
+                                    .orderBy().desc("job_post_workflow_id").setMaxRows(1).findUnique();
 
                             candidateExtraData.setWorkflowStatus(jobPostWorkflowLatest.getStatus());
                             candidateExtraData.setInterviewDate(jobPostWorkflowLatest.getScheduledInterviewDate());

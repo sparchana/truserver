@@ -45,7 +45,6 @@ function renderIndividualCandidateCard(value, parent, view) {
         //for all candidate card render except applied candidates
         parent.append(candidateCard);
     } else{
-
         //since we have 3 parents for applied candidate card, we are computing it inside this else part
         //segregation of applications
         actionNeeded = false;
