@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        @* TODO dynamic naming based on search keyword using 'document.title' *@
+        <title>Search_Keyword | TruJobs - New Job Vacancies in Search_Keyword</title>
+
+        <meta name="keywords" content="">
+
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+
+            <!-- Bootstrap Core CSS -->
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.min.css">
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        @* TODO move this to commmon *@
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/awesomplete.css">
+
+        <link rel="stylesheet" href="/assets/support/css/nprogress.css">
+
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+
+        <meta name="theme-color" content="#000000">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+    <body>
+        <div id="fixedButton" style="display: none;">
+            <div>
+                Go to top
+            </div>
+            @* TODO move this to commmon *@
+            <img src="/assets/recruiter/img/icons/top.svg" width="48px" style="display: block;" onclick="scrollToTop()"/>
+        </div>
+
+            <!--Search bar start-->
+        <div class="container-fluid back-banner-candidate">
+            <div class="container" style="padding: 0;" id="searchBoxContainer">
+                <div class="row">
+                    <h6 style="font-weight:600; color: #fff; margin-top: 24px; font-size: 22px">Job Search</h6>
+                </div>
+                <div class="row" style="margin-top: -16px">
+                    <div class="card col s12 l12" style="margin: 0;padding: 0">
+                        <div class="card-content col s12 l12" style="margin: 0;padding: 12px 1%">
+                            <div class="input-field  col s12 l6" id="searchTextBox">
+                                <input id="searchText" type="text"  data-multiple>
+                            </div>
+                            <div class="col s12 l2" id="searchLocationBox">
+                                <select id="searchLocation" class="tokenCustomInput tokenize-sample"></select>
+                            </div>
+                            <div class="col s12 l1" id="searchEducationBox">
+                                <select id="searchEducation" class="tokenCustomInput tokenize-sample"></select>
+                            </div>
+                            <div class="col s12 l1" id="searchExperienceBox">
+                                <select id="searchExperience" class="tokenCustomInput tokenize-sample"></select>
+                            </div>
+                            <div class="col s12 l2" style="margin-top: 4px">
+                                <a class="waves-effect waves-light ascentGreen lighten-1 btn right" id="searchBtn" data-toggle="collapse" data-target="#filterDetail"><font style="color: #fff;
+                                    font-weight: 400"><b>Search</b></font>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <!--Search bar ends-->
+        <div class="container-fluid hide-on-med-and-up" style="padding: 1%;">
+            <div class="row">
+                <div class="col s6">
+                    <div class="waves-effect waves-light btn" id="sortByMobileViewBtn" onclick="showSort()" style="padding: 0 9px; width: 100%;">Sort By</div>
+                </div>
+                <div class="col s6">
+                    <div class="waves-effect waves-light btn" id="filterMobileViewBtn" onclick="showFilter()" style="padding: 0 9px; width: 100%;">Filter</div>
+                </div>
+            </div>
+        </div>
+            <!-- Details container -->
+        <div class="container" style="padding: 0">
+            <div class="row">
+                    <!-- Sort & Filter -->
+                <div class="col s12 l3">
+                    <div id="sortMainBox">
+                        <div class="card-content">
+                            <font size="4">Sort by</font>
+                        </div>
+                        <ul class="collapsible" data-collapsible="expandable">
+                            <li>
+                                <div class="collapsible-header active"><i class="material-icons">repeat</i>
+                                    Sort by</div>
+                                <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                    <div>
+                                        <input name="sortBy" type="radio" value="0" id="sortByMinSalary" />
+                                        <label style="font-size: 12px" for="sortByMinSalary">Salary (Low to High)</label>
+                                    </div>
+                                    <div>
+                                        <input name="sortBy" type="radio" value="1" id="sortByMaxSalary" />
+                                        <label style="font-size: 12px" for="sortByMaxSalary">Salary (High to Low)</label>
+                                    </div>
+                                    <div>
+                                        <input name="sortBy" type="radio" value="2" id="latestActive" />
+                                        <label style="font-size: 12px" for="latestActive">Last Active (Newest to oldest)</label>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div id="filterMainBox">
+                            <div class="card-content">
+                                <font size="4">Filters</font>
+                                <div id="resetFilters" class="waves-effect waves-light orange lighten-1" onclick="" style="padding: 4px 8px 4px 8px;
+                                    float: right; display: inline-block; border-radius: 4px;">
+                                    <font style="color: #fff;font-weight: 400; font-size: 12px"><b>
+                                        <center>
+                                            RESET FILTERS
+                                        </center>
+                                    </b></font>
+                                </div>
+                            </div>
+                            <div class="card-content" style="padding: 0">
+                                <div class="row">
+                                    <div class="col s12 l12">
+                                        <ul class="collapsible" data-collapsible="expandable">
+                                            <li>
+                                                <div class="collapsible-header active">
+                                                    <img src="/assets/recruiter/img/icons/gender.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                    Gender
+                                                    <span style="float: right; display: none" id="gender_filter">
+                                                        <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                    </span>
+                                                </div>
+
+                                                <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                                    <div>
+                                                        <input name="filterGender" type="radio" onchange="updateGenderFilter()" value="0" id="gender_0" />
+                                                        <label style="font-size: 12px" for="gender_0">Male</label>
+                                                    </div>
+                                                    <div>
+                                                        <input name="filterGender" type="radio" onchange="updateGenderFilter()" value="1" id="gender_1" />
+                                                        <label style="font-size: 12px" for="gender_1">Female</label>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="collapsible-header active ">
+                                                    <img src="/assets/recruiter/img/icons/language.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                    Language
+                                                    <span style="float: right; display: none" id="language_filter">
+                                                        <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                    </span>
+                                                </div>
+
+                                                <div class="collapsible-body" style="padding: 8px 18px 8px 18px" id="languageFilterDiv" onclick="checkOnFilterChange()"></div>
+                                            </li>
+                                        </ul>
+
+                                        <div class="row">
+                                            <div class="col s8 l7" style="padding-right: 4px;"></div>
+                                            <div class="col s4 l5" style="padding-left: 0; margin: 0">
+                                                <center>
+                                                    <div id="resetFilters_" class="waves-effect waves-light orange lighten-1 btn" style="padding: 0 9px; width: 100%; display: inline-block">
+                                                        <font style="color: #fff;font-weight: 400; font-size: 12px"><b>
+                                                            <center>
+                                                            Reset Filters
+                                                            </center>
+                                                        </b></font>
+                                                    </div>
+                                                </center>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <!-- Candidate Details -->
+                <div class="col s12 l9">
+                    <div id="resultContainer"></div>
+                    <div id="searchJobPanel">
+                        <center>
+                            <img src="/assets/recruiter/img/search_candidate.svg" width="96px">
+                            <h5>Welcome to Job search page.</h5>
+                            <h6>Search among 100000+ Jobs</h6>
+                        </center>
+
+                    </div>
+                    <div id="loadingIcon" style="display: none; padding-top: 6%">
+                        <center>
+                            <h6>Searching Jobs</h6>
+                            <svg viewBox="0 0 32 32" width="24" height="24">
+                                <circle id="loadingSpinner" cx="16" cy="16" r="14" fill="none"></circle>
+                            </svg>
+                        </center>
+                    </div>
+                    <div id="noJobsDiv" style="padding: 120px 6% 0 6%; display: none">
+                        <center>
+                            <img src="/assets/recruiter/img/empty_box.svg" width="96px">
+                            <h5>No Jobs found!</h5>
+                            <h6>Looks like there are no jobs matching your search. Please edit search/filter options and try again</h6>
+                        </center>
+                    </div>
+                    <div id="endOfResultsDiv" style="padding: 20px 6% 0 6%; display: none">
+                        <center>
+                            <img src="/assets/recruiter/img/empty_box.svg" width="96px">
+                            <h5>That's all we have for now!</h5>
+                            <h6>Showing all the jobs according to your filter preferences</h6>
+                        </center>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
+        <script type="text/javascript" src="/assets/common/js/materialize.min.js"></script>
+        <script type="text/javascript" src="/assets/common/js/awesomplete.min.js"></script>
+        <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+        <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
+        <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
+        <script type="text/javascript" src="/assets/search/js/searchController.js"></script>
+        <script>
+        $(window).resize(function(){
+            var width = $(window).width();
+            if(width < 780){
+                $("#editBtn").removeClass("btn-large").addClass("btn-small");
+            } else{
+                $("#editBtn").removeClass("btn-small").addClass("btn-large");
+            }
+        });
+        </script>
+    </body>
+</html>
