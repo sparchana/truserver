@@ -377,8 +377,14 @@ a:hover{
 
 #jobLogo{
     margin-top: 12%;
+    width: 84%;
+    max-height: 90px;
+}
+
+#jobLogoMyJob{
+    margin-top: 12%;
     width: 90%;
-    height: 48px;
+    max-height: 180px;
 }
 
 #hotJobs{

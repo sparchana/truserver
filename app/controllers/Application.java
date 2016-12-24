@@ -901,7 +901,12 @@ public class Application extends Controller {
         List<JobRole> jobs = JobRole.find.setUseQueryCache(!isDevMode).orderBy("jobName").findList();
         List<JobRole> jobRolesToReturn = new ArrayList<JobRole>();
         for(JobRole jobRole : jobs){
-            List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",jobRole.getJobRoleId()).findList();
+            List<JobPost> jobPostList = JobPost.find.where()
+                    .eq("jobRole.jobRoleId",jobRole.getJobRoleId())
+                    .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                    .eq("Source", ServerConstants.SOURCE_INTERNAL)
+                    .findList();
+
             if(jobPostList.size() > 0){
                 jobRolesToReturn.add(jobRole);
             }
