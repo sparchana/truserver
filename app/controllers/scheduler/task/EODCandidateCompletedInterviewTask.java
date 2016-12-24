@@ -77,7 +77,7 @@ public class EODCandidateCompletedInterviewTask extends TimerTask {
 
     @Override
     public void run() {
-        // fetch all the jobPost whose recruiter has interview credits
+        // fetch all the application which had interviews today
         Logger.info("Starting EOD notify candidates for play store rating ..");
 
         Calendar now = Calendar.getInstance();

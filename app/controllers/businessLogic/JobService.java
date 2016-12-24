@@ -143,12 +143,15 @@ public class JobService {
             //send email to recruiter
             sendRecruiterJobPostLiveEmail(existingJobPost.getRecruiterProfile(), existingJobPost);
 
+            //TODO uncomment this when we want to start notifying candidates about the job post
+/*
             //send sms to all the matching candidate
             JobPost jobPost = existingJobPost;
 
             new Thread(() -> {
                 sendSmsToCandidateMatchingWithJobPost(jobPost);
             }).start();
+*/
 
 
         }

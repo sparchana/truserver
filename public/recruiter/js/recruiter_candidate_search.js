@@ -88,7 +88,8 @@ function requestServerSearchCall(sortBy) {
 }
 
 function scrollToTop() {
-    $('body').scrollTop(0);
+    $('html, body').animate({scrollTop : 0},800);
+    return false;
 }
 
 $(document).ready(function(){
@@ -842,6 +843,10 @@ function updateGenderFilter() {
 }
 
 function checkOnFilterChange(){
+
+    //scroll to top
+    scrollToTop();
+
     //education filter
     var selectedEducation = [];
     $('#educationFilterDiv input:checked').each(function() {
