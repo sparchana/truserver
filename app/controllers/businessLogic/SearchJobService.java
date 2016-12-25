@@ -3,11 +3,13 @@ package controllers.businessLogic;
 import api.http.httpRequest.search.SearchJobRequest;
 import api.http.httpResponse.search.SearchJobResponse;
 import api.http.httpResponse.search.helper.SearchParamsResponse;
+import models.entity.JobPost;
 import models.entity.Static.Education;
 import models.entity.Static.Experience;
 import models.entity.Static.Locality;
 import play.Logger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,7 +24,10 @@ public class SearchJobService {
 
         if (request.getSearchParamRequest() != null) {
             SearchParamsResponse searchParamsResponse = new SearchParamsResponse();
-            searchParamsResponse.setSearchKeywords(request.getSearchParamRequest().getKeywordList());
+            searchParamsResponse
+                    .setSearchKeywords(
+                            segregateKeywords(
+                            request.getSearchParamRequest().getKeywordList()).getSearchKeywords());
             searchParamsResponse
                     .setPositiveKeywords(
                             segregateKeywords(
@@ -58,6 +63,15 @@ public class SearchJobService {
 
 
             response.setSearchParams(searchParamsResponse);
+            List<JobPost> jobPostList = JobSearchService
+                    .queryAndReturnJobPosts(searchParamsResponse.getSearchKeywords(),
+                            searchParamsResponse.getLocality(),
+                            searchParamsResponse.getEducation(),
+                            searchParamsResponse.getExperience(),
+                            1,
+                            true,
+                            null, 1);
+            response.setResults(jobPostList);
         }
         return response;
     }
@@ -90,12 +104,18 @@ public class SearchJobService {
     private static SearchParamsResponse segregateKeywords(List<String> keywordList) {
         // positive keyword for which there are no match and negative keyword for which there is a match
         SearchParamsResponse response = new SearchParamsResponse();
+        List<String> refinedKeywordList = new ArrayList<>();
+        for(String keyword: keywordList){
+            if(!(keyword == null || keyword.trim().isEmpty())){
+                refinedKeywordList.add(keyword);
+            }
+        }
 
         // TODO determine positive keywords and negative keywords here and append accordingly
-        Logger.info("keywordList: size: " + keywordList.size());
-        response.setNegativeKeywords(keywordList);
-        response.setPositiveKeywords(keywordList);
-
+        Logger.info("keywordList: size: " + refinedKeywordList.size());
+        response.setNegativeKeywords(refinedKeywordList);
+        response.setPositiveKeywords(refinedKeywordList);
+        response.setSearchKeywords(refinedKeywordList);
         return response;
     }
 

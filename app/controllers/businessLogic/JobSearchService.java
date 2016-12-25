@@ -2,18 +2,20 @@ package controllers.businessLogic;
 
 import api.ServerConstants;
 import api.http.FormValidator;
+import api.http.httpResponse.JobPostResponse;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.PagedList;
 import com.avaje.ebean.Query;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
-import in.trujobs.proto.*;
+import in.trujobs.proto.JobFilterRequest;
 import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.OM.JobPreference;
+import models.entity.Static.Education;
+import models.entity.Static.Experience;
 import models.entity.Static.JobRole;
-import play.Logger;
+import models.entity.Static.Locality;
 
-import api.http.httpResponse.JobPostResponse;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -414,6 +416,70 @@ public class JobSearchService {
         }
 
         return query.findList();
+    }
+
+    public static List<JobPost> queryAndReturnJobPosts(List<String> keywordList,
+                                                        Locality locality,
+                                                        Education education,
+                                                        Experience experience,
+                                                        int sortBy,
+                                                        boolean isHot,
+                                                        Integer source,
+                                                        int index)
+    {
+
+        if (source == null) {
+            source = ServerConstants.SOURCE_INTERNAL;
+        }
+
+        Query<JobPost> query = JobPost.find.query();
+
+        if (keywordList != null && keywordList.size() >0 ) {
+            query = query.select("*")
+                    .fetch("jobRole")
+                    .fetch("company")
+                    .where()
+                    .or( Expr.in("jobPostTitle", keywordList),Expr.or(
+                                    Expr.in("jobRole.jobName", keywordList),
+                                    Expr.in("company.companyName", keywordList)
+                            )
+                    )
+                    .query();
+        }
+
+        if(locality != null) {
+            query = query.select("*").fetch("jobPostToLocalityList")
+                    .where()
+                    .eq("jobPostToLocalityList.locality.localityId", locality.getLocalityId())
+                    .query();
+        }
+
+        if(education != null) {
+            query = query.select("*").fetch("jobPostEducation")
+                    .where()
+                    .eq("jobPostEducation.educationId", education.getEducationId())
+                    .query();
+        }
+        if(experience != null) {
+            query = query.select("*").fetch("jobPostExperience")
+                    .where()
+                    .eq("jobPostExperience.experienceId", experience.getExperienceId())
+                    .query();
+        }
+
+//        if (isHot) {
+//            query = query.where().eq("jobPostIsHot", "1").query();
+//        }
+
+        query = query.where().eq("source", source).query();
+
+        query = query.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).query();
+
+        query = query.orderBy().desc("JobPostIsHot");
+
+        query = query.setFirstRow(index).setMaxRows(20);
+
+        return  query.findPagedList().getList();
     }
 
     private static Long getSalaryValue(Integer id) {

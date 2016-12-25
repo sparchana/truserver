@@ -3,6 +3,7 @@ package api.http.httpResponse.search;
 import api.http.httpResponse.search.helper.FilterParamsResponse;
 import api.http.httpResponse.search.helper.SearchParamsResponse;
 import api.http.httpResponse.search.helper.SortParamsResponse;
+import models.entity.JobPost;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class SearchJobResponse {
     private SearchParamsResponse searchParams;
     private FilterParamsResponse filterParams;
     private SortParamsResponse sortParams;
-    private List<Object> results;
+    private List<JobPost> results;
 
     public SearchJobResponse() {
         this.results = new LinkedList<>();
@@ -79,11 +80,12 @@ public class SearchJobResponse {
         this.sortParams = sortParams;
     }
 
-    public List<Object> getResults() {
+
+    public List<JobPost> getResults() {
         return results;
     }
 
-    public void setResults(List<Object> results) {
+    public void setResults(List<JobPost> results) {
         this.results = results;
     }
 }

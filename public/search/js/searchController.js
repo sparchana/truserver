@@ -348,6 +348,7 @@
                     var url = window.location.pathname.split('/');
                     var _searchUrl = url[url.length - 2];
                     app.currentSearchURL = _searchUrl;
+                    app.currentSearchParams = {};
                     if(_searchUrl != null){
                         var list = _searchUrl.split('_');
                         // run identifier on this array;
