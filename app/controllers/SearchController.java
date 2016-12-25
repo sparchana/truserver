@@ -28,7 +28,7 @@ public class SearchController extends Controller {
         return ok(toJson(JobRole.find.all()));
     }
 
-    public static Result search() {
+    public static Result search(Integer index) {
         JsonNode searchReq = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + searchReq );
         if(searchReq == null) {
@@ -44,6 +44,12 @@ public class SearchController extends Controller {
             e.printStackTrace();
         }
 
+        // can also pass this as param
+        if(index != null)  {
+            searchJobRequest.setIndex(index);
+        } else {
+            searchJobRequest.setIndex(0);
+        }
         // init search Service
         SearchJobService searchJobService = new SearchJobService();
 

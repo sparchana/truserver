@@ -418,7 +418,7 @@ public class JobSearchService {
         return query.findList();
     }
 
-    public static List<JobPost> queryAndReturnJobPosts(List<String> keywordList,
+    public static JobPostResponse queryAndReturnJobPosts(List<String> keywordList,
                                                         Locality locality,
                                                         Education education,
                                                         Experience experience,
@@ -427,6 +427,7 @@ public class JobSearchService {
                                                         Integer source,
                                                         int index)
     {
+        JobPostResponse response = new JobPostResponse();
 
         if (source == null) {
             source = ServerConstants.SOURCE_INTERNAL;
@@ -477,9 +478,11 @@ public class JobSearchService {
 
         query = query.orderBy().desc("JobPostIsHot");
 
+        response.setTotalJobs(query.findRowCount());
         query = query.setFirstRow(index).setMaxRows(20);
 
-        return  query.findPagedList().getList();
+        response.setAllJobPost(query.findPagedList().getList());
+        return  response;
     }
 
     private static Long getSalaryValue(Integer id) {

@@ -1,12 +1,9 @@
 package api.http.httpResponse.search;
 
+import api.http.httpResponse.JobPostResponse;
 import api.http.httpResponse.search.helper.FilterParamsResponse;
 import api.http.httpResponse.search.helper.SearchParamsResponse;
 import api.http.httpResponse.search.helper.SortParamsResponse;
-import models.entity.JobPost;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created by zero on 24/12/16.
@@ -25,10 +22,9 @@ public class SearchJobResponse {
     private SearchParamsResponse searchParams;
     private FilterParamsResponse filterParams;
     private SortParamsResponse sortParams;
-    private List<JobPost> results;
+    private JobPostResponse results;
 
     public SearchJobResponse() {
-        this.results = new LinkedList<>();
         this.status = STATUS.UNKNOWN;
     }
 
@@ -80,12 +76,11 @@ public class SearchJobResponse {
         this.sortParams = sortParams;
     }
 
-
-    public List<JobPost> getResults() {
+    public JobPostResponse getResults() {
         return results;
     }
 
-    public void setResults(List<JobPost> results) {
+    public void setResults(JobPostResponse results) {
         this.results = results;
     }
 }

@@ -1,9 +1,9 @@
 package controllers.businessLogic;
 
 import api.http.httpRequest.search.SearchJobRequest;
+import api.http.httpResponse.JobPostResponse;
 import api.http.httpResponse.search.SearchJobResponse;
 import api.http.httpResponse.search.helper.SearchParamsResponse;
-import models.entity.JobPost;
 import models.entity.Static.Education;
 import models.entity.Static.Experience;
 import models.entity.Static.Locality;
@@ -63,15 +63,15 @@ public class SearchJobService {
 
 
             response.setSearchParams(searchParamsResponse);
-            List<JobPost> jobPostList = JobSearchService
+            JobPostResponse jobPostResponse = JobSearchService
                     .queryAndReturnJobPosts(searchParamsResponse.getSearchKeywords(),
                             searchParamsResponse.getLocality(),
                             searchParamsResponse.getEducation(),
                             searchParamsResponse.getExperience(),
                             1,
                             true,
-                            null, 1);
-            response.setResults(jobPostList);
+                            null, request.getIndex());
+            response.setResults(jobPostResponse);
         }
         return response;
     }

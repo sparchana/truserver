@@ -13,6 +13,7 @@ public class SearchJobRequest {
     public SearchParamRequest searchParamRequest;
     public FilterParamRequest filterParamRequest;
     public SortParamRequest sortParamRequest;
+    public Integer index;
 
 
     public SearchParamRequest getSearchParamRequest() {
@@ -37,5 +38,13 @@ public class SearchJobRequest {
 
     public void setSortParamRequest(SortParamRequest sortParamRequest) {
         this.sortParamRequest = sortParamRequest;
+    }
+
+    public Integer getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer index) {
+        this.index = index;
     }
 }
