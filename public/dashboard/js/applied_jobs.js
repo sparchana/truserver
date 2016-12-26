@@ -32,7 +32,7 @@ $(window).load(function () {
     });
     $("#status").fadeOut();
     $("#loaderLogo").fadeOut();
-    $("#preloader").delay(1000).fadeOut("slow");
+    $("#preloader").fadeOut();
 });
 
 $(document).ready(function () {
@@ -387,7 +387,7 @@ function prePopulateJobSection(jobApplication) {
             var jobLogo = document.createElement("img");
             jobLogo.src = jobPost.jobPost.company.companyLogo;
             jobLogo.setAttribute('width', '80%');
-            jobLogo.id = "jobLogo";
+            jobLogo.id = "jobLogoMyJob";
             col.appendChild(jobLogo);
 
             var jobBodyCol = document.createElement("div");
@@ -649,14 +649,49 @@ function prePopulateJobSection(jobApplication) {
             jobBodyCol.appendChild(titleRowStatus);
 
             if(jobPost.status.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && jobPost.status.statusId <= JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
-                var addressBody = document.createElement("div");
-                if(jobPost.jobPost.jobPostAddress != null || jobPost.jobPost.jobPostAddress != ""){
-                    addressBody.textContent = "Interview Address : " + jobPost.jobPost.jobPostAddress;
+
+                var recruiterBody = document.createElement("div");
+                var recruiterInfo = "";
+                recruiterBody.textContent = "Recruiter Info: ";
+                recruiterBody.style = "margin-top: 8px; margin-right: 12px; font-weight: bold";
+                titleRowStatus.appendChild(recruiterBody);
+
+                //computing recruiter info
+                if(jobPost.jobPost.recruiterProfile != null){
+                    recruiterInfo = jobPost.jobPost.recruiterProfile.recruiterProfileName + " (" + jobPost.jobPost.recruiterProfile.recruiterProfileMobile + ")";
                 } else {
-                    addressBody.textContent = "Interview Address : Not available";
+                    recruiterInfo = "";
                 }
-                addressBody.style = "margin-top: 8px; margin-right: 12px";
+
+                var recruiterInfoBody = document.createElement("span");
+                recruiterInfoBody.style = "font-weight: normal";
+                recruiterInfoBody.textContent = recruiterInfo;
+                if(recruiterInfo == ""){
+                    recruiterInfoBody.textContent = "Information not available";
+                }
+                recruiterBody.appendChild(recruiterInfoBody);
+
+                //computing Address
+                var addressBody = document.createElement("div");
+                addressBody.textContent = "Interview Address : ";
+                addressBody.style = "margin-top: 8px; margin-right: 12px; font-weight: bold";
                 titleRowStatus.appendChild(addressBody);
+
+                var address = "";
+
+                if(jobPost.jobPost.interviewFullAddress != null && jobPost.jobPost.interviewFullAddress != ""){
+                    address = jobPost.jobPost.interviewFullAddress;
+                } else {
+                    address = "";
+                }
+                var addressInfoBody = document.createElement("span");
+                addressInfoBody.style = "font-weight: normal";
+                addressInfoBody.textContent = address;
+                if(address == ""){
+                    addressInfoBody.textContent = "Address not available";
+                }
+                addressBody.appendChild(addressInfoBody);
+
             }
 
             if(jobPost.status != null){
@@ -671,6 +706,7 @@ function prePopulateJobSection(jobApplication) {
                         titleRowStatus.appendChild(statusUpdateBody);
 
                         var statusBody = document.createElement("span");
+                        statusBody.style = "font-weight: bold";
                         statusBody.textContent = "Current Status: ";
                         statusUpdateBody.appendChild(statusBody);
 
@@ -813,7 +849,7 @@ function prePopulateJobSection(jobApplication) {
                                 $("#delayed_" + jobPost.jobPost.jobPostId).hide();
                                 $("#started_" + jobPost.jobPost.jobPostId).show();
                                 $("#reached_" + jobPost.jobPost.jobPostId).show();
-                            } else if(jobPost.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED) {
+                            } else if(jobPost.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY) {
                                 currentStatus.textContent = "On the Way";
                                 currentStatus.style = "font-weight: bold; margin-right: 4px; color: green";
 

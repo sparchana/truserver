@@ -194,7 +194,11 @@ function processDataForJobPostLocation(returnedData) {
 }
 
 function confirmApply() {
-    $("#applyButton").addClass("jobApplied").removeClass("jobApplyBtnModal").prop('disabled',true).html("Applying");
+    $("#applyButton").removeClass("jobApplyBtnModal").addClass("jobApplied").prop('disabled',true).html("Applying");
+    $("#applyButton").click(function(){ return false});
+    $("#applyButton").unbind();
+    $("#applyButton").removeAttr("onclick");
+
     applyJobSubmitViaCandidate(jobPostId, prefLocation, prefTimeSlot, scheduledInterviewDate, true);
 //    applyJob(jobPostId, prefLocation, true);
 }
@@ -321,8 +325,8 @@ function checkSlotAvailability(x, interviewDays) {
 
 function openLogin() {
     $("#signInPopup").html("Sign In");
-    document.getElementById("resetCheckUserBtn").disabled = false;
-    document.getElementById("resetNewPasswordBtn").disabled = false;
+    try{ document.getElementById("resetCheckUserBtn").disabled = false; } catch (e){}
+    try{ document.getElementById("resetNewPasswordBtn").disabled = false; } catch (e){}
     $('#form_login_candidate').show();
     $('#noUserLogin').hide();
     $('#incorrectMsgLogin').hide();

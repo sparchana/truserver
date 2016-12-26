@@ -102,10 +102,21 @@ body{
 }
 
 .contactUnlocked{
-    padding: 6px 16px 6px 16px;
+    padding: 5px 8px 5px 8px;
+    font-size: 12px;
     border-radius: 4px;
     border: 2px solid #2ec866;
     color: #2ec866;
+}
+
+.appliedFilter{
+    font-size: 12px;
+    padding: 6px;
+    width: auto;
+    color: white;
+    font-weight: bold;
+    border-radius: 4px;
+    background: grey;
 }
 
 #creditView{
@@ -129,6 +140,20 @@ body{
     transform-origin: 50%;
     -webkit-animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
     animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+}
+
+.customUnlockBtn{
+    background: #2aae5e;
+    font-weight: bold;
+    margin-right: 8px;
+    color: white;
+    padding: 6px 12px 6px 12px;
+    border-radius: 3px;
+}
+
+.customUnlockBtn:hover{
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    color: white;
 }
 
 .packCol{

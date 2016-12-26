@@ -1,5 +1,7 @@
 package controllers;
 
+import dao.JobPostDAO;
+import notificationService.*;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
@@ -280,22 +282,6 @@ public class Application extends Controller {
         return ok(toJson(JobService.addJobPost(addJobPostRequest, InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE)));
     }
 
-    public static Result addCompanyLogo() {
-        Http.MultipartFormData body = request().body().asMultipartFormData();
-        Http.MultipartFormData.FilePart picture = body.getFile("picture");
-        if (picture != null) {
-            String fileName = picture.getFilename();
-            String contentType = picture.getContentType();
-            File file = (File) picture.getFile();
-            Logger.info("uploaded! " + file);
-            CompanyService.uploadCompanyLogo(file, fileName);
-            return ok("File uploaded");
-        } else {
-            flash("error", "Missing file");
-            return redirect(routes.Application.index());
-        }
-    }
-
     @Security.Authenticated(SecuredUser.class)
     public static Result addRecruiter() {
         JsonNode req = request().body().asJson();
@@ -375,6 +361,34 @@ public class Application extends Controller {
             return badRequest("error uploading file. Check file type");
         }
         return ok(toJson(ParseCSV.parseCSV(file)));
+    }
+
+    public static Result uploadLogo() {
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart companyLogo = body.getFile("file");
+
+        if (companyLogo != null) {
+            String fileName = companyLogo.getFilename();
+
+            File file = (File) companyLogo.getFile();
+            Logger.info("uploaded! " + fileName);
+            CompanyService.uploadCompanyLogo(file, fileName);
+
+            List<String> companyId = Arrays.asList(fileName.split("\\s*_\\s*"));
+            if(companyId.get(1) != null){
+                Company company = Company.find.where().eq("CompanyId", companyId.get(1)).findUnique();
+                if(company != null){
+                    company.setCompanyLogo("https://s3.amazonaws.com/trujobs.in/companyLogos/" + fileName);
+                    company.update();
+                }
+            }
+            return ok("File uploaded");
+
+
+        } else {
+            flash("error", "Missing file");
+            return redirect(routes.Application.index());
+        }
     }
 
     @Security.Authenticated(SuperAdminSecured.class)
@@ -563,7 +577,7 @@ public class Application extends Controller {
     }
 
     public static Result getJobPostInfo(long jobPostId, Integer isSupport) {
-        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
         if(jobPost!=null){
             if(isSupport == 0){
                 String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
@@ -846,7 +860,7 @@ public class Application extends Controller {
                                              .orderBy().desc("jobPostUpdateTimestamp")
                                              .findList();
 
-        // get all jobpost uuiids
+        // get all jobpost uuids
         List<String> jobpostUUIDs = new ArrayList<>();
         for (JobPost jobPost : jobPosts) {
             jobpostUUIDs.add(jobPost.getJobPostUUId());
@@ -883,7 +897,12 @@ public class Application extends Controller {
         List<JobRole> jobs = JobRole.find.setUseQueryCache(!isDevMode).orderBy("jobName").findList();
         List<JobRole> jobRolesToReturn = new ArrayList<JobRole>();
         for(JobRole jobRole : jobs){
-            List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",jobRole.getJobRoleId()).findList();
+            List<JobPost> jobPostList = JobPost.find.where()
+                    .eq("jobRole.jobRoleId",jobRole.getJobRoleId())
+                    .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                    .eq("Source", ServerConstants.SOURCE_INTERNAL)
+                    .findList();
+
             if(jobPostList.size() > 0){
                 jobRolesToReturn.add(jobRole);
             }
@@ -1416,7 +1435,7 @@ public class Application extends Controller {
                             jobPostIdList.add(Long.parseLong(jobPostId));
                         }
                     }
-                    List<JobPost> jobPostList = JobPost.find.where().in("jobPostId", jobPostIdList).findList();
+                    List<JobPost> jobPostList = JobPostDAO.findByIdList(jobPostIdList);
                     for (JobPost jobPost : jobPostList) {
                         if (!jobRoleIdList.contains(jobPost.getJobRole().getJobRoleId())){
                             jobRoleIdList.add(jobPost.getJobRole().getJobRoleId());
@@ -1660,7 +1679,7 @@ public class Application extends Controller {
 
     @Security.Authenticated(RecSecured.class)
     public static Result getJobPostMatchingParams(long jobPostId) {
-        return ok(toJson(JobPost.find.where().eq("jobPostId", jobPostId).findUnique()));
+        return ok(toJson(JobPostDAO.findById(jobPostId)));
     }
 
     @Security.Authenticated(RecSecured.class)
@@ -1743,7 +1762,7 @@ public class Application extends Controller {
             return badRequest();
         }
         if(jobRoleId == null && jobPostId !=null && jobPostId != 0) {
-            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+            JobPost jobPost = JobPostDAO.findById(jobPostId);
             jobRoleId = jobPost.getJobRole().getJobRoleId();
         }
 
@@ -1785,7 +1804,7 @@ public class Application extends Controller {
         List<String> jobRoleIdList = new ArrayList<>();
 
         if(jobRoleIds == null && jobRoleId == null && jobPostId !=null && jobPostId != 0) {
-            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+            JobPost jobPost = JobPostDAO.findById(jobPostId);
             if(jobPost == null) {
                 return badRequest();
             }
@@ -1929,11 +1948,17 @@ public class Application extends Controller {
             if(candidate.getCandidateLastWithdrawnSalary() != null) {
                 return  ok(toJson(candidate.getCandidateLastWithdrawnSalary()));
             }
-            return  ok();
+            return ok();
         } else if (ServerConstants.PROPERTY_TYPE_LOCALITY == propertyId) {
-            return  ok(toJson(candidate.getLocality()));
+            if(candidate.getLocality() != null){
+                return  ok(toJson(candidate.getLocality()));
+            }
+            return ok();
         } else if (ServerConstants.PROPERTY_TYPE_WORK_SHIFT == propertyId) {
-            return  ok(toJson(candidate.getTimeShiftPreference()));
+            if(candidate.getTimeShiftPreference() != null){
+                return  ok(toJson(candidate.getTimeShiftPreference()));
+            }
+            return ok();
         }
 
         return badRequest("Error");
@@ -2046,13 +2071,18 @@ public class Application extends Controller {
         return ok(views.html.CandidateDashboard.update_status_view.render());
     }
 
-    @Security.Authenticated(SecuredUser.class)
     public static Result updateInterviewStatus(long cId, long jpId, long val, long reason) {
         Candidate candidate = Candidate.find.where().eq("candidateId", cId).findUnique();
+        Integer channel;
+        if(session().get("sessionChannel") != null){
+            channel = Integer.valueOf(session().get("sessionChannel"));
+        } else{
+            channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
+        }
         if(candidate != null){
-            JobPost jobPost = JobPost.find.where().eq("JobPostId", jpId).findUnique();
+            JobPost jobPost = JobPostDAO.findById(jpId);
             if(jobPost != null){
-                return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val, reason, Integer.valueOf(session().get("sessionChannel")))));
+                return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val, reason, channel)));
             }
         }
         return ok("0");
@@ -2063,7 +2093,7 @@ public class Application extends Controller {
         if(session().get("candidateId") != null){
             Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")).findUnique();
             if(candidate != null){
-                JobPost jobPost = JobPost.find.where().eq("JobPostId", jpId).findUnique();
+                JobPost jobPost = JobPostDAO.findById(jpId);
                 if(jobPost != null){
                     return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val, reason, Integer.valueOf(session().get("sessionChannel")))));
                 }
@@ -2075,9 +2105,11 @@ public class Application extends Controller {
     public static Result getJpWfStatus(long cId, long jpId) {
         Candidate candidate = Candidate.find.where().eq("candidateId", cId).findUnique();
         if(candidate != null){
-            JobPost jobPost = JobPost.find.where().eq("JobPostId", jpId).findUnique();
+            JobPost jobPost = JobPostDAO.findById(jpId);
             if(jobPost != null){
-                return ok(toJson(JobPostWorkflowEngine.getCandidateLatestStatus(candidate, jobPost)));
+                if(JobPostWorkflowEngine.getCandidateLatestStatus(candidate, jobPost) != null){
+                    return ok(toJson(JobPostWorkflowEngine.getCandidateLatestStatus(candidate, jobPost)));
+                }
             }
         }
         return ok("0");
@@ -2111,12 +2143,12 @@ public class Application extends Controller {
             Logger.info("null jobPostId received in GET");
             return badRequest();
         }
-        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
         if(jobPost == null) {
             Logger.info("No JobPost Found for jobPostId: " + jobPostId);
             return badRequest();
         }
-        return ok(toJson(JobPostWorkflowEngine.isInterviewRequired(jobPost)));
+        return ok(toJson(RecruiterService.isInterviewRequired(jobPost)));
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -2216,9 +2248,9 @@ public class Application extends Controller {
 
             // make entry into prescreen result/response table
             JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), jobPostId, Integer.valueOf(session().get("sessionChannel")));
-            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+            JobPost jobPost = JobPostDAO.findById(jobPostId);
 
-            return ok(toJson(JobPostWorkflowEngine.isInterviewRequired(jobPost)));
+            return ok(toJson(RecruiterService.isInterviewRequired(jobPost)));
         }
         return badRequest();
     }
@@ -2235,15 +2267,5 @@ public class Application extends Controller {
         }
 
         return ok(toJson(JobPostWorkflowEngine.updateFeedback(addFeedbackRequest, Integer.valueOf(session().get("sessionChannel")))));
-    }
-
-    public static Result testnotification(){
-        Candidate candidate = Candidate.find.where().eq("CandidateMobile", "+918971739586").findUnique();
-        if(candidate.getCandidateAndroidToken() != null){
-            NotificationUtil.sendNotification("Hi", "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
-            return ok("1");
-        }
-        return ok("Null token!");
-
     }
 }

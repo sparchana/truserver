@@ -6,14 +6,16 @@ import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import dao.JobPostWorkFlowDAO;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.OM.*;
 import models.entity.Static.*;
+import play.Logger;
+import play.core.server.Server;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by batcoder1 on 15/6/16.
@@ -87,6 +89,18 @@ public class JobPost extends Model {
 
     @Column(name = "JobPostWorkingDays", columnDefinition = "binary(7) null")
     private Byte jobPostWorkingDays;
+
+    @Column(name = "PlaceId", columnDefinition = "text null")
+    private String placeId;
+
+    @Column(name = "interview_building_no", columnDefinition = "text null")
+    private String interviewBuildingNo;
+
+    @Column(name = "interview_landmark", columnDefinition = "text null")
+    private String interviewLandmark;
+
+    @Column(name = "ReviewApplication", columnDefinition = "int(1) null")
+    private Integer reviewApplication;
 
     @ManyToOne
     @JsonManagedReference
@@ -590,4 +604,151 @@ public class JobPost extends Model {
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
+
+    public String getPlaceId() {
+        return placeId;
+    }
+
+    public void setPlaceId(String placeId) {
+        this.placeId = placeId;
+    }
+
+    public String getInterviewBuildingNo() {
+        return interviewBuildingNo;
+    }
+
+    public void setInterviewBuildingNo(String interviewBuildingNo) {
+        this.interviewBuildingNo = interviewBuildingNo;
+    }
+
+    public String getInterviewLandmark() {
+        return interviewLandmark;
+    }
+
+    public void setInterviewLandmark(String interviewLandmark) {
+        this.interviewLandmark = interviewLandmark;
+    }
+
+    public Integer getReviewApplication() {
+        return reviewApplication;
+    }
+
+    public void setReviewApplication(Integer reviewApplication) {
+        this.reviewApplication = reviewApplication;
+    }
+
+    public String getInterviewFullAddress() {
+        String address = "";
+
+        if(this.getJobPostAddress() != null){
+            address = this.getJobPostAddress();
+
+            //if building No/ office no/ office no is there, prefix it
+            if(!Objects.equals(this.getInterviewBuildingNo(), "") && this.getInterviewBuildingNo() != null){
+                address = this.getInterviewBuildingNo() + ", " + address;
+
+                //if landmark is available is there, add it after full address
+                if(!Objects.equals(this.getInterviewLandmark(), "") && this.getInterviewLandmark() != null){
+                    address += ", Landmark: " + this.getInterviewLandmark();
+                }
+            } else if(!Objects.equals(this.getInterviewLandmark(), "") && this.getInterviewLandmark() != null){
+                //if landmark is available is there, add it after full address
+                address += ", Landmark: " + this.getInterviewLandmark();
+            }
+        }
+
+        return address;
+    }
+
+    public Integer getAwaitingInterviewScheduleCount() {
+        List<Long> jobIdList = new ArrayList<>();
+        jobIdList.add(this.getJobPostId());
+
+        // get records for specific jobPostid with status and exact scheduleDate
+        List<JobPostWorkflow> jobPostWorkflowList =
+                JobPostWorkFlowDAO.getApplicationCountAccordingToStatus(
+                        jobIdList,
+                        ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED
+                );
+
+        return jobPostWorkflowList.size();
+    }
+
+    public Integer getAwaitingRecruiterConfirmationCount() {
+        List<Long> jobIdList = new ArrayList<>();
+        jobIdList.add(this.getJobPostId());
+
+        // get records for specific jobPostid with status and exact scheduleDate
+        List<JobPostWorkflow> jobPostWorkflowList =
+                JobPostWorkFlowDAO.getApplicationCountAccordingToStatus(
+                        jobIdList,
+                        ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED
+                );
+
+        return jobPostWorkflowList.size();
+    }
+
+    public Integer getConfirmedInterviewsCount() {
+        List<Long> jobIdList = new ArrayList<>();
+        jobIdList.add(this.getJobPostId());
+
+        // get records for specific jobPostid with status and exact scheduleDate
+        List<JobPostWorkflow> jobPostWorkflowList =
+                JobPostWorkFlowDAO.getConfirmedInterviewApplications(
+                        jobIdList,
+                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED
+                );
+
+        return jobPostWorkflowList.size();
+    }
+
+    public Integer getTodaysInterviewCount() {
+        Calendar now = Calendar.getInstance();
+        Date today = now.getTime();
+
+        List<Long> jobIdList = new ArrayList<>();
+        jobIdList.add(this.getJobPostId());
+
+        // get records for specific jobPostid with status and exact scheduleDate
+        List<JobPostWorkflow> jobPostWorkflowList =
+                JobPostWorkFlowDAO.getTodayInterview(
+                        jobIdList,
+                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED,
+                        today);
+
+        return jobPostWorkflowList.size();
+    }
+
+    public Integer getTomorrowsInterviewCount() {
+        Calendar now = Calendar.getInstance();
+        Date today = now.getTime();
+
+        List<Long> jobIdList = new ArrayList<>();
+        jobIdList.add(this.getJobPostId());
+
+        // get records for specific jobPostid with status and exact scheduleDate
+        List<JobPostWorkflow> jobPostWorkflowList =
+                JobPostWorkFlowDAO.getTomorrowsInterview(
+                        jobIdList,
+                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED,
+                        today);
+
+        return jobPostWorkflowList.size();
+    }
+
+    public Integer getCompletedInterviewCount() {
+        List<Long> jobIdList = new ArrayList<>();
+        jobIdList.add(this.getJobPostId());
+
+        // get records for specific jobPostid with status and exact scheduleDate
+        List<JobPostWorkflow> jobPostWorkflowList =
+                JobPostWorkFlowDAO.getConfirmedInterviewApplications(
+                        jobIdList,
+                        ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED
+                );
+
+        return jobPostWorkflowList.size();
+
+    }
+
 }

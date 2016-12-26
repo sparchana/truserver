@@ -14,6 +14,7 @@ import api.http.httpResponse.Recruiter.AddRecruiterResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
 import api.http.httpResponse.ResetPasswordResponse;
+import api.http.httpResponse.interview.InterviewResponse;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
@@ -643,4 +644,44 @@ public class RecruiterService {
         }
         recruiterCreditHistory.save();
     }
+
+    public static InterviewResponse isInterviewRequired(JobPost jobPost) {
+        InterviewResponse interviewResponse = new InterviewResponse();
+        if (jobPost == null) {
+            interviewResponse.setStatus(ServerConstants.ERROR);
+            return interviewResponse;
+        }
+        int validCount = 0;
+        if (jobPost.getRecruiterProfile() == null) {
+            // don't show interview modal if no recruiter is set for a jobpost
+            interviewResponse.setStatus(ServerConstants.INTERVIEW_NOT_REQUIRED);
+            return interviewResponse;
+        }
+        Long recruiterId = jobPost.getRecruiterProfile().getRecruiterProfileId();
+        RecruiterCreditHistory recruiterCreditHistory = RecruiterCreditHistory.find.where()
+                .eq("recruiterProfile.recruiterProfileId", recruiterId)
+                .eq("recruiterCreditCategory.recruiterCreditCategoryId", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
+                .orderBy().desc("createTimestamp").setMaxRows(1).findUnique();
+        if (recruiterCreditHistory != null &&
+                recruiterCreditHistory.getRecruiterCreditCategory().getRecruiterCreditCategoryId()
+                        == ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK
+                && recruiterCreditHistory.getRecruiterCreditsAvailable() > 0) {
+            // When recruiter credit available then show Interview UI
+            validCount++;
+        }
+
+        if (jobPost.getInterviewDetailsList() != null && jobPost.getInterviewDetailsList().size() > 0) {
+            // When slot available then  show Interview UI
+            validCount++;
+        }
+
+        if (validCount == 2) {
+            interviewResponse.setStatus(ServerConstants.INTERVIEW_REQUIRED);
+            return interviewResponse;
+        }
+
+        interviewResponse.setStatus(ServerConstants.INTERVIEW_NOT_REQUIRED);
+        return interviewResponse;
+    }
+
 }

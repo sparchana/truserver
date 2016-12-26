@@ -1,6 +1,7 @@
 package controllers.businessLogic.ongrid;
 
 import api.http.httpResponse.ongrid.OngridAadhaarVerificationResponse;
+import com.avaje.ebean.Expr;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.CandidateService;
@@ -22,6 +23,7 @@ import play.api.Play;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,7 +78,15 @@ public class AadhaarService {
     public OngridAadhaarVerificationResponse sendAadharSyncVerificationRequest(String candidateMobile)
     {
         Candidate candidate = CandidateService.isCandidateExists(candidateMobile);
+
         OngridAadhaarVerificationResponse response = new OngridAadhaarVerificationResponse();
+
+        Boolean isDevMode = play.api.Play.isDev(play.api.Play.current()) || play.api.Play.isTest(play.api.Play.current());
+        if(isDevMode){
+            Logger.info("Dev mode: not verifying candidate Aadhar");
+            return response;
+        }
+
 
         if (candidate == null) {
             response.setResponseStatus(OngridAadhaarVerificationResponse.STATUS_ERROR);
@@ -156,6 +166,38 @@ public class AadhaarService {
         Logger.info(response.getResponseMessage());
 
         return response;
+    }
+
+    /**
+     * Queries the tables IdProofReference for all candidates who have aadhaar number mentioned,
+     * joins with OnGridVerificationResults to understand already verified candidates
+     * and returns the delta list of candidates that are yet to be verified
+     * @return
+     */
+    public List<Candidate> getNonVerifiedAadhaarList() {
+
+        // Query all candidates that have aadhaar document number given
+        List<IDProofReference> aadhaarRecordsWithNumber =
+                IDProofReference.find.where().and(Expr.eq("idProof.idProofId", IdProofDAO.IDPROOF_AADHAAR_ID),
+                        Expr.isNotNull("idProofNumber")).findList();
+
+        List<Candidate> candidatesToBeVerified = new ArrayList<Candidate>();
+
+        for (IDProofReference idProofReference : aadhaarRecordsWithNumber) {
+            candidatesToBeVerified.add(idProofReference.getCandidate());
+        }
+
+        // join with OnGridVerificationResults
+        List<OngridVerificationResults> ongridResultsRecords =
+                OngridVerificationResults.find.select("candidate").setDistinct(true).findList();
+
+        // return the list of candidates that have aadhaar numebr given, but dont have an entry in
+        // OnGridVerificationResults
+        for (OngridVerificationResults result : ongridResultsRecords) {
+            candidatesToBeVerified.remove(result.getCandidate());
+        }
+
+        return candidatesToBeVerified;
     }
 
     private String constructRequestParams(Candidate candidate)

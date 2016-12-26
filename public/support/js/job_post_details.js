@@ -10,8 +10,8 @@ var jobPostJobRole = [];
 var slotArray = [];
 
 var fullAddress;
-var interviewLat;
-var interviewLng;
+var interviewLat = null;
+var interviewLng = null;
 
 function getLocality() {
     return localityArray;
@@ -295,7 +295,7 @@ $(document).ready(function () {
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
-    } else{
+    } else {
         $("#jobPostJobRole").tokenInput(getJob(), {
             theme: "facebook",
             placeholder: "Job Role?",
@@ -312,8 +312,10 @@ $(document).ready(function () {
             minChars: 0,
             preventDuplicates: true
         });
+
+        renderMap();
     }
-    
+
     /* ajax commands to fetch all localities and jobs*/
     try {
         $.ajax({
@@ -539,64 +541,6 @@ $(document).ready(function () {
         }
         $('#jobPostEndTime').append(option);
     }
-
-    google.maps.event.addDomListener(window, 'load', function () {
-        var defaultBounds = new google.maps.LatLngBounds(
-            new google.maps.LatLng(12.97232, 77.59480),
-            new google.maps.LatLng(12.89201, 77.58905)
-        );
-
-        var options = {
-            bounds: defaultBounds,
-            componentRestrictions: {country: 'in'}
-        };
-
-        var places = new google.maps.places.Autocomplete(document.getElementById('jobPostAddress'), options);
-        google.maps.event.addListener(places, 'place_changed', function () {
-            var place = places.getPlace();
-            var address = place.formatted_address;
-            var latitude = place.geometry.location.lat();
-            var longitude = place.geometry.location.lng();
-            fullAddress = address;
-            interviewLat = latitude;
-            interviewLng = longitude;
-
-            $("#jobPostAddressVal").show();
-            $("#jobPostAddress").hide();
-            $("#jobPostAddressVal").html(fullAddress);
-
-            $('#jp_lat').val(latitude);
-            $('#jp_lon').val(longitude);
-
-            //initializing map
-            var parent = $("#map_parent");
-
-            parent.html('');
-            var map = '<div id="jp_map" style="width: 500px; height: 240px"></div>';
-            parent.append(map);
-
-            $('#jp_map').locationpicker({
-                location: {
-                    latitude: latitude,
-                    longitude: longitude
-                },
-                radius: 100,
-                inputBinding: {
-                    latitudeInput: $('#jp_lat'),
-                    longitudeInput: $('#jp_lon'),
-                    radiusInput: $('#jp_address_text'),
-                    locationNameInput: $('#jp_address_text')
-                },
-                enableAutocomplete: true,
-                onchanged: function () {
-                    interviewLat = $('#jp_lat').val();
-                    interviewLng = $('#jp_lon').val();
-                    $("#jobPostAddressVal").html($('#jp_address_text').val());
-                }
-            });
-        });
-    });
-
 });
 
 function processDataGetCreditCategory(returnedData) {
@@ -617,11 +561,6 @@ function processDataGetAllTimeSlots(returnedData) {
         var option ='<label class="btn btn-custom-check educationBtn"><input type="checkbox" name="interviewTimeSlot" id=\"interviewSlot_' + id + '\" value=\"' + id + '\">' + name + '</label>';
         $('#interviewTimeSlot').append(option);
     });
-}
-
-function interviewUpdate() {
-    $("#jobPostAddressVal").hide();
-    $("#jobPostAddress").show();
 }
 
 function processDataForJobPost(returnedData) {
@@ -801,16 +740,16 @@ function processDataForJobPost(returnedData) {
         $("#jobPostStatus").val(returnedData.jobPostStatus.jobStatusId);
     }
 
+    if(returnedData.reviewApplication == null || returnedData.reviewApplication == 1){
+        $( "#check_applications" ).prop( "checked", true);
+    } else{
+        $( "#check_applications" ).prop( "checked", false);
+    }
+
     if(Object.keys(returnedData.interviewDetailsList).length > 0){
         var interviewDetailsList = returnedData.interviewDetailsList;
         if(interviewDetailsList[0].interviewDays != null){
             var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
-
-            if(interviewDetailsList[0].reviewApplication == null || interviewDetailsList[0].reviewApplication == 1){
-                $( "#check_applications" ).prop( "checked", true);
-            } else{
-                $( "#check_applications" ).prop( "checked", false);
-            }
 
             /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
             if(interviewDays.length != 7){
@@ -841,54 +780,59 @@ function processDataForJobPost(returnedData) {
         });
     }
 
-    $("#jobPostAddress").hide();
-    if(returnedData.interviewDetailsList != null && Object.keys(returnedData.interviewDetailsList).length){
-        if(returnedData.interviewDetailsList[0].lat != null){
-            interviewLat = returnedData.interviewDetailsList[0].lat;
-            interviewLng = returnedData.interviewDetailsList[0].lng;
-            if(returnedData.jobPostAddress != null){
-                //initializing map
-                var parent = $("#map_parent");
+    if(returnedData.latitude != null){
+        interviewLat = returnedData.latitude;
+    }
 
-                parent.html('');
-                var map = '<div id="jp_map" style="width: 500px; height: 240px"></div>';
-                parent.append(map);
+    if(returnedData.longitude != null){
+        interviewLng = returnedData.longitude;
+    }
 
-                $('#jp_map').locationpicker({
-                    location: {
-                        latitude: interviewLat,
-                        longitude: interviewLng
-                    },
-                    radius: 100,
-                    inputBinding: {
-                        latitudeInput: $('#jp_lat'),
-                        longitudeInput: $('#jp_lon'),
-                        radiusInput: $('#jp_address_text'),
-                        locationNameInput: $('#jp_address_text')
-                    },
-                    enableAutocomplete: true,
-                    onchanged: function () {
-                        interviewLat = $('#jp_lat').val();
-                        interviewLng = $('#jp_lon').val();
-                        $("#jobPostAddressVal").html($('#jp_address_text').val());
-                    }
-                });
+    $("#landmarkDetails").show();
+    if(returnedData.interviewBuildingNo != null){
+        $("#interviewBuildingNo").val(returnedData.interviewBuildingNo);
+    }
 
-
-                fullAddress = returnedData.jobPostAddress;
-                $("#jobPostAddress").hide();
-                $("#jobPostAddressVal").html(returnedData.jobPostAddress);
-            } else {
-                $("#jobPostAddressVal").hide();
-                $("#jobPostAddress").show();
-            }
-        }
-    } else{
-        interviewLat = null;
-        interviewLng = null;
-        fullAddress = null;
+    if(returnedData.interviewLandmark != null){
+        $("#interviewLandmark").val(returnedData.interviewLandmark);
     }
 
     $("#partnerInterviewIncentive").val(returnedData.jobPostPartnerInterviewIncentive);
     $("#partnerJoiningIncentive").val(returnedData.jobPostPartnerJoiningIncentive);
+
+    renderMap();
+}
+
+function clearField(){
+    $('#interviewAddress').val('');
+}
+
+function renderMap(){
+    if(interviewLat == null){
+
+        //default values of MG Road
+        interviewLat = 12.975568542471832;
+        interviewLng = 77.60660031434168;
+    }
+
+    $('#map_parent').locationpicker({
+        location: {
+            latitude: interviewLat,
+            longitude: interviewLng
+        },
+        radius: 80,
+        inputBinding: {
+            latitudeInput: $('#jp_lat'),
+            longitudeInput: $('#jp_lon'),
+            locationNameInput: $('#interviewAddress')
+        },
+        enableAutocomplete: true,
+        onchanged: function (currentLocation, radius, isMarkerDropped) {
+            //add method if we want to perform any action
+            $("#jp_lat").val(currentLocation.latitude);
+            $("#jp_lon").val(currentLocation.longitude);
+
+            $("#landmarkDetails").show();
+        }
+    });
 }

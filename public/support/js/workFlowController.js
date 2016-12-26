@@ -1066,31 +1066,38 @@ $(function () {
                     } else if (app.currentView == "confirmed_interview_view") {
                         var candidateStatus = '<b id="current_status_' + newCandidate.candidate.candidateId + '">' + "Data not available" + '</b>';
                         if(newCandidate.extraData.candidateInterviewStatus != null){
+
+                            var reason = "";
+                            if(newCandidate.extraData.reason != null){
+                                if(newCandidate.extraData.workflowStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING) { //not going
+                                    reason = ' [reason: ' + newCandidate.extraData.reason.reasonName + ']';
+                                } else{
+                                    reason = ' [reaching: ' + newCandidate.extraData.reason.reasonName + ']';
+                                }
+                            }
+
                             var lastUpdate = new Date(newCandidate.extraData.creationTimestamp);
                             var timing = "";
-                            if(lastUpdate.getHours() > 12){
+                            if(lastUpdate.getHours() == 12){
+                                timing = lastUpdate.getHours() + ":" + lastUpdate.getMinutes() + " pm";
+                            } else if(lastUpdate.getHours() > 12){
                                 timing = lastUpdate.getHours() - 12 + ":" + lastUpdate.getMinutes() + " pm";
                             } else{
                                 timing = lastUpdate.getHours() + ":" + lastUpdate.getMinutes() + " am";
                             }
                             candidateStatus = '<b id="current_status_' + newCandidate.candidate.candidateId + '">'
-                                + newCandidate.extraData.candidateInterviewStatus.statusTitle + '</b>' + '('+ lastUpdate.getDate() + "-"
+                                + newCandidate.extraData.candidateInterviewStatus.statusTitle + '</b>' + reason + '('+ lastUpdate.getDate() + "-"
                                 + (lastUpdate.getMonth() + 1) + "-" + lastUpdate.getFullYear() + " " + timing + ')';
                         }
 
-                        var today = new Date();
-                        var interviewDate = new Date(newCandidate.extraData.interviewDate);
-                        if(interviewDate.getDate() == today.getDate() && interviewDate.getMonth() == today.getMonth() && interviewDate.getFullYear() == today.getFullYear()) { // today's schedule
-                            //interview for this job is scheduled today, hence allow to update status
-                            candidateStatus +=  '<select style="margin-left: 8px" id="interview_status_' + newCandidate.candidate.candidateId +'">' +
-                                '<option value="0">Select a Status</option>' +
-                                '<option value="1">Not Going</option>' +
-                                '<option value="2">Delayed</option>' +
-                                '<option value="3">Started</option>' +
-                                '<option value="4">Reached</option>' +
-                                '</select>' +
-                                '<input style="margin-left: 6px" type="button" value="Update" onclick="updateStatus('+ newCandidate.candidate.candidateId + ')">';
-                        }
+                        candidateStatus +=  '<select style="margin-left: 8px" id="interview_status_' + newCandidate.candidate.candidateId +'">' +
+                            '<option value="0">Select a Status</option>' +
+                            '<option value="1">Not Going</option>' +
+                            '<option value="2">Delayed</option>' +
+                            '<option value="3">On the Way</option>' +
+                            '<option value="4">Reached</option>' +
+                            '</select>' +
+                            '<input style="margin-left: 6px" type="button" value="Update" onclick="updateStatus('+ newCandidate.candidate.candidateId + ')">';
 
                         return candidateStatus;
                     } else if(app.currentView == "pending_interview_schedule"){
@@ -1146,12 +1153,7 @@ $(function () {
                             }
                         }
                         if(app.currentView == "confirmed_interview_view"){
-                            var today = new Date();
-                            var interviewDate = new Date(newCandidate.extraData.interviewDate);
-                            if(interviewDate.getTime() <= today.getTime()) { // today's schedule
-                                //interview for this job is scheduled today, hence allow to update status
-                                candidateStatus += '<input style="margin-left: 6px" type="button" value="Update" onclick="openFeedbackModal('+ newCandidate.candidate.candidateId + ')">';
-                            }
+                            candidateStatus += '<input style="margin-left: 6px" type="button" value="Update" onclick="openFeedbackModal('+ newCandidate.candidate.candidateId + ')">';
                         }
                         return candidateStatus;
                     } else {
@@ -1606,12 +1608,19 @@ $(function () {
         var jobRoleTitle = returnedData.jobRole.jobName;
         var jobRoleId = returnedData.jobPostId;
 
+        var jobPostInterviewAddress = "Not Available";
+
+        //computing Address
+        if(returnedData.interviewFullAddress != null && returnedData.interviewFullAddress != ""){
+            jobPostInterviewAddress = returnedData.interviewFullAddress;
+        }
+
         app.renderJobCard(jobPostTitle, jobPostCompany, jobPostSalary, jobRoleTitle, jobRoleId,
-            jobPostLocalityNameList, jobPostEducation, jpExperience);
+            jobPostLocalityNameList, jobPostEducation, jpExperience, jobPostInterviewAddress);
     };
 
     app.renderJobCard = function (jobPostTitle, jobPostCompany, jobPostSalary, jobRoleTitle, jobRoleId,
-                                  jobPostLocalityNameList, jobPostEducation, jpExperience) {
+                                  jobPostLocalityNameList, jobPostEducation, jpExperience, jobPostInterviewAddress) {
         $('#job_post_title').text(jobPostTitle);
         $('#job_post_company_title').text(jobPostCompany);
         $('#job_post_salary').text(jobPostSalary);
@@ -1620,6 +1629,7 @@ $(function () {
         $('#job_post_experience').text(jpExperience);
         $('#job_post_locality').text(jobPostLocalityNameList);
         $('#job_role_id').text("Job Details");
+        $('#job_post_interview_address').text(jobPostInterviewAddress);
         gJobRoleId = jobRoleId;
     };
 

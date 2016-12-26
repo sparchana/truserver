@@ -201,12 +201,12 @@ function getAllAppliedJobs() {
                                                         candidateStatus += '<option value = 1>Not Going</option>';
                                                     }
                                                     candidateStatus += '<option value = 2>Delayed</option>' +
-                                                        '<option value = 3>Started</option>' +
+                                                        '<option value = 3>On the Way</option>' +
                                                         '<option value = 4>Reached</option>';
                                                 } else if(jobApplication.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){
-                                                    candidateStatus += '<option value = 3>Started</option>' +
+                                                    candidateStatus += '<option value = 3>On the Way</option>' +
                                                         '<option value = 4>Reached</option>';
-                                                } else if(jobApplication.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED){
+                                                } else if(jobApplication.status.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY){
                                                     candidateStatus += '<option value = 2>Delayed</option>' +
                                                         '<option value = 4>Reached</option>';
                                                 }

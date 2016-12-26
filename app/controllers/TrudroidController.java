@@ -16,6 +16,7 @@ import com.google.api.client.util.Base64;
 import com.google.protobuf.InvalidProtocolBufferException;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
 import dao.staticdao.TrudroidFeedbackReasonDAO;
@@ -38,7 +39,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static api.ServerConstants.*;
-import static controllers.businessLogic.JobSearchService.*;
+import static controllers.businessLogic.JobSearchService.getAllJobPosts;
 import static models.util.InterviewUtil.getDayVal;
 import static models.util.InterviewUtil.getMonthVal;
 import static models.util.Util.generateOtp;
@@ -85,7 +86,16 @@ public class TrudroidController {
 
             LoginResponse loginResponse = CandidateService.login(loginRequest.getCandidateLoginMobile(),
                     loginRequest.getCandidateLoginPassword(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
-            loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(loginResponse.getStatus()));
+
+
+            //TODO: to handle the new status in the new APK
+            //since we have a new status in the web version stating no auth record but candidate exists, android doesn't have
+            // hence we are setting status as 'no user' where the status is 'no auth'
+            if(loginResponse.getStatus() == LoginResponse.STATUS_NO_PASSWORD){
+                loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(LoginResponse.STATUS_NO_USER));
+            } else{
+            }
+
             if (loginResponse.getStatus() == loginResponse.STATUS_SUCCESS) {
                 loginResponseBuilder.setCandidateFirstName(loginResponse.getCandidateFirstName());
                 if (loginResponse.getCandidateLastName() != null) {
@@ -240,7 +250,16 @@ public class TrudroidController {
                     FormValidator.convertToIndianMobileFormat(pResetPasswordRequest.getMobile()),
                     InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID
             );
-            resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(resetPasswordResponse.getStatus()));
+
+            //TODO: to handle the new status in the new APK
+            //since we have a new status in the web version stating no auth record but candidate exists, android doesn't have
+            // hence we are setting status as 'no user' where the status is 'no auth'
+            if(resetPasswordResponse.getStatus() == LoginResponse.STATUS_NO_PASSWORD){
+                resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(LoginResponse.STATUS_NO_USER));
+            } else{
+                resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(resetPasswordResponse.getStatus()));
+            }
+
             resetPasswordResponseBuilder.setOtp(resetPasswordResponse.getOtp());
 
             Logger.info("Status returned = " + resetPasswordResponseBuilder.getStatus());
@@ -665,7 +684,21 @@ public class TrudroidController {
         if (jobPost.getJobPostIncentives() != null) jobPostBuilder.setJobPostIncentives(jobPost.getJobPostIncentives());
         if (jobPost.getJobPostMinRequirement() != null)
             jobPostBuilder.setJobPostMinRequirements(jobPost.getJobPostMinRequirement());
-        if (jobPost.getJobPostAddress() != null) jobPostBuilder.setJobPostAddress(jobPost.getJobPostAddress());
+
+        //address
+        String address;
+        if(jobPost.getInterviewFullAddress() != null && !Objects.equals(jobPost.getInterviewFullAddress().trim(), "")){
+            address = jobPost.getInterviewFullAddress();
+        } else {
+            address = "";
+        }
+
+        jobPostBuilder.setJobPostAddress(address);
+        if(Objects.equals(address.trim(), "")){
+            jobPostBuilder.setJobPostAddress("Address not available");
+        }
+
+        //working days
         if (jobPost.getJobPostWorkingDays() != null) {
             jobPostBuilder.setJobPostWorkingDays(Integer.toString(jobPost.getJobPostWorkingDays(), 2));
         } else {
@@ -802,7 +835,7 @@ public class TrudroidController {
             pGetJobPostDetailsRequest = GetJobPostDetailsRequest.parseFrom(Base64.decodeBase64(requestString));
 
             //getting jobPost model object
-            JobPost jobPost = JobPost.find.where().eq("jobPostId", pGetJobPostDetailsRequest.getJobPostId()).findUnique();
+            JobPost jobPost = JobPostDAO.findById(pGetJobPostDetailsRequest.getJobPostId());
             if (jobPost != null) {
                 getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.SUCCESS);
                 getJobPostDetailsResponse.setJobPost(getJobPostInformationFromJobPostObject(jobPost));
@@ -1043,7 +1076,18 @@ public class TrudroidController {
                         jobPostObjectBuilder.setJobPostCompanyName(jwpf.getJobPost().getCompany().getCompanyName());
                         jobPostObjectBuilder.setJobPostCompanyLogo(jwpf.getJobPost().getCompany().getCompanyLogo());
 
-                        jobPostObjectBuilder.setJobPostAddress(jwpf.getJobPost().getJobPostAddress());
+                        //address
+                        String address;
+                        if(jwpf.getJobPost().getInterviewFullAddress() != null && !Objects.equals(jwpf.getJobPost().getInterviewFullAddress().trim(), "")){
+                            address = jwpf.getJobPost().getInterviewFullAddress();
+                        } else {
+                            address = "";
+                        }
+
+                        jobPostObjectBuilder.setJobPostAddress(address);
+                        if(Objects.equals(address.trim(), "")){
+                            jobPostObjectBuilder.setJobPostAddress("Address not available");
+                        }
 
                         //recruiter's name
                         jobPostObjectBuilder.setRecruiterName("Not Available");
@@ -1250,7 +1294,9 @@ public class TrudroidController {
 
             if (updateCandidateEducationProfileRequest.getIsFinalFragment()) {
                 Candidate candidate = CandidateService.isCandidateExists(updateCandidateEducationProfileRequest.getCandidateMobile());
-                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), updateCandidateEducationProfileRequest.getJobPostId(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
+                if(candidate != null){
+                    JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), updateCandidateEducationProfileRequest.getJobPostId(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
+                }
             }
         } catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");
@@ -1677,7 +1723,7 @@ public class TrudroidController {
         PreScreenPopulateResponse populateResponse = JobPostWorkflowEngine.getJobPostVsCandidate(preScreenPopulateRequest.getJobPostId(),
                 candidate.getCandidateId(), false);
 
-        JobPost jobPost = JobPost.find.where().eq("jobPostId", preScreenPopulateRequest.getJobPostId()).findUnique();
+        JobPost jobPost = JobPostDAO.findById(preScreenPopulateRequest.getJobPostId());
         if (jobPost == null) {
             return badRequest();
         } else {
@@ -2084,7 +2130,7 @@ public class TrudroidController {
                 return badRequest();
             }
 
-            JobPost jobPost = JobPost.find.where().eq("jobPostId", interviewSlotsRequest.getJobPostId()).findUnique();
+            JobPost jobPost = JobPostDAO.findById(interviewSlotsRequest.getJobPostId());
 
             if (jobPost == null) {
                 return badRequest();
@@ -2098,8 +2144,15 @@ public class TrudroidController {
             newCalendar.get(Calendar.DAY_OF_MONTH);
             Date today = newCalendar.getTime();
 
-            // generate interview slots for next of next 3 days
-            for (int k = 2; k < 5; ++k) {
+            int k;
+            // for those jobpost in which the auto confirm is marked as checked, we start line up from the next day
+            if(jobPost.getReviewApplication() == null || jobPost.getReviewApplication() == ServerConstants.REVIEW_APPLICATION_AUTO){
+                k = 1;
+            } else {
+                k = 2;
+            }
+            // generate interview slots for next 3 days
+            for (; k < 5; ++k) {
 
                 Calendar c = Calendar.getInstance();
                 c.setTime(today);
@@ -2175,7 +2228,7 @@ public class TrudroidController {
 
         Candidate candidate = Candidate.find.where().eq("CandidateMobile", FormValidator.convertToIndianMobileFormat(updateCandidateStatusRequest.getCandidateMobile())).findUnique();
         if (candidate != null) {
-            JobPost jobPost = JobPost.find.where().eq("JobPostId", updateCandidateStatusRequest.getJpId()).findUnique();
+            JobPost jobPost = JobPostDAO.findById(updateCandidateStatusRequest.getJpId());
             if (JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost,
                     Long.valueOf(updateCandidateStatusRequest.getCandidateStatus()),
                     updateCandidateStatusRequest.getNotGoingReason(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID) == 1) {
@@ -2229,10 +2282,10 @@ public class TrudroidController {
         checkInterviewSlotResponse.setStatus(CheckInterviewSlotResponse.Status.SUCCESS);
 
         if(checkInterviewSlotRequest.getJobPostId() > 0) {
-            JobPost jobPost = JobPost.find.where().eq("jobPostId", checkInterviewSlotRequest.getJobPostId()).findUnique();
+            JobPost jobPost = JobPostDAO.findById(checkInterviewSlotRequest.getJobPostId());
             if(jobPost == null) {
                 checkInterviewSlotResponse.setStatus(CheckInterviewSlotResponse.Status.FAILURE);
-            } else if(JobPostWorkflowEngine.isInterviewRequired(jobPost).getStatus() == ServerConstants.INTERVIEW_REQUIRED){
+            } else if(RecruiterService.isInterviewRequired(jobPost).getStatus() == ServerConstants.INTERVIEW_REQUIRED){
                 checkInterviewSlotResponse.setShouldShowInterview(true);
             } else {
                 checkInterviewSlotResponse.setShouldShowInterview(false);
