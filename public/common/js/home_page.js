@@ -91,7 +91,7 @@ $(document).ready(function(){
         if ($(this).scrollTop() > 350) {
             $('.registerBox').fadeIn();
             if(w > 400){
-                $('.registerBox').css("width","150px");
+                $('.registerBox').css("width","120px");
             }
             else{
                 $('.registerBox').css("width","100%");

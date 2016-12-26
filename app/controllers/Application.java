@@ -1328,10 +1328,19 @@ public class Application extends Controller {
         }
         else if(urlParameters.getUrlType() == UrlParameters.TYPE.B) {
             // query jobrole table for the given id. if it doesnt exist, fwd to page not found
-            JobSearchService jobSearchService = new JobSearchService();
-            JobPostResponse jobPostResponse = jobSearchService.getActiveJobsForJobRolePaginated(urlParameters.getJobRoleId(),index);
-            if(jobPostResponse != null && jobPostResponse.getTotalJobs() > 0){
-                return ok(toJson(jobPostResponse));
+            JobRole jobRole = JobRole.find.where().eq("JobRoleId",urlParameters.getJobRoleId()).findUnique();
+            if(jobRole != null){
+                JobSearchService jobSearchService = new JobSearchService();
+                JobPostResponse jobPostResponse = jobSearchService.getActiveJobsForJobRolePaginated(urlParameters.getJobRoleId(),index);
+                if(jobPostResponse != null && jobPostResponse.getTotalJobs() > 0){
+                    return ok(toJson(jobPostResponse));
+                }else{
+                    return ok("Error");
+                }
+            }
+            else{
+                Logger.error(" Job post with id " + urlParameters.getJobPostId() + " not found!. Forwarding user to page not found");
+                return badRequest();
             }
         }
         Logger.error("Unrecognized URL pattern detected " + urlString + ". Forwarding user to page not found");
