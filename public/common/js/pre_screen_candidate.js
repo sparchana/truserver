@@ -1483,6 +1483,11 @@ function submitPreScreen() {
         var d = {};
         var msg;
 
+        $("#preScreenInterviewSetBtn").prop("disabled", true);
+        $("#preScreenInterviewSetBtn").click(function(){ return false});
+        $("#preScreenInterviewSetBtn").unbind();
+        $("#preScreenInterviewSetBtn").removeAttr("onclick");
+
         // prep d
         $.each(propertyIdArray, function (index, propId) {
             okToSubmit = true;
