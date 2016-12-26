@@ -2129,26 +2129,29 @@ public class JobPostWorkflowEngine {
             JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(jobPostWorkflowCurrent, jobPostWorkflowCurrent.getStatus().getStatusId(),
                     jwStatus, interviewStatusRequest.getRescheduledSlot(), date, channel);
 
-            InterviewScheduleStatusUpdate interviewScheduleStatusUpdate = new InterviewScheduleStatusUpdate();
-            interviewScheduleStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
-            interviewScheduleStatusUpdate.setStatus(JobPostWorkflowStatus.find.where().eq("status_id", jwStatus).findUnique());
+            if(jobPostWorkflowNew != null){
+                InterviewScheduleStatusUpdate interviewScheduleStatusUpdate = new InterviewScheduleStatusUpdate();
+                interviewScheduleStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
+                interviewScheduleStatusUpdate.setStatus(JobPostWorkflowStatus.find.where().eq("status_id", jwStatus).findUnique());
 
-            if (jwStatus == ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT) {
-                interviewScheduleStatusUpdate.setRejectReason(new RejectReasonDAO().getById(Long.valueOf(interviewStatusRequest.getReason())));
+                if (jwStatus == ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT) {
+                    interviewScheduleStatusUpdate.setRejectReason(new RejectReasonDAO().getById(Long.valueOf(interviewStatusRequest.getReason())));
+                }
+                interviewScheduleStatusUpdate.save();
+
+                // save the interaction
+                InteractionService.createWorkflowInteraction(
+                        jobPostWorkflowCurrent.getJobPostWorkflowUUId(),
+                        candidate.getCandidateUUId(),
+                        jwType,
+                        null,
+                        jobPostWorkflowCurrent.getJobPost().getJobPostId() + ": " + jobPostWorkflowCurrent.getJobPost().getJobRole().getJobName() + interactionResult,
+                        channel
+                );
+
+                return ok("1");
+
             }
-            interviewScheduleStatusUpdate.save();
-
-            // save the interaction
-            InteractionService.createWorkflowInteraction(
-                    jobPostWorkflowCurrent.getJobPostWorkflowUUId(),
-                    candidate.getCandidateUUId(),
-                    jwType,
-                    null,
-                    jobPostWorkflowCurrent.getJobPost().getJobPostId() + ": " + jobPostWorkflowCurrent.getJobPost().getJobRole().getJobName() + interactionResult,
-                    channel
-            );
-
-            return ok("1");
         }
         return ok("0");
     }
@@ -2210,8 +2213,8 @@ public class JobPostWorkflowEngine {
 
         if (jobPostWorkflowNew != null) {
             jobPostWorkflowNew.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", jwStatus).findUnique());
+            jobPostWorkflowNew.update();
         }
-        jobPostWorkflowNew.update();
 
         if (session().get("sessionChannel") == null) {
             channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
@@ -2370,6 +2373,10 @@ public class JobPostWorkflowEngine {
             jobPostWorkflowCurrent = jobPostWorkflowNew;
         }
 
+        if (jobPostWorkflowCurrent == null) {
+            return null;
+        }
+
         String interactionResult = "";
 
         interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_INTERVIEW_SCHEDULED;
@@ -2408,6 +2415,10 @@ public class JobPostWorkflowEngine {
                             jobPostWorkflowCurrent, ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED,
                             jwfStatus, interviewSlotDetail.getTimeSlot(),
                             interviewSlotDetail.getScheduledInterviewDate(), channel);
+
+                    if(jobPostWorkflowNew == null){
+                        return null;
+                    }
 
                     CandidateInterviewStatusUpdate candidateInterviewStatusUpdate = new CandidateInterviewStatusUpdate();
                     candidateInterviewStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
@@ -2538,6 +2549,10 @@ public class JobPostWorkflowEngine {
                 jobPostWorkflowCurrent.getScheduledInterviewTimeSlot().getInterviewTimeSlotId(),
                 jobPostWorkflowCurrent.getScheduledInterviewDate(), channel);
 
+        if(jobPostWorkflowNew == null){
+            return 0;
+        }
+
         if (jobPostWorkflowNew != null) {
             jobPostWorkflowNew.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", jwStatus).findUnique());
             jobPostWorkflowNew.update();
@@ -2621,11 +2636,10 @@ public class JobPostWorkflowEngine {
                 jobPostWorkflowCurrent.getScheduledInterviewTimeSlot().getInterviewTimeSlotId(),
                 jobPostWorkflowCurrent.getScheduledInterviewDate(), channel);
 
-        if (jobPostWorkflowNew != null) {
-            jobPostWorkflowNew.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", jwStatus).findUnique());
+        if(jobPostWorkflowNew == null){
+            return 0;
         }
-        jobPostWorkflowNew.update();
-
+        
         CandidateInterviewStatusUpdate candidateInterviewStatusUpdate = new CandidateInterviewStatusUpdate();
         candidateInterviewStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
         candidateInterviewStatusUpdate.setJobPost(jobPostWorkflowCurrent.getJobPost());

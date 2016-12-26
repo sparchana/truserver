@@ -78,7 +78,15 @@ public class AadhaarService {
     public OngridAadhaarVerificationResponse sendAadharSyncVerificationRequest(String candidateMobile)
     {
         Candidate candidate = CandidateService.isCandidateExists(candidateMobile);
+
         OngridAadhaarVerificationResponse response = new OngridAadhaarVerificationResponse();
+
+        Boolean isDevMode = play.api.Play.isDev(play.api.Play.current()) || play.api.Play.isTest(play.api.Play.current());
+        if(isDevMode){
+            Logger.info("Dev mode: not verifying candidate Aadhar");
+            return response;
+        }
+
 
         if (candidate == null) {
             response.setResponseStatus(OngridAadhaarVerificationResponse.STATUS_ERROR);
