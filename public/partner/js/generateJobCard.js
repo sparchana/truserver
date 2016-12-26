@@ -207,23 +207,7 @@ function prePopulateJobSection(jobApplication) {
     var today = new Date();
 
     jobApplication.forEach(function (appliedJob) {
-
-        //TODO: pre screen attempt button
-/*
-        if(appliedJob.preScreenRequired){
-            if(candidateId == null ) {
-                scrapeCandidateIdFromUrl();
-            }
-            // jpId is jobPostId
-            var jpId = appliedJob.jobPost.jobPostId;
-            jobRoleName = appliedJob.jobPost.jobRole.jobName;
-            companyName = appliedJob.jobPost.company.companyName;
-            return '<input type="submit" value="Pre-Screen"  style="width:150px" onclick="openPartnerPreScreenModal(' + jpId+ ', ' + candidateId + ');" id="' + candidateInfo.lead.leadId + '" class="btn btn-primary">'
-        } else {
-            return '<div class="mLabel" style="width:100%" >Completed</div>';
-        }
-*/
-
+        
         if(appliedJob.status.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE){
 
             //rescheduled interviews
