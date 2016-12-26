@@ -34,7 +34,7 @@
                 Go to top
             </div>
             @* TODO move this to commmon *@
-            <img src="/assets/recruiter/img/icons/top.svg" width="48px" style="display: block;" onclick="scrollToTop()"/>
+            <img src="/assets/recruiter/img/icons/top.svg" width="48px" id="scrollToTop" style="display: block;"/>
         </div>
 
             <!--Search bar start-->
@@ -102,8 +102,8 @@
                                         <label style="font-size: 12px" for="sortByMaxSalary">Salary (High to Low)</label>
                                     </div>
                                     <div>
-                                        <input name="sortBy" type="radio" value="2" id="latestActive" />
-                                        <label style="font-size: 12px" for="latestActive">Last Active (Newest to oldest)</label>
+                                        <input name="sortBy" type="radio" value="2" id="latestPosted" />
+                                        <label style="font-size: 12px" for="latestPosted">Posted on (Newest to oldest)</label>
                                     </div>
                                 </div>
                             </li>
@@ -137,11 +137,11 @@
 
                                                 <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
                                                     <div>
-                                                        <input name="filterGender" type="radio" onchange="updateGenderFilter()" value="0" id="gender_0" />
+                                                        <input name="filterGender" type="radio" value="0" id="gender_0" />
                                                         <label style="font-size: 12px" for="gender_0">Male</label>
                                                     </div>
                                                     <div>
-                                                        <input name="filterGender" type="radio" onchange="updateGenderFilter()" value="1" id="gender_1" />
+                                                        <input name="filterGender" type="radio" value="1" id="gender_1" />
                                                         <label style="font-size: 12px" for="gender_1">Female</label>
                                                     </div>
                                                 </div>
@@ -155,7 +155,7 @@
                                                     </span>
                                                 </div>
 
-                                                <div class="collapsible-body" style="padding: 8px 18px 8px 18px" id="languageFilterDiv" onclick="checkOnFilterChange()"></div>
+                                                <div class="collapsible-body " style="padding: 8px 18px 8px 18px" id="languageFilterDiv"></div>
                                             </li>
                                         </ul>
 

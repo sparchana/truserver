@@ -1,28 +1,30 @@
 package api.http.httpRequest.search.helper;
 
+import java.util.List;
+
 /**
  * Created by zero on 24/12/16.
  */
 public class FilterParamRequest {
-    int gender;
-    long languageId;
+    Integer selectedGender;
+    List<Long> selectedLanguageIdList;
 
     public FilterParamRequest() {
     }
 
-    public int getGender() {
-        return gender;
+    public Integer getSelectedGender() {
+        return selectedGender;
     }
 
-    public void setGender(int gender) {
-        this.gender = gender;
+    public void setSelectedGender(Integer selectedGender) {
+        this.selectedGender = selectedGender;
     }
 
-    public long getLanguageId() {
-        return languageId;
+    public List<Long> getSelectedLanguageIdList() {
+        return selectedLanguageIdList;
     }
 
-    public void setLanguageId(long languageId) {
-        this.languageId = languageId;
+    public void setSelectedLanguageIdList(List<Long> selectedLanguageIdList) {
+        this.selectedLanguageIdList = selectedLanguageIdList;
     }
 }

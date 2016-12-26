@@ -8,7 +8,7 @@
  *
  */
 
-;(function ($) {
+var app = (function ($) {
     'use strict';
 
     var DEFAULT_VALUES = {
@@ -24,11 +24,18 @@
         allLocation: [],
         allEducation: [],
         allExperience: [],
+        allLanguage: [],
         currentURL: window.location.pathname,
         currentSearchParams: {},
-        currentFilterParams: {},
-        currentSortParams: {},
+        currentFilterParams: {
+            selectedGender: null,
+            selectedLanguageIdList: []
+        },
+        currentSortParams: {
+            sortBy: null
+        },
         page: 1,
+        isPaginationEnabled: false,
         currentSearchURL: window.location.pathname.split('/')[window.location.pathname.split('/').length - 2],
 
         // basic getter/setter types method
@@ -38,12 +45,15 @@
                 if (!(app.currentSearchURL == DEFAULT_VALUES.D_SEARCH_URL)) {
                     app.page = 1;
                     app.do.prepareSearchParamFromURL();
-                    app.do.search();
+                    app.do.search(true);
                 }
                 app.render.renderTextSearch();
                 app.render.renderLocation();
                 app.render.renderEducation();
                 app.render.renderExperince();
+
+                // render filter paramas
+                app.render.renderLanguage();
                 app.run.urlChangeDetector();
             },
             getAllJobRole: function () {
@@ -83,6 +93,17 @@
                 //ajax call and save data to allExperience
                 if (app.allExperience.length == 0) {
                     return $.ajax({type: 'POST', url: '/getAllExperience'});
+                } else {
+                    // new promise says its already there
+                    return new Promise(function (resolve, reject) {
+                        resolve(null);
+                    });
+                }
+            },
+            getAllLanguage: function () {
+                //ajax call and save data to allExperience
+                if (app.allLanguage.length == 0) {
+                    return $.ajax({type: 'POST', url: '/getAllLanguage'});
                 } else {
                     // new promise says its already there
                     return new Promise(function (resolve, reject) {
@@ -247,6 +268,57 @@
                     console.log(fromReject);
                 });
             },
+            // render filter
+            renderLanguage: function () {
+                var promise = new Promise(function (resolve, reject) {
+                        app.bMethods.getAllLanguage().then(
+                            function (returnedData) {
+                                if (returnedData != null) {
+                                    returnedData.forEach(function (experience) {
+                                        app.allLanguage.push(experience);
+                                    });
+                                }
+                                resolve();
+                            },
+                            function (xhr, state, error) {
+                                reject(error);
+                            }
+                        );
+                    }
+                );
+
+                promise.then(function () {
+                    console.log("render language filter");
+
+                    var parent = $("#languageFilterDiv");
+
+                    app.allLanguage.forEach(function (language) {
+
+                        var mainDiv = document.createElement("div");
+                        parent.append(mainDiv);
+
+                        var languageInput = document.createElement("input");
+                        languageInput.type = "checkbox";
+                        languageInput.onclick = function () {
+                            checkOnFilterChange();
+                        };
+                        languageInput.id = "lang_" + language.languageId;
+                        languageInput.setAttribute("value", language.languageId);
+                        mainDiv.appendChild(languageInput);
+
+                        var languageLabel = document.createElement("label");
+                        languageLabel.style = "font-size: 14px";
+                        languageLabel.setAttribute("for", "lang_" + language.languageId);
+                        languageLabel.textContent = language.languageName;
+                        mainDiv.appendChild(languageLabel);
+
+                    });
+
+                }).catch(function (fromReject) {
+                    console.log(fromReject);
+                });
+
+            },
             renderTextSearch: function () {
                 var input = document.getElementById("searchText");
                 var awesomplete = new Awesomplete('input[data-multiple]', {
@@ -278,18 +350,22 @@
         },
         // action perform methods
         do: {
-            search: function () {
+            search: function (isBasicResetRequired) {
+                if(isBasicResetRequired) {
+                    app.run.basicReset();
+                }
+
                 // ajax call
                 var d = {
                     searchParamRequest: app.currentSearchParams,
-                    filterParamRequest: app.filterParamRequest,
-                    sortParamRequest: app.sortParamRequest
+                    filterParamRequest: app.currentFilterParams,
+                    sortParamRequest: app.currentSortParams
                 };
 
-                console.log("/api/search/?page="+app.page);
+                console.log("/api/search/?page=" + app.page);
                 $.ajax({
                     type: "POST",
-                    url: "/api/search/?page="+app.page,
+                    url: "/api/search/?page=" + app.page,
                     async: true,
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(d),
@@ -300,9 +376,6 @@
                         console.log("error: " + message);
                     }
                 });
-            },
-            resetFilters: function () {
-                console.log("reset filter ");
             },
             modifyURL: function (url) {
                 // TODO ideally this should change after the result is returned
@@ -347,7 +420,7 @@
             },
             prepareSearchParamFromURL: function() {
 
-                // interprates url and create search params
+                // interpretes url and create search params
                 try {
                     var url = window.location.pathname.split('/');
                     var _searchUrl = url[url.length - 2];
@@ -413,7 +486,9 @@
                             _numberOfPages ++;
                         }
                         console.log("no of pages : " + _numberOfPages);
-                        app.do.pagination(_numberOfPages);
+                        if(!app.isPaginationEnabled){
+                            app.do.pagination(_numberOfPages);
+                       }
 
                         $("#hotJobs").html("");
                         var _count = 0;
@@ -714,15 +789,14 @@
                     }
                 }
 
-                // TODO add placeholder in html
                 $(".first").hide();
                 $(".last").hide();
                 $(".prev a").html("<<");
                 $(".next a").html(">>");
             },
             pagination: function (noOfPages) {
+                // this boolean prevents from looping into pagination when search is triggered
                 console.log("render page navigator | noOfPages: " + noOfPages);
-                // TODO fix trigger of 'onPageClick' as its getting triggered on init
                 // c.f http://esimakin.github.io/twbs-pagination/
                 // ' Call destroy method and then initialize it with new options.'
                 $('#jobCardControl').twbsPagination('destroy');
@@ -733,15 +807,17 @@
                         if(page > 0 ){
                             console.log("page: " + page);
                             app.page = page;
-                        } else{
-                            app.page = 1;
+                            
                         }
-                        app.do.search();
+                        if(app.isPaginationEnabled) {
+                            app.do.search(false);
+                        }
                         $(".page-link").click(function(){
                             $('html, body').animate({scrollTop: $("#job_cards_inc").offset().top - 100}, 800);
                         });
                     }
                 });
+                app.isPaginationEnabled = true;
             },
             createAndAppendDivider: function (title) {
                 var parent = $("#hotJobs");
@@ -761,6 +837,62 @@
                 hotJobItem.textContent = title;
 
                 mainDiv.appendChild(hotJobItem);
+            },
+            updateLanguageFilter: function () {
+                console.log("update language filter");
+                //language filter
+                app.currentFilterParams.selectedLanguageIdList = [];
+                $('#languageFilterDiv input:checked').each(function() {
+                    console.log("added id: " + parseInt($(this).attr('value')));
+                    app.currentFilterParams.selectedLanguageIdList.push(parseInt($(this).attr('value')));
+                });
+                if(app.currentFilterParams.selectedLanguageIdList.length > 0){
+                    $("#language_filter").show();
+                } else{
+                    $("#language_filter").hide();
+                }
+
+                //prep language filter object
+                app.do.search(true);
+            },
+            updateGenderFilter: function (genderId) {
+                $("#gender_filter").show();
+                app.currentFilterParams.selectedGender = genderId;
+
+                console.log("gender: " + genderId);
+
+                app.do.search(true);
+            },
+            updateSortBy: function (value) {
+                /*
+                 0 sort by salary low to high
+                 1 sort by salary high to low
+                 2 sort by datePosted : newest on top
+                 */
+
+                app.currentSortParams.sortBy = parseInt(value);
+
+                console.log("gender: " + value);
+
+                app.do.search(true);
+            },
+            resetFilters: function () {
+                console.log("reset filter");
+                $("#gender_filter").hide();
+                $("#salary_filter").hide();
+                $("#language_filter").hide();
+
+
+                $('input:checkbox').removeAttr('checked');
+                $('input:radio').removeAttr('checked');
+
+                document.getElementById('latestPosted').checked = true;
+
+                app.currentFilterParams.selectedGender = null;
+                app.currentFilterParams.selectedLanguageIdList = [];
+                app.currentSortParams.sortBy = null;
+
+                app.do.search(true);
             }
         },
         // action validator methods
@@ -773,6 +905,11 @@
             },
             urlChangeDetector: function () {
                 // TODO detect url change and re-trigger search
+            },
+            basicReset: function () {
+                console.log("basic reset");
+                app.page = 1;
+                app.isPaginationEnabled = false;
             }
         }
     };
@@ -796,7 +933,40 @@
         app.page = 1; // reset page to 1 for new search
         app.currentURL = app.do.modifyURL(app.do.prepareURL());
         app.do.prepareSearchParamFromURL();
-        app.do.search();
+        app.do.search(true);
+    });
+
+    // filterChange listener
+
+    // document.getElementById("languageFilterDiv").addEventListener("click", function(event){
+    //     console.log("language filter div clicked: e: " + event +" this: " + this.id);
+    //     app.do.updateLanguageFilter(event);
+    //     // event.returnValue = true;
+    // });
+
+    // $( "input[name=languageFilter]:checkbox").on('click', function() {
+    //     app.do.updateLanguageFilter();
+    // });
+    //
+    // $( "input[name=languageFilter]:checkbox").on('click', function() {
+    //     alert('a')
+    // });
+    // scroll to top listener
+    document.getElementById("scrollToTop").addEventListener("click", function(){
+        $('body').scrollTop(0);
+    });
+
+    // gender filter listner
+    $("input[name=filterGender]:radio").change(function () {
+        app.do.updateGenderFilter(this.value);
+        console.log("gender filter ");
+    });
+
+    // sort listener
+    $("input[name=sortBy]:radio").change(function () {
+        // current its assumed that on server the value 0, 1, 2 are defined in same way
+        app.do.updateSortBy(this.value);
+        console.log("sort by");
     });
 
     // public methods
@@ -804,5 +974,11 @@
         return (!str || 0 === str.length);
     }
 
-
+    return app;
 }(jQuery));
+
+
+
+function checkOnFilterChange(){
+    app.do.updateLanguageFilter();
+}

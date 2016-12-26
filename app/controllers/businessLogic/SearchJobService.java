@@ -7,7 +7,6 @@ import api.http.httpResponse.search.helper.SearchParamsResponse;
 import models.entity.Static.Education;
 import models.entity.Static.Experience;
 import models.entity.Static.Locality;
-import play.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,8 +35,6 @@ public class SearchJobService {
                     .setNegativeKeywords(
                             segregateKeywords(
                             request.getSearchParamRequest().getKeywordList()).getNegativeKeywords());
-
-            Logger.info("keywordList: size: " + searchParamsResponse.getPositiveKeywords().size());
 
 
             // determine locality and append it to response
@@ -68,10 +65,13 @@ public class SearchJobService {
                             searchParamsResponse.getLocality(),
                             searchParamsResponse.getEducation(),
                             searchParamsResponse.getExperience(),
-                            1,
+                            request.getSortParamRequest().getSortBy(),
                             true,
-                            null, request.getPage());
+                            null,
+                            request.getPage(),
+                            request.getFilterParamRequest());
             response.setResults(jobPostResponse);
+            response.setPage(request.getPage());
         }
         return response;
     }
@@ -112,7 +112,6 @@ public class SearchJobService {
         }
 
         // TODO determine positive keywords and negative keywords here and append accordingly
-        Logger.info("keywordList: size: " + refinedKeywordList.size());
         response.setNegativeKeywords(new ArrayList<>());
         response.setPositiveKeywords(refinedKeywordList);
         response.setSearchKeywords(refinedKeywordList);

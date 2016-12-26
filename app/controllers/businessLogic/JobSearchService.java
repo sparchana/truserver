@@ -2,6 +2,7 @@ package controllers.businessLogic;
 
 import api.ServerConstants;
 import api.http.FormValidator;
+import api.http.httpRequest.search.helper.FilterParamRequest;
 import api.http.httpResponse.JobPostResponse;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.PagedList;
@@ -15,14 +16,14 @@ import models.entity.Static.Education;
 import models.entity.Static.Experience;
 import models.entity.Static.JobRole;
 import models.entity.Static.Locality;
+import play.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static api.ServerConstants.SORT_BY_DATE_POSTED;
-import static api.ServerConstants.SORT_BY_SALARY;
+import static api.ServerConstants.*;
 
 /**
  * Created by zero on 15/8/16.
@@ -419,13 +420,14 @@ public class JobSearchService {
     }
 
     public static JobPostResponse queryAndReturnJobPosts(List<String> keywordList,
-                                                        Locality locality,
-                                                        Education education,
-                                                        Experience experience,
-                                                        int sortBy,
-                                                        boolean isHot,
-                                                        Integer source,
-                                                        int page)
+                                                         Locality locality,
+                                                         Education education,
+                                                         Experience experience,
+                                                         Integer sortBy,
+                                                         boolean isHot,
+                                                         Integer source,
+                                                         int page,
+                                                         FilterParamRequest filterParamRequest)
     {
         int MAX_ROW = 5;
         JobPostResponse response = new JobPostResponse();
@@ -437,6 +439,7 @@ public class JobSearchService {
 
         Query<JobPost> query = JobPost.find.query();
 
+        // TODO convert this to do a LIKE for all the words in the 'keywordList'
         if (keywordList != null && keywordList.size() >0 ) {
             query = query.select("*")
                     .fetch("jobRole")
@@ -470,6 +473,38 @@ public class JobSearchService {
                     .query();
         }
 
+        if (filterParamRequest!= null) {
+
+            // apply gender filter
+            if(filterParamRequest.getSelectedGender() != null){
+                if (filterParamRequest.getSelectedGender() == ServerConstants.GENDER_MALE) {
+                    query = query
+                            .where()
+                            .or(Expr.isNull("gender"), Expr.or(
+                                    Expr.eq("gender", ServerConstants.GENDER_MALE),
+                                    Expr.eq("gender", ServerConstants.GENDER_ANY)))
+                            .query();
+
+                } else if (filterParamRequest.getSelectedGender() == ServerConstants.GENDER_FEMALE) {
+                    query = query
+                            .where()
+                            .or(Expr.isNull("gender"), Expr.or(
+                                    Expr.eq("gender", ServerConstants.GENDER_FEMALE),
+                                    Expr.eq("gender", ServerConstants.GENDER_ANY)))
+                            .query();
+                }
+            }
+
+            // apply language filter
+            if(filterParamRequest.getSelectedLanguageIdList() != null
+                    && filterParamRequest.getSelectedLanguageIdList().size() > 0 ) {
+                query = query.select("*").fetch("jobPostLanguageRequirements")
+                        .where()
+                        .in("jobPostLanguageRequirements.language.languageId", filterParamRequest.getSelectedLanguageIdList())
+                        .query();
+            }
+        }
+
 //        if (isHot) {
 //            query = query.where().eq("jobPostIsHot", "1").query();
 //        }
@@ -478,9 +513,24 @@ public class JobSearchService {
 
         query = query.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).query();
 
-        query = query.orderBy().desc("JobPostIsHot");
+
+        // sort params
+        if(sortBy != null){
+            if (sortBy == 0) {
+                query = query.orderBy().asc("jobPostMinSalary");
+
+            } else if (sortBy == 1) {
+                query = query.orderBy().desc("jobPostMinSalary");
+            } else if (sortBy == SORT_BY_DATE_POSTED) {
+                query = query.orderBy().desc("jobPostCreateTimestamp");
+            }
+        } else {
+            query = query.orderBy().desc("JobPostIsHot");
+        }
+
 
         response.setTotalJobs(query.findRowCount());
+        Logger.info("total jobs: " + response.getTotalJobs());
         query = query.setFirstRow((page - 1) * MAX_ROW).setMaxRows(MAX_ROW);
 
         response.setAllJobPost(query.findPagedList().getList());

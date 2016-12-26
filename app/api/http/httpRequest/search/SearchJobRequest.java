@@ -15,7 +15,6 @@ public class SearchJobRequest {
     public SortParamRequest sortParamRequest;
     public Integer page;
 
-
     public SearchParamRequest getSearchParamRequest() {
         return searchParamRequest;
     }
@@ -47,4 +46,5 @@ public class SearchJobRequest {
     public void setPage(Integer page) {
         this.page = page;
     }
+
 }
