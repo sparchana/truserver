@@ -48,7 +48,7 @@ public class UrlValidatorUtil {
         if (mAllWithPostId.find()) {
             //Pattern Check for JobRole-jobs-in-location-at-company-jobPostId
             try{
-                urlParameters.setUrlType(UrlParameters.TYPE.jobsRoleInAtWithJobPostId);
+                urlParameters.setUrlType(UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION_COMPANY_WITH_JOB_POST_ID);
                 urlParameters.setJobLocation(mAllWithPostId.group(5));
                 String[] splitJobCompany = mAllWithPostId.group(7).split("-");//to get first element of the array after split which is Company Name
                 urlParameters.setJobCompany(splitJobCompany[0]);
@@ -58,29 +58,29 @@ public class UrlValidatorUtil {
             }
             catch(NumberFormatException ex){
                 Logger.info("Invalid Url !! " + ex);
-                urlParameters.setUrlType(UrlParameters.TYPE.InvalidRequest);
+                urlParameters.setUrlType(UrlParameters.TYPE.INVALID_REQUEST);
             }
         } else if (mAll.find()) {
 
             //Pattern Check for JobRole-jobs-in-location-at-company
             // We are not handling this url pattern for now
-            urlParameters.setUrlType(UrlParameters.TYPE.InvalidRequest);
+            urlParameters.setUrlType(UrlParameters.TYPE.INVALID_REQUEST);
 
         } else if (mJobRoleCompany.find()) {
 
             //Pattern Check for JobRole-jobs-at-Company
             // We are not handling this url pattern for now
-            urlParameters.setUrlType(UrlParameters.TYPE.InvalidRequest);
+            urlParameters.setUrlType(UrlParameters.TYPE.INVALID_REQUEST);
 
         } else if (mJobRoleLocation.find()) {
             try{
                 //Pattern Check for JobRole-jobs-in-Location
-                urlParameters.setUrlType(UrlParameters.TYPE.jobRoleIn);
+                urlParameters.setUrlType(UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION);
                 urlParameters.setJobRoleName(mJobRoleLocation.group(1));
                 urlParameters.setJobRoleId(Long.valueOf(mJobRoleLocation.group(5)));
             }catch(NumberFormatException ex){
                 Logger.info("Invalid Url !! " + ex);
-                urlParameters.setUrlType(UrlParameters.TYPE.InvalidRequest);
+                urlParameters.setUrlType(UrlParameters.TYPE.INVALID_REQUEST);
             }
 
 
@@ -88,29 +88,29 @@ public class UrlValidatorUtil {
 
             //Pattern Check for All-jobs-in-Location-at-company;
             // We are not handling this url pattern for now
-            urlParameters.setUrlType(UrlParameters.TYPE.InvalidRequest);
+            urlParameters.setUrlType(UrlParameters.TYPE.INVALID_REQUEST);
 
         } else if (mCompany.find()) {
 
             //Pattern Check for All-jobs-at-Company ;
             // We are not handling this url pattern for now
-            urlParameters.setUrlType(UrlParameters.TYPE.InvalidRequest);
+            urlParameters.setUrlType(UrlParameters.TYPE.INVALID_REQUEST);
 
         } else if(mLocation.find()) {
 
             //Pattern Check for All-jobs-in-Location
             // We are not handling this url pattern for now
-            urlParameters.setUrlType(UrlParameters.TYPE.allJobsIn);
+            urlParameters.setUrlType(UrlParameters.TYPE.TYPE_ALL_JOBS_LOCATION);
 
         } else if(mJobRole.find()) {
             try{
                 //Pattern Check for All-jobs-JobRoleID
-                urlParameters.setUrlType(UrlParameters.TYPE.allJobsWithJobRoleId);
+                urlParameters.setUrlType(UrlParameters.TYPE.TYPE_ALL_JOBS_WITH_JOB_ROLE_ID);
                 urlParameters.setJobRoleId(Long.valueOf(mJobRole.group(4)));
                 urlParameters.setJobRoleName(mJobRole.group(1));
             } catch(NumberFormatException ex){
                 Logger.info("Invalid Url !! " + ex);
-                urlParameters.setUrlType(UrlParameters.TYPE.InvalidRequest);
+                urlParameters.setUrlType(UrlParameters.TYPE.INVALID_REQUEST);
             }
         }
         return urlParameters;
@@ -123,11 +123,11 @@ public class UrlValidatorUtil {
         UrlParameters urlParameters = new UrlParameters();
 
         if(mJobDetails.find()) {
-            urlParameters.setUrlType(UrlParameters.TYPE.getJobDetailsWithJobPostId);
+            urlParameters.setUrlType(UrlParameters.TYPE.TYPE_JOB_DETAILS_WITH_JOB_POST_ID_REQUEST);
             urlParameters.setJobPostId(Long.valueOf(mJobDetails.group(8)));
         }
         else if(mJobRoleWiseJobPosts.find()) {
-            urlParameters.setUrlType(UrlParameters.TYPE.getJobPostWithJobRoleId);
+            urlParameters.setUrlType(UrlParameters.TYPE.TYPE_JOB_POST_WITH_JOB_ROLE_ID_REQUEST);
             urlParameters.setJobRoleId(Long.valueOf(mJobRoleWiseJobPosts.group(3)));
         }
         return urlParameters;

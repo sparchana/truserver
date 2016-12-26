@@ -14,17 +14,17 @@ public class UrlParameters {
     public TYPE urlType;
 
     public  enum TYPE{
-        jobsRoleInAtWithJobPostId,
-        jobRoleInAt,
-        jobRoleAt,
-        jobRoleIn,
-        allJobsAt,
-        allJobsIn,
-        allJobsInAt,
-        allJobsWithJobRoleId,
-        getJobDetailsWithJobPostId,
-        getJobPostWithJobRoleId,
-        InvalidRequest
+        TYPE_JOB_ROLE_LOCATION_COMPANY_WITH_JOB_POST_ID,
+        TYPE_JOB_ROLE_LOCATION_COMPANY,
+        TYPE_JOB_ROLE_COMPANY,
+        TYPE_JOB_ROLE_LOCATION,
+        TYPE_ALL_JOBS_COMPANY,
+        TYPE_ALL_JOBS_LOCATION,
+        TYPE_ALL_JOBS_LOCATION_COMPANY,
+        TYPE_ALL_JOBS_WITH_JOB_ROLE_ID,
+        TYPE_JOB_DETAILS_WITH_JOB_POST_ID_REQUEST,
+        TYPE_JOB_POST_WITH_JOB_ROLE_ID_REQUEST,
+        INVALID_REQUEST
     }
 
     public String getJobPostTitle() {
