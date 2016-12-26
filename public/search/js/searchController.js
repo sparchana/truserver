@@ -16,7 +16,8 @@
         D_SEARCH_KEYWORD_IDENTIFIER: "jobs-in-bangalore",
         D_LOCALITY_IDENTIFIER: "near-",
         D_EDU_IDENTIFIER: "-pass",
-        D_EXP_IDENTIFIER: "-experience"
+        D_EXP_IDENTIFIER: "-experience",
+        D_JOBS_PER_PAGE: 0,
     };
     var app = {
         allJobRole: [],
@@ -27,7 +28,7 @@
         currentSearchParams: {},
         currentFilterParams: {},
         currentSortParams: {},
-        index: 0,
+        page: 1,
         currentSearchURL: window.location.pathname.split('/')[window.location.pathname.split('/').length - 2],
 
         // basic getter/setter types method
@@ -35,6 +36,7 @@
             init: function () {
                 console.log("init");
                 if (!(app.currentSearchURL == DEFAULT_VALUES.D_SEARCH_URL)) {
+                    app.page = 1;
                     app.do.prepareSearchParamFromURL();
                     app.do.search();
                 }
@@ -284,9 +286,10 @@
                     sortParamRequest: app.sortParamRequest
                 };
 
+                console.log("/api/search/?page="+app.page);
                 $.ajax({
                     type: "POST",
-                    url: "/api/search/?p="+app.index,
+                    url: "/api/search/?page="+app.page,
                     async: true,
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(d),
@@ -387,7 +390,7 @@
                             }
                         }
                     }
-                } catch (exception){
+                } catch (exception) {
                     console.log("exception in interpreting url: "+exception.stack);
                 }
             },
@@ -397,65 +400,68 @@
                 // pagination is required
 
                 if(data != null) {
-                    var jobPostList = data.results.allJobPost;
-                    var jobPostCount = Object.keys(jobPostList).length;
-                    if(jobPostCount > 0){
-                        var numberOfPages = parseInt(data.results.totalJobs)/5;
-                        var rem = parseInt(data.results.totalJobs) % 5;
-                        if(rem > 0){
-                            numberOfPages ++;
+                    var _jobPostList = data.results.allJobPost;
+                    var _jobPostCount = Object.keys(_jobPostList).length;
+                    if(_jobPostCount > 0){
+                        if(DEFAULT_VALUES.D_JOBS_PER_PAGE == 0){
+                            DEFAULT_VALUES.D_JOBS_PER_PAGE = parseInt(data.results.jobsPerPage);
+                            console.log("max row" + DEFAULT_VALUES.D_JOBS_PER_PAGE);
                         }
-                        if(app.index == 0){
-                            app.do.pagination(numberOfPages);
+                        var _numberOfPages = Math.floor(parseInt(data.results.totalJobs)/ DEFAULT_VALUES.D_JOBS_PER_PAGE);
+                        var _rem = parseInt(data.results.totalJobs) % DEFAULT_VALUES.D_JOBS_PER_PAGE;
+                        if(_rem > 0){
+                            _numberOfPages ++;
                         }
+                        console.log("no of pages : " + _numberOfPages);
+                        app.do.pagination(_numberOfPages);
 
                         $("#hotJobs").html("");
-                        var count = 0;
-                        var parent = $("#hotJobs");
+                        var _count = 0;
+                        var _parent = $("#hotJobs");
                         //returnedData.reverse();
                         $("#jobLoaderDiv").hide();
 
                         app.do.createAndAppendDivider("Popular Jobs");
-                        var isDividerPresent = false;
-                        jobPostList.forEach(function (jobPost){
-                            count++;
-                            if(count){
+                        var _isDividerPresent = false;
+                        _jobPostList.forEach(function (jobPost){
+                            _count++;
+                            if(_count){
                                 //!* get all localities of the jobPost *!/
-                                var jobLocality = jobPost.jobPostToLocalityList;
-                                var localities = "";
-                                var allLocalities = "";
-                                var loopCount = 0;
+                                var _jobLocality = jobPost.jobPostToLocalityList;
+                                var _localities = "";
+                                var _allLocalities = "";
+                                var _loopCount = 0;
 
-                                if(jobPost.source != null && jobPost.source > 0 && !isDividerPresent){
+                                if(jobPost.source != null && jobPost.source > 0 && !_isDividerPresent){
                                     app.do.createAndAppendDivider("Other Jobs");
-                                    isDividerPresent = true;
+                                    _isDividerPresent = true;
                                 }
 
-                                app.allLocation.forEach(function (locality) {
-                                    loopCount ++;
-                                    if(loopCount > 2){
+                                _jobLocality.forEach(function (locality) {
+                                    _loopCount ++;
+                                    if(_loopCount > 2){
                                         return false;
                                     } else{
-                                        var name = locality.name;
-                                        localities += name;
-                                        if(loopCount < Object.keys(jobLocality).length){
-                                            localities += ", ";
+                                        var name = locality.locality.localityName;
+                                        _localities += name;
+                                        if(_loopCount < Object.keys(_jobLocality).length){
+                                            _localities += ", ";
                                         }
                                     }
                                 });
-                                loopCount = 0;
-                                app.allLocation.forEach(function (locality) {
-                                    loopCount++;
-                                    var name = locality.name;
-                                    allLocalities += name;
-                                    if(loopCount < Object.keys(jobLocality).length){
-                                        allLocalities += ", ";
+                                _loopCount = 0;
+                                _jobLocality.forEach(function (locality) {
+                                    _loopCount++;
+                                    var name = locality.locality.localityName;
+                                    _allLocalities += name;
+                                    if(_loopCount < Object.keys(_jobLocality).length){
+                                        _allLocalities += ", ";
                                     }
                                 });
 
                                 var hotJobItem = document.createElement("div");
                                 hotJobItem.id = "hotJobItem";
-                                parent.append(hotJobItem);
+                                _parent.append(hotJobItem);
 
                                 var centreTag = document.createElement("center");
                                 hotJobItem.appendChild(centreTag);
@@ -584,13 +590,13 @@
 
                                 var locDiv = document.createElement("div");
                                 locDiv.style = "display: inline-block; font-size: 14px";
-                                locDiv.textContent = localities;
+                                locDiv.textContent = _localities;
                                 jobBodySubRowColLoc.appendChild(locDiv);
 
-                                if(((jobLocality.length) - 2) > 0 ){
+                                if(((_jobLocality.length) - 2) > 0 ){
                                     var tooltip = document.createElement("a");
                                     tooltip.id = "locationMsg_" + jobPost.jobPostId;
-                                    tooltip.title = allLocalities;
+                                    tooltip.title = _allLocalities;
                                     tooltip.style = "color: #2980b9";
                                     tooltip.textContent = " more";
                                     jobBodySubRowColLoc.appendChild(tooltip);
@@ -703,6 +709,8 @@
                             }
                         });
 
+                    } else {
+                        // no jobs found
                     }
                 }
 
@@ -713,15 +721,20 @@
                 $(".next a").html(">>");
             },
             pagination: function (noOfPages) {
+                console.log("render page navigator | noOfPages: " + noOfPages);
+                // TODO fix trigger of 'onPageClick' as its getting triggered on init
+                // c.f http://esimakin.github.io/twbs-pagination/
+                // ' Call destroy method and then initialize it with new options.'
+                $('#jobCardControl').twbsPagination('destroy');
                 $('#jobCardControl').twbsPagination({
                     totalPages: noOfPages,
                     visiblePages: 5,
                     onPageClick: function (event, page) {
                         if(page > 0 ){
-                            app.index = (page - 1)*5;
-                        }
-                        else{
-                            app.index = 0;
+                            console.log("page: " + page);
+                            app.page = page;
+                        } else{
+                            app.page = 1;
                         }
                         app.do.search();
                         $(".page-link").click(function(){
@@ -764,6 +777,7 @@
         }
     };
 
+    // loading card view elements here
     $('#job_cards_inc').load('/jobPostCardView');
 
     // control flow
@@ -779,6 +793,7 @@
 
     // search click listener
     document.getElementById("searchBtn").addEventListener("click", function(){
+        app.page = 1; // reset page to 1 for new search
         app.currentURL = app.do.modifyURL(app.do.prepareURL());
         app.do.prepareSearchParamFromURL();
         app.do.search();

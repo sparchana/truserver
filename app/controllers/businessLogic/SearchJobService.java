@@ -70,7 +70,7 @@ public class SearchJobService {
                             searchParamsResponse.getExperience(),
                             1,
                             true,
-                            null, request.getIndex());
+                            null, request.getPage());
             response.setResults(jobPostResponse);
         }
         return response;
@@ -113,7 +113,7 @@ public class SearchJobService {
 
         // TODO determine positive keywords and negative keywords here and append accordingly
         Logger.info("keywordList: size: " + refinedKeywordList.size());
-        response.setNegativeKeywords(refinedKeywordList);
+        response.setNegativeKeywords(new ArrayList<>());
         response.setPositiveKeywords(refinedKeywordList);
         response.setSearchKeywords(refinedKeywordList);
         return response;

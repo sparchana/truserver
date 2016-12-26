@@ -181,7 +181,7 @@ POST        /getPendingCandidateApproval                                  contro
 # ~~~~~~~~~~~~~
 GET         /s/:searchText/                                               controllers.SearchController.renderSearch(searchText : String)
 GET         /ss/                                                          controllers.SearchController.getSearchSuggestion(key : String)
-POST        /api/search/                                                  controllers.SearchController.search(index: Integer?=null)
+POST        /api/search/                                                  controllers.SearchController.search(page: Integer?=null)
 
 
 #new routes

@@ -425,9 +425,11 @@ public class JobSearchService {
                                                         int sortBy,
                                                         boolean isHot,
                                                         Integer source,
-                                                        int index)
+                                                        int page)
     {
+        int MAX_ROW = 5;
         JobPostResponse response = new JobPostResponse();
+        response.setJobsPerPage(MAX_ROW);
 
         if (source == null) {
             source = ServerConstants.SOURCE_INTERNAL;
@@ -440,7 +442,7 @@ public class JobSearchService {
                     .fetch("jobRole")
                     .fetch("company")
                     .where()
-                    .or( Expr.in("jobPostTitle", keywordList),Expr.or(
+                    .or( Expr.in("jobPostTitle", keywordList), Expr.or(
                                     Expr.in("jobRole.jobName", keywordList),
                                     Expr.in("company.companyName", keywordList)
                             )
@@ -479,7 +481,7 @@ public class JobSearchService {
         query = query.orderBy().desc("JobPostIsHot");
 
         response.setTotalJobs(query.findRowCount());
-        query = query.setFirstRow(index).setMaxRows(20);
+        query = query.setFirstRow((page - 1) * MAX_ROW).setMaxRows(MAX_ROW);
 
         response.setAllJobPost(query.findPagedList().getList());
         return  response;
