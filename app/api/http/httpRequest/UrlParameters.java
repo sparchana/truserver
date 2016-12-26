@@ -14,15 +14,17 @@ public class UrlParameters {
     public TYPE urlType;
 
     public  enum TYPE{
-        A,
-        B,
-        C,
-        D,
-        E,
-        F,
-        G,
-        H,
-        InValidRequest
+        jobsRoleInAtWithJobPostId,
+        jobRoleInAt,
+        jobRoleAt,
+        jobRoleIn,
+        allJobsAt,
+        allJobsIn,
+        allJobsInAt,
+        allJobsWithJobRoleId,
+        getJobDetailsWithJobPostId,
+        getJobPostWithJobRoleId,
+        InvalidRequest
     }
 
     public String getJobPostTitle() {

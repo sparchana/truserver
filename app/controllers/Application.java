@@ -1292,38 +1292,42 @@ public class Application extends Controller {
         UrlValidatorUtil urlValidatorUtil = new UrlValidatorUtil();
         UrlParameters urlParameters = urlValidatorUtil.parseURL(urlString);
 
-        if(urlParameters.getUrlType() == UrlParameters.TYPE.A) {
+        if(urlParameters.getUrlType() == UrlParameters.TYPE.jobsRoleInAtWithJobPostId) {
             String jobLocation = urlParameters.getJobLocation();
             String jobCompany = urlParameters.getJobCompany();
             String jobPostTile = urlParameters.getJobPostTitle();
             Long jobPostId = urlParameters.getJobPostId();
             return ok(views.html.Fragment.posted_job_details.render(jobLocation,jobCompany,jobPostTile,jobPostId));
             }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.B) {
-                return ok("All Post");
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.jobRoleInAt) {
+                //return ok("All Post");
+                return ok(views.html.page_not_found.render());
             }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.C) {
-                return ok("Job Post at Company");
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.jobRoleAt) {
+                //return ok("Job Post at Company");
+                return ok(views.html.page_not_found.render());
             }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.D) {
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.jobRoleIn) {
                return ok(views.html.Fragment.job_role_page.render(urlParameters.getJobRoleName(),
                        urlParameters.getJobRoleId()));
             }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.E) {
-                return ok("All Jobs in Location at Company");
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.allJobsInAt) {
+                //return ok("All Jobs in Location at Company");
+                return ok(views.html.page_not_found.render());
             }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.F) {
-                return ok("All Jobs at Company");
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.allJobsAt) {
+                return ok(views.html.page_not_found.render());
+                //return ok("All Jobs at Company");
             }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.G) {
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.allJobsIn) {
                 return ok(views.html.Fragment.show_all_jobs_page.render());
             }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.H) {
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.allJobsWithJobRoleId) {
                 String jobRoleName = urlParameters.getJobRoleName();
                 Long jobRoleId = urlParameters.getJobRoleId();
                 return ok(views.html.Fragment.job_role_page.render(jobRoleName,jobRoleId));
             }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.InValidRequest){
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.InvalidRequest){
                 return ok(views.html.page_not_found.render());
             }
 
@@ -1333,9 +1337,9 @@ public class Application extends Controller {
     public static Result getJobsPageContent(String urlString,Long index) {
 
         UrlValidatorUtil urlValidatorUtil = new UrlValidatorUtil();
-        UrlParameters urlParameters = urlValidatorUtil.jobCommonDetailsRequest(urlString);
+        UrlParameters urlParameters = urlValidatorUtil.parseJobsContentPageUrl(urlString);
 
-        if(urlParameters.getUrlType() == UrlParameters.TYPE.A){
+        if(urlParameters.getUrlType() == UrlParameters.TYPE.getJobDetailsWithJobPostId){
             JobPost jobPost = JobPost.find.where().eq("JobPostId", urlParameters.getJobPostId()).findUnique();
             if (jobPost != null) {
                 return ok(toJson(jobPost));
@@ -1345,7 +1349,7 @@ public class Application extends Controller {
                 return badRequest();
             }
         }
-        else if(urlParameters.getUrlType() == UrlParameters.TYPE.B) {
+        else if(urlParameters.getUrlType() == UrlParameters.TYPE.getJobPostWithJobRoleId) {
             // query jobrole table for the given id. if it doesnt exist, fwd to page not found
             JobRole jobRole = JobRole.find.where().eq("JobRoleId",urlParameters.getJobRoleId()).findUnique();
             if(jobRole != null){
