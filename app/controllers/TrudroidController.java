@@ -87,7 +87,7 @@ public class TrudroidController {
             LoginResponse loginResponse = CandidateService.login(loginRequest.getCandidateLoginMobile(),
                     loginRequest.getCandidateLoginPassword(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
 
-            
+
             //TODO: to handle the new status in the new APK
             //since we have a new status in the web version stating no auth record but candidate exists, android doesn't have
             // hence we are setting status as 'no user' where the status is 'no auth'
@@ -1294,7 +1294,9 @@ public class TrudroidController {
 
             if (updateCandidateEducationProfileRequest.getIsFinalFragment()) {
                 Candidate candidate = CandidateService.isCandidateExists(updateCandidateEducationProfileRequest.getCandidateMobile());
-                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), updateCandidateEducationProfileRequest.getJobPostId(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
+                if(candidate != null){
+                    JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), updateCandidateEducationProfileRequest.getJobPostId(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
+                }
             }
         } catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");
