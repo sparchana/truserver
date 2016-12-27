@@ -126,10 +126,11 @@ var app = (function ($) {
                     $('#searchLocation').tokenize({
                         displayDropdownOnFocus: true,
                         placeholder: "Location",
+                        newElements: true,
                         nbDropdownElements: 1000,
                         maxElements: 1
                     }).tokenRemove( $('#searchLocation').val()[0]).tokenAdd(locality.localityId, locality.localityName);
-                } else {
+                } else if($("#searchLocation option[value='1']").length  == 0){
                     var promise = new Promise(function (resolve, reject) {
                             app.bMethods.getAllLocation().then(
                                 function (returnedData) {
@@ -160,6 +161,7 @@ var app = (function ($) {
                             $('#searchLocation').append(option);
                         });
 
+                        console.log("app.allLocation size: "+ app.allLocation.length);
                         $('#searchLocation').tokenize({
                             displayDropdownOnFocus: true,
                             placeholder: "Location",
@@ -186,7 +188,7 @@ var app = (function ($) {
                         nbDropdownElements: 1000,
                         maxElements: 1
                     }).tokenRemove( $('#searchEducation').val()[0]).tokenAdd(education.educationId, education.educationName);
-                } else {
+                } else if($("#searchEducation option[value='1']").length  == 0){
                     var promise = new Promise(function (resolve, reject) {
                             app.bMethods.getAllEducation().then(
                                 function (returnedData) {
@@ -252,7 +254,7 @@ var app = (function ($) {
                         nbDropdownElements: 1000,
                         maxElements: 1
                     }).tokenRemove( $('#searchExperience').val()[0]).tokenAdd(experience.experienceId, experience.experienceType);
-                } else {
+                } else if($("#searchExperience option[value='1']").length  == 0){
                     var promise = new Promise(function (resolve, reject) {
                             app.bMethods.getAllExperience().then(
                                 function (returnedData) {
