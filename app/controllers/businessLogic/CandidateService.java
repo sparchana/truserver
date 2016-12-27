@@ -427,8 +427,10 @@ public class CandidateService
                     candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
                 }
             } else {
-                localityList.add((int) candidate.getLocality().getLocalityId());
-                candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
+                if(candidate.getLocality() != null){
+                    localityList.add((int) candidate.getLocality().getLocalityId());
+                    candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
+                }
             }
 
             if(request.getCandidateMobile() != null){

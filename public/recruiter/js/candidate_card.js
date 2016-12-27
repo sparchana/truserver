@@ -139,9 +139,9 @@ function renderIndividualCandidateCard(value, parent, view) {
                         pastInterviewHeader.style = "padding: 8px; text-align: center";
                         confirmedParent.append(pastInterviewHeader);
                         pastInterviewsFlag = true;
-                        showFeedback = true;
                     }
 
+                    showFeedback = true;
                     showStatusFlag = true;
                     confirmedParent.append(candidateCard);
                     confirmedCount++;

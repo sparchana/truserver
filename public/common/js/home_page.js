@@ -39,7 +39,6 @@ function processDataCheckJobs(returnedData) {
         jobArray.push(item);
     });
 }
-
 $(function() {
     $('a[href*="#"]:not([href="#"])').click(function() {
         if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
@@ -88,7 +87,20 @@ $(document).ready(function(){
             $("#fixed-menu").fadeOut();
         }
     });*/
-
+    $(window).scroll(function(){
+        if ($(this).scrollTop() > 350) {
+            $('.registerBox').fadeIn();
+            if(w > 400){
+                $('.registerBox').css("width","120px");
+            }
+            else{
+                $('.registerBox').css("width","100%");
+            }
+        } else {
+            $('.registerBox').fadeOut();
+            $('.registerBox').css("width","50px");
+        }
+    });
     $(window).scroll(function(){
         if ($(this).scrollTop() > 100) {
             $('.scrollToTop').fadeIn();
@@ -278,6 +290,11 @@ function processDataAllJobPosts(returnedData) {
                 var jobTitle = document.createElement("h4");
                 jobTitle.textContent = jobPost.jobPostTitle + " | " + jobPost.company.companyName;
                 jobBodyCol.appendChild(jobTitle);
+
+                var jobRole = document.createElement("h5");
+                jobRole.style = "color:rgba(0, 159, 219, 0.99)";
+                jobRole.textContent = jobPost.jobRole.jobName + " Job";
+                jobBodyCol.appendChild(jobRole);
 
                 var hr = document.createElement("hr");
                 jobBodyCol.appendChild(hr);
@@ -485,12 +502,12 @@ function processDataAllJobPosts(returnedData) {
                 applyBtn.textContent = "View & Apply";
                 applyBtnDiv.appendChild(applyBtn);
                 applyBtn.onclick=function(){
-                    var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
+                    var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
                     jobPostBreak = jobPostBreak.toLowerCase();
-                    var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
+                    var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
                     jobCompany = jobCompany.toLowerCase();
                     try {
-                        window.location.href = "/jobs/" + jobPostBreak + "/bengaluru/" + jobCompany + "/" + jobPost.jobPostId;
+                        window.location.href = "/jobs/" + jobPostBreak + "-jobs-in-bengaluru-at-" + jobCompany + "-" + jobPost.jobPostId;
                     } catch (exception) {
                         console.log("exception occured!!" + exception);
                     }

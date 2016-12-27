@@ -1,4 +1,4 @@
-@(jobRoleName: String)
+@(jobRoleName: String , jobRoleId : Long)
 <html>
     <head>
         <meta charset="utf-8">
@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>
-            Trujobs - Find @jobRoleName.split('_').map(_.capitalize).mkString(" ") for Freshers and Experienced Candidates </title>
+            Trujobs - Find @jobRoleName.split('-').map(_.capitalize).mkString(" ") for Freshers and Experienced Candidates </title>
 
         <meta name="keywords" content="driving jobs, fresher jobs, jobs for freshers, job search sites, job posting, sales jobs, beautician jobs,
         medical transcription jobs, online job search, find jobs, receptionist jobs, admin jobs, office assistant jobs,
@@ -16,7 +16,7 @@
         plumber jobs, electrician jobs, job search, accountant jobs, job vacancy, bangalore vacancy">
 
         <meta name="description" content="Search and apply for jobs online. Register for FREE and find best
-        @jobRoleName.split('_').map(_.capitalize).mkString(" "). Give a missed call at 8880007799 for best jobs." />
+        @jobRoleName.split('-').map(_.capitalize).mkString(" "). Give a missed call at 8880007799 for best jobs." />
 
         <meta http-equiv="Cache-control" content="public">
         <meta name="theme-color" content="#286ab6">
@@ -42,6 +42,8 @@
         <script type="text/javascript" src="/assets/common/js/jquery.twbsPagination.js"></script>
 
         <script>
+            var jobRoleNameRender = "@jobRoleName";
+            var jobRoleIdRender = "@jobRoleId";
             $('html, body').css({
                 'overflow': 'hidden',
                 'height': '100%'
@@ -110,7 +112,7 @@
                     <div class="row">
                         <div class="col-sm-10" id="headingMain">
                             <h1 style="letter-spacing: 2px;font-size:28px"><b id="jobTitleLine">
-                                Register for @jobRoleName.split('_').map(_.capitalize).mkString(" ")</b></h1>
+                                Register for @jobRoleName.split('-').map(_.capitalize).mkString(" ")</b></h1>
                             <h2 style="letter-spacing: 1px;
                                 margin-top: 10px;">Call 8880007799 to find jobs in top companies!</h2>
                         </div>
@@ -124,7 +126,7 @@
             <form id="form_signup_candidate" style="margin-top: 0%;
                 margin-right: 2%;
                 margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
-                <h4 id="jobRoleTitle" style="font-weight: bold">Job Seeker Registration</h4>
+                <h4 id="jobRoleTitle" style="font-weight: bold">Register for @jobRoleName.split('-').map(_.capitalize).mkString(" ")</h4>
                 <div class="row" id="firstNameLastName">
                     <div class="col-sm-6" style="padding: 0 4px 0 16px">
                         <input id="candidateFirstName" placeholder="First name" type="text" maxLength="49" class="form-control input-md">
@@ -174,7 +176,9 @@
                     padding-right: 8%;
                     padding-left: 8%;
                     width: 100%" >Register for FREE</button>
-                <p style="padding-top:10px;margin:0"><font size = 2px> By signing up I agree to <a href='/privacy'>Terms & Conditions</a></font></p>
+                <p style="padding-top:5px;margin:0;font-size: 12px"> By signing up I agree to <a href='/privacy'>Terms & Conditions</a></p>
+                <hr>
+                <p style="padding-top:5px;margin:0"><font size = 2px> Already Registered ? <a href='#' data-toggle="modal" data-target="#myLoginModal" onClick="openLogin()">Sign In Here </a></font></p>
                     <!-- Text input-->
             </form>
             <div class="modal fade bs-example-modal-sm" id="myRegistrationModal" tabindex="-1" role="dialog" aria-labelledby="myRegistrationModal">
@@ -287,6 +291,9 @@
                 <div id="jobRoleGrid" style="width: auto"></div>
             </div>
         </div>
+        <a href ="#" class="registerBox" data-toggle="modal" data-target="#mySignUpModal" onClick="openSignUp()">
+            <div class="row" id="registerBoxInner"><font size="3" style="color: #fff">Apply Now</font></div>
+        </a>
         <a href="#" class="scrollToTop"><img src="/assets/common/img/up.svg"></a>
             <!-- Start Footer-->
         <div id="footer_inc"></div>

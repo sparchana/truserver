@@ -83,19 +83,21 @@ $(window).load(function() {
     $("#preloader").delay(1000).fadeOut("slow");
 });
 
-
 $(document).ready(function(){
-    var jobDetailPageUrl = $(location).attr('href');
-    var jobDetailPageUrlBreak = jobDetailPageUrl.split("/");
-    jobDetailPageUrlBreak.reverse();
     try {
             $.ajax({
                 type: "GET",
-                url: "/job/" + jobDetailPageUrlBreak[3] + "/"+ jobDetailPageUrlBreak[2] + "/"+jobDetailPageUrlBreak[1] +"/"+jobDetailPageUrlBreak[0],
+                url: "/job/"+ jobRoleNameRender  + "-jobs-in-"+ jobLocationRender +"-at-"+ jobCompanyRender +"-"+ jobPostIdRender,
                 contentType: "application/json; charset=utf-8",
                 data: false,
                 processData: false,
-                success: processDataForHotJobPost
+                success: processDataForHotJobPost,
+                error: function (xhr, ajaxOption, throwError) {
+                    console.log(xhr.status);
+                    if(xhr.status == 400){
+                        window.location = '/pageNotFound';
+                    }
+                }
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);
@@ -192,7 +194,11 @@ function processDataForJobPostLocation(returnedData) {
 }
 
 function confirmApply() {
-    $("#applyButton").addClass("jobApplied").removeClass("jobApplyBtnModal").prop('disabled',true).html("Applying");
+    $("#applyButton").removeClass("jobApplyBtnModal").addClass("jobApplied").prop('disabled',true).html("Applying");
+    $("#applyButton").click(function(){ return false});
+    $("#applyButton").unbind();
+    $("#applyButton").removeAttr("onclick");
+
     applyJobSubmitViaCandidate(jobPostId, prefLocation, prefTimeSlot, scheduledInterviewDate, true);
 //    applyJob(jobPostId, prefLocation, true);
 }
@@ -371,8 +377,7 @@ function processJobPostAppliedStatus(status) {
 }
 
 function processDataForHotJobPost(returnedData) {
-
-    if (returnedData != "Error" && returnedData != "") {
+    if (returnedData != "") {
         jobId = returnedData.jobPostId;
         if(returnedData.jobPostPartnerInterviewIncentive != null){
             $("#interviewIncentiveVal").html("₹" + returnedData.jobPostPartnerInterviewIncentive + " interview incentive");
@@ -594,7 +599,6 @@ function processDataForHotJobPost(returnedData) {
             console.log("exception occured!!" + exception);
         }
     } else {
-        console.log("#404 No Page Found");
         window.location.href = "/pageNotFound";
     }
 }

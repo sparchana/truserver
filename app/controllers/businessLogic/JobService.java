@@ -143,12 +143,15 @@ public class JobService {
             //send email to recruiter
             sendRecruiterJobPostLiveEmail(existingJobPost.getRecruiterProfile(), existingJobPost);
 
+            //TODO uncomment this when we want to start notifying candidates about the job post
+/*
             //send sms to all the matching candidate
             JobPost jobPost = existingJobPost;
 
             new Thread(() -> {
                 sendSmsToCandidateMatchingWithJobPost(jobPost);
             }).start();
+*/
 
 
         }
@@ -1168,17 +1171,22 @@ public class JobService {
         if(candidateSearchMap != null){
             Logger.info("Sending notification to " + candidateSearchMap.size() + " candidates regarding the jobPost: " + jobPost.getJobPostTitle());
 
+            Boolean hasCredit = false;
+            if(jobPost.getRecruiterProfile().totalInterviewCredits() > 0){
+                hasCredit = true;
+            }
+
             //adding to notification Handler queue
             for (Map.Entry<Long, CandidateWorkflowData> candidate : candidateSearchMap.entrySet()) {
-                if(jobPost.getRecruiterProfile().totalInterviewCredits() > 0){
+                if(hasCredit){
                     //recruiter has interview credits
-                    SmsUtil.sendJobPostSmsToCandidate(jobPost, candidate.getValue().getCandidate());
-                    NotificationUtil.sendJobPostNotificationToCandidate(jobPost, candidate.getValue().getCandidate());
+                    SmsUtil.sendJobPostSmsToCandidateRecHasCredits(jobPost, candidate.getValue().getCandidate());
+                    NotificationUtil.sendJobPostNotificationToCandidateRecHasNoCredits(jobPost, candidate.getValue().getCandidate());
 
                 } else{
                     //recruiter doesn't have interview credits
-                    SmsUtil.sendJobPostSmsToCandidate(jobPost, candidate.getValue().getCandidate());
-                    NotificationUtil.sendJobPostNotificationToCandidate(jobPost, candidate.getValue().getCandidate());
+                    SmsUtil.sendJobPostSmsToCandidateRecHasNoCredits(jobPost, candidate.getValue().getCandidate());
+                    NotificationUtil.sendJobPostNotificationToCandidateRecHasNoCredits(jobPost, candidate.getValue().getCandidate());
                 }
             }
         }
