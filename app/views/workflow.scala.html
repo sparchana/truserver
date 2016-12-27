@@ -54,17 +54,18 @@
                     </div>
                 </div>
                 <nav class="mdl-navigation" style="padding-top:0">
-                    <a id="match_view_drawer" class="mdl-navigation__link" href="?view=match_view">Match View</a>
-                    <a id="pre_screen_view_drawer" class="mdl-navigation__link" href="?view=pre_screen_view">Pre-Screen View</a>
-                    <a id="pre_screen_completed_view_drawer" class="mdl-navigation__link" href="?view=pre_screen_completed_view">Pre-Screen Completed View</a>
-                    @*<a id="assessment_view_drawer" class="mdl-navigation__link" href="#">ASSESSMENT VIEW</a>*@
-                    @*<a id="interview_view_drawer" class="mdl-navigation__link" href="#">INTERVIEW</a>*@
+                    <a id="match_view_drawer" class="mdl-navigation__link" href="?view=match_view">Match Candidates</a>
+                    <a id="pre_screen_view_drawer" class="mdl-navigation__link" href="?view=pre_screen_view">Pre-screen Candidates</a>
+                    <a id="pending_interview_schedule_drawer" class="mdl-navigation__link" href="?view=pending_interview_schedule">Schedule Interviews</a>
+                    <a id="pre_screen_completed_view_drawer" class="mdl-navigation__link" href="?view=pre_screen_completed_view">Confirm/Reject Interviews</a>
+                    <a id="confirmed_interview" class="mdl-navigation__link" href="?view=confirmed_interview_view">Confirmed Interviews</a>
+                    <a id="interview_view_drawer" class="mdl-navigation__link" href="?view=completed_interview_view">Completed Interviews</a>
                 </nav>
             </div>
             <main class="mdl-layout__content" style="padding:1% 2%;background-color: #efefef">
                 <div class="mdl-card mdl-shadow--4dp">
                     <div class="mdl-card__supporting-text">
-                        <div class="mdl-grid">
+                        <div class="mdl-grid" style="padding-bottom: 0">
                             <!-- Job Post Detail Card -->
                             <div class="mdl-cell mdl-cell--2-col" id="job_post_title" style="padding-top:8px;padding-left:20px; font-size: 22px; font-weight: 500">
                                 Job Post Name
@@ -117,6 +118,22 @@
                                 </button>
                             </div><!-- Job Post Detail Card End-->
                         </div>
+                        <div class="mdl-grid" style="padding-top: 0">
+
+                                <!-- empty col -->
+                            <div class="mdl-cell mdl-cell--2-col" style="margin-top: 0">
+                                <div style="display: inline-block;">
+                                    <div id="job_post_company_title" style="margin-left: 4px;display: inline-block"></div>
+                                </div>
+                            </div>
+
+                            <div class="mdl-cell mdl-cell--8-col" style="margin-top: 0">
+                                <div style="display: inline-block;">
+                                    <div style="margin-left: 4px;color: rgb(63,81,181);font-size: 12px">Interview Address</div>
+                                    <div id="job_post_interview_address" style="margin-left: 4px;display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div>@content</div>
@@ -127,10 +144,14 @@
                 </div>*@
             </main>
         </div>
+        <script type="text/javascript" src="/assets/partner/js/notify.min.js"></script>
         <script type="text/javascript" src="/assets/build/support/sapp.min.js"></script>
-        <script type="text/javascript" src="/assets/support/js/workFlowController.js"></script>
+        <script type="text/javascript" src="/assets/common/js/jobpost_workflow_constants.js"></script>
+        <script type="text/javascript" src="/assets/build/support/workFlowController.min.js"></script>
         <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
         <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
         <script type="text/javascript" src="/assets/support/js/dataTables.select.min.js"></script>
+        <script type="text/javascript" src="/assets/support/js/Moment.js"></script>
+        <script type="text/javascript" src="/assets/support/js/daterangepicker.js"></script>
     </body>
 </html>

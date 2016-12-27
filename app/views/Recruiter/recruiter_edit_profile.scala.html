@@ -36,71 +36,69 @@
             $('.recruiter_navbar').load('/recruiterNavbar');
         </script>
         <div class="back-banner"></div>
-        <div style="display: flex;
-            justify-content: center;
+        <div style="justify-content: center;
             align-items: center;
             margin-top: -360px">
             <div class="container recruiterHomeMainCard" >
-                <img src="/assets/recruiter/img/manager.svg" width="56px" style="margin-top: -16px">
+                <img src="/assets/recruiter/img/manager.svg" width="56px" style="margin: -16px 10px 0 10px">
                 <h5 style="display: inline-block">Recruiter Profile!</h5>
                 <hr>
                 <div class="row">
                     <form class="col s12">
                         <div class="row">
-                            <div class="input-field col s12 l6">
+                            <div class="input-field col s12 m6 l6">
                                 <i class="material-icons prefix">account_circle</i>
                                 <input placeholder="Enter your name" id="rec_name" maxlength="35" type="text" class="validate">
                                 <label for="rec_name">Name<font color="red">*</font></label>
                             </div>
-                            <div class="input-field col s12 l6">
+                            <div class="input-field col s12 m6 l6">
                                 <i class="material-icons prefix">phone</i>
                                 <input placeholder="Enter your mobile" disabled id="rec_mobile" type="text" maxlength="10" class="validate">
                                 <label for="rec_mobile">Mobile</label>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s12 l6">
+                            <div class="input-field col s12 m6 l6">
                                 <i class="material-icons prefix">email</i>
                                 <input placeholder="Enter your email" id="rec_email" type="text" maxlength="36" class="validate">
                                 <label for="rec_email">Email<font color="red">*</font></label>
                             </div>
-                            <div class="input-field col s12 l6">
+                            <div class="input-field col s12 m6 l6">
                                 <i class="material-icons prefix">dialpad</i>
                                 <input placeholder="Enter your landline number" id="rec_landline" type="text" maxlength="13" class="validate">
                                 <label for="rec_landline">Landline</label>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s12 l6">
+                            <div class="input-field col s12 m6 l6">
                                 <i class="material-icons prefix"><img src="/assets/recruiter/img/icons/linkedin-black.svg" style="margin: -24px 0 0 6px" width="26px"></i>
                                 <input placeholder="eg: https://www.linkedin.com/in/profileName" id="rec_linkedin" maxlength="56" type="text" class="validate">
                                 <label for="rec_linkedin">Linkedin Profile</label>
                             </div>
-                            <div class="input-field col s12 l6">
+                            <div class="input-field col s12 m6 l6">
                                 <i class="material-icons prefix">phone</i>
                                 <input placeholder="Enter your alternate number" id="rec_alternate_mobile" type="text" maxlength="10" class="validate">
                                 <label for="rec_alternate_mobile">Alternate mobile</label>
                             </div>
                         </div>
                         <br>
-                        <img src="/assets/recruiter/img/office.svg" width="56px" style="margin-top: -16px">
+                        <img src="/assets/recruiter/img/office.svg" width="56px" style="margin: -16px 10px 0 10px">
                         <h5 style="display: inline-block">Company Profile!</h5>
-
                         <hr>
                         <div class="row">
-                            <div class="input-field col s12 l6">
+                            <div class="input-field col s12 m6 l6">
                                 <i class="material-icons prefix">business</i>
                                 <input placeholder="Enter your company name" id="rec_company_name" maxlength="35" type="text" class="validate">
                                 <label for="rec_name">Name<font color="red">*</font></label>
                             </div>
-                            <div class="input-field col s12 l6">
+                            <div class="input-field col s12 m6 l6">
                                 <i class="material-icons prefix">web</i>
                                 <input placeholder="Enter your company's website" id="rec_company_website" type="text" maxlength="25" class="validate">
                                 <label for="rec_company_website">Website</label>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s12 l6">
+                            <div class="input-field col s12 m6 l6">
                                 <i class="material-icons prefix">settings_input_composite</i>
                                 <select id="rec_company_type" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
                                 <script type="text/javascript">
@@ -117,14 +115,14 @@
                                 <style>
                                 div.Tokenize ul.TokensContainer {
                                     margin-left: 44px;
-                                    width: 93%;
+                                    width: 86%;
                                     padding-bottom: 12px;
                                     border-bottom: 1px solid rgba(101, 99, 99, 0.64);
                                 }
                                 </style>
                             </div>
 
-                            <div class="input-field col s12 l6">
+                            <div class="input-field col s12 m6 l6" id="upperSpaceInputField">
                                 <i class="material-icons prefix">supervisor_account</i>
                                 <input placeholder="No. of Employees" id="rec_company_employees" type="text" maxlength="15" class="validate">
                                 <label for="rec_company_employees">Total Employee count</label>
@@ -134,7 +132,7 @@
 
                         <br>
                         <div class="row">
-                            <div class="input-field col s12 l6">
+                            <div class="input-field col s12 m6 l6">
                                 <i class="material-icons prefix">location_on</i>
                                 <select id="rec_company_locality" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
                                 <script type="text/javascript">
@@ -150,7 +148,7 @@
                                 </script>
                             </div>
 
-                            <div class="input-field col s12 l6">
+                            <div class="input-field col s12 m6 l6" id="upperSpaceInputField">
                                 <i class="material-icons prefix">location_on</i>
                                 <input placeholder="Enter your office pincode" id="rec_company_pincode" maxlength="6" type="text" class="validate">
                                 <label for="rec_company_pincode">Pin Code</label>
@@ -159,13 +157,13 @@
 
                         <br>
                         <div class="row">
-                            <div class="input-field col s12 l6">
+                            <div class="input-field col s12 m6 l6">
                                 <i class="material-icons prefix">reorder</i>
                                 <textarea placeholder="Company office address" id="rec_company_address" class="materialize-textarea"></textarea>
                                 <label for="rec_company_address">Company Address</label>
                             </div>
 
-                            <div class="input-field col s12 l6">
+                            <div class="input-field col s12 m6 l6">
                                 <i class="material-icons prefix">reorder</i>
                                 <textarea placeholder="Tell us about your company" id="rec_company_desc" class="materialize-textarea"></textarea>
                                 <label for="rec_company_desc">Company Description</label>
@@ -173,22 +171,24 @@
                         </div>
 
                         <div class="row">
-                            <div class="input-field col s12 l6">
-                                <input style="display: none" id="rec_company_old_logo" type="text" class="form-control input-md" >
-                                <img id="rec_company_logo_old" width="120px">
-                                <div class="file-field input-field">
-                                    <div class="btn">
-                                        <span>Upload Company Logo</span>
+                            <div class="input-field col s12 m6" style="margin: 0">
+                                <div class="file-field input-field col s12 m12" style="padding: 0">
+                                    <div class="file-path-wrapper col s9 offset-s1 m9 offset-m1">
+                                        <input class="file-path validate" type="text" placeholder="Upload Company Logo">
+                                    </div>
+                                    <div class="btn col s2 m2 pull-right" >
+                                        <i class="material-icons">play_for_work</i>
                                         <input type="file" id="companyLogo" onchange="readURL(this)" accept='image/*'>
                                     </div>
-                                    <div class="file-path-wrapper">
-                                        <input class="file-path validate" type="text">
-                                    </div>
+                                </div>
+                                <div class="input-field col s12 m12" style="margin-left:34px">
+                                    <label>Company Logo Preview</label>
+                                    <br>
+                                    <img id="rec_company_logo_old" width="120px">
+                                    <input style="display: none" id="rec_company_old_logo" type="text" class="form-control input-md" >
                                 </div>
                             </div>
                         </div>
-
-                        <br>
                         <div onclick="saveForm()" class="waves-effect waves-light right ascentGreen lighten-1 btn"><font style="color: #fff;
                             font-weight: 600">Save Profile</font></div>
                     </form>
@@ -228,6 +228,8 @@
     </body>
 
     <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
     <script type="text/javascript" src="/assets/common/js/validation.js"></script>
     <script type="text/javascript" src="/assets/recruiter/js/recruiter_edit_profile.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/recruiter_notifier.js"></script>
 </html>

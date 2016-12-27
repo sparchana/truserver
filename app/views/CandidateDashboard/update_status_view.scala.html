@@ -1,0 +1,92 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Trujobs - Update your Status </title>
+
+        <meta name="keywords" content="driving jobs, fresher jobs, jobs for freshers, job search sites, job posting, sales jobs, beautician jobs,
+        medical transcription jobs, online job search, find jobs, receptionist jobs, admin jobs, office assistant jobs,
+        plumbing work, teacher job, online teaching jobs, jobs in schools, teacher vacancy, teacher recruitment, entry level jobs,
+        delivery boy jobs,call center jobs, BPO jobs, kpo jobs, job job job, data entry jobs, back office jobs,
+        receptionist jobs, beautician jobs, experienced jobs, jobs in Bangalore, cashier jobs, entry level jobs,
+        plumber jobs, electrician jobs, job search, accountant jobs, job vacancy, bangalore vacancy">
+
+        <meta name="description" content="Search and apply for jobs online. Register for FREE and find best
+        fresher and experienced jobs.Give a missed call at 8880007799 for best jobs." />
+
+            <!-- Bootstrap Core CSS -->
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+        @*<script type="text/javascript" src="/assets/common/js/jquery.min_1_12_0.js"></script>*@
+        <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
+        <script type="text/javascript" src="/assets/common/js/jobpost_workflow_constants.js"></script>
+        <script type="text/javascript" src="/assets/dashboard/js/update_status.js"></script>
+        <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+
+        <meta name="theme-color" content="#286ab6">
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+
+        <style>
+            .submit-btn{
+                margin-top: 12px;
+                display: block;
+                background: #5095ff;
+                border: none;
+                padding: 8px;
+                border-radius: 4px;
+                color: white;
+                font-weight: bold;}
+        </style>
+    </head>
+    <body>
+        <center style="margin-top: 16px">
+            <img src="/assets/common/img/logo-color.gif" height="36px">
+            <div id="validInterview" style="display: none">
+                <div style="margin-top: 28px; font-size: 22px">Update status for your interview today!</div>
+                <div style="margin-top: 8px; font-size: 16px" id="interviewName"></div>
+                <br>
+
+                <h3 style="color: limegreen" id="customMsg"></h3>
+                <div id="actionOptions">
+                    <select id="status_val"></select>
+                    <input type="button" id="updateStatusBtn" value="Update Status" class="submit-btn" onclick="updateStatus()">
+                </div>
+            </div>
+            <div id="invalidInterview" style="display: none">
+                <h3 style="color: red" id="errorMsg"></h3>
+            </div>
+
+        </center>
+
+            <!-- not going modal -->
+        <div class="modal fade" id="notGoingModal" tabindex="-1" role="dialog" aria-labelledby="notGoingModal">
+            <div class="modal-dialog" role="document" id="customModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="heading"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="confirmationMsg">
+                            <center>
+                                <img src="/assets/common/img/jobApply.png" width="48px">
+                            </center>
+                            <center>
+                                <h4><b id="subHeading"></b></h4>
+                                <div class="materialDash"></div>
+                                <div class="custom_container" style="margin-top: 16px">
+                                    <select id="notGoingReason"></select>
+                                </div>
+                                <button type="submit" onclick="confirmUpdateStatusNotGoing()" id="updateNotGoingReasonBtn" class="submit-btn">Submit</button>
+                            </center>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>

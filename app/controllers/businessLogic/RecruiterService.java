@@ -14,6 +14,7 @@ import api.http.httpResponse.Recruiter.AddRecruiterResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
 import api.http.httpResponse.ResetPasswordResponse;
+import api.http.httpResponse.interview.InterviewResponse;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
@@ -28,11 +29,12 @@ import models.util.EmailUtil;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
-import play.core.server.Server;
 import play.mvc.Result;
 
 import java.util.UUID;
 
+import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
+import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
 import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;
@@ -151,8 +153,8 @@ public class RecruiterService {
 
             newRecruiter.save();
 
-            //assigning 5 free contact unlock credits for the recruiter
-            addContactCredit(newRecruiter, 5);
+            //assigning some free contact unlock credits for the recruiter
+            addContactCredit(newRecruiter, ServerConstants.RECRUITER_FREE_CONTACT_CREDITS);
 
             interactionType = InteractionConstants.INTERACTION_TYPE_RECRUITER_SIGN_UP;
             result = InteractionConstants.INTERACTION_RESULT_NEW_RECRUITER;
@@ -195,13 +197,13 @@ public class RecruiterService {
     }
 
     public static AddRecruiterResponse createRecruiterProfile(RecruiterSignUpRequest recruiterSignUpRequest,
-                                                              InteractionService.InteractionChannelType channelType)
+                                                              int channelType)
     {
         AddRecruiterResponse addRecruiterResponse = new AddRecruiterResponse();
         String result = "";
         Integer interactionType;
         Company existingCompany = Company.find.where().eq("companyId", recruiterSignUpRequest.getRecruiterCompany()).findUnique();
-        int leadChannel = (channelType == InteractionService.InteractionChannelType.SELF) ?
+        int leadChannel = (channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE) ?
                 ServerConstants.LEAD_CHANNEL_RECRUITER :
                 ServerConstants.LEAD_CHANNEL_SUPPORT;
 
@@ -228,8 +230,8 @@ public class RecruiterService {
 
                 newRecruiter.save();
 
-                //assigning 5 free contact unlock credits for the recruiter
-                addContactCredit(newRecruiter, 5);
+                //assigning free contact unlock credits for the recruiter
+                addContactCredit(newRecruiter, ServerConstants.RECRUITER_FREE_CONTACT_CREDITS);
 
                 //setting all the credit values
                 setCreditHistoryValues(newRecruiter, recruiterSignUpRequest);
@@ -281,7 +283,7 @@ public class RecruiterService {
                             recruiterSignUpRequest.getInterviewCredits());
                 }
 
-                if (channelType == InteractionService.InteractionChannelType.SELF) {
+                if (channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE) {
                     result = InteractionConstants.INTERACTION_RESULT_RECRUITER_INFO_UPDATED_SELF;
                 } else {
                     result = InteractionConstants.INTERACTION_RESULT_RECRUITER_INFO_UPDATED_SUPPORT;
@@ -623,7 +625,7 @@ public class RecruiterService {
     }
 
     private static void addContactCredit(RecruiterProfile recruiterProfile, Integer creditCount){
-        //new recruiter hence giving 5 free contact unlock credits
+        // new recruiter hence giving  free contact unlock credits
         RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
 
         RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where().eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK).findUnique();
@@ -633,7 +635,7 @@ public class RecruiterService {
         recruiterCreditHistory.setRecruiterProfile(recruiterProfile);
         recruiterCreditHistory.setRecruiterCreditsAvailable(creditCount);
         recruiterCreditHistory.setRecruiterCreditsUsed(0);
-        recruiterCreditHistory.setUnits(5);
+        recruiterCreditHistory.setUnits(creditCount);
 
         if(session().get("sessionUsername") != null){
             recruiterCreditHistory.setRecruiterCreditsAddedBy("Support: " + session().get("sessionUsername"));
@@ -642,4 +644,44 @@ public class RecruiterService {
         }
         recruiterCreditHistory.save();
     }
+
+    public static InterviewResponse isInterviewRequired(JobPost jobPost) {
+        InterviewResponse interviewResponse = new InterviewResponse();
+        if (jobPost == null) {
+            interviewResponse.setStatus(ServerConstants.ERROR);
+            return interviewResponse;
+        }
+        int validCount = 0;
+        if (jobPost.getRecruiterProfile() == null) {
+            // don't show interview modal if no recruiter is set for a jobpost
+            interviewResponse.setStatus(ServerConstants.INTERVIEW_NOT_REQUIRED);
+            return interviewResponse;
+        }
+        Long recruiterId = jobPost.getRecruiterProfile().getRecruiterProfileId();
+        RecruiterCreditHistory recruiterCreditHistory = RecruiterCreditHistory.find.where()
+                .eq("recruiterProfile.recruiterProfileId", recruiterId)
+                .eq("recruiterCreditCategory.recruiterCreditCategoryId", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
+                .orderBy().desc("createTimestamp").setMaxRows(1).findUnique();
+        if (recruiterCreditHistory != null &&
+                recruiterCreditHistory.getRecruiterCreditCategory().getRecruiterCreditCategoryId()
+                        == ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK
+                && recruiterCreditHistory.getRecruiterCreditsAvailable() > 0) {
+            // When recruiter credit available then show Interview UI
+            validCount++;
+        }
+
+        if (jobPost.getInterviewDetailsList() != null && jobPost.getInterviewDetailsList().size() > 0) {
+            // When slot available then  show Interview UI
+            validCount++;
+        }
+
+        if (validCount == 2) {
+            interviewResponse.setStatus(ServerConstants.INTERVIEW_REQUIRED);
+            return interviewResponse;
+        }
+
+        interviewResponse.setStatus(ServerConstants.INTERVIEW_NOT_REQUIRED);
+        return interviewResponse;
+    }
+
 }

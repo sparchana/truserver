@@ -13,6 +13,13 @@ function processDataResetCheckUser(returnedData) {
         $('#noUserLogin').hide();
     }
 
+    else if(returnedData.status == 5){
+        $('#noPasswordLogin').show();
+        $('#noUserLogin').hide();
+        $('#incorrectMsgLogin').hide();
+        document.getElementById("resetCheckUserBtn").disabled = false;
+    }
+
     else {
         document.getElementById("resetCheckUserBtn").disabled = false;
         $('#noUserLogin').show();
@@ -30,15 +37,17 @@ function processDataPostReset(returnedData) {
 
         if(applyJobFlag == 1){
             $("#myLoginModal").modal("hide");
-            applyJob(applyJobId, prefLocation, false);
+            /*applyJobSubmitViaCandidate(applyJobId, prefLocation, prefTimeSlot, scheduledInterviewDate, true);*/
+//            applyJob(applyJobId, prefLocation, false);
             $("#customSubMsg").html("Logging in ...");
             $('#customSubMsg').modal({backdrop: 'static', keyboard: false});
             var jp_id = applyJobId;
             applyJobFlag = 0;
             applyJobId = 0;
-            setTimeout(function(){
-                window.location = "/dashboard/appliedJobs/?assessment=true&jp_id="+jp_id;
-            }, 3000);
+            window.location = "/dashboard/appliedJobs/?ps=true&jp_id="+jp_id+"&pref_loc="+prefLocation;
+            /*setTimeout(function(){
+                /!*window.location = "/dashboard/appliedJobs/?assessment=true&jp_id="+jp_id;*!/
+            }, 3000);*/
         } else{
             window.location = "/dashboard";
         }

@@ -10,8 +10,8 @@
     overflow-y: auto;
     background-color: rgb(243, 245, 244);
 }
-.pre-screen-modal .modal-content {
-    padding: 1%;
+.modal-content {
+    padding: 0 1%;
     border-radius:1px;
 }
 .modal-body{
@@ -49,9 +49,31 @@ body.open-modal {
 
 }
 .modal-header{
-    padding:8px;
+    padding:16px;
 }
 
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.remove-padding-left {
+    padding-left: 0;
+}
+.remove-padding-right {
+    padding-right: 0;
+}
+#confirmationMsg{
+    padding:1%;
+    margin-top:20px;
+}
+#interview-selector-modal .modal-content{
+        padding: 0;
+}
+#interview-selector-modal .modal-header{
+        background-color: rgb(63, 81, 181);
+        color: #fff;
+}
 
 @media screen and (max-width: 768px) {
     .pre-screen-modal .modal-dialog{

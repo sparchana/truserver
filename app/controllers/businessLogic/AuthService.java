@@ -30,7 +30,7 @@ public class AuthService {
         session("sessionExpiry", String.valueOf(auth.getAuthSessionIdExpiryMillis()));
     }
 
-    public static CandidateSignUpResponse savePassword(String mobile, String password, InteractionService.InteractionChannelType channelType){
+    public static CandidateSignUpResponse savePassword(String mobile, String password, int channelType){
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
 
         Logger.info("to check: " + mobile);
@@ -51,7 +51,7 @@ public class AuthService {
                 if(candidate != null){
                     objAUUID = candidate.getCandidateUUId();
                 }
-                if(channelType == InteractionService.InteractionChannelType.SELF){
+                if(channelType == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
                     InteractionService.createInteractionForCandidateResetPasswordViaWebsite(objAUUID, interactionResult);
                 } else{
                     InteractionService.createInteractionForCandidateResetPasswordViaAndroid(objAUUID, interactionResult);
@@ -118,7 +118,7 @@ public class AuthService {
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
                 String objAUUID = existingCandidate.getCandidateUUId();
-                if (channelType == InteractionService.InteractionChannelType.SELF) {
+                if (channelType == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE) {
                     InteractionService.createInteractionForCandidateAddPasswordViaWebsite(objAUUID);
                 } else{
                     InteractionService.createInteractionForCandidateAddPasswordViaAndroid(objAUUID);
@@ -166,10 +166,13 @@ public class AuthService {
     }
     public static void addSession(Auth existingAuth, Candidate existingCandidate){
         session().put("sessionId", existingAuth.getAuthSessionId());
+        session().put("sessionUsername", "CID-"+String.valueOf(existingCandidate.getCandidateId()));
         session().put("candidateId", String.valueOf(existingCandidate.getCandidateId()));
         session().put("candidateMobile", String.valueOf(existingCandidate.getCandidateMobile()));
         session().put("leadId", String.valueOf(existingCandidate.getLead().getLeadId()));
         session().put("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
+        session().put("sessionUsername", String.valueOf(existingCandidate.getCandidateFullName() + "_candidate"));
+        session().put("sessionChannel", String.valueOf(InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE));
         Logger.info("set-sessionId"+ session().get("candidateMobile"));
     }
 }

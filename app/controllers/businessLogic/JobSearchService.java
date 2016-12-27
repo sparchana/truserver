@@ -3,6 +3,7 @@ package controllers.businessLogic;
 import api.ServerConstants;
 import api.http.FormValidator;
 import com.avaje.ebean.Expr;
+import com.avaje.ebean.PagedList;
 import com.avaje.ebean.Query;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import in.trujobs.proto.*;
@@ -12,6 +13,7 @@ import models.entity.OM.JobPreference;
 import models.entity.Static.JobRole;
 import play.Logger;
 
+import api.http.httpResponse.JobPostResponse;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -75,14 +77,13 @@ public class JobSearchService {
 
         for (Integer source : jobPostSources) {
 
-            // We are collecting results for job posts mathcing the exact jobrole ids and other relevant job role ids
+            // We are collecting results for job posts matching the exact jobrole ids and other relevant job role ids
             // in different lists so that we can maintain sort order within these groups
             // Eg. For a telecaller job search, we want to first show all telecaller jobs sorted in the given order
             // followed by by all BPO jobs
 
             List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, filterParams, sortBy, isHot, source);
 
-            // TODO: This should be changed to a fetch from DB. Sbould not be computed upon every run.
             List<Long> relatedJobRoleIds = JobRelevancyEngine.getRelatedJobRoleIds(jobRoleIds);
 
             List<JobPost> relatedJobRoleJobs = queryAndReturnJobPosts(relatedJobRoleIds, filterParams, sortBy, isHot, source);
@@ -99,21 +100,56 @@ public class JobSearchService {
                         ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
 
                 if (sortBy == ServerConstants.SORT_DEFAULT) {
-                    resultJobPosts.addAll(sortByDistance(exactJobsWithinDistance));
-                    resultJobPosts.addAll(sortByDistance(relatedJobsWithinDistance));
+                    //segregation
+                    resultJobPosts = sortJobPostListAccordingToHotJobs(sortByDistance(exactJobsWithinDistance), sortByDistance(relatedJobsWithinDistance));
+
                 }
                 else {
-                    resultJobPosts.addAll(exactJobsWithinDistance);
-                    resultJobPosts.addAll(relatedJobsWithinDistance);
+                    //segregation
+                    resultJobPosts = sortJobPostListAccordingToHotJobs(exactJobsWithinDistance, relatedJobsWithinDistance);
                 }
             }
             else {
-                resultJobPosts.addAll(exactJobRoleJobs);
-                resultJobPosts.addAll(relatedJobRoleJobs);
+                //segregation
+                resultJobPosts = sortJobPostListAccordingToHotJobs(exactJobRoleJobs, relatedJobRoleJobs);
             }
         }
 
         return resultJobPosts;
+    }
+
+    public static List<JobPost> sortJobPostListAccordingToHotJobs(List<JobPost> exactJobPostList, List<JobPost> relevantJobPostList){
+        List<JobPost> finalList = new ArrayList<>();
+
+        List<JobPost> exactHotJobs = new ArrayList<>();
+        List<JobPost> exactOtherJobs = new ArrayList<>();
+
+        List<JobPost> relevantHotJobs = new ArrayList<>();
+        List<JobPost> relevantOtherJobs = new ArrayList<>();
+
+        //segregation
+        for(JobPost jobPost : exactJobPostList){
+            if(jobPost.getJobPostIsHot()){
+                exactHotJobs.add(jobPost);
+            } else{
+                exactOtherJobs.add(jobPost);
+            }
+        }
+
+        for(JobPost jobPost : relevantJobPostList){
+            if(jobPost.getJobPostIsHot()){
+                relevantHotJobs.add(jobPost);
+            } else{
+                relevantOtherJobs.add(jobPost);
+            }
+        }
+
+        finalList.addAll(exactHotJobs);
+        finalList.addAll(exactOtherJobs);
+        finalList.addAll(relevantHotJobs);
+        finalList.addAll(relevantOtherJobs);
+
+        return finalList;
     }
 
 
@@ -216,14 +252,14 @@ public class JobSearchService {
                 }
             }
 
-            return getRelevantJobPostsWithinDistance(lat, lng, jobRoleIds, null, ServerConstants.SORT_DEFAULT, false, false);
+            return getRelevantJobPostsWithinDistance(lat, lng, jobRoleIds, null, ServerConstants.SORT_BY_DATE_POSTED, true, false);
         }
 
         return getAllJobPosts();
     }
 
     /**
-     * returns all available INTERNAL jobs sorted based on candidate's job role preferences
+     * returns all available INTERNAL jobs in ACTIVE state sorted based on candidate's job role preferences
      *
      * @param mobile candidates mobile
      * @return
@@ -246,11 +282,13 @@ public class JobSearchService {
                 }
             }
 
-            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, null, null, false, ServerConstants.SOURCE_INTERNAL);
+            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, null, SORT_BY_DATE_POSTED,
+                    false, ServerConstants.SOURCE_INTERNAL);
 
             List<Long> relevantJobRoleIds = JobRelevancyEngine.getRelatedJobRoleIds(jobRoleIds);
 
-            List<JobPost> relevantJobRoleJobs = queryAndReturnJobPosts(relevantJobRoleIds, null, null, false, ServerConstants.SOURCE_INTERNAL);
+            List<JobPost> relevantJobRoleJobs = queryAndReturnJobPosts(relevantJobRoleIds, null, SORT_BY_DATE_POSTED,
+                    false, ServerConstants.SOURCE_INTERNAL);
 
             List<Long> finalJobRoleIdList = new ArrayList<>();
             finalJobRoleIdList.addAll(jobRoleIds);
@@ -264,7 +302,8 @@ public class JobSearchService {
             List<Long> otherJobRoleIdList = jobRoleList.stream().map(JobRole::getJobRoleId).collect(Collectors.toList());
 
             //getting all the internal jobs apart form candidate's job role pref & relevant job roles
-            List<JobPost> otherJobRoleJobs = queryAndReturnJobPosts(otherJobRoleIdList, null, null, false, ServerConstants.SOURCE_INTERNAL);
+            List<JobPost> otherJobRoleJobs = queryAndReturnJobPosts(otherJobRoleIdList, null, SORT_BY_DATE_POSTED,
+                    true, ServerConstants.SOURCE_INTERNAL);
 
             for(JobPost jobPost : relevantJobRoleJobs) {
                 if(!exactJobRoleJobs.contains(jobPost)) {
@@ -363,6 +402,8 @@ public class JobSearchService {
             }
         }
 
+        query = query.orderBy().desc("JobPostIsHot");
+
         if(sortBy != null){
             if (sortBy == SORT_BY_DATE_POSTED) {
                 query = query.orderBy().desc("jobPostCreateTimestamp");
@@ -400,4 +441,73 @@ public class JobSearchService {
 
         return jobPostsResponseList;
     }
+
+    /** return all available Hot jobs in Active state
+     * @param index index from where the set of jobs to be shown
+     * @return hot jobs w.r.t index value and total number of hot jobs
+     */
+    public static JobPostResponse getAllHotJobsPaginated(Long index) {
+        JobPostResponse jobPostResponse = new JobPostResponse();
+        if (index != null) {
+            PagedList<JobPost> pagedList = JobPost.find
+                    .where()
+                    .eq("jobPostIsHot", "1")
+                    .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                    .eq("Source", ServerConstants.SOURCE_INTERNAL)
+                    .setFirstRow(Math.toIntExact(index))
+                    .setMaxRows(5)
+                    .orderBy().asc("source")
+                    .orderBy().desc("jobPostUpdateTimestamp")
+                    .findPagedList();
+            List<JobPost> jobPostList = pagedList.getList();
+            jobPostResponse.setAllJobPost(jobPostList);
+            jobPostResponse.setTotalJobs(JobPost.find.where().eq("jobPostIsHot", "1").eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).eq("Source", ServerConstants.SOURCE_INTERNAL).findRowCount());
+
+        }
+        return jobPostResponse;
+
+    }
+
+    /** return all available jobs in Active state
+     * @param index index form where the set of jobs to be shown
+     * @return all jobs with active state w.r.t index value and also total number of active jobs
+     */
+    public static JobPostResponse getAllActiveJobsPaginated(Long index){
+        JobPostResponse jobPostResponse = new JobPostResponse();
+        if(index != null){
+            PagedList<JobPost> pagedList = JobPost.find
+                                          .where()
+                                          .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                                          .eq("Source", ServerConstants.SOURCE_INTERNAL)
+                                          .setFirstRow(Math.toIntExact(index))
+                                          .setMaxRows(5)
+                                          .orderBy().asc("source")
+                                          .orderBy().desc("jobPostIsHot")
+                                          .orderBy().desc("jobPostUpdateTimestamp")
+                                          .findPagedList();
+            List<JobPost> jobPostList = pagedList.getList();
+            jobPostResponse.setAllJobPost(jobPostList);
+            jobPostResponse.setTotalJobs(JobPost.find.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).eq("Source", ServerConstants.SOURCE_INTERNAL).findRowCount());
+        }
+     return jobPostResponse;
+    }
+
+    public static JobPostResponse getActiveJobsForJobRolePaginated(Long jobRoleId, Long index){
+        JobPostResponse jobPostResponse = new JobPostResponse();
+        if(index!=null){
+            List<JobPost> jobPostList = JobPost.find.where()
+                    .eq("jobRole.jobRoleId",jobRoleId)
+                    .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                    .eq("Source", ServerConstants.SOURCE_INTERNAL)
+                    .setFirstRow(Math.toIntExact(index))
+                    .setMaxRows(5)
+                    .orderBy().asc("source")
+                    .orderBy().desc("jobPostUpdateTimestamp")
+                    .findList();
+            jobPostResponse.setAllJobPost(jobPostList);
+            jobPostResponse.setTotalJobs(JobPost.find.where().eq("jobRole.jobRoleId",jobRoleId).eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).eq("Source", ServerConstants.SOURCE_INTERNAL).findRowCount());
+        }
+    return jobPostResponse;
+    }
+
 }

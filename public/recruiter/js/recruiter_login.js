@@ -4,6 +4,7 @@
 
 var recruiterMobile;
 function processDataLogin(returnedData) {
+    $("#loginSubmitBtn").removeClass("disabled");
     if(returnedData.status == 1){
         if(returnedData.isCandidateVerified == 0){ //recruiter has not been verified
             requestOtp(recruiterMobile)
@@ -17,7 +18,6 @@ function processDataLogin(returnedData) {
     } else if(returnedData.status == 3){
         notifyError("Recruiter does not exists");
     } else if(returnedData.status == 4){
-        $("#loginSubmitBtn").removeClass("disabled");
         notifyError("Incorrect login credentials");
     }
 }

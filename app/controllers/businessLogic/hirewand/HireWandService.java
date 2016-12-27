@@ -100,8 +100,14 @@ public class HireWandService {
                         else if(params.get("resume") instanceof InputStream == false) throw new InvalidRequestException("Invalid parameter, `resume` must be a inputstream", 702);
                         else{
                             paramlist.add(new NameValuePair("filename", (String) params.get("filename")));
-                            if(params.get("callback")!=null) paramlist.add(new NameValuePair("callback", (String) params.get("callback")));
-                            else if(callbackurl!=null) paramlist.add(new NameValuePair("callback", (String) params.get("callbackurl")));
+                            if(params.get("callback")!=null) {
+                                Logger.info("Callback URL in supplied params = "+(String) params.get("callback"));
+                                paramlist.add(new NameValuePair("callback", (String) params.get("callback")));
+                            }
+                            else if(callbackurl!=null) {
+                                Logger.info("Preset Callback URL = "+callbackurl);
+                                paramlist.add(new NameValuePair("callback", callbackurl));
+                            }
                             if(params.get("prettytype")!=null)paramlist.add(new NameValuePair("prettytype",(String) params.get("prettytype")));
                             requestEntityStream = (new InputStreamRequestEntity((InputStream) params.get("resume")));
                             httppost = new PostMethod(UPLOADURL);

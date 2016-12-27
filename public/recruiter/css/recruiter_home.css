@@ -19,7 +19,7 @@
 }
 
 .select-wrapper input.select-dropdown{
-    color: #b1b1b1;
+    color: #c5c5c5;
 }
 ::-webkit-scrollbar
 {
@@ -55,6 +55,12 @@ div.Tokenize ul.TokensContainer li.TokenSearch input{
     box-shadow: none;
     border-bottom:1px solid #1d1d1d;
 }
+#creditCardIcon{
+    padding: 24px;
+}
+#creditCardIcon img{
+    width:52px;
+}
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -88,7 +94,6 @@ nav{
     text-align: center;
     background: rgba(0, 0, 0, 0.68)
 }
-
 .sectionOneBody{
     font-family: Lato;
     text-align: center;
@@ -254,7 +259,7 @@ footer.page-footer .footer-copyright{
     text-align: center;
 }
 .materialDash{
-    height: 2px;
+    height: 1px;
     width: 72px;
     background: #2ec866;
     margin: 1%;
@@ -341,6 +346,7 @@ body#recruiterHome{
 .recruiterHomeMessgeBox{
     box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.12);
     display: block;
+
     margin-bottom: 16px;
     background: #fff;
     border-radius: 4px;
@@ -383,7 +389,127 @@ input[type=text]:disabled{
     color: rgb(169, 169, 169);
 }
 
+.accept{
+    margin-left: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.reject{
+    margin-left: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.reschedule{
+    margin-left: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#hasCredit{
+    text-align: justify;
+    margin: 25px 0 25px 0;
+    display: none;
+}
+#hasNoCredit{
+    text-align: justify;
+    margin: 25px 0 25px 0;
+    display: none;
+}
+#headingUnlockCandidate{
+    font-size: 26px;
+    color:#ffffff;
+    margin-top:-46px;
+    margin-bottom:10px
+}
+
+#jobTitle{
+    font-weight: bold;
+    color: #118bff;
+}
+
+#jobTitle:hover{
+    font-weight: bold;
+    color: #0d529a;
+    cursor: pointer;
+}
+
+a:hover{
+    cursor: pointer;
+    color: #0d529a;
+    text-decoration: none;
+}
+
+#trackIcon:hover{
+    color: #118bff;
+    cursor: pointer;
+}
+
+#creditView{
+    z-index: 9999;
+    color: white;
+    position: fixed;
+    border-radius: 4px;
+    background: rgba(41, 36, 37, 0.85);
+    padding: 16px;
+    bottom: 24px;
+    right: 24px;
+}
+
+.newNotification{
+    margin-left: 8px;
+    display: inline-block;
+    background-color: #a42e35;
+    border-radius: 50%;
+    color: white;
+    font: bold 12px/15px Helvetica, Verdana, Tahoma;
+    height: 24px;
+    width: 24px;
+    padding: 5px 3px 0 3px;
+    text-align: center;
+}
+
+@media screen and (max-width: 600px) {
+    #upperSpaceInputField{
+        margin-top: 40px;
+    }
+    #creditCardIcon{
+        padding:12px;
+    }
+    #creditCardIcon img{
+        width:32px;
+    }
+    #hasCredit{
+        text-align: justify;
+        margin: 5px 0 20px 0;
+        display: none;
+    }
+    #hasNoCredit{
+        text-align: justify;
+        margin: 5px 0 20px 0;
+        display: none;
+    }
+    #headingUnlockCandidate{
+        font-size: 22px;
+        color:#ffffff;
+        margin-top:-40px;
+        margin-bottom:10px
+    }
+}
+
 @media screen and (max-width: 768px) {
+
+    #creditViewMobile{
+        width: 100%;
+        z-index: 9999;
+        color: white;
+        position: fixed;
+        border-radius: 0;
+        background: rgba(41, 36, 37, 0.85);
+        padding: 5px 5px 10px 5px;
+        bottom:0;
+        margin: 0;
+    }
 
     .packCol img{
         width: 15px;

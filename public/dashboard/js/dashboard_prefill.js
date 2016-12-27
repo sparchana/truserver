@@ -411,6 +411,17 @@ function saveCandidateBasicProfile(){
 
     var homeLocalitySelected = $('#candidateHomeLocality').val();
     var jobSelected = $('#candidateJobPref').val();
+
+    var candidateDocumentIdList = $('#candidateIdProof').val().split(",");
+
+    var documentValues = [];
+    candidateDocumentIdList.forEach(function (id) {
+        var item = {};
+        item["idProofId"] = parseInt(id);
+        item["idProofValue"] = $('#idProofValue_'+ id).val();
+        documentValues.push(item);
+    });
+
     var selectedDob = $('#dob_year').val() + "-" + $('#dob_month').val() + "-" + $('#dob_day').val();
     var c_dob = String(selectedDob);
     var selectedDate = new Date(c_dob);
@@ -427,7 +438,29 @@ function saveCandidateBasicProfile(){
         case 3: notifyError("First name contains special symbols. Enter a valid first name"); statusCheck=0; break;
         case 4: notifyError("Please enter your first name"); statusCheck=0; break;
     }
+    //document value verification
+    documentValues.forEach(function(id){
+       if(id.idProofId == ""){
+           notifyError("Please Select Document");
+           statusCheck=0;
+       }
+       else{
+           if(id.idProofValue == "" || id.idProofValue == undefined || id.idProofValue.trim().length == 0){
+               notifyError("Please provide document details");
+               statusCheck=0;
+           }
+           else{
+               var isChecked = id.idProofId;
+               var isValid = validateInput(isChecked, id.idProofValue.trim());
 
+               if (isChecked && !isValid) {
+                statusCheck = 0;
+                $.notify("Please provide valid document details.", 'error');
+                }
+
+           }
+       }
+    });
     if(res == 0){
         notifyError("Enter a valid mobile number");
         statusCheck=0;
@@ -472,7 +505,12 @@ function saveCandidateBasicProfile(){
         for(i=0;i<jobPref.length; i++){
             candidatePreferredJob.push(parseInt(jobPref[i]));
         }
-
+        var candidatePreferredAsset = [];
+        var assetList = $('#candidateAsset').val().split(",");
+        /* Candidate asset list  */
+        for (i = 0; i < assetList.length; i++) {
+            candidatePreferredAsset.push(parseInt(assetList[i]));
+        }
         try {
             var d = {
                 //mandatory fields
@@ -484,6 +522,8 @@ function saveCandidateBasicProfile(){
 
                 //others
                 candidateDob: c_dob,
+                candidateAssetList: candidatePreferredAsset,
+                candidateIdProofList: documentValues,
                 candidateTimeShiftPref: $('#candidateTimeShiftPref').val(),
                 candidateGender: ($('input:radio[name="gender"]:checked').val())
             };
@@ -493,7 +533,6 @@ function saveCandidateBasicProfile(){
 
             localStorage.setItem("name", d.candidateFirstName);
             localStorage.setItem("lastName", d.candidateSecondName);
-
             $.ajax({
                 type: "POST",
                 url: "/candidateUpdateBasicProfile",
@@ -506,9 +545,39 @@ function saveCandidateBasicProfile(){
         }
     }
 }
-
+function validateInput(idProofId, value) {
+    // aadhaar validation
+    if (idProofId == 3) {
+        if (!validateAadhar(value)) {
+            return false;
+        } else {
+            return true;
+        }
+    } else if (idProofId == 1 || idProofId == 7) {
+        if (!validateDL(value)) {
+            return false;
+        } else {
+            return true;
+        }
+    } else if (idProofId == 2) {
+        if (!validatePASSPORT(value)) {
+            return false;
+        } else {
+            return true;
+        }
+    } else if (idProofId == 4) {
+        if (!validatePAN(value)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+    else{
+        return true;
+    }
+}
 function saveCandidateExperienceDetails(){
-    console.log(candidateInformation);
+    /*console.log(candidateInformation);*/
     var experienceStatus = $('input:radio[name="workExperience"]:checked').val();
     var selectedSalary = $('#candidateLastWithdrawnSalary').val();
 

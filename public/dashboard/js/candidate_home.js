@@ -67,7 +67,6 @@ function getJobsForCandidate() {
 }
 
 function processDataAllJobPosts(returnedData) {
-    console.log(returnedData);
     var jobPostCount = Object.keys(returnedData).length;
     if(jobPostCount > 0){
         var count = 0;
@@ -173,9 +172,9 @@ function processDataAllJobPosts(returnedData) {
 
                 var salaryDiv = document.createElement("div");
                 salaryDiv.style = "display: inline-block; font-size: 13px";
-                if(jobPost.jobPostMaxSalary == "0"){
+                if(jobPost.jobPostMaxSalary == "0" || jobPost.jobPostMaxSalary == null){
                     salaryDiv.textContent = jobPost.jobPostMinSalary + " monthly";
-                } else{
+                } else {
                     salaryDiv.textContent = jobPost.jobPostMinSalary + " - " + jobPost.jobPostMaxSalary + " monthly";
                 }
 
@@ -277,18 +276,15 @@ function processDataAllJobPosts(returnedData) {
             }
         });
         if(count<4){
-            document.getElementById("hotJobs").style.height = "51%";
+            document.getElementById("hotJobs").style= ("overflow:scroll;height:51%")
         }
         else{
-            document.getElementById("hotJobs").style.height = "72%";
+            document.getElementById("hotJobs").style= ("overflow:scroll;height:100%");
+
         }
     } else {
         $("#jobLoaderDiv").hide();
     }
-}
-
-function confirmApply() {
-    applyJob(jobPostId, prefLocation, true);
 }
 
 $(function() {
@@ -337,12 +333,12 @@ function processDataAndFillMinProfile(returnedData) {
         localStorage.setItem("gender", returnedData.candidateGender);
         if (returnedData.candidateGender == 0) {
             try{
-                document.getElementById("userGender").innerHTML = ", Male";
+                document.getElementById("userGender").innerHTML = " , Male";
                 $("#userImg").attr('src', '/assets/dashboard/img/userMale.svg');
             } catch(err){}
         } else {
             try{
-                document.getElementById("userGender").innerHTML = ", Female";
+                document.getElementById("userGender").innerHTML = " , Female";
                 $("#userImg").attr('src', '/assets/dashboard/img/userFemale.svg');
             } catch(err){}
         }
@@ -363,7 +359,7 @@ function processDataAndFillMinProfile(returnedData) {
         if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
             age--;
         }
-        document.getElementById("userAge").innerHTML = ", " + age + " years";
+        document.getElementById("userAge").innerHTML = " , " + age + " years";
     }
     try {
         var jobRoles = "";
@@ -452,10 +448,12 @@ function processDataAndFillMinProfile(returnedData) {
     }
 
     var appliedJobs = returnedData.jobApplicationList;
-    appliedJobs.forEach(function (jobApplication) {
-        $("#apply_btn_" + jobApplication.jobPost.jobPostId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
-        $("#applyBtnDiv_" + jobApplication.jobPost.jobPostId).prop('disabled',true);
-    });
+    if(appliedJobs != null) {
+        appliedJobs.forEach(function (jobApplication) {
+            $("#apply_btn_" + jobApplication.jobPost.jobPostId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
+            $("#applyBtnDiv_" + jobApplication.jobPost.jobPostId).prop('disabled',true);
+        });
+    }
 
     getJobsForCandidate();
 

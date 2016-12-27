@@ -1,5 +1,6 @@
 package models.entity.OM;
 
+import com.amazonaws.services.importexport.model.Job;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -9,6 +10,7 @@ import models.entity.Static.InterviewTimeSlot;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Objects;
 
 /**
  * Created by dodo on 29/9/16.

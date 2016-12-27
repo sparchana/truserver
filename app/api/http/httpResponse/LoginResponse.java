@@ -8,6 +8,7 @@ public class LoginResponse {
     public static final int STATUS_FAILURE = 2;
     public static final int STATUS_NO_USER = 3;
     public static final int STATUS_WRONG_PASSWORD = 4;
+    public static final int STATUS_NO_PASSWORD = 5;
 
     public int status;
     public int isAssessed;

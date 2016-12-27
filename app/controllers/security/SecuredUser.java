@@ -9,10 +9,13 @@ import play.mvc.Http.Context;
 import play.mvc.Result;
 import play.mvc.Security;
 
+import static play.mvc.Controller.session;
+
 public class SecuredUser extends Security.Authenticator {
 
     @Override
     public String getUsername(Context ctx) {
+
         //Logger.info("dev session id in Secured Class is "+ctx.session().get("sessionId"));
         /* TODO getSessionId and match it in auth table + separate partner from using this secured class, modify old partner secured class and make use of that for all partner api end-points */
         /*
@@ -25,6 +28,9 @@ public class SecuredUser extends Security.Authenticator {
             }
         }
         */
+        if(ctx.session().get("sessionChannel") == null){
+            return null;
+        }
         return ctx.session().get("sessionId");
     }
 

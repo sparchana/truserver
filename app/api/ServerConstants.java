@@ -111,6 +111,7 @@ public class ServerConstants {
     public static final String SDF_FORMAT_ENTRY = "yyyy-MM-dd hh:mm:ss";
     public static final String SDF_FORMAT_HH = "yyyy-MM-dd HH:mm:ss";
     public static final String SDF_FORMAT_YYYYMMDD = "yyyy-MM-dd";
+    public static final String SDF_FORMAT_DDMMYYYY = "dd-MM-yyyy";
 
     public static final String PROD_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/1NIGQC5jmSDuQaGUF0Jw1UG-Dz_3huFtZf9Bo7ncPl4g/formResponse";
     public static final String DEV_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/e/1FAIpQLSdyYKeNROcs8sPAxpQ6PqT7Xd_V8vetjk2HNFYoakPjjX_z5Q/formResponse";
@@ -134,6 +135,23 @@ public class ServerConstants {
     public static final int JWF_STATUS_PRESCREEN_ATTEMPTED = 2;
     public static final int JWF_STATUS_PRESCREEN_FAILED = 3;
     public static final int JWF_STATUS_PRESCREEN_COMPLETED = 4;
+
+    public static final int JWF_STATUS_INTERVIEW_SCHEDULED = 5;
+    public static final int JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT = 6;
+    public static final int JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE = 7;
+    public static final int JWF_STATUS_INTERVIEW_RESCHEDULE = 8;
+    public static final int JWF_STATUS_INTERVIEW_CONFIRMED = 9;
+
+    public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING = 10;
+    public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED = 11;
+    public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY = 12;
+    public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED = 13;
+
+    public static final int JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED = 14;
+    public static final int JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_REJECTED = 15;
+    public static final int JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW = 16;
+    public static final int JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED = 17;
+
     // Requirements Table
     public static final String PROFILE_REQUIREMENT_TABLE_AGE = "age";
     public static final String PROFILE_REQUIREMENT_TABLE_EXPERIENCE = "experience";
@@ -142,6 +160,8 @@ public class ServerConstants {
     public static final String PROFILE_REQUIREMENT_TABLE_GENDER = "gender";
     public static final String PROFILE_REQUIREMENT_TABLE_LOCATION = "locality";
     public static final String PROFILE_REQUIREMENT_TABLE_WORKTIMINGS = "worktimings";
+    public static final int REVIEW_APPLICATION_MANUAL = 0;
+    public static final int REVIEW_APPLICATION_AUTO = 1;
     public static Map<String, String> devTeamMobile;
 
     // rec sorting keys
@@ -166,6 +186,9 @@ public class ServerConstants {
         devTeamEmail.put("recruiter_support", "recruitersupport@trujobs.in");
         devTeamEmail.put("Adarsh", "adarsh.raj@trujobs.in");
         devTeamEmail.put("Sandy", "sandeep.kumar@trujobs.in");
+        devTeamEmail.put("Rafik", "rafik.khadar@trujobs.in");
+        devTeamEmail.put("Chillu", "sandeep@trujobs.in");
+        devTeamEmail.put("techAdmin", "techadmin@trujobs.in");
     }
 
     public static final Double DEFAULT_MATCHING_ENGINE_RADIUS = 10.0; // In Kilometers
@@ -202,6 +225,7 @@ public class ServerConstants {
     public static final String SUPPORT_DEFAULT_UUID = "SUPPORT-DEFAULT-UUID";
 
     public static final String SELF_UNLOCKED_CANDIDATE_CONTACT = "Self unlocked contact";
+    public static final String SELF_UNLOCKED_INTEVIEW = "Self unlocked Interview";
 
     /************************
      *  Scrapped Data Source
@@ -220,9 +244,64 @@ public class ServerConstants {
     public static final int CATEGORY_ASSET = 3;
     public static final int CATEGORY_PROFILE = 4;
 
+    /* ---  Pre Screening Key ---- */
+    public static final int PROPERTY_TYPE_DOCUMENT = 0;
+    public static final int PROPERTY_TYPE_LANGUAGE = 1;
+    public static final int PROPERTY_TYPE_ASSET_OWNED = 2;
+    public static final int PROPERTY_TYPE_MAX_AGE = 3;
+    public static final int PROPERTY_TYPE_EXPERIENCE = 4;
+    public static final int PROPERTY_TYPE_EDUCATION = 5;
+    public static final int PROPERTY_TYPE_GENDER = 6;
+    public static final int PROPERTY_TYPE_SALARY = 7;
+    public static final int PROPERTY_TYPE_LOCALITY = 8;
+    public static final int PROPERTY_TYPE_WORK_SHIFT = 9;
+
+    /* ---  Pre Screening Map ---- */
+    public static final Map<Integer, String> PROPERTY_TYPE_MAP = new HashMap<>();
+    static {
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_DOCUMENT, "Document");
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_LANGUAGE, "Language");
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_ASSET_OWNED, "Asset Owned");
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_MAX_AGE, "Max Age");
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_EXPERIENCE, "Experience");
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_EDUCATION, "Education");
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_GENDER, "Gender");
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_SALARY, "Salary");
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_LOCALITY, "Locality");
+        PROPERTY_TYPE_MAP.put(PROPERTY_TYPE_WORK_SHIFT, "Work Shift");
+    }
+
+//    public enum PropertyType{
+//        DOCUMENT,
+//        LANGUAGE,
+//        ASSET_OWNED,
+//        MAX_AGE,
+//        EXPERIENCE,
+//        EDUCATION,
+//        GENDER,
+//        SALARY,
+//        LOCALITY,
+//        WORK_SHIFT;
+//
+//        public String toString() {
+//            String title = name();
+//            if(title.contains("_")){
+//                String head = title.split("_")[0];
+//                String tail = title.split("_")[1];
+//                head = head.charAt(0) + head.substring(1).toLowerCase();
+//                tail = tail.charAt(0) + tail.substring(1).toLowerCase();
+//                return head +" "+ tail;
+//            } else {
+//                return name().charAt(0) + name().substring(1).toLowerCase();
+//            }
+//        }
+//    }
+
     // Recruiter constants
     public static int RECRUITER_CATEGORY_CONTACT_UNLOCK = 1;
     public static int RECRUITER_CATEGORY_INTERVIEW_UNLOCK = 2;
+
+    public static int RECRUITER_FREE_CONTACT_CREDITS = 3;
 
     // pre screen front end ui ids
 
@@ -235,4 +314,50 @@ public class ServerConstants {
     public static final String ACTIVE_BEYOND_2_MONTHS = "Beyond two months";
 
     public static final String DEFAULT_COMPANY_LOGO = "https://s3.amazonaws.com/trujobs.in/companyLogos/default_company_logo.png";
+
+    // preScreening category
+    public static final int INTERVIEW_STATUS_ACCEPTED = 1;
+    public static final int INTERVIEW_STATUS_REJECTED_BY_RECRUITER = 2;
+    public static final int INTERVIEW_STATUS_RESCHEDULED = 3;
+    public static final int INTERVIEW_STATUS_REJECTED_BY_CANDIDATE = 4;
+
+    // is_interview_required response
+    public static final int ERROR = 0;
+    public static final int INTERVIEW_NOT_REQUIRED = 1; // "OK"
+    public static final int INTERVIEW_REQUIRED = 2;     // "INTERVIEW"
+
+    // rescheduled Interview status
+    public static final int RESCHEULED_INTERVIEW_STATUS_ACCEPTED = 1;
+    public static final int RESCHEULED_INTERVIEW_STATUS_REJECTED = 0;
+
+    // candidate Interview tracking status
+    public static final int CANDIDATE_INTERVIEW_STATUS_NOT_GOING = 1;
+    public static final int CANDIDATE_INTERVIEW_STATUS_DELAYED = 2;
+    public static final int CANDIDATE_INTERVIEW_STATUS_STARTED = 3;
+    public static final int CANDIDATE_INTERVIEW_STATUS_REACHED = 4;
+
+    // candidate Interview feedback status
+    public static final int CANDIDATE_FEEDBACK_COMPLETE_SELECTED = 1;
+    public static final int CANDIDATE_FEEDBACK_COMPLETE_REJECTED = 2;
+    public static final int CANDIDATE_FEEDBACK_NO_SHOW = 3;
+    public static final int CANDIDATE_FEEDBACK_NOT_QUALIFIED = 4;
+
+    //reason type
+    public static final int INTERVIEW_REJECT_TYPE_REASON = 1;
+    public static final int INTERVIEW_NOT_GOING_TYPE_REASON = 2;
+    public static final int INTERVIEW_NOT_SELECED_TYPE_REASON = 3;
+    public static final int CANDIDATE_ETA = 4;
+
+    /* android notification intent type */
+    public static final int ANDROID_INTENT_ACTIVITY_SEARCH_JOBS = 1;
+    public static final int ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING = 2;
+    public static final int ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED = 3;
+    public static final int ANDROID_INTENT_ACTIVITY_MY_JOBS_COMPLETED = 4;
+    public static final int ANDROID_INTENT_ACTIVITY_MY_PROFILE = 5;
+    public static final int ANDROID_INTENT_ACTIVITY_REFER = 6;
+    public static final int ANDROID_INTENT_ACTIVITY_FEEDBACK = 7;
+    public static final int ANDROID_INTENT_ACTIVITY_INTERVIEW_TIPS = 8;
+
+    public static final String CREATED_BY = "Candidate";
+
 }

@@ -14,6 +14,7 @@ import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Static.CandidateProfileStatus;
 import models.entity.Static.Language;
 import models.entity.Static.Locality;
+import models.entity.ongrid.transactional.OngridVerificationResults;
 import org.apache.commons.lang3.text.WordUtils;
 import play.Logger;
 
@@ -193,6 +194,9 @@ public class Candidate extends Model {
     @Transient
     private String matchedLocation = null;
 
+    @Transient
+    private Float profileCompletionScore = null;
+
     @JsonBackReference
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     private List<RecruiterToCandidateUnlocked> recruiterToCandidateUnlockedList;
@@ -201,6 +205,14 @@ public class Candidate extends Model {
     @PrivateOwned
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     private List<CandidateAsset> candidateAssetList;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
+    private List<OngridVerificationResults> candidateVerificationList;
+
+    @Column(name = "candidate_android_token", columnDefinition = "text null")
+    private String candidateAndroidToken;
 
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
@@ -592,6 +604,14 @@ public class Candidate extends Model {
         this.matchedLocation = matchedLocation;
     }
 
+    public Float getProfileCompletionScore() {
+        return profileCompletionScore;
+    }
+
+    public void setProfileCompletionScore(Float profileCompletionScore) {
+        this.profileCompletionScore = profileCompletionScore;
+    }
+
     public List<RecruiterToCandidateUnlocked> getRecruiterToCandidateUnlockedList() {
         return recruiterToCandidateUnlockedList;
     }
@@ -606,6 +626,22 @@ public class Candidate extends Model {
 
     public void setCandidateAssetList(List<CandidateAsset> candidateAssetList) {
         this.candidateAssetList = candidateAssetList;
+    }
+
+    public List<OngridVerificationResults> getCandidateVerificationList() {
+        return candidateVerificationList;
+    }
+
+    public void setCandidateVerificationList(List<OngridVerificationResults> candidateVerificationList) {
+        this.candidateVerificationList = candidateVerificationList;
+    }
+
+    public String getCandidateAndroidToken() {
+        return candidateAndroidToken;
+    }
+
+    public void setCandidateAndroidToken(String candidateAndroidToken) {
+        this.candidateAndroidToken = candidateAndroidToken;
     }
 }
 

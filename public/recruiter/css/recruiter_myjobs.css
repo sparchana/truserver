@@ -31,3 +31,195 @@
 #colHeadDataTable {
     border-right: 1px solid #ffffff;
 }
+#jobTable{
+    padding-bottom: 4%;
+}
+
+.tabs{
+    border:4px;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 2px 0 rgba(0, 0, 0, 0.12), 0 2px 2px -1px rgba(0, 0, 0, 0.2);
+}
+.tabs > li > a{
+    text-decoration: none;
+}
+.tabs .indicator {
+    position: absolute;
+    bottom: 0;
+    height: 2px;
+    background-color: #56B4D3;
+    will-change: left, right;
+}
+.tabs .tab a:hover {
+    color: #187b95;
+}
+.tabs .tab a {
+    color: #909090;
+    display: block;
+    width: 100%;
+    height: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    transition: color .28s ease;
+}
+
+.activeTab{
+    font-weight: bold;
+    color: #187b95;
+}
+
+.activeParent{
+    background: rgba(109, 130, 128, 0.22);
+}
+
+.feedbackVal{
+    display: inline-block;
+    margin-right: 4px;
+    border-radius: 4px;
+    background: #ff853b;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 7px;
+}
+
+.matchDiv{
+    border-radius: 4px;
+    background: #ff853b;
+    color: white;
+    width: auto;
+    text-decoration: none;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 6px;
+}
+
+#tab1, #tab2, #tab3, #tab4{
+    font-size: 12px;
+}
+
+.newCounter{
+    display: block;
+}
+
+.applicationCount{
+    display: inline-block;
+    background-color: #cecece;
+    border-radius: 50%;
+    color: black;
+    font: bold 12px/15px Helvetica, Verdana, Tahoma;
+    height: 24px;
+    width: 24px;
+    padding: 5px 3px 0 3px;
+    text-align: center;
+    margin-left: 4px;
+}
+
+.headerRibbon{
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 14px;
+    color: white;
+    background: rgb(31, 128, 123);
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+.customFeedbackBtn:hover{
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    color: white;
+}
+
+.customUnlockBtn{
+    background: #2aae5e;
+    font-weight: bold;
+    margin-right: 8px;
+    color: white;
+    padding: 6px 12px 6px 12px;
+    border-radius: 3px;
+}
+
+.customUnlockBtn:hover{
+    box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+    color: white;
+}
+
+.feedbackBtn{
+    font-weight: bold;
+    margin-right: 8px;
+}
+
+.interviewStatusDiv{
+    color: black;
+    text-align: right;
+    margin-top: 4px;
+}
+
+.mapView{
+    width: 500px;
+    height: 240px;
+}
+
+@media screen and (max-width:1000px){
+
+    #tab1, #tab2, #tab3, #tab4{
+        font-size: 9px;
+    }
+
+    .interviewStatusDiv{
+        color: black;
+        text-align: center;
+        margin: 8px;
+    }
+
+    .unlockBtn{
+        font-weight: bold;
+        margin: 8px;
+    }
+
+    .feedbackBtn{
+        font-weight: bold;
+        margin-right: 0;
+        margin-top: 4px;
+        margin-bottom: 4px;
+    }
+
+    .unlockDiv{
+        text-align: center;
+    }
+
+    #headerForData{
+        margin: 0;
+        font-weight: 600;
+        font-size: 12px;
+        text-align:center;
+        padding: 1%;
+        background-color: #f3f3f3;
+    }
+    #outerBoxMain{
+        font-size: 12px;
+        text-align:center;
+        padding: 1%;
+        margin: 0;
+        background-color: #ffffff;
+    }
+}
+@media screen and (max-width:600px){
+    .newCounter{
+        display: inline-block;
+    }
+
+    #headerForData{
+        margin: 0;
+        font-weight: 600;
+        font-size: 12px;
+        text-align:center;
+        padding: 1%;
+        background-color: #f3f3f3;
+    }
+    #outerBoxMain{
+        font-size: 12px;
+        text-align:left;
+        padding: 1%;
+        margin: 0;
+        background-color: #ffffff;
+    }
+}

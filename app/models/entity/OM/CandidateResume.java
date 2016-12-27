@@ -5,9 +5,11 @@ import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.annotation.WhoCreated;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import models.entity.Candidate;
+import models.entity.Recruiter.RecruiterLead;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 
 import static play.mvc.Controller.session;
 
@@ -87,6 +89,10 @@ public class CandidateResume extends Model {
 
     public void setParsedResume(String parsedResume) {
         this.parsedResume = parsedResume;
+    }
+
+    public List<CandidateResume> readById(List<Long> ids) {
+        return CandidateResume.find.where().idIn(ids).setUseCache(Boolean.TRUE).findList();
     }
 
 }

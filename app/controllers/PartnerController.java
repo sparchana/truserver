@@ -7,14 +7,21 @@ import api.http.httpRequest.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.PartnerSignUpResponse;
 import api.http.httpResponse.SupportDashboardElementResponse;
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.RawSql;
+import com.avaje.ebean.RawSqlBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.*;
+import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.SecuredUser;
+import dao.JobPostDAO;
 import models.entity.*;
 import models.entity.OM.JobApplication;
+import models.entity.OM.JobPostWorkflow;
 import models.entity.OM.PartnerToCandidate;
+import models.entity.OM.PreScreenRequirement;
 import models.entity.Static.LeadSource;
 import models.entity.Static.PartnerType;
 import models.util.SmsUtil;
@@ -26,7 +33,9 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static models.util.Util.generateOtp;
@@ -34,6 +43,7 @@ import static play.libs.Json.toJson;
 
 import static play.mvc.Controller.request;
 import static play.mvc.Controller.session;
+import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 import static play.mvc.Results.redirect;
 
@@ -64,7 +74,7 @@ public class PartnerController {
         }
         Logger.info("JSON req: " + req);
 
-        InteractionService.InteractionChannelType channelType = InteractionService.InteractionChannelType.PARTNER;
+        int channelType = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
         return ok(toJson(PartnerService.signUpPartner(partnerSignUpRequest, channelType, ServerConstants.LEAD_SOURCE_UNKNOWN)));
 
     }
@@ -83,7 +93,7 @@ public class PartnerController {
         String partnerMobile = partnerSignUpRequest.getpartnerAuthMobile();
         String partnerPassword = partnerSignUpRequest.getpartnerPassword();
 
-        return ok(toJson(PartnerAuthService.savePassword(partnerMobile, partnerPassword, InteractionService.InteractionChannelType.SELF)));
+        return ok(toJson(PartnerAuthService.savePassword(partnerMobile, partnerPassword, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE)));
     }
 
     public static Result loginSubmit() {
@@ -98,7 +108,7 @@ public class PartnerController {
         Logger.info("req JSON: " + req );
         String loginMobile = loginRequest.getCandidateLoginMobile();
         String loginPassword = loginRequest.getCandidateLoginPassword();
-        return ok(toJson(PartnerService.login(loginMobile, loginPassword, InteractionService.InteractionChannelType.SELF)));
+        return ok(toJson(PartnerService.login(loginMobile, loginPassword, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE)));
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -122,7 +132,7 @@ public class PartnerController {
         String partnerMobile = resetPasswordResquest.getResetPasswordMobile();
         Logger.info("==> " + partnerMobile);
 
-        return ok(toJson(PartnerService.findPartnerAndSendOtp(partnerMobile, InteractionService.InteractionChannelType.SELF)));
+        return ok(toJson(PartnerService.findPartnerAndSendOtp(partnerMobile, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE)));
     }
 
     public static Result getAllPartnerType() {
@@ -172,7 +182,7 @@ public class PartnerController {
         Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
         if(partner != null){
             partnerProfileRequest.setPartnerMobile(partner.getPartnerMobile());
-            return ok(toJson(PartnerService.createPartnerProfile(partnerProfileRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_BASIC_PROFILE)));
+            return ok(toJson(PartnerService.createPartnerProfile(partnerProfileRequest, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE, ServerConstants.UPDATE_BASIC_PROFILE)));
         } else{
             return ok("0");
         }
@@ -201,7 +211,7 @@ public class PartnerController {
                 addSupportCandidateRequest.setLeadSource(leadSource.getLeadSourceId());
             }
             CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                    InteractionService.InteractionChannelType.PARTNER,
+                    InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE,
                     ServerConstants.UPDATE_ALL_BY_SUPPORT);
             if(candidateSignUpResponse.getStatus() == CandidateSignUpResponse.STATUS_SUCCESS){
                 if(isNewCandidate){ //save a record in partnerToCandidate
@@ -352,19 +362,16 @@ public class PartnerController {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result getAppliedJobsByPartnerForCandidate(long id) {
+        Logger.info(id + " candidateId");
         Candidate candidate = Candidate.find.where().eq("candidateId", id).findUnique();
         if(candidate != null){
             Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
             if(partner != null){
-                List<JobApplication> jobApplicationList = JobApplication.find.where()
-                        .eq("candidateId", candidate.getCandidateId())
-                        .eq("partner_id", partner.getPartnerId())
-                        .orderBy("jobApplicationCreateTimeStamp desc")
-                        .findList();
-                return ok(toJson(jobApplicationList));
+                return ok(toJson(JobPostWorkflowEngine.getPartnerAppliedJobsForCandidate(candidate, partner)));
             }
         }
         return ok("0");
+
     }
 
     public static Result getCandidateMatchingJobs(long id) {
@@ -376,7 +383,7 @@ public class PartnerController {
     }
 
     public static Result getJobPostInfoViaPartner(long jobPostId, long candidateId) {
-        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
         if(jobPost !=null){
             String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
             String objAUUID = "";
@@ -389,6 +396,32 @@ public class PartnerController {
                         interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName()
                 );
                 return ok(toJson(jobPost));
+            }
+        }
+        return ok("0");
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result confirmInterview(long cId, long jpId, long value){
+        if(session().get("sessionChannel") == null){
+            Logger.warn("Partner session channel not set, logged out partner");
+            logoutPartner();
+            return badRequest();
+        }
+        if (session().get("partnerId") != null) {
+            Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+            if(partner != null){
+                Candidate candidate = Candidate.find.where().eq("candidateId", cId).findUnique();
+                if(candidate != null){
+                    PartnerToCandidate partnerToCandidate = PartnerToCandidate.find.where()
+                            .eq("partner_id", partner.getPartnerId())
+                            .eq("t0.candidate_CandidateId", candidate.getCandidateId())
+                            .findUnique();
+
+                    if(partnerToCandidate != null){
+                        return ok(toJson(JobPostWorkflowEngine.confirmCandidateInterview(jpId, value, candidate, Integer.valueOf(session().get("sessionChannel")))));
+                    }
+                }
             }
         }
         return ok("0");

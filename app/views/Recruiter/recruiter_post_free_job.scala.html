@@ -26,6 +26,9 @@
     <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
     <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
 
+    <script type="text/javascript" src='http://maps.google.com/maps/api/js?key=AIzaSyCKHf7GijuzKW84Ggz0fFWWHD0y9_onUhg&sensor=false&libraries=places'></script>
+    <script src="/assets/recruiter/js/locationpicker.jquery.min.js"></script>
+
     <meta name="theme-color" content="#000000">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   </head>
@@ -33,7 +36,7 @@
     <div class="recruiter_navbar"></div>
     <script>
             $('.recruiter_navbar').load('/recruiterNavbar');
-        </script>
+    </script>
       <!-- Tab View-->
     <div class="container-fluid back-banner-candidate">
       <div class="container">
@@ -46,8 +49,8 @@
       <div class="row">
         <div class="col s12" style="padding: 0">
           <ul class="tabs" style="border-top-right-radius: 6px; border-top-left-radius: 6px">
-            <li class="tab col s4"><a href="#jobDetails" onclick="changeJobDescClass()"><font id="jobDescTabHead" class="activeTab" size="3" style="font-weight: 600">Job Description</font></a></li>
-            <li class="tab col s4"><a href="#jobRequirement" onclick="changeJobReqClass()"><font id="jobReqTabHead" size="3" style="font-weight: 600">Job Requirements</font></a></li>
+            <li class="tab col s4"><a href="#jobDetails" onclick="changeJobDescClass()"><font id="jobDescTabHead" class="activeTab" size="2" style="font-weight: 600">Job Description</font></a></li>
+            <li class="tab col s4"><a href="#jobRequirement" onclick="changeJobReqClass()"><font id="jobReqTabHead" size="2" style="font-weight: 600">Job Requirements & Interview Schedule</font></a></li>
           </ul>
         </div>
         <div id="jobDetails" class="col s12">
@@ -97,7 +100,7 @@
                           <div class="input-field col s6 l4" style="margin-top: 20px">
                               <label>Work Location(s): <font color="red">*</font></label>
                           </div>
-                          <div class="input-field col s12 l4">
+                          <div class="input-field col s6 l4">
                               <select id="jobPostLocality" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
                               <script type="text/javascript">
                             $('#jobPostLocality').tokenize({
@@ -206,10 +209,10 @@
                       </div>
                     </div>
                     <div class="row" id="jobPostDetails" style="margin-bottom:20px;">
-                      <div class="input-field col s3 l4" style="margin-top: 20px">
+                      <div class="input-field col s6 l4" style="margin-top: 20px">
                         <label>Working Days :</label>
                       </div>
-                      <div class="input-field col s9 l7" style="margin-left:-10px">
+                      <div class="input-field col s6 l7" style="margin-left:-10px">
                         <input type="checkbox" id="working_1" />
                         <label for="working_1">Mon </label><span style="margin-left:10px"></span>
                         <input type="checkbox" id="working_2" />
@@ -235,7 +238,7 @@
                       </div>
                     </div>
                       <!--Button-->
-                    <div class="row" style="margin: 0">
+                    <div class="row" style="margin:20px 0 0 0">
                       <a class="waves-effect waves-light orange lighten-1 btn right" onclick="toJobRequirement()"><font style="color: #fff;
                         font-weight: 400"><b>Next</b></font>
                       </a>
@@ -253,39 +256,40 @@
                 <div class="card" style="margin: 0">
                   <div class="card-content">
                     <div class="row">
-                      <div class="col s12 l12">
-                        <font size="3" style="font-weight: bold">We have pre-filled some requirements for you convenience. Please review and edit as required</font>
+                      <div class="col s12 l12" id="hintTextMssg">
+                        We have pre-filled some requirements for you convenience. Please review and edit as required
                       </div>
                     </div>
                     <div class="row" id="jobPostDetails" style="margin-bottom: 25px;">
-                      <div class="input-field col s3 l4" style="margin-top: 18px;">
+                      <div class="input-field col s6 l4" style="margin-top: 18px;">
                         <label>Specify Gender :</label>
                       </div>
-                      <div class="input-field col s9 l7" style="padding: 0;">
-                        <div class="col s4 l2" style="padding: 0;">
+                      <div class="input-field col s6 l7" style="padding: 0;">
+                        <div class="col s6 l3" style="padding: 0;">
                           <input name="jobPostGender" value="0" type="radio" id="male">
                           <label for="male">Male</label>
                         </div>
-                        <div class="col s4 l2" style="padding: 0">
+                        <div class="col s6 l3" style="padding: 0">
                           <input name="jobPostGender" value="1" type="radio" id="female">
                           <label for="female">Female</label>
                         </div>
-                        <div class="col s3 l2">
+                        <div class="col s6 l3" style="padding: 0">
                           <input name="jobPostGender" value="2" type="radio" id="any" checked>
                           <label for="any">Any</label>
                         </div>
                       </div>
                     </div>
+
                     <div class="row" id="jobPostDetails" style="margin-top: -16px">
                       <div class="input-field col s6 l4" >
                         <label>Is there any age limitation for this job?</label>
                       </div>
-                      <div class="input-field col s9 l7" style="margin-top:12px; padding: 0;">
-                        <div class="col s4 l2" style="padding: 0;">
+                      <div class="input-field col s6 l7" style="margin-top:12px; padding: 0;">
+                        <div class="col s6 l3" style="padding: 0;">
                           <input name="jobPostAgeReq" value="1" type="radio" id="yes">
                           <label for="yes">Yes</label>
                         </div>
-                        <div class="col s4 l2" style="padding: 0">
+                        <div class="col s6 l3" style="padding: 0">
                           <input name="jobPostAgeReq" value="0" type="radio" id="no" checked>
                           <label for="no">No</label>
                         </div>
@@ -293,10 +297,9 @@
                         <div class="input-field col s6 l4" style="margin-top: 0px;">
                           <input placeholder="Specify max age limitation" id="jobPostMaxAge" style="display: none;" type="number" class="validate">
                         </div>
-
                       </div>
-
                     </div>
+
                     <div class="row" id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 18px">
                         <label>Should the candidate have any minimum education qualification?</label>
@@ -318,7 +321,7 @@
                       </div>
                     </div>
 
-                      <div class="row" id="jobPostDetails">
+                    <div class="row" id="jobPostDetails">
                           <div class="input-field col s6 l4" style="margin-top: 18px">
                               <label>Should candidate have any minimum work experience ?</label>
                           </div>
@@ -339,7 +342,7 @@
                           </div>
                       </div>
 
-                      <div class="row" id="jobPostDetails">
+                    <div class="row" id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 18px">
                         <label>Should candidate know any specific language(s) ?</label>
                       </div>
@@ -381,7 +384,7 @@
                       </div>
                     </div>
 
-                    <div id="documentSection" style="display: none">
+                    <div id="documentSection" style="display: none;margin-bottom: 2%">
                       <div class="row" id="jobPostDetails">
                         <div class="input-field col s6 l4" style="margin-top: 18px">
                           <label>Should the candidate have any specific document(s)?</label>
@@ -403,20 +406,115 @@
                       </div>
                     </div>
 
-                    <div class="row" style="margin: 0">
-                      <a class="waves-effect waves-light ascentGreen btn right" id="saveEdit" onclick="saveJob()"><font style="color: #fff;
-                        font-weight: 400"><b>Save</b></font>
-                      </a>
-                      <a class="waves-effect waves-light orange lighten-1 btn right" id="previousTab" onclick="toJobDetail()"><font style="color: #fff;
-                        font-weight: 400"><b>Back</b></font>
-                      </a>
+                    <br>
+                    <font size="3" style="font-weight: bold">Please mention when can candidates walk-in for interviews</font>
+                    <div class="row" id="jobPostDetails" style="margin-bottom:20px;">
+                      <div class="input-field col s3 l4" style="margin-top: 20px">
+                        <label>Interview Days :</label>
+                      </div>
+                      <div class="input-field col s9 l7" style="margin-left:-10px">
+                        <input type="checkbox" id="interview_day_1" />
+                        <label for="interview_day_1">Mon </label><span style="margin-left:10px"></span>
+
+                        <input type="checkbox" id="interview_day_2" />
+                        <label for="interview_day_2">Tue </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="interview_day_3" />
+                        <label for="interview_day_3">Wed </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="interview_day_4" />
+                        <label for="interview_day_4">Thr </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="interview_day_5" />
+                        <label for="interview_day_5">Fri </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="interview_day_6" />
+                        <label for="interview_day_6">Sat </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="interview_day_7" />
+                        <label for="interview_day_7">Sun </label>
+                      </div>
                     </div>
+
+                    <div class="row" id="jobPostDetails" style="margin-bottom:20px;">
+                      <div class="input-field col s3 l4" style="margin-top: 20px">
+                        <label>Interview Time Slots :</label>
+                      </div>
+                      <div class="input-field col s9 l7" style="margin-left:-10px">
+                        <div id="timeSlotSection"></div>
+                      </div>
+                    </div>
+
+                    <div class="row" id="jobPostDetails">
+                      <div class="input-field col s6 l4" style="margin-top: 20px">
+                      </div>
+                      <div class="input-field col s12 l8" style="padding: 0">
+                        <input type="checkbox" id="check_applications"/>
+                        <label for="check_applications" id="reviewApplicationLabel">Confirm interviews for all applications (uncheck this option if you want to review applications before confirming interviews)</label>
+                      </div>
+                    </div>
+
+                    <div class="row" id="jobPostDetails">
+
+                      <div class="input-field col s12 l4" style="margin-top: 20px">
+                        <label>Interview address:<font color="red">*</font></label>
+                      </div>
+
+                      <div class="input-field col s12 l8">
+
+                        <input type="text" class="form-control" id="interviewAddress" onclick="clearField()" placeholder="Start typing company / building name or landmark / locality name" /> <!-- google autocomplete textbox -->
+
+                        <!-- hidden lat/long -->
+                        <input type="text" class="form-control" style="width: 110px; display: none" id="jp_lat" />
+                        <input type="text" class="form-control" style="width: 110px; display: none" id="jp_lon" />
+                      </div>
+
+                      <div style="display: none;" id="landmarkDetails">
+                          <!-- office/building no -->
+                        <div class="input-field col s12 l4" style="margin-top: 16px">
+                          <label>Office No./Building no.:</label>
+                        </div>
+                        <div class="input-field col s12 l8" style="margin-top: 20px">
+                          <input type="text" placeholder="Building no / door no / floor no / site no" class="form-control" id="interviewBuildingNo" />
+                        </div>
+
+                          <!-- office/building no -->
+                        <div class="input-field col s12 l4" style="margin-top: 16px">
+                          <label>Landmark:</label>
+                        </div>
+
+                        <div class="input-field col s12 l8" style="margin-top: 20px">
+                          <input type="text" placeholder="Enter landmark" class="form-control" id="interviewLandmark" />
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <div id="map_parent" style="width: 100%; height: 480px;"></div>
+
+                    <div class="row" style="margin-top: 24px">
+                        <a class="waves-effect waves-light ascentGreen btn right" id="saveEdit" onclick="saveJob()"><font style="color: #fff;
+                            font-weight: 400"><b>Save</b></font>
+                        </a>
+                        <a class="waves-effect waves-light orange lighten-1 btn right" id="previousTab" onclick="toJobDetail()"><font style="color: #fff;
+                            font-weight: 400"><b>Back</b></font>
+                        </a>
+                  </div>
+
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+
+
+      <!-- Modal Structure -->
+    <div id="modal1" class="modal">
+      <div class="modal-content">
+        <h4>Modal Header</h4>
+        <p>A bunch of text</p>
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
       </div>
     </div>
 
@@ -455,4 +553,5 @@
   <script type="text/javascript" src="/assets/common/js/validation.js"></script>
   <script type="text/javascript" src="/assets/recruiter/js/post_free_job.js"></script>
   <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
+  <script type="text/javascript" src="/assets/recruiter/js/recruiter_notifier.js"></script>
 </html>

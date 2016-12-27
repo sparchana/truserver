@@ -35,6 +35,35 @@ function renderDashboard() {
                     var returned_data = new Array();
                     returnedData.forEach(function (jobPost) {
 
+                        var remainingContactCredits = 0;
+                        var remainingInterviewCredits = 0;
+                        if(jobPost.recruiterProfile != null){
+                            var creditHistoryList = jobPost.recruiterProfile.recruiterCreditHistoryList;
+                            creditHistoryList.reverse();
+                            var toCheckContactCreditCount = true;
+                            var toCheckInterviewCreditCount = true;
+                            creditHistoryList.forEach(function (creditHistory){
+                                try{
+                                    if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
+                                        if(toCheckContactCreditCount){
+                                            remainingContactCredits = parseInt(creditHistory.recruiterCreditsAvailable);
+                                            toCheckContactCreditCount = false;
+                                        }
+                                    } else{
+                                        if(toCheckInterviewCreditCount){
+                                            if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
+                                                remainingInterviewCredits = parseInt(creditHistory.recruiterCreditsAvailable);
+                                                toCheckInterviewCreditCount = false;
+                                            }
+                                        }
+                                    }
+                                    if((toCheckContactCreditCount == false) && (toCheckInterviewCreditCount ==false)){
+                                        return false;
+                                    }
+                                } catch(err){}
+                            });
+                        }
+
                         //addFooter();
                         returned_data.push({
                             'jobId': '<a href="'+"/jobPostDetails/"+jobPost.jobPostId+'" id="'+jobPost.jobPostId+'" style="cursor:pointer;" target="_blank">'+jobPost.jobPostId+'</a>',
@@ -46,10 +75,10 @@ function renderDashboard() {
                             'company': '<a href="'+"/companyDetails/"+jobPost.company.companyId+'" id="'+jobPost.company.companyId+'" style="cursor:pointer;" target="_blank">'+jobPost.company.companyName+'</a>',
                             'jobTitle': jobPost.jobPostTitle,
                             'jobSalary' : function () {
-                                if(jobPost.jobPostMaxSalary == 0){
-                                    return ((jobPost.jobPostMinSalary != null) ? "₹" + jobPost.jobPostMinSalary : "0");
-                                } else{
+                                if(jobPost.jobPostMaxSalary != 0 && jobPost.jobPostMaxSalary != null){
                                     return ((jobPost.jobPostMinSalary != null) ? "₹" + jobPost.jobPostMinSalary : "0") + " - ₹" + ((jobPost.jobPostMaxSalary != null) ? jobPost.jobPostMaxSalary : "0");
+                                } else{
+                                    return ((jobPost.jobPostMinSalary != null) ? "₹" + jobPost.jobPostMinSalary : "0");
                                 }
                             },
                             'jobRecruiter': function () {
@@ -101,10 +130,11 @@ function renderDashboard() {
                             },
 
                             'jobInterviewAddress' : function () {
-                                if(jobPost.jobPostAddress != null && jobPost.jobPostAddress != ''){
-                                    return jobPost.jobPostAddress;
+                                if(jobPost.interviewFullAddress != null && jobPost.interviewFullAddress != ""){
+                                    return jobPost.interviewFullAddress;
+                                } else{
+                                    return "Not Available";
                                 }
-                                return "Not Specified";
                             },
                             'jobIsHot' : function () {
                                 if(jobPost.jobPostIsHot == true){
@@ -133,9 +163,54 @@ function renderDashboard() {
                                     return "Not Specified";
                                 }
                             },
+                            'awaitingInterviewSchedule' : function(){
+                                if(jobPost.awaitingInterviewScheduleCount != null) {
+                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=pending_interview_schedule" style="cursor:pointer;" target="_blank">'+jobPost.awaitingInterviewScheduleCount+'</a>';
+                                } else {
+                                    return "NA";
+                                }
+                            },
+                            'awaitingRecruiterConfirmation' : function(){
+                                if(jobPost.awaitingRecruiterConfirmationCount != null) {
+                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=pre_screen_completed_view" style="cursor:pointer;" target="_blank">'+jobPost.awaitingRecruiterConfirmationCount+'</a>';
+                                } else {
+                                    return "NA";
+                                }
+                            },
+                            'confirmedInterviews' : function(){
+                                if(jobPost.confirmedInterviewsCount != null) {
+                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=confirmed_interview_view" style="cursor:pointer;" target="_blank">'+jobPost.confirmedInterviewsCount+'</a>';
+                                } else {
+                                    return "NA";
+                                }
+                            },
+                            'todaysInterview' : function(){
+                                if(jobPost.todaysInterviewCount != null) {
+                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=confirmed_interview_view" style="cursor:pointer;" target="_blank">'+jobPost.todaysInterviewCount+'</a>';
+                                } else {
+                                    return "NA";
+                                }
+                            },
+                            'tomorrowsInterview' : function(){
+                                if(jobPost.tomorrowsInterviewCount != null) {
+                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=confirmed_interview_view" style="cursor:pointer;" target="_blank">'+jobPost.tomorrowsInterviewCount+'</a>';
+                                } else {
+                                    return "NA";
+                                }
+                            },
+
+                            'completedInterview' : function(){
+                                if(jobPost.completedInterviewCount != null) {
+                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=completed_interview_view" style="cursor:pointer;" target="_blank">'+jobPost.completedInterviewCount+'</a>';
+                                } else {
+                                    return "NA";
+                                }
+                            },
                             'match' : function () {
-                                return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=match_view" style="cursor:pointer;" target="_blank"><button class="btn btn-success">Match</button></a>'
-                            }
+                                return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=match_view" style="cursor:pointer;" target="_blank"><button class="btn btn-success">Dashboard</button></a>'
+                            },
+                            'contactCredits' : remainingContactCredits,
+                            'interviewCredits' : remainingInterviewCredits
                         })
                     });
                     return returned_data;
@@ -144,21 +219,29 @@ function renderDashboard() {
             "deferRender": true,
             "columns": [
                 { "data": "jobId" },
+                { "data": "match" },
                 { "data": "jobCreationTimestamp" },
                 { "data": "company" },
                 { "data": "jobTitle" },
                 { "data": "jobRecruiter" },
+                { "data": "contactCredits" },
+                { "data": "interviewCredits" },
                 { "data": "jobSalary" },
                 { "data": "jobLocation" },
                 { "data": "jobRole" },
+                { "data": "jobStatus" },
+                { "data": "jobIsHot" },
+                { "data": "createdBy" },
+                { "data": "awaitingInterviewSchedule" },
+                { "data": "awaitingRecruiterConfirmation" },
+                { "data": "confirmedInterviews" },
+                { "data": "todaysInterview" },
+                { "data": "tomorrowsInterview" },
+                { "data": "completedInterview" },
                 { "data": "jobExperience" },
                 { "data": "jobInterviewSchedule" },
                 { "data": "jobInterviewAddress" },
-                { "data": "jobIsHot" },
-                { "data": "jobType" },
-                { "data": "jobStatus" },
-                { "data": "createdBy" },
-                { "data": "match" }
+                { "data": "jobType" }
             ],
             "order": [[0, "desc"]],
             "language": {

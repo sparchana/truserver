@@ -9,6 +9,10 @@ var jobPostJobRole = [];
 
 var slotArray = [];
 
+var fullAddress;
+var interviewLat = null;
+var interviewLng = null;
+
 function getLocality() {
     return localityArray;
 }
@@ -291,7 +295,7 @@ $(document).ready(function () {
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
-    } else{
+    } else {
         $("#jobPostJobRole").tokenInput(getJob(), {
             theme: "facebook",
             placeholder: "Job Role?",
@@ -308,8 +312,10 @@ $(document).ready(function () {
             minChars: 0,
             preventDuplicates: true
         });
+
+        renderMap();
     }
-    
+
     /* ajax commands to fetch all localities and jobs*/
     try {
         $.ajax({
@@ -498,19 +504,43 @@ $(document).ready(function () {
 
     defaultOption = $('<option value="-1"></option>').text("Select Job End time");
     $('#jobPostEndTime').append(defaultOption);
-    for(i=0;i<=24;i++){
+    for(i=0; i<=24; i++){
         var option = document.createElement("option");
         option.value = i;
-        option.textContent = i + ":00 hrs";
+        if(i == 0){
+            option.textContent = "12 AM";
+        } else{
+            if(i >= 12){
+                if((i-12) == 0){
+                    option.textContent = "12 PM";
+                } else{
+                    option.textContent = (i - 12) + " PM";
+                }
+            } else{
+                option.textContent = i + " AM";
+            }
+        }
         $('#jobPostStartTime').append(option);
     }
-    for(i=0;i<=24;i++) {
+
+    for(i = 0; i <= 24; i++){
         option = document.createElement("option");
         option.value = i;
-        option.textContent = i + ":00 hrs";
+        if(i == 0){
+            option.textContent = "12 AM";
+        } else{
+            if(i >= 12){
+                if((i-12) == 0){
+                    option.textContent = "12 PM";
+                } else{
+                    option.textContent = (i - 12) + " PM";
+                }
+            } else{
+                option.textContent = i + " AM";
+            }
+        }
         $('#jobPostEndTime').append(option);
     }
-    
 });
 
 function processDataGetCreditCategory(returnedData) {
@@ -532,7 +562,6 @@ function processDataGetAllTimeSlots(returnedData) {
         $('#interviewTimeSlot').append(option);
     });
 }
-
 
 function processDataForJobPost(returnedData) {
     $("#jobPostId").val(returnedData.jobPostId);
@@ -627,10 +656,6 @@ function processDataForJobPost(returnedData) {
             preventDuplicates: true
         });
     }
-    if(returnedData.jobPostAddress != null ){
-        $("#jobPostAddress").val(returnedData.jobPostAddress);
-    }
-
     if(returnedData.jobPostPinCode != null ){
         $("#jobPostPinCode").val(returnedData.jobPostPinCode);
     }
@@ -715,6 +740,12 @@ function processDataForJobPost(returnedData) {
         $("#jobPostStatus").val(returnedData.jobPostStatus.jobStatusId);
     }
 
+    if(returnedData.reviewApplication == null || returnedData.reviewApplication == 1){
+        $( "#check_applications" ).prop( "checked", true);
+    } else{
+        $( "#check_applications" ).prop( "checked", false);
+    }
+
     if(Object.keys(returnedData.interviewDetailsList).length > 0){
         var interviewDetailsList = returnedData.interviewDetailsList;
         if(interviewDetailsList[0].interviewDays != null){
@@ -748,6 +779,60 @@ function processDataForJobPost(returnedData) {
             slotBtn.parent().addClass('active');
         });
     }
+
+    if(returnedData.latitude != null){
+        interviewLat = returnedData.latitude;
+    }
+
+    if(returnedData.longitude != null){
+        interviewLng = returnedData.longitude;
+    }
+
+    $("#landmarkDetails").show();
+    if(returnedData.interviewBuildingNo != null){
+        $("#interviewBuildingNo").val(returnedData.interviewBuildingNo);
+    }
+
+    if(returnedData.interviewLandmark != null){
+        $("#interviewLandmark").val(returnedData.interviewLandmark);
+    }
+
     $("#partnerInterviewIncentive").val(returnedData.jobPostPartnerInterviewIncentive);
     $("#partnerJoiningIncentive").val(returnedData.jobPostPartnerJoiningIncentive);
+
+    renderMap();
+}
+
+function clearField(){
+    $('#interviewAddress').val('');
+}
+
+function renderMap(){
+    if(interviewLat == null){
+
+        //default values of MG Road
+        interviewLat = 12.975568542471832;
+        interviewLng = 77.60660031434168;
+    }
+
+    $('#map_parent').locationpicker({
+        location: {
+            latitude: interviewLat,
+            longitude: interviewLng
+        },
+        radius: 80,
+        inputBinding: {
+            latitudeInput: $('#jp_lat'),
+            longitudeInput: $('#jp_lon'),
+            locationNameInput: $('#interviewAddress')
+        },
+        enableAutocomplete: true,
+        onchanged: function (currentLocation, radius, isMarkerDropped) {
+            //add method if we want to perform any action
+            $("#jp_lat").val(currentLocation.latitude);
+            $("#jp_lon").val(currentLocation.longitude);
+
+            $("#landmarkDetails").show();
+        }
+    });
 }

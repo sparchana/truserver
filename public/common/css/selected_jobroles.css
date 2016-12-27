@@ -63,11 +63,6 @@ input::-webkit-inner-spin-button {
     width: 72px;
     background: #2980b9;
 }
-body{
-    background: #fcfcfc;
-    font-family: Lato;
-    color: #3a3c3b;
-}
 
 #preloader  {
     position: absolute;
@@ -275,10 +270,6 @@ body{
 
 #navigationbar{
     color: #ffffff;
-}
-
-a:hover{
-    text-decoration: none;
 }
 
 #customCard {
@@ -1005,49 +996,6 @@ li .dropdown-menu{
     color:#06436a;
     letter-spacing: 1px;
 }
-
-#jobRoleBottom{
-    border-bottom: 1px solid #f4eef2;
-    background: #ffffff;
-}
-
-#jobRoleNoBorder{
-    background: #ffffff;
-    text-decoration: none;
-    color: #000000;
-}
-a{
-    color:#000000;
-}
-#jobRoleRight{
-    border-right: 1px solid #f4eef2;
-    background: #ffffff;
-}
-
-#jobRole{
-    border-right: 1px solid #f4eef2;
-    border-bottom: 1px solid #f4eef2;
-    background: #ffffff;
-}
-
-#jobRoleNoBorder:hover, #jobRoleRight:hover, #jobRoleBottom:hover, #jobRole:hover {
-    background: #f8f2f0;
-    color: #000000;
-    /* for slow hove effect*/
-
-    -webkit-transition: background 3s;
-    -moz-transition:    background 3.5s;
-    -ms-transition:     background 3.5s;
-    -o-transition:      background 3.5s;
-    transition:         background 3.5s;
-
-    -webkit-transition: color 0.2s;
-    -moz-transition:    color 0.2s;
-    -ms-transition:     color 0.2s;
-    -o-transition:      color 0.2s;
-    transition:         color 0.2s;
-}
-
 .thumbnail {
     position: absolute;
     top: 15px;

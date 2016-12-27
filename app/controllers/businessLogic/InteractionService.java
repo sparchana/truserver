@@ -17,19 +17,6 @@ import static play.mvc.Controller.session;
  * Created by batcoder1 on 5/5/16.
  */
 public class InteractionService {
-    /* */
-    public enum InteractionChannelType {
-        UNKNOWN,
-        SELF,
-        SELF_ANDROID,
-        SUPPORT,
-        KNOWLARITY,
-        PARTNER;
-
-        public String toString() {
-            return name().charAt(0) + name().substring(1).toLowerCase();
-        }
-    }
 
     public static void createInteractionForFollowUpRequest(String followUpMobile, Timestamp followUpSchedule){
         Candidate candidate = CandidateService.isCandidateExists(followUpMobile);
@@ -417,7 +404,7 @@ public class InteractionService {
 
     /* Workflow Interaction */
     public static void createWorkflowInteraction(String objAuuId, String objBuuId,
-                                                 Integer interactionType,String notes, String interactionResult)
+                                                 Integer interactionType,String notes, String interactionResult, Integer channel)
     {
         Interaction interaction = new Interaction(
                 objAuuId,
@@ -427,8 +414,8 @@ public class InteractionService {
                 interactionType,
                 notes,
                 interactionResult,
-                session().get("sessionUsername"),
-                INTERACTION_CHANNEL_SUPPORT_WEBSITE
+                session().get("sessionUsername") == null ? InteractionConstants.INTERACTION_CHANNEL_MAP.get(channel) : session().get("sessionUsername"),
+                channel == null ? INTERACTION_CHANNEL_SUPPORT_WEBSITE: channel
         );
         InteractionService.createInteraction(interaction);
     }

@@ -2,23 +2,14 @@ package models.util;
 
 import api.ServerConstants;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
+import controllers.Global;
 import models.entity.JobPost;
 import models.entity.Recruiter.RecruiterProfile;
-import org.apache.commons.lang3.text.WordUtils;
-import org.apache.commons.mail.DefaultAuthenticator;
-import org.apache.commons.mail.Email;
-import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.SimpleEmail;
+import notificationService.EmailEvent;
+import notificationService.NotificationEvent;
 import play.Logger;
-import play.Play;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 
 import static api.ServerConstants.devTeamEmail;
-import static api.ServerConstants.devTeamMobile;
 
 /**
  * Created by dodo on 15/10/16.
@@ -38,7 +29,7 @@ public class EmailUtil {
                 "                <hr style=\"background: #ffffff\">\n" + "<br>";
 
     private static String MESSAGE_DIV_START = "<div style=\" display: inline-block; text-align: left; font-color: #000000; " +
-            " letter-spacing: 1.5px; "+
+            " letter-spacing: 1.5px; color: #000000;"+
             " line-height: 20px; padding-left: 4%; padding-right: 4%; width: 70%; background: #ffffff\">";
 
     private static String MESSAGE_HELLO = "Hello ";
@@ -65,13 +56,13 @@ public class EmailUtil {
         String message = MAIL_HEADER + MESSAGE_DIV_START + MESSAGE_HELLO
                 + recruiterProfile.getRecruiterProfileName() + "!<br><br>"
                 + "Welcome to Trujobs recruitment platform!<br>"
-                + "As a welcome gift we have added <b> 5 FREE CONTACT UNLOCK credits</b> to your account!. "
+                + "As a welcome gift we have added <b> "+ ServerConstants.RECRUITER_FREE_CONTACT_CREDITS+" FREE CONTACT UNLOCK credits</b> to your account!. "
                 + "Log in at www.trujobs.in/recruiter to start contacting thousands of verified candidates!.<br><br>"
                 + "Happy hiring!"
                 + MESSAGE_THANKYOU +  MESSAGE_DIV_END + MAIL_FOOTER;
 
         Logger.info(" Sending welcome email for recruiter " + recruiterProfile.getRecruiterProfileName());
-        sendEmail(recruiterProfile.getRecruiterProfileEmail(), message, subject);
+        addEmailToNotificationQueue(recruiterProfile.getRecruiterProfileEmail(), message, subject);
     }
 
     public static void sendRecruiterWelcomeEmailForSupportSignup(RecruiterProfile recruiterProfile, String dummyPassword)
@@ -84,12 +75,12 @@ public class EmailUtil {
                 + "Your TruJobs business account is now setup. Your login details are: <br>"
                 + " <b> Username: </b> " + recruiterProfile.getRecruiterProfileMobile().substring(3, 13) + "<br>"
                 + " <b> Password: </b> " + dummyPassword + "<br><br>"
-                + "As a welcome gift we have added <b> 5 FREE candidate contact credits </b>to your account!. "
+                + "As a welcome gift we have added <b> "+ServerConstants.RECRUITER_FREE_CONTACT_CREDITS+" FREE candidate contact credits </b>to your account!. "
                 + "Log in at www.trujobs.in/recruiter to start contacting thousands of verified candidates!.<br><br>"
                 + "Happy hiring!"
                 + MESSAGE_THANKYOU +  MESSAGE_DIV_END + MAIL_FOOTER;
 
-        sendEmail(recruiterProfile.getRecruiterProfileEmail(), message, subject);
+        addEmailToNotificationQueue(recruiterProfile.getRecruiterProfileEmail(), message, subject);
     }
 
     public static void sendRecruiterNewJobPostEmail(RecruiterProfile recruiterProfile, JobPost jobPost)
@@ -107,7 +98,17 @@ public class EmailUtil {
                 + "Happy hiring!"
                 + MESSAGE_THANKYOU +  MESSAGE_DIV_END + MAIL_FOOTER;
 
-        sendEmail(recruiterProfile.getRecruiterProfileEmail(), message, subject);
+        addEmailToNotificationQueue(recruiterProfile.getRecruiterProfileEmail(), message, subject);
+    }
+
+    public static String getEmailHTML(RecruiterProfile recruiterProfile, String message){
+
+        return MAIL_HEADER + MESSAGE_DIV_START + MESSAGE_HELLO
+                + recruiterProfile.getRecruiterProfileName() + "!<br><br>"
+                + message
+                + "Happy hiring!"
+                + MESSAGE_THANKYOU +  MESSAGE_DIV_END + MAIL_FOOTER;
+
     }
 
     public static void sendRecruiterJobPostLiveEmail(RecruiterProfile recruiterProfile, JobPost jobPost)
@@ -121,7 +122,7 @@ public class EmailUtil {
                 + "Happy hiring!"
                 + MESSAGE_THANKYOU +  MESSAGE_DIV_END + MAIL_FOOTER;
 
-        sendEmail(recruiterProfile.getRecruiterProfileEmail(), message, subject);
+        addEmailToNotificationQueue(recruiterProfile.getRecruiterProfileEmail(), message, subject);
     }
 
     public static void sendRecruiterRequestCreditEmail(RecruiterProfile recruiterProfile, AddCreditRequest addCreditRequest)
@@ -152,14 +153,15 @@ public class EmailUtil {
                 + ". Thank You";
 
 
-        sendEmail(recruiterProfile.getRecruiterProfileEmail(), message, subject);
+        addEmailToNotificationQueue(recruiterProfile.getRecruiterProfileEmail(), message, subject);
 
-        sendEmail(devTeamEmail.get("Adarsh"), internalMessage, internalMailSubject);
-        sendEmail(devTeamEmail.get("Archana"), internalMessage, internalMailSubject);
-        sendEmail(devTeamEmail.get("recruiter_support"), internalMessage, internalMailSubject);
-        sendEmail(devTeamEmail.get("Avishek"), internalMessage, internalMailSubject);
-        sendEmail(devTeamEmail.get("Sandy"), internalMessage, internalMailSubject);
-
+        addEmailToNotificationQueue(devTeamEmail.get("Adarsh"), internalMessage, internalMailSubject);
+        addEmailToNotificationQueue(devTeamEmail.get("Archana"), internalMessage, internalMailSubject);
+        addEmailToNotificationQueue(devTeamEmail.get("recruiter_support"), internalMessage, internalMailSubject);
+        addEmailToNotificationQueue(devTeamEmail.get("Avishek"), internalMessage, internalMailSubject);
+        addEmailToNotificationQueue(devTeamEmail.get("Sandy"), internalMessage, internalMailSubject);
+        addEmailToNotificationQueue(devTeamEmail.get("Rafik"), internalMessage, internalMailSubject);
+        addEmailToNotificationQueue(devTeamEmail.get("Chillu"), internalMessage, internalMailSubject);
     }
 
     public static void sendRecruiterCreditTopupMail(RecruiterProfile recruiterProfile, Integer contactCredits, Integer interviewCredits)
@@ -185,35 +187,13 @@ public class EmailUtil {
                 + ". Log in at www.trujobs.in/recruiter to start contacting thousands of verified candidates!.<br><br>"
                 + MESSAGE_THANKYOU +  MESSAGE_DIV_END + MAIL_FOOTER;
 
-        sendEmail(recruiterProfile.getRecruiterProfileEmail(), message, subject);
+        addEmailToNotificationQueue(recruiterProfile.getRecruiterProfileEmail(), message, subject);
     }
 
-    private static void sendEmail(String to, String message, String subject) {
-        boolean isDevMode = play.api.Play.isDev(play.api.Play.current()) || play.api.Play.isTest(play.api.Play.current());
+    private static void addEmailToNotificationQueue(String to, String message, String subject) {
 
-        //new thread
-        new Thread(() -> {
-            try {
-                Email email = new SimpleEmail();
-                email.setHostName(Play.application().configuration().getString("mail.smtp.host"));
-                email.setSmtpPort(465);
-                email.setAuthenticator(new DefaultAuthenticator(Play.application().configuration().getString("mail.smtp.user")
-                        , Play.application().configuration().getString("mail.smtp.pass")));
-                email.setSSLOnConnect(true);
-                email.setContent(message, "text/html; charset=utf-8");
-                email.setFrom("recruiter.support@trujobs.in", "Trujobs Recruiter");
-                email.setSubject(subject);
-                email.addTo(to);
-                if(isDevMode){
-                    Logger.info("DevMode: No Email sent");
-                } else {
-                    Logger.info("Sending email to " + to);
-                    email.send();
-                }
-            } catch (EmailException e) {
-                e.printStackTrace();
-            }
-        }).start();
-
+        //adding to notificationHandler queue
+        NotificationEvent notificationEvent = new EmailEvent(to, message, subject);
+        Global.getmNotificationHandler().addToQueue(notificationEvent);
     }
 }

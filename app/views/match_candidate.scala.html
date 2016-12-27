@@ -1,18 +1,5 @@
 @workflow{
-    <script>
-        $(function () {
-            $('.collapse').on('show',function(){
-                alert("Im shown");
-                $(this).parent().find(".glyphicon-menu-up").removeClass("glyphicon-menu-up").addClass("glyphicon-menu-down");
-            })
-                    /*.$('#match-pane-header').on('hidden', function(){
-             alert("Im shown");
-             $(this).parent().find(".glyphicon-menu-down").removeClass("glyphicon-menu-down").addClass("glyphicon-menu-up");
-             });*/
-        });
-    </script>
-    <div id="searchError" style="text-align: center;
-        color: red"><h5 id="searchErrorMsg"></h5></div>
+    <div id="searchError" style="text-align: center;color: red"><h5 id="searchErrorMsg"></h5></div>
     <div id="matchPane">
         <div class="panel mdl-card mdl-shadow--4dp" style="overflow: visible !important;">
             <div class="panel-heading" id="match-pane-header" data-toggle="collapse" data-target="#matchPaneBody" onmouseover="" style="cursor: pointer;">
@@ -130,6 +117,8 @@
                     <th></th>
                     <th></th>
                     <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tfoot>
@@ -164,6 +153,8 @@
                     <th>MinProfile?</th>
                     <th>Exp Detail</th>
                     <th>Candidate Id</th>
+                    <th></th>
+                    <th></th>
                     <th></th>
                     <th></th>
                     <th></th>

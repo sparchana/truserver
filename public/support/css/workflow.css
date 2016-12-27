@@ -86,3 +86,58 @@ input[type=checkbox], input[type=radio]{
     text-align: left !important;
     padding-left: 17px !important;
 }
+.btn.active, .btn:active{
+    background-color: rgb(255,64,129);
+    color:#fff;
+}
+.btn-custom-check{
+    color: rgb(113, 113, 113);
+    background-color:rgba(210, 210, 210, 0.5);
+}
+.btn-group>.btn:first-child{
+    width: 220px;
+}
+#eduCompleted{
+    margin-left: 20px;
+}
+#eduCompletedNot{
+    margin-left: 40px;
+}
+.accept{
+    cursor: pointer;
+    padding: 3px 6px 6px 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #c0c8b6;
+    transition: 0.2s;
+}
+.accept:hover{
+    background: #06c840;
+}
+.reject{
+    margin-left: 8px;
+    cursor: pointer;
+    padding: 3px 6px 6px 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #c0c8b6;
+    transition: 0.2s;
+}
+.reject:hover{
+    background: #f66624;
+}
+.reschedule{
+    margin-left: 8px;
+    cursor: pointer;
+    padding: 3px 6px 6px 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #c0c8b6;
+    transition: 0.2s;
+}
+.reschedule:hover{
+    background: #edc63a;
+}

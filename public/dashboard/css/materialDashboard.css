@@ -137,11 +137,9 @@ body{
 .indicatorBtnRed{
     width: 80px;
     text-align: center;
-    margin: 4px 8px 4px 0;
+    margin: 4px 0px 4px 0;
     border-radius: 2px;
     padding: 4px 0px 4px 0;
-    background-color: rgba(200, 36, 7, 1);
-    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
     display: inline-block;
 }
 .row-eq-height{
@@ -163,7 +161,7 @@ div.assessmentAlertDiv.red{
     padding: 4px 12px;
     border-radius: 20px;
     cursor: pointer;
-    background-color: red;
+    background: linear-gradient(to right, rgb(199, 4, 4) 0%, rgb(222, 81, 0) 100%);
     font-weight: bold;
 }
 
@@ -190,17 +188,21 @@ div.assessmentAlertDiv.red{
 
 .img-src {
     position: absolute;
-    background:linear-gradient(
-            rgba(65, 69, 121, 0.3),
-            rgba(12, 12, 24, 0.3)
-    ), url(../img/dashboard_back.png) repeat;
-    background-size: 80%;
+    background: linear-gradient(to left, rgba(0, 50, 67, 0.17), rgba(0, 0, 0, 0.17)), url(../img/dashboard_back.png) repeat;
+    background-size: 100%;
     top: -10%;
     bottom: 10%;
     left: -10%;
     right: 10%;
     width: 120%;
     height: 120%;
+}
+#profileBox{
+    padding: 1%;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    background: rgba(0, 0, 0, 0.42);
 }
 
 .img-src.blurred-image {
@@ -210,8 +212,7 @@ div.assessmentAlertDiv.red{
 
 #sectionHead{
     color: #ffffff;
-    padding-top: 60px;
-    padding-bottom: 24px;
+    margin-top: 72px;
     text-align: center;
 }
 
@@ -225,11 +226,9 @@ div.assessmentAlertDiv.red{
 }
 .profileComplete{
     text-align: center;
-    margin: 4px 8px 4px 0;
+    margin: 4px 0px 4px 0;
     width: 80px;
     padding: 4px 0px;
-    background-color: rgba(11, 126, 22, 1);
-    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
     display: inline-block;
 }
 
@@ -282,7 +281,7 @@ div.inblockDiv{
 
 #sectionBody{
     color: #525252;
-    background: #fafafa;
+    background: #eeeeee;
 }
 
 #hotJobItem{
@@ -293,6 +292,42 @@ div.inblockDiv{
     background: #ffffff;
 
     transition: all 0.7s cubic-bezier(.25,.8,.25,1);
+}
+
+#customTab{
+    box-shadow: 0 1px 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
+    margin: 8px 0 0 0;
+    background: #ffffff;
+    text-align: center;
+}
+
+.tabItem{
+    color: #39393b;
+    padding: 12px;
+    cursor: pointer;
+}
+
+.activeTab{
+    color: rgba(8, 65, 99, 0.67);
+    font-weight: bold;
+    border-bottom: 2px solid rgba(8, 65, 99, 0.67);
+}
+
+.headerRibbon{
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 16px;
+    color: white;
+    margin-top: 8px;
+    background: rgba(8, 65, 99, 0.67);
+}
+
+.statusOption{
+    display: none;
+    display: inline-block;
+    margin-right: 8px;
+    text-align: center;
+    cursor: pointer;
 }
 
 #jobBody {
@@ -324,7 +359,7 @@ div.inblockDiv{
     padding: 2%;
 }
 
-#activeLink{
+.activeLink{
     color: #fefffd;
     font-weight: bold;
 }
@@ -483,6 +518,7 @@ hr{
     color: #fff;
     border-color: #f4e3a4;
     background-color: #f4cb6c;
+    background: #f4cb6c;
 }
 .appliedBtn:hover{
     cursor: not-allowed;
@@ -550,6 +586,66 @@ hr{
     margin: 6px;
 }
 
+.confirmInterview {
+    margin-left: 8px;
+    padding: 4px 8px 4px 8px;
+    font-weight: bold;
+    color: white;
+    background: rgba(11, 126, 22, 1);
+    border-radius: 16px;
+    cursor: pointer;
+}
+
+.accept{
+    cursor: pointer;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+}
+
+.reject{
+    margin-left: 8px;
+    cursor: pointer;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+}
+
+.navigationBtn{
+    padding: 8px;
+    background: rgb(56, 79, 146);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    width: 100%;
+    text-align: center;
+}
+#profileInfoDiv{
+    padding: 1%;
+    text-align: left;
+}
+#userImageDiv{
+    padding: 1%;
+    text-align: right;
+}
+#profileProgressDiv{
+    padding: 1%;
+    border-left: 1px #fff solid;
+}
+@media screen and (max-width: 768px){
+    #profileProgressDiv{
+        padding: 1%;
+        border:none;
+    }
+    #profileInfoDiv{
+        text-align: center;
+    }
+    #userImageDiv{
+        text-align: center;
+    }
+}
 @media screen and (max-width: 800px) {
     .candidateCard{
         padding: 4%;
@@ -657,7 +753,7 @@ hr{
         border: 1px solid #e5e7db;
     }
     .appliedDate{
-        float: right;
+        text-align: center;
     }
 }
 @media screen and (max-width: 1000px) {

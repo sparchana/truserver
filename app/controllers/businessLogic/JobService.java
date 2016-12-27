@@ -8,13 +8,19 @@ import api.http.httpRequest.ApplyJobRequest;
 import api.GoogleSheetHttpRequest;
 import api.http.httpResponse.AddJobPostResponse;
 import api.http.httpResponse.ApplyJobResponse;
+import api.http.httpResponse.CandidateWorkflowData;
+import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
+import api.http.httpResponse.interview.InterviewResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Model;
+import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import dao.JobPostDAO;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.OM.*;
 import models.entity.Static.*;
 import models.util.EmailUtil;
+import models.util.NotificationUtil;
 import models.util.SmsUtil;
 import play.Logger;
 import play.api.Play;
@@ -24,18 +30,21 @@ import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.*;
 
+import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
+import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
+import static api.InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
 import static controllers.businessLogic.InteractionService.createInteractionForNewJobPost;
 import static models.util.EmailUtil.sendRecruiterJobPostLiveEmail;
-import static models.util.SmsUtil.sendRecruiterFreeJobPostingSms;
-import static models.util.SmsUtil.sendRecruiterJobPostActivationSms;
+import static models.util.SmsUtil.*;
 import static play.mvc.Controller.session;
+import static play.mvc.Results.ok;
 
 /**
  * Created by batcoder1 on 17/6/16.
  */
 public class JobService {
     public static AddJobPostResponse addJobPost(AddJobPostRequest addJobPostRequest,
-                                                InteractionService.InteractionChannelType channelType)
+                                                int channelType)
     {
         AddJobPostResponse addJobPostResponse = new AddJobPostResponse();
         List<Integer> jobPostLocalityList = addJobPostRequest.getJobPostLocalities();
@@ -50,7 +59,7 @@ public class JobService {
         Integer interactionType;
         boolean isSendJobActivationAlert = false;
 
-        JobPost existingJobPost = JobPost.find.where().eq("jobPostId", addJobPostRequest.getJobPostId()).findUnique();
+        JobPost existingJobPost = JobPostDAO.findById(addJobPostRequest.getJobPostId());
         if(existingJobPost == null){
             Logger.info("Job post does not exists. Creating a new job Post");
             existingJobPost = new JobPost();
@@ -67,7 +76,7 @@ public class JobService {
             // if support creates a job post in new status, no alert is sent to recruiter
             if (existingJobPost.getJobPostStatus().getJobStatusId() == ServerConstants.JOB_STATUS_ACTIVE) {
                 isSendJobActivationAlert = true;
-            } else if (channelType == InteractionService.InteractionChannelType.SELF) {
+            } else if (channelType == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE) {
                 // These sms and mail alerts are sent only in case of self-job posts by recruiter
                 // in this case the default status is 'new'
                 // if support creates a job post in new status, no alert is sent to recruiter
@@ -132,15 +141,23 @@ public class JobService {
             sendRecruiterJobPostActivationSms(existingJobPost.getRecruiterProfile(), existingJobPost);
 
             //send email to recruiter
-            JobPost finalExistingJobPost = existingJobPost;
-            sendRecruiterJobPostLiveEmail(finalExistingJobPost.getRecruiterProfile(), finalExistingJobPost);
+            sendRecruiterJobPostLiveEmail(existingJobPost.getRecruiterProfile(), existingJobPost);
+
+            //send sms to all the matching candidate
+            JobPost jobPost = existingJobPost;
+
+            new Thread(() -> {
+                sendSmsToCandidateMatchingWithJobPost(jobPost);
+            }).start();
+
+
         }
 
-        if(channelType == InteractionService.InteractionChannelType.SUPPORT){
+        if(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE){
             createdBy = session().get("sessionUsername");
             objAUuid = ServerConstants.SUPPORT_DEFAULT_UUID;
             objAType = ServerConstants.OBJECT_TYPE_SUPPORT;
-            channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
+            channel = INTERACTION_CHANNEL_SUPPORT_WEBSITE;
         } else {
             createdBy = InteractionConstants.INTERACTION_CREATED_SELF;
             objAType = ServerConstants.OBJECT_TYPE_RECRUTER;
@@ -180,6 +197,13 @@ public class JobService {
                 if(interviewDays.charAt(i) == '1'){
                     flag = true;
                     break;
+                }
+            }
+
+            if(jobPost != null){
+                List<InterviewDetails> interviewDetailsList = InterviewDetails.find.where().eq("JobPostId", jobPost.getJobPostId()).findList();
+                for(InterviewDetails interviewDetails: interviewDetailsList){
+                    interviewDetails.delete();
                 }
             }
             //create multiple entries in interview details table
@@ -222,8 +246,16 @@ public class JobService {
         newJobPost.setJobPostIncentives(addJobPostRequest.getJobPostIncentives());
         newJobPost.setJobPostMinRequirement(addJobPostRequest.getJobPostMinRequirement());
 
+        newJobPost.setLatitude(addJobPostRequest.getJobPostInterviewLocationLat());
+        newJobPost.setLongitude(addJobPostRequest.getJobPostInterviewLocationLng());
+
+        newJobPost.setReviewApplication(addJobPostRequest.getReviewApplications());
+
         newJobPost.setJobPostAddress(addJobPostRequest.getJobPostAddress());
         newJobPost.setJobPostPinCode(addJobPostRequest.getJobPostPinCode());
+
+        newJobPost.setInterviewBuildingNo(addJobPostRequest.getJobPostAddressBuildingNo());
+        newJobPost.setInterviewLandmark(addJobPostRequest.getJobPostAddressLandmark());
 
         newJobPost.setJobPostVacancies(addJobPostRequest.getJobPostVacancies());
         newJobPost.setJobPostDescriptionAudio(addJobPostRequest.getJobPostDescriptionAudio());
@@ -618,14 +650,14 @@ public class JobService {
     }
 
     public static ApplyJobResponse applyJob(ApplyJobRequest applyJobRequest,
-                                            InteractionService.InteractionChannelType channelType)
+                                            int channelType)
             throws IOException, JSONException
     {
         Logger.info("checking user and jobId: " + applyJobRequest.getCandidateMobile() + " + " + applyJobRequest.getJobId());
         ApplyJobResponse applyJobResponse = new ApplyJobResponse();
         Candidate existingCandidate = CandidateService.isCandidateExists(applyJobRequest.getCandidateMobile());
         if(existingCandidate != null){
-            JobPost existingJobPost = JobPost.find.where().eq("jobPostId",applyJobRequest.getJobId()).findUnique();
+            JobPost existingJobPost = JobPostDAO.findById(Long.valueOf(applyJobRequest.getJobId()));
             if(existingJobPost == null ){
                 applyJobResponse.setStatus(ApplyJobResponse.STATUS_NO_JOB);
                 Logger.info("JobPost with jobId: " + applyJobRequest.getJobId() + " does not exists");
@@ -637,6 +669,17 @@ public class JobService {
                     jobApplication.setCandidate(existingCandidate);
                     jobApplication.setJobPost(existingJobPost);
 
+                    //setting time slot
+                    if(applyJobRequest.getTimeSlot() != null){
+                        InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", applyJobRequest.getTimeSlot()).findUnique();
+                        if(interviewTimeSlot != null){
+                            jobApplication.setInterviewTimeSlot(interviewTimeSlot);
+                        }
+                    }
+                    //setting scheduled interview date
+                    if(applyJobRequest.getScheduledInterviewDate() != null){
+                        jobApplication.setScheduledInterviewDate(applyJobRequest.getScheduledInterviewDate());
+                    }
                     Locality locality = Locality.find.where().eq("localityId", applyJobRequest.getLocalityId()).findUnique();
                     if(locality != null){
                         jobApplication.setLocality(locality);
@@ -647,20 +690,9 @@ public class JobService {
                     String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB;
                     Partner partner = null;
                     if(applyJobRequest.getPartner()){
-                        // this job is being applied by a partner for a candidate, hence we need to det partner Id in the job Application table
+                        // this job is being applied by a partner for a candidate, hence we need to get partner Id in the job Application table
                         partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
                         if(partner != null){
-                            //setting time slot
-                            if(applyJobRequest.getTimeSlot() != null){
-                                InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", applyJobRequest.getTimeSlot()).findUnique();
-                                if(interviewTimeSlot != null){
-                                    jobApplication.setInterviewTimeSlot(interviewTimeSlot);
-                                }
-                            }
-                            //setting scheduled interview date
-                            if(applyJobRequest.getScheduledInterviewDate() != null){
-                                jobApplication.setScheduledInterviewDate(applyJobRequest.getScheduledInterviewDate());
-                            }
                             //setting partner
                             jobApplication.setPartner(partner);
                             SmsUtil.sendJobApplicationSmsViaPartner(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName(), partner.getPartnerFirstName());
@@ -669,12 +701,15 @@ public class JobService {
                         }
                     } else{
                         SmsUtil.sendJobApplicationSms(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName(), channelType);
+
+                        //sending notification
+                        NotificationUtil.sendJobApplicationNotification(existingCandidate, existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), jobApplication.getLocality().getLocalityName());
                     }
 
                     jobApplication.save();
                     writeJobApplicationToGoogleSheet(existingJobPost.getJobPostId(), applyJobRequest.getCandidateMobile(), channelType, applyJobRequest.getLocalityId(), partner, applyJobRequest);
 
-                    if (channelType == InteractionService.InteractionChannelType.SELF) {
+                    if (channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE) {
                         // job application coming from website
                         InteractionService.createInteractionForJobApplicationViaWebsite(
                                 existingCandidate.getCandidateUUId(),
@@ -698,36 +733,98 @@ public class JobService {
                     Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " already applied to jobPost with jobId:" + existingJobPost.getJobPostId());
                 }
 
+                // assuming job apply to a particular jobpost is a one time event, this will push candidate into selected state
+                String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_SELECTED_FOR_PRESCREEN;
+                interactionResult += existingJobPost.getJobPostId() + ": " + existingJobPost.getJobRole().getJobName();
+                if (existingJobPost.getCompany() != null) {
+                    interactionResult += "@" + existingJobPost.getCompany().getCompanyName();
+                }
+
+
+                //  Each initial application should also have initial job post workflow entry, this methods takes care
+                //  of job Post workflow entry + corresponding interaction
+                createJobPostWorkflowEntry( existingCandidate, existingJobPost, channelType,
+                                            ServerConstants.JWF_STATUS_SELECTED,
+                                            InteractionConstants.INTERACTION_TYPE_CANDIDATE_SELECTED_FOR_PRESCREEN,
+                                            interactionResult);
+            }
+            PreScreenPopulateResponse populateResponse = JobPostWorkflowEngine.getJobPostVsCandidate(Long.valueOf(applyJobRequest.getJobId()),
+                    existingCandidate.getCandidateId(), false);
+            if(populateResponse.isVisible()){
+                applyJobResponse.setPreScreenAvailable(true);
+            } else {
+                applyJobResponse.setPreScreenAvailable(false);
+
+                // if there is no pre_screen_requirement with the jobpost then create entry ()
+                // with prescreen completed, for this candidate
                 // also create entry in jobPostWorkflow table
                 JobPostWorkflow jobPostWorkflow = JobPostWorkflow.find
                         .where()
                         .eq("candidate_id", existingCandidate.getCandidateId())
+                        .eq("status_id", ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED)
                         .eq("job_post_id", existingJobPost.getJobPostId()).setMaxRows(1).findUnique();
 
-                if (jobPostWorkflow == null) {
-                    jobPostWorkflow = new JobPostWorkflow();
-                    jobPostWorkflow.setCandidate(existingCandidate);
-                    jobPostWorkflow.setJobPost(existingJobPost);
-                    jobPostWorkflow.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_SELECTED).findUnique());
-
-                    if(channelType == InteractionService.InteractionChannelType.SELF ||
-                            channelType == InteractionService.InteractionChannelType.SELF_ANDROID ){
-                        jobPostWorkflow.setCreatedBy(channelType.toString());
-                    } else {
-                        // partner, support, recruiter
-                        jobPostWorkflow.setCreatedBy(session().get("sessionUsername"));
-                    }
-                    jobPostWorkflow.save();
+                if(jobPostWorkflow == null) {
+                    JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(existingCandidate.getCandidateId(),
+                            existingJobPost.getJobPostId(),
+                            channelType);
                 }
             }
+            InterviewResponse interviewResponse = RecruiterService.isInterviewRequired(existingJobPost);
+            if(interviewResponse.getStatus() < ServerConstants.INTERVIEW_REQUIRED){
+                applyJobResponse.setInterviewAvailable(false);
+            } else {
+                applyJobResponse.setInterviewAvailable(true);
+            }
+
+            // adding only those field that are req by interview UI messaging
+            applyJobResponse.setJobRoleTitle(existingJobPost.getJobRole().getJobName());
+            applyJobResponse.setJobTitle(existingJobPost.getJobPostTitle());
+            applyJobResponse.setCompanyName(existingJobPost.getCompany().getCompanyName());
+            applyJobResponse.setJobPostId(existingJobPost.getJobPostId());
         } else{
             applyJobResponse.setStatus(ApplyJobResponse.STATUS_NO_CANDIDATE);
             Logger.info("Candidate Does not exists");
         }
+
         return applyJobResponse;
     }
 
-    public static void writeJobApplicationToGoogleSheet(Long jobPostId, String candidateMobile, InteractionService.InteractionChannelType channelType, Integer localityId, Partner partner, ApplyJobRequest applyJobRequest) throws UnsupportedEncodingException {
+    private static void createJobPostWorkflowEntry(Candidate existingCandidate, JobPost existingJobPost,
+                                                   int channelType, int status,
+                                                   int interactionType, String interactionResult ) {
+        // also create entry in jobPostWorkflow table
+        JobPostWorkflow jobPostWorkflow = JobPostWorkflow.find
+                .where()
+                .eq("candidate_id", existingCandidate.getCandidateId())
+                .eq("status_id", status)
+                .eq("job_post_id", existingJobPost.getJobPostId()).setMaxRows(1).findUnique();
+
+        // if no entry for the given status then create entry
+        if (jobPostWorkflow == null) {
+            jobPostWorkflow = new JobPostWorkflow();
+            jobPostWorkflow.setCandidate(existingCandidate);
+            jobPostWorkflow.setJobPost(existingJobPost);
+            jobPostWorkflow.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", status).findUnique());
+
+
+            jobPostWorkflow.setCreatedBy(session().get("sessionUsername") == null ?InteractionConstants.INTERACTION_CHANNEL_MAP.get(channelType) : session().get("sessionUsername") );
+            jobPostWorkflow.setChannel(channelType);
+            jobPostWorkflow.save();
+
+            // save the interaction
+            InteractionService.createWorkflowInteraction(
+                    jobPostWorkflow.getJobPostWorkflowUUId(),
+                    existingCandidate.getCandidateUUId(),
+                    interactionType,
+                    null,
+                    interactionResult,
+                    channelType
+            );
+        }
+    }
+
+    public static void writeJobApplicationToGoogleSheet(Long jobPostId, String candidateMobile, int channelType, Integer localityId, Partner partner, ApplyJobRequest applyJobRequest) throws UnsupportedEncodingException {
         String jobIdVal = "-";
         String companyNameVal = "-";
         String jobPostNameVal = "-";
@@ -760,9 +857,9 @@ public class JobService {
         String interviewTimeVal = "";
         int sheetId = ServerConstants.SHEET_MAIN;
 
-        if(channelType == InteractionService.InteractionChannelType.SELF_ANDROID){
+        if(channelType == INTERACTION_CHANNEL_CANDIDATE_ANDROID){
             jobApplicationChannelVal = "Android";
-        } else if(channelType == InteractionService.InteractionChannelType.SELF){
+        } else if(channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
             jobApplicationChannelVal = "Website";
         }
 
@@ -771,7 +868,7 @@ public class JobService {
             candidatePrescreenLocationVal = preScreenLocality.getLocalityName();
         }
 
-        JobPost jobpost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        JobPost jobpost = JobPostDAO.findById(jobPostId);
         if(jobpost != null){
             jobIdVal = String.valueOf(jobpost.getJobPostId());
             jobPostNameVal = jobpost.getJobPostTitle();
@@ -854,7 +951,7 @@ public class JobService {
                     candidateSkillsVal += skill.getSkill().getSkillName() + ", ";
                 }
             }
-            
+
             if(candidate.getLocality() != null){
                 candidateHomeLocalityVal = candidate.getLocality().getLocalityName();
             }
@@ -1037,4 +1134,54 @@ public class JobService {
         }
         return jobPostToLocalityList;
     }
+
+    public static List<JobPost> getAllJobPostWithRecruitersWithInterviewCredits() {
+        List<JobPost> jobPostListToReturn = new ArrayList<>();
+
+        List<JobPost> jobPostList = JobPost.find.where()
+                .isNotNull("JobRecruiterId")
+                .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                .eq("Source", ServerConstants.SOURCE_INTERNAL)
+                .findList();
+
+        for(JobPost j: jobPostList){
+            if(j.getRecruiterProfile().totalInterviewCredits() > 0){
+                jobPostListToReturn.add(j);
+            }
+        }
+        return jobPostListToReturn;
+    }
+
+    public static void sendSmsToCandidateMatchingWithJobPost(JobPost jobPost){
+        Map<Long, CandidateWorkflowData> candidateSearchMap = JobPostWorkflowEngine.getCandidateForRecruiterSearch(
+                null, //age
+                null, //min salary
+                null, //max salary
+                jobPost.getGender(), //gender
+                null, //experience
+                jobPost.getJobRole().getJobRoleId(), //jobRole
+                null, //education
+                null, //locality
+                null, //language list
+                20.00);
+
+        if(candidateSearchMap != null){
+            Logger.info("Sending notification to " + candidateSearchMap.size() + " candidates regarding the jobPost: " + jobPost.getJobPostTitle());
+
+            //adding to notification Handler queue
+            for (Map.Entry<Long, CandidateWorkflowData> candidate : candidateSearchMap.entrySet()) {
+                if(jobPost.getRecruiterProfile().totalInterviewCredits() > 0){
+                    //recruiter has interview credits
+                    SmsUtil.sendJobPostSmsToCandidate(jobPost, candidate.getValue().getCandidate());
+                    NotificationUtil.sendJobPostNotificationToCandidate(jobPost, candidate.getValue().getCandidate());
+
+                } else{
+                    //recruiter doesn't have interview credits
+                    SmsUtil.sendJobPostSmsToCandidate(jobPost, candidate.getValue().getCandidate());
+                    NotificationUtil.sendJobPostNotificationToCandidate(jobPost, candidate.getValue().getCandidate());
+                }
+            }
+        }
+    }
+
 }

@@ -1,5 +1,13 @@
 
 var gTableDataContainer = [];
+var leadChannelToString = new Map();
+leadChannelToString.set(0, "Website");
+leadChannelToString.set(1, "Knowlarity");
+leadChannelToString.set(2, "Support");
+leadChannelToString.set(3, "Android");
+leadChannelToString.set(4, "Unknown");
+leadChannelToString.set(5, "Partner");
+leadChannelToString.set(6, "Recruiter");
 
 function processAlphaResponse(alphaResponse){
     var dialog = document.querySelector('dialog');
@@ -113,6 +121,71 @@ function constructTableForRelevantJobs(rows) {
     }
 }*/
 
+function constructTableForProfileCompletionScores (rows) {
+    try {
+         var tdata = new google.visualization.DataTable();
+         var tableDivId = 'profile-completion-scoring_table_div';
+         if($('#profile-completion-scoring-table-content')){
+             $(tableDivId).empty();
+             $('#csv_profile-completion-scoring_table_div').empty();
+         }
+
+         if(rows != null) {
+             tdata.addColumn('number', "CLID");
+             tdata.addColumn('string', "Name");
+             tdata.addColumn('string', "Mobile");
+             tdata.addColumn('string', "Channel");
+             tdata.addColumn('string', "Creation Date");
+             tdata.addColumn('number', "Profile Completion Score");
+             tdata.addColumn('string', "Aadhaar Number");
+             tdata.addColumn('string', "Aadhaar Verification - Name");
+             tdata.addColumn('string', "Aadhaar Verification - Mobile");
+             tdata.addColumn('string', "Aadhaar Verification - DOB");
+             tdata.addColumn('string', "Aadhaar Verification - Gender");
+
+         var googleTableRows = [];
+
+         $.each( rows, function(row, candidate) {
+             var googleRowOneRow = [];
+             var verificationMap = getVerificationStatus(candidate);
+
+             googleRowOneRow.push(candidate.lead.leadId);
+             googleRowOneRow.push(candidate.candidateFirstName);
+             googleRowOneRow.push(candidate.candidateMobile);
+             googleRowOneRow.push(leadChannelToString.get(candidate.lead.leadChannel));
+             googleRowOneRow.push(new Date(candidate.candidateCreateTimestamp).toLocaleDateString());
+             googleRowOneRow.push(candidate.profileCompletionScore);
+             googleRowOneRow.push(getAadhaarNumber(candidate));
+             googleRowOneRow.push(verificationMap["Name"]);
+             googleRowOneRow.push(verificationMap["Phone"]);
+             googleRowOneRow.push(verificationMap["DOB"]);
+             googleRowOneRow.push(verificationMap["Gender"]);
+             googleTableRows.push(googleRowOneRow);
+         });
+
+             tdata.addRows(googleTableRows);
+
+             var csv = google.visualization.dataTableToCsv(tdata);
+             var csvString = csv;
+             var a         = document.createElement('a');
+             a.href        = 'data:attachment/csv,' +  encodeURIComponent(csvString);
+             a.target      = '_blank';
+             a.download    = 'profileCompletion.csv';
+             a.textContent = 'Profile Completion Scores';
+             //$('div[id="csv_profile_completion_scoring_table'+'"]').append(a);
+             $('#csv_profile-completion-scoring_table_div').append(a);
+
+             var table = new google.visualization.Table(document.getElementById(tableDivId ));
+             table.draw(tdata, {showRowNumber: true, allowHtml: true, width: '100%', height: '100%'});
+
+             $("#profile-tab-spinner").removeClass("is-active");
+             pushToSnackbar("Profile completion scores fetched Successfully !!");
+         }
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+ }
+
 function constructTableForData(tableName, row) {
     // generates every thing only for one table
     var data = new google.visualization.DataTable();
@@ -174,7 +247,6 @@ function renderAnalyticsResult(analyticsResult) {
     if(analyticsResult != null){
         $('#tabular-content').empty();
         $.each( analyticsResult, function( key, value ) {
-            //console.log("ar: " + key);
             constructTableForData(key, value);
         });
     }
@@ -299,7 +371,7 @@ function fetchDeactivatedCandidateList() {
     }
 }
 
-function constructMultiSelect(){
+function constructMultiSelectForMetrics(){
     // Callback that creates and populates a data table,
     // instantiates the pie chart, passes in the data and
     // draws it.
@@ -320,20 +392,54 @@ function constructMultiSelect(){
     selectList.multiselect('rebuild');
 }
 
+function constructMultiSelectForProfileCompletion(){
+    var data = [
+        {label: "< 20%", value: "0.2"},
+        {label: "< 40%", value: "0.4"},
+        {label: "< 60%", value: "0.6"},
+        {label: "< 80%", value: "0.8"},
+        {label: "< 100%", value: "1"}
+    ];
+
+    var selectList = $('#queryRadioSelect');
+    selectList.multiselect({
+        includeSelectAllOption: false,
+        maxHeight: 300
+    });
+    selectList.multiselect('dataprovider', data);
+    selectList.multiselect('rebuild');
+}
+
 function googleTableplot() {
     google.charts.load('current', {'packages':['table']});
     google.charts.setOnLoadCallback(queryForm());
 
 }
 
-function hideDrawerElements() {
+function hideAllDrawerElements() {
     $('#queryMultiSelect-grid').hide();
     $('#pushToGoogleSheet-lbl').hide();
+    $('#queryRadioSelect-grid').hide();
 }
-function showDrawerElements() {
+
+function showMetricsDrawerElements() {
     $('#queryMultiSelect-grid').show();
     $('#pushToGoogleSheet-lbl').show();
 }
+
+function hideMetricsDrawerElements() {
+    $('#queryMultiSelect-grid').hide();
+    $('#pushToGoogleSheet-lbl').hide();
+}
+
+function showProfileDrawerElements() {
+    $('#queryRadioSelect-grid').show();
+}
+
+function hideProfileDrawerElements() {
+    $('#queryRadioSelect-grid').hide();
+}
+
 function saveDeactivationChanges() {
     var deactiveToActiveList = [];
     $('#deactivatedCandidateTable input[type=checkbox]').each(function(){
@@ -443,6 +549,26 @@ function fetchAndDisplayRelevantJobs() {
 
 }*/
 
+function fetchAndDisplayProfileCompletionScores() {
+    $("#profile-tab-spinner").addClass("is-active");
+    var d = {
+        fromThisDate: $('#fromThisDate').val(),
+        toThisDate: $('#toThisDate').val(),
+        profileCompletionMaxScore: $('#queryRadioSelect').val(),
+    };
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/api/alpha/3",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(d),
+            success: constructTableForProfileCompletionScores
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+ }
+
 function updateActivityScores() {
     getJSON('/api/compute/updateAllActivityScores', 'POST').then(function(response) {
         pushToSnackbar('Udpated candidte activity scores table !!');
@@ -454,29 +580,84 @@ function updateActivityScores() {
 
 }
 
+function getAadhaarNumber(candidate) {
+    try {
+        if (candidate.idProofReferenceList != null) {
+            candidate.idProofReferenceList.forEach(function (idProofRef) {
+                if (idProofRef.idProof.idProofId == 3) {
+                    if (idProofRef.idProofNumber != 'undefined') {
+                        return idProofRef.idProofNumber;
+                    }
+                }
+            });
+        }
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+    return "N/A"
+}
+
+function getVerificationStatus(candidate) {
+
+    var verificationList = candidate.candidateVerificationList;
+    var resultMap = new Object();
+    resultMap["Name"] = "N/A";
+    resultMap["Phone"] = "N/A";
+    resultMap["DOB"] = "N/A";
+    resultMap["Gender"] = "N/A";
+
+
+    if (verificationList != null && verificationList.length > 0) {
+
+        verificationList.forEach(function (verificationResult) {
+            if (verificationResult.ongridFieldId.fieldId == 3) {
+                resultMap["Name"] = verificationResult.ongridVerificationStatusId.statusName;
+            }
+            if (verificationResult.ongridFieldId.fieldId == 4) {
+                resultMap["Phone"] = verificationResult.ongridVerificationStatusId.statusName;
+            }
+            if (verificationResult.ongridFieldId.fieldId == 5) {
+                resultMap["DOB"] = verificationResult.ongridVerificationStatusId.statusName;
+            }
+            if (verificationResult.ongridFieldId.fieldId == 9) {
+                resultMap["Gender"] = verificationResult.ongridVerificationStatusId.statusName;
+            }
+        });
+    }
+    return resultMap;
+}
+
 $(function(){
     $("#btnDeActiveToActive").click(function(){
         saveDeactivationChanges();
     });
     $( "#deactivatedCandidateTab" ).click(function() {
         pushToSnackbar("Select expiry time period from left Drawer and hit search");
-        hideDrawerElements();
+        hideAllDrawerElements();
     });
     $( "#tabularTab" ).click(function() {
-        showDrawerElements();
+        constructMultiSelectForMetrics();
+        showMetricsDrawerElements();
+        hideProfileDrawerElements();
     });
     $( "#updateRelevantJobRoles" ).click(function() {
         updateRelevantJobRoles();
     });
-    $( "#updateActivityScores" ).click(function() {
-        updateActivityScores();
-    });
+    
     $( "#jobRelevancyTab" ).click(function() {
         fetchAndDisplayRelevantJobs();
+
     });
     /*$( "#activityScoringTab" ).click(function() {
         fetchAndDisplayActivityScores();
     });*/
+
+    $("#profileCompletionTab").click(function () {
+        constructMultiSelectForProfileCompletion();
+        showProfileDrawerElements();
+        hideMetricsDrawerElements();
+        pushToSnackbar("Select time period and profile completion % from left Drawer and hit search");
+    });
 
     var dialog = document.querySelector('dialog');
     var showModalButton = document.querySelector('.show-modal');
@@ -490,7 +671,6 @@ $(function(){
         dialog.close();
     });
 
-    constructMultiSelect();
     googleTableplot();
     //drawerManipulator();
 
@@ -517,6 +697,8 @@ $(function(){
             fetchDeactivatedCandidateList();
         } else if( $( "#tabularTab" ).hasClass("is-active") ){
             queryForm();
+        } else if($("#profileCompletionTab").hasClass("is-active")) {
+            fetchAndDisplayProfileCompletionScores();
         }
     });
 });

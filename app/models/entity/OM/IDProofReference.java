@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.Static.IdProof;
+import models.entity.ongrid.OnGridVerificationStatus;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -34,6 +35,14 @@ public class IDProofReference extends Model {
     @JsonManagedReference
     @JoinColumn(name = "IdProofId", referencedColumnName = "idProofId")
     private IdProof idProof;
+
+    @Column(name = "IdProofNumber", columnDefinition = "varchar(255) null")
+    private String idProofNumber;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "verification_status", referencedColumnName = "status_id")
+    private OnGridVerificationStatus onGridVerificationStatus;
 
     public static Finder<String, IDProofReference> find = new Finder(IDProofReference.class);
 
@@ -68,4 +77,14 @@ public class IDProofReference extends Model {
     public IdProof getIdProof() {
         return idProof;
     }
+
+    public String getIdProofNumber() {
+        return idProofNumber;
+    }
+
+    public void setIdProofNumber(String idProofNumber) {
+        this.idProofNumber = idProofNumber;
+    }
 }
+
+

@@ -18,6 +18,8 @@ import javax.persistence.NonUniqueResultException;
 import java.util.List;
 import java.util.UUID;
 
+import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
+import static api.InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
 import static controllers.businessLogic.PartnerInteractionService.*;
 import static models.util.Util.generateOtp;
 import static play.mvc.Controller.session;
@@ -67,7 +69,7 @@ public class PartnerService {
     }
 
     public static PartnerSignUpResponse signUpPartner(PartnerSignUpRequest partnerSignUpRequest,
-                                                        InteractionService.InteractionChannelType channelType,
+                                                        int channelType,
                                                         int leadSourceId) {
 
         PartnerSignUpResponse partnerSignUpResponse = new PartnerSignUpResponse();
@@ -95,7 +97,7 @@ public class PartnerService {
                     resetPartnerTypeAndLocality(partner, partnerSignUpRequest);
                     partnerSignUpResponse = createNewPartner(partner, lead);
                     interactionType = InteractionConstants.INTERACTION_TYPE_PARTNER_SIGN_UP;
-                    if(!(channelType == InteractionService.InteractionChannelType.SUPPORT)){
+                    if(!(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE)){
                         // triggers when partner is self created
                         triggerOtp(partner, partnerSignUpResponse);
                         result = InteractionConstants.INTERACTION_RESULT_NEW_PARTNER;
@@ -108,7 +110,7 @@ public class PartnerService {
                         partner.setPartnerFirstName(partnerSignUpRequest.getPartnerName());
                         resetPartnerTypeAndLocality(partner, partnerSignUpRequest);
                         interactionType = InteractionConstants.INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP;
-                        if(!(channelType == InteractionService.InteractionChannelType.SUPPORT)){
+                        if(!(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE)){
                             triggerOtp(partner, partnerSignUpResponse);
                             result = InteractionConstants.INTERACTION_RESULT_EXISTING_PARTNER_VERIFICATION;
                             objectAUUId = partner.getPartnerUUId();
@@ -162,7 +164,7 @@ public class PartnerService {
         partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_SUCCESS);
     }
 
-    public static LoginResponse login(String loginMobile, String loginPassword, InteractionService.InteractionChannelType channelType){
+    public static LoginResponse login(String loginMobile, String loginPassword, int channelType){
         LoginResponse loginResponse = new LoginResponse();
         Logger.info(" login mobile: " + loginMobile);
         Partner existingPartner = isPartnerExists(FormValidator.convertToIndianMobileFormat(loginMobile));
@@ -204,7 +206,7 @@ public class PartnerService {
         return loginResponse;
     }
 
-    public static ResetPasswordResponse findPartnerAndSendOtp(String partnerMobile, InteractionService.InteractionChannelType channelType){
+    public static ResetPasswordResponse findPartnerAndSendOtp(String partnerMobile, int channelType){
         ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
         Partner existingPartner = isPartnerExists(partnerMobile);
         if(existingPartner != null){
@@ -233,7 +235,7 @@ public class PartnerService {
         return resetPasswordResponse;
     }
 
-    public static PartnerSignUpResponse createPartnerProfile(PartnerProfileRequest partnerProfileRequest, InteractionService.InteractionChannelType channelType,
+    public static PartnerSignUpResponse createPartnerProfile(PartnerProfileRequest partnerProfileRequest, int channelType,
                                                              int profileUpdateFlag) {
         PartnerSignUpResponse partnerSignUpResponse = new PartnerSignUpResponse();
         // get partnerBasic obj from req

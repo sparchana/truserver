@@ -3,6 +3,7 @@ package models.entity.OM;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.Static.Asset;
 
@@ -33,7 +34,7 @@ public class CandidateAsset extends Model{
     private Candidate candidate;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonManagedReference
     @JoinColumn(name = "asset_id", referencedColumnName = "asset_id")
     private Asset asset;
 

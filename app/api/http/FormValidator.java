@@ -16,6 +16,11 @@ public class FormValidator {
                     Logger.info("Invalid mobile number received ");
                     return null;
                 }
+            } else {
+                phoneNo = phoneNo.trim();
+                if(phoneNo.length() == 12 && phoneNo.substring(0,0) != "+") {
+                    return "+"+phoneNo;
+                }
             }
         } else Logger.info("Null Phone no received");
         return phoneNo;

@@ -11,10 +11,8 @@ var salary;
 var education;
 var homeLocality;
 
-function processDataApplyJob(returnedData) {
+function processDataApplyJob(returnedData, jobPostId, candidateId, isPartner) {
     $("#jobApplyConfirm").modal("hide");
-    $("#messagePromptModal").modal("show");
-    $('body').addClass('open-modal');
 
     // hiding below divs in partner page
     try{
@@ -22,19 +20,37 @@ function processDataApplyJob(returnedData) {
         $("#verifyOtp").hide();
     } catch (e){}
 
-    if(returnedData.status == 1){
-        $('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
-        $("#customMsg").html("Your Job Application is Successful");
+    // enabling apply btn in partner
+    try{
+        $("#applyButton").addClass("jobApplyBtnModal").removeClass("jobApplied").prop('disabled',false).html("Apply");
+    } catch (e){}
+
+    if(returnedData.status == 1) {
+        //$('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
+        //$("#customMsg").html("Your Job Application is Successful");
+        // $.notify("Job Application successfully applied.", 'success');
         try{
             $(".jobApplyBtnV2").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
             $('.jobApplyBtnV2').attr('onclick','').unbind('click');
         } catch(err){
             console.log(err);
         }
+        // generate prescreen modal here
+        if(isPartner) {
+            openPartnerPreScreenModal(jobPostId, candidateId);
+        } else {
+            openCandidatePreScreenModal(jobPostId, localStorage.getItem("mobile"));
+        }
     } else if(returnedData.status == 2){
+        $("#messagePromptModal").modal("show");
+        $('body').addClass('open-modal');
+
         $('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
         $("#customMsg").html("Oops! Something went Wrong. Unable to apply");
-    } else if(returnedData.status == 3){
+    } else if(returnedData.status == 3) {
+        $("#messagePromptModal").modal("show");
+        $('body').addClass('open-modal');
+
         $('#customMsgIcon').attr('src', "/assets/common/img/alreadyApplied.png");
         $("#customMsg").html("Looks like you already applied for this Job. Click My Jobs to view your applied Jobs");
         try{
@@ -43,16 +59,22 @@ function processDataApplyJob(returnedData) {
             console.log(err);
         }
     } else if(returnedData.status == 4){
+        $("#messagePromptModal").modal("show");
+        $('body').addClass('open-modal');
+
         $('#customMsgIcon').attr('src', "/assets/common/img/logo.gif");
         $("#customMsg").html("Oops! Candidate does't Exists");
     } else{
+        $("#messagePromptModal").modal("show");
+        $('body').addClass('open-modal');
+
         $('#customMsgIcon').attr('src', "/assets/common/img/logo.gif");
         $("#customMsg").html("Oops! Looks like the job is no longer available");
     }
 }
 
 // apply_job ajax script
-function applyJob(id, localityId, triggerModal){
+function applyJobSubmitViaCandidate(id, localityId, prefTimeSlot, scheduledInterviewDate, triggerModal){
     applyJobFlag = 1;
     applyJobId = id;
     var phone = localStorage.getItem("mobile");
@@ -63,24 +85,30 @@ function applyJob(id, localityId, triggerModal){
         $("#myLoginModal").modal("show");
         $("#signInPopup").html("Sign In to Apply");
     } else{
-        console.log("shouldTriggerModal: "+triggerModal);
-        if(triggerModal){
-            getAssessmentQuestions(null, id);
+        /*if(triggerModal){
+                openCandidatePreScreenModal(id, localStorage.getItem("mobile"));
+                interviewButtonCondition(id);
+            /!*getAssessmentQuestions(null, id);*!/
+        // }*/
+        if($('#applyButton')!=null){
+            $('#applyButton').attr('disabled', true).html("Applying...");
+
         }
-        applyJobSubmit(id, phone, localityId, null, null, false);
+        applyJobSubmit(id, localStorage.getItem("candidateId"), phone, localityId, null, null, false);
     }
 } // end of submit
 
-function applyJobSubmit(jobPostId, phone, localityId, prefTimeSlot, scheduledInterviewDate, isPartner) {
+function applyJobSubmit(jobPostId, candidateId, phone, localityId, prefTimeSlot, scheduledInterviewDate, isPartner) {
     try {
         var partner = false;
         var prefTimeSlotVal;
         var scheduledInterviewDateVal;
+        // TODO: remove interview_schedule and interview-slot as now there exists a interview js module
         if(isPartner){
             partner = true;
             prefTimeSlotVal = prefTimeSlot;
             scheduledInterviewDateVal = scheduledInterviewDate;
-        } else{
+        } else {
             prefTimeSlotVal = null;
             scheduledInterviewDateVal = null;
         }
@@ -88,9 +116,9 @@ function applyJobSubmit(jobPostId, phone, localityId, prefTimeSlot, scheduledInt
             jobId: jobPostId,
             candidateMobile: phone,
             localityId: localityId,
-            timeSlot: prefTimeSlotVal,
-            scheduledInterviewDate: scheduledInterviewDateVal,
-            isPartner: partner
+            timeSlot: prefTimeSlot,
+            scheduledInterviewDate: scheduledInterviewDate,
+            isPartner: isPartner
         };
         $.ajax({
             type: "POST",
@@ -98,7 +126,9 @@ function applyJobSubmit(jobPostId, phone, localityId, prefTimeSlot, scheduledInt
             async: false,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(d),
-            success: processDataApplyJob
+            success: function (returnedData) {
+                processDataApplyJob(returnedData, jobPostId, candidateId, isPartner);
+            }
         });
 
     } catch (exception) {

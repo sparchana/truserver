@@ -73,7 +73,7 @@ function processDataForShowRecruiterLeadStatus(returnedData) {
 
 function processDataForGetAllCompanyType(returnedData) {
     if (returnedData != null) {
-        //console.log(returnedData);
+        console.log(returnedData);
         returnedData.forEach(function (response) {
             var id = response.companyTypeId;
             var name = response.companyTypeName;
@@ -125,7 +125,7 @@ function processDataForReadRecruiterLead(returnData) {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-	//console.log("getAllLocality executed");
+	console.log("getAllLocality executed");
 
 	/* pre fetch job roles*/
     try {
@@ -141,7 +141,7 @@ function processDataForReadRecruiterLead(returnData) {
     } catch (exception) {
         console.log("exception occurred!!" + exception);
     }
-	//console.log("getAllJobs executed");
+	console.log("getAllJobs executed");
 
     /* pre-fetch company type*/
     try {
@@ -157,7 +157,7 @@ function processDataForReadRecruiterLead(returnData) {
     } catch (exception) {
         console.log("exception occurred!!" + exception);
     }
-	//console.log("getAllCompanyType executed");
+	console.log("getAllCompanyType executed");
 
 	// map for locality id:name and recruiter_lead_locality_to_recruiter_lead_jobrole:locality_to_recruiter_lead_locality
 	var thisJobLocality = {};
@@ -170,6 +170,7 @@ function processDataForReadRecruiterLead(returnData) {
 		$('#recruiterLeadStatus').val(returnData[0].entity.recruiterLeadStatus);
 		$('#recruiterLeadName').val(returnData[0].entity.recruiterLeadName);
 		$('#recruiterLeadMobile').val(returnData[0].entity.recruiterLeadMobile);
+		console.log("recruiterLeadMobile= "+returnData[0].entity.recruiterLeadMobile)
 		$('#recruiterLeadAltNumber').val(returnData[0].entity.recruiterLeadAltNumber);
 		$('#recruiterLeadEmail').val(returnData[0].entity.recruiterLeadEmail);
 		$('#recruiterLeadChannel').val(returnData[0].entity.recruiterLeadChannel);
@@ -187,7 +188,7 @@ function processDataForReadRecruiterLead(returnData) {
 		var allCompanyTypes = getCompanyType();
 		// get the value for the company type id
 		allCompanyTypes.every(function(each){
-			//console.log("each.id="+each.id+" compared against "+returnData[0].entity.companyLead.companyLeadType.companyTypeId);
+			console.log("each.id="+each.id+" compared against "+returnData[0].entity.companyLead.companyLeadType.companyTypeId);
 			if(each.id == returnData[0].entity.companyLead.companyLeadType.companyTypeId){
 				$('#companyLeadType').val(each.id);
 				return false;
@@ -200,19 +201,19 @@ function processDataForReadRecruiterLead(returnData) {
 		// fill job role table
 		if((returnData[0].entity.recruiterLeadToJobRoleList != null) && (returnData[0].entity.recruiterLeadToJobRoleList.length > 0)) {
 
-			//console.log("returnData[0].entity.recruiterLeadToJobRoleList.length="+returnData[0].entity.recruiterLeadToJobRoleList.length);
+			console.log("returnData[0].entity.recruiterLeadToJobRoleList.length="+returnData[0].entity.recruiterLeadToJobRoleList.length);
 
 			// for each job role row
 			returnData[0].entity.recruiterLeadToJobRoleList.forEach(function(jobRole) {
 
-				//console.log("jobRole: "+JSON.stringify(jobRole));
+				console.log("jobRole: "+JSON.stringify(jobRole));
 
 				// get job roles
 				var allJobRoles = getJob();
-				//console.log("allJobRoles: "+allJobRoles);
+				console.log("allJobRoles: "+allJobRoles);
 				// get job locations
 				var allLocations = getLocality();
-				//console.log("allLocations: "+allLocations);
+				console.log("allLocations: "+allLocations);
 
 				var appendString = '<tr name="jobRoleRow">';
 				appendString += '<td style="display:none;"> <input type="number" name="recruiterLeadToJobRoleId" style="display:none;" value="'+((typeof jobRole.recruiterLeadToJobRoleId !== "undefined")? ((jobRole.recruiterLeadToJobRoleId)?jobRole.recruiterLeadToJobRoleId:0):'')+'"></td>';
@@ -220,7 +221,7 @@ function processDataForReadRecruiterLead(returnData) {
 				// build job role dropdown list
 				var jobRoleDropDown = '<select name="jobRoleidSelect" style="display:block;">';
 				allJobRoles.forEach(function(each){
-					//console.log("Entered allJobRoles.forEach: "+JSON.stringify(each));
+					console.log("Entered allJobRoles.forEach: "+JSON.stringify(each));
 					if((jobRole.jobRole) && (jobRole.jobRole.jobRoleId == each.id)){
 						jobRoleDropDown += '<option id="'+each.id+'" value="'+each.name+'" selected="selected">'+each.name+'</option>';
 					}
@@ -238,7 +239,7 @@ function processDataForReadRecruiterLead(returnData) {
 						thisJobLocality[locality.locality.localityId] = locality.locality.localityName;
 					}
 				});
-				//console.log("thisJobLocality:"+JSON.stringify(thisJobLocality));
+				console.log("thisJobLocality:"+JSON.stringify(thisJobLocality));
 
 				// build localities dropdown list
 				var jobLocDropDown = '<select name="jobLocationidSelect" style="display:block;" multiple>';
@@ -260,7 +261,7 @@ function processDataForReadRecruiterLead(returnData) {
 				appendString += '<td> <input type="text" name="jobDetailRequirement" value="'+((typeof jobRole.jobDetailRequirement != "undefined")? jobRole.jobDetailRequirement:'')+'"></td>';
 				appendString += '</tr>'
 				$('#jobRoleTable tbody').append(appendString);
-				//console.log(appendString);
+				console.log(appendString);
 
 			});
 		}
@@ -325,7 +326,7 @@ function processDataForReadRecruiterLead(returnData) {
 	                var locObject = {};
 					locObject['locality'] = localityArray.getKeyByValue(localityArr[i]);
 					locObject['recruiterLeadToLocalityId'] = ((thisJobLocality.hasOwnProperty(jobObject['recruiterLeadToJobRoleId']+"_"+i))?thisJobLocality[jobObject['recruiterLeadToJobRoleId']+"_"+i]:0);
-					//console.log("locObject="+JSON.stringify(locObject));
+					console.log("locObject="+JSON.stringify(locObject));
 					locObjArray.push(locObject);
 				}
 
@@ -406,10 +407,10 @@ function appendEmptyRow() {
 
 	// get job roles
 	var allJobRoles = getJob();
-	//console.log("allJobRoles: "+allJobRoles);
+	console.log("allJobRoles: "+allJobRoles);
 	// get job locations
 	var allLocations = getLocality();
-	//console.log("allLocations: "+allLocations);
+	console.log("allLocations: "+allLocations);
 
 	var appendString = '<tr name="jobRoleRow">';
 	appendString += '<td style="display:none;"> <input type="number" style="display:none;" name="recruiterLeadToJobRoleId" value=""></td>';
@@ -417,7 +418,7 @@ function appendEmptyRow() {
 	// build job role dropdown list
 	var jobRoleDropDown = '<select name="jobRoleidSelect" style="display:block;">';
 	allJobRoles.forEach(function(each){
-		//console.log("Entered allJobRoles.forEach: "+JSON.stringify(each));
+		console.log("Entered allJobRoles.forEach: "+JSON.stringify(each));
 		jobRoleDropDown += '<option id="'+each.id+'" value="'+each.name+'">'+each.name+'</option>';
 	});
 	jobRoleDropDown += '</select>';
@@ -441,7 +442,7 @@ function appendEmptyRow() {
 	appendString += '<td> <input type="text" name="jobDetailRequirement" value=""></td>';
 	appendString += '</tr>'
 	$('#jobRoleTable tbody').append(appendString);
-	//console.log(appendString);
+	console.log(appendString);
 
 }
 
@@ -469,10 +470,10 @@ function convertSerializedArrayToHash(data) {
 
 Object.defineProperty(Object.prototype, 'getKeyByValue',{
   value : function(value) {
-	//console.log("getKeyByValue called with "+value);
+	console.log("getKeyByValue called with "+value);
     for( var prop in this ) {
         if( this.hasOwnProperty( prop ) ) {
-             //console.log("prop="+prop+" value="+JSON.stringify(this[prop]));
+             console.log("prop="+prop+" value="+JSON.stringify(this[prop]));
              if( this[ prop ].name === value ) {
                  return this[prop].id;
              }

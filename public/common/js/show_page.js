@@ -4,6 +4,7 @@ var localityArray = [];
 var jobArray = [];
 var prefLocation;
 var prefLocationName;
+var index = 0;
 
 function getLocality(){
     return localityArray;
@@ -58,14 +59,9 @@ $(function () {
     })
 });
 
-$(window).load(function() {
-    $('html, body').css({
-        'overflow': 'auto',
-        'height': 'auto'
-    });
-    $("#status").fadeOut();
-    $("#loaderLogo").fadeOut();
-    $("#preloader").delay(500).fadeOut("slow");
+$(window).load(function(){
+    var autoPlay = $("#hiringCompanyLogo");
+    autoPlay.trigger('owl.play',2200);
 });
 
 $(document).ready(function(){
@@ -86,6 +82,20 @@ $(document).ready(function(){
             $("#fixed-menu").css('background-color', 'rgba(0, 0, 0, 0.175)');
             $("#fixed-menu").fadeOut();
         }
+    });
+
+    $(window).scroll(function(){
+        if ($(this).scrollTop() > 100) {
+            $('.scrollToTop').fadeIn();
+        } else {
+            $('.scrollToTop').fadeOut();
+        }
+    });
+
+    //Click event to scroll to top
+    $('.scrollToTop').click(function(){
+        $('html, body').animate({scrollTop : 0},800);
+        return false;
     });
 
     try {
@@ -119,11 +129,10 @@ $(document).ready(function(){
 
     $("#sectionOne").css("background-image","linear-gradient(rgba(24, 26, 45, 0.4),rgba(24, 26, 45, 0.4))" +
         ",url(/assets/common/img/"+allJobDetailPageUrlBreak[0]+".png)");
-
     try {
         $.ajax({
             type: "GET",
-            url: "/jobs/" + allJobDetailPageUrlBreak[1] +"/"+ allJobDetailPageUrlBreak[0],
+            url: "/jobs/" + allJobDetailPageUrlBreak[1] +"/"+ allJobDetailPageUrlBreak[0]+"?i=" + index,
             contentType: "application/json; charset=utf-8",
             data: false,
             processData: false,
@@ -133,89 +142,43 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 
+    $("#hiringCompanyLogo").owlCarousel({
+        items : 4,
+        itemsMobile : true,
+        jsonPath : '/getAllCompanyLogos',
+        jsonSuccess : customDataSuccess
+    });
+
+});
+
+function getAllJobs(index) {
+    var allJobDetailPageUrl = $(location).attr('href');
+    var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
+    allJobDetailPageUrlBreak.reverse();
     try {
         $.ajax({
-            type: "POST",
-            url: "/getAllCompanyLogos",
+            type: "GET",
+            url: "/jobs/" + allJobDetailPageUrlBreak[1] +"/"+ allJobDetailPageUrlBreak[0]+"?i=" + index,
+            contentType: "application/json; charset=utf-8",
             data: false,
-            contentType: false,
             processData: false,
-            success: processDataCheckCompanyLogo
+            success: processDataForSelectedJobPost
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-});
-
-function processDataCheckCompanyLogo(returnedData) {
-    var companyCount = Object.keys(returnedData).length;
-    var companyRowCount = Math.floor(companyCount / 3); // 3 because we are showing 6 companies in a row
-    var remainingCompanies = companyCount % 3;
-
-    var count = 0;
-    var start = 0;
-    var parent = $("#hiringCompanies");
-
-    var rowDiv = document.createElement("div");
-    rowDiv.className = "item active";
-    parent.append(rowDiv);
-
-    returnedData.forEach(function (company) {
-        if(count >= start && count < (start+3)){
-            var logoDiv = document.createElement("div");
-            logoDiv.className = "col-sm-4";
-            rowDiv.appendChild(logoDiv);
-
-            var companyLogo = document.createElement("img");
-            companyLogo.className = "img-responsive";
-            companyLogo.id = "companyLogoSlider";
-            companyLogo.setAttribute('alt', "Companies Hiring");
-            if(company.companyLogo != null) companyLogo.src = company.companyLogo;
-            logoDiv.appendChild(companyLogo);
-
-        }
-        count++;
-        //checking when to end the loop
-        if(count > 3){ return true; }
-    });
-
-    var startIndex = 3;
-    for(var i=1;i<companyRowCount; i++){
-        setCompanyLogos(returnedData, startIndex);
-        startIndex = startIndex + 3;
-    }
-    if(remainingCompanies > 0){
-        startIndex = companyCount - remainingCompanies;
-        setCompanyLogos(returnedData, startIndex);
-    }
+    $(".first").hide();
+    $(".last").hide();
+    $(".prev a").html("<<");
+    $(".next a").html(">>");
 }
-
-function setCompanyLogos(returnedData, start){
-    var count = 0;
-    var parent = $("#hiringCompanies");
-
-    var rowDiv = document.createElement("div");
-    rowDiv.className = "item";
-    parent.append(rowDiv);
-
-    returnedData.forEach(function (company) {
-        if(count >= start && count < (start+3)){
-            var logoDiv = document.createElement("div");
-            logoDiv.className = "col-sm-4";
-            rowDiv.appendChild(logoDiv);
-
-            var companyLogo = document.createElement("img");
-            companyLogo.className = "img-responsive";
-            companyLogo.id = "companyLogoSlider";
-            companyLogo.setAttribute('alt', "Companies Hiring");
-            if(company.companyLogo != null) companyLogo.src = company.companyLogo;
-            logoDiv.appendChild(companyLogo);
-
-        }
-        count++;
-        //checking when to end the loop
-        if(count > start + 3){ return true; }
+function customDataSuccess(data){
+    var content = "";
+    data.forEach(function (logo) {
+        var img = logo;
+        content += "<img width='150px' height='50px' src=\"" +img+ "\">"
     });
+    $("#hiringCompanyLogo").html(content);
 }
 
 function createAndAppendDivider(title, ifPrepend) {
@@ -242,8 +205,27 @@ function createAndAppendDivider(title, ifPrepend) {
 
     mainDiv.appendChild(hotJobItem);
 }
-
+function pagination(noOfPages){
+    $('#jobCardControl').twbsPagination({
+        totalPages: noOfPages,
+        visiblePages: 5,
+        onPageClick: function (event, page) {
+            if(page > 0 ){
+                index = (page - 1)*5;
+            }
+            else{
+                index = 0;
+            }
+            getAllJobs(index);
+            $(".page-link").click(function(){
+                $('html, body').animate({scrollTop: $("#job_cards_inc").offset().top - 100}, 800);
+            });
+        }
+    });
+}
 function processDataForSelectedJobPost(returnedData) {
+    var jobPostList = returnedData.allJobPost;
+
     var allJobDetailPageUrl = $(location).attr('href');
     var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
     allJobDetailPageUrlBreak.reverse();
@@ -258,9 +240,17 @@ function processDataForSelectedJobPost(returnedData) {
         $('#jobTitleLine').html("Register for "+ decodedJobRoleName);
         $('#jobRoleTitle').html("Register for "+ decodedJobRoleName);
         $('#applyToJobsTitle').html("Apply to "+ decodedJobRoleName);
-        if(returnedData != ""){
-        var jobPostCount = Object.keys(returnedData).length;
+        var jobPostCount = Object.keys(jobPostList).length;
             if (jobPostCount > 0) {
+                var numberOfPages = parseInt(returnedData.totalJobs)/5;
+                var rem = parseInt(returnedData.totalJobs) % 5;
+                if(rem > 0){
+                    numberOfPages ++;
+                }
+                if(index == 0){
+                    pagination(numberOfPages);
+                }
+                $("#hotJobs").html("");
                 var count = 0;
                 var popularJobCount = 0;
                 var parent = $("#hotJobs");
@@ -268,7 +258,7 @@ function processDataForSelectedJobPost(returnedData) {
                 //returnedData.reverse();
                 $("#jobLoaderDiv").hide();
                 try {
-                    returnedData.forEach(function (jobPost) {
+                    jobPostList.forEach(function (jobPost) {
                         count++;
                         if (count) {
                             /* get all localities of the jobPost */
@@ -564,12 +554,6 @@ function processDataForSelectedJobPost(returnedData) {
                             }
                         }
                     });
-                    if(count<4){
-                        document.getElementById("hotJobs").style.height = "54%";
-                    }
-                    else{
-                        document.getElementById("hotJobs").style.height = "72%";
-                    }
                 } catch (exception) {
                     console.log("exception occured!!" + exception.stack);
                 }
@@ -577,7 +561,8 @@ function processDataForSelectedJobPost(returnedData) {
                     createAndAppendDivider("Popular Jobs", true);
                 }
             }
-    } else{
+     else{
+            $("#jobLoaderDiv").hide();
             var parent = $("#hotJobs");
             var hotJobItem = document.createElement("div");
             hotJobItem.id = "hotJobItem";
@@ -606,13 +591,20 @@ function processDataForSelectedJobPost(returnedData) {
             var jobMsgLine1 = document.createElement("div");
             jobMsgLine1.id = "jobMsgLine1";
             col.appendChild(jobMsgLine1);
-            $("#jobMsgLine1").html("Oops!! No relevant jobs found at this movement");
+            $("#jobMsgLine1").html("Oops!! No relevant jobs found at this moment");
 
             var jobMsgLine2 = document.createElement("div");
             jobMsgLine2.id = "jobMsgLine2";
             col.appendChild(jobMsgLine2);
             $("#jobMsgLine2").html("Register yourself to get updates when new jobs are posted");
     }
+    $('html, body').css({
+        'overflow': 'auto',
+        'height': 'auto'
+    });
+    $("#status").fadeOut();
+    $("#loaderLogo").fadeOut();
+    $("#preloader").delay(500).fadeOut("slow");
 }
 
 
@@ -673,6 +665,7 @@ function openLogin() {
     $('#errorMsgReset').hide();
     $('#form_password_reset_otp').hide();
     $('#form_password_reset_new').hide();
+    $('#noPasswordLogin').hide();
 }
 
 function openSignUp() {

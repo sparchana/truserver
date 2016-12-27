@@ -38,4 +38,16 @@ public class CandidateResumeService extends TruService {
         return null;
     }
 
+    @Override
+    public TruResponse update(TruRequest request) {
+        TruResponse candidateResumeResponse = (TruResponse) super.update(request);
+        // save, if allowed
+        if(checkSaveAllowed(candidateResumeResponse)) {
+            save();
+            candidateResumeResponse.setStatus(TruResponse.STATUS_SUCCESS);
+        }
+
+        return candidateResumeResponse;
+    }
+
 }

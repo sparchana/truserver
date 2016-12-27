@@ -1,0 +1,153 @@
+#interviewModalBtn{
+   background-color:#09ac58;
+    color:#fff;
+}
+#education_details{
+    padding:2% 3%;
+
+}
+#preScreenInterviewSetBtn{
+    background: #09ac58;
+    color:#fff;
+}
+#missingInfo li{
+    font-weight: bold;
+    margin: 10px;
+    color:#09ac58;
+}
+#missingInfo li > .row{
+    color:#000000;
+}
+
+#workedJobRole ul li{
+    margin: 4px 0 0 0;
+}
+#workedJobRole ul{
+    height:34px;
+}
+button {
+overflow: hidden;
+}
+li:hover .dropdown-menu{
+    display: none;
+}
+li .open>.dropdown-menu{
+    display: block;
+}
+.btn-group button{
+    width: 215px;
+}
+#candidateSalary{
+    display: inline-block;
+    width: 82%;
+}
+#candidateDob{
+    display: inline-block;
+    width: 52%;
+}
+#candidateTotalExperienceYear{
+    display: inline-block;
+    margin:0 10px 0 0;
+    width: 25%;
+}
+#candidateTotalExperienceMonth{
+    display: inline-block;
+    margin:0 10px 0 10px;
+    width: 25%;
+}
+#candidateEducationInstitute{
+    display: inline-block;
+    width: 52%;
+}
+#candidateLastWithdrawnSalary{
+    width: 52%;
+}
+#preScreenModalBody{
+    width: 66%;
+}
+#preScreenModal .modal-header{
+    background-color: #09ac58;
+    color: #fff;
+}
+#preScreenModal .modal-content{
+    padding: 0;
+}
+#preScreenModal .btn-custom-check.active{
+    background: #09ac58;
+    border: 1px solid #09ac58;
+    color: #ffffff;
+}
+#companyDetailsCapture{
+    padding: 2%;
+    border-radius: 4px;
+    background: rgba(144, 151, 152, 0.15);
+}
+.dropdown-menu>.active>a, .dropdown-menu>.active>a:hover, .dropdown-menu>.active>a:focus{
+    background:#09ac58 ;
+}
+#preScreenModalBody{
+    margin:40px auto;
+}
+#salary_details{
+    padding:2% 3%;
+}
+#candidateFresh{
+    margin:0 8%;
+}
+#candidateExp{
+    margin:0 8% 0 2%;
+}
+.btn-group label{
+    width:110px;
+}
+@media screen and (max-width: 970px) {
+    #preScreenModalBody{
+        width: 100%;
+    }
+}
+@media screen and (max-width: 768px) {
+    .btn-group label{
+        width:100%;
+    }
+    #candidateFresh{
+        margin:0 2%;
+    }
+    #candidateExp{
+        margin:0 2%;
+    }
+
+    #language_details{
+        text-align: center;
+    }
+    #candidateLastWithdrawnSalary{
+        width: 100%;
+    }
+    #candidateEducationInstitute{
+        width: 100%;
+    }
+    #candidateTotalExperienceYear{
+        width: 100%;
+        margin-left: 0;
+    }
+    #candidateTotalExperienceMonth{
+        width: 100%;
+        margin-left: 0;
+    }
+    .btn-group{
+        width: 100%;
+    }
+    .btn-group button{
+        width: 100%;
+    }
+    .btn-group .multiselect{
+        width: 100%;
+    }
+    #salary_details{
+        padding:2%;
+        text-align:left;
+    }
+    #candidateSalary{
+        display: inline-block;
+        width: 100%;
+    }
+}

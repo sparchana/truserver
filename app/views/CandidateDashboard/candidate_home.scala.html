@@ -35,9 +35,6 @@
 
         <meta name="theme-color" content="#286ab6">
         <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
-        <script>
-            google.load('visualization', '1', {packages: ['table']});
-        </script>
         <script type="text/javascript">
           $('html, body').css({
               'overflow': 'hidden',
@@ -72,34 +69,6 @@
             </div>
         </div>
 
-            <!-- custom message modal -->
-        <div class="modal fade" id="jobApplyConfirm" tabindex="-1" role="dialog" aria-labelledby="jobApplyConfirm">
-            <div class="modal-dialog" role="document" id="customModal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">Job Application Confirmation</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div id="confirmationMsg">
-                            <center>
-                                <img src="/assets/common/img/jobApply.png" width="48px">
-                            </center>
-                            <center>
-                                <h5>You are applying for <b><div style="display: inline-block" id="jobNameConfirmation"></div></b>
-                                    job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>
-                                    .</h5>
-                                <h5>Please select the location where you can work:</h5>
-                                <select id="jobLocality" class="selectDropdown"></select>
-                                <button type="submit" onclick="confirmApply()" id="applyButton" class="jobApplyBtnModal" style="display: none;
-                                    margin: 6px">Apply</button>
-                            </center>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
             <div class="container">
                 <div class="navbar-header">
@@ -112,24 +81,24 @@
                     </button>
                     <div itemscope itemtype ="http://schema.org/logo">
                         <a class="navbar-brand" href="#"><img id="navLogo" itemprop="Brand" src="/assets/common/img/logo-main.gif" alt="TruJobs Logo" height="32px"></a>
-                        <a class="hidden-xs" href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" style="padding: 0px">
+                        <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" style="padding: 0px">
                             <img id="playStoreLogoNavBar" src="/assets/common/img/download_btn.png" alt="PlayStore Logo" height="54%"></a>
                     </div>
                 </div>
 
                 <div class="collapse navbar-collapse" id="navigationbar">
                     <ul class="nav navbar-nav navbar-right">
-                        <li class="hidden-xs">
+                        <li class="hidden-sm">
                             <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank">
                                 <img src="/assets/common/img/download_btn.png" style="height: 30px;
                                     margin-top: -6px;
                                     margin-right: -16px;">
                             </a>
                         </li>
-                        <li><a href="#" id="activeLink">Candidate Dashboard</a></li>
-                        <li><a href="/dashboard/editProfile">Profile</a></li>
-                        <li><a href="/dashboard/appliedJobs/">View Applied Jobs</a></li>
-                        <li><a href="/showJobs">View All Jobs</a></li>
+                        <li class="candidateDashboard activeLink"><a href="/dashboard" >Candidate Dashboard</a></li>
+                        <li class="candidateProfile"><a href="/dashboard/editProfile" >Profile</a></li>
+                        <li class="viewAppliedJob"><a href="/dashboard/appliedJobs/">View Applied Jobs</a></li>
+                        <li class="viewAllJobs"><a href="/showJobs" >View All Jobs</a></li>
                         <li><a href="#" onclick="logoutUser()">Log Out</a></li>
                     </ul>
                 </div>
@@ -141,25 +110,49 @@
             <div id="overlay"></div>
         </div>
         <div id="sectionHead" class="container profileBody">
-            <div class="col-sm-6">
-                <img src="/assets/dashboard/img/userMale.svg" id="userImg">
-                <h4>
-                    <b>
-                        <div id="userName" style="display: inline-block"></div>
-                        <div id="userAge" style="display: inline-block"></div>
-                        <div id="userGender" style="display: inline-block"></div>
-                    </b>
-                </h4>
-                <h5><div id="userMobile" style="display: inline-block"></div>, Bangalore</h5>
-                <div style="margin-top: 0;">
-                    <div class="inblockDiv" style="margin-left: 16px">
-                        <a href="/dashboard/editProfile">
-                            <div class="profileIncomplete indicatorBtnRed"><b><font color="#fff">Incomplete</font></b></div>
-                        </a>
-                        <div class="profileComplete" style="display: none"><b>Complete</b></div>
-                    </div>Profile Status
-                </div>
+            <div class="row" id="profileBox">
+                    <div class="col-sm-2" id="userImageDiv">
+                        <img src="/assets/dashboard/img/userMale.svg" id="userImg">
+                    </div>
+                    <div class="col-sm-6" id="profileInfoDiv">
+                        <h4>
+                            <b>
+                                <div id="userName" style="display: inline-block;font-size:28px"></div>
+                                <div id="userAge" style="display: inline-block"></div>
+                                <div id="userGender" style="display: inline-block"></div>
+                            </b>
+                        </h4>
+                        <h5>
+                            <img src="/assets/dashboard/img/phone.svg" style="margin:-3px 3px 0 5px" height="18px">
+                            <div id="userMobile" style="display: inline-block"></div>
+                            <img src="/assets/dashboard/img/location-point.svg" style="margin:-3px 3px 0 5px" height="18px">
+                            <div style="display: inline-block;">Bangalore</div>
+                        </h5>
+                    </div>
+                    <div class="col-sm-3 col-sm-offset-1" id="profileProgressDiv" >
+                        <div class="row">
+                            <h4 style="margin: 8px 0 0 0">Profile Status</h4>
+                        </div>
+                        <div class="row inblockDiv">
+                            <a href="/dashboard/editProfile">
+                                <div class="profileIncomplete indicatorBtnRed">
+                                    <img src="/assets/dashboard/img/incomplete.svg" height="18px">
+                                    <img src="/assets/dashboard/img/incomplete.svg" height="18px">
+                                    <img src="/assets/dashboard/img/incomplete.svg" height="18px">
+                                    <div style="margin-top: 6px"><b><font style="color:#ffffff">Incomplete</font></b></div>
+                                </div>
+                            </a>
+                            <div class="profileComplete" style="display: none">
+                                <img src="/assets/dashboard/img/complete.svg" height="18px">
+                                <img src="/assets/dashboard/img/complete.svg" height="18px">
+                                <img src="/assets/dashboard/img/complete.svg" height="18px">
+                                <div style="margin-top: 6px"><b>Complete</b></div>
+                            </div>
+                        </div>
+                    </div>
             </div>
+        </div>
+@*
             <div class="col-sm-6" style="display: flex;
                 justify-content: center;
                 align-items: flex-end;
@@ -169,7 +162,7 @@
                 </div>
 
             </div>
-        </div>
+*@
         <div id="sectionBody" class="startBody">
             <div class="container profileBody">
                 <h3 style="display: inline-block">Profile</h3>
@@ -325,10 +318,10 @@
 
             <!-- Assessment Import -->
 
-        <link rel="stylesheet" type="text/css" href="/assets/css/assessment_modal.css">
+@*        <link rel="stylesheet" type="text/css" href="/assets/css/assessment_modal.css">
         <script type="text/javascript" src="/assets/js/bootbox.min.js"></script>
         <script type="text/javascript" src="/assets/js/assessment_modal.js"></script>
-        <script type="text/javascript" src="/assets/js/assessment_indicator.js"></script>
+        <script type="text/javascript" src="/assets/js/assessment_indicator.js"></script>*@
         <script>
             $(document).ready(function () {
                 $(document).ready(function () {

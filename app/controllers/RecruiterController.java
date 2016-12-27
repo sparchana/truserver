@@ -1,5 +1,6 @@
 package controllers;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.AddJobPostRequest;
@@ -8,33 +9,41 @@ import api.http.httpRequest.Recruiter.AddCreditRequest;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
 import api.http.httpRequest.Recruiter.RecruiterLeadToLocalityRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
+import api.http.httpRequest.Recruiter.*;
 import api.http.httpRequest.ResetPasswordResquest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.CandidateWorkflowData;
-import api.http.httpResponse.Recruiter.JobApplicationResponse;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import controllers.businessLogic.Recruiter.RecruiterLeadStatusService;
+import controllers.security.RecruiterSecured;
 import controllers.security.SecuredUser;
+import dao.JobPostDAO;
+import dao.JobPostWorkFlowDAO;
 import models.entity.JobPost;
-import models.entity.OM.JobApplication;
+import models.entity.OM.JobPostWorkflow;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
+import org.apache.commons.logging.Log;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterSearchCandidate;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.request;
@@ -55,7 +64,7 @@ public class RecruiterController {
         return ok(views.html.Recruiter.recruiter_index.render());
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result recruiterHome() {
         return ok(views.html.Recruiter.recruiter_home.render());
     }
@@ -152,7 +161,7 @@ public class RecruiterController {
         return ok(res);
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result getRecruiterProfileInfo() {
         RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
         if(recruiterProfile != null) {
@@ -161,12 +170,12 @@ public class RecruiterController {
         return ok("0");
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result recruiterCandidateSearch(){
         return ok(views.html.Recruiter.recruiter_candidate_search.render());
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result recruiterEditProfile() {
         return ok(views.html.Recruiter.recruiter_edit_profile.render());
     }
@@ -195,7 +204,7 @@ public class RecruiterController {
         return ok("0");
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result addRecruiter() {
         JsonNode req = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
@@ -206,7 +215,7 @@ public class RecruiterController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(RecruiterService.createRecruiterProfile(recruiterSignUpRequest, InteractionService.InteractionChannelType.SELF)));
+        return ok(toJson(RecruiterService.createRecruiterProfile(recruiterSignUpRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE)));
     }
 
 
@@ -222,47 +231,193 @@ public class RecruiterController {
     }
 
     public static Result getAllJobApplicants(long jobPostId) {
-        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
         if(jobPost != null){
             if(session().get("recruiterId") != null){
                 RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
                 if(recruiterProfile != null){
                     if(jobPost.getRecruiterProfile() != null){
-                        if(jobPost.getRecruiterProfile().getRecruiterProfileId() == recruiterProfile.getRecruiterProfileId()){
-                            List<JobApplication> jobApplicationList = JobApplication.find.where().eq("JobPostId", jobPostId).findList();
-                            List<JobApplicationResponse> jobApplicationResponseList = new ArrayList<>();
-                            for(JobApplication jobApplication: jobApplicationList){
-                                JobApplicationResponse jobApplicationResponse = new JobApplicationResponse();
+                        if(Objects.equals(jobPost.getRecruiterProfile().getRecruiterProfileId(), recruiterProfile.getRecruiterProfileId())){
 
-                                jobApplicationResponse.setCandidate(jobApplication.getCandidate());
-                                jobApplicationResponse.setJobApplicationId(jobApplication.getJobApplicationId());
-                                jobApplicationResponse.setJobApplicationCreatingTimeStamp(String.valueOf(jobApplication.getJobApplicationCreateTimeStamp()));
-                                jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
-                                jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
-                                jobApplicationResponse.setInterviewTimeSlot(jobApplication.getInterviewTimeSlot());
-                                jobApplicationResponse.setScheduledInterviewDate(jobApplication.getScheduledInterviewDate());
+                            //initially we were returning the returned map directly. Since we need the list of candidate in ascending order of the interview date,
+                            //  we are adding the values of the map in a list. This is being done because the order of map vales was getting sorted in ascending value
+                            // with respect to the key valus. Hence using a list here
 
-                                jobApplicationResponseList.add(jobApplicationResponse);
+                            Map<Long, CandidateWorkflowData> selectedCandidateMap =
+                                                             JobPostWorkflowEngine.getRecruiterJobLinedUpCandidates(jobPostId);
+
+                            List<CandidateWorkflowData> jobApplicantList = new LinkedList<>();
+                            for (Map.Entry<Long, CandidateWorkflowData> entry : selectedCandidateMap.entrySet()) {
+                                jobApplicantList.add(entry.getValue());
                             }
 
-                            return ok(toJson(jobApplicationResponseList));
+                            return ok(toJson(jobApplicantList));
                         }
                     }
                 }
             }
         }
-
         return ok("0");
     }
 
     public static Result getAllRecruiterJobPosts() {
         if(session().get("recruiterId") != null){
-            return ok(toJson(JobPost.find.where().eq("JobRecruiterId", session().get("recruiterId")).findList()));
+
+            Map<?, JobPost> recruiterJobPostMap = JobPost.find.where().eq("JobRecruiterId", session().get("recruiterId")).setMapKey("jobPostId").findMap();
+
+            String jpIdList = "";
+
+            for(Map.Entry<?, JobPost> entity: recruiterJobPostMap.entrySet()) {
+                JobPost jobPost = entity.getValue();
+                jpIdList += "'" + jobPost.getJobPostId() + "', ";
+
+            }
+
+            List<JobPostWorkflow> jobPostWorkflowList = new ArrayList<>();
+
+            if(Objects.equals(jpIdList, "")){
+                return ok(toJson(jobPostWorkflowList));
+            }
+            // if candidate who have applied to the jobpost, only those jobpostworkflow obj will be returned
+            jobPostWorkflowList = JobPostWorkFlowDAO.getJobApplications(jpIdList.substring(0, jpIdList.length()-2));
+
+            Map<Long, RecruiterJobPostObject> recruiterJobPostResponseMap = new LinkedHashMap<>();
+            for(JobPostWorkflow jpwf : jobPostWorkflowList){
+                RecruiterJobPostObject singleObject = recruiterJobPostResponseMap.get(jpwf.getJobPost().getJobPostId());
+
+                if(singleObject == null ){
+                    singleObject = new RecruiterJobPostObject();
+                    recruiterJobPostResponseMap.put(jpwf.getJobPost().getJobPostId(), singleObject);
+                    singleObject.setJobPost(jpwf.getJobPost());
+                }
+
+                // jpwf of one candidate
+                Map<Long, JobPostWorkflow> response = singleObject.getJobPostWorkflowMap();
+                if(response == null){
+                    response = new HashMap<>();
+                }
+                if(response.get(jpwf.getCandidate().getCandidateId()) == null){
+                    response.put(jpwf.getCandidate().getCandidateId(), jpwf);
+
+                    //here we are enhancing the 'new application' interview count. We have two variables now.
+                    // pendingCount: contains all the application whose status is 'Scheduled'
+                    // upcoming count: contains all the application whose status is confirmed and feedback is not set
+
+                    Date today = new Date();
+                    Calendar now = Calendar.getInstance();
+                    Calendar cal = Calendar.getInstance();
+
+                    //checking all the pendingConfirmation applications
+                    if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
+                        singleObject.setPendingCount(singleObject.getPendingCount() + 1);
+                    } else if(jpwf.getStatus().getStatusId() >= ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED
+                            && jpwf.getStatus().getStatusId() < ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+
+                        //checking all the todays and upcoming interview applications
+
+
+                        Date interviewDate = jpwf.getScheduledInterviewDate();
+                        cal.setTime(interviewDate);
+
+                        //today's interviews
+                        if(now.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && (now.get(Calendar.MONTH) + 1) == (cal.get(Calendar.MONTH) + 1)
+                                && now.get(Calendar.DATE) == cal.get(Calendar.DATE)){
+
+                            singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
+                        } else if(interviewDate.after(today)){
+                            //future interviews
+                            singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
+                        }
+
+                        //rest all the applications are past interviews, hence we are not counting
+                    }
+
+                    singleObject.setTotalCount(singleObject.getTotalCount()+1);
+                    singleObject.setJobPostWorkflowMap(response);
+                }
+            }
+
+
+            for(Map.Entry<?, JobPost> entity: recruiterJobPostMap.entrySet()) {
+                // jobpost to which no candidate has applied
+                RecruiterJobPostObject singleObject = recruiterJobPostResponseMap.get(entity.getKey());
+                if(singleObject == null) {
+                    singleObject = new RecruiterJobPostObject();
+                    singleObject.setJobPost(entity.getValue());
+                    singleObject.setTotalCount(0);
+                    singleObject.setPendingCount(0);
+
+                    recruiterJobPostResponseMap.put((Long) entity.getKey(), singleObject);
+                }
+            }
+
+            return ok(toJson(recruiterJobPostResponseMap));
         }
         return ok("0");
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    public static class RecruiterJobPostObject{
+        Map<Long, JobPostWorkflow> jobPostWorkflowMap;
+        int pendingCount;
+        int upcomingCount;
+        int totalCount;
+        JobPost jobPost;
+
+        public RecruiterJobPostObject() {
+            pendingCount = 0;
+            totalCount = 0;
+            upcomingCount = 0;
+        }
+
+        public RecruiterJobPostObject(Map<Long, JobPostWorkflow> jobPostWorkflowMap, int pendingCount, int totalCount, int upcomingCount) {
+            this.jobPostWorkflowMap = jobPostWorkflowMap;
+            this.pendingCount = pendingCount;
+            this.upcomingCount = upcomingCount;
+            this.totalCount = totalCount;
+        }
+
+        public Map<Long, JobPostWorkflow> getJobPostWorkflowMap() {
+            return jobPostWorkflowMap;
+        }
+
+        public void setJobPostWorkflowMap(Map<Long, JobPostWorkflow> jobPostWorkflowMap) {
+            this.jobPostWorkflowMap = jobPostWorkflowMap;
+        }
+
+        public int getPendingCount() {
+            return pendingCount;
+        }
+
+        public void setPendingCount(int pendingCount) {
+            this.pendingCount = pendingCount;
+        }
+
+        public int getTotalCount() {
+            return totalCount;
+        }
+
+        public void setTotalCount(int totalCount) {
+            this.totalCount = totalCount;
+        }
+
+        public JobPost getJobPost() {
+            return jobPost;
+        }
+
+        public void setJobPost(JobPost jobPost) {
+            this.jobPost = jobPost;
+        }
+
+        public int getUpcomingCount() {
+            return upcomingCount;
+        }
+
+        public void setUpcomingCount(int upcomingCount) {
+            this.upcomingCount = upcomingCount;
+        }
+    }
+
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result getMatchingCandidate() {
         JsonNode matchingCandidateRequestJson = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + matchingCandidateRequestJson);
@@ -327,25 +482,21 @@ public class RecruiterController {
                     }
 
                     // sort by last active
-                    // TODO move 1,2,3 to server constant
-                    if (matchingCandidateRequest.getSortBy() == ServerConstants.REC_SORT_LASTEST_ACTIVE) {
+                    if (Objects.equals(matchingCandidateRequest.getSortBy(), ServerConstants.REC_SORT_LASTEST_ACTIVE)) {
                         // last active, latest on top
-//                        Collections.sort(listToBeReturned,  (o1, o2) -> o2.getExtraData().getLastActive().lastActiveValueId.compareTo(o1.getExtraData().getLastActive().lastActiveValueId));
                         Collections.sort(listToBeReturned,  new LastActiveComparator());
-                    } else if (matchingCandidateRequest.getSortBy() == ServerConstants.REC_SORT_SALARY_H_TO_L) {
+                    } else if (Objects.equals(matchingCandidateRequest.getSortBy(), ServerConstants.REC_SORT_SALARY_H_TO_L)) {
                         // candidate lw salary H->L
-//                        Collections.sort(listToBeReturned,  (o1, o2) -> o2.getCandidate().getCandidateLastWithdrawnSalary().compareTo(o1.getCandidate().getCandidateLastWithdrawnSalary()));
                         Collections.sort(listToBeReturned,  new SalaryComparatorHtoL());
-                    } else if (matchingCandidateRequest.getSortBy() == ServerConstants.REC_SORT_SALARY_L_TO_H) {
+                    } else if (Objects.equals(matchingCandidateRequest.getSortBy(), ServerConstants.REC_SORT_SALARY_L_TO_H)) {
                         // candidate lw salary L->H
-//                        Collections.sort(listToBeReturned,  (o1, o2) -> o1.getCandidate().getCandidateLastWithdrawnSalary().compareTo(o2.getCandidate().getCandidateLastWithdrawnSalary()));
                         Collections.sort(listToBeReturned,  new SalaryComparatorLtoH());
                     }
 
                     //getting limited results
                     for (CandidateWorkflowData val : listToBeReturned) {
                         if(count >= matchingCandidateRequest.getInitialValue()){
-                            if(count < (matchingCandidateRequest.getInitialValue()+10) ){
+                            if(count < (matchingCandidateRequest.getInitialValue() + 10) ){
                                 val.getCandidate().setCandidateMobile("");
                                 val.getCandidate().setCandidateEmail("");
                                 finalListToBeReturned.add(val);
@@ -364,7 +515,7 @@ public class RecruiterController {
         return ok("0");
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result getUnlockedCandidates() {
         if(session().get("recruiterId") != null){
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
@@ -377,7 +528,7 @@ public class RecruiterController {
         return ok("0");
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result requestCredits() {
         JsonNode req = request().body().asJson();
         Logger.info("req JSON: " + req );
@@ -392,19 +543,19 @@ public class RecruiterController {
         return ok(toJson(RecruiterService.requestCreditForRecruiter(addCreditRequest)));
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result recruiterJobPost(Long id) {
         return ok(views.html.Recruiter.recruiter_post_free_job.render());
     }
 
     public static Result getRecruiterJobPostInfo(long jpId) {
-        JobPost jobPost = JobPost.find.where().eq("jobPostId", jpId).findUnique();
+        JobPost jobPost = JobPostDAO.findById(jpId);
         if(jobPost != null){
             if(session().get("recruiterId") != null){
                 RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
                 if(recruiterProfile != null){
                     if(jobPost.getRecruiterProfile() != null){
-                        if(jobPost.getRecruiterProfile().getRecruiterProfileId() == recruiterProfile.getRecruiterProfileId()){
+                        if(Objects.equals(jobPost.getRecruiterProfile().getRecruiterProfileId(), recruiterProfile.getRecruiterProfileId())){
                             return ok(toJson(jobPost));
                         }
                     }
@@ -414,7 +565,7 @@ public class RecruiterController {
         return ok("0");
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result addJobPost() {
         JsonNode req = request().body().asJson();
         Logger.info("Browser: " + request().getHeader("User-Agent") + "; Req JSON : " + req);
@@ -426,7 +577,7 @@ public class RecruiterController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(JobService.addJobPost(addJobPostRequest, InteractionService.InteractionChannelType.SELF)));
+        return ok(toJson(JobService.addJobPost(addJobPostRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE)));
     }
 
     public static Result renderAllRecruiterJobPosts() {
@@ -451,13 +602,60 @@ public class RecruiterController {
 
     }
 
+    public static Result updateInterviewStatus() {
+        JsonNode req = request().body().asJson();
+
+        InterviewStatusRequest interviewStatusRequest = new InterviewStatusRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            interviewStatusRequest = newMapper.readValue(req.toString(), InterviewStatusRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(session().get("sessionChannel") == null){
+            Logger.warn("SessionChannel null, hence recruiter logged out");
+            logoutRecruiter();
+            return badRequest();
+        }
+
+        return JobPostWorkflowEngine.updateInterviewStatus(interviewStatusRequest, InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE);
+    }
+
+    public static Result getTodayInterviewDetails() {
+        JsonNode req = request().body().asJson();
+
+        InterviewTodayRequest interviewTodayRequest = new InterviewTodayRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            interviewTodayRequest = newMapper.readValue(req.toString(), InterviewTodayRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ok(toJson(JobPostWorkflowEngine.getTodaysInterviewDetails(interviewTodayRequest)));
+    }
+
+    public static Result getPendingCandidateApproval() {
+        JsonNode req = request().body().asJson();
+
+        InterviewTodayRequest interviewTodayRequest = new InterviewTodayRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            interviewTodayRequest = newMapper.readValue(req.toString(), InterviewTodayRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ok(toJson(JobPostWorkflowEngine.processDataPendingApproval(interviewTodayRequest)));
+    }
+
     // sorting helper methods
     private static class LastActiveComparator implements Comparator<CandidateWorkflowData> {
 
         @Override
         public int compare(CandidateWorkflowData o1, CandidateWorkflowData o2) {
             if (o1.getExtraData().getLastActive() == null) {
-                return (o2.getCandidate().getCandidateLastWithdrawnSalary() == null) ? 0 : 1;
+                return (o2.getExtraData().getLastActive() == null) ? 0 : 1;
             }
             if (o2.getExtraData().getLastActive() == null) {
                 return -1;
@@ -560,6 +758,11 @@ public class RecruiterController {
         JsonNode res = toJson(recruiterLeadService.delete(recruiterLeadRequest));
         Logger.info("res JSON: " + res);
         return ok(res);
+
+    }
+
+    public static Result trackApplication(long id) {
+        return ok(views.html.Recruiter.recruiter_interviews.render());
     }
 
 }

@@ -1,7 +1,5 @@
 package api.http.httpResponse.Workflow;
 
-import models.entity.Static.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,26 +8,65 @@ import java.util.List;
  */
 public class PreScreenPopulateResponse {
 
-    public enum Status{
+    public enum Status {
         UNKNOWN,
         FAILURE,
         SUCCESS,
         INVALID
     }
 
+    public static class PreScreenCustomObject {
+        Object object;
+        boolean isObjectAvailable;
+        Object placeHolder;
+
+        public PreScreenCustomObject(Object object, Object placeHolder, boolean isObjectAvailable) {
+            this.object = object;
+            this.placeHolder = placeHolder;
+            this.isObjectAvailable = isObjectAvailable;
+        }
+
+        public Object getObject() {
+            return object;
+        }
+
+        public void setObject(Object object) {
+            this.object = object;
+        }
+
+        public Object getPlaceHolder() {
+            return placeHolder;
+        }
+
+        public void setPlaceHolder(Object placeHolder) {
+            this.placeHolder = placeHolder;
+        }
+
+        public boolean isObjectAvailable() {
+            return isObjectAvailable;
+        }
+
+        public void setObjectAvailable(boolean objectAvailable) {
+            isObjectAvailable = objectAvailable;
+        }
+    }
+
     public static class PreScreenElement {
         public String propertyTitle;
+        public int propertyId;
 
         public List<Object> propertyIdList;
-        public List<Object> jobPostElementList;
-        public List<Object> candidateElementList;
+        public List<PreScreenCustomObject> jobPostElementList;
+        public List<PreScreenCustomObject> candidateElementList;
         public boolean isMatching;
         public boolean isSingleEntity;
         public boolean isMinReq;
+        public Object jobPostPlaceHolder;
+        public Object candidatePlaceHolder;
 
         // used with single entity
-        public Object jobPostElement;
-        public Object candidateElement;
+        public PreScreenCustomObject jobPostElement;
+        public PreScreenCustomObject candidateElement;
 
         public PreScreenElement() {
             this.isMatching = true;
@@ -46,6 +83,14 @@ public class PreScreenPopulateResponse {
             this.propertyTitle = propertyTitle;
         }
 
+        public int getPropertyId() {
+            return propertyId;
+        }
+
+        public void setPropertyId(int propertyId) {
+            this.propertyId = propertyId;
+        }
+
         public List<Object> getPropertyIdList() {
             return propertyIdList;
         }
@@ -54,35 +99,76 @@ public class PreScreenPopulateResponse {
             this.propertyIdList = propertyIdList;
         }
 
-        public List<Object> getJobPostElementList() {
+        public List<PreScreenCustomObject> getJobPostElementList() {
             return jobPostElementList;
         }
 
-        public void setJobPostElementList(List<Object> jobPostElementList) {
+        public void setJobPostElementList(List<PreScreenCustomObject> jobPostElementList) {
             this.jobPostElementList = jobPostElementList;
         }
 
-        public List<Object> getCandidateElementList() {
+        public List<PreScreenCustomObject> getCandidateElementList() {
             return candidateElementList;
         }
 
-        public void setCandidateElementList(List<Object> candidateElementList) {
+        public void setCandidateElementList(List<PreScreenCustomObject> candidateElementList) {
             this.candidateElementList = candidateElementList;
         }
-        public Object getJobPostElement() {
+
+        public boolean isMatching() {
+            return isMatching;
+        }
+
+        public void setMatching(boolean matching) {
+            isMatching = matching;
+        }
+
+        public boolean isSingleEntity() {
+            return isSingleEntity;
+        }
+
+        public void setSingleEntity(boolean singleEntity) {
+            isSingleEntity = singleEntity;
+        }
+
+        public boolean isMinReq() {
+            return isMinReq;
+        }
+
+        public void setMinReq(boolean minReq) {
+            isMinReq = minReq;
+        }
+
+        public PreScreenCustomObject getJobPostElement() {
             return jobPostElement;
         }
 
-        public void setJobPostElement(Object jobPostElement) {
+        public void setJobPostElement(PreScreenCustomObject jobPostElement) {
             this.jobPostElement = jobPostElement;
         }
 
-        public Object getCandidateElement() {
+        public PreScreenCustomObject getCandidateElement() {
             return candidateElement;
         }
 
-        public void setCandidateElement(Object candidateElement) {
+        public void setCandidateElement(PreScreenCustomObject candidateElement) {
             this.candidateElement = candidateElement;
+        }
+
+        public Object getJobPostPlaceHolder() {
+            return jobPostPlaceHolder;
+        }
+
+        public void setJobPostPlaceHolder(Object jobPostPlaceHolder) {
+            this.jobPostPlaceHolder = jobPostPlaceHolder;
+        }
+
+        public Object getCandidatePlaceHolder() {
+            return candidatePlaceHolder;
+        }
+
+        public void setCandidatePlaceHolder(Object candidatePlaceHolder) {
+            this.candidatePlaceHolder = candidatePlaceHolder;
         }
     }
 
@@ -93,8 +179,9 @@ public class PreScreenPopulateResponse {
     public List<PreScreenElement> elementList;
     public Status status;
     public String jobPostMinReq;
+    public boolean visible;
 
-    public PreScreenPopulateResponse(){
+    public PreScreenPopulateResponse() {
         this.elementList = new ArrayList<>();
     }
 
@@ -120,5 +207,21 @@ public class PreScreenPopulateResponse {
 
     public void setJobPostMinReq(String jobPostMinReq) {
         this.jobPostMinReq = jobPostMinReq;
+    }
+
+    public Long getCandidateId() {
+        return candidateId;
+    }
+
+    public void setCandidateId(Long candidateId) {
+        this.candidateId = candidateId;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }

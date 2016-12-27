@@ -38,6 +38,11 @@ public class AddJobPostRequest {
     public List<Long> jobPostAsset;
     public Integer jobPostMaxAge;
     public Integer jobPostGender;
+    public Double jobPostInterviewLocationLat;
+    public Double jobPostInterviewLocationLng;
+    public Integer reviewApplications;
+    public String jobPostAddressBuildingNo;
+    public String jobPostAddressLandmark;
 
     public List<Integer> interviewTimeSlot;
 
@@ -314,5 +319,44 @@ public class AddJobPostRequest {
     public void setJobPostGender(Integer jobPostGender) {
         this.jobPostGender = jobPostGender;
     }
-}
 
+    public Double getJobPostInterviewLocationLat() {
+        return jobPostInterviewLocationLat;
+    }
+
+    public void setJobPostInterviewLocationLat(Double jobPostInterviewLocationLat) {
+        this.jobPostInterviewLocationLat = jobPostInterviewLocationLat;
+    }
+
+    public Double getJobPostInterviewLocationLng() {
+        return jobPostInterviewLocationLng;
+    }
+
+    public void setJobPostInterviewLocationLng(Double jobPostInterviewLocationLng) {
+        this.jobPostInterviewLocationLng = jobPostInterviewLocationLng;
+    }
+
+    public Integer getReviewApplications() {
+        return reviewApplications;
+    }
+
+    public void setReviewApplications(Integer reviewApplications) {
+        this.reviewApplications = reviewApplications;
+    }
+
+    public String getJobPostAddressBuildingNo() {
+        return jobPostAddressBuildingNo;
+    }
+
+    public void setJobPostAddressBuildingNo(String jobPostAddressBuildingNo) {
+        this.jobPostAddressBuildingNo = jobPostAddressBuildingNo;
+    }
+
+    public String getJobPostAddressLandmark() {
+        return jobPostAddressLandmark;
+    }
+
+    public void setJobPostAddressLandmark(String jobPostAddressLandmark) {
+        this.jobPostAddressLandmark = jobPostAddressLandmark;
+    }
+}
