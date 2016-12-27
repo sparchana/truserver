@@ -45,9 +45,9 @@ function processDataCheckAllJobRoles(jobPostJobRoles) {
                     jobAnchorFooter.onclick = function () {
                         var jobRoleName = jobRoleItem.jobName;
                         var jobRoleId = jobRoleItem.jobRoleId;
-                        var jobPostBreak = jobRoleName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
+                        var jobPostBreak = jobRoleName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '-');
                         jobPostBreak = jobPostBreak.toLowerCase();
-                        window.location.href = "/job/" + jobPostBreak + "_jobs" + "/" + jobRoleId;
+                        window.location.href = "/jobs/" + jobPostBreak + "-jobs-in-bangalore-" + jobRoleId;
                     };
 
                     var jobRoleNameFooter = document.createElement("div");
@@ -85,9 +85,9 @@ function setJobRoles(returnedData, start){
             jobAnchor.style = "margin-right: 0%;margin-left: 0%;";
            /* jobAnchor.style= "margin:0px";*/
             jobAnchor.onclick = function () {
-                var jobPostBreak = jobRole.jobName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
+                var jobPostBreak = jobRole.jobName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '-');
                 jobPostBreak = jobPostBreak.toLowerCase();
-                window.location.href = "/job/" + jobPostBreak + "_jobs" + "/" + jobRole.jobRoleId;
+                window.location.href = "/jobs/" + jobPostBreak + "-jobs-in-bangalore-" + jobRole.jobRoleId;
             };
             gridDiv.appendChild(jobAnchor);
 

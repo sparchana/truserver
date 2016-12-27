@@ -424,11 +424,22 @@ a:hover{
 
 
 #jobRole{
-    padding-top: 20%;
-    padding-bottom: 20%;
+    margin: 1px;
+    padding-top: 16%;
+    padding-bottom: 16%;
     border-right: 1px solid #f4eef2;
     border-bottom: 1px solid #f4eef2;
+    background: rgba(255, 255, 255, 0.69);
+}
+#jobRole:hover{
+    box-shadow: 0 1px 8px rgba(0,0,0,0.22), 0 4px 4px rgba(0,0,0,0.12);
     background: #ffffff;
+    transition: opacity 0.5s ease-in-out;
+    -webkit-transition: background 0.4s;
+    -moz-transition:    background 0.4s;
+    -ms-transition:     background 0.4s;
+    -o-transition:      background 0.4s;
+    transition:         background 0.4s;
 }
 #jobRoleName{
     padding: 1%;
@@ -442,7 +453,7 @@ a:hover{
 }
 
 
-#jobRoleNoBorder:hover, #jobRoleRight:hover, #jobRoleBottom:hover, #jobRole:hover {
+#jobRoleNoBorder:hover, #jobRoleRight:hover, #jobRoleBottom:hover {
     background: #faf4f2;
     color: #003557;
     cursor: pointer;
