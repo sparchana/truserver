@@ -3,10 +3,16 @@ package controllers.scheduler.task;
 import api.ServerConstants;
 import dao.JobPostWorkFlowDAO;
 import models.entity.OM.JobPostWorkflow;
+import models.entity.Recruiter.RecruiterCreditPack;
 import models.entity.Recruiter.RecruiterProfile;
+import models.entity.Recruiter.Static.RecruiterCreditCategory;
+import models.entity.RecruiterCreditHistory;
 import play.Logger;
 
 import java.util.*;
+
+import static play.mvc.Controller.session;
+import static play.mvc.Results.ok;
 
 /**
  * Created by dodo on 26/12/16.
@@ -19,9 +25,101 @@ import java.util.*;
 
 public class EODDebitInterviewCreditTask extends TimerTask {
 
-    private void startCreditDebitTast(List<RecruiterProfile>recruiterProfileList){
+    private void startCreditDebitTask(List<RecruiterProfile>recruiterProfileList, Boolean isDebit){
         new Thread(() -> {
-            //TODO: start auto deduct task
+
+            RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where()
+                    .eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
+                    .findUnique();
+
+
+            for(RecruiterProfile recruiterProfile : recruiterProfileList){
+                List<RecruiterCreditPack> packList = RecruiterCreditPack.find.where()
+                        .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
+                        .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
+                        .findList();
+
+                //making an entry in recruiter credit history table
+                RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
+                recruiterCreditHistory.setRecruiterProfile(recruiterProfile);
+
+                if(recruiterCreditCategory != null){
+                    recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
+                }
+
+
+                if(isDebit){
+                    for(RecruiterCreditPack pack : packList){
+                        if(pack.getCreditsAvailable() > 0){
+                            if(!pack.getCreditIsExpired()){
+                                pack.setCreditsAvailable(pack.getCreditsAvailable() - 1);
+                                pack.setCreditsUsed(pack.getCreditsUsed() + 1);
+                                pack.update();
+                                break;
+                            }
+                        }
+                    }
+
+                    RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
+                            .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
+                            .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
+                            .setMaxRows(1)
+                            .orderBy("create_timestamp desc")
+                            .findUnique();
+
+                    if(recruiterCreditHistoryLatest != null){
+                        if(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() > 0){
+                            recruiterCreditHistory.setRecruiterCreditsAvailable(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() - 1);
+                            recruiterCreditHistory.setRecruiterCreditsUsed(recruiterCreditHistoryLatest.getRecruiterCreditsUsed() + 1);
+                            recruiterCreditHistory.setUnits(-1);
+
+                            if(session().get("sessionUsername") != null){
+                                recruiterCreditHistory.setRecruiterCreditsAddedBy("Support: " + session().get("sessionUsername"));
+                            } else{
+                                recruiterCreditHistory.setRecruiterCreditsAddedBy("Not specified");
+                            }
+
+                            //saving/updating all the rows
+                            recruiterCreditHistory.save();
+                        }
+                    }
+                } else{
+                    //credit
+                    for(RecruiterCreditPack pack : packList){
+                        if(pack.getCreditsAvailable() > 0){
+                            if(!pack.getCreditIsExpired()){
+                                pack.setCreditsAvailable(pack.getCreditsAvailable() + 1);
+                                pack.update();
+                                break;
+                            }
+                        }
+                    }
+
+                    RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
+                            .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
+                            .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
+                            .setMaxRows(1)
+                            .orderBy("create_timestamp desc")
+                            .findUnique();
+
+                    if(recruiterCreditHistoryLatest != null){
+                        if(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() > 0){
+                            recruiterCreditHistory.setRecruiterCreditsAvailable(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() + 1);
+                            recruiterCreditHistory.setRecruiterCreditsUsed(recruiterCreditHistoryLatest.getRecruiterCreditsUsed());
+                            recruiterCreditHistory.setUnits(1);
+
+                            if(session().get("sessionUsername") != null){
+                                recruiterCreditHistory.setRecruiterCreditsAddedBy("Support: " + session().get("sessionUsername"));
+                            } else{
+                                recruiterCreditHistory.setRecruiterCreditsAddedBy("Not specified");
+                            }
+
+                            //saving/updating all the rows
+                            recruiterCreditHistory.save();
+                        }
+                    }
+                }
+            }
         }).start();
     }
 
@@ -46,6 +144,18 @@ public class EODDebitInterviewCreditTask extends TimerTask {
             }
         }
 
-        startCreditDebitTast(recruiterProfileList);
+        //debiting credits
+        startCreditDebitTask(recruiterProfileList, true);
+
+        jobPostWorkflowList = JobPostWorkFlowDAO.getAllTodaysFeedbackApplications();
+
+        for(JobPostWorkflow jobPostWorkflow : jobPostWorkflowList){
+            if(jobPostWorkflow.getJobPost().getRecruiterProfile() != null){
+                recruiterProfileList.add(jobPostWorkflow.getJobPost().getRecruiterProfile());
+            }
+        }
+
+        //crediting credits if feedback provided
+        startCreditDebitTask(recruiterProfileList, false);
     }
 }

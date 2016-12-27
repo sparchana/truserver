@@ -69,6 +69,8 @@ public class SchedulerManager implements Runnable {
 //        createStartOfTheDayJobPostEvent(jobPostInfoDelay);
 
 //        createEODRateUsPostInterview(rateUsPostInterviewDelay);
+
+//        createEODCreditDebitInterviewCredit(aadhaarVerificationDelay);
     }
 
     private void createSameDayInterviewAlertEvent(int hr) {
@@ -118,6 +120,13 @@ public class SchedulerManager implements Runnable {
 
         EODCandidateCompletedInterviewTask eodCandidateCompletedInterviewTask = new EODCandidateCompletedInterviewTask();
         timer.schedule(eodCandidateCompletedInterviewTask, delay, oneDay);
+    }
+
+    private void createEODCreditDebitInterviewCredit(long delay){
+        Logger.info("Auto debit interview credit + auto credit interview credit if feedback provided!");
+
+        EODDebitInterviewCreditTask eodDebitInterviewCreditTask = new EODDebitInterviewCreditTask();
+        timer.schedule(eodDebitInterviewCreditTask, delay, oneDay);
     }
 
 

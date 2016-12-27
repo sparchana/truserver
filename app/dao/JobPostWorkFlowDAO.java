@@ -371,4 +371,25 @@ public class JobPostWorkFlowDAO {
                 .setRawSql(rawSql)
                 .findList();
     }
+
+    public static List<JobPostWorkflow> getAllTodaysFeedbackApplications(){
+        StringBuilder workFlowQueryBuilder = new StringBuilder(
+                " select createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
+                        " job_post_id, status_id from job_post_workflow i " +
+                        " where status_id > 13" +
+                        " and date(creation_timestamp) = curdate()");
+
+        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
+                .columnMapping("creation_timestamp", "creationTimestamp")
+                .columnMapping("job_post_id", "jobPost.jobPostId")
+                .columnMapping("status_id", "status.statusId")
+                .columnMapping("candidate_id", "candidate.candidateId")
+                .columnMapping("createdby", "createdBy")
+                .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
+                .create();
+
+        return Ebean.find(JobPostWorkflow.class)
+                .setRawSql(rawSql)
+                .findList();
+    }
 }

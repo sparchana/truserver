@@ -112,6 +112,12 @@ public class RecruiterProfile extends Model {
     @OneToMany(mappedBy = "recruiterProfile", cascade = CascadeType.ALL)
     private List<RecruiterToCandidateUnlocked> recruiterToCandidateUnlockedList;
 
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "recruiterProfile", cascade = CascadeType.REMOVE)
+    private List<RecruiterCreditPack> creditPackList;
+
+
     public static Finder<String, RecruiterProfile> find = new Finder(RecruiterProfile.class);
 
     public RecruiterProfile() {
@@ -301,6 +307,14 @@ public class RecruiterProfile extends Model {
 
     public void setRecruiterAuth(RecruiterAuth recruiterAuth) {
         this.recruiterAuth = recruiterAuth;
+    }
+
+    public List<RecruiterCreditPack> getCreditPackList() {
+        return creditPackList;
+    }
+
+    public void setCreditPackList(List<RecruiterCreditPack> creditPackList) {
+        this.creditPackList = creditPackList;
     }
 
     public Integer totalContactCredits() {
