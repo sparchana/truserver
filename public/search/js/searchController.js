@@ -55,6 +55,9 @@ var app = (function ($) {
                 // render filter paramas
                 app.render.renderLanguage();
                 app.run.urlChangeDetector();
+
+
+                document.getElementById('latestPosted').checked = true;
             },
             getAllJobRole: function () {
                 //ajax call and save data to allJobRole
@@ -491,11 +494,16 @@ var app = (function ($) {
                             app.do.pagination(_numberOfPages);
                        }
 
+                        $('#job_cards_inc').show();
+                        $('#jobCardControl').show();
+
                         $("#hotJobs").html("");
                         var _count = 0;
                         var _parent = $("#hotJobs");
                         //returnedData.reverse();
+
                         $("#jobLoaderDiv").hide();
+                        $('#noJobsDiv').hide();
 
                         app.do.createAndAppendDivider("Popular Jobs");
                         var _isDividerPresent = false;
@@ -787,6 +795,14 @@ var app = (function ($) {
 
                     } else {
                         // no jobs found
+                        // reset current job card and navigator
+
+                        $('#job_cards_inc').hide();
+                        $('#jobCardControl').hide();
+
+                        $("#jobLoaderDiv").hide();
+                        $('#noJobsDiv').show();
+
                     }
                 }
 
@@ -905,7 +921,13 @@ var app = (function ($) {
 
             },
             urlChangeDetector: function () {
-                // TODO detect url change and re-trigger search
+                if (window.history && window.history.pushState) {
+
+                    $(window).on('popstate', function() {
+                        location.reload();
+                    });
+
+                }
             },
             basicReset: function () {
                 console.log("basic reset");
@@ -973,14 +995,6 @@ var app = (function ($) {
     // public methods
     function isEmpty(str) {
         return (!str || 0 === str.length);
-    }
-
-    if (window.history && window.history.pushState) {
-
-        $(window).on('popstate', function() {
-            location.reload();
-        });
-
     }
 
     return app;

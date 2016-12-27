@@ -539,7 +539,10 @@ public class JobSearchService {
                 query = query.orderBy().desc("jobPostCreateTimestamp");
             }
         } else {
+            // default orders
+            query = query.orderBy().asc("source");
             query = query.orderBy().desc("JobPostIsHot");
+            query = query.orderBy().desc("jobPostUpdateTimestamp");
         }
 
 
