@@ -447,7 +447,7 @@ public class JobSearchService {
                 && (filterParamRequest.getSelectedGender() == null
                 && filterParamRequest.getSelectedLanguageIdList().size() == 0
         )){
-            response = getAllHotJobsPaginated(Long.valueOf((page-1)*MAX_ROW));
+            response = getAllActiveJobsPaginated(Long.valueOf((page-1)*MAX_ROW));
             response.setJobsPerPage(MAX_ROW);
 
             return response;
