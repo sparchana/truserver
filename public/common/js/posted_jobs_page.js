@@ -432,44 +432,49 @@ function processDataForHotJobPost(returnedData) {
         }
 
         if (returnedData.jobPostWorkingDays != "" && returnedData.jobPostWorkingDays != null) {
-            var workingDays = returnedData.jobPostWorkingDays.toString(2);
-            var i;
-            /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
-            if (workingDays.length != 7) {
-                var x = 7 - workingDays.length;
-                var modifiedWorkingDays = "";
+            if(returnedData.jobPostWorkingDays == 127){
+                $("#postedJobWorkingDays").html("No - Holiday");
+            }else{
+                var workingDays = returnedData.jobPostWorkingDays.toString(2);
+                var i;
+                /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
+                if (workingDays.length != 7) {
+                    var x = 7 - workingDays.length;
+                    var modifiedWorkingDays = "";
 
-                for (i = 0; i < x; i++) {
-                    modifiedWorkingDays += "0";
+                    for (i = 0; i < x; i++) {
+                        modifiedWorkingDays += "0";
+                    }
+                    modifiedWorkingDays += workingDays;
+                    workingDays = modifiedWorkingDays;
                 }
-                modifiedWorkingDays += workingDays;
-                workingDays = modifiedWorkingDays;
-            }
-            var holiday = "";
-            var arryDay = workingDays.split("");
-            if (arryDay[0] != 1) {
-                holiday += "Mon, ";
-            }
-            if (arryDay[1] != 1) {
-                holiday += "Tue, ";
-            }
-            if (arryDay[2] != 1) {
-                holiday += "Wed, ";
-            }
-            if (arryDay[3] != 1) {
-                holiday += "Thu, ";
-            }
-            if (arryDay[4] != 1) {
-                holiday += "Fri, ";
-            }
-            if (arryDay[5] != 1) {
+                var holiday = "";
+                var arryDay = workingDays.split("");
+                if (arryDay[0] != 1) {
+                    holiday += "Mon, ";
+                }
+                if (arryDay[1] != 1) {
+                    holiday += "Tue, ";
+                }
+                if (arryDay[2] != 1) {
+                    holiday += "Wed, ";
+                }
+                if (arryDay[3] != 1) {
+                    holiday += "Thu, ";
+                }
+                if (arryDay[4] != 1) {
+                    holiday += "Fri, ";
+                }
+                if (arryDay[5] != 1) {
 
-                holiday += "Sat, ";
+                    holiday += "Sat, ";
+                }
+                if (arryDay[6] != 1) {
+                    holiday += "Sun ";
+                }
+                $("#postedJobWorkingDays").html(holiday + " - Holiday");
             }
-            if (arryDay[6] != 1) {
-                holiday += "Sun ";
-            }
-            $("#postedJobWorkingDays").html(holiday + " - Holiday");
+
         }
         
         if (returnedData.jobPostStartTime != null && returnedData.jobPostStartTime != -1
