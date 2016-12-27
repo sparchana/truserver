@@ -373,7 +373,8 @@ var app = (function ($) {
             },
             renderTextSearch: function () {
                 var input = $("#searchText");
-                if((input.val() == null || input.val().length < 3)){
+                var numberOfKeywords = input.val().split(",");
+                if((input.val() == null || input.val().length < 3) ){
                     console.log("no need to get suggestion");
                     return;
                 }
@@ -404,6 +405,9 @@ var app = (function ($) {
                         }
                     });
                     app.suggestion.list = list;
+                    if(app.suggestion.list.length == 0) {
+                        // when no suggestions are returned. do something here...
+                    }
                 });
                 $('.awesomplete').css('width', '100%')
             }

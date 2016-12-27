@@ -71,9 +71,15 @@ public class SearchController extends Controller {
             if(keyword.replace(" ", "").trim().isEmpty()){
                 continue;
             }
-            companyJunction.add(Expr.like("companyName", keyword + "%"));
-            companyJunction.add(Expr.eq("Source", ServerConstants.SOURCE_INTERNAL));
-            companyJunction.add(Expr.eq("CompStatus", ServerConstants.COMPANY_STATUS_ACTIVE));
+            companyJunction.add(
+                    Expr.and(
+                            Expr.eq("CompStatus", ServerConstants.COMPANY_STATUS_ACTIVE),
+                            Expr.and(
+                                    Expr.eq("Source", ServerConstants.SOURCE_INTERNAL),
+                                    Expr.like("companyName", keyword + "%")
+                            )
+                    )
+            );
 
         }
         companyJunction.endJunction();
@@ -91,9 +97,15 @@ public class SearchController extends Controller {
             if(keyword.replace(" ", "").trim().isEmpty()){
                 continue;
             }
-            jobPostJunction.add(Expr.like("jobPostTitle", keyword + "%"));
-            jobPostJunction.add(Expr.eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE));
-            jobPostJunction.add(Expr.eq("Source", ServerConstants.SOURCE_INTERNAL));
+            companyJunction.add(
+                    Expr.and(
+                            Expr.eq("Source", ServerConstants.SOURCE_INTERNAL),
+                            Expr.and(
+                                    Expr.eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE),
+                                    Expr.like("jobPostTitle", keyword + "%")
+                            )
+                    )
+            );
         }
         jobPostJunction.endJunction();
 
