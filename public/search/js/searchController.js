@@ -42,11 +42,11 @@ var app = (function ($) {
         bMethods : {
             init: function () {
                 console.log("init");
+                app.page = 1;
                 if (!(app.currentSearchURL == DEFAULT_VALUES.D_SEARCH_URL)) {
-                    app.page = 1;
                     app.do.prepareSearchParamFromURL();
-                    app.do.search(true);
                 }
+                app.do.search(true);
                 app.render.renderTextSearch();
                 app.render.renderLocation();
                 app.render.renderEducation();
@@ -351,6 +351,7 @@ var app = (function ($) {
         // action perform methods
         do: {
             search: function (isBasicResetRequired) {
+                console.log("do search ");
                 if(isBasicResetRequired) {
                     app.run.basicReset();
                 }
@@ -807,7 +808,7 @@ var app = (function ($) {
                         if(page > 0 ){
                             console.log("page: " + page);
                             app.page = page;
-                            
+
                         }
                         if(app.isPaginationEnabled) {
                             app.do.search(false);
@@ -974,10 +975,19 @@ var app = (function ($) {
         return (!str || 0 === str.length);
     }
 
+    if (window.history && window.history.pushState) {
+
+        $(window).on('popstate', function() {
+            location.reload();
+        });
+
+    }
+
     return app;
 }(jQuery));
 
 
+// exposed methods
 
 function checkOnFilterChange(){
     app.do.updateLanguageFilter();

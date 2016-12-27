@@ -439,6 +439,20 @@ public class JobSearchService {
 
         Query<JobPost> query = JobPost.find.query();
 
+        if((keywordList == null||keywordList.size() ==0 )
+                && locality == null
+                && education == null
+                && experience == null
+                && sortBy == null
+                && (filterParamRequest.getSelectedGender() == null
+                && filterParamRequest.getSelectedLanguageIdList().size() == 0
+        )){
+            response = getAllHotJobsPaginated(Long.valueOf((page-1)*MAX_ROW));
+            response.setJobsPerPage(MAX_ROW);
+
+            return response;
+        }
+
         // TODO convert this to do a LIKE for all the words in the 'keywordList'
         if (keywordList != null && keywordList.size() >0 ) {
             query = query.select("*")
