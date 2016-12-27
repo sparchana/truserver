@@ -194,6 +194,7 @@ var app = (function ($) {
                 }
                 // this if check prevents static token suggestion from being duplicated
                 else if ($("#searchEducation option[value='1']").length == 0) {
+
                     var promise = new Promise(function (resolve, reject) {
                             app.bMethods.getAllEducation().then(
                                 function (returnedData) {
@@ -262,6 +263,7 @@ var app = (function ($) {
                 }
                 // this if check prevents static token suggestion from being duplicated
                 else if ($("#searchExperience option[value='1']").length == 0) {
+
                     var promise = new Promise(function (resolve, reject) {
                             app.bMethods.getAllExperience().then(
                                 function (returnedData) {
