@@ -163,6 +163,9 @@ public class ServerConstants {
     public static final int REVIEW_APPLICATION_AUTO = 1;
     public static Map<String, String> devTeamMobile;
 
+    // company status
+    public static final int COMPANY_STATUS_ACTIVE = 2;
+
     // rec sorting keys
     public static Integer REC_SORT_LASTEST_ACTIVE = 1;
     public static Integer REC_SORT_SALARY_H_TO_L = 2;

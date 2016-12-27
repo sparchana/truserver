@@ -4,9 +4,7 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.search.helper.FilterParamRequest;
 import api.http.httpResponse.JobPostResponse;
-import com.avaje.ebean.Expr;
-import com.avaje.ebean.PagedList;
-import com.avaje.ebean.Query;
+import com.avaje.ebean.*;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import in.trujobs.proto.JobFilterRequest;
 import models.entity.Candidate;
@@ -23,7 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static api.ServerConstants.*;
+import static api.ServerConstants.SORT_BY_DATE_POSTED;
+import static api.ServerConstants.SORT_BY_SALARY;
 
 /**
  * Created by zero on 15/8/16.
@@ -453,12 +452,15 @@ public class JobSearchService {
             return response;
         }
 
+
         // TODO convert this to do a LIKE for all the words in the 'keywordList'
         if (keywordList != null && keywordList.size() >0 ) {
+
             query = query.select("*")
                     .fetch("jobRole")
                     .fetch("company")
                     .where()
+                    .disjunction()
                     .or( Expr.in("jobPostTitle", keywordList), Expr.or(
                                     Expr.in("jobRole.jobName", keywordList),
                                     Expr.in("company.companyName", keywordList)

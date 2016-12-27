@@ -28,6 +28,7 @@ var app = (function ($) {
         allEducation: [],
         allExperience: [],
         allLanguage: [],
+        suggestion: null,
         currentURL: window.location.pathname,
         currentSearchParams: {},
         currentFilterParams: {
@@ -42,7 +43,7 @@ var app = (function ($) {
         currentSearchURL: window.location.pathname.split('/')[window.location.pathname.split('/').length - 2],
 
         // basic getter/setter types method
-        bMethods : {
+        bMethods: {
             init: function () {
                 console.log("init");
                 app.page = 1;
@@ -76,7 +77,7 @@ var app = (function ($) {
             getAllLocation: function () {
                 //ajax call || its a promise
                 if (app.allLocation.length == 0) {
-                   return $.ajax({type: 'POST', url: '/getAllLocality'});
+                    return $.ajax({type: 'POST', url: '/getAllLocality'});
                 } else {
                     // new promise says its already there
                     return new Promise(function (resolve, reject) {
@@ -121,15 +122,18 @@ var app = (function ($) {
         // basic ui rendering methods
         render: {
             renderLocation: function (locality) {
-                if(locality != null) {
+                if (locality != null) {
                     console.log('re render with localityname; ' + locality.localityName);
                     $('#searchLocation').tokenize({
                         displayDropdownOnFocus: true,
                         placeholder: "Location",
+                        newElements: true,
                         nbDropdownElements: 1000,
                         maxElements: 1
-                    }).tokenRemove( $('#searchLocation').val()[0]).tokenAdd(locality.localityId, locality.localityName);
-                } else {
+                    }).tokenRemove($('#searchLocation').val()[0]).tokenAdd(locality.localityId, locality.localityName);
+                }
+                // this if check prevents static token suggestion from being duplicated
+                else if ($("#searchLocation option[value='1']").length == 0) {
                     var promise = new Promise(function (resolve, reject) {
                             app.bMethods.getAllLocation().then(
                                 function (returnedData) {
@@ -160,6 +164,7 @@ var app = (function ($) {
                             $('#searchLocation').append(option);
                         });
 
+                        console.log("app.allLocation size: " + app.allLocation.length);
                         $('#searchLocation').tokenize({
                             displayDropdownOnFocus: true,
                             placeholder: "Location",
@@ -178,15 +183,17 @@ var app = (function ($) {
             },
             renderEducation: function (education) {
 
-                if(education!=null){
+                if (education != null) {
                     console.log('re render with education; ' + education.educationName);
                     $('#searchEducation').tokenize({
                         displayDropdownOnFocus: true,
                         placeholder: "Education",
                         nbDropdownElements: 1000,
                         maxElements: 1
-                    }).tokenRemove( $('#searchEducation').val()[0]).tokenAdd(education.educationId, education.educationName);
-                } else {
+                    }).tokenRemove($('#searchEducation').val()[0]).tokenAdd(education.educationId, education.educationName);
+                }
+                // this if check prevents static token suggestion from being duplicated
+                else if ($("#searchEducation option[value='1']").length == 0) {
                     var promise = new Promise(function (resolve, reject) {
                             app.bMethods.getAllEducation().then(
                                 function (returnedData) {
@@ -206,7 +213,7 @@ var app = (function ($) {
 
                     promise.then(function () {
                         console.log("render education");
-                        var option ;
+                        var option;
                         var first = {};
                         var initId = null;
                         app.allEducation.forEach(function (education) {
@@ -215,13 +222,13 @@ var app = (function ($) {
                             option = $('<option value=' + id + '></option>').text(name);
                             $('#searchEducation').append(option);
 
-                            if(initId == null) {
+                            if (initId == null) {
                                 initId = id;
                             }
 
-                            if(name == "Any") {
+                            if (name == "Any") {
                                 console.log("found any");
-                                first = {'id':  id, 'name': name };
+                                first = {'id': id, 'name': name};
                                 DEFAULT_VALUES.D_EDU_ANY = first;
                             }
                         });
@@ -244,15 +251,17 @@ var app = (function ($) {
             },
             renderExperience: function (experience) {
 
-                if(experience != null) {
+                if (experience != null) {
 
                     $('#searchExperience').tokenize({
                         displayDropdownOnFocus: true,
                         placeholder: "Experience",
                         nbDropdownElements: 1000,
                         maxElements: 1
-                    }).tokenRemove( $('#searchExperience').val()[0]).tokenAdd(experience.experienceId, experience.experienceType);
-                } else {
+                    }).tokenRemove($('#searchExperience').val()[0]).tokenAdd(experience.experienceId, experience.experienceType);
+                }
+                // this if check prevents static token suggestion from being duplicated
+                else if ($("#searchExperience option[value='1']").length == 0) {
                     var promise = new Promise(function (resolve, reject) {
                             app.bMethods.getAllExperience().then(
                                 function (returnedData) {
@@ -281,13 +290,13 @@ var app = (function ($) {
                             var name = experience.experienceType;
                             option = $('<option value=' + id + '></option>').text(name);
 
-                            if(initId == null) {
+                            if (initId == null) {
                                 initId = id;
                             }
 
-                            if(experience.experienceType == "Any") {
+                            if (experience.experienceType == "Any") {
                                 console.log("found any");
-                                first = {'id':  id, 'name': name };
+                                first = {'id': id, 'name': name};
                                 DEFAULT_VALUES.D_EXP_ANY = first;
                             }
 
@@ -363,39 +372,47 @@ var app = (function ($) {
 
             },
             renderTextSearch: function () {
-                var input = document.getElementById("searchText");
-                var awesomplete = new Awesomplete('input[data-multiple]', {
-                    minChars: 1,
-                    autoFirst: true,
-                    filter: function(text, input) {
-                        return Awesomplete.FILTER_CONTAINS(text, input.match(/[^,]*$/)[0]);
-                    },
+                var input = $("#searchText");
+                if((input.val() == null || input.val().length < 3)){
+                    console.log("no need to get suggestion");
+                    return;
+                }
+                if(app.suggestion == null){
+                    app.suggestion = new Awesomplete('input[data-multiple]', {
+                        minChars: 1,
+                        autoFirst: true,
+                        filter: function (text, input) {
+                            return Awesomplete.FILTER_CONTAINS(text, input.match(/[^,]*$/)[0]);
+                        },
 
-                    replace: function(text) {
-                        var before = this.input.value.match(/^.+,\s*|/)[0];
-                        this.input.value = before + text + ", ";
-                    }
-                });
+                        replace: function (text) {
+                            var before = this.input.value.match(/^.+,\s*|/)[0];
+                            this.input.value = before + text + ", ";
+                        }
+                    });
+                }
 
                 $.ajax({
-                    url: '/ss/?key=' + input.textContent,
+                    url: '/ss/?key=' + input.val(),
                     type: 'GET',
                     dataType: 'json'
-                }).success(function(data) {
-                        var list = [];
-                        $.each(data, function(key, value) {
-                            list.push(value.jobName);
-                        });
-                        awesomplete.list = list;
+                }).success(function (data) {
+                    var list = [];
+                    $.each(data, function (key, value) {
+                        if(!(input.val().toLowerCase().indexOf(value.toLowerCase() + ",") >= 0)){
+                            list.push(value);
+                        }
+                    });
+                    app.suggestion.list = list;
                 });
-                $('.awesomplete').css('width','100%')
+                $('.awesomplete').css('width', '100%')
             }
         },
         // action perform methods
         do: {
             search: function (isBasicResetRequired) {
                 console.log("do search ");
-                if(isBasicResetRequired) {
+                if (isBasicResetRequired) {
                     app.run.basicReset();
                 }
 
@@ -424,14 +441,14 @@ var app = (function ($) {
             },
             modifyURL: function (url) {
                 // TODO ideally this should change after the result is returned
-                window.history.pushState("object or string", "Title", "/s/"+url);
-                return "/s/"+url;
+                window.history.pushState("object or string", "Title", "/s/" + url);
+                return "/s/" + url;
             },
             prepareURL: function () {
                 var _searchStr = document.getElementById("searchText").value;
 
-                if(_searchStr != null || _searchStr.trim() != ""){
-                    _searchStr+= "-'";
+                if (_searchStr != null || _searchStr.trim() != "") {
+                    _searchStr += "-'";
                 }
                 // forced in-bangalore
                 _searchStr += DEFAULT_VALUES.D_SEARCH_KEYWORD_IDENTIFIER;
@@ -440,84 +457,84 @@ var app = (function ($) {
                 _searchStr = _searchStr.replace(/[^a-z0-9]+/gi, '-');
 
                 // replace first occurance of -
-                _searchStr = _searchStr.replace(/^(-)+/,"");
+                _searchStr = _searchStr.replace(/^(-)+/, "");
 
                 var _location = document.getElementById("searchLocation");
-                var _text =  _location.options[_location.selectedIndex];
-                if(_location.value != 0 && _text!= null){
-                    _searchStr += "_"+DEFAULT_VALUES.D_LOCALITY_IDENTIFIER + _text.innerHTML.replace(/\s+/g, '-');
+                var _text = _location.options[_location.selectedIndex];
+                if (_location.value != 0 && _text != null) {
+                    _searchStr += "_" + DEFAULT_VALUES.D_LOCALITY_IDENTIFIER + _text.innerHTML.replace(/\s+/g, '-');
                 }
 
                 var _education = document.getElementById("searchEducation");
                 _text = _education.options[_education.selectedIndex];
 
-                if(_education.value != 0 && _text != null && _text.innerHTML.toLowerCase() != "any"){
+                if (_education.value != 0 && _text != null && _text.innerHTML.toLowerCase() != "any") {
                     _searchStr += "_for-" + _text.innerHTML.replace(/[^a-z0-9]+/gi, '-') + DEFAULT_VALUES.D_EDU_IDENTIFIER;
                 }
 
                 var _experience = document.getElementById("searchExperience");
                 _text = _experience.options[_experience.selectedIndex];
-                if(_experience.value != 0 && _text != null && _text.innerHTML.toLowerCase() != "any"){
+                if (_experience.value != 0 && _text != null && _text.innerHTML.toLowerCase() != "any") {
                     _searchStr += "_for-" + _text.innerHTML.replace(/[^a-z0-9]+/gi, '-') + DEFAULT_VALUES.D_EXP_IDENTIFIER;
                 }
 
-                return (_searchStr+"/").toLowerCase();
+                return (_searchStr + "/").toLowerCase();
             },
-            prepareSearchParamFromURL: function() {
+            prepareSearchParamFromURL: function () {
 
-                // interpretes url and create search params
+                // interprets url and create search params
                 try {
                     var url = window.location.pathname.split('/');
                     var _searchUrl = url[url.length - 2];
                     app.currentSearchURL = _searchUrl;
                     app.currentSearchParams = {};
-                    if(_searchUrl != null){
+                    if (_searchUrl != null) {
                         var list = _searchUrl.split('_');
                         // run identifier on this array;
                         var i;
                         for (i = 0; i < list.length; i++) {
-                            if(isEmpty(list[i])) {
+                            if (isEmpty(list[i])) {
                                 continue;
                             }
                             var _param = list[i];
-                            if(_param.search(DEFAULT_VALUES.D_SEARCH_KEYWORD_IDENTIFIER) != -1) {
+                            if (_param.search(DEFAULT_VALUES.D_SEARCH_KEYWORD_IDENTIFIER) != -1) {
                                 _param = _param.replace(DEFAULT_VALUES.D_SEARCH_KEYWORD_IDENTIFIER, '');
                                 _param = _param.trim();
-                                if(_param.length > 0) {
+                                if (_param.length > 0) {
                                     _param = _param.split('-');
                                     app.currentSearchParams["keywordList"] = _param;
                                 }
                             } else if (_param.search(DEFAULT_VALUES.D_LOCALITY_IDENTIFIER) != -1) {
                                 _param = _param.replace(DEFAULT_VALUES.D_LOCALITY_IDENTIFIER, '');
-                                if(!isEmpty(_param)){
+                                if (!isEmpty(_param)) {
                                     app.currentSearchParams["locationName"] = _param.replace(/[^a-z0-9]+/gi, ' ').trim();
                                 }
                             } else if (_param.search(DEFAULT_VALUES.D_EDU_IDENTIFIER) != -1) {
                                 _param = _param.replace(DEFAULT_VALUES.D_EDU_IDENTIFIER, '');
                                 _param = _param.replace("for", '');
                                 _param = _param.trim();
-                                if(!isEmpty(_param)){
+                                if (!isEmpty(_param)) {
                                     app.currentSearchParams["educationText"] = _param.replace(/[^a-z0-9]+/gi, ' ').trim();
                                 }
                             } else if (_param.search(DEFAULT_VALUES.D_EXP_IDENTIFIER) != -1) {
                                 _param = _param.replace(DEFAULT_VALUES.D_EXP_IDENTIFIER, '');
                                 _param = _param.replace("for", '');
-                                if(!isEmpty(_param)){
+                                if (!isEmpty(_param)) {
                                     app.currentSearchParams["experienceText"] = _param.replace(/[^a-z0-9]+/gi, ' ').trim();
                                 }
                             }
                         }
                     }
                 } catch (exception) {
-                    console.log("exception in interpreting url: "+exception.stack);
+                    console.log("exception in interpreting url: " + exception.stack);
                 }
             },
-            parseSearchResponse : function (data) {
+            parseSearchResponse: function (data) {
                 console.log(data);
                 // form result, and render it in card
                 // pagination is required
 
-                if(data != null) {
+                if (data != null) {
                     // append search params to the UI
                     app.render.renderLocation(data.searchParams.locality);
                     app.render.renderEducation(data.searchParams.education);
@@ -525,20 +542,20 @@ var app = (function ($) {
 
                     var _jobPostList = data.results.allJobPost;
                     var _jobPostCount = Object.keys(_jobPostList).length;
-                    if(_jobPostCount > 0){
-                        if(DEFAULT_VALUES.D_JOBS_PER_PAGE == 0){
+                    if (_jobPostCount > 0) {
+                        if (DEFAULT_VALUES.D_JOBS_PER_PAGE == 0) {
                             DEFAULT_VALUES.D_JOBS_PER_PAGE = parseInt(data.results.jobsPerPage);
                             console.log("max row" + DEFAULT_VALUES.D_JOBS_PER_PAGE);
                         }
-                        var _numberOfPages = Math.floor(parseInt(data.results.totalJobs)/ DEFAULT_VALUES.D_JOBS_PER_PAGE);
+                        var _numberOfPages = Math.floor(parseInt(data.results.totalJobs) / DEFAULT_VALUES.D_JOBS_PER_PAGE);
                         var _rem = parseInt(data.results.totalJobs) % DEFAULT_VALUES.D_JOBS_PER_PAGE;
-                        if(_rem > 0){
-                            _numberOfPages ++;
+                        if (_rem > 0) {
+                            _numberOfPages++;
                         }
                         console.log("no of pages : " + _numberOfPages);
-                        if(!app.isPaginationEnabled){
+                        if (!app.isPaginationEnabled) {
                             app.do.pagination(_numberOfPages);
-                       }
+                        }
 
                         $('#job_cards_inc').show();
                         $('#jobCardControl').show();
@@ -553,28 +570,28 @@ var app = (function ($) {
 
                         app.do.createAndAppendDivider("Popular Jobs");
                         var _isDividerPresent = false;
-                        _jobPostList.forEach(function (jobPost){
+                        _jobPostList.forEach(function (jobPost) {
                             _count++;
-                            if(_count){
+                            if (_count) {
                                 //!* get all localities of the jobPost *!/
                                 var _jobLocality = jobPost.jobPostToLocalityList;
                                 var _localities = "";
                                 var _allLocalities = "";
                                 var _loopCount = 0;
 
-                                if(jobPost.source != null && jobPost.source > 0 && !_isDividerPresent){
+                                if (jobPost.source != null && jobPost.source > 0 && !_isDividerPresent) {
                                     app.do.createAndAppendDivider("Other Jobs");
                                     _isDividerPresent = true;
                                 }
 
                                 _jobLocality.forEach(function (locality) {
-                                    _loopCount ++;
-                                    if(_loopCount > 2){
+                                    _loopCount++;
+                                    if (_loopCount > 2) {
                                         return false;
-                                    } else{
+                                    } else {
                                         var name = locality.locality.localityName;
                                         _localities += name;
-                                        if(_loopCount < Object.keys(_jobLocality).length){
+                                        if (_loopCount < Object.keys(_jobLocality).length) {
                                             _localities += ", ";
                                         }
                                     }
@@ -584,7 +601,7 @@ var app = (function ($) {
                                     _loopCount++;
                                     var name = locality.locality.localityName;
                                     _allLocalities += name;
-                                    if(_loopCount < Object.keys(_jobLocality).length){
+                                    if (_loopCount < Object.keys(_jobLocality).length) {
                                         _allLocalities += ", ";
                                     }
                                 });
@@ -656,7 +673,7 @@ var app = (function ($) {
 
                                 var salaryDiv = document.createElement("div");
                                 salaryDiv.style = "display: inline-block; font-size: 14px";
-                                if(jobPost.jobPostMaxSalary == "0" || jobPost.jobPostMaxSalary == null){
+                                if (jobPost.jobPostMaxSalary == "0" || jobPost.jobPostMaxSalary == null) {
                                     salaryDiv.textContent = rupeeFormatSalary(jobPost.jobPostMinSalary) + " monthly";
                                 } else {
                                     salaryDiv.textContent = rupeeFormatSalary(jobPost.jobPostMinSalary) + " - " + rupeeFormatSalary(jobPost.jobPostMaxSalary) + " monthly";
@@ -723,7 +740,7 @@ var app = (function ($) {
                                 locDiv.textContent = _localities;
                                 jobBodySubRowColLoc.appendChild(locDiv);
 
-                                if(((_jobLocality.length) - 2) > 0 ){
+                                if (((_jobLocality.length) - 2) > 0) {
                                     var tooltip = document.createElement("a");
                                     tooltip.id = "locationMsg_" + jobPost.jobPostId;
                                     tooltip.title = _allLocalities;
@@ -737,7 +754,7 @@ var app = (function ($) {
                                     $('[data-toggle="tooltip"]').tooltip()
                                 });
 
-                                if(localStorage.getItem("incentives") == "1"){
+                                if (localStorage.getItem("incentives") == "1") {
                                     var incentiveDetails = document.createElement("div");
                                     incentiveDetails.className = "row";
                                     incentiveDetails.id = "incentiveDetails";
@@ -770,9 +787,9 @@ var app = (function ($) {
                                     var interviewIncentiveVal = document.createElement("div");
                                     interviewIncentiveVal.className = "incentiveEmptyBody";
                                     interviewIncentiveVal.style = "display: inline-block;";
-                                    if(jobPost.jobPostPartnerInterviewIncentive == null || jobPost.jobPostPartnerInterviewIncentive == 0){
+                                    if (jobPost.jobPostPartnerInterviewIncentive == null || jobPost.jobPostPartnerInterviewIncentive == 0) {
                                         interviewIncentiveVal.textContent = "Interview incentive not specified";
-                                    } else{
+                                    } else {
                                         interviewIncentiveVal.textContent = "₹" + rupeeFormatSalary(jobPost.jobPostPartnerInterviewIncentive) + " interview incentive";
                                         incentiveIcon.src = "/assets/partner/img/money-bag.png";
                                         interviewIncentiveVal.className = "incentiveBody";
@@ -806,10 +823,10 @@ var app = (function ($) {
                                     var joiningIncentiveVal = document.createElement("div");
                                     joiningIncentiveVal.className = "incentiveEmptyBody";
                                     joiningIncentiveVal.style = "display: inline-block;";
-                                    if(jobPost.jobPostPartnerJoiningIncentive == null || jobPost.jobPostPartnerJoiningIncentive == 0){
+                                    if (jobPost.jobPostPartnerJoiningIncentive == null || jobPost.jobPostPartnerJoiningIncentive == 0) {
                                         joiningIncentiveVal.textContent = "Joining Incentive not specified";
-                                    } else{
-                                        joiningIncentiveVal.textContent =  "₹" + rupeeFormatSalary(jobPost.jobPostPartnerJoiningIncentive) + " joining incentive";
+                                    } else {
+                                        joiningIncentiveVal.textContent = "₹" + rupeeFormatSalary(jobPost.jobPostPartnerJoiningIncentive) + " joining incentive";
                                         incentiveIcon.src = "/assets/partner/img/money-bag.png";
                                         joiningIncentiveVal.className = "incentiveBody";
                                     }
@@ -825,10 +842,10 @@ var app = (function ($) {
                                 applyBtn.className = "jobApplyBtn";
                                 applyBtn.textContent = "View & Apply";
                                 applyBtnDiv.appendChild(applyBtn);
-                                applyBtn.onclick=function(){
-                                    var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
+                                applyBtn.onclick = function () {
+                                    var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
                                     jobPostBreak = jobPostBreak.toLowerCase();
-                                    var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
+                                    var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
                                     jobCompany = jobCompany.toLowerCase();
                                     try {
                                         window.location.href = "/jobs/" + jobPostBreak + "/bengaluru/" + jobCompany + "/" + jobPost.jobPostId;
@@ -867,15 +884,15 @@ var app = (function ($) {
                     totalPages: noOfPages,
                     visiblePages: 5,
                     onPageClick: function (event, page) {
-                        if(page > 0 ){
+                        if (page > 0) {
                             console.log("page: " + page);
                             app.page = page;
 
                         }
-                        if(app.isPaginationEnabled) {
+                        if (app.isPaginationEnabled) {
                             app.do.search(false);
                         }
-                        $(".page-link").click(function(){
+                        $(".page-link").click(function () {
                             $('html, body').animate({scrollTop: $("#job_cards_inc").offset().top - 100}, 800);
                         });
                     }
@@ -905,13 +922,13 @@ var app = (function ($) {
                 console.log("update language filter");
                 //language filter
                 app.currentFilterParams.selectedLanguageIdList = [];
-                $('#languageFilterDiv input:checked').each(function() {
+                $('#languageFilterDiv input:checked').each(function () {
                     console.log("added id: " + parseInt($(this).attr('value')));
                     app.currentFilterParams.selectedLanguageIdList.push(parseInt($(this).attr('value')));
                 });
-                if(app.currentFilterParams.selectedLanguageIdList.length > 0){
+                if (app.currentFilterParams.selectedLanguageIdList.length > 0) {
                     $("#language_filter").show();
-                } else{
+                } else {
                     $("#language_filter").hide();
                 }
 
@@ -969,7 +986,7 @@ var app = (function ($) {
             urlChangeDetector: function () {
                 if (window.history && window.history.pushState) {
 
-                    $(window).on('popstate', function() {
+                    $(window).on('popstate', function () {
                         location.reload();
                     });
 
@@ -981,33 +998,33 @@ var app = (function ($) {
                 app.isPaginationEnabled = false;
 
 
-                if($('#searchLocation').val() == null) {
+                if ($('#searchLocation').val() == null) {
                     $('#searchLocation').tokenize({
                         displayDropdownOnFocus: true,
                         placeholder: "Location",
                         nbDropdownElements: 1000,
                         maxElements: 1
                     }).tokenAdd(DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE.id,
-                                                   DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE.name);
+                        DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE.name);
                 }
-                if($('#searchEducation').val() == null) {
+                if ($('#searchEducation').val() == null) {
                     $('#searchEducation').tokenize({
                         displayDropdownOnFocus: true,
                         placeholder: "Education",
                         nbDropdownElements: 1000,
                         maxElements: 1
                     }).tokenAdd(DEFAULT_VALUES.D_EDU_ANY.id,
-                                                   DEFAULT_VALUES.D_EDU_ANY.name);
+                        DEFAULT_VALUES.D_EDU_ANY.name);
                 }
 
-                if($('#searchExperience').val() == null) {
+                if ($('#searchExperience').val() == null) {
                     $('#searchExperience').tokenize({
                         displayDropdownOnFocus: true,
                         placeholder: "Experience",
                         nbDropdownElements: 1000,
                         maxElements: 1
                     }).tokenAdd(DEFAULT_VALUES.D_EXP_ANY.id,
-                                                    DEFAULT_VALUES.D_EXP_ANY.name);
+                        DEFAULT_VALUES.D_EXP_ANY.name);
                 }
 
             }
@@ -1021,39 +1038,33 @@ var app = (function ($) {
     app.bMethods.init();
 
     // resetFilters even listeners
-    document.getElementById("resetFilters").addEventListener("click", function(){
+    document.getElementById("resetFilters").addEventListener("click", function () {
         app.do.resetFilters();
     });
-    document.getElementById("resetFilters_").addEventListener("click", function(){
+    document.getElementById("resetFilters_").addEventListener("click", function () {
         app.do.resetFilters();
     });
 
     // search click listener
-    document.getElementById("searchBtn").addEventListener("click", function(){
+    document.getElementById("searchBtn").addEventListener("click", function () {
         app.page = 1; // reset page to 1 for new search
         app.currentURL = app.do.modifyURL(app.do.prepareURL());
         app.do.prepareSearchParamFromURL();
         app.do.search(true);
     });
 
-    // filterChange listener
-
-    // document.getElementById("languageFilterDiv").addEventListener("click", function(event){
-    //     console.log("language filter div clicked: e: " + event +" this: " + this.id);
-    //     app.do.updateLanguageFilter(event);
-    //     // event.returnValue = true;
-    // });
-
-    // $( "input[name=languageFilter]:checkbox").on('click', function() {
-    //     app.do.updateLanguageFilter();
-    // });
-    //
-    // $( "input[name=languageFilter]:checkbox").on('click', function() {
-    //     alert('a')
-    // });
     // scroll to top listener
-    document.getElementById("scrollToTop").addEventListener("click", function(){
+    document.getElementById("scrollToTop").addEventListener("click", function () {
         $('body').scrollTop(0);
+    });
+
+    // this detect the typing even on the search bar
+    $('#searchText').on('keyup',function (event) {
+        if(((event.keyCode >= 48 && event.keyCode <= 57)
+            || (event.keyCode >= 65 && event.keyCode <= 90) )){
+            // trigger suggestion only when typing alpha numeric is happening
+            app.render.renderTextSearch();
+        }
     });
 
     // gender filter listner
@@ -1080,6 +1091,6 @@ var app = (function ($) {
 
 // exposed methods
 
-function checkOnFilterChange(){
+function checkOnFilterChange() {
     app.do.updateLanguageFilter();
 }
