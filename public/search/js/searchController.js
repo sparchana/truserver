@@ -18,6 +18,9 @@ var app = (function ($) {
         D_EDU_IDENTIFIER: "-pass",
         D_EXP_IDENTIFIER: "-experience",
         D_JOBS_PER_PAGE: 0,
+        D_EDU_ANY: {},
+        D_EXP_ANY: {},
+        D_LOCATION_ALL_BANGALORE: {}
     };
     var app = {
         allJobRole: [],
@@ -50,7 +53,7 @@ var app = (function ($) {
                 app.render.renderTextSearch();
                 app.render.renderLocation();
                 app.render.renderEducation();
-                app.render.renderExperince();
+                app.render.renderExperience();
 
                 // render filter paramas
                 app.render.renderLanguage();
@@ -138,8 +141,10 @@ var app = (function ($) {
 
                 promise.then(function () {
                     console.log("render location");
-                    var option = $('<option value="0"></option>').text("All Bangalore");
+                    DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE = {id: "0", name: "All Bangalore"};
+                    var option = $('<option value="'+DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE.id +'"></option>').text(DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE.name);
                     $('#searchLocation').append(option);
+
                     app.allLocation.forEach(function (locality) {
                         var id = locality.localityId;
                         var name = locality.localityName;
@@ -196,6 +201,7 @@ var app = (function ($) {
                         if(name == "Any") {
                             console.log("found any");
                             first = {'id':  id, 'name': name };
+                            DEFAULT_VALUES.D_EDU_ANY = first;
                         }
                     });
 
@@ -208,13 +214,13 @@ var app = (function ($) {
                     });
 
                     $('#searchEducation').tokenize().tokenRemove(initId);
-                    $('#searchEducation').tokenize().tokenAdd(first.id, first.name);
+                    $('#searchEducation').tokenize().tokenAdd(DEFAULT_VALUES.D_EDU_ANY.id, DEFAULT_VALUES.D_EDU_ANY.name);
                 }).catch(function (fromReject) {
                     console.log(fromReject);
                 });
 
             },
-            renderExperince: function () {
+            renderExperience: function () {
 
                 var promise = new Promise(function (resolve, reject) {
                         app.bMethods.getAllExperience().then(
@@ -251,6 +257,7 @@ var app = (function ($) {
                         if(experience.experienceType == "Any") {
                             console.log("found any");
                             first = {'id':  id, 'name': name };
+                            DEFAULT_VALUES.D_EXP_ANY = first;
                         }
 
                         $('#searchExperience').append(option);
@@ -265,7 +272,7 @@ var app = (function ($) {
                     });
 
                     $('#searchExperience').tokenize().tokenRemove(initId);
-                    $('#searchExperience').tokenize().tokenAdd(first.id, first.name);
+                    $('#searchExperience').tokenize().tokenAdd(DEFAULT_VALUES.D_EXP_ANY.id, DEFAULT_VALUES.D_EXP_ANY.name);
 
                 }).catch(function (fromReject) {
                     console.log(fromReject);
@@ -358,6 +365,7 @@ var app = (function ($) {
                 if(isBasicResetRequired) {
                     app.run.basicReset();
                 }
+
 
                 // ajax call
                 var d = {
@@ -933,6 +941,25 @@ var app = (function ($) {
                 console.log("basic reset");
                 app.page = 1;
                 app.isPaginationEnabled = false;
+
+
+                if($('#searchLocation').val() == null) {
+                    $('#searchLocation').tokenize()
+                                         .tokenAdd(DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE.id,
+                                                   DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE.name);
+                }
+                if($('#searchEducation').val() == null) {
+                    $('#searchEducation').tokenize()
+                                         .tokenAdd(DEFAULT_VALUES.D_EDU_ANY.id,
+                                                   DEFAULT_VALUES.D_EDU_ANY.name);
+                }
+
+                if($('#searchExperience').val() == null) {
+                    $('#searchExperience').tokenize()
+                                          .tokenAdd(DEFAULT_VALUES.D_EXP_ANY.id,
+                                                    DEFAULT_VALUES.D_EXP_ANY.name);
+                }
+
             }
         }
     };
