@@ -49,7 +49,6 @@ var app = (function ($) {
                 if (!(app.currentSearchURL == DEFAULT_VALUES.D_SEARCH_URL)) {
                     app.do.prepareSearchParamFromURL();
                 }
-                app.do.search(true);
                 app.render.renderTextSearch();
                 app.render.renderLocation();
                 app.render.renderEducation();
@@ -59,6 +58,7 @@ var app = (function ($) {
                 app.render.renderLanguage();
                 app.run.urlChangeDetector();
 
+                app.do.search(true);
 
                 document.getElementById('latestPosted').checked = true;
             },
@@ -120,163 +120,196 @@ var app = (function ($) {
         },
         // basic ui rendering methods
         render: {
-            renderLocation: function () {
-
-                var promise = new Promise(function (resolve, reject) {
-                        app.bMethods.getAllLocation().then(
-                            function (returnedData) {
-                                if (returnedData != null) {
-                                    returnedData.forEach(function (locality) {
-                                        app.allLocation.push(locality);
-                                    });
-                                }
-                                resolve();
-                            },
-                            function (xhr, state, error) {
-                                reject(error);
-                            }
-                        );
-                    }
-                );
-
-                promise.then(function () {
-                    console.log("render location");
-                    DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE = {id: "0", name: "All Bangalore"};
-                    var option = $('<option value="'+DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE.id +'"></option>').text(DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE.name);
-                    $('#searchLocation').append(option);
-
-                    app.allLocation.forEach(function (locality) {
-                        var id = locality.localityId;
-                        var name = locality.localityName;
-                        option = $('<option value=' + id + '></option>').text(name);
-                        $('#searchLocation').append(option);
-                    });
-
+            renderLocation: function (locality) {
+                if(locality != null) {
+                    console.log('re render with localityname; ' + locality.localityName);
                     $('#searchLocation').tokenize({
                         displayDropdownOnFocus: true,
                         placeholder: "Location",
-                        newElements: true,
                         nbDropdownElements: 1000,
                         maxElements: 1
-                    });
-                }).catch(function (fromReject) {
-                    console.log(fromReject);
-                });
-
-            },
-            renderEducation: function () {
-
-                var promise = new Promise(function (resolve, reject) {
-                        app.bMethods.getAllEducation().then(
-                            function (returnedData) {
-                                if (returnedData != null) {
-                                    returnedData.forEach(function (education) {
-                                        app.allEducation.push(education);
-                                    });
+                    }).tokenRemove( $('#searchLocation').val()[0]).tokenAdd(locality.localityId, locality.localityName);
+                } else {
+                    var promise = new Promise(function (resolve, reject) {
+                            app.bMethods.getAllLocation().then(
+                                function (returnedData) {
+                                    if (returnedData != null) {
+                                        returnedData.forEach(function (locality) {
+                                            app.allLocation.push(locality);
+                                        });
+                                    }
+                                    resolve();
+                                },
+                                function (xhr, state, error) {
+                                    reject(error);
                                 }
-                                resolve();
-                            },
-                            function (xhr, state, error) {
-                                reject(error);
-                            }
-                        );
-                    }
-                );
-
-                promise.then(function () {
-                    console.log("render education");
-                    var option ;
-                    var first = {};
-                    var initId = null;
-                    app.allEducation.forEach(function (education) {
-                        var id = education.educationId;
-                        var name = education.educationName;
-                        option = $('<option value=' + id + '></option>').text(name);
-                        $('#searchEducation').append(option);
-
-                        if(initId == null) {
-                            initId = id;
+                            );
                         }
+                    );
 
-                        if(name == "Any") {
-                            console.log("found any");
-                            first = {'id':  id, 'name': name };
-                            DEFAULT_VALUES.D_EDU_ANY = first;
-                        }
+                    promise.then(function () {
+                        console.log("render location");
+                        DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE = {id: "0", name: "All Bangalore"};
+                        var option = $('<option value="0"></option>').text("All Bangalore");
+                        $('#searchLocation').append(option);
+
+                        app.allLocation.forEach(function (locality) {
+                            var id = locality.localityId;
+                            var name = locality.localityName;
+                            option = $('<option value=' + id + '></option>').text(name);
+                            $('#searchLocation').append(option);
+                        });
+
+                        $('#searchLocation').tokenize({
+                            displayDropdownOnFocus: true,
+                            placeholder: "Location",
+                            newElements: true,
+                            nbDropdownElements: 1000,
+                            maxElements: 1
+                        });
+
+                        $('#searchLocation').tokenize().tokenRemove('0');
+                        $('#searchLocation').tokenize().tokenAdd(DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE.id, DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE.name);
+
+                    }).catch(function (fromReject) {
+                        console.log(fromReject);
                     });
+                }
+            },
+            renderEducation: function (education) {
 
+                if(education!=null){
+                    console.log('re render with education; ' + education.educationName);
                     $('#searchEducation').tokenize({
                         displayDropdownOnFocus: true,
                         placeholder: "Education",
-                        newElements: true,
                         nbDropdownElements: 1000,
                         maxElements: 1
-                    });
+                    }).tokenRemove( $('#searchEducation').val()[0]).tokenAdd(education.educationId, education.educationName);
+                } else {
+                    var promise = new Promise(function (resolve, reject) {
+                            app.bMethods.getAllEducation().then(
+                                function (returnedData) {
+                                    if (returnedData != null) {
+                                        returnedData.forEach(function (education) {
+                                            app.allEducation.push(education);
+                                        });
+                                    }
+                                    resolve();
+                                },
+                                function (xhr, state, error) {
+                                    reject(error);
+                                }
+                            );
+                        }
+                    );
 
-                    $('#searchEducation').tokenize().tokenRemove(initId);
-                    $('#searchEducation').tokenize().tokenAdd(DEFAULT_VALUES.D_EDU_ANY.id, DEFAULT_VALUES.D_EDU_ANY.name);
-                }).catch(function (fromReject) {
-                    console.log(fromReject);
-                });
+                    promise.then(function () {
+                        console.log("render education");
+                        var option ;
+                        var first = {};
+                        var initId = null;
+                        app.allEducation.forEach(function (education) {
+                            var id = education.educationId;
+                            var name = education.educationName;
+                            option = $('<option value=' + id + '></option>').text(name);
+                            $('#searchEducation').append(option);
+
+                            if(initId == null) {
+                                initId = id;
+                            }
+
+                            if(name == "Any") {
+                                console.log("found any");
+                                first = {'id':  id, 'name': name };
+                                DEFAULT_VALUES.D_EDU_ANY = first;
+                            }
+                        });
+
+                        $('#searchEducation').tokenize({
+                            displayDropdownOnFocus: true,
+                            placeholder: "Education",
+                            newElements: true,
+                            nbDropdownElements: 1000,
+                            maxElements: 1
+                        });
+
+                        $('#searchEducation').tokenize().tokenRemove(initId);
+                        $('#searchEducation').tokenize().tokenAdd(DEFAULT_VALUES.D_EDU_ANY.id, DEFAULT_VALUES.D_EDU_ANY.name);
+                    }).catch(function (fromReject) {
+                        console.log(fromReject);
+                    });
+                }
 
             },
-            renderExperience: function () {
+            renderExperience: function (experience) {
 
-                var promise = new Promise(function (resolve, reject) {
-                        app.bMethods.getAllExperience().then(
-                            function (returnedData) {
-                                if (returnedData != null) {
-                                    returnedData.forEach(function (experience) {
-                                        app.allExperience.push(experience);
-                                    });
-                                }
-                                resolve();
-                            },
-                            function (xhr, state, error) {
-                                reject(error);
-                            }
-                        );
-                    }
-                );
-
-                promise.then(function () {
-                    console.log("render experience");
-                    var option;
-                    var first = {};
-                    var initId = null;
-
-                    app.allExperience.forEach(function (experience) {
-                        var id = experience.experienceId;
-                        var name = experience.experienceType;
-                        option = $('<option value=' + id + '></option>').text(name);
-
-                        if(initId == null) {
-                            initId = id;
-                        }
-
-                        if(experience.experienceType == "Any") {
-                            console.log("found any");
-                            first = {'id':  id, 'name': name };
-                            DEFAULT_VALUES.D_EXP_ANY = first;
-                        }
-
-                        $('#searchExperience').append(option);
-                    });
+                if(experience != null) {
 
                     $('#searchExperience').tokenize({
                         displayDropdownOnFocus: true,
                         placeholder: "Experience",
-                        newElements: true,
                         nbDropdownElements: 1000,
                         maxElements: 1
+                    }).tokenRemove( $('#searchExperience').val()[0]).tokenAdd(experience.experienceId, experience.experienceType);
+                } else {
+                    var promise = new Promise(function (resolve, reject) {
+                            app.bMethods.getAllExperience().then(
+                                function (returnedData) {
+                                    if (returnedData != null) {
+                                        returnedData.forEach(function (experience) {
+                                            app.allExperience.push(experience);
+                                        });
+                                    }
+                                    resolve();
+                                },
+                                function (xhr, state, error) {
+                                    reject(error);
+                                }
+                            );
+                        }
+                    );
+
+                    promise.then(function () {
+                        console.log("render experience");
+                        var option;
+                        var first = {};
+                        var initId = null;
+
+                        app.allExperience.forEach(function (experience) {
+                            var id = experience.experienceId;
+                            var name = experience.experienceType;
+                            option = $('<option value=' + id + '></option>').text(name);
+
+                            if(initId == null) {
+                                initId = id;
+                            }
+
+                            if(experience.experienceType == "Any") {
+                                console.log("found any");
+                                first = {'id':  id, 'name': name };
+                                DEFAULT_VALUES.D_EXP_ANY = first;
+                            }
+
+                            $('#searchExperience').append(option);
+                        });
+
+                        $('#searchExperience').tokenize({
+                            displayDropdownOnFocus: true,
+                            placeholder: "Experience",
+                            newElements: true,
+                            nbDropdownElements: 1000,
+                            maxElements: 1
+                        });
+
+                        $('#searchExperience').tokenize().tokenRemove(initId);
+                        $('#searchExperience').tokenize().tokenAdd(DEFAULT_VALUES.D_EXP_ANY.id, DEFAULT_VALUES.D_EXP_ANY.name);
+
+                    }).catch(function (fromReject) {
+                        console.log(fromReject);
                     });
+                }
 
-                    $('#searchExperience').tokenize().tokenRemove(initId);
-                    $('#searchExperience').tokenize().tokenAdd(DEFAULT_VALUES.D_EXP_ANY.id, DEFAULT_VALUES.D_EXP_ANY.name);
-
-                }).catch(function (fromReject) {
-                    console.log(fromReject);
-                });
             },
             // render filter
             renderLanguage: function () {
@@ -485,6 +518,11 @@ var app = (function ($) {
                 // pagination is required
 
                 if(data != null) {
+                    // append search params to the UI
+                    app.render.renderLocation(data.searchParams.locality);
+                    app.render.renderEducation(data.searchParams.education);
+                    app.render.renderExperience(data.searchParams.experience);
+
                     var _jobPostList = data.results.allJobPost;
                     var _jobPostCount = Object.keys(_jobPostList).length;
                     if(_jobPostCount > 0){
@@ -944,19 +982,31 @@ var app = (function ($) {
 
 
                 if($('#searchLocation').val() == null) {
-                    $('#searchLocation').tokenize()
-                                         .tokenAdd(DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE.id,
+                    $('#searchLocation').tokenize({
+                        displayDropdownOnFocus: true,
+                        placeholder: "Location",
+                        nbDropdownElements: 1000,
+                        maxElements: 1
+                    }).tokenAdd(DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE.id,
                                                    DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE.name);
                 }
                 if($('#searchEducation').val() == null) {
-                    $('#searchEducation').tokenize()
-                                         .tokenAdd(DEFAULT_VALUES.D_EDU_ANY.id,
+                    $('#searchEducation').tokenize({
+                        displayDropdownOnFocus: true,
+                        placeholder: "Education",
+                        nbDropdownElements: 1000,
+                        maxElements: 1
+                    }).tokenAdd(DEFAULT_VALUES.D_EDU_ANY.id,
                                                    DEFAULT_VALUES.D_EDU_ANY.name);
                 }
 
                 if($('#searchExperience').val() == null) {
-                    $('#searchExperience').tokenize()
-                                          .tokenAdd(DEFAULT_VALUES.D_EXP_ANY.id,
+                    $('#searchExperience').tokenize({
+                        displayDropdownOnFocus: true,
+                        placeholder: "Experience",
+                        nbDropdownElements: 1000,
+                        maxElements: 1
+                    }).tokenAdd(DEFAULT_VALUES.D_EXP_ANY.id,
                                                     DEFAULT_VALUES.D_EXP_ANY.name);
                 }
 
