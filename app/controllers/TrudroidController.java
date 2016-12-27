@@ -86,7 +86,16 @@ public class TrudroidController {
 
             LoginResponse loginResponse = CandidateService.login(loginRequest.getCandidateLoginMobile(),
                     loginRequest.getCandidateLoginPassword(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
-            loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(loginResponse.getStatus()));
+
+
+            //TODO: to handle the new status in the new APK
+            //since we have a new status in the web version stating no auth record but candidate exists, android doesn't have
+            // hence we are setting status as 'no user' where the status is 'no auth'
+            if(loginResponse.getStatus() == LoginResponse.STATUS_NO_PASSWORD){
+                loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(LoginResponse.STATUS_NO_USER));
+            } else{
+            }
+
             if (loginResponse.getStatus() == loginResponse.STATUS_SUCCESS) {
                 loginResponseBuilder.setCandidateFirstName(loginResponse.getCandidateFirstName());
                 if (loginResponse.getCandidateLastName() != null) {
@@ -241,7 +250,16 @@ public class TrudroidController {
                     FormValidator.convertToIndianMobileFormat(pResetPasswordRequest.getMobile()),
                     InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID
             );
-            resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(resetPasswordResponse.getStatus()));
+
+            //TODO: to handle the new status in the new APK
+            //since we have a new status in the web version stating no auth record but candidate exists, android doesn't have
+            // hence we are setting status as 'no user' where the status is 'no auth'
+            if(resetPasswordResponse.getStatus() == LoginResponse.STATUS_NO_PASSWORD){
+                resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(LoginResponse.STATUS_NO_USER));
+            } else{
+                resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(resetPasswordResponse.getStatus()));
+            }
+
             resetPasswordResponseBuilder.setOtp(resetPasswordResponse.getOtp());
 
             Logger.info("Status returned = " + resetPasswordResponseBuilder.getStatus());
@@ -1276,7 +1294,9 @@ public class TrudroidController {
 
             if (updateCandidateEducationProfileRequest.getIsFinalFragment()) {
                 Candidate candidate = CandidateService.isCandidateExists(updateCandidateEducationProfileRequest.getCandidateMobile());
-                JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), updateCandidateEducationProfileRequest.getJobPostId(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
+                if(candidate != null){
+                    JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), updateCandidateEducationProfileRequest.getJobPostId(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
+                }
             }
         } catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");

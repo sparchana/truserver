@@ -83,7 +83,20 @@ $(document).ready(function(){
             $("#fixed-menu").fadeOut();
         }
     });
-
+    $(window).scroll(function(){
+        if ($(this).scrollTop() > 350) {
+            $('.registerBox').fadeIn();
+            if(w > 400){
+                $('.registerBox').css("width","120px");
+            }
+            else{
+                $('.registerBox').css("width","100%");
+            }
+        } else {
+            $('.registerBox').fadeOut();
+            $('.registerBox').css("width","50px");
+        }
+    });
     $(window).scroll(function(){
         if ($(this).scrollTop() > 100) {
             $('.scrollToTop').fadeIn();
@@ -123,20 +136,23 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-    var allJobDetailPageUrl = $(location).attr('href');
-    var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
-    allJobDetailPageUrlBreak.reverse();
 
     $("#sectionOne").css("background-image","linear-gradient(rgba(24, 26, 45, 0.4),rgba(24, 26, 45, 0.4))" +
-        ",url(/assets/common/img/"+allJobDetailPageUrlBreak[0]+".png)");
+        ",url(/assets/common/img/"+jobRoleIdRender +".png)");
     try {
         $.ajax({
             type: "GET",
-            url: "/jobs/" + allJobDetailPageUrlBreak[1] +"/"+ allJobDetailPageUrlBreak[0]+"?i=" + index,
+            url: "/job/" + jobRoleNameRender +"-jobs-"+ jobRoleIdRender+"?i=" + index,
             contentType: "application/json; charset=utf-8",
             data: false,
             processData: false,
-            success: processDataForSelectedJobPost
+            success: processDataForSelectedJobPost,
+            error: function (xhr, ajaxOption, throwError) {
+                console.log(xhr.status);
+                if(xhr.status == 400){
+                    window.location = '/pageNotFound';
+                }
+            }
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
@@ -152,13 +168,11 @@ $(document).ready(function(){
 });
 
 function getAllJobs(index) {
-    var allJobDetailPageUrl = $(location).attr('href');
-    var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
-    allJobDetailPageUrlBreak.reverse();
     try {
+        console.log();
         $.ajax({
             type: "GET",
-            url: "/jobs/" + allJobDetailPageUrlBreak[1] +"/"+ allJobDetailPageUrlBreak[0]+"?i=" + index,
+            url: "/job/" + jobRoleNameRender +"-jobs-"+ jobRoleIdRender +"?i=" + index,
             contentType: "application/json; charset=utf-8",
             data: false,
             processData: false,
@@ -224,343 +238,330 @@ function pagination(noOfPages){
     });
 }
 function processDataForSelectedJobPost(returnedData) {
-    var jobPostList = returnedData.allJobPost;
-
-    var allJobDetailPageUrl = $(location).attr('href');
-    var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
-    allJobDetailPageUrlBreak.reverse();
-    var conTitle = allJobDetailPageUrlBreak[1].split("_");
-    var showTitle = [""];
-    var temp;
-    for(var i=0;i<conTitle.length;i++){
-        temp = conTitle[i].charAt(0).toUpperCase() + conTitle[i].substring(1);
-        showTitle +=temp + " ";
-    }
-    var decodedJobRoleName = showTitle.replace(/%20/g, " ");
-        $('#jobTitleLine').html("Register for "+ decodedJobRoleName);
-        $('#jobRoleTitle').html("Register for "+ decodedJobRoleName);
-        $('#applyToJobsTitle').html("Apply to "+ decodedJobRoleName);
+    if(returnedData != "Error"){
+        var jobPostList = returnedData.allJobPost;
         var jobPostCount = Object.keys(jobPostList).length;
-            if (jobPostCount > 0) {
-                var numberOfPages = parseInt(returnedData.totalJobs)/5;
-                var rem = parseInt(returnedData.totalJobs) % 5;
-                if(rem > 0){
-                    numberOfPages ++;
-                }
-                if(index == 0){
-                    pagination(numberOfPages);
-                }
-                $("#hotJobs").html("");
-                var count = 0;
-                var popularJobCount = 0;
-                var parent = $("#hotJobs");
-                var isDividerPresent = false;
-                //returnedData.reverse();
-                $("#jobLoaderDiv").hide();
-                try {
-                    jobPostList.forEach(function (jobPost) {
-                        count++;
-                        if (count) {
-                            /* get all localities of the jobPost */
-                            var jobLocality = jobPost.jobPostToLocalityList;
-                            var localities = "";
-                            var allLocalities = "";
-                            var loopCount = 0;
-
-                            if(jobPost.source != null && jobPost.source > 0 && !isDividerPresent){
-                                createAndAppendDivider("Other Jobs", false);
-                                isDividerPresent = true;
-                            }
-
-                            jobLocality.forEach(function (locality) {
-                                loopCount++;
-                                if (loopCount > 2) {
-                                    return false;
-                                } else {
-                                    var name = locality.locality.localityName;
-                                    localities += name;
-                                    if (loopCount < Object.keys(jobLocality).length) {
-                                        localities += ", ";
-                                    }
-                                }
-                            });
-
-                            loopCount = 0;
-                            jobLocality.forEach(function (locality) {
-                                loopCount++;
-                                var name = locality.locality.localityName;
-                                allLocalities += name;
-                                if (loopCount < Object.keys(jobLocality).length) {
-                                    allLocalities += ", ";
-                                }
-                            });
-
-                            var hotJobItem = document.createElement("div");
-                            hotJobItem.id = "hotJobItem";
-                            parent.append(hotJobItem);
-
-                            var centreTag = document.createElement("center");
-                            hotJobItem.appendChild(centreTag);
-
-                            var rowDiv = document.createElement("div");
-                            rowDiv.className = "row";
-                            rowDiv.style = "margin: 0; padding: 0";
-                            centreTag.appendChild(rowDiv);
-
-                            var col = document.createElement("div");
-                            col.className = "col-sm-2";
-                            rowDiv.appendChild(col);
-
-                            var jobLogo = document.createElement("img");
-                            if(jobPost.company.companyLogo != null) jobLogo.src = jobPost.company.companyLogo;
-                            jobLogo.setAttribute('width', '80%');
-                            jobLogo.id = "jobLogo";
-                            col.appendChild(jobLogo);
-
-                            var jobBodyCol = document.createElement("div");
-                            jobBodyCol.className = "col-sm-8";
-                            jobBodyCol.id = "jobBody";
-                            rowDiv.appendChild(jobBodyCol);
-
-                            var jobTitle = document.createElement("h4");
-                            jobTitle.textContent = jobPost.jobPostTitle + " | " + jobPost.company.companyName;
-                            jobBodyCol.appendChild(jobTitle);
-
-                            var hr = document.createElement("hr");
-                            jobBodyCol.appendChild(hr);
-
-
-                            var jobBodyDetails = document.createElement("div");
-                            jobBodyDetails.className = "row";
-                            jobBodyDetails.id = "jobBodyDetails";
-                            jobBodyCol.appendChild(jobBodyDetails);
-
-                            /*  salary  */
-
-                            var bodyCol = document.createElement("div");
-                            bodyCol.className = "col-sm-4";
-                            bodyCol.id = "jobSalary";
-                            jobBodyDetails.appendChild(bodyCol);
-
-                            var jobBodySubRow = document.createElement("div");
-                            jobBodySubRow.className = "row";
-                            bodyCol.appendChild(jobBodySubRow);
-
-                            var jobBodySubRowCol = document.createElement("div");
-                            jobBodySubRowCol.className = "col-sm-12";
-                            jobBodySubRow.appendChild(jobBodySubRowCol);
-
-                            var salaryIconDiv = document.createElement("div");
-                            salaryIconDiv.style = "display : inline-block; margin: 4px;top:0";
-                            jobBodySubRowCol.appendChild(salaryIconDiv);
-
-                            var salaryIcon = document.createElement("img");
-                            salaryIcon.src = "/assets/common/img/salary.svg";
-                            salaryIcon.setAttribute('height', '15px');
-                            salaryIcon.style = "margin-top: -4px";
-                            salaryIconDiv.appendChild(salaryIcon);
-
-
-                            var salaryDiv = document.createElement("div");
-                            salaryDiv.style = "display: inline-block; font-size: 14px";
-                            if(jobPost.jobPostMaxSalary == "0" || jobPost.jobPostMaxSalary == null){
-                                salaryDiv.textContent = rupeeFormatSalary(jobPost.jobPostMinSalary) + " monthly";
-                            } else{
-                                salaryDiv.textContent = rupeeFormatSalary(jobPost.jobPostMinSalary) + " - " + rupeeFormatSalary(jobPost.jobPostMaxSalary) + " monthly";
-                            }
-                            jobBodySubRowCol.appendChild(salaryDiv);
-
-                            /*  experience  */
-
-
-                            var bodyColExp = document.createElement("div");
-                            bodyColExp.className = "col-sm-3";
-                            bodyColExp.id = "jobExp";
-                            jobBodyDetails.appendChild(bodyColExp);
-
-                            var jobBodySubRowExp = document.createElement("div");
-                            jobBodySubRowExp.className = "row";
-                            bodyColExp.appendChild(jobBodySubRowExp);
-
-                            var jobBodySubRowColExp = document.createElement("div");
-                            jobBodySubRowColExp.className = "col-sm-12";
-                            jobBodySubRowExp.appendChild(jobBodySubRowColExp);
-
-                            var expIconDiv = document.createElement("div");
-                            expIconDiv.style = "display : inline-block; margin: 4px;top:0";
-                            jobBodySubRowColExp.appendChild(expIconDiv);
-
-                            var expIcon = document.createElement("img");
-                            expIcon.src = "/assets/common/img/workExp.svg";
-                            expIcon.setAttribute('height', '15px');
-                            expIcon.style = "margin-top: -4px";
-                            expIconDiv.appendChild(expIcon);
-
-                            var expDiv = document.createElement("div");
-                            expDiv.style = "display: inline-block; font-size: 14px";
-                            expDiv.textContent = "Exp: " + jobPost.jobPostExperience.experienceType;
-                            jobBodySubRowColExp.appendChild(expDiv);
-
-                            /*  Location  */
-
-                            var bodyColLoc = document.createElement("div");
-                            bodyColLoc.className = "col-sm-5";
-                            bodyColLoc.id = "jobLocation";
-                            jobBodyDetails.appendChild(bodyColLoc);
-
-                            var jobBodySubRowLoc = document.createElement("div");
-                            jobBodySubRowLoc.className = "row";
-                            bodyColLoc.appendChild(jobBodySubRowLoc);
-
-                            var jobBodySubRowColLoc = document.createElement("div");
-                            jobBodySubRowColLoc.className = "col-sm-12";
-                            jobBodySubRowLoc.appendChild(jobBodySubRowColLoc);
-
-                            var locIconDiv = document.createElement("div");
-                            locIconDiv.style = "display : inline-block; margin: 4px;top:0";
-                            jobBodySubRowColLoc.appendChild(locIconDiv);
-
-                            var locIcon = document.createElement("img");
-                            locIcon.src = "/assets/common/img/location.svg";
-                            locIcon.setAttribute('height', '15px');
-                            locIcon.style = "margin-top: -4px";
-                            locIconDiv.appendChild(locIcon);
-
-                            var locDiv = document.createElement("div");
-                            locDiv.style = "display: inline-block; font-size: 14px";
-                            locDiv.textContent = localities;
-                            jobBodySubRowColLoc.appendChild(locDiv);
-
-                            if (((jobLocality.length) - 2) > 0) {
-                                var tooltip = document.createElement("a");
-                                tooltip.id = "locationMsg_" + jobPost.jobPostId;
-                                tooltip.title = allLocalities;
-                                tooltip.style = "color: #2980b9";
-                                tooltip.textContent = " more";
-                                jobBodySubRowColLoc.appendChild(tooltip);
-                            }
-
-                            $("#locationMsg_" + jobPost.jobPostId).attr("data-toggle", "tooltip");
-                            $(function () {
-                                $('[data-toggle="tooltip"]').tooltip()
-                            });
-
-                            if(localStorage.getItem("incentives") == "1"){
-                                var incentiveDetails = document.createElement("div");
-                                incentiveDetails.className = "row";
-                                incentiveDetails.id = "incentiveDetails";
-                                jobBodyCol.appendChild(incentiveDetails);
-
-                                //!*  interview incentive  *!/
-
-                                var interviewIncentiveCol = document.createElement("div");
-                                interviewIncentiveCol.className = "col-sm-4";
-                                incentiveDetails.appendChild(interviewIncentiveCol);
-
-                                var interviewIncentiveRow = document.createElement("div");
-                                interviewIncentiveRow.className = "row";
-                                interviewIncentiveCol.appendChild(interviewIncentiveRow);
-
-                                var interviewIncentiveRowCol = document.createElement("div");
-                                interviewIncentiveRowCol.className = "col-sm-12";
-                                interviewIncentiveRow.appendChild(interviewIncentiveRowCol);
-
-                                var incentiveIconDiv = document.createElement("div");
-                                incentiveIconDiv.style = "display : inline-block;top:0";
-                                interviewIncentiveRowCol.appendChild(incentiveIconDiv);
-
-                                var incentiveIcon = document.createElement("img");
-                                incentiveIcon.src = "/assets/partner/img/coin.png";
-                                incentiveIcon.setAttribute('height', '20px');
-                                incentiveIcon.style = "margin: -4px 0 0 -5px";
-                                incentiveIconDiv.appendChild(incentiveIcon);
-
-                                var interviewIncentiveVal = document.createElement("div");
-                                interviewIncentiveVal.className = "incentiveEmptyBody";
-                                interviewIncentiveVal.style = "display: inline-block;";
-                                if(jobPost.jobPostPartnerInterviewIncentive == null || jobPost.jobPostPartnerInterviewIncentive == 0){
-                                    interviewIncentiveVal.textContent = "Interview incentive not specified";
-                                } else{
-                                    interviewIncentiveVal.textContent = "₹" + rupeeFormatSalary(jobPost.jobPostPartnerInterviewIncentive) + " interview incentive";
-                                    incentiveIcon.src = "/assets/partner/img/money-bag.png";
-                                    interviewIncentiveVal.className = "incentiveBody";
-                                }
-                                interviewIncentiveRowCol.appendChild(interviewIncentiveVal);
-
-                                //!*  joining incentive  *!/
-
-                                var joiningIncentiveCol = document.createElement("div");
-                                joiningIncentiveCol.className = "col-sm-4";
-                                incentiveDetails.appendChild(joiningIncentiveCol);
-
-                                var joiningIncentiveRow = document.createElement("div");
-                                joiningIncentiveRow.className = "row";
-                                joiningIncentiveCol.appendChild(joiningIncentiveRow);
-
-                                var joiningIncentiveRowCol = document.createElement("div");
-                                joiningIncentiveRowCol.className = "col-sm-12";
-                                joiningIncentiveRow.appendChild(joiningIncentiveRowCol);
-
-                                incentiveIconDiv = document.createElement("div");
-                                incentiveIconDiv.style = "display : inline-block;top:0";
-                                joiningIncentiveRowCol.appendChild(incentiveIconDiv);
-
-                                incentiveIcon = document.createElement("img");
-                                incentiveIcon.src = "/assets/partner/img/coin.png";
-                                incentiveIcon.setAttribute('height', '20px');
-                                incentiveIcon.style = "margin: -4px 0 0 -5px";
-                                incentiveIconDiv.appendChild(incentiveIcon);
-
-                                var joiningIncentiveVal = document.createElement("div");
-                                joiningIncentiveVal.className = "incentiveEmptyBody";
-                                joiningIncentiveVal.style = "display: inline-block;";
-                                if(jobPost.jobPostPartnerJoiningIncentive == null || jobPost.jobPostPartnerJoiningIncentive == 0){
-                                    joiningIncentiveVal.textContent = "Joining Incentive not specified";
-                                } else{
-                                    joiningIncentiveVal.textContent =  "₹" + rupeeFormatSalary(jobPost.jobPostPartnerJoiningIncentive) + " joining incentive";
-                                    incentiveIcon.src = "/assets/partner/img/money-bag.png";
-                                    joiningIncentiveVal.className = "incentiveBody";
-                                }
-                                incentiveIconDiv.appendChild(joiningIncentiveVal);
-                            }
-
-                            //!*  apply button *!/
-                            var applyBtnDiv = document.createElement("div");
-                            applyBtnDiv.className = "col-sm-2";
-                            rowDiv.appendChild(applyBtnDiv);
-
-                            var applyBtn = document.createElement("div");
-                            if(localStorage.getItem("incentives") == "1"){
-                                applyBtn.textContent = "View Job";
-                            } else{
-                                applyBtn.textContent = "View & Apply";
-                            }
-                            applyBtn.className = "jobApplyBtn";
-
-                            applyBtnDiv.appendChild(applyBtn);
-                            applyBtn.onclick=function(){
-                                var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
-                                jobPostBreak = jobPostBreak.toLowerCase();
-                                var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
-                                jobCompany = jobCompany.toLowerCase();
-                                try {
-                                    window.location.href = "/jobs/" + jobPostBreak + "/bengaluru/" + jobCompany + "/" + jobPost.jobPostId;
-                                } catch (exception) {
-                                    console.log("exception occured!!" + exception.stack);
-                                }
-                            };
-                            if(jobPost.source == 0){
-                                popularJobCount++;
-                            }
-                        }
-                    });
-                } catch (exception) {
-                    console.log("exception occured!!" + exception.stack);
-                }
-                if(popularJobCount > 0){
-                    createAndAppendDivider("Popular Jobs", true);
-                }
+        if (jobPostCount > 0) {
+            var numberOfPages = parseInt(returnedData.totalJobs)/5;
+            var rem = parseInt(returnedData.totalJobs) % 5;
+            if(rem > 0){
+                numberOfPages ++;
             }
+            if(index == 0){
+                pagination(numberOfPages);
+            }
+            $("#hotJobs").html("");
+            var count = 0;
+            var popularJobCount = 0;
+            var parent = $("#hotJobs");
+            var isDividerPresent = false;
+            //returnedData.reverse();
+            $("#jobLoaderDiv").hide();
+            try {
+                jobPostList.forEach(function (jobPost) {
+                    count++;
+                    if (count) {
+                        /* get all localities of the jobPost */
+                        var jobLocality = jobPost.jobPostToLocalityList;
+                        var localities = "";
+                        var allLocalities = "";
+                        var loopCount = 0;
+
+                        if(jobPost.source != null && jobPost.source > 0 && !isDividerPresent){
+                            createAndAppendDivider("Other Jobs", false);
+                            isDividerPresent = true;
+                        }
+
+                        jobLocality.forEach(function (locality) {
+                            loopCount++;
+                            if (loopCount > 2) {
+                                return false;
+                            } else {
+                                var name = locality.locality.localityName;
+                                localities += name;
+                                if (loopCount < Object.keys(jobLocality).length) {
+                                    localities += ", ";
+                                }
+                            }
+                        });
+
+                        loopCount = 0;
+                        jobLocality.forEach(function (locality) {
+                            loopCount++;
+                            var name = locality.locality.localityName;
+                            allLocalities += name;
+                            if (loopCount < Object.keys(jobLocality).length) {
+                                allLocalities += ", ";
+                            }
+                        });
+
+                        var hotJobItem = document.createElement("div");
+                        hotJobItem.id = "hotJobItem";
+                        parent.append(hotJobItem);
+
+                        var centreTag = document.createElement("center");
+                        hotJobItem.appendChild(centreTag);
+
+                        var rowDiv = document.createElement("div");
+                        rowDiv.className = "row";
+                        rowDiv.style = "margin: 0; padding: 0";
+                        centreTag.appendChild(rowDiv);
+
+                        var col = document.createElement("div");
+                        col.className = "col-sm-2";
+                        rowDiv.appendChild(col);
+
+                        var jobLogo = document.createElement("img");
+                        if(jobPost.company.companyLogo != null) jobLogo.src = jobPost.company.companyLogo;
+                        jobLogo.setAttribute('width', '80%');
+                        jobLogo.id = "jobLogo";
+                        col.appendChild(jobLogo);
+
+                        var jobBodyCol = document.createElement("div");
+                        jobBodyCol.className = "col-sm-8";
+                        jobBodyCol.id = "jobBody";
+                        rowDiv.appendChild(jobBodyCol);
+
+                        var jobTitle = document.createElement("h4");
+                        jobTitle.textContent = jobPost.jobPostTitle + " | " + jobPost.company.companyName;
+                        jobBodyCol.appendChild(jobTitle);
+
+                        var hr = document.createElement("hr");
+                        jobBodyCol.appendChild(hr);
+
+
+                        var jobBodyDetails = document.createElement("div");
+                        jobBodyDetails.className = "row";
+                        jobBodyDetails.id = "jobBodyDetails";
+                        jobBodyCol.appendChild(jobBodyDetails);
+
+                        /*  salary  */
+
+                        var bodyCol = document.createElement("div");
+                        bodyCol.className = "col-sm-4";
+                        bodyCol.id = "jobSalary";
+                        jobBodyDetails.appendChild(bodyCol);
+
+                        var jobBodySubRow = document.createElement("div");
+                        jobBodySubRow.className = "row";
+                        bodyCol.appendChild(jobBodySubRow);
+
+                        var jobBodySubRowCol = document.createElement("div");
+                        jobBodySubRowCol.className = "col-sm-12";
+                        jobBodySubRow.appendChild(jobBodySubRowCol);
+
+                        var salaryIconDiv = document.createElement("div");
+                        salaryIconDiv.style = "display : inline-block; margin: 4px;top:0";
+                        jobBodySubRowCol.appendChild(salaryIconDiv);
+
+                        var salaryIcon = document.createElement("img");
+                        salaryIcon.src = "/assets/common/img/salary.svg";
+                        salaryIcon.setAttribute('height', '15px');
+                        salaryIcon.style = "margin-top: -4px";
+                        salaryIconDiv.appendChild(salaryIcon);
+
+
+                        var salaryDiv = document.createElement("div");
+                        salaryDiv.style = "display: inline-block; font-size: 14px";
+                        if(jobPost.jobPostMaxSalary == "0" || jobPost.jobPostMaxSalary == null){
+                            salaryDiv.textContent = rupeeFormatSalary(jobPost.jobPostMinSalary) + " monthly";
+                        } else{
+                            salaryDiv.textContent = rupeeFormatSalary(jobPost.jobPostMinSalary) + " - " + rupeeFormatSalary(jobPost.jobPostMaxSalary) + " monthly";
+                        }
+                        jobBodySubRowCol.appendChild(salaryDiv);
+
+                        /*  experience  */
+
+
+                        var bodyColExp = document.createElement("div");
+                        bodyColExp.className = "col-sm-3";
+                        bodyColExp.id = "jobExp";
+                        jobBodyDetails.appendChild(bodyColExp);
+
+                        var jobBodySubRowExp = document.createElement("div");
+                        jobBodySubRowExp.className = "row";
+                        bodyColExp.appendChild(jobBodySubRowExp);
+
+                        var jobBodySubRowColExp = document.createElement("div");
+                        jobBodySubRowColExp.className = "col-sm-12";
+                        jobBodySubRowExp.appendChild(jobBodySubRowColExp);
+
+                        var expIconDiv = document.createElement("div");
+                        expIconDiv.style = "display : inline-block; margin: 4px;top:0";
+                        jobBodySubRowColExp.appendChild(expIconDiv);
+
+                        var expIcon = document.createElement("img");
+                        expIcon.src = "/assets/common/img/workExp.svg";
+                        expIcon.setAttribute('height', '15px');
+                        expIcon.style = "margin-top: -4px";
+                        expIconDiv.appendChild(expIcon);
+
+                        var expDiv = document.createElement("div");
+                        expDiv.style = "display: inline-block; font-size: 14px";
+                        expDiv.textContent = "Exp: " + jobPost.jobPostExperience.experienceType;
+                        jobBodySubRowColExp.appendChild(expDiv);
+
+                        /*  Location  */
+
+                        var bodyColLoc = document.createElement("div");
+                        bodyColLoc.className = "col-sm-5";
+                        bodyColLoc.id = "jobLocation";
+                        jobBodyDetails.appendChild(bodyColLoc);
+
+                        var jobBodySubRowLoc = document.createElement("div");
+                        jobBodySubRowLoc.className = "row";
+                        bodyColLoc.appendChild(jobBodySubRowLoc);
+
+                        var jobBodySubRowColLoc = document.createElement("div");
+                        jobBodySubRowColLoc.className = "col-sm-12";
+                        jobBodySubRowLoc.appendChild(jobBodySubRowColLoc);
+
+                        var locIconDiv = document.createElement("div");
+                        locIconDiv.style = "display : inline-block; margin: 4px;top:0";
+                        jobBodySubRowColLoc.appendChild(locIconDiv);
+
+                        var locIcon = document.createElement("img");
+                        locIcon.src = "/assets/common/img/location.svg";
+                        locIcon.setAttribute('height', '15px');
+                        locIcon.style = "margin-top: -4px";
+                        locIconDiv.appendChild(locIcon);
+
+                        var locDiv = document.createElement("div");
+                        locDiv.style = "display: inline-block; font-size: 14px";
+                        locDiv.textContent = localities;
+                        jobBodySubRowColLoc.appendChild(locDiv);
+
+                        if (((jobLocality.length) - 2) > 0) {
+                            var tooltip = document.createElement("a");
+                            tooltip.id = "locationMsg_" + jobPost.jobPostId;
+                            tooltip.title = allLocalities;
+                            tooltip.style = "color: #2980b9";
+                            tooltip.textContent = " more";
+                            jobBodySubRowColLoc.appendChild(tooltip);
+                        }
+
+                        $("#locationMsg_" + jobPost.jobPostId).attr("data-toggle", "tooltip");
+                        $(function () {
+                            $('[data-toggle="tooltip"]').tooltip()
+                        });
+
+                        if(localStorage.getItem("incentives") == "1"){
+                            var incentiveDetails = document.createElement("div");
+                            incentiveDetails.className = "row";
+                            incentiveDetails.id = "incentiveDetails";
+                            jobBodyCol.appendChild(incentiveDetails);
+
+                            //!*  interview incentive  *!/
+
+                            var interviewIncentiveCol = document.createElement("div");
+                            interviewIncentiveCol.className = "col-sm-4";
+                            incentiveDetails.appendChild(interviewIncentiveCol);
+
+                            var interviewIncentiveRow = document.createElement("div");
+                            interviewIncentiveRow.className = "row";
+                            interviewIncentiveCol.appendChild(interviewIncentiveRow);
+
+                            var interviewIncentiveRowCol = document.createElement("div");
+                            interviewIncentiveRowCol.className = "col-sm-12";
+                            interviewIncentiveRow.appendChild(interviewIncentiveRowCol);
+
+                            var incentiveIconDiv = document.createElement("div");
+                            incentiveIconDiv.style = "display : inline-block;top:0";
+                            interviewIncentiveRowCol.appendChild(incentiveIconDiv);
+
+                            var incentiveIcon = document.createElement("img");
+                            incentiveIcon.src = "/assets/partner/img/coin.png";
+                            incentiveIcon.setAttribute('height', '20px');
+                            incentiveIcon.style = "margin: -4px 0 0 -5px";
+                            incentiveIconDiv.appendChild(incentiveIcon);
+
+                            var interviewIncentiveVal = document.createElement("div");
+                            interviewIncentiveVal.className = "incentiveEmptyBody";
+                            interviewIncentiveVal.style = "display: inline-block;";
+                            if(jobPost.jobPostPartnerInterviewIncentive == null || jobPost.jobPostPartnerInterviewIncentive == 0){
+                                interviewIncentiveVal.textContent = "Interview incentive not specified";
+                            } else{
+                                interviewIncentiveVal.textContent = "₹" + rupeeFormatSalary(jobPost.jobPostPartnerInterviewIncentive) + " interview incentive";
+                                incentiveIcon.src = "/assets/partner/img/money-bag.png";
+                                interviewIncentiveVal.className = "incentiveBody";
+                            }
+                            interviewIncentiveRowCol.appendChild(interviewIncentiveVal);
+
+                            //!*  joining incentive  *!/
+
+                            var joiningIncentiveCol = document.createElement("div");
+                            joiningIncentiveCol.className = "col-sm-4";
+                            incentiveDetails.appendChild(joiningIncentiveCol);
+
+                            var joiningIncentiveRow = document.createElement("div");
+                            joiningIncentiveRow.className = "row";
+                            joiningIncentiveCol.appendChild(joiningIncentiveRow);
+
+                            var joiningIncentiveRowCol = document.createElement("div");
+                            joiningIncentiveRowCol.className = "col-sm-12";
+                            joiningIncentiveRow.appendChild(joiningIncentiveRowCol);
+
+                            incentiveIconDiv = document.createElement("div");
+                            incentiveIconDiv.style = "display : inline-block;top:0";
+                            joiningIncentiveRowCol.appendChild(incentiveIconDiv);
+
+                            incentiveIcon = document.createElement("img");
+                            incentiveIcon.src = "/assets/partner/img/coin.png";
+                            incentiveIcon.setAttribute('height', '20px');
+                            incentiveIcon.style = "margin: -4px 0 0 -5px";
+                            incentiveIconDiv.appendChild(incentiveIcon);
+
+                            var joiningIncentiveVal = document.createElement("div");
+                            joiningIncentiveVal.className = "incentiveEmptyBody";
+                            joiningIncentiveVal.style = "display: inline-block;";
+                            if(jobPost.jobPostPartnerJoiningIncentive == null || jobPost.jobPostPartnerJoiningIncentive == 0){
+                                joiningIncentiveVal.textContent = "Joining Incentive not specified";
+                            } else{
+                                joiningIncentiveVal.textContent =  "₹" + rupeeFormatSalary(jobPost.jobPostPartnerJoiningIncentive) + " joining incentive";
+                                incentiveIcon.src = "/assets/partner/img/money-bag.png";
+                                joiningIncentiveVal.className = "incentiveBody";
+                            }
+                            incentiveIconDiv.appendChild(joiningIncentiveVal);
+                        }
+
+                        //!*  apply button *!/
+                        var applyBtnDiv = document.createElement("div");
+                        applyBtnDiv.className = "col-sm-2";
+                        rowDiv.appendChild(applyBtnDiv);
+
+                        var applyBtn = document.createElement("div");
+                        if(localStorage.getItem("incentives") == "1"){
+                            applyBtn.textContent = "View Job";
+                        } else{
+                            applyBtn.textContent = "View & Apply";
+                        }
+                        applyBtn.className = "jobApplyBtn";
+
+                        applyBtnDiv.appendChild(applyBtn);
+                        applyBtn.onclick=function(){
+                            var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
+                            jobPostBreak = jobPostBreak.toLowerCase();
+                            var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
+                            jobCompany = jobCompany.toLowerCase();
+                            try {
+                                window.location.href = "/jobs/" + jobPostBreak + "-jobs-in-bengaluru-at-" + jobCompany + "-" + jobPost.jobPostId;
+                            } catch (exception) {
+                                console.log("exception occured!!" + exception.stack);
+                            }
+                        };
+                        if(jobPost.source == 0){
+                            popularJobCount++;
+                        }
+                    }
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception.stack);
+            }
+            if(popularJobCount > 0){
+                createAndAppendDivider("Popular Jobs", true);
+            }
+        }
+    }
      else{
             $("#jobLoaderDiv").hide();
             var parent = $("#hotJobs");

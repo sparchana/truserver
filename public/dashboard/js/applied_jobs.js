@@ -387,7 +387,7 @@ function prePopulateJobSection(jobApplication) {
             var jobLogo = document.createElement("img");
             jobLogo.src = jobPost.jobPost.company.companyLogo;
             jobLogo.setAttribute('width', '80%');
-            jobLogo.id = "jobLogo";
+            jobLogo.id = "jobLogoMyJob";
             col.appendChild(jobLogo);
 
             var jobBodyCol = document.createElement("div");
@@ -649,23 +649,49 @@ function prePopulateJobSection(jobApplication) {
             jobBodyCol.appendChild(titleRowStatus);
 
             if(jobPost.status.statusId > JWF_STATUS_INTERVIEW_RESCHEDULE && jobPost.status.statusId <= JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
-                var addressBody = document.createElement("div");
-                var address = "";
+
+                var recruiterBody = document.createElement("div");
+                var recruiterInfo = "";
+                recruiterBody.textContent = "Recruiter Info: ";
+                recruiterBody.style = "margin-top: 8px; margin-right: 12px; font-weight: bold";
+                titleRowStatus.appendChild(recruiterBody);
+
+                //computing recruiter info
+                if(jobPost.jobPost.recruiterProfile != null){
+                    recruiterInfo = jobPost.jobPost.recruiterProfile.recruiterProfileName + " (" + jobPost.jobPost.recruiterProfile.recruiterProfileMobile + ")";
+                } else {
+                    recruiterInfo = "";
+                }
+
+                var recruiterInfoBody = document.createElement("span");
+                recruiterInfoBody.style = "font-weight: normal";
+                recruiterInfoBody.textContent = recruiterInfo;
+                if(recruiterInfo == ""){
+                    recruiterInfoBody.textContent = "Information not available";
+                }
+                recruiterBody.appendChild(recruiterInfoBody);
 
                 //computing Address
+                var addressBody = document.createElement("div");
+                addressBody.textContent = "Interview Address : ";
+                addressBody.style = "margin-top: 8px; margin-right: 12px; font-weight: bold";
+                titleRowStatus.appendChild(addressBody);
+
+                var address = "";
+
                 if(jobPost.jobPost.interviewFullAddress != null && jobPost.jobPost.interviewFullAddress != ""){
                     address = jobPost.jobPost.interviewFullAddress;
                 } else {
                     address = "";
                 }
-
-                addressBody.textContent = "Interview Address : " + address;
+                var addressInfoBody = document.createElement("span");
+                addressInfoBody.style = "font-weight: normal";
+                addressInfoBody.textContent = address;
                 if(address == ""){
-                    addressBody.textContent = "Interview Address : " + "Address not available";
+                    addressInfoBody.textContent = "Address not available";
                 }
+                addressBody.appendChild(addressInfoBody);
 
-                addressBody.style = "margin-top: 8px; margin-right: 12px";
-                titleRowStatus.appendChild(addressBody);
             }
 
             if(jobPost.status != null){
@@ -680,6 +706,7 @@ function prePopulateJobSection(jobApplication) {
                         titleRowStatus.appendChild(statusUpdateBody);
 
                         var statusBody = document.createElement("span");
+                        statusBody.style = "font-weight: bold";
                         statusBody.textContent = "Current Status: ";
                         statusUpdateBody.appendChild(statusBody);
 

@@ -3,6 +3,8 @@ package models.util;
 import api.ServerConstants;
 import controllers.Global;
 import models.entity.Candidate;
+import models.entity.JobPost;
+import models.entity.OM.JobPostToLocality;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Static.InterviewTimeSlot;
 import notificationService.FCMEvent;
@@ -112,4 +114,91 @@ public class NotificationUtil {
             Logger.info("Token not available");
         }
     }
+
+    public static void sendJobPostNotificationToCandidateRecHasCredits(JobPost jobPost, Candidate candidate) {
+        String jobLocalities = "";
+        String salary;
+        if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
+            salary = jobPost.getJobPostMinSalary() + " - " + jobPost.getJobPostMaxSalary();
+        } else {
+            salary = String.valueOf(jobPost.getJobPostMinSalary());
+        }
+
+        if(jobPost.getJobPostToLocalityList() != null){
+            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
+                jobLocalities += jobPostToLocality.getLocality().getLocalityName() + ", ";
+            }
+        }
+        String msg = jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
+                jobLocalities.substring(0, jobLocalities.length() - 2) + ". Book your interview at www.trujobs.in or download app at bit.ly/trujobsapp";
+
+        if(candidate.getCandidateAndroidToken() != null){
+            addFcmToNotificationQueue(msg, "New Job Alert!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+        } else{
+            Logger.info("Token not available");
+        }
+
+    }
+
+    public static void sendJobPostNotificationToCandidateRecHasNoCredits(JobPost jobPost, Candidate candidate) {
+        String jobLocalities = "";
+        String salary;
+        if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
+            salary = jobPost.getJobPostMinSalary() + " - " + jobPost.getJobPostMaxSalary();
+        } else {
+            salary = String.valueOf(jobPost.getJobPostMinSalary());
+        }
+
+        if(jobPost.getJobPostToLocalityList() != null){
+            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
+                jobLocalities += jobPostToLocality.getLocality().getLocalityName() + ", ";
+            }
+        }
+        String msg = jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
+                jobLocalities.substring(0, jobLocalities.length() - 2) + ". Apply now at www.trujobs.in or download app at bit.ly/trujobsapp";
+
+        if(candidate.getCandidateAndroidToken() != null){
+            addFcmToNotificationQueue(msg, "New Job Alert!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+        } else{
+            Logger.info("Token not available");
+        }
+    }
+
+    public static void sendSODNotificationToCandidateRecHasCredits(JobPost jobPost, Candidate candidate) {
+        String jobLocalities = "";
+        String salary;
+        if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
+            salary = jobPost.getJobPostMinSalary() + " - " + jobPost.getJobPostMaxSalary();
+        } else {
+            salary = String.valueOf(jobPost.getJobPostMinSalary());
+        }
+
+        if(jobPost.getJobPostToLocalityList() != null){
+            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
+                jobLocalities += jobPostToLocality.getLocality().getLocalityName() + ", ";
+            }
+        }
+        String msg = jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
+                jobLocalities.substring(0, jobLocalities.length() - 2) + ". Book your interview at www.trujobs.in or download app at bit.ly/trujobsapp";
+
+        if(candidate.getCandidateAndroidToken() != null){
+            addFcmToNotificationQueue(msg, "Book interviews Today!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+        } else{
+            Logger.info("Token not available");
+        }
+    }
+
+    public static void sendEODNotificationToCandidatePostInterview(JobPost jobPost, Candidate candidate) {
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", you had an interview today for " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". " +
+                "How would you rate your experience with TruJobs? Please rate us on bit.ly/trujobsapp";
+
+        if(candidate.getCandidateAndroidToken() != null){
+            addFcmToNotificationQueue(msg, "We value your feedback!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+        } else{
+            Logger.info("Token not available");
+        }
+
+    }
+
+
 }

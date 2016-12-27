@@ -719,6 +719,23 @@ public class JobPost extends Model {
         return jobPostWorkflowList.size();
     }
 
+    public Integer getTomorrowsInterviewCount() {
+        Calendar now = Calendar.getInstance();
+        Date today = now.getTime();
+
+        List<Long> jobIdList = new ArrayList<>();
+        jobIdList.add(this.getJobPostId());
+
+        // get records for specific jobPostid with status and exact scheduleDate
+        List<JobPostWorkflow> jobPostWorkflowList =
+                JobPostWorkFlowDAO.getTomorrowsInterview(
+                        jobIdList,
+                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED,
+                        today);
+
+        return jobPostWorkflowList.size();
+    }
+
     public Integer getCompletedInterviewCount() {
         List<Long> jobIdList = new ArrayList<>();
         jobIdList.add(this.getJobPostId());

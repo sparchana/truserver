@@ -15,7 +15,6 @@ import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
-import com.avaje.ebean.PagedList;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -35,10 +34,7 @@ import models.entity.*;
 import models.entity.Intelligence.RelatedJobRole;
 import models.entity.OM.*;
 import models.entity.Static.*;
-import models.util.NotificationUtil;
-import models.util.ParseCSV;
-import models.util.SmsUtil;
-import models.util.Util;
+import models.util.*;
 import play.Logger;
 import play.api.Play;
 import play.data.Form;
@@ -286,22 +282,6 @@ public class Application extends Controller {
         return ok(toJson(JobService.addJobPost(addJobPostRequest, InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE)));
     }
 
-    public static Result addCompanyLogo() {
-        Http.MultipartFormData body = request().body().asMultipartFormData();
-        Http.MultipartFormData.FilePart picture = body.getFile("picture");
-        if (picture != null) {
-            String fileName = picture.getFilename();
-            String contentType = picture.getContentType();
-            File file = (File) picture.getFile();
-            Logger.info("uploaded! " + file);
-            CompanyService.uploadCompanyLogo(file, fileName);
-            return ok("File uploaded");
-        } else {
-            flash("error", "Missing file");
-            return redirect(routes.Application.index());
-        }
-    }
-
     @Security.Authenticated(SecuredUser.class)
     public static Result addRecruiter() {
         JsonNode req = request().body().asJson();
@@ -381,6 +361,34 @@ public class Application extends Controller {
             return badRequest("error uploading file. Check file type");
         }
         return ok(toJson(ParseCSV.parseCSV(file)));
+    }
+
+    public static Result uploadLogo() {
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart companyLogo = body.getFile("file");
+
+        if (companyLogo != null) {
+            String fileName = companyLogo.getFilename();
+
+            File file = (File) companyLogo.getFile();
+            Logger.info("uploaded! " + fileName);
+            CompanyService.uploadCompanyLogo(file, fileName);
+
+            List<String> companyId = Arrays.asList(fileName.split("\\s*_\\s*"));
+            if(companyId.get(1) != null){
+                Company company = Company.find.where().eq("CompanyId", companyId.get(1)).findUnique();
+                if(company != null){
+                    company.setCompanyLogo("https://s3.amazonaws.com/trujobs.in/companyLogos/" + fileName);
+                    company.update();
+                }
+            }
+            return ok("File uploaded");
+
+
+        } else {
+            flash("error", "Missing file");
+            return redirect(routes.Application.index());
+        }
     }
 
     @Security.Authenticated(SuperAdminSecured.class)
@@ -889,7 +897,12 @@ public class Application extends Controller {
         List<JobRole> jobs = JobRole.find.setUseQueryCache(!isDevMode).orderBy("jobName").findList();
         List<JobRole> jobRolesToReturn = new ArrayList<JobRole>();
         for(JobRole jobRole : jobs){
-            List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",jobRole.getJobRoleId()).findList();
+            List<JobPost> jobPostList = JobPost.find.where()
+                    .eq("jobRole.jobRoleId",jobRole.getJobRoleId())
+                    .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                    .eq("Source", ServerConstants.SOURCE_INTERNAL)
+                    .findList();
+
             if(jobPostList.size() > 0){
                 jobRolesToReturn.add(jobRole);
             }
@@ -1273,25 +1286,88 @@ public class Application extends Controller {
         return ok(views.html.Fragment.footer.render());}
 
     public static Result renderJobPostCards() { return ok(views.html.Fragment.hot_jobs_card_view.render());}
-    public static Result renderShowAllJobs() { return ok(views.html.Fragment.show_all_jobs_page.render());}
     public static Result pageNotFound() { return ok(views.html.page_not_found.render());}
-    public static Result renderJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
-        return ok(views.html.Fragment.posted_job_details.render(jobCompany,jobTitle));
+    public static Result renderJobRelatedPages(String urlString){
+        
+        UrlValidatorUtil urlValidatorUtil = new UrlValidatorUtil();
+        UrlParameters urlParameters = urlValidatorUtil.parseURL(urlString);
+
+        if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION_COMPANY_WITH_JOB_POST_ID) {
+            String jobLocation = urlParameters.getJobLocation();
+            String jobCompany = urlParameters.getJobCompany();
+            String jobPostTile = urlParameters.getJobPostTitle();
+            Long jobPostId = urlParameters.getJobPostId();
+            return ok(views.html.Fragment.posted_job_details.render(jobLocation,jobCompany,jobPostTile,jobPostId));
+            }
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION_COMPANY) {
+                //return ok("All Post");
+                return ok(views.html.page_not_found.render());
+            }
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_COMPANY) {
+                //return ok("Job Post at Company");
+                return ok(views.html.page_not_found.render());
+            }
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION) {
+               return ok(views.html.Fragment.job_role_page.render(urlParameters.getJobRoleName(),
+                       urlParameters.getJobRoleId()));
+            }
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_LOCATION_COMPANY) {
+                //return ok("All Jobs in Location at Company");
+                return ok(views.html.page_not_found.render());
+            }
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_COMPANY) {
+                return ok(views.html.page_not_found.render());
+                //return ok("All Jobs at Company");
+            }
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_LOCATION) {
+                return ok(views.html.Fragment.show_all_jobs_page.render());
+            }
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_WITH_JOB_ROLE_ID) {
+                String jobRoleName = urlParameters.getJobRoleName();
+                Long jobRoleId = urlParameters.getJobRoleId();
+                return ok(views.html.Fragment.job_role_page.render(jobRoleName,jobRoleId));
+            }
+            else if(urlParameters.getUrlType() == UrlParameters.TYPE.INVALID_REQUEST){
+                return ok(views.html.page_not_found.render());
+            }
+
+        return ok(views.html.page_not_found.render());
     }
 
-    public static Result getJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
-        JobPost jobPost = JobPostDAO.findById(jobId);
-        if (jobPost != null) {
-            return ok(toJson(jobPost));
+    public static Result getJobsPageContent(String urlString,Long index) {
+
+        UrlValidatorUtil urlValidatorUtil = new UrlValidatorUtil();
+        UrlParameters urlParameters = urlValidatorUtil.parseJobsContentPageUrl(urlString);
+
+        if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_DETAILS_WITH_JOB_POST_ID_REQUEST){
+            JobPost jobPost = JobPost.find.where().eq("JobPostId", urlParameters.getJobPostId()).findUnique();
+            if (jobPost != null) {
+                return ok(toJson(jobPost));
+            }
+            else {
+                Logger.error(" Job post with id " + urlParameters.getJobPostId() + " not found!. Forwarding user to page not found");
+                return badRequest();
+            }
         }
-        return ok("Error");
-    }
-    public static Result renderJobRoleJobPage(String rolePara, Long idPara) {
-        return ok(views.html.Fragment.job_role_page.render(rolePara));
-    }
-
-    public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara,Long index) {
-        return ok(toJson(JobSearchService.getActiveJobsForJobRolePaginated(idPara,index)));
+        else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_POST_WITH_JOB_ROLE_ID_REQUEST) {
+            // query jobrole table for the given id. if it doesnt exist, fwd to page not found
+            JobRole jobRole = JobRole.find.where().eq("JobRoleId",urlParameters.getJobRoleId()).findUnique();
+            if(jobRole != null){
+                JobSearchService jobSearchService = new JobSearchService();
+                JobPostResponse jobPostResponse = jobSearchService.getActiveJobsForJobRolePaginated(urlParameters.getJobRoleId(),index);
+                if(jobPostResponse != null && jobPostResponse.getTotalJobs() > 0){
+                    return ok(toJson(jobPostResponse));
+                }else{
+                    return ok("Error");
+                }
+            }
+            else{
+                Logger.error(" Job post with id " + urlParameters.getJobPostId() + " not found!. Forwarding user to page not found");
+                return badRequest();
+            }
+        }
+        Logger.error("Unrecognized URL pattern detected " + urlString + ". Forwarding user to page not found");
+        return badRequest();
     }
 
     public static Result getAllCompanyLogos() {

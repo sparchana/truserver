@@ -52,6 +52,7 @@ public class CompanyService {
                 Company newCompany = new Company();
                 newCompany  = getAndAddCompanyValues(addCompanyRequest,newCompany);
                 newCompany.save();
+
                 addCompanyResponse.setCompanyId(newCompany.getCompanyId());
                 addCompanyResponse.setStatus(AddCompanyResponse.STATUS_SUCCESS);
                 Logger.info("Company: " + newCompany.getCompanyName() + " successfully created");
@@ -64,6 +65,8 @@ public class CompanyService {
             Logger.info("Company already exists. Updating existing Company");
             existingCompany = getAndAddCompanyValues(addCompanyRequest, existingCompany);
             existingCompany.update();
+
+            addCompanyResponse.setCompanyId(existingCompany.getCompanyId());
             addCompanyResponse.setStatus(AddCompanyResponse.STATUS_UPDATE_SUCCESS);
             Logger.info("Company: " + existingCompany.getCompanyName() + " successfully updated");
         }
