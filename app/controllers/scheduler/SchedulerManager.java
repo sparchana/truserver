@@ -70,7 +70,7 @@ public class SchedulerManager implements Runnable {
 
 //        createEODRateUsPostInterview(rateUsPostInterviewDelay);
 
-//        createEODCreditDebitInterviewCredit(aadhaarVerificationDelay);
+//        createEODCreditDebitAndExpireInterviewCredit(aadhaarVerificationDelay);
     }
 
     private void createSameDayInterviewAlertEvent(int hr) {
@@ -122,8 +122,9 @@ public class SchedulerManager implements Runnable {
         timer.schedule(eodCandidateCompletedInterviewTask, delay, oneDay);
     }
 
-    private void createEODCreditDebitInterviewCredit(long delay){
-        Logger.info("Auto debit interview credit + auto credit interview credit if feedback provided!");
+    private void createEODCreditDebitAndExpireInterviewCredit(long delay){
+        Logger.info("Auto debit interview credit + auto credit interview credit if feedback provided and expire interview credits" +
+                " which needs to be expired");
 
         EODDebitInterviewCreditTask eodDebitInterviewCreditTask = new EODDebitInterviewCreditTask();
         timer.schedule(eodDebitInterviewCreditTask, delay, oneDay);
