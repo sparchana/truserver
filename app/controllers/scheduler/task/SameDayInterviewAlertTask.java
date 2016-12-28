@@ -66,8 +66,6 @@ public class SameDayInterviewAlertTask extends TimerTask {
             shouldRunThisTask = true;
 
         } else {
-            Logger.info("last SDI schedulerStats object run at hr: " + mXHrBack.getHours() + " m: " + mXHrBack.getMinutes() + " s:" + mXHrBack.getSeconds());
-            Logger.info("SDI mXHrBack hr:" + schedulerStats.getEndTimestamp().getHours() + " m: " + schedulerStats.getEndTimestamp().getMinutes() + " s:" + schedulerStats.getEndTimestamp().getSeconds());
             if(schedulerStats.getEndTimestamp().getDate() != mXHrBack.getDate()
                     || (schedulerStats.getEndTimestamp().before(mXHrBack) || schedulerStats.getEndTimestamp().equals(mXHrBack))) {
 
