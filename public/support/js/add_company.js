@@ -185,7 +185,7 @@ function saveForm(){
         if($("#companyName").val() == ""){
             alert("Please Enter company Name");
             status=0;
-        } else if((f.type).substring(0,1) != "i"){
+        } else if(document.getElementById("companyLogo").value != "" && (f.type).substring(0,1) != "i"){
             alert("Please select a valid image for logo");
             status=0;
         } else{
