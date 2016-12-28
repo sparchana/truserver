@@ -224,6 +224,7 @@ public class ServerConstants {
 
     /* Non Logged In Search Result UUID */
     public static final String TRU_DROID_NOT_LOGGED_UUID = "TRU-DROID-NOT-LOGGEDIN-UUID";
+    public static final String TRU_WEB_NOT_LOGGED_UUID = "TRU-WEB-NOT-LOGGEDIN-UUID";
     public static final String SUPPORT_DEFAULT_UUID = "SUPPORT-DEFAULT-UUID";
 
     public static final String SELF_UNLOCKED_CANDIDATE_CONTACT = "Self unlocked contact";

@@ -143,6 +143,10 @@ public class SearchController extends Controller {
         SearchJobService searchJobService = new SearchJobService();
 
         Logger.info(""+ toJson(searchJobRequest));
-        return ok(toJson(searchJobService.searchJobs(searchJobRequest)));
+        Long cId = null;
+        if(( session().get("candidateId") != null)){
+            cId = Long.valueOf(session().get("candidateId"));
+        }
+        return ok(toJson(searchJobService.searchJobs(searchJobRequest, cId)));
     }
 }

@@ -1,12 +1,15 @@
 package controllers.businessLogic;
 
+import api.ServerConstants;
 import api.http.httpRequest.search.SearchJobRequest;
 import api.http.httpResponse.JobPostResponse;
 import api.http.httpResponse.search.SearchJobResponse;
 import api.http.httpResponse.search.helper.SearchParamsResponse;
+import models.entity.Candidate;
 import models.entity.Static.Education;
 import models.entity.Static.Experience;
 import models.entity.Static.Locality;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,7 +20,7 @@ import java.util.List;
  */
 public class SearchJobService {
 
-    public SearchJobResponse searchJobs(SearchJobRequest request) {
+    public SearchJobResponse searchJobs(SearchJobRequest request, Long candidateId) {
         SearchJobResponse response = new SearchJobResponse();
         // figure out keyword from the list
 
@@ -72,6 +75,45 @@ public class SearchJobService {
                             request.getFilterParamRequest());
             response.setResults(jobPostResponse);
             response.setPage(request.getPage());
+
+            // create interaction params
+            StringBuilder result = new StringBuilder();
+            result.append("Search for ");
+            result.append(StringUtils.join(", ",searchParamsResponse.getSearchKeywords()) + " jobs ");
+            result.append("@" + (searchParamsResponse.getLocality() != null ? searchParamsResponse.getLocality().getLocalityName() : "All Bangalore"));
+            result.append(" with filter ");
+            result.append(" Edu: " + (searchParamsResponse.getEducation() != null ? searchParamsResponse.getEducation().getEducationName() : " ANY_EDUCATION"));
+            result.append(" Exp: " + (searchParamsResponse.getExperience() != null ? searchParamsResponse.getExperience().getExperienceType() : " ANY_EXPERIENCE"));
+
+
+            if(request.getFilterParamRequest() != null){
+                String gender = "";
+                if(request.getFilterParamRequest().getSelectedGender() == null
+                        || request.getFilterParamRequest().getSelectedGender() == ServerConstants.GENDER_ANY){
+                    gender = "ANY_GENDER";
+                } else {
+                   gender = request.getFilterParamRequest().getSelectedGender()
+                            == ServerConstants.GENDER_MALE ? "MALE": "FEMALE";
+                }
+                result.append(" Gender: " + (request.getFilterParamRequest() != null ? gender : " ANY_GENDER"));
+                result.append(" Language: " + (request.getFilterParamRequest() != null ? gender : " ANY_GENDER"));
+            }
+
+             /* Interaction */
+            String objectAUUID;
+            if (candidateId == null) {
+                objectAUUID = ServerConstants.TRU_WEB_NOT_LOGGED_UUID;
+            } else {
+                Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
+                if(candidate != null){
+                    objectAUUID = candidate.getCandidateUUId();
+                } else {
+                    objectAUUID = ServerConstants.TRU_WEB_NOT_LOGGED_UUID;
+                }
+            }
+
+            // create interaction
+            InteractionService.createInteractionForWebSearch(objectAUUID, result.toString());
         }
         return response;
     }

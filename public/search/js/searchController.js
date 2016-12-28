@@ -760,14 +760,74 @@ var app = (function ($) {
                                     $('[data-toggle="tooltip"]').tooltip()
                                 });
 
-                                //!*  apply button *!/
+                                var hr = document.createElement("hr");
+                                jobBodyCol.appendChild(hr);
+
+                                var jobBodyFooter = document.createElement("div");
+                                jobBodyFooter.className = "row";
+                                jobBodyFooter.id = "jobBodyFooter";
+                                jobBodyCol.appendChild(jobBodyFooter);
+
+                                // posted on div
+                                var postedOnDiv = document.createElement("div");
+                                postedOnDiv.className = "col-sm-2";
+                                postedOnDiv.textContent = "Posted on: " + new Date(jobPost.jobPostCreateTimestamp).toDateString();
+                                jobBodyCol.appendChild(postedOnDiv);
+
+                                // vacancies div
+                                var vacanciesDiv = document.createElement("div");
+                                vacanciesDiv.className = "col-sm-2";
+                                vacanciesDiv.textContent = "Vacancies: " + jobPost.jobPostVacancies;
+                                jobBodyCol.appendChild(vacanciesDiv);
+
+                                // gender div
+                                var genderDiv = document.createElement("div");
+                                genderDiv.className = "col-sm-2";
+                                genderDiv.textContent = app.run.validateGender(jobPost.gender);
+                                jobBodyCol.appendChild(genderDiv);
+
+                                // age div
+                                var ageDiv = document.createElement("div");
+                                ageDiv.className = "col-sm-2";
+                                ageDiv.textContent = app.run.validateMaxAge(jobPost.jobPostMaxAge);
+                                jobBodyCol.appendChild(ageDiv);
+
+                                // timeshift div
+                                var ageDiv = document.createElement("div");
+                                ageDiv.className = "col-sm-2";
+                                ageDiv.textContent = app.run.validateWorkShift(jobPost.jobPostShift);
+                                jobBodyCol.appendChild(ageDiv);
+
+
+                                //!*  apply div button *!/
                                 var applyBtnDiv = document.createElement("div");
                                 applyBtnDiv.className = "col-sm-2";
                                 rowDiv.appendChild(applyBtnDiv);
 
+
+                                //!*  more button *!/
+                                var moreBtn = document.createElement("div");
+                                moreBtn.className = "jobMoreBtn";
+                                moreBtn.textContent = "More Info";
+                                applyBtnDiv.appendChild(moreBtn);
+                                moreBtn.onclick = function () {
+                                    var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
+                                    jobPostBreak = jobPostBreak.toLowerCase();
+                                    var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
+                                    jobCompany = jobCompany.toLowerCase();
+                                    try {
+                                        window.location.href = "/jobs/" + jobPostBreak + "/bengaluru/" + jobCompany + "/" + jobPost.jobPostId;
+                                    } catch (exception) {
+                                        console.log("exception occured!!" + exception);
+                                    }
+                                };
+
+
+                                //!*  apply button *!/
                                 var applyBtn = document.createElement("div");
                                 applyBtn.className = "jobApplyBtn";
-                                applyBtn.textContent = "View & Apply";
+                                applyBtn.textContent = "Apply/Book Interview";
+
                                 applyBtnDiv.appendChild(applyBtn);
                                 applyBtn.onclick = function () {
                                     var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
@@ -779,7 +839,7 @@ var app = (function ($) {
                                     } catch (exception) {
                                         console.log("exception occured!!" + exception);
                                     }
-                                }
+                                };
                             }
                         });
 
@@ -904,6 +964,13 @@ var app = (function ($) {
         },
         // action validator methods
         run: {
+            validateWorkShift: function (jobPostShift) {
+                if(jobPostShift == null) {
+                    return "";
+                } else if(jobPostShift.timeShiftName){
+                    return "Time Shift: " + jobPostShift.timeShiftName;
+                }
+            },
             searchValidation: function () {
 
             },
@@ -918,6 +985,23 @@ var app = (function ($) {
                     });
 
                 }
+            },
+            validateGender : function (gender) {
+                if(gender == null || gender == 2 ){
+                    return "Gender: Any";
+                } else if (gender == 0){
+                    return "Gender: Female";
+                } else if (gender == 1){
+                    return "Gender: Male";
+                }
+                return "";
+            },
+            validateMaxAge: function (age) {
+              if(age == null) {
+                  return "";
+              }  else {
+                  return "Max Age : " + age;
+              }
             },
             basicReset: function () {
                 console.log("basic reset");

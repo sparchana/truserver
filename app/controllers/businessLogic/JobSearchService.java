@@ -462,7 +462,7 @@ public class JobSearchService {
                     .where()
                     .disjunction();
 
-            for(String keyword : keywordList){
+            for(String keyword : keywordList) {
                 if (keyword != null && !keyword.trim().isEmpty()) {
                     keyword = keyword.trim();
                     Logger.info("keyword: " + keyword);
@@ -535,7 +535,6 @@ public class JobSearchService {
 
         query = query.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).query();
 
-
         // sort params
         if(sortBy != null){
             if (sortBy == 0) {
@@ -552,7 +551,6 @@ public class JobSearchService {
             query = query.orderBy().desc("JobPostIsHot");
             query = query.orderBy().desc("jobPostUpdateTimestamp");
         }
-
 
         response.setTotalJobs(query.findRowCount());
         Logger.info("total jobs: " + response.getTotalJobs());
