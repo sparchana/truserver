@@ -18,6 +18,8 @@ import api.http.httpResponse.interview.InterviewResponse;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
+import dao.RecruiterCreditHistoryDAO;
+import dao.RecruiterCreditPackDAO;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterCreditPack;
@@ -318,11 +320,7 @@ public class RecruiterService {
             // Has candidate contact unlock credit, hence make an entry in recruiterPayment table
             // RecruiterPayment recruiterPayment = new RecruiterPayment();
 
-            RecruiterCreditPack existingPack = RecruiterCreditPack.find.where()
-                    .eq("recruiterProfileId", existingRecruiter.getRecruiterProfileId())
-                    .setMaxRows(1)
-                    .orderBy().desc("create_timestamp")
-                    .findUnique();
+            RecruiterCreditPack existingPack = RecruiterCreditPackDAO.getLatestCreditPack(existingRecruiter);
 
             Calendar cal = Calendar.getInstance();
             cal.add(Calendar.MONTH, 1);
@@ -350,35 +348,18 @@ public class RecruiterService {
                 //adding a new pack in recruiter pack table
                 recruiterCreditPack.save();
             } else{
+
+                //if the value needs to be debited, we will debit from the oldest recruiter credit pack
+                // this code block handles the debiting of contact unlock credits from the pack
+
                 Integer creditRequest = addRecruiterRequest.getContactCredits() * (-1);
                 List<RecruiterCreditPack> packList = RecruiterCreditPack.find.where()
                         .eq("RecruiterProfileId", existingRecruiter.getRecruiterProfileId())
                         .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK)
                         .findList();
 
-                Integer remainingDebit = 0;
-                for(RecruiterCreditPack pack : packList) {
-                    if (pack.getCreditsAvailable() > 0) {
-                        if (!pack.getCreditIsExpired()) {
-
-                            if(pack.getCreditsAvailable() < creditRequest){
-                                remainingDebit = creditRequest - pack.getCreditsAvailable();
-                                creditRequest = remainingDebit;
-                                pack.setCreditsUsed(pack.getCreditsUsed() + pack.getCreditsAvailable());
-                                pack.setCreditsAvailable(0);
-                                pack.update();
-                            } else{
-                                pack.setCreditsUsed(pack.getCreditsUsed() + creditRequest);
-                                pack.setCreditsAvailable(pack.getCreditsAvailable() - creditRequest);
-                                pack.update();
-                                remainingDebit = 0;
-                            }
-                            if(remainingDebit == 0){
-                                break;
-                            }
-                        }
-                    }
-                }
+                //debits credits from pack
+                RecruiterService.debitCreditsFromPack(creditRequest, packList);
             }
 
             RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
@@ -413,12 +394,8 @@ public class RecruiterService {
             //computing total credits with respect to unit price
             Integer availableCredits = 0;
             Integer usedCredits = 0;
-            RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
-                    .eq("RecruiterProfileId", existingRecruiter.getRecruiterProfileId())
-                    .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK)
-                    .setMaxRows(1)
-                    .orderBy("create_timestamp desc")
-                    .findUnique();
+            RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistoryDAO.getRecruiterLatestCreditHistoryById(existingRecruiter,
+                    ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK);
 
             if(recruiterCreditHistoryLatest != null){
                 availableCredits = recruiterCreditHistoryLatest.getRecruiterCreditsAvailable();
@@ -443,12 +420,8 @@ public class RecruiterService {
 
             if(addRecruiterRequest.getInterviewCredits() > 0){
 
-                //create a new pack only if the amount of credit is postitive, i.e. adding credits
-                RecruiterCreditPack existingPack = RecruiterCreditPack.find.where()
-                        .eq("recruiterProfileId", existingRecruiter.getRecruiterProfileId())
-                        .setMaxRows(1)
-                        .orderBy().desc("create_timestamp")
-                        .findUnique();
+                //create a new pack only if the amount of credit is positive, i.e. adding credits
+                RecruiterCreditPack existingPack = RecruiterCreditPackDAO.getLatestCreditPack(existingRecruiter);
 
                 Calendar cal = Calendar.getInstance();
                 cal.add(Calendar.MONTH, 1);
@@ -476,37 +449,17 @@ public class RecruiterService {
                 //adding a new pack in recruiter pack table
                 recruiterCreditPack.save();
             } else{
+                //if the value needs to be debited, we will debit from the oldest recruiter credit pack
+                // this code block handles the debiting of interview unlock credits from the pack
+
                 Integer creditRequest = addRecruiterRequest.getInterviewCredits() * (-1);
-                List<RecruiterCreditPack> packList = RecruiterCreditPack.find.where()
-                        .eq("RecruiterProfileId", existingRecruiter.getRecruiterProfileId())
-                        .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
-                        .findList();
+                List<RecruiterCreditPack> packList = RecruiterCreditPackDAO.getInterviewCreditPackById(existingRecruiter,
+                        ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK);
 
-                Integer remainingDebit = 0;
-                for(RecruiterCreditPack pack : packList) {
-                    if (pack.getCreditsAvailable() > 0) {
-                        if (!pack.getCreditIsExpired()) {
+                //debits credits from pack
+                RecruiterService.debitCreditsFromPack(creditRequest, packList);
 
-                            if(pack.getCreditsAvailable() < creditRequest){
-                                remainingDebit = creditRequest - pack.getCreditsAvailable();
-                                creditRequest = remainingDebit;
-                                pack.setCreditsUsed(pack.getCreditsUsed() + pack.getCreditsAvailable());
-                                pack.setCreditsAvailable(0);
-                                pack.update();
-                            } else{
-                                pack.setCreditsUsed(pack.getCreditsUsed() + creditRequest);
-                                pack.setCreditsAvailable(pack.getCreditsAvailable() - creditRequest);
-                                pack.update();
-                                remainingDebit = 0;
-                            }
-                            if(remainingDebit == 0){
-                                break;
-                            }
-                        }
-                    }
-                }
             }
-
 
             RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
 
@@ -542,12 +495,8 @@ public class RecruiterService {
             //computing total credits with respect to unit price
             Integer availableCredits = 0;
             Integer usedCredits = 0;
-            RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
-                    .eq("RecruiterProfileId", existingRecruiter.getRecruiterProfileId())
-                    .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
-                    .setMaxRows(1)
-                    .orderBy("create_timestamp desc")
-                    .findUnique();
+            RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistoryDAO.getRecruiterLatestCreditHistoryById(existingRecruiter,
+                    ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK);
 
             if(recruiterCreditHistoryLatest != null){
                 availableCredits = recruiterCreditHistoryLatest.getRecruiterCreditsAvailable();
@@ -835,4 +784,30 @@ public class RecruiterService {
         return interviewResponse;
     }
 
+    public static void debitCreditsFromPack(Integer creditsToDebited, List<RecruiterCreditPack> packList) {
+        Integer remainingDebit = 0;
+        for(RecruiterCreditPack pack : packList) {
+            if (pack.getCreditsAvailable() > 0) {
+                if (!pack.getCreditIsExpired()) {
+
+                    if(pack.getCreditsAvailable() < creditsToDebited){
+                        remainingDebit = creditsToDebited - pack.getCreditsAvailable();
+                        creditsToDebited = remainingDebit;
+                        pack.setCreditsUsed(pack.getCreditsUsed() + pack.getCreditsAvailable());
+                        pack.setCreditsAvailable(0);
+                        pack.update();
+                    } else{
+                        pack.setCreditsUsed(pack.getCreditsUsed() + creditsToDebited);
+                        pack.setCreditsAvailable(pack.getCreditsAvailable() - creditsToDebited);
+                        pack.update();
+                        remainingDebit = 0;
+                    }
+                    if(remainingDebit == 0){
+                        break;
+                    }
+                }
+            }
+        }
+
+    }
 }

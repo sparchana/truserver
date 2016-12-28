@@ -9,6 +9,7 @@ import models.entity.OM.JobPostWorkflow;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -391,5 +392,16 @@ public class JobPostWorkFlowDAO {
         return Ebean.find(JobPostWorkflow.class)
                 .setRawSql(rawSql)
                 .findList();
+    }
+
+    public static List<JobPostWorkflow> getTodaysConfirmedInterviews(){
+        Calendar now = Calendar.getInstance();
+        String todayDate = now.get(Calendar.YEAR) + "-" + (now.get(Calendar.MONTH) + 1) + "-" + now.get(Calendar.DATE);
+
+        return JobPostWorkflow.find.where()
+                .eq("scheduled_interview_date", todayDate)
+                .eq("status_id", ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED)
+                .findList();
+
     }
 }

@@ -1,7 +1,10 @@
 package controllers.scheduler.task;
 
 import api.ServerConstants;
+import controllers.businessLogic.RecruiterService;
 import dao.JobPostWorkFlowDAO;
+import dao.RecruiterCreditHistoryDAO;
+import dao.RecruiterCreditPackDAO;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Recruiter.RecruiterCreditPack;
 import models.entity.Recruiter.RecruiterProfile;
@@ -25,98 +28,76 @@ import static play.mvc.Results.ok;
 
 public class EODDebitInterviewCreditTask extends TimerTask {
 
-    private void startCreditDebitTask(List<RecruiterProfile>recruiterProfileList, Boolean isDebit){
+    private void startCreditDebitTask(Map<RecruiterProfile, Integer> recruiterCreditMap, Boolean isDebit){
         new Thread(() -> {
 
-            RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where()
+            RecruiterCreditCategory category = RecruiterCreditCategory.find.where()
                     .eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
                     .findUnique();
 
+            //in this map, we have recruiterProfile as key and valus as no of credits to be debited
+            for (Map.Entry<RecruiterProfile, Integer> entry : recruiterCreditMap.entrySet()) {
 
-            for(RecruiterProfile recruiterProfile : recruiterProfileList){
-                List<RecruiterCreditPack> packList = RecruiterCreditPack.find.where()
-                        .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
-                        .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
-                        .findList();
+                //getting key and value
+                RecruiterProfile recruiterProfile = entry.getKey();
+                Integer creditCount = entry.getValue();
+
+                Logger.info("Recruiter: " + recruiterProfile.getRecruiterProfileName() + " | Credits: " + creditCount);
+
+                //getting all the credit packs of the recruiter
+                List<RecruiterCreditPack> packList = RecruiterCreditPackDAO.getInterviewCreditPackById(recruiterProfile,
+                        ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK);
+
+                if(isDebit){
+
+                    //debits credits from pack
+                    RecruiterService.debitCreditsFromPack(creditCount, packList);
+                } else{
+
+                    //credit the oldest active pack
+                    for(RecruiterCreditPack pack : packList){
+                        if(pack.getCreditsAvailable() > 0){
+                            if(!pack.getCreditIsExpired()){
+                                pack.setCreditsAvailable(pack.getCreditsAvailable() + creditCount);
+                                pack.update();
+                                break;
+                            }
+                        }
+                    }
+                }
 
                 //making an entry in recruiter credit history table
                 RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
                 recruiterCreditHistory.setRecruiterProfile(recruiterProfile);
 
-                if(recruiterCreditCategory != null){
-                    recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
-                }
+                recruiterCreditHistory.setRecruiterCreditCategory(category);
 
+                //fetching recruiter latest credit history from recruiter credit history table
+                RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistoryDAO.getRecruiterLatestCreditHistoryById(
+                        recruiterProfile, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK);
 
-                if(isDebit){
-                    for(RecruiterCreditPack pack : packList){
-                        if(pack.getCreditsAvailable() > 0){
-                            if(!pack.getCreditIsExpired()){
-                                pack.setCreditsAvailable(pack.getCreditsAvailable() - 1);
-                                pack.setCreditsUsed(pack.getCreditsUsed() + 1);
-                                pack.update();
-                                break;
-                            }
-                        }
-                    }
+                if(recruiterCreditHistoryLatest != null){
+                    if(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() > 0){
+                        if(isDebit){
 
-                    RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
-                            .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
-                            .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
-                            .setMaxRows(1)
-                            .orderBy("create_timestamp desc")
-                            .findUnique();
-
-                    if(recruiterCreditHistoryLatest != null){
-                        if(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() > 0){
-                            recruiterCreditHistory.setRecruiterCreditsAvailable(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() - 1);
-                            recruiterCreditHistory.setRecruiterCreditsUsed(recruiterCreditHistoryLatest.getRecruiterCreditsUsed() + 1);
-                            recruiterCreditHistory.setUnits(-1);
-
-                            if(session().get("sessionUsername") != null){
-                                recruiterCreditHistory.setRecruiterCreditsAddedBy("Support: " + session().get("sessionUsername"));
-                            } else{
-                                recruiterCreditHistory.setRecruiterCreditsAddedBy("Not specified");
-                            }
-
-                            //saving/updating all the rows
-                            recruiterCreditHistory.save();
-                        }
-                    }
-                } else{
-                    //credit
-                    for(RecruiterCreditPack pack : packList){
-                        if(pack.getCreditsAvailable() > 0){
-                            if(!pack.getCreditIsExpired()){
-                                pack.setCreditsAvailable(pack.getCreditsAvailable() + 1);
-                                pack.update();
-                                break;
-                            }
-                        }
-                    }
-
-                    RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
-                            .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
-                            .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
-                            .setMaxRows(1)
-                            .orderBy("create_timestamp desc")
-                            .findUnique();
-
-                    if(recruiterCreditHistoryLatest != null){
-                        if(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() > 0){
-                            recruiterCreditHistory.setRecruiterCreditsAvailable(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() + 1);
+                            //TODO: to discuss negative credit case
+                            recruiterCreditHistory.setRecruiterCreditsAvailable(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() - creditCount);
+                            recruiterCreditHistory.setRecruiterCreditsUsed(recruiterCreditHistoryLatest.getRecruiterCreditsUsed() + creditCount);
+                            recruiterCreditHistory.setUnits(-creditCount);
+                        } else{
+                            recruiterCreditHistory.setRecruiterCreditsAvailable(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() + creditCount);
                             recruiterCreditHistory.setRecruiterCreditsUsed(recruiterCreditHistoryLatest.getRecruiterCreditsUsed());
-                            recruiterCreditHistory.setUnits(1);
-
-                            if(session().get("sessionUsername") != null){
-                                recruiterCreditHistory.setRecruiterCreditsAddedBy("Support: " + session().get("sessionUsername"));
-                            } else{
-                                recruiterCreditHistory.setRecruiterCreditsAddedBy("Not specified");
-                            }
-
-                            //saving/updating all the rows
-                            recruiterCreditHistory.save();
+                            recruiterCreditHistory.setUnits(creditCount);
                         }
+
+                        if(session().get("sessionUsername") != null){
+                            recruiterCreditHistory.setRecruiterCreditsAddedBy("Support: " + session().get("sessionUsername"));
+                        } else{
+                            recruiterCreditHistory.setRecruiterCreditsAddedBy("Not specified");
+                        }
+
+                        //saving new row
+                        recruiterCreditHistory.save();
                     }
                 }
             }
@@ -125,14 +106,12 @@ public class EODDebitInterviewCreditTask extends TimerTask {
 
     private void expireRecruiterInterviewCredits(){
         new Thread(() -> {
-            Calendar today = Calendar.getInstance();
-            today.set(Calendar.HOUR_OF_DAY, 0);
 
-            String dateToday = today.get(Calendar.YEAR) + "-" + (today.get(Calendar.MONTH)+1) + "-" + today.get(Calendar.DATE);
-            List<RecruiterCreditPack> packList = RecruiterCreditPack.find.where()
-                    .eq("expiryDate", dateToday)
-                    .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
-                    .findList();
+            List<RecruiterCreditPack> packList = RecruiterCreditPackDAO.getAllPacksExpiringToday();
+
+            RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where()
+                    .eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
+                    .findUnique();
 
             Integer creditsExpiring;
             for(RecruiterCreditPack pack : packList){
@@ -146,26 +125,20 @@ public class EODDebitInterviewCreditTask extends TimerTask {
                 RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
                 recruiterCreditHistory.setRecruiterProfile(pack.getRecruiterProfile());
 
-                RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where()
-                        .eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
-                        .findUnique();
 
                 if(recruiterCreditCategory != null){
                     recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
                 }
 
-                RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
-                        .eq("RecruiterProfileId", pack.getRecruiterProfile().getRecruiterProfileId())
-                        .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
-                        .setMaxRows(1)
-                        .orderBy("create_timestamp desc")
-                        .findUnique();
+                //getting latest record of the credit history table
+                RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistoryDAO.getRecruiterLatestCreditHistoryById(
+                        pack.getRecruiterProfile(), ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK);
 
                 if(recruiterCreditHistoryLatest != null){
                     if(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() > 0){
                         recruiterCreditHistory.setRecruiterCreditsAvailable(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() - creditsExpiring);
                         recruiterCreditHistory.setRecruiterCreditsUsed(recruiterCreditHistoryLatest.getRecruiterCreditsUsed() + creditsExpiring);
-                        recruiterCreditHistory.setUnits(creditsExpiring);
+                        recruiterCreditHistory.setUnits(-creditsExpiring);
 
                         if(session().get("sessionUsername") != null){
                             recruiterCreditHistory.setRecruiterCreditsAddedBy("Support: " + session().get("sessionUsername"));
@@ -186,37 +159,38 @@ public class EODDebitInterviewCreditTask extends TimerTask {
         // fetch all today's interviews
         Logger.info("Starting EOD auto debit interview credits ...");
 
-        List<RecruiterProfile> recruiterProfileList = new ArrayList<>();
+        //getting list of today's confirmed interview
+        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkFlowDAO.getTodaysConfirmedInterviews();
 
-        Calendar now = Calendar.getInstance();
-        String todayDate = now.get(Calendar.YEAR) + "-" + (now.get(Calendar.MONTH) + 1) + "-" + now.get(Calendar.DATE);
-
-        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
-                .eq("scheduled_interview_date", todayDate)
-                .eq("status_id", ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED)
-                .findList();
-
-        for(JobPostWorkflow jobPostWorkflow : jobPostWorkflowList){
-            if(jobPostWorkflow.getJobPost().getRecruiterProfile() != null){
-                recruiterProfileList.add(jobPostWorkflow.getJobPost().getRecruiterProfile());
-            }
-        }
+        Map<RecruiterProfile, Integer> recruiterCreditMap = returnMapData(jobPostWorkflowList);
 
         //debiting credits
-        startCreditDebitTask(recruiterProfileList, true);
+        startCreditDebitTask(recruiterCreditMap, true);
 
         jobPostWorkflowList = JobPostWorkFlowDAO.getAllTodaysFeedbackApplications();
 
-        for(JobPostWorkflow jobPostWorkflow : jobPostWorkflowList){
-            if(jobPostWorkflow.getJobPost().getRecruiterProfile() != null){
-                recruiterProfileList.add(jobPostWorkflow.getJobPost().getRecruiterProfile());
-            }
-        }
+        recruiterCreditMap = returnMapData(jobPostWorkflowList);
 
         //crediting credits if feedback provided
-        startCreditDebitTask(recruiterProfileList, false);
+        startCreditDebitTask(recruiterCreditMap, false);
 
         //task to expire all the interview credits which are expiring today
         expireRecruiterInterviewCredits();
+    }
+
+    public static Map<RecruiterProfile, Integer> returnMapData(List<JobPostWorkflow> jobPostWorkflowList){
+
+        Map<RecruiterProfile, Integer> recruiterCreditMap = new HashMap<RecruiterProfile, Integer>();
+
+        for(JobPostWorkflow jobPostWorkflow : jobPostWorkflowList){
+            if(jobPostWorkflow.getJobPost().getRecruiterProfile() != null){
+                RecruiterProfile recruiterProfile = jobPostWorkflow.getJobPost().getRecruiterProfile();
+
+                Integer count = recruiterCreditMap.get(recruiterProfile);
+                recruiterCreditMap.put(recruiterProfile, (count == null) ? 1 : count + 1);
+            }
+        }
+
+        return recruiterCreditMap;
     }
 }
