@@ -32,7 +32,9 @@ public class SchedulerManagerTest {
         SMS,
         EMAIL,
         IN_APP_NOTIFICATION,
-        COMPUTE_DELAY
+        COMPUTE_DELAY,
+        COMPUTE_DELAY_SDI,
+        SDI
     }
 
     private SchedulerManagerTest.MethodType type;
@@ -64,12 +66,13 @@ public class SchedulerManagerTest {
                 {MethodType.COMPUTE_DELAY, 20, 30, 0},
                 {MethodType.COMPUTE_DELAY, 20, 20, 0},
                 {MethodType.COMPUTE_DELAY, 20, 20, 0},
-                {MethodType.COMPUTE_DELAY, 20, 00, 0}
+                {MethodType.COMPUTE_DELAY, 20, 00, 0},
+                {MethodType.SDI, 0, 2, 0},
+                {MethodType.COMPUTE_DELAY_SDI, 2, 0, 0},
         });
     }
 
 
-    @Test
     public void testComputeDelay() {
         if (type == MethodType.COMPUTE_DELAY) {
             Application fakeApp = fakeApplication();
@@ -79,6 +82,24 @@ public class SchedulerManagerTest {
                     this.min,
                     this.sec)
             ));
+        }
+    }
+    public void testComputeDelayForSDI() {
+        if (type == MethodType.COMPUTE_DELAY_SDI) {
+            Application fakeApp = fakeApplication();
+            TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
+            running(server, () -> Logger.info("delay: " + schedulerManager.computeDelayForSDI(this.hr)
+            ));
+        }
+    }
+    @Test
+    public void testCreateSameDayInterviewAlertEvent() {
+        if (type == MethodType.SDI) {
+            Application fakeApp = fakeApplication();
+            TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
+            running(server, () -> {
+//                schedulerManager.createSameDayInterviewAlertEvent(this.min);
+            });
         }
     }
 }
