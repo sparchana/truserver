@@ -192,7 +192,11 @@ function processDataForJobPostLocation(returnedData) {
 }
 
 function confirmApply() {
-    $("#applyButton").addClass("jobApplied").removeClass("jobApplyBtnModal").prop('disabled',true).html("Applying");
+    $("#applyButton").removeClass("jobApplyBtnModal").addClass("jobApplied").prop('disabled',true).html("Applying");
+    $("#applyButton").click(function(){ return false});
+    $("#applyButton").unbind();
+    $("#applyButton").removeAttr("onclick");
+
     applyJobSubmitViaCandidate(jobPostId, prefLocation, prefTimeSlot, scheduledInterviewDate, true);
 //    applyJob(jobPostId, prefLocation, true);
 }

@@ -48,7 +48,7 @@ GET         /workflowInteraction/:uuid                                    contro
 GET         /support/api/shouldShowInterview/                             controllers.Application.shouldShowInterview(jobPostId: java.lang.Long ?= null)
 
 POST        /addCompany                                                   controllers.Application.addCompany()
-POST        /addCompanyLogo                                               controllers.Application.addCompanyLogo()
+POST        /addCompanyLogo                                               controllers.Application.uploadLogo()
 POST        /addJobPost                                                   controllers.Application.addJobPost()
 POST        /addOrUpdateFollowUp                                          controllers.Application.addOrUpdateFollowUp()
 POST        /addRecruiter                                                 controllers.Application.addRecruiter()
