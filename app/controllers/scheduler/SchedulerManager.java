@@ -76,7 +76,7 @@ public class SchedulerManager implements Runnable {
         Logger.info("Same Day Interview Alert Event Scheduled!");
         if (periodInHr < 1) return;
 
-        long xHr = periodInHr * 1000 * 60 * 60; // 3 hr
+        long xHr = periodInHr * 60 * 60; // 3 hr
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
