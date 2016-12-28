@@ -438,6 +438,7 @@ public class JobSearchService {
 
         Query<JobPost> query = JobPost.find.query();
 
+        // when no search params provided, return all active jobs
         if((keywordList == null||keywordList.size() ==0 )
                 && locality == null
                 && education == null
