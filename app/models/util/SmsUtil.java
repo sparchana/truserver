@@ -591,4 +591,11 @@ public class SmsUtil {
                 "How would you rate your experience with TruJobs? Please rate us on bit.ly/trujobsapp";
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
     }
+
+    public static void sendWeeklySmsToDownloadAndroidApp(Candidate candidate) {
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", Download TruJobs app now at bit.ly/trujobsapp to get " +
+                "instant job alerts near your location!";
+        addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
+    }
+
 }

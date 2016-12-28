@@ -32,6 +32,7 @@ public class SODNotifyCandidateAboutJobPostTask extends TimerTask {
 
     private void sendJobPostAlert(List<JobPost> jobPostList){
         new Thread(() -> {
+            Logger.info("Send alert to all the matching candidates of " + jobPostList.size() + " job posts");
             for(JobPost jobPost : jobPostList){
                 Map<Long, CandidateWorkflowData> candidateSearchMap = JobPostWorkflowEngine.getCandidateForRecruiterSearch(
                         null, //age

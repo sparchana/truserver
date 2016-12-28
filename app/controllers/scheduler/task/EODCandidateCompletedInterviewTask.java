@@ -31,6 +31,8 @@ public class EODCandidateCompletedInterviewTask extends TimerTask {
     private void sendRateUsNotification(List<JobPostWorkflow> jobPostWorkflowList){
         new Thread(() -> {
 
+            Logger.info("Sending alert to " + jobPostWorkflowList.size() + " candidates to rate us on play store");
+            
             SchedulerSubType subType = SchedulerSubType.find.where()
                     .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_EOD_RATE_US)
                     .findUnique();

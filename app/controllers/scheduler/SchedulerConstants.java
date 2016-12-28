@@ -15,6 +15,7 @@ public class SchedulerConstants {
     public static int SCHEDULER_SUB_TYPE_RECRUITER_EOD_SUMMARY = 5;
     public static int SCHEDULER_SUB_TYPE_CANDIDATE_SOD_JOB_ALERT = 6;
     public static int SCHEDULER_SUB_TYPE_CANDIDATE_EOD_RATE_US = 7;
+    public static int SCHEDULER_SUB_TYPE_CANDIDATE_APP_DOWNLOAD = 8;
 
 
     public static int INTERVIEW_TIME_SLOT_10_AM = 1;
