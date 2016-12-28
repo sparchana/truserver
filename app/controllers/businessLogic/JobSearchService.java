@@ -453,20 +453,25 @@ public class JobSearchService {
         }
 
 
-        // TODO convert this to do a LIKE for all the words in the 'keywordList'
         if (keywordList != null && keywordList.size() >0 ) {
 
-            query = query.select("*")
+            Junction<JobPost> junction = query.select("*")
                     .fetch("jobRole")
                     .fetch("company")
                     .where()
-                    .disjunction()
-                    .or( Expr.in("jobPostTitle", keywordList), Expr.or(
-                                    Expr.in("jobRole.jobName", keywordList),
-                                    Expr.in("company.companyName", keywordList)
-                            )
-                    )
-                    .query();
+                    .disjunction();
+
+            for(String keyword : keywordList){
+                if (keyword != null && !keyword.trim().isEmpty()) {
+                    keyword = keyword.trim();
+                    Logger.info("keyword: " + keyword);
+                    query = junction
+                            .add(Expr.like("jobPostTitle", "%" + keyword + "%"))
+                            .add(Expr.like("jobRole.jobName", "%" + keyword + "%"))
+                            .add(Expr.like("company.companyName", "%" + keyword + "%"))
+                            .endJunction().query();
+                }
+            }
         }
 
         if(locality != null) {
