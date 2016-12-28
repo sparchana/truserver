@@ -42,38 +42,37 @@ public class EODCandidateCompletedInterviewTask extends TimerTask {
             SchedulerType typeFcm = SchedulerType.find.where()
                     .eq("schedulerTypeId", SCHEDULER_TYPE_FCM).findUnique();
 
+            Timestamp startTime = new Timestamp(System.currentTimeMillis());
+
             for(JobPostWorkflow jpwf : jobPostWorkflowList){
-                //recruiter has interview credits
-                Timestamp startTime = new Timestamp(System.currentTimeMillis());
-
-
-                String note = "SMS alert for candidate to rate us on play store after interview.";
-
-                SchedulerStats newSchedulerStats = new SchedulerStats();
-                newSchedulerStats.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
 
                 //sending sms
                 SmsUtil.sendEODSmsToCandidatePostInterview(jpwf.getJobPost(), jpwf.getCandidate());
 
-                Timestamp endTime = new Timestamp(System.currentTimeMillis());
-                SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
-
-                /* Notification part */
-                startTime = new Timestamp(System.currentTimeMillis());
-
-                note = "Android notification alert for candidate to rate us on play store after interview.";
-
-                newSchedulerStats = new SchedulerStats();
-                newSchedulerStats.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
-
                 //sending notification
                 NotificationUtil.sendEODNotificationToCandidatePostInterview(jpwf.getJobPost(), jpwf.getCandidate());
 
-                endTime = new Timestamp(System.currentTimeMillis());
-                SchedulerManager.saveNewSchedulerStats(startTime, typeFcm, subType, note, endTime, true);
-
-
             }
+
+            //saving stats for sms event
+            String note = "SMS alert for candidate to rate us on play store after interview.";
+
+            SchedulerStats newSchedulerStats = new SchedulerStats();
+            newSchedulerStats.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
+
+            Timestamp endTime = new Timestamp(System.currentTimeMillis());
+            SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
+
+            //saving stats for fcm event
+            note = "Android notification alert for candidate to rate us on play store after interview.";
+
+            newSchedulerStats = new SchedulerStats();
+            newSchedulerStats.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
+
+            endTime = new Timestamp(System.currentTimeMillis());
+
+            SchedulerManager.saveNewSchedulerStats(startTime, typeFcm, subType, note, endTime, true);
+
         }).start();
     }
 
