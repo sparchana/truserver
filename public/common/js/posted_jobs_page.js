@@ -83,19 +83,21 @@ $(window).load(function() {
     $("#preloader").delay(1000).fadeOut("slow");
 });
 
-
 $(document).ready(function(){
-    var jobDetailPageUrl = $(location).attr('href');
-    var jobDetailPageUrlBreak = jobDetailPageUrl.split("/");
-    jobDetailPageUrlBreak.reverse();
     try {
             $.ajax({
                 type: "GET",
-                url: "/job/" + jobDetailPageUrlBreak[3] + "/"+ jobDetailPageUrlBreak[2] + "/"+jobDetailPageUrlBreak[1] +"/"+jobDetailPageUrlBreak[0],
+                url: "/job/"+ jobRoleNameRender  + "-jobs-in-"+ jobLocationRender +"-at-"+ jobCompanyRender +"-"+ jobPostIdRender,
                 contentType: "application/json; charset=utf-8",
                 data: false,
                 processData: false,
-                success: processDataForHotJobPost
+                success: processDataForHotJobPost,
+                error: function (xhr, ajaxOption, throwError) {
+                    console.log(xhr.status);
+                    if(xhr.status == 400){
+                        window.location = '/pageNotFound';
+                    }
+                }
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);
@@ -375,8 +377,7 @@ function processJobPostAppliedStatus(status) {
 }
 
 function processDataForHotJobPost(returnedData) {
-
-    if (returnedData != "Error" && returnedData != "") {
+    if (returnedData != "") {
         jobId = returnedData.jobPostId;
         if(returnedData.jobPostPartnerInterviewIncentive != null){
             $("#interviewIncentiveVal").html("₹" + returnedData.jobPostPartnerInterviewIncentive + " interview incentive");
@@ -431,44 +432,49 @@ function processDataForHotJobPost(returnedData) {
         }
 
         if (returnedData.jobPostWorkingDays != "" && returnedData.jobPostWorkingDays != null) {
-            var workingDays = returnedData.jobPostWorkingDays.toString(2);
-            var i;
-            /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
-            if (workingDays.length != 7) {
-                var x = 7 - workingDays.length;
-                var modifiedWorkingDays = "";
+            if(returnedData.jobPostWorkingDays == 127){
+                $("#postedJobWorkingDays").html("No - Holiday");
+            }else{
+                var workingDays = returnedData.jobPostWorkingDays.toString(2);
+                var i;
+                /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
+                if (workingDays.length != 7) {
+                    var x = 7 - workingDays.length;
+                    var modifiedWorkingDays = "";
 
-                for (i = 0; i < x; i++) {
-                    modifiedWorkingDays += "0";
+                    for (i = 0; i < x; i++) {
+                        modifiedWorkingDays += "0";
+                    }
+                    modifiedWorkingDays += workingDays;
+                    workingDays = modifiedWorkingDays;
                 }
-                modifiedWorkingDays += workingDays;
-                workingDays = modifiedWorkingDays;
-            }
-            var holiday = "";
-            var arryDay = workingDays.split("");
-            if (arryDay[0] != 1) {
-                holiday += "Mon, ";
-            }
-            if (arryDay[1] != 1) {
-                holiday += "Tue, ";
-            }
-            if (arryDay[2] != 1) {
-                holiday += "Wed, ";
-            }
-            if (arryDay[3] != 1) {
-                holiday += "Thu, ";
-            }
-            if (arryDay[4] != 1) {
-                holiday += "Fri, ";
-            }
-            if (arryDay[5] != 1) {
+                var holiday = "";
+                var arryDay = workingDays.split("");
+                if (arryDay[0] != 1) {
+                    holiday += "Mon, ";
+                }
+                if (arryDay[1] != 1) {
+                    holiday += "Tue, ";
+                }
+                if (arryDay[2] != 1) {
+                    holiday += "Wed, ";
+                }
+                if (arryDay[3] != 1) {
+                    holiday += "Thu, ";
+                }
+                if (arryDay[4] != 1) {
+                    holiday += "Fri, ";
+                }
+                if (arryDay[5] != 1) {
 
-                holiday += "Sat, ";
+                    holiday += "Sat, ";
+                }
+                if (arryDay[6] != 1) {
+                    holiday += "Sun ";
+                }
+                $("#postedJobWorkingDays").html(holiday + " - Holiday");
             }
-            if (arryDay[6] != 1) {
-                holiday += "Sun ";
-            }
-            $("#postedJobWorkingDays").html(holiday + " - Holiday");
+
         }
         
         if (returnedData.jobPostStartTime != null && returnedData.jobPostStartTime != -1
@@ -598,7 +604,6 @@ function processDataForHotJobPost(returnedData) {
             console.log("exception occured!!" + exception);
         }
     } else {
-        console.log("#404 No Page Found");
         window.location.href = "/pageNotFound";
     }
 }

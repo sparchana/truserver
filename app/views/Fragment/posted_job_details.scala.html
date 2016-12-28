@@ -1,4 +1,4 @@
-@(jobRoleCompanyName: String, jobRoleName: String)
+@(jobLocation:String, jobRoleCompanyName: String, jobRoleName: String, jobPostId: Long)
 <html>
     <head>
         <meta charset="utf-8">
@@ -37,6 +37,10 @@
         <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
 
         <script>
+            var jobPostIdRender = @jobPostId;
+            var jobCompanyRender = "@jobRoleCompanyName";
+            var jobRoleNameRender = "@jobRoleName";
+            var jobLocationRender = "@jobLocation";
                 $('html, body').css({
                     'overflow': 'hidden',
                     'height': '100%'
