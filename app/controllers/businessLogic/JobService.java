@@ -1178,16 +1178,10 @@ public class JobService {
 
             //adding to notification Handler queue
             for (Map.Entry<Long, CandidateWorkflowData> candidate : candidateSearchMap.entrySet()) {
-                if(hasCredit){
-                    //recruiter has interview credits
-                    SmsUtil.sendJobPostSmsToCandidateRecHasCredits(jobPost, candidate.getValue().getCandidate());
-                    NotificationUtil.sendJobPostNotificationToCandidateRecHasNoCredits(jobPost, candidate.getValue().getCandidate());
 
-                } else{
-                    //recruiter doesn't have interview credits
-                    SmsUtil.sendJobPostSmsToCandidateRecHasNoCredits(jobPost, candidate.getValue().getCandidate());
-                    NotificationUtil.sendJobPostNotificationToCandidateRecHasNoCredits(jobPost, candidate.getValue().getCandidate());
-                }
+                //here there are 2 types of sms/fcm notification is being triggered. It is being differentiated by 'hasCredit' flag
+                SmsUtil.sendSODJobPostInfoSmsToCandidate(jobPost, candidate.getValue().getCandidate(), hasCredit);
+                NotificationUtil.sendJobPostNotificationToCandidate(jobPost, candidate.getValue().getCandidate(), hasCredit);
             }
         }
     }

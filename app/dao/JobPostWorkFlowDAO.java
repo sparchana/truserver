@@ -371,4 +371,12 @@ public class JobPostWorkFlowDAO {
                 .setRawSql(rawSql)
                 .findList();
     }
+
+    public static List<JobPostWorkflow> getTodaysConfirmedInterviews(String todayDate){
+
+        return JobPostWorkflow.find.where()
+                .eq("scheduled_interview_date", todayDate)
+                .eq("status_id", ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED)
+                .findList();
+    }
 }

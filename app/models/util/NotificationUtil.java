@@ -115,32 +115,7 @@ public class NotificationUtil {
         }
     }
 
-    public static void sendJobPostNotificationToCandidateRecHasCredits(JobPost jobPost, Candidate candidate) {
-        String jobLocalities = "";
-        String salary;
-        if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
-            salary = jobPost.getJobPostMinSalary() + " - " + jobPost.getJobPostMaxSalary();
-        } else {
-            salary = String.valueOf(jobPost.getJobPostMinSalary());
-        }
-
-        if(jobPost.getJobPostToLocalityList() != null){
-            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
-                jobLocalities += jobPostToLocality.getLocality().getLocalityName() + ", ";
-            }
-        }
-        String msg = jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
-                jobLocalities.substring(0, jobLocalities.length() - 2) + ". Book your interview at www.trujobs.in or download app at bit.ly/trujobsapp";
-
-        if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "New Job Alert!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
-        } else{
-            Logger.info("Token not available");
-        }
-
-    }
-
-    public static void sendJobPostNotificationToCandidateRecHasNoCredits(JobPost jobPost, Candidate candidate) {
+    public static void sendJobPostNotificationToCandidate(JobPost jobPost, Candidate candidate, Boolean hasCredit) {
         String jobLocalities = "";
         String salary;
         if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
@@ -157,32 +132,15 @@ public class NotificationUtil {
         String msg = jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
                 jobLocalities.substring(0, jobLocalities.length() - 2) + ". Apply now at www.trujobs.in or download app at bit.ly/trujobsapp";
 
-        if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "New Job Alert!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+        String notificationTitle;
+        if(hasCredit){
+            notificationTitle = "Book interviews Today!";
         } else{
-            Logger.info("Token not available");
+            notificationTitle = "New Job Alert!";
         }
-    }
-
-    public static void sendSODNotificationToCandidateRecHasCredits(JobPost jobPost, Candidate candidate) {
-        String jobLocalities = "";
-        String salary;
-        if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
-            salary = jobPost.getJobPostMinSalary() + " - " + jobPost.getJobPostMaxSalary();
-        } else {
-            salary = String.valueOf(jobPost.getJobPostMinSalary());
-        }
-
-        if(jobPost.getJobPostToLocalityList() != null){
-            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
-                jobLocalities += jobPostToLocality.getLocality().getLocalityName() + ", ";
-            }
-        }
-        String msg = jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
-                jobLocalities.substring(0, jobLocalities.length() - 2) + ". Book your interview at www.trujobs.in or download app at bit.ly/trujobsapp";
 
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "Book interviews Today!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+            addFcmToNotificationQueue(msg, notificationTitle, candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
         } else{
             Logger.info("Token not available");
         }

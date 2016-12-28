@@ -560,7 +560,7 @@ public class SmsUtil {
         addSmsToNotificationQueue(jobApplication.getCandidate().getCandidateMobile(), msg);
     }
 
-    public static void sendJobPostSmsToCandidateRecHasCredits(JobPost jobPost, Candidate candidate) {
+    public static void sendSODJobPostInfoSmsToCandidate(JobPost jobPost, Candidate candidate, Boolean hasCredits) {
         String jobLocalities = "";
         String salary;
         if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
@@ -574,45 +574,14 @@ public class SmsUtil {
                 jobLocalities += jobPostToLocality.getLocality().getLocalityName() + ", ";
             }
         }
-        String msg = "New Job Alert! " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
-               jobLocalities.substring(0, jobLocalities.length() - 2) + ". Book your interview at www.trujobs.in or download app at bit.ly/trujobsapp";
-        addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
-    }
 
-    public static void sendJobPostSmsToCandidateRecHasNoCredits(JobPost jobPost, Candidate candidate) {
-        String jobLocalities = "";
-        String salary;
-        if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
-            salary = jobPost.getJobPostMinSalary() + " - " + jobPost.getJobPostMaxSalary();
-        } else {
-            salary = String.valueOf(jobPost.getJobPostMinSalary());
+        String msgPrefix;
+        if(hasCredits){
+            msgPrefix = "Book job interviews on TruJobs! ";
+        } else{
+            msgPrefix = "New Job Alert! ";
         }
-
-        if(jobPost.getJobPostToLocalityList() != null){
-            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
-                jobLocalities += jobPostToLocality.getLocality().getLocalityName() + ", ";
-            }
-        }
-        String msg = "New Job Alert! " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
-                jobLocalities.substring(0, jobLocalities.length() - 2) + ". Apply Now at www.trujobs.in or download app at bit.ly/trujobsapp";
-        addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
-    }
-
-    public static void sendSODSmsToCandidateRecHasCredits(JobPost jobPost, Candidate candidate) {
-        String jobLocalities = "";
-        String salary;
-        if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
-            salary = jobPost.getJobPostMinSalary() + " - " + jobPost.getJobPostMaxSalary();
-        } else {
-            salary = String.valueOf(jobPost.getJobPostMinSalary());
-        }
-
-        if(jobPost.getJobPostToLocalityList() != null){
-            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
-                jobLocalities += jobPostToLocality.getLocality().getLocalityName() + ", ";
-            }
-        }
-        String msg = "Book job interviews on TruJobs! " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
+        String msg = msgPrefix + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
                 jobLocalities.substring(0, jobLocalities.length() - 2) + ". Book your interview at www.trujobs.in or download app at bit.ly/trujobsapp";
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
     }

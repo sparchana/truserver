@@ -53,18 +53,22 @@ public class SODNotifyCandidateAboutJobPostTask extends TimerTask {
                         hasCredit = true;
                     }
 
+                    SchedulerSubType subType = SchedulerSubType.find.where()
+                            .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_SOD_JOB_ALERT)
+                            .findUnique();
+
+                    SchedulerType type = SchedulerType.find.where()
+                            .eq("schedulerTypeId", SCHEDULER_TYPE_SMS).findUnique();
+
+                    SchedulerType typeFcm = SchedulerType.find.where()
+                            .eq("schedulerTypeId", SCHEDULER_TYPE_FCM).findUnique();
+
                     //adding to notification Handler queue
                     for (Map.Entry<Long, CandidateWorkflowData> candidate : candidateSearchMap.entrySet()) {
                         if(hasCredit){
 
                             //recruiter has interview credits
                             Timestamp startTime = new Timestamp(System.currentTimeMillis());
-                            SchedulerSubType subType = SchedulerSubType.find.where()
-                                    .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_SOD_JOB_ALERT)
-                                    .findUnique();
-
-                            SchedulerType type = SchedulerType.find.where()
-                                    .eq("schedulerTypeId", SCHEDULER_TYPE_SMS).findUnique();
 
                             String note = "SMS alert for New Job alert.";
 
@@ -72,19 +76,13 @@ public class SODNotifyCandidateAboutJobPostTask extends TimerTask {
                             newSchedulerStats.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
 
                             //sending sms
-                            SmsUtil.sendSODSmsToCandidateRecHasCredits(jobPost, candidate.getValue().getCandidate());
+                            SmsUtil.sendSODJobPostInfoSmsToCandidate(jobPost, candidate.getValue().getCandidate(), hasCredit);
 
                             Timestamp endTime = new Timestamp(System.currentTimeMillis());
                             SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
 
                             /* Notification part */
                             startTime = new Timestamp(System.currentTimeMillis());
-                            subType = SchedulerSubType.find.where()
-                                    .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_SOD_JOB_ALERT)
-                                    .findUnique();
-
-                            type = SchedulerType.find.where()
-                                    .eq("schedulerTypeId", SCHEDULER_TYPE_FCM).findUnique();
 
                             note = "Android notification alert for New Job alert.";
 
@@ -92,10 +90,10 @@ public class SODNotifyCandidateAboutJobPostTask extends TimerTask {
                             newSchedulerStats.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
 
                             //sending notification
-                            NotificationUtil.sendSODNotificationToCandidateRecHasCredits(jobPost, candidate.getValue().getCandidate());
+                            NotificationUtil.sendJobPostNotificationToCandidate(jobPost, candidate.getValue().getCandidate(), hasCredit);
 
                             endTime = new Timestamp(System.currentTimeMillis());
-                            SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
+                            SchedulerManager.saveNewSchedulerStats(startTime, typeFcm, subType, note, endTime, true);
                         }
                     }
                 }
