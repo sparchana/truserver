@@ -23,6 +23,7 @@ var app = (function ($) {
         D_LOCATION_ALL_BANGALORE: {}
     };
     var app = {
+        shouldDoSearch: true,
         allJobRole: [],
         allLocation: [],
         allEducation: [],
@@ -45,7 +46,7 @@ var app = (function ($) {
             selectedLanguageIdList: []
         },
         currentSortParams: {
-            sortBy: 1 // default set to sort by relevance
+            sortBy: 5 // default set to sort by relevance
         },
         page: 1,
         isPaginationEnabled: false,
@@ -338,8 +339,8 @@ var app = (function ($) {
                         app.bMethods.getAllLanguage().then(
                             function (returnedData) {
                                 if (returnedData != null) {
-                                    returnedData.forEach(function (experience) {
-                                        app.allLanguage.push(experience);
+                                    returnedData.forEach(function (language) {
+                                        app.allLanguage.push(language);
                                     });
                                 }
                                 resolve();
@@ -455,7 +456,13 @@ var app = (function ($) {
         },
         // action perform methods
         do: {
+            fillSearchTextBoxWithKeywords: function (keywordList) {
+                document.getElementById("searchText").value = keywordList;
+            },
             search: function (isBasicResetRequired) {
+                if(!app.shouldDoSearch){
+                    return;
+                }
                 console.log("do search ");
                 if (isBasicResetRequired) {
                     app.run.basicReset();
@@ -483,6 +490,9 @@ var app = (function ($) {
                         console.log("error: " + message);
                     }
                 });
+            },
+            prepNmodifyURL:function () {
+                return app.do.modifyURL(app.do.prepareURL());
             },
             modifyURL: function (url) {
                 // TODO ideally this should change after the result is returned
@@ -538,7 +548,8 @@ var app = (function ($) {
 
                         if(_searchUrl.indexOf(DEFAULT_VALUES.D_SEARCH_KEYWORD_IDENTIFIER)  < 0){
                             // redirect to 404
-                            window.location = "/pageNotFound" ;
+                            // window.location = "/pageNotFound" ;
+                            app.do.noJobsFound(true);
                             return;
                         }
 
@@ -582,6 +593,26 @@ var app = (function ($) {
                     console.log("exception in interpreting url: " + exception.stack);
                 }
             },
+            noJobsFound: function (data) {
+                if(data){
+                    $('#noJobsDiv').show();
+
+                    $('#job_cards_inc').hide();
+                    $('#jobCardControl').hide();
+                    app.shouldDoSearch = false;
+                } else {
+                    $('#noJobsDiv').hide();
+
+                    $('#job_cards_inc').show();
+                    $('#jobCardControl').show();
+                    app.shouldDoSearch = true;
+                }
+                $("#hotJobs").html("");
+
+                $("#jobLoaderDiv").hide();
+
+                return;
+            },
             parseSearchResponse: function (data) {
                 console.log(data);
                 // form result, and render it in card
@@ -592,6 +623,17 @@ var app = (function ($) {
                     app.render.renderLocation(data.searchParams.locality);
                     app.render.renderEducation(data.searchParams.education);
                     app.render.renderExperience(data.searchParams.experience);
+
+                    app.mark.selectedLanguageFilter(data.filterParams.languageList);
+                    app.mark.selectedGenderFilter(data.filterParams.gender);
+                    app.do.fillSearchTextBoxWithKeywords(data.searchParams.searchKeywords);
+
+                    if(data.isURLInvalid){
+                        app.do.noJobsFound(true);
+                        return;
+                    } else {
+                        app.do.noJobsFound(false);
+                    }
 
                     var _jobPostList = data.results.allJobPost;
                     var _jobPostCount = Object.keys(_jobPostList).length;
@@ -621,8 +663,8 @@ var app = (function ($) {
                         $("#jobLoaderDiv").hide();
                         $('#noJobsDiv').hide();
 
-                        app.do.createAndAppendDivider("Popular Jobs");
-                        var _isDividerPresent = false;
+                        app.do.createAndAppendDivider("Popular Jobs ("+data.results.totalJobs+" results found) ");
+                        // var _isDividerPresent = false;
                         _jobPostList.forEach(function (jobPost) {
                             _count++;
                             if (_count) {
@@ -631,11 +673,11 @@ var app = (function ($) {
                                 var _localities = "";
                                 var _allLocalities = "";
                                 var _loopCount = 0;
-
-                                if (jobPost.source != null && jobPost.source > 0 && !_isDividerPresent) {
-                                    app.do.createAndAppendDivider("Other Jobs");
-                                    _isDividerPresent = true;
-                                }
+                                //
+                                // if (jobPost.source != null && jobPost.source > 0 && !_isDividerPresent) {
+                                //     app.do.createAndAppendDivider("Other Jobs");
+                                //     _isDividerPresent = true;
+                                // }
 
                                 _jobLocality.forEach(function (locality) {
                                     _loopCount++;
@@ -873,7 +915,18 @@ var app = (function ($) {
                                 //!*  apply button *!/
                                 var applyBtn = document.createElement("div");
                                 applyBtn.className = "jobApplyBtn";
-                                applyBtn.textContent = "Apply/Book Interview";
+                                var applyJobText ;
+                                if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != 4){
+                                    if(jobPost.applyBtnStatus == 2) {
+                                        applyJobText = "Book Interview";
+                                    } else if(jobPost.applyBtnStatus == 3) {
+                                        applyJobText = "Already Applied";
+                                        applyBtn.disabled =  true;
+                                    }
+                                } else {
+                                    applyJobText = "Apply";
+                                }
+                                applyBtn.textContent = applyJobText;
 
                                 applyBtnDiv.appendChild(applyBtn);
                                 applyBtn.onclick = function () {
@@ -901,6 +954,9 @@ var app = (function ($) {
                         $('#noJobsDiv').show();
 
                     }
+
+                    return app.do.modifyURL(app.do.prepareURL());
+
                 }
 
                 $(".first").hide();
@@ -986,16 +1042,16 @@ var app = (function ($) {
             },
             updateSortBy: function (value) {
                 /*
-                 1 sort by nearby
+                 5 sort by salary relevance
                  2 sort by datePosted : newest on top
                  3 sort by salary high to low
                  4 sort by salary low to high
                  */
-                // current its assumed that on server the value 0, 1, 2, 3, 4 are defined in same way
+                // current its assumed that on server the value  2, 3, 4, 5 are defined in same way
 
                 app.currentSortParams.sortBy = parseInt(value);
 
-                console.log("gender: " + value);
+                console.log("sort by : " + value);
 
                 app.do.search(true);
             },
@@ -1017,6 +1073,26 @@ var app = (function ($) {
                 app.currentSortParams.sortBy = 1; // default set to sort by relevance
 
                 app.do.search(true);
+            }
+        },
+        // ui filter marking
+        mark: {
+            selectedLanguageFilter: function (languageList) {
+                if(languageList == null || languageList.length == 0) {
+                    return;
+                }
+
+                languageList.forEach(function (language) {
+                    document.getElementById('lang_'+language.languageId).checked = true;
+                });
+
+            },
+            selectedGenderFilter: function (id) {
+                if(id == null || id == 2) {
+                    return;
+                }
+                document.getElementById('gender_'+id).checked = true;
+
             }
         },
         // action validator methods
@@ -1116,7 +1192,7 @@ var app = (function ($) {
     // search click listener
     document.getElementById("searchBtn").addEventListener("click", function () {
         app.page = 1; // reset page to 1 for new search
-        app.currentURL = app.do.modifyURL(app.do.prepareURL());
+        app.currentURL = app.do.prepNmodifyURL();
         app.do.prepareSearchParamFromURL();
         app.do.search(true);
     });

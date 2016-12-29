@@ -213,6 +213,7 @@ public class ServerConstants {
     public static final int SORT_BY_SALARY = 3;
     public static final int SORT_BY_SALARY_MIN_MAX = 4;
     public static final int SORT_DEFAULT = SORT_BY_NEARBY;
+    public static final int SORT_BY_RELEVANCE = 5;
 
     public static final int GENDER_MALE = 0;
     public static final int GENDER_FEMALE = 1;
@@ -325,10 +326,13 @@ public class ServerConstants {
     public static final int INTERVIEW_STATUS_RESCHEDULED = 3;
     public static final int INTERVIEW_STATUS_REJECTED_BY_CANDIDATE = 4;
 
-    // is_interview_required response
+    // is_interview_required response ||  Apply Job Button status
+
     public static final int ERROR = 0;
     public static final int INTERVIEW_NOT_REQUIRED = 1; // "OK"
     public static final int INTERVIEW_REQUIRED = 2;     // "INTERVIEW"
+    public static final int ALREADY_APPLIED = 3;     // "JOB POST ALREADY APPLIED"
+    public static final int APPLY = 4;     // "JOB POST ALREADY APPLIED"
 
     // rescheduled Interview status
     public static final int RESCHEULED_INTERVIEW_STATUS_ACCEPTED = 1;

@@ -4,7 +4,10 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.search.helper.FilterParamRequest;
 import api.http.httpResponse.JobPostResponse;
-import com.avaje.ebean.*;
+import com.avaje.ebean.Expr;
+import com.avaje.ebean.Junction;
+import com.avaje.ebean.PagedList;
+import com.avaje.ebean.Query;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import in.trujobs.proto.JobFilterRequest;
 import models.entity.Candidate;
@@ -18,6 +21,7 @@ import play.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -520,9 +524,10 @@ public class JobSearchService {
         query = query.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).query();
 
         boolean doSortByDistance = false;
+        int modifiedSortBy = sortBy;
 
         // sort params, this should ideally not exist now as we are externally sorting it anyways
-        if ((sortBy == ServerConstants.SORT_BY_NEARBY) && locality == null) {
+        if ((sortBy == ServerConstants.SORT_BY_RELEVANCE) && locality == null) {
 
             // default orders
             query = query.orderBy().asc("source");
@@ -530,7 +535,7 @@ public class JobSearchService {
             query = query.orderBy().desc("jobPostUpdateTimestamp");
 
             Logger.info("sort by null");
-            sortBy = SORT_BY_DATE_POSTED;
+            modifiedSortBy = SORT_BY_DATE_POSTED;
             doSortByDistance = false;
         }
 
@@ -549,7 +554,35 @@ public class JobSearchService {
             resultJobsWithinDistance = resultJobPosts;
         }
 
-        MatchingEngineService.sortJobPostList(resultJobsWithinDistance, sortBy, doSortByDistance);
+        // our current logic for sory by relevance is this
+        // if relevant sort is not set then we dont segregate hotJobs with nonHotJobs
+        // relevant criteria : {hot : with filters} then {nonHot: with filter} (Active, source->internal)
+        if(sortBy == ServerConstants.SORT_BY_RELEVANCE){
+            List<JobPost> hotJobPostList = new LinkedList<>();
+            List<JobPost> nonHotJobPostList = new LinkedList<>();
+
+            modifiedSortBy = SORT_BY_DATE_POSTED;
+
+            // segregate hot with non H
+            for(JobPost jobPost : resultJobsWithinDistance) {
+                if(jobPost.getJobPostIsHot()){
+                    hotJobPostList.add(jobPost);
+                } else {
+                    nonHotJobPostList.add(jobPost);
+                }
+            }
+
+            // sort individually
+            MatchingEngineService.sortJobPostList(hotJobPostList, modifiedSortBy, doSortByDistance);
+            MatchingEngineService.sortJobPostList(nonHotJobPostList, modifiedSortBy, doSortByDistance);
+
+            resultJobsWithinDistance.clear();
+            resultJobsWithinDistance.addAll(hotJobPostList);
+            resultJobsWithinDistance.addAll(nonHotJobPostList);
+        } else {
+            MatchingEngineService.sortJobPostList(resultJobsWithinDistance, modifiedSortBy, doSortByDistance);
+        }
+
 
         response.setTotalJobs(resultJobsWithinDistance.size());
         Logger.info("total jobs: " + response.getTotalJobs());
@@ -560,7 +593,6 @@ public class JobSearchService {
         for (int j = 0; j < MAX_ROW && i < resultJobsWithinDistance.size(); ++j) {
             trimmedJobPosts.add(resultJobsWithinDistance.get(i++));
         }
-
 
         response.setAllJobPost(trimmedJobPosts);
 

@@ -23,6 +23,8 @@ public class SearchJobResponse {
     private FilterParamsResponse filterParams;
     private SortParamsResponse sortParams;
     private JobPostResponse results;
+    public boolean isURLInvalid;
+
 
     public SearchJobResponse() {
         this.status = STATUS.UNKNOWN;
@@ -82,5 +84,13 @@ public class SearchJobResponse {
 
     public void setResults(JobPostResponse results) {
         this.results = results;
+    }
+
+    public boolean isURLInvalid() {
+        return isURLInvalid;
+    }
+
+    public void setURLInvalid(boolean URLInvalid) {
+        isURLInvalid = URLInvalid;
     }
 }
