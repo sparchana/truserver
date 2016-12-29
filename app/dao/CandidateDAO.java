@@ -23,10 +23,10 @@ public class CandidateDAO {
                 .isNull("CandidatePlaceLat")
                 .findList();
     }
-    public static List<Candidate> getCandidateWhoUpdateProfileInAWeek() {
+    public static List<Candidate> getCandidateWhoUpdateProfileSinceIndexDays(Integer days) {
 
         String workFlowQueryBuilder = " select objectauuid from interaction where" +
-                "  interactiontype = '11' and objectatype = '4' and date(creationtimestamp) > curdate()-7 ";
+                "  interactiontype = '11' and objectatype = '4' and date(creationtimestamp) > curdate()-" + days ;
 
         RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder)
                 .columnMapping("objectauuid", "objectAUUId")

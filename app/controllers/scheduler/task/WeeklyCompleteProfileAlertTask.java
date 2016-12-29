@@ -13,6 +13,7 @@ import models.util.SmsUtil;
 import play.Logger;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.TimerTask;
 
@@ -77,19 +78,24 @@ public class WeeklyCompleteProfileAlertTask extends TimerTask {
     public void run() {
         Logger.info("Starting weekly task to notify candidates to complete profile ..");
 
+        List<Candidate> candidateList = new ArrayList<>();
+
         //calculating candidate profile completion score for all the candidate who were active last week
-        for(Candidate candidate : CandidateDAO.getCandidateWhoUpdateProfileInAWeek()){
+        for(Candidate candidate : CandidateDAO.getCandidateWhoUpdateProfileSinceIndexDays(7)){
             int scale = (int) Math.pow(10, 2);
             float percentValue = (float) Math.round(CandidateService.getProfileCompletionPercent(FormValidator
                     .convertToIndianMobileFormat(candidate.getCandidateMobile())) * 100 * scale) / scale;
             candidate.setCandidateScore((int) percentValue);
 
+            if(percentValue < 80){
+                candidateList.add(candidate);
+            }
+
             //updating candidate profile score of a candidate
             candidate.update();
         }
 
-
-        //list of candidates whose profile score is less than 80%
-        sendProfileCompletionAlert(CandidateDAO.getCandidateWithLessThanLimitProfileScore(80));
+        //list of candidates whose profile score is less than 80% last 'n' no. of days
+        sendProfileCompletionAlert(candidateList);
     }
 }
