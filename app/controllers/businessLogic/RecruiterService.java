@@ -18,6 +18,7 @@ import api.http.httpResponse.interview.InterviewResponse;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
+import dao.RecruiterCreditHistoryDAO;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterLead;
@@ -31,6 +32,9 @@ import models.util.Util;
 import play.Logger;
 import play.mvc.Result;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
@@ -310,9 +314,12 @@ public class RecruiterService {
             createdBy = "Support: " + session().get("sessionUsername");
         }
 
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, 1);
+        Date expiryDate = cal.getTime();
+
         //setting values for candidate contact unlock credits
         if(addRecruiterRequest.getContactCredits() != null && addRecruiterRequest.getContactCredits() != 0){
-
             // Has candidate contact unlock credit, hence make an entry in recruiterPayment table
             // RecruiterPayment recruiterPayment = new RecruiterPayment();
             RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
@@ -347,22 +354,32 @@ public class RecruiterService {
             //computing total credits with respect to unit price
             Integer availableCredits = 0;
             Integer usedCredits = 0;
-            RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
-                    .eq("RecruiterProfileId", existingRecruiter.getRecruiterProfileId())
-                    .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK)
-                    .setMaxRows(1)
-                    .orderBy("create_timestamp desc")
-                    .findUnique();
 
-            if(recruiterCreditHistoryLatest != null){
-                availableCredits = recruiterCreditHistoryLatest.getRecruiterCreditsAvailable();
-                usedCredits = recruiterCreditHistoryLatest.getRecruiterCreditsUsed();
+
+            if(addRecruiterRequest.getContactCredits() > 0){
+
+                //credit
+                RecruiterCreditHistory latestPack = RecruiterCreditHistoryDAO.getLatestRecruiterCreditPack(
+                        ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK);
+
+                if (latestPack == null){
+                    recruiterCreditHistory.setRecruiterCreditPackNo(1);
+                } else{
+                    RecruiterCreditHistory latest = RecruiterCreditHistoryDAO.getLatestRecruiterCreditPackDetails(existingRecruiter);
+                    recruiterCreditHistory.setRecruiterCreditPackNo(latest.getRecruiterCreditPackNo() + 1); //adding a new pack
+                }
+
+                recruiterCreditHistory.setExpiryDate(expiryDate);
+                recruiterCreditHistory.setCreditIsExpired(false);
+                recruiterCreditHistory.setLatest(true);
+                recruiterCreditHistory.setRecruiterCreditsAvailable(availableCredits + addRecruiterRequest.getContactCredits());
+                recruiterCreditHistory.setRecruiterCreditsUsed(usedCredits);
+                recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
+                recruiterCreditHistory.setCreditsAdded(addRecruiterRequest.getContactCredits());
+            } else{
+                //debit
+
             }
-
-            availableCredits = availableCredits + (addRecruiterRequest.getContactCredits());
-            recruiterCreditHistory.setRecruiterCreditsAvailable(availableCredits);
-            recruiterCreditHistory.setRecruiterCreditsUsed(usedCredits);
-            recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
 
             //saving the values
             recruiterCreditHistory.save();
@@ -408,22 +425,30 @@ public class RecruiterService {
             //computing total credits with respect to unit price
             Integer availableCredits = 0;
             Integer usedCredits = 0;
-            RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
-                    .eq("RecruiterProfileId", existingRecruiter.getRecruiterProfileId())
-                    .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
-                    .setMaxRows(1)
-                    .orderBy("create_timestamp desc")
-                    .findUnique();
 
-            if(recruiterCreditHistoryLatest != null){
-                availableCredits = recruiterCreditHistoryLatest.getRecruiterCreditsAvailable();
-                usedCredits = recruiterCreditHistoryLatest.getRecruiterCreditsUsed();
+            if(addRecruiterRequest.getContactCredits() > 0){
+                RecruiterCreditHistory latestPack = RecruiterCreditHistoryDAO.getLatestRecruiterCreditPack(
+                        ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK);
+
+                if (latestPack == null){
+                    recruiterCreditHistory.setRecruiterCreditPackNo(1);
+                } else{
+                    RecruiterCreditHistory latest = RecruiterCreditHistoryDAO.getLatestRecruiterCreditPackDetails(existingRecruiter);
+                    recruiterCreditHistory.setRecruiterCreditPackNo(latest.getRecruiterCreditPackNo() + 1); //adding a new pack
+
+                }
+
+                recruiterCreditHistory.setExpiryDate(expiryDate);
+                recruiterCreditHistory.setCreditIsExpired(false);
+                recruiterCreditHistory.setLatest(true);
+                recruiterCreditHistory.setRecruiterCreditsAvailable(availableCredits + addRecruiterRequest.getInterviewCredits());
+                recruiterCreditHistory.setRecruiterCreditsUsed(usedCredits);
+                recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
+                recruiterCreditHistory.setCreditsAdded(addRecruiterRequest.getInterviewCredits());
+
+            } else{
+                //debit
             }
-
-            availableCredits = availableCredits + (addRecruiterRequest.getInterviewCredits());
-            recruiterCreditHistory.setRecruiterCreditsAvailable(availableCredits);
-            recruiterCreditHistory.setRecruiterCreditsUsed(usedCredits);
-            recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
 
             //saving the values
             recruiterCreditHistory.save();
