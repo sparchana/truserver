@@ -1,23 +1,19 @@
 package api.http.httpResponse.search.helper;
 
-import models.entity.Static.Education;
-import models.entity.Static.Experience;
+import api.ServerConstants;
 import models.entity.Static.Language;
+
+import java.util.List;
 
 /**
  * Created by zero on 24/12/16.
  */
 public class FilterParamsResponse {
     public int gender;
-    public Language language;
-    public Education education;
-    public Experience experience;
+    public List<Language> languageList;
 
-    public FilterParamsResponse(int gender, Language language, Education education, Experience experience) {
-        this.gender = gender;
-        this.language = language;
-        this.education = education;
-        this.experience = experience;
+    public FilterParamsResponse() {
+        this.gender = ServerConstants.GENDER_ANY;
     }
 
     public int getGender() {
@@ -28,27 +24,11 @@ public class FilterParamsResponse {
         this.gender = gender;
     }
 
-    public Language getLanguage() {
-        return language;
+    public List<Language> getLanguageList() {
+        return languageList;
     }
 
-    public void setLanguage(Language language) {
-        this.language = language;
-    }
-
-    public Education getEducation() {
-        return education;
-    }
-
-    public void setEducation(Education education) {
-        this.education = education;
-    }
-
-    public Experience getExperience() {
-        return experience;
-    }
-
-    public void setExperience(Experience experience) {
-        this.experience = experience;
+    public void setLanguageList(List<Language> languageList) {
+        this.languageList = languageList;
     }
 }

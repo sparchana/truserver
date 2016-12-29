@@ -140,7 +140,6 @@ public class MatchingEngineService {
                         .compareTo(a.getJobPostMinSalary()));
                 break;
             case SORT_BY_SALARY_MIN_MAX:
-                Logger.info("In mGetAllJobPostsRaw : sorting on Salary");
                 Collections.sort(jobPostsResponseList, (a, b) -> a.getJobPostMinSalary()
                         .compareTo(b.getJobPostMinSalary()));
                 break;

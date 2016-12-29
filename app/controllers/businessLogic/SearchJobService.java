@@ -4,11 +4,13 @@ import api.ServerConstants;
 import api.http.httpRequest.search.SearchJobRequest;
 import api.http.httpResponse.JobPostResponse;
 import api.http.httpResponse.search.SearchJobResponse;
+import api.http.httpResponse.search.helper.FilterParamsResponse;
 import api.http.httpResponse.search.helper.SearchParamsResponse;
 import models.entity.Candidate;
 import models.entity.OM.LanguageKnown;
 import models.entity.Static.Education;
 import models.entity.Static.Experience;
+import models.entity.Static.Language;
 import models.entity.Static.Locality;
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,6 +29,7 @@ public class SearchJobService {
 
         if (request.getSearchParamRequest() != null) {
             SearchParamsResponse searchParamsResponse = new SearchParamsResponse();
+            FilterParamsResponse filterParamsResponse = new FilterParamsResponse();
             searchParamsResponse
                     .setSearchKeywords(
                             segregateKeywords(
@@ -66,6 +69,8 @@ public class SearchJobService {
             Candidate candidate = null;
             JobPostResponse jobPostResponse;
 
+            List<Language> languageList = new ArrayList<>();
+
             if(candidateId != null) {
                 candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
             }
@@ -77,19 +82,24 @@ public class SearchJobService {
                     && searchParamsResponse.getLocality() == null
                     && searchParamsResponse.getEducation() == null
                     && searchParamsResponse.getExperience() == null
-                    && request.getSortParamRequest().getSortBy() == null
                     && (request.getFilterParamRequest().getSelectedGender() == null
                     && request.getFilterParamRequest().getSelectedLanguageIdList().size() == 0
             )) {
-                // overriding gender filter
+                // overriding gender filter & prep response filter object
                 request.getFilterParamRequest().setSelectedGender(candidate.getCandidateGender());
 
                 List<Long> languageIdList = new ArrayList<>();
                 for (LanguageKnown languageKnown : candidate.getLanguageKnownList()) {
                     languageIdList.add(Long.valueOf(languageKnown.getLanguage().getLanguageId()));
+                    languageList.add(languageKnown.getLanguage());
                 }
+
                 // overriding language filter
                 request.getFilterParamRequest().setSelectedLanguageIdList(languageIdList);
+
+                // override response
+                searchParamsResponse.setLocality(candidate.getLocality());
+                searchParamsResponse.setEducation(candidate.getCandidateEducation().getEducation());
 
                 jobPostResponse = JobSearchService
                         .queryAndReturnJobPosts(searchParamsResponse.getSearchKeywords(),
@@ -114,7 +124,22 @@ public class SearchJobService {
                                 request.getFilterParamRequest());
             }
 
+            if(languageList.isEmpty()
+                    && filterParamsResponse != null
+                    && filterParamsResponse.getLanguageList()!= null
+                    && !filterParamsResponse.getLanguageList().isEmpty()){
+                languageList = new ArrayList<>();
+                languageList.addAll(
+                        Language.find.where().in("languageId", request.getFilterParamRequest().getSelectedLanguageIdList()).findList());
+            }
+            if(request.getFilterParamRequest() != null){
+                filterParamsResponse.setLanguageList(languageList);
+               if(request.getFilterParamRequest().getSelectedGender() != null)
+                   filterParamsResponse.setGender(request.getFilterParamRequest().getSelectedGender());
+            }
+
             response.setSearchParams(searchParamsResponse);
+            response.setFilterParams(filterParamsResponse);
 
             response.setResults(jobPostResponse);
             response.setPage(request.getPage());

@@ -437,20 +437,20 @@ public class JobSearchService {
 
         Query<JobPost> query = JobPost.find.query();
 
-        // when no search params provided, return all active jobs
-        if((keywordList == null||keywordList.size() ==0 )
-                && locality == null
-                && education == null
-                && experience == null
-                && sortBy == null
-                && (filterParamRequest.getSelectedGender() == null
-                && filterParamRequest.getSelectedLanguageIdList().size() == 0
-        )){
-            response = getAllActiveJobsPaginated(Long.valueOf((page-1)*MAX_ROW));
-            response.setJobsPerPage(MAX_ROW);
-
-            return response;
-        }
+//        // when no search params provided, return all active jobs
+//        if((keywordList == null||keywordList.size() ==0 )
+//                && locality == null
+//                && education == null
+//                && experience == null
+//                && sortBy == null
+//                && (filterParamRequest.getSelectedGender() == null
+//                && filterParamRequest.getSelectedLanguageIdList().size() == 0
+//        )){
+//            response = getAllActiveJobsPaginated(Long.valueOf((page-1)*MAX_ROW));
+//            response.setJobsPerPage(MAX_ROW);
+//
+//            return response;
+//        }
 
 //        /* for filter to work, set locality to bangalore lat lng*/
 //        // c.f https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyCKHf7GijuzKW84Ggz0fFWWHD0y9_onUhg&address=bangalore
@@ -543,13 +543,21 @@ public class JobSearchService {
 
         query = query.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).query();
 
+        boolean doSortByDistance = false;
+
         // sort params, this should ideally not exist now as we are externally sorting it anyways
-        if(sortBy == null){
+        if((sortBy == ServerConstants.SORT_BY_NEARBY) && locality == null){
             // default orders
             query = query.orderBy().asc("source");
             query = query.orderBy().desc("JobPostIsHot");
             query = query.orderBy().desc("jobPostUpdateTimestamp");
+
+            Logger.info("sort by null");
+            sortBy = SORT_BY_DATE_POSTED;
+            doSortByDistance = false;
         }
+
+
 //        query = query.setFirstRow((page - 1) * MAX_ROW).setMaxRows(MAX_ROW);
 
         List<JobPost> resultJobPosts = query.findList();
@@ -560,15 +568,12 @@ public class JobSearchService {
             resultJobsWithinDistance = MatchingEngineService.filterByDistance(resultJobPosts,
                     locality.getLat(), locality.getLng(),
                     ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
-
+            doSortByDistance = true;
         } else {
             resultJobsWithinDistance = resultJobPosts;
         }
 
-        if(sortBy == null){
-            sortBy = SORT_DEFAULT;
-        }
-        MatchingEngineService.sortJobPostList(resultJobsWithinDistance, sortBy, true);
+        MatchingEngineService.sortJobPostList(resultJobsWithinDistance, sortBy, doSortByDistance);
 
         response.setTotalJobs(resultJobsWithinDistance.size());
         Logger.info("total jobs: " + response.getTotalJobs());

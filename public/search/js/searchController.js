@@ -36,7 +36,7 @@ var app = (function ($) {
             selectedLanguageIdList: []
         },
         currentSortParams: {
-            sortBy: null
+            sortBy: 1 // default set to sort by relevance
         },
         page: 1,
         isPaginationEnabled: false,
@@ -407,7 +407,7 @@ var app = (function ($) {
                         }
                     });
                     app.suggestion.list = list;
-                    if(app.suggestion.list.length == 0) {
+                    if(app.suggestion.list != null && app.suggestion.list.length == 0) {
                         // when no suggestions are returned. do something here...
                     }
                 });
@@ -959,7 +959,7 @@ var app = (function ($) {
 
                 app.currentFilterParams.selectedGender = null;
                 app.currentFilterParams.selectedLanguageIdList = [];
-                app.currentSortParams.sortBy = null;
+                app.currentSortParams.sortBy = 1; // default set to sort by relevance
 
                 app.do.search(true);
             }
