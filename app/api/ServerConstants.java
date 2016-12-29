@@ -211,6 +211,7 @@ public class ServerConstants {
     public static final int SORT_BY_NEARBY = 1;
     public static final int SORT_BY_DATE_POSTED = 2;
     public static final int SORT_BY_SALARY = 3;
+    public static final int SORT_BY_SALARY_MIN_MAX = 4;
     public static final int SORT_DEFAULT = SORT_BY_NEARBY;
 
     public static final int GENDER_MALE = 0;

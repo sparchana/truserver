@@ -6,6 +6,7 @@ import api.http.httpResponse.JobPostResponse;
 import api.http.httpResponse.search.SearchJobResponse;
 import api.http.httpResponse.search.helper.SearchParamsResponse;
 import models.entity.Candidate;
+import models.entity.OM.LanguageKnown;
 import models.entity.Static.Education;
 import models.entity.Static.Experience;
 import models.entity.Static.Locality;
@@ -61,18 +62,60 @@ public class SearchJobService {
                         determineExperience(request.getSearchParamRequest().getExperienceText()));
             }
 
+            // if candidate has logged in then default search should be hooked with its preference
+            Candidate candidate = null;
+            JobPostResponse jobPostResponse;
+
+            if(candidateId != null) {
+                candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
+            }
+            // when no search params provided, and candidate is logged in, it returns
+            // data filtered by candidates preference
+            if (candidate != null &&
+                    (searchParamsResponse.getSearchKeywords() == null
+                    || searchParamsResponse.getSearchKeywords().size() == 0)
+                    && searchParamsResponse.getLocality() == null
+                    && searchParamsResponse.getEducation() == null
+                    && searchParamsResponse.getExperience() == null
+                    && request.getSortParamRequest().getSortBy() == null
+                    && (request.getFilterParamRequest().getSelectedGender() == null
+                    && request.getFilterParamRequest().getSelectedLanguageIdList().size() == 0
+            )) {
+                // overriding gender filter
+                request.getFilterParamRequest().setSelectedGender(candidate.getCandidateGender());
+
+                List<Long> languageIdList = new ArrayList<>();
+                for (LanguageKnown languageKnown : candidate.getLanguageKnownList()) {
+                    languageIdList.add(Long.valueOf(languageKnown.getLanguage().getLanguageId()));
+                }
+                // overriding language filter
+                request.getFilterParamRequest().setSelectedLanguageIdList(languageIdList);
+
+                jobPostResponse = JobSearchService
+                        .queryAndReturnJobPosts(searchParamsResponse.getSearchKeywords(),
+                                candidate.getLocality(),
+                                candidate.getCandidateEducation().getEducation(),
+                                searchParamsResponse.getExperience(),
+                                request.getSortParamRequest().getSortBy(),
+                                true,
+                                null,
+                                request.getPage(),
+                                request.getFilterParamRequest());
+            } else {
+                jobPostResponse = JobSearchService
+                        .queryAndReturnJobPosts(searchParamsResponse.getSearchKeywords(),
+                                searchParamsResponse.getLocality(),
+                                searchParamsResponse.getEducation(),
+                                searchParamsResponse.getExperience(),
+                                request.getSortParamRequest().getSortBy(),
+                                true,
+                                null,
+                                request.getPage(),
+                                request.getFilterParamRequest());
+            }
 
             response.setSearchParams(searchParamsResponse);
-            JobPostResponse jobPostResponse = JobSearchService
-                    .queryAndReturnJobPosts(searchParamsResponse.getSearchKeywords(),
-                            searchParamsResponse.getLocality(),
-                            searchParamsResponse.getEducation(),
-                            searchParamsResponse.getExperience(),
-                            request.getSortParamRequest().getSortBy(),
-                            true,
-                            null,
-                            request.getPage(),
-                            request.getFilterParamRequest());
+
             response.setResults(jobPostResponse);
             response.setPage(request.getPage());
 
@@ -99,18 +142,17 @@ public class SearchJobService {
                 result.append(" Language: " + (request.getFilterParamRequest() != null ? gender : " ANY_GENDER"));
             }
 
-             /* Interaction */
             String objectAUUID;
             if (candidateId == null) {
                 objectAUUID = ServerConstants.TRU_WEB_NOT_LOGGED_UUID;
             } else {
-                Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
                 if(candidate != null){
                     objectAUUID = candidate.getCandidateUUId();
                 } else {
                     objectAUUID = ServerConstants.TRU_WEB_NOT_LOGGED_UUID;
                 }
             }
+
 
             // create interaction
             InteractionService.createInteractionForWebSearch(objectAUUID, result.toString());

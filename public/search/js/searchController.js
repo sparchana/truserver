@@ -61,7 +61,7 @@ var app = (function ($) {
 
                 app.do.search(true);
 
-                document.getElementById('latestPosted').checked = true;
+                document.getElementById('sortByRelevance').checked = true;
             },
             getAllJobRole: function () {
                 //ajax call and save data to allJobRole
@@ -932,10 +932,12 @@ var app = (function ($) {
             },
             updateSortBy: function (value) {
                 /*
-                 0 sort by salary low to high
-                 1 sort by salary high to low
+                 1 sort by nearby
                  2 sort by datePosted : newest on top
+                 3 sort by salary high to low
+                 4 sort by salary low to high
                  */
+                // current its assumed that on server the value 0, 1, 2, 3, 4 are defined in same way
 
                 app.currentSortParams.sortBy = parseInt(value);
 
@@ -953,7 +955,7 @@ var app = (function ($) {
                 $('input:checkbox').removeAttr('checked');
                 $('input:radio').removeAttr('checked');
 
-                document.getElementById('latestPosted').checked = true;
+                document.getElementById('sortByRelevance').checked = true;
 
                 app.currentFilterParams.selectedGender = null;
                 app.currentFilterParams.selectedLanguageIdList = [];
@@ -1086,7 +1088,6 @@ var app = (function ($) {
 
     // sort listener
     $("input[name=sortBy]:radio").change(function () {
-        // current its assumed that on server the value 0, 1, 2 are defined in same way
         app.do.updateSortBy(this.value);
         console.log("sort by");
     });

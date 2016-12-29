@@ -21,8 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static api.ServerConstants.SORT_BY_DATE_POSTED;
-import static api.ServerConstants.SORT_BY_SALARY;
+import static api.ServerConstants.*;
 
 /**
  * Created by zero on 15/8/16.
@@ -101,7 +100,7 @@ public class JobSearchService {
                         latitude, longitude,
                         ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
 
-                if (sortBy == ServerConstants.SORT_DEFAULT) {
+                if (sortBy == SORT_DEFAULT) {
                     //segregation
                     resultJobPosts = sortJobPostListAccordingToHotJobs(sortByDistance(exactJobsWithinDistance), sortByDistance(relatedJobsWithinDistance));
 
@@ -201,7 +200,7 @@ public class JobSearchService {
                         latitude, longitude,
                         ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
 
-                if (sortBy == ServerConstants.SORT_DEFAULT) {
+                if (sortBy == SORT_DEFAULT) {
                     resultJobPosts.addAll(sortByDistance(exactJobsWithinDistance));
                 }
                 else {
@@ -453,6 +452,14 @@ public class JobSearchService {
             return response;
         }
 
+//        /* for filter to work, set locality to bangalore lat lng*/
+//        // c.f https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyCKHf7GijuzKW84Ggz0fFWWHD0y9_onUhg&address=bangalore
+//        Double latitude = 12.9715987;
+//        Double longitude = 77.5945627;
+//        if(locality != null) {
+//            latitude = locality.getLat();
+//            longitude = locality.getLng();
+//        }
 
         if (keywordList != null && keywordList.size() >0 ) {
 
@@ -475,12 +482,13 @@ public class JobSearchService {
             }
         }
 
-        if(locality != null) {
-            query = query.select("*").fetch("jobPostToLocalityList")
-                    .where()
-                    .eq("jobPostToLocalityList.locality.localityId", locality.getLocalityId())
-                    .query();
-        }
+//      not doing a direct match for location, as requirement is to do a match withing a radius
+//        if(locality != null) {
+//            query = query.select("*").fetch("jobPostToLocalityList")
+//                    .where()
+//                    .eq("jobPostToLocalityList.locality.localityId", locality.getLocalityId())
+//                    .query();
+//        }
 
         if(education != null) {
             query = query.select("*").fetch("jobPostEducation")
@@ -526,7 +534,7 @@ public class JobSearchService {
                         .query();
             }
         }
-
+//       commented out for now,  to have more results
 //        if (isHot) {
 //            query = query.where().eq("jobPostIsHot", "1").query();
 //        }
@@ -535,28 +543,47 @@ public class JobSearchService {
 
         query = query.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).query();
 
-        // sort params
-        if(sortBy != null){
-            if (sortBy == 0) {
-                query = query.orderBy().asc("jobPostMinSalary");
-
-            } else if (sortBy == 1) {
-                query = query.orderBy().desc("jobPostMinSalary");
-            } else if (sortBy == SORT_BY_DATE_POSTED) {
-                query = query.orderBy().desc("jobPostCreateTimestamp");
-            }
-        } else {
+        // sort params, this should ideally not exist now as we are externally sorting it anyways
+        if(sortBy == null){
             // default orders
             query = query.orderBy().asc("source");
             query = query.orderBy().desc("JobPostIsHot");
             query = query.orderBy().desc("jobPostUpdateTimestamp");
         }
+//        query = query.setFirstRow((page - 1) * MAX_ROW).setMaxRows(MAX_ROW);
 
-        response.setTotalJobs(query.findRowCount());
+        List<JobPost> resultJobPosts = query.findList();
+
+        // sort by relevance {hot jobs + internal + distance}
+        List<JobPost> resultJobsWithinDistance;
+        if(locality != null && locality.getLat() != null) {
+            resultJobsWithinDistance = MatchingEngineService.filterByDistance(resultJobPosts,
+                    locality.getLat(), locality.getLng(),
+                    ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
+
+        } else {
+            resultJobsWithinDistance = resultJobPosts;
+        }
+
+        if(sortBy == null){
+            sortBy = SORT_DEFAULT;
+        }
+        MatchingEngineService.sortJobPostList(resultJobsWithinDistance, sortBy, true);
+
+        response.setTotalJobs(resultJobsWithinDistance.size());
         Logger.info("total jobs: " + response.getTotalJobs());
-        query = query.setFirstRow((page - 1) * MAX_ROW).setMaxRows(MAX_ROW);
 
-        response.setAllJobPost(query.findPagedList().getList());
+        // find every thing and trim off the result based on page number
+        List<JobPost> trimmedJobPosts = new ArrayList<>();
+        int i = (page - 1) * MAX_ROW;
+        for(int j = 0; j<MAX_ROW && i<resultJobsWithinDistance.size(); ++j){
+            trimmedJobPosts.add(resultJobsWithinDistance.get(i++));
+        }
+
+
+
+        response.setAllJobPost(trimmedJobPosts);
+
         return  response;
     }
 
