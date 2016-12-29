@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class FilterParamsResponse {
     public int gender;
+    public long salary;
     public List<Language> languageList;
 
     public FilterParamsResponse() {
@@ -30,5 +31,13 @@ public class FilterParamsResponse {
 
     public void setLanguageList(List<Language> languageList) {
         this.languageList = languageList;
+    }
+
+    public long getSalary() {
+        return salary;
+    }
+
+    public void setSalary(long salary) {
+        this.salary = salary;
     }
 }

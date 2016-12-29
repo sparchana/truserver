@@ -7,6 +7,7 @@ import java.util.List;
  */
 public class FilterParamRequest {
     Integer selectedGender;
+    Long selectedSalary;
     List<Long> selectedLanguageIdList;
 
     public FilterParamRequest() {
@@ -26,5 +27,13 @@ public class FilterParamRequest {
 
     public void setSelectedLanguageIdList(List<Long> selectedLanguageIdList) {
         this.selectedLanguageIdList = selectedLanguageIdList;
+    }
+
+    public Long getSelectedSalary() {
+        return selectedSalary;
+    }
+
+    public void setSelectedSalary(Long selectedSalary) {
+        this.selectedSalary = selectedSalary;
     }
 }

@@ -437,30 +437,6 @@ public class JobSearchService {
 
         Query<JobPost> query = JobPost.find.query();
 
-//        // when no search params provided, return all active jobs
-//        if((keywordList == null||keywordList.size() ==0 )
-//                && locality == null
-//                && education == null
-//                && experience == null
-//                && sortBy == null
-//                && (filterParamRequest.getSelectedGender() == null
-//                && filterParamRequest.getSelectedLanguageIdList().size() == 0
-//        )){
-//            response = getAllActiveJobsPaginated(Long.valueOf((page-1)*MAX_ROW));
-//            response.setJobsPerPage(MAX_ROW);
-//
-//            return response;
-//        }
-
-//        /* for filter to work, set locality to bangalore lat lng*/
-//        // c.f https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyCKHf7GijuzKW84Ggz0fFWWHD0y9_onUhg&address=bangalore
-//        Double latitude = 12.9715987;
-//        Double longitude = 77.5945627;
-//        if(locality != null) {
-//            latitude = locality.getLat();
-//            longitude = locality.getLng();
-//        }
-
         if (keywordList != null && keywordList.size() >0 ) {
 
             Junction<JobPost> junction = query.select("*")
@@ -481,14 +457,6 @@ public class JobSearchService {
                 }
             }
         }
-
-//      not doing a direct match for location, as requirement is to do a match withing a radius
-//        if(locality != null) {
-//            query = query.select("*").fetch("jobPostToLocalityList")
-//                    .where()
-//                    .eq("jobPostToLocalityList.locality.localityId", locality.getLocalityId())
-//                    .query();
-//        }
 
         if(education != null) {
             query = query.select("*").fetch("jobPostEducation")
@@ -532,6 +500,11 @@ public class JobSearchService {
                         .where()
                         .in("jobPostLanguageRequirements.language.languageId", filterParamRequest.getSelectedLanguageIdList())
                         .query();
+            }
+            // apply salary filter
+            if(filterParamRequest.getSelectedSalary() != null && filterParamRequest.getSelectedSalary() !=0) {
+                query = query.where().or(Expr.ge("jobPostMinSalary", filterParamRequest.getSelectedSalary()),
+                        Expr.ge("jobPostMaxSalary", filterParamRequest.getSelectedSalary())).query();
             }
         }
 //       commented out for now,  to have more results
@@ -584,7 +557,6 @@ public class JobSearchService {
         for(int j = 0; j<MAX_ROW && i<resultJobsWithinDistance.size(); ++j){
             trimmedJobPosts.add(resultJobsWithinDistance.get(i++));
         }
-
 
 
         response.setAllJobPost(trimmedJobPosts);

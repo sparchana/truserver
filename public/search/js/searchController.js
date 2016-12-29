@@ -28,11 +28,20 @@ var app = (function ($) {
         allEducation: [],
         allExperience: [],
         allLanguage: [],
+        allSalaryOptions: [
+            {id: 0, name: " Any"},
+            {id: 8, name: " >= 8000"}, // value = val * 1000
+            {id: 10, name: " >= 10000"},
+            {id: 12, name: " >= 12000"},
+            {id: 15, name: " >= 15000"},
+            {id: 20, name: " >= 20000"}
+        ],
         suggestion: null,
         currentURL: window.location.pathname,
         currentSearchParams: {},
         currentFilterParams: {
             selectedGender: null,
+            selectedSalary: 0, // any
             selectedLanguageIdList: []
         },
         currentSortParams: {
@@ -57,6 +66,7 @@ var app = (function ($) {
 
                 // render filter paramas
                 app.render.renderLanguage();
+                app.render.renderSalaryFilter();
                 app.run.urlChangeDetector();
 
                 app.do.search(true);
@@ -372,6 +382,35 @@ var app = (function ($) {
                     console.log(fromReject);
                 });
 
+            },
+            renderSalaryFilter: function () {
+
+                console.log("render salary filter");
+
+                var parent = $("#salaryFilterDiv");
+                app.allSalaryOptions.forEach(function (salary) {
+
+                    var mainDiv = document.createElement("div");
+                    parent.append(mainDiv);
+
+                    var salaryInput = document.createElement("input");
+                    salaryInput.type = "radio";
+                    salaryInput.name = "salaryFilter";
+
+
+                    salaryInput.id = "sal_" + salary.id;
+                    salaryInput.setAttribute("value", salary.name);
+                    mainDiv.appendChild(salaryInput);
+
+                    var salaryLabel = document.createElement("label");
+                    salaryLabel.style = "font-size: 14px";
+                    salaryLabel.setAttribute("for", "sal_" + salary.id);
+                    salaryLabel.textContent = salary.name;
+                    mainDiv.appendChild(salaryLabel);
+
+                });
+
+                document.getElementById('sal_0').checked = true;
             },
             renderTextSearch: function () {
                 var input = $("#searchText");
@@ -905,7 +944,7 @@ var app = (function ($) {
 
                 mainDiv.appendChild(hotJobItem);
             },
-            updateLanguageFilter: function () {
+            updateOnFilterChange: function () {
                 console.log("update language filter");
                 //language filter
                 app.currentFilterParams.selectedLanguageIdList = [];
@@ -919,7 +958,6 @@ var app = (function ($) {
                     $("#language_filter").hide();
                 }
 
-                //prep language filter object
                 app.do.search(true);
             },
             updateGenderFilter: function (genderId) {
@@ -927,6 +965,14 @@ var app = (function ($) {
                 app.currentFilterParams.selectedGender = genderId;
 
                 console.log("gender: " + genderId);
+
+                app.do.search(true);
+            },
+            updateSalaryFilter: function (salaryId) {
+                $("#salary_filter").show();
+                app.currentFilterParams.selectedSalary = parseInt(salaryId) * 1000;
+
+                console.log("salary gt : " + salaryId);
 
                 app.do.search(true);
             },
@@ -956,6 +1002,7 @@ var app = (function ($) {
                 $('input:radio').removeAttr('checked');
 
                 document.getElementById('sortByRelevance').checked = true;
+                document.getElementById('sal_0').checked = true;
 
                 app.currentFilterParams.selectedGender = null;
                 app.currentFilterParams.selectedLanguageIdList = [];
@@ -1086,6 +1133,12 @@ var app = (function ($) {
         console.log("gender filter ");
     });
 
+    // salary filter listner
+    $("input[name=salaryFilter]:radio").change(function () {
+        app.do.updateSalaryFilter(this.id.split("_")[1]);
+        console.log("salary  filter id: " + this.id.split("_")[1]);
+    });
+
     // sort listener
     $("input[name=sortBy]:radio").change(function () {
         app.do.updateSortBy(this.value);
@@ -1104,5 +1157,5 @@ var app = (function ($) {
 // exposed methods
 
 function checkOnFilterChange() {
-    app.do.updateLanguageFilter();
+    app.do.updateOnFilterChange();
 }
