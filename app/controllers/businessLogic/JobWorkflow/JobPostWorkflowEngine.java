@@ -45,7 +45,6 @@ import java.util.*;
 import static api.ServerConstants.*;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
 import static models.util.SmsUtil.*;
-import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 import static play.mvc.Results.ok;
 
@@ -1320,8 +1319,8 @@ public class JobPostWorkflowEngine {
             preScreenResponse.save();
         }
         if (preScreenRequest.isPass() != null && !(preScreenRequest.isPass())) {
-            // candidate failed prescren, then don't show interview
-            interviewResponse.setStatus(ServerConstants.ERROR);
+            // candidate failed prescreen, then don't show interview
+            interviewResponse.setStatus(ServerConstants.INTERVIEW_NOT_REQUIRED);
             return interviewResponse;
         }
         return RecruiterService.isInterviewRequired(jobPostWorkflowNew.getJobPost());

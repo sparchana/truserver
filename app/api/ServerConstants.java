@@ -163,6 +163,9 @@ public class ServerConstants {
     public static final int REVIEW_APPLICATION_AUTO = 1;
     public static Map<String, String> devTeamMobile;
 
+    // company status
+    public static final int COMPANY_STATUS_ACTIVE = 2;
+
     // rec sorting keys
     public static Integer REC_SORT_LASTEST_ACTIVE = 1;
     public static Integer REC_SORT_SALARY_H_TO_L = 2;
@@ -208,6 +211,7 @@ public class ServerConstants {
     public static final int SORT_BY_NEARBY = 1;
     public static final int SORT_BY_DATE_POSTED = 2;
     public static final int SORT_BY_SALARY = 3;
+    public static final int SORT_BY_SALARY_MIN_MAX = 4;
     public static final int SORT_DEFAULT = SORT_BY_NEARBY;
 
     public static final int GENDER_MALE = 0;
@@ -221,6 +225,7 @@ public class ServerConstants {
 
     /* Non Logged In Search Result UUID */
     public static final String TRU_DROID_NOT_LOGGED_UUID = "TRU-DROID-NOT-LOGGEDIN-UUID";
+    public static final String TRU_WEB_NOT_LOGGED_UUID = "TRU-WEB-NOT-LOGGEDIN-UUID";
     public static final String SUPPORT_DEFAULT_UUID = "SUPPORT-DEFAULT-UUID";
 
     public static final String SELF_UNLOCKED_CANDIDATE_CONTACT = "Self unlocked contact";

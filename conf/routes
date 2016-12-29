@@ -177,6 +177,12 @@ POST        /getRecruiterJobPostInfo/:id                                  contro
 POST        /getTodayInterviewDetails                                     controllers.RecruiterController.getTodayInterviewDetails()
 POST        /getPendingCandidateApproval                                  controllers.RecruiterController.getPendingCandidateApproval()
 
+# Search API
+# ~~~~~~~~~~~~~
+GET         /s/:searchText/                                               controllers.SearchController.renderSearch(searchText : String)
+GET         /ss/                                                          controllers.SearchController.getSearchSuggestion(key : String)
+POST        /api/search/                                                  controllers.SearchController.search(page: Integer?=null)
+
 
 #new routes
 #~~~~~~~~~~~~~~~~~~~~
