@@ -663,7 +663,7 @@ var app = (function ($) {
                         $("#jobLoaderDiv").hide();
                         $('#noJobsDiv').hide();
 
-                        app.do.createAndAppendDivider("Popular Jobs ("+data.results.totalJobs+" results found) ");
+                        app.do.createAndAppendDivider("Popular Jobs ("+data.results.totalJobs+" jobs found) ");
                         // var _isDividerPresent = false;
                         _jobPostList.forEach(function (jobPost) {
                             _count++;
