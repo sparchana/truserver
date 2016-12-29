@@ -67,8 +67,9 @@ public class SameDayInterviewAlertTask extends TimerTask {
 
         } else {
             if(schedulerStats.getEndTimestamp().getDate() != mXHrBack.getDate()
-                    || (schedulerStats.getEndTimestamp().before(mXHrBack))) {
-                // last run was 'x++' hr back, hence re run
+                    || (schedulerStats.getEndTimestamp().before(mXHrBack) || schedulerStats.getEndTimestamp().equals(mXHrBack))) {
+
+                // last run was at or before 'x' hr back, hence re run
                 shouldRunThisTask = true;
             }
         }
