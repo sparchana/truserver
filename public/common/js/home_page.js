@@ -608,6 +608,11 @@ function addLead() {
         }
     }
 }
+function showField(){
+    $('#mainFieldSearch').removeClass("col-lg-9").addClass("col-lg-5");
+    $('#experienceFieldSearch').fadeIn();
+    $('#educationFieldSearch').fadeIn();
+}
 
 function openLogin() {
     $("#signInPopup").html("Sign In");
