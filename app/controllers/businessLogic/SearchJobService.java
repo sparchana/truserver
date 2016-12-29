@@ -70,6 +70,7 @@ public class SearchJobService {
             JobPostResponse jobPostResponse;
 
             List<Language> languageList = new ArrayList<>();
+            List<String> languageStringList = new ArrayList<>();
 
             if(candidateId != null) {
                 candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
@@ -92,6 +93,7 @@ public class SearchJobService {
                 for (LanguageKnown languageKnown : candidate.getLanguageKnownList()) {
                     languageIdList.add(Long.valueOf(languageKnown.getLanguage().getLanguageId()));
                     languageList.add(languageKnown.getLanguage());
+                    languageStringList.add(languageKnown.getLanguage().getLanguageName());
                 }
 
                 // overriding language filter
@@ -131,6 +133,10 @@ public class SearchJobService {
                 languageList = new ArrayList<>();
                 languageList.addAll(
                         Language.find.where().in("languageId", request.getFilterParamRequest().getSelectedLanguageIdList()).findList());
+
+                for(Language language : languageList){
+                    languageStringList.add(language.getLanguageName());
+                }
             }
             if(request.getFilterParamRequest() != null){
                 filterParamsResponse.setLanguageList(languageList);
@@ -163,9 +169,12 @@ public class SearchJobService {
                    gender = request.getFilterParamRequest().getSelectedGender()
                             == ServerConstants.GENDER_MALE ? "MALE": "FEMALE";
                 }
-                result.append(" Gender: " + (request.getFilterParamRequest() != null ? gender : " ANY_GENDER"));
-                result.append(" Language: " + (request.getFilterParamRequest() != null ? gender : " ANY_GENDER"));
+                result.append(" Gender: " + gender );
+                result.append(" Language: " + ((languageStringList != null || languageStringList.size() >0 )?  String.join(",", languageStringList): " ANY_LANGUAGE"));
+                result.append(" Salary: >= " + (request.getFilterParamRequest().getSelectedSalary() != 0 ? request.getFilterParamRequest().getSelectedSalary() : " ANY_SALARY"));
             }
+
+            result.append(" returned ("+response.getResults().getTotalJobs()+") Jobs");
 
             String objectAUUID;
             if (candidateId == null) {
@@ -182,6 +191,9 @@ public class SearchJobService {
             // create interaction
             InteractionService.createInteractionForWebSearch(objectAUUID, result.toString());
         }
+
+        // modify result jobPosts add CTA it in
+
         return response;
     }
 
