@@ -531,9 +531,17 @@ var app = (function ($) {
                 try {
                     var url = window.location.pathname.split('/');
                     var _searchUrl = url[url.length - 2];
-                    app.currentSearchURL = _searchUrl;
+
                     app.currentSearchParams = {};
                     if (_searchUrl != null) {
+                        app.currentSearchURL = _searchUrl;
+
+                        if(_searchUrl.indexOf(DEFAULT_VALUES.D_SEARCH_KEYWORD_IDENTIFIER)  < 0){
+                            // redirect to 404
+                            window.location = "/pageNotFound" ;
+                            return;
+                        }
+
                         var list = _searchUrl.split('_');
                         // run identifier on this array;
                         var i;

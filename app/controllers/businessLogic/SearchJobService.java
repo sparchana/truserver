@@ -7,6 +7,7 @@ import api.http.httpResponse.search.SearchJobResponse;
 import api.http.httpResponse.search.helper.FilterParamsResponse;
 import api.http.httpResponse.search.helper.SearchParamsResponse;
 import models.entity.Candidate;
+import models.entity.JobPost;
 import models.entity.OM.LanguageKnown;
 import models.entity.Static.Education;
 import models.entity.Static.Experience;
@@ -192,7 +193,8 @@ public class SearchJobService {
             InteractionService.createInteractionForWebSearch(objectAUUID, result.toString());
         }
 
-        // modify result jobPosts add CTA it in
+        // modify result jobPosts add CTA in it
+
 
         return response;
     }
@@ -240,4 +242,17 @@ public class SearchJobService {
     }
 
 
+    /**
+     *
+     * uses Transient field from JobPost and 
+     * @param jobPostList
+     * @return
+     */
+    private List<JobPost> computeCTA(List<JobPost> jobPostList){
+
+        for(JobPost jobPost: jobPostList){
+
+        }
+        return jobPostList;
+    }
 }

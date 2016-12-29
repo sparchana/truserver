@@ -425,8 +425,7 @@ public class JobSearchService {
                                                          boolean isHot,
                                                          Integer source,
                                                          int page,
-                                                         FilterParamRequest filterParamRequest)
-    {
+                                                         FilterParamRequest filterParamRequest) {
         int MAX_ROW = 5;
         JobPostResponse response = new JobPostResponse();
         response.setJobsPerPage(MAX_ROW);
@@ -437,7 +436,7 @@ public class JobSearchService {
 
         Query<JobPost> query = JobPost.find.query();
 
-        if (keywordList != null && keywordList.size() >0 ) {
+        if (keywordList != null && keywordList.size() > 0) {
 
             Junction<JobPost> junction = query.select("*")
                     .fetch("jobRole")
@@ -445,7 +444,7 @@ public class JobSearchService {
                     .where()
                     .disjunction();
 
-            for(String keyword : keywordList) {
+            for (String keyword : keywordList) {
                 if (keyword != null && !keyword.trim().isEmpty()) {
                     keyword = keyword.trim();
                     Logger.info("keyword: " + keyword);
@@ -458,23 +457,23 @@ public class JobSearchService {
             }
         }
 
-        if(education != null) {
+        if (education != null) {
             query = query.select("*").fetch("jobPostEducation")
                     .where()
                     .eq("jobPostEducation.educationId", education.getEducationId())
                     .query();
         }
-        if(experience != null) {
+        if (experience != null) {
             query = query.select("*").fetch("jobPostExperience")
                     .where()
                     .eq("jobPostExperience.experienceId", experience.getExperienceId())
                     .query();
         }
 
-        if (filterParamRequest!= null) {
+        if (filterParamRequest != null) {
 
             // apply gender filter
-            if(filterParamRequest.getSelectedGender() != null){
+            if (filterParamRequest.getSelectedGender() != null) {
                 if (filterParamRequest.getSelectedGender() == ServerConstants.GENDER_MALE) {
                     query = query
                             .where()
@@ -494,19 +493,23 @@ public class JobSearchService {
             }
 
             // apply language filter
-            if(filterParamRequest.getSelectedLanguageIdList() != null
-                    && filterParamRequest.getSelectedLanguageIdList().size() > 0 ) {
+            if (filterParamRequest.getSelectedLanguageIdList() != null
+                                && filterParamRequest.getSelectedLanguageIdList().size() > 0) {
+
                 query = query.select("*").fetch("jobPostLanguageRequirements")
-                        .where()
-                        .in("jobPostLanguageRequirements.language.languageId", filterParamRequest.getSelectedLanguageIdList())
-                        .query();
+                             .where()
+                             .in("jobPostLanguageRequirements.language.languageId", filterParamRequest.getSelectedLanguageIdList())
+                             .query();
             }
             // apply salary filter
-            if(filterParamRequest.getSelectedSalary() != null && filterParamRequest.getSelectedSalary() !=0) {
+            if (filterParamRequest.getSelectedSalary() != null
+                                && filterParamRequest.getSelectedSalary() != 0) {
+
                 query = query.where().or(Expr.ge("jobPostMinSalary", filterParamRequest.getSelectedSalary()),
-                        Expr.ge("jobPostMaxSalary", filterParamRequest.getSelectedSalary())).query();
+                                         Expr.ge("jobPostMaxSalary", filterParamRequest.getSelectedSalary())).query();
             }
         }
+
 //       commented out for now,  to have more results
 //        if (isHot) {
 //            query = query.where().eq("jobPostIsHot", "1").query();
@@ -519,7 +522,8 @@ public class JobSearchService {
         boolean doSortByDistance = false;
 
         // sort params, this should ideally not exist now as we are externally sorting it anyways
-        if((sortBy == ServerConstants.SORT_BY_NEARBY) && locality == null){
+        if ((sortBy == ServerConstants.SORT_BY_NEARBY) && locality == null) {
+
             // default orders
             query = query.orderBy().asc("source");
             query = query.orderBy().desc("JobPostIsHot");
@@ -530,14 +534,13 @@ public class JobSearchService {
             doSortByDistance = false;
         }
 
-
 //        query = query.setFirstRow((page - 1) * MAX_ROW).setMaxRows(MAX_ROW);
 
         List<JobPost> resultJobPosts = query.findList();
 
         // sort by relevance {hot jobs + internal + distance}
         List<JobPost> resultJobsWithinDistance;
-        if(locality != null && locality.getLat() != null) {
+        if (locality != null && locality.getLat() != null) {
             resultJobsWithinDistance = MatchingEngineService.filterByDistance(resultJobPosts,
                     locality.getLat(), locality.getLng(),
                     ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
@@ -554,14 +557,14 @@ public class JobSearchService {
         // find every thing and trim off the result based on page number
         List<JobPost> trimmedJobPosts = new ArrayList<>();
         int i = (page - 1) * MAX_ROW;
-        for(int j = 0; j<MAX_ROW && i<resultJobsWithinDistance.size(); ++j){
+        for (int j = 0; j < MAX_ROW && i < resultJobsWithinDistance.size(); ++j) {
             trimmedJobPosts.add(resultJobsWithinDistance.get(i++));
         }
 
 
         response.setAllJobPost(trimmedJobPosts);
 
-        return  response;
+        return response;
     }
 
     private static Long getSalaryValue(Integer id) {
