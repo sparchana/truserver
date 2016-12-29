@@ -606,4 +606,11 @@ public class SmsUtil {
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
     }
 
+    public static void sendWeeklySmsToNotifyNoOfMatchingJobs(Candidate candidate, Integer jobCount, String jobRole) {
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", You are missing out on new jobs! There are over " + jobCount +
+                " new " + jobRole + " jobs on TruJobs platform near your locality! Apply now at www.trujobs.in or download app at bit.ly/trujobsapp.";
+
+        addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
+    }
+
 }

@@ -47,7 +47,7 @@ public class WeeklyCompleteProfileAlertTask extends TimerTask {
                 //sending sms
                 SmsUtil.sendWeeklySmsToCompleteProfile(candidate);
 
-                //sending sms
+                //sending notification
                 NotificationUtil.sendWeeklyNotificationToCompleteProfile(candidate);
             }
 
@@ -69,7 +69,6 @@ public class WeeklyCompleteProfileAlertTask extends TimerTask {
             endTime = new Timestamp(System.currentTimeMillis());
 
             SchedulerManager.saveNewSchedulerStats(startTime, typeFcm, subType, note, endTime, true);
-
 
         }).start();
     }

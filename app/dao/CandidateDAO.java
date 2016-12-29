@@ -25,7 +25,7 @@ public class CandidateDAO {
     }
     public static List<Candidate> getCandidateWhoUpdateProfileSinceIndexDays(Integer days) {
 
-        String workFlowQueryBuilder = " select objectauuid from interaction where" +
+        String workFlowQueryBuilder = " select distinct objectauuid from interaction where" +
                 "  interactiontype = '11' and objectatype = '4' and date(creationtimestamp) > curdate()-" + days ;
 
         RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder)

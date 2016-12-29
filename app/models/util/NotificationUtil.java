@@ -168,7 +168,17 @@ public class NotificationUtil {
         } else{
             Logger.info("Token not available");
         }
+    }
 
+    public static void sendWeeklyNotificationToNotifyNoOfMatchingJobs(Candidate candidate, Integer jobCount, String jobRole) {
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", You are missing out on new jobs! There are over " + jobCount +
+                " new " + jobRole + " jobs on TruJobs platform near your locality! Apply now at www.trujobs.in or download app at bit.ly/trujobsapp.";
+
+        if(candidate.getCandidateAndroidToken() != null){
+            addFcmToNotificationQueue(msg, jobCount + " new jobs near you!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+        } else{
+            Logger.info("Token not available");
+        }
     }
 
 
