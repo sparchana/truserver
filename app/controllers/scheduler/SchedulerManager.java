@@ -55,6 +55,11 @@ public class SchedulerManager implements Runnable {
         int mWeeklyNotifyAppDownloadMin = (play.Play.application().configuration().getInt("schedulertask.weekly.appdownload.notifier.start.min"));
         int mWeeklyNotifyAppDownloadSec = (play.Play.application().configuration().getInt("schedulertask.weekly.appdownload.notifier.start.sec"));
 
+        int mWeeklyProfileCompletionDay = (play.Play.application().configuration().getInt("schedulertask.weekly.profilecompletion.notifier.start.day"));
+        int mWeeklyProfileCompletionHr = (play.Play.application().configuration().getInt("schedulertask.weekly.profilecompletion.notifier.start.hr"));
+        int mWeeklyProfileCompletionMin = (play.Play.application().configuration().getInt("schedulertask.weekly.profilecompletion.notifier.start.min"));
+        int mWeeklyProfileCompletionSec = (play.Play.application().configuration().getInt("schedulertask.weekly.profilecompletion.notifier.start.sec"));
+
         long eodMailDelay = computeDelay(mEODMailTaskStartHr, mEODMailTaskStartMin , mEODMailTaskStartSec);
         long ndiMailDelay = computeDelay(mEODNextDayInterviewTaskStartHr, mEODNextDayInterviewStartMin , mEODNextDayInterviewStartSec);
         long aadhaarVerificationDelay = computeDelay(mEODAadhaarTaskStartHr, mEODAadhaarTaskStartMin , mEODAadhaarTaskStartSec);
@@ -67,6 +72,9 @@ public class SchedulerManager implements Runnable {
         // weekly tasks
         long weeklyAppDownloadTaskDelay = computeDelayForWeeklyTask(mWeeklyNotifyAppDownloadDay, mWeeklyNotifyAppDownloadHr,
                 mWeeklyNotifyAppDownloadMin , mWeeklyNotifyAppDownloadSec);
+
+        long weeklyProfileCompletionTaskDelay = computeDelayForWeeklyTask(mWeeklyProfileCompletionDay, mWeeklyProfileCompletionHr,
+                mWeeklyProfileCompletionMin , mWeeklyProfileCompletionSec);
 
         // createSameDayInterviewAlertEvent method takes time period (in hrs) as input
         createSameDayInterviewAlertEvent(sameDayInterviewAlertEventPeriod, sdiDelay);
@@ -82,6 +90,8 @@ public class SchedulerManager implements Runnable {
 //        createEODRateUsPostInterviewEvent(rateUsPostInterviewDelay);
 
 //        createWeeklyAppDownloadEvent(weeklyAppDownloadTaskDelay);
+
+//        createWeeklyProfileCompletionEvent(weeklyProfileCompletionTaskDelay);
     }
 
     public void createSameDayInterviewAlertEvent(int periodInHr, long delay) {
@@ -138,6 +148,13 @@ public class SchedulerManager implements Runnable {
 
         WeeklyAppDownloadAlertTask weeklyAppDownloadAlertTask = new WeeklyAppDownloadAlertTask();
         timer.schedule(weeklyAppDownloadAlertTask, delay, oneWeek);
+    }
+
+    private void createWeeklyProfileCompletionEvent(long delay){
+        Logger.info("Send alert candidate not downloaded the app yet!");
+
+        WeeklyCompleteProfileAlertTask weeklyCompleteProfileAlertTask = new WeeklyCompleteProfileAlertTask();
+        timer.schedule(weeklyCompleteProfileAlertTask, delay, oneWeek);
     }
 
 

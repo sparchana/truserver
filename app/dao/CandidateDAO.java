@@ -1,7 +1,15 @@
 package dao;
 
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.RawSql;
+import com.avaje.ebean.RawSqlBuilder;
 import models.entity.Candidate;
+import models.entity.Interaction;
+import models.entity.OM.JobPostWorkflow;
+import org.apache.commons.lang3.StringUtils;
+import play.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,4 +23,31 @@ public class CandidateDAO {
                 .isNull("CandidatePlaceLat")
                 .findList();
     }
+    public static List<Candidate> getCandidateWhoUpdateProfileInAWeek() {
+
+        String workFlowQueryBuilder = " select objectauuid from interaction where" +
+                "  interactiontype = '11' and objectatype = '4' and date(creationtimestamp) > curdate()-7 ";
+
+        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder)
+                .columnMapping("objectauuid", "objectAUUId")
+                .create();
+
+        List<Interaction> interactions = Ebean.find(Interaction.class)
+                .setRawSql(rawSql)
+                .findList();
+
+        List<Candidate> candidateList = new ArrayList<>();
+
+        for(Interaction interaction : interactions){
+            candidateList.add(Candidate.find.where().eq("candidateUUId", interaction.getObjectAUUId()).findUnique());
+        }
+
+        return candidateList;
+    }
+
+    public static List<Candidate> getCandidateWithLessThanLimitProfileScore(int score) {
+
+        return Candidate.find.where().lt("candidateScore", score).findList();
+    }
+
 }

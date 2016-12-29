@@ -186,6 +186,9 @@ public class Candidate extends Model {
     @Column(name = "CandidatePlaceLng", columnDefinition = "double null")
     private Double candidateLocalityLng;
 
+    @Column(name = "candidateScore", columnDefinition = "int signed null")
+    private Integer candidateScore;
+
     @JsonBackReference
     @PrivateOwned
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.REMOVE)
@@ -642,6 +645,14 @@ public class Candidate extends Model {
 
     public void setCandidateAndroidToken(String candidateAndroidToken) {
         this.candidateAndroidToken = candidateAndroidToken;
+    }
+
+    public Integer getCandidateScore() {
+        return candidateScore;
+    }
+
+    public void setCandidateScore(Integer candidateScore) {
+        this.candidateScore = candidateScore;
     }
 }
 

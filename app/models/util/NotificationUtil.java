@@ -158,5 +158,18 @@ public class NotificationUtil {
 
     }
 
+    public static void sendWeeklyNotificationToCompleteProfile(Candidate candidate) {
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", We noticed that your TruJobs profile is not complete. " +
+                "Did you know that a complete profile will get you a job 5 times faster? Complete profile now at www.trujobs.in or" +
+                " download app at bit.ly/trujobsapp";
+
+        if(candidate.getCandidateAndroidToken() != null){
+            addFcmToNotificationQueue(msg, "Your TruJobs profile is incomplete", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+        } else{
+            Logger.info("Token not available");
+        }
+
+    }
+
 
 }
