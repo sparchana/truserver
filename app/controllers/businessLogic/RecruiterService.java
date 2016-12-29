@@ -426,7 +426,7 @@ public class RecruiterService {
             Integer availableCredits = 0;
             Integer usedCredits = 0;
 
-            if(addRecruiterRequest.getContactCredits() > 0){
+            if(addRecruiterRequest.getInterviewCredits() > 0){
                 RecruiterCreditHistory latestPack = RecruiterCreditHistoryDAO.getLatestRecruiterCreditPack(
                         ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK);
 
