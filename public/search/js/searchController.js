@@ -462,6 +462,7 @@ var app = (function ($) {
             },
             search: function (isBasicResetRequired) {
                 if(!app.shouldDoSearch){
+                    console.log("no search!");
                     return;
                 }
                 console.log("do search ");
@@ -546,12 +547,13 @@ var app = (function ($) {
                     app.currentSearchParams = {};
                     if (_searchUrl != null) {
                         app.currentSearchURL = _searchUrl;
-
                         if(_searchUrl.indexOf(DEFAULT_VALUES.D_SEARCH_KEYWORD_IDENTIFIER)  < 0){
                             // redirect to 404
                             // window.location = "/pageNotFound" ;
                             app.do.noJobsFound(true);
                             return;
+                        } else {
+                            app.do.noJobsFound(false);
                         }
 
                         var list = _searchUrl.split('_');
@@ -629,6 +631,7 @@ var app = (function ($) {
                     app.mark.selectedGenderFilter(data.filterParams.gender);
                     app.do.fillSearchTextBoxWithKeywords(data.searchParams.searchKeywords);
 
+                    console.log("data.isURLInvalid: " + data.isURLInvalid);
                     if(data.isURLInvalid){
                         app.do.noJobsFound(true);
                         return;
@@ -943,7 +946,7 @@ var app = (function ($) {
                                 var subDivHint = document.createElement("div");
                                 subDivHint.className = "row";
                                 subDivHint.style= "display: inline-block;margin:0 0 0 30px;color: #9f9f9f;font-size: 12px;padding:4px";
-                                subDivHint.textContent = "Gender";
+                                subDivHint.textContent = "Max Age";
                                 ageCol.appendChild(subDivHint);
 
                                 var subRowForData = document.createElement("div");
@@ -1077,12 +1080,12 @@ var app = (function ($) {
                                 applyBtnDiv.appendChild(applyBtn);
 
                                 applyBtn.onclick = function () {
-                                    var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
+                                    var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
                                     jobPostBreak = jobPostBreak.toLowerCase();
-                                    var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
+                                    var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
                                     jobCompany = jobCompany.toLowerCase();
                                     try {
-                                        window.location.href = "/jobs/" + jobPostBreak + "/bengaluru/" + jobCompany + "/" + jobPost.jobPostId;
+                                        window.location.href = "/jobs/" + jobPostBreak + "-jobs-in-bengaluru-at-" + jobCompany + "-" + jobPost.jobPostId;
                                     } catch (exception) {
                                         console.log("exception occured!!" + exception);
                                     }
