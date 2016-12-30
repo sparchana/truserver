@@ -201,6 +201,7 @@ var app = (function ($) {
                         var option = $('<option value="0"></option>').text("All Bangalore");
                         $('#searchLocation').append(option);
 
+                        app.allLocationArray = [];
                         app.allLocation.forEach(function (locality) {
                             var id = locality.localityId;
                             var name = locality.localityName;
