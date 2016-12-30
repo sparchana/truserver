@@ -103,7 +103,7 @@
                 <div class="container">
                     <font color="white">
                         <div class="row">
-                            <div class="col-md-2 hidden-xs" style="margin-right:2%; padding: 0">
+                            <div class="col-md-2 hidden-sm hidden-xs" style="margin-right:2%; padding: 0">
                                 <img src="/assets/common/img/image4.png" style="display: inline-block;" width="150px">
                             </div>
                             <div class="col-sm-12 col-md-6" style="margin-top: 20px">
@@ -112,19 +112,19 @@
                                 </div>
                                 <div class="row" id="searchBarDivMain">
                                     <div class="input-group" id="searchBar">
-                                        <div class=" col-sm-12 col-md-9" id="mainFieldSearch">
+                                        <div class="col-xs-12 col-sm-9 col-md-9" id="mainFieldSearch">
                                             <input type="text" id="inputMainField" class="form-control" onclick="showField()" placeholder="Search for Company, Job, Title">
                                         </div>
-                                        <div class="col-sm-12 col-md-2" id="locationFieldSearch" style="padding: 0">
+                                        <div class="col-xs-12 col-sm-2 col-md-2" id="locationFieldSearch" style="padding: 0">
                                             <input type="text" class="form-control" placeholder="Location">
                                         </div>
-                                        <div class="col-sm-12 col-md-2" id="experienceFieldSearch">
+                                        <div class="col-xs-12 col-sm-2 col-md-2" id="experienceFieldSearch">
                                             <input type="text" class="form-control" placeholder="Experience">
                                         </div>
-                                        <div class="col-sm-12 col-md-2" id="educationFieldSearch">
+                                        <div class="col-xs-12 col-sm-2 col-md-2" id="educationFieldSearch">
                                             <input type="text" class="form-control" placeholder="Education">
                                         </div>
-                                        <div class="col-sm-12 col-md-1" style="padding: 0">
+                                        <div class="col-xs-12 col-sm-1 col-md-1" style="padding: 0">
                                             <button type="button" id="searchBtn"class="btn btn-default" aria-label="Left Align">
                                                 <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                                             </button>
@@ -135,10 +135,28 @@
                         </div>
                     </font>
                 </div>
+                <div class="container hidden-md hidden-lg" style="padding: 0">
+                    <div class="row" style="margin:2%">
+                        <div class="col-xs-6 col-sm-4 col-sm-offset-2" style="padding-left: 0">
+                            <button type="button" id="searchSignUpBtn"class="btn btn-default" aria-label="Left Align">
+                                <a href="#" data-toggle="modal" data-target="#mySignUpModal" onClick="openSignUp()">
+                                    <font style="font-weight: bold;color:#ff3d00">Sign Up</font>
+                                </a>
+                            </button>
+                        </div>
+                        <div class="col-xs-6 col-sm-4" style="padding-right: 0">
+                            <button type="button" id="searchSignInBtn"class="btn btn-default" aria-label="Left Align">
+                                <a href="#" data-toggle="modal" data-target="#myLoginModal" onClick="openLogin()">
+                                    <font style="font-weight: bold;color:#ff3d00">Sign In</font>
+                                </a>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
             <!-- End of sectionOne -->
-        <div class="container">
+        <div class="container hidden-sm hidden-xs">
             <div class="leadBox">
                 <form id="form_signup_candidate"  style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
                     <h4 style="font-weight: bold">Job Seeker Registration</h4>
