@@ -11,6 +11,13 @@
 var app = (function ($) {
     'use strict';
 
+    String.prototype.capitalizeFirstLetter = function() {
+        return this.charAt(0).toUpperCase() + this.slice(1);
+    };
+
+    String.prototype.toTitleCase = function () {
+        return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+    };
     var DEFAULT_VALUES = {
         D_SEARCH_URL: "jobs-in-bangalore",
         D_SEARCH_KEYWORD_IDENTIFIER: "jobs-in-bangalore",
@@ -20,10 +27,10 @@ var app = (function ($) {
         D_JOBS_PER_PAGE: 0,
         D_EDU_ANY: {},
         D_EXP_ANY: {},
-        D_LOCATION_ALL_BANGALORE: {},
-        D_SHOW_REG_FAB: true,
+        D_LOCATION_ALL_BANGALORE: {}
     };
     var app = {
+        isUserLoggedIn: false,
         shouldDoSearch: true,
         allJobRole: [],
         allLocation: [],
@@ -32,14 +39,15 @@ var app = (function ($) {
         allLanguage: [],
         allSalaryOptions: [
             {id: 0, name: " Any"},
-            {id: 8, name: " >= 8000"}, // value = val * 1000
-            {id: 10, name: " >= 10000"},
-            {id: 12, name: " >= 12000"},
-            {id: 15, name: " >= 15000"},
-            {id: 20, name: " >= 20000"}
+            {id: 8, name: " 8000 & More"}, // value = val * 1000
+            {id: 10, name: " 10000 & More"},
+            {id: 12, name: " 12000 & More"},
+            {id: 15, name: " 15000 & More"},
+            {id: 20, name: " 20000 & More"}
         ],
         suggestion: null,
         currentURL: window.location.pathname,
+        currentSearchURL: window.location.pathname.split('/')[window.location.pathname.split('/').length - 2],
         currentSearchParams: {},
         currentFilterParams: {
             selectedGender: null,
@@ -51,7 +59,6 @@ var app = (function ($) {
         },
         page: 1,
         isPaginationEnabled: false,
-        currentSearchURL: window.location.pathname.split('/')[window.location.pathname.split('/').length - 2],
 
         // basic getter/setter types method
         bMethods: {
@@ -458,7 +465,8 @@ var app = (function ($) {
         // action perform methods
         do: {
             fillSearchTextBoxWithKeywords: function (keywordList) {
-                document.getElementById("searchText").value = keywordList;
+                var searchBoxText = keywordList.join(" ") + ", ";
+                document.getElementById("searchText").value = searchBoxText.toTitleCase();
             },
             search: function (isBasicResetRequired) {
                 if(!app.shouldDoSearch){
@@ -622,6 +630,9 @@ var app = (function ($) {
                 // pagination is required
 
                 if (data != null) {
+
+                    app.isUserLoggedIn = data.isUserLoggedIn;
+
                     // append search params to the UI
                     app.render.renderLocation(data.searchParams.locality);
                     app.render.renderEducation(data.searchParams.education);
@@ -667,7 +678,10 @@ var app = (function ($) {
                         $("#jobLoaderDiv").hide();
                         $('#noJobsDiv').hide();
 
-                        app.do.createAndAppendDivider("Popular Jobs ("+data.results.totalJobs+" jobs found) ");
+                        var jobSearchTitle = app.currentSearchURL.capitalizeFirstLetter().replace(/[^a-z0-9]+/gi, ' ');
+                        console.log("jobSearchTitle: "+ jobSearchTitle);
+
+                        app.do.createAndAppendDivider(jobSearchTitle , " | showing 1-5 (out of "+data.results.totalJobs+" jobs) ");
                         // var _isDividerPresent = false;
                         _jobPostList.forEach(function (jobPost) {
                             _count++;
@@ -1030,8 +1044,9 @@ var app = (function ($) {
                                 var postedOnDiv = document.createElement("div");
                                 postedOnDiv.className = "col-sm-6";
                                 postedOnDiv.style = "margin-top:12px;text-align:left";
-                                postedOnDiv.textContent = "Posted on: " + new Date(jobPost.jobPostCreateTimestamp).toDateString();
+                                postedOnDiv.textContent = "Posted: " + app.parse.createdOnDate(jobPost.jobPostCreateTimestamp);
                                 rowDivApplyButton.appendChild(postedOnDiv);
+
 
                                 var applyBtnDiv = document.createElement("div");
                                 applyBtnDiv.className = "col-sm-6";
@@ -1055,12 +1070,12 @@ var app = (function ($) {
                                 moreBtn.textContent = "More Info";
                                 jobMoreCol.appendChild(moreBtn);
                                 moreBtn.onclick = function () {
-                                    var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
+                                    var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
                                     jobPostBreak = jobPostBreak.toLowerCase();
-                                    var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
+                                    var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
                                     jobCompany = jobCompany.toLowerCase();
                                     try {
-                                        window.location.href = "/jobs/" + jobPostBreak + "/bengaluru/" + jobCompany + "/" + jobPost.jobPostId;
+                                        window.location.href = "/jobs/" + jobPostBreak + "-jobs-in-bengaluru-at-" + jobCompany + "-" + jobPost.jobPostId;
                                     } catch (exception) {
                                         console.log("exception occured!!" + exception);
                                     }
@@ -1145,24 +1160,29 @@ var app = (function ($) {
                 });
                 app.isPaginationEnabled = true;
             },
-            createAndAppendDivider: function (title) {
+            createAndAppendDivider: function (title, resultSizeTitle) {
                 var parent = $("#hotJobs");
 
                 var mainDiv = document.createElement("div");
                 mainDiv.id = "hotJobItemDivider";
                 parent.append(mainDiv);
 
-                var otherJobIcon = document.createElement("img");
-                otherJobIcon.src = "/assets/common/img/suitcase.png";
-                otherJobIcon.style = "width: 42px; margin: 8px";
-                otherJobIcon.setAttribute("display", "inline-block");
-                mainDiv.appendChild(otherJobIcon);
+                // var otherJobIcon = document.createElement("img");
+                // otherJobIcon.src = "/assets/common/img/suitcase.png";
+                // otherJobIcon.style = "width: 42px; margin: 8px";
+                // otherJobIcon.setAttribute("display", "inline-block");
+                // mainDiv.appendChild(otherJobIcon);
 
                 var hotJobItem = document.createElement("span");
                 hotJobItem.setAttribute("display", "inline-block");
                 hotJobItem.textContent = title;
-
                 mainDiv.appendChild(hotJobItem);
+
+                var resultSizeSpan = document.createElement("span");
+                resultSizeSpan.setAttribute("display", "inline-block");
+                resultSizeSpan.textContent = resultSizeTitle;
+
+                mainDiv.appendChild(resultSizeSpan);
             },
             updateOnFilterChange: function () {
                 console.log("update language filter");
@@ -1328,6 +1348,27 @@ var app = (function ($) {
                 }
 
             }
+        },
+        parse: {
+            createdOnDate: function (timestamp) {
+                var jobDate = new Date(timestamp);
+                var currentDate = new Date();
+
+                var daysDiff= app.parse.daysDiff(jobDate, currentDate);
+
+                if(daysDiff > 90 ) {
+                    return " 3 months ago";
+                } else if(jobDate.getDate() == currentDate.getUTCDate()) {
+                    return " Today";
+                } else {
+                    return daysDiff + " days ago";
+                }
+
+            },
+            daysDiff: function(firstDate, secondDate){
+
+                return Math.round((secondDate-firstDate)/(1000*60*60*24));
+            }
         }
     };
 
@@ -1399,3 +1440,24 @@ var app = (function ($) {
 function checkOnFilterChange() {
     app.do.updateOnFilterChange();
 }
+
+/* register box */
+$(window).scroll(function(){
+    console.log(app.isUserLoggedIn);
+    // if(!app.isUserLoggedIn){
+    //     var w = window.innerWidth;
+    //     if ($(this).scrollTop() > 350) {
+    //         $('.registerBox').fadeIn();
+    //         if(w > 400){
+    //             $('.registerBox').css("width","120px");
+    //         }
+    //         else{
+    //             $('.registerBox').css("width","100%");
+    //         }
+    //     } else {
+    //         $('.registerBox').fadeOut();
+    //         $('.registerBox').css("width","50px");
+    //     }
+    // }
+
+});

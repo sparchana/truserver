@@ -6,20 +6,17 @@ import api.http.httpResponse.JobPostResponse;
 import api.http.httpResponse.search.SearchJobResponse;
 import api.http.httpResponse.search.helper.FilterParamsResponse;
 import api.http.httpResponse.search.helper.SearchParamsResponse;
+import dao.JobPostWorkFlowDAO;
 import models.entity.Candidate;
 import models.entity.JobPost;
-import models.entity.OM.JobApplication;
+import models.entity.OM.JobPostWorkflow;
+import models.entity.OM.JobPreference;
 import models.entity.OM.LanguageKnown;
-import models.entity.Static.Education;
-import models.entity.Static.Experience;
-import models.entity.Static.Language;
-import models.entity.Static.Locality;
+import models.entity.Static.*;
 import org.apache.commons.lang3.StringUtils;
+import play.Logger;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by zero on 24/12/16.
@@ -90,6 +87,7 @@ public class SearchJobService {
         List<String> languageStringList = new ArrayList<>();
 
         if (candidateId != null) {
+            response.setUserLoggedIn(true);
             candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
         }
 
@@ -102,17 +100,26 @@ public class SearchJobService {
                 && searchParamsResponse.getEducation() == null
                 && searchParamsResponse.getExperience() == null
                 && (request.getFilterParamRequest().getSelectedGender() == null
-                && request.getFilterParamRequest().getSelectedLanguageIdList().size() == 0)) {
+                && request.getFilterParamRequest().getSelectedLanguageIdList().size() == 0))
+        {
 
             // overriding gender filter & prep response filter object
             request.getFilterParamRequest().setSelectedGender(candidate.getCandidateGender());
-
             List<Long> languageIdList = new ArrayList<>();
             for (LanguageKnown languageKnown : candidate.getLanguageKnownList()) {
                 languageIdList.add(Long.valueOf(languageKnown.getLanguage().getLanguageId()));
                 languageList.add(languageKnown.getLanguage());
                 languageStringList.add(languageKnown.getLanguage().getLanguageName());
             }
+
+            // candidate job role
+            List<String> jobRoleNameList = new ArrayList<>();
+            for(JobPreference jobPreference: candidate.getJobPreferencesList()){
+                String jobRoleName = jobPreference.getJobRole().getJobName().replaceAll("[^\\w\\s]"," ").toLowerCase();
+                jobRoleNameList.addAll(Arrays.asList(jobRoleName.split("\\s+")));
+            }
+            request.getSearchParamRequest().setKeywordList(jobRoleNameList);
+            searchParamsResponse.setSearchKeywords(jobRoleNameList);
 
             // overriding language filter
             request.getFilterParamRequest().setSelectedLanguageIdList(languageIdList);
@@ -263,32 +270,46 @@ public class SearchJobService {
      * @param jobPostList
      * @return
      */
-    private void computeCTA(List<JobPost> jobPostList, Long candidateId){
+    public void computeCTA(List<JobPost> jobPostList, Long candidateId){
 
         List<Long> jobPostIdList = new ArrayList<>();
-        Map<JobPost, JobApplication> jobApplicationMap =
-                               JobApplication.find.where()
-                                             .in("jobPost.jobPostId", jobPostIdList)
-                                             .eq("candidateId", candidateId)
-                                             .findMap("jobPost", JobPost.class);
+        Map<Long, JobPostWorkflow> jobApplicationMap = new HashMap<>();
+
+        if(candidateId != null) {
+            List<JobPostWorkflow> candidateAppliedJobs = JobPostWorkFlowDAO.candidateAppliedJobs(candidateId);
+            for(JobPostWorkflow jobPostWorkflow: candidateAppliedJobs){
+                jobApplicationMap.putIfAbsent(jobPostWorkflow.getJobPost().getJobPostId(), jobPostWorkflow);
+            }
+        }
 
         for(JobPost jobPost: jobPostList){
 
             // Add a check for already applied candidate
             if(candidateId != null) {
-                if(jobApplicationMap.get(jobPost) != null){
+                Logger.info("candidateId: " + candidateId);
+                if(jobApplicationMap.get(jobPost.getJobPostId()) != null){
                     jobPost.setApplyBtnStatus(ServerConstants.ALREADY_APPLIED);
                 }
             }
-
-            if(RecruiterService.isInterviewRequired(jobPost).getStatus() == ServerConstants.INTERVIEW_REQUIRED){
-                jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_REQUIRED);
-            } else {
-                jobPost.setApplyBtnStatus(ServerConstants.APPLY);
+            // change only if its not set prev, i.e its set to default value
+            if(jobPost.getApplyBtnStatus() == 0){
+                if(RecruiterService.isInterviewRequired(jobPost).getStatus() == ServerConstants.INTERVIEW_REQUIRED){
+                    jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_REQUIRED);
+                } else {
+                    jobPost.setApplyBtnStatus(ServerConstants.APPLY);
+                }
             }
+
             jobPostIdList.add(jobPost.getJobPostId());
         }
 
         return;
+    }
+
+    public void computeCTA(JobPost jobPost, Long candidateId){
+        List<JobPost> jobPostList = new ArrayList<>();
+        jobPostList.add(jobPost);
+
+        computeCTA(jobPostList, candidateId);
     }
 }

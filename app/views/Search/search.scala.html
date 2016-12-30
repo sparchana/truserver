@@ -30,6 +30,13 @@
 
     </head>
     <body>
+            @*<!-- Nav start -->*@
+        @*<div id="nav_bar_inc"></div>*@
+        @*<script>*@
+            @*$(document).ready(function(){*@
+                @*$('#nav_bar_inc').load('/navBar');*@
+            @*});*@
+        @*</script>*@
         <div id="fixedButton" style="display: none;">
             <div>
                 Go to top
@@ -215,6 +222,12 @@
                 </div>
             </div>
         </div>
+
+        @* register box start *@
+        <a href ="#" class="registerBox" data-toggle="modal" data-target="#mySignUpModal" onClick="openSignUp()">
+            <div class="row" id="registerBoxInner"><font size="3" style="color: #fff">Apply Now</font></div>
+        </a>
+        @* register box end*@
 
         <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
         <script type="text/javascript" src="/assets/common/js/materialize.min.js"></script>
