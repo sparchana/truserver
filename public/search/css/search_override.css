@@ -1,15 +1,21 @@
+/*
+this css make sure at the end the override are proper
+
+*/
 .jobMoreBtn{
     margin-top:1%;
     padding:2%;
     border:1px solid #d5d;
     border-radius:2px;
 }
-.jobApplyBtn{
+
+.jobApplyBtn {
     margin-top: 1%;
-    padding:2%;
+    padding: 2%;
     width: 50%;
     float: right;
 }
+
 .modal{
     display: none;
     overflow: hidden;
@@ -27,4 +33,3 @@
     width: auto;
     margin: auto;
 }
-
