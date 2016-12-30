@@ -10,3 +10,7 @@
     width: 50%;
     float: right;
 }
+div.Tokenize ul.TokensContainer li.Token, div.Tokenize ul.TokensContainer li.TokenSearch{
+    margin:0;
+    padding: 2px;
+}
