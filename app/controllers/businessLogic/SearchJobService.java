@@ -126,12 +126,14 @@ public class SearchJobService {
 
             // override response
             searchParamsResponse.setLocality(candidate.getLocality());
-            searchParamsResponse.setEducation(candidate.getCandidateEducation().getEducation());
+
+            /* for newly signup candidate this, along with exp, language,  will be null*/
+            if(candidate.getCandidateEducation() != null) searchParamsResponse.setEducation(candidate.getCandidateEducation().getEducation());
 
             jobPostResponse = JobSearchService
                     .queryAndReturnJobPosts(searchParamsResponse.getSearchKeywords(),
                             candidate.getLocality(),
-                            candidate.getCandidateEducation().getEducation(),
+                            candidate.getCandidateEducation() != null ? candidate.getCandidateEducation().getEducation(): null,
                             searchParamsResponse.getExperience(),
                             request.getSortParamRequest().getSortBy(),
                             true,
@@ -286,7 +288,6 @@ public class SearchJobService {
 
             // Add a check for already applied candidate
             if(candidateId != null) {
-                Logger.info("candidateId: " + candidateId);
                 if(jobApplicationMap.get(jobPost.getJobPostId()) != null){
                     jobPost.setApplyBtnStatus(ServerConstants.ALREADY_APPLIED);
                 }

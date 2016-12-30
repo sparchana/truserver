@@ -34,6 +34,7 @@ var app = (function ($) {
         shouldDoSearch: true,
         allJobRole: [],
         allLocation: [],
+        allLocationArray: [],
         allEducation: [],
         allExperience: [],
         allLanguage: [],
@@ -140,6 +141,30 @@ var app = (function ($) {
         },
         // basic ui rendering methods
         render: {
+            renderJobRole: function () {
+                var promise = new Promise(function (resolve, reject) {
+                        app.bMethods.getAllJobRole().then(
+                            function (returnedData) {
+                                if (returnedData != null) {
+                                    returnedData.forEach(function (jobRole) {
+                                        var id = jobRole.jobRoleId;
+                                        var name = jobRole.jobName;
+                                        var item = {};
+                                        item ["id"] = id;
+                                        item ["name"] = name;
+                                        app.allJobRole.push(item);
+                                    });
+                                }
+                                resolve();
+                            },
+                            function (xhr, state, error) {
+                                reject(error);
+                            }
+                        );
+                    }
+                );
+
+            },
             renderLocation: function (locality) {
                 if (locality != null) {
                     console.log('re render with localityname; ' + locality.localityName);
@@ -176,11 +201,17 @@ var app = (function ($) {
                         var option = $('<option value="0"></option>').text("All Bangalore");
                         $('#searchLocation').append(option);
 
+                        app.allLocationArray = [];
                         app.allLocation.forEach(function (locality) {
                             var id = locality.localityId;
                             var name = locality.localityName;
                             option = $('<option value=' + id + '></option>').text(name);
                             $('#searchLocation').append(option);
+
+                            var item = {};
+                            item ["id"] = id;
+                            item ["name"] = name;
+                            app.allLocationArray.push(item);
                         });
 
                         console.log("app.allLocation size: " + app.allLocation.length);
@@ -632,6 +663,11 @@ var app = (function ($) {
                 if (data != null) {
 
                     app.isUserLoggedIn = data.isUserLoggedIn;
+                    if(app.isUserLoggedIn){
+                        $('#nav_bar_inc').load('/navBarLoggedIn');
+                    } else {
+                        $('#nav_bar_inc').load('/navBar');
+                    }
 
                     // append search params to the UI
                     app.render.renderLocation(data.searchParams.locality);
@@ -681,7 +717,7 @@ var app = (function ($) {
                         var jobSearchTitle = app.currentSearchURL.capitalizeFirstLetter().replace(/[^a-z0-9]+/gi, ' ');
                         console.log("jobSearchTitle: "+ jobSearchTitle);
 
-                        app.do.createAndAppendDivider(jobSearchTitle , " | showing 1-5 (out of "+data.results.totalJobs+" jobs) ");
+                        app.do.createAndAppendDivider(" Showing 1-5 of "+data.results.totalJobs+" jobs matching your search");
                         // var _isDividerPresent = false;
                         _jobPostList.forEach(function (jobPost) {
                             _count++;
@@ -1170,7 +1206,7 @@ var app = (function ($) {
                 });
                 app.isPaginationEnabled = true;
             },
-            createAndAppendDivider: function (title, resultSizeTitle) {
+            createAndAppendDivider: function (title) {
                 var parent = $("#hotJobs");
 
                 var mainDiv = document.createElement("div");
@@ -1189,11 +1225,6 @@ var app = (function ($) {
                 hotJobItem.textContent = title;
                 mainDiv.appendChild(hotJobItem);
 
-                var resultSizeSpan = document.createElement("span");
-                resultSizeSpan.setAttribute("display", "inline-block");
-                resultSizeSpan.textContent = resultSizeTitle;
-
-                mainDiv.appendChild(resultSizeSpan);
             },
             updateOnFilterChange: function () {
                 console.log("update language filter");
@@ -1449,23 +1480,58 @@ function checkOnFilterChange() {
     app.do.updateOnFilterChange();
 }
 
+
+function getJob(){
+    app.render.renderJobRole();
+    return app.allJobRole;
+};
+function getLocality(){
+    console.log("all locality size: "+ app.allLocationArray.length);
+    return app.allLocationArray;
+};
+
 /* register box */
 $(window).scroll(function(){
     console.log(app.isUserLoggedIn);
-    // if(!app.isUserLoggedIn){
-    //     var w = window.innerWidth;
-    //     if ($(this).scrollTop() > 350) {
-    //         $('.registerBox').fadeIn();
-    //         if(w > 400){
-    //             $('.registerBox').css("width","120px");
-    //         }
-    //         else{
-    //             $('.registerBox').css("width","100%");
-    //         }
-    //     } else {
-    //         $('.registerBox').fadeOut();
-    //         $('.registerBox').css("width","50px");
-    //     }
-    // }
-
+    if(!app.isUserLoggedIn){
+        var w = window.innerWidth;
+        if ($(this).scrollTop() > 350) {
+            $('.registerBox').fadeIn();
+            if(w > 400){
+                $('.registerBox').css("width","120px");
+            }
+            else{
+                $('.registerBox').css("width","100%");
+            }
+        } else {
+            $('.registerBox').fadeOut();
+            $('.registerBox').css("width","50px");
+        }
+    }
 });
+
+
+// for nav bar imports
+function openLogin() {
+    $("#signInPopup").html("Sign In");
+    document.getElementById("resetCheckUserBtn").disabled = false;
+    document.getElementById("resetNewPasswordBtn").disabled = false;
+    $('#form_login_candidate').show();
+    $('#noUserLogin').hide();
+    $('#incorrectMsgLogin').hide();
+    $('#form_forgot_password').hide();
+    $('#errorMsgReset').hide();
+    $('#form_password_reset_otp').hide();
+    $('#form_password_reset_new').hide();
+    $('#noPasswordLogin').hide();
+}
+
+function openSignUp() {
+    $("#myLoginModal").modal("hide");
+}
+//search bar animation effect code
+function showField(){
+    $('#mainFieldSearch').removeClass("col-md-8").addClass("col-md-4");
+    $('#searchEducationBox').fadeIn();
+    $('#searchExperienceBox').fadeIn();
+}
