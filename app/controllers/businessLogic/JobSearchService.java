@@ -442,6 +442,7 @@ public class JobSearchService {
 
         if (keywordList != null && keywordList.size() > 0) {
 
+            Logger.info("keyword List size: " + keywordList.size());
             Junction<JobPost> junction = query.select("*")
                     .fetch("jobRole")
                     .fetch("company")

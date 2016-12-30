@@ -24,6 +24,7 @@ public class SearchJobResponse {
     private SortParamsResponse sortParams;
     private JobPostResponse results;
     public boolean isURLInvalid;
+    public boolean isUserLoggedIn;
 
 
     public SearchJobResponse() {
@@ -92,5 +93,13 @@ public class SearchJobResponse {
 
     public void setURLInvalid(boolean URLInvalid) {
         isURLInvalid = URLInvalid;
+    }
+
+    public boolean isUserLoggedIn() {
+        return isUserLoggedIn;
+    }
+
+    public void setUserLoggedIn(boolean userLoggedIn) {
+        isUserLoggedIn = userLoggedIn;
     }
 }
