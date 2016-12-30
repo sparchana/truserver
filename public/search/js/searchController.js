@@ -20,7 +20,8 @@ var app = (function ($) {
         D_JOBS_PER_PAGE: 0,
         D_EDU_ANY: {},
         D_EXP_ANY: {},
-        D_LOCATION_ALL_BANGALORE: {}
+        D_LOCATION_ALL_BANGALORE: {},
+        D_SHOW_REG_FAB: true,
     };
     var app = {
         shouldDoSearch: true,
@@ -732,108 +733,154 @@ var app = (function ($) {
                                 jobTitle.textContent = jobPost.jobPostTitle + " | " + jobPost.company.companyName;
                                 jobBodyCol.appendChild(jobTitle);
 
+                                var jobRoleName= document.createElement("p");
+                                jobRoleName.textContent = jobPost.jobRole.jobName + " Job";
+                                jobRoleName.style = "color:#5d5";
+                                jobBodyCol.appendChild(jobRoleName);
+
                                 var hr = document.createElement("hr");
-                                jobBodyCol.appendChild(hr);
+                                centreTag.appendChild(hr);
+
+                                var rowDivDetails = document.createElement("div");
+                                rowDivDetails.className = "row";
+                                rowDivDetails.style = "margin: 0; padding: 0";
+                                centreTag.appendChild(rowDivDetails);
 
                                 var jobBodyDetails = document.createElement("div");
                                 jobBodyDetails.className = "row";
                                 jobBodyDetails.id = "jobBodyDetails";
-                                jobBodyCol.appendChild(jobBodyDetails);
+                                jobBodyDetails.style = "margin:0";
+                                rowDivDetails.appendChild(jobBodyDetails);
+
+
+                                var jobBodyDetailsFirst = document.createElement("div");
+                                jobBodyDetailsFirst.className = "row";
+                                jobBodyDetailsFirst.id = "jobBodyDetailsFir";
+                                jobBodyDetailsFirst.style = "margin:0";
+                                jobBodyDetails.appendChild(jobBodyDetailsFirst);
+
+
+                                var jobBodyDetailsSecond = document.createElement("div");
+                                jobBodyDetailsSecond.className = "row";
+                                jobBodyDetailsSecond.id = "jobBodyDetailsSec";
+                                jobBodyDetailsSecond.style = "margin:0";
+                                jobBodyDetails.appendChild(jobBodyDetailsSecond);
+
 
                                 //!*  salary  *!/
 
                                 var bodyCol = document.createElement("div");
-                                bodyCol.className = "col-sm-4";
+                                bodyCol.className = "col-sm-6 col-md-4";
                                 bodyCol.id = "jobSalary";
-                                jobBodyDetails.appendChild(bodyCol);
+                                jobBodyDetailsFirst.appendChild(bodyCol);
 
-                                var jobBodySubRow = document.createElement("div");
-                                jobBodySubRow.className = "row";
-                                bodyCol.appendChild(jobBodySubRow);
+                                var subDivHint = document.createElement("div");
+                                subDivHint.className = "row";
+                                subDivHint.style= "display: inline-block;margin:0 0 0 30px;color: #9f9f9f;font-size: 12px;padding:4px";
+                                subDivHint.textContent = "Salary";
+                                bodyCol.appendChild(subDivHint);
 
-                                var jobBodySubRowCol = document.createElement("div");
-                                jobBodySubRowCol.className = "col-sm-12";
-                                jobBodySubRow.appendChild(jobBodySubRowCol);
+                                var subRowForData = document.createElement("div");
+                                subRowForData.className = "row";
+                                bodyCol.appendChild(subRowForData);
 
                                 var salaryIconDiv = document.createElement("div");
-                                salaryIconDiv.style = "display : inline-block; margin: 4px;top:0";
-                                jobBodySubRowCol.appendChild(salaryIconDiv);
+                                salaryIconDiv.className="col-xs-2";
+                                salaryIconDiv.style = "padding-right:0;margin-top:-2px";
+                                subRowForData.appendChild(salaryIconDiv);
 
                                 var salaryIcon = document.createElement("img");
                                 salaryIcon.src = "/assets/common/img/salary.svg";
-                                salaryIcon.setAttribute('height', '15px');
-                                salaryIcon.style = "margin-top: -4px";
+                                salaryIcon.setAttribute('height', '20px');
                                 salaryIconDiv.appendChild(salaryIcon);
 
+                                var salaryDataDiv = document.createElement("div");
+                                salaryDataDiv.className="col-xs-10";
+                                salaryDataDiv.style="padding:0;margin-left:-2px";
+                                subRowForData.appendChild(salaryDataDiv);
 
                                 var salaryDiv = document.createElement("div");
-                                salaryDiv.style = "display: inline-block; font-size: 14px";
+                                salaryDiv.style = "display: inline-block";
                                 if (jobPost.jobPostMaxSalary == "0" || jobPost.jobPostMaxSalary == null) {
                                     salaryDiv.textContent = rupeeFormatSalary(jobPost.jobPostMinSalary) + " monthly";
                                 } else {
                                     salaryDiv.textContent = rupeeFormatSalary(jobPost.jobPostMinSalary) + " - " + rupeeFormatSalary(jobPost.jobPostMaxSalary) + " monthly";
                                 }
-                                jobBodySubRowCol.appendChild(salaryDiv);
+                                salaryDataDiv.appendChild(salaryDiv);
 
                                 //!*  experience  *!/
 
-                                var bodyColExp = document.createElement("div");
-                                bodyColExp.className = "col-sm-3";
-                                bodyColExp.id = "jobExp";
-                                jobBodyDetails.appendChild(bodyColExp);
+                                var bodyCol = document.createElement("div");
+                                bodyCol.className = "col-sm-6 col-md-4";
+                                bodyCol.id = "jobSalary";
+                                jobBodyDetailsSecond.appendChild(bodyCol);
 
-                                var jobBodySubRowExp = document.createElement("div");
-                                jobBodySubRowExp.className = "row";
-                                bodyColExp.appendChild(jobBodySubRowExp);
+                                var subDivHint = document.createElement("div");
+                                subDivHint.className = "row";
+                                subDivHint.style= "display: inline-block;margin:0 0 0 30px;color: #9f9f9f;font-size: 12px;padding:4px";
+                                subDivHint.textContent = "Experience";
+                                bodyCol.appendChild(subDivHint);
 
-                                var jobBodySubRowColExp = document.createElement("div");
-                                jobBodySubRowColExp.className = "col-sm-12";
-                                jobBodySubRowExp.appendChild(jobBodySubRowColExp);
+                                var subRowForData = document.createElement("div");
+                                subRowForData.className = "row";
+                                bodyCol.appendChild(subRowForData);
 
                                 var expIconDiv = document.createElement("div");
-                                expIconDiv.style = "display : inline-block; margin: 4px;top:0";
-                                jobBodySubRowColExp.appendChild(expIconDiv);
+                                expIconDiv.className="col-xs-2";
+                                expIconDiv.style = "padding-right:0;margin-top:-2px";
+                                subRowForData.appendChild(expIconDiv);
 
                                 var expIcon = document.createElement("img");
-                                expIcon.src = "/assets/common/img/workExp.svg";
-                                expIcon.setAttribute('height', '15px');
-                                expIcon.style = "margin-top: -4px";
+                                expIcon.src = "/assets/common/img/salary.svg";
+                                expIcon.setAttribute('height', '20px');
                                 expIconDiv.appendChild(expIcon);
 
+                                var expDataDiv = document.createElement("div");
+                                expDataDiv.className="col-xs-10";
+                                expDataDiv.style="padding:0;margin-left:-2px";
+                                subRowForData.appendChild(expDataDiv);
+
                                 var expDiv = document.createElement("div");
-                                expDiv.style = "display: inline-block; font-size: 14px";
-                                expDiv.textContent = "Exp: " + jobPost.jobPostExperience.experienceType;
-                                jobBodySubRowColExp.appendChild(expDiv);
+                                expDiv.style = "display: inline-block;";
+                                expDiv.textContent = jobPost.jobPostExperience.experienceType;
+                                expDataDiv.appendChild(expDiv);
 
                                 //!*  Location  *!/
 
                                 var bodyColLoc = document.createElement("div");
-                                bodyColLoc.className = "col-sm-5";
+                                bodyColLoc.className = "col-sm-6 col-md-4";
                                 bodyColLoc.id = "jobLocation";
-                                jobBodyDetails.appendChild(bodyColLoc);
+                                jobBodyDetailsFirst.appendChild(bodyColLoc);
+
+                                var subDivHint = document.createElement("div");
+                                subDivHint.className = "row";
+                                subDivHint.style= "display: inline-block;margin:0 0 0 30px;color: #9f9f9f;font-size: 12px;padding:4px";
+                                subDivHint.textContent = "Location";
+                                bodyColLoc.appendChild(subDivHint);
 
                                 var jobBodySubRowLoc = document.createElement("div");
                                 jobBodySubRowLoc.className = "row";
                                 bodyColLoc.appendChild(jobBodySubRowLoc);
 
-                                var jobBodySubRowColLoc = document.createElement("div");
-                                jobBodySubRowColLoc.className = "col-sm-12";
-                                jobBodySubRowLoc.appendChild(jobBodySubRowColLoc);
-
                                 var locIconDiv = document.createElement("div");
-                                locIconDiv.style = "display : inline-block; margin: 4px;top:0";
-                                jobBodySubRowColLoc.appendChild(locIconDiv);
+                                locIconDiv.style = "padding-right:0;margin-top:-2px";
+                                locIconDiv.className = "col-xs-2";
+                                jobBodySubRowLoc.appendChild(locIconDiv);
 
                                 var locIcon = document.createElement("img");
                                 locIcon.src = "/assets/common/img/location.svg";
-                                locIcon.setAttribute('height', '15px');
-                                locIcon.style = "margin-top: -4px";
+                                locIcon.setAttribute('height', '20px');
                                 locIconDiv.appendChild(locIcon);
 
+                                var locDataDiv = document.createElement("div");
+                                locDataDiv.className="col-xs-10";
+                                locDataDiv.style="padding:0;margin-left:-2px";
+                                jobBodySubRowLoc.appendChild(locDataDiv);
+
                                 var locDiv = document.createElement("div");
-                                locDiv.style = "display: inline-block; font-size: 14px";
+                                locDiv.style = "display: inline-block";
                                 locDiv.textContent = _localities;
-                                jobBodySubRowColLoc.appendChild(locDiv);
+                                locDataDiv.appendChild(locDiv);
 
                                 if (((_jobLocality.length) - 2) > 0) {
                                     var tooltip = document.createElement("a");
@@ -841,7 +888,7 @@ var app = (function ($) {
                                     tooltip.title = _allLocalities;
                                     tooltip.style = "color: #2980b9";
                                     tooltip.textContent = " more";
-                                    jobBodySubRowColLoc.appendChild(tooltip);
+                                    locDataDiv.appendChild(tooltip);
                                 }
 
                                 $("#locationMsg_" + jobPost.jobPostId).attr("data-toggle", "tooltip");
@@ -849,56 +896,155 @@ var app = (function ($) {
                                     $('[data-toggle="tooltip"]').tooltip()
                                 });
 
-                                var hr = document.createElement("hr");
-                                jobBodyCol.appendChild(hr);
+                                // gender div
 
-                                var jobBodyFooter = document.createElement("div");
-                                jobBodyFooter.className = "row";
-                                jobBodyFooter.id = "jobBodyFooter";
-                                jobBodyCol.appendChild(jobBodyFooter);
+                                var genderCol = document.createElement("div");
+                                genderCol.className = "col-sm-6 col-md-4";
+                                genderCol.id = "jobGender";
+                                jobBodyDetailsSecond.appendChild(genderCol);
+
+                                var subDivHint = document.createElement("div");
+                                subDivHint.className = "row";
+                                subDivHint.style= "display: inline-block;margin:0 0 0 30px;color: #9f9f9f;font-size: 12px;padding:4px";
+                                subDivHint.textContent = "Gender";
+                                genderCol.appendChild(subDivHint);
+
+                                var subRowForData = document.createElement("div");
+                                subRowForData.className = "row";
+                                genderCol.appendChild(subRowForData);
+
+                                var genderIconDiv = document.createElement("div");
+                                genderIconDiv.className="col-xs-2";
+                                genderIconDiv.style = "padding-right:0;margin-top:-2px";
+                                subRowForData.appendChild(genderIconDiv);
+
+                                var genderIcon = document.createElement("img");
+                                genderIcon.src = "/assets/common/img/salary.svg";
+                                genderIcon.setAttribute('height', '20px');
+                                genderIconDiv.appendChild(genderIcon);
+
+                                var genderDataDiv = document.createElement("div");
+                                genderDataDiv.className="col-xs-10";
+                                genderDataDiv.style="padding:0;margin-left:-2px";
+                                subRowForData.appendChild(genderDataDiv);
+
+                                var genderDiv = document.createElement("div");
+                                genderDiv.style = "display: inline-block";
+                                genderDiv.textContent = app.run.validateGender(jobPost.gender);
+                                genderDataDiv.appendChild(genderDiv);
+
+                                // age div
+
+                                var ageCol = document.createElement("div");
+                                ageCol.className = "col-sm-6 col-md-4";
+                                ageCol.id = "jobGender";
+                                jobBodyDetailsSecond.appendChild(ageCol);
+
+                                var subDivHint = document.createElement("div");
+                                subDivHint.className = "row";
+                                subDivHint.style= "display: inline-block;margin:0 0 0 30px;color: #9f9f9f;font-size: 12px;padding:4px";
+                                subDivHint.textContent = "Gender";
+                                ageCol.appendChild(subDivHint);
+
+                                var subRowForData = document.createElement("div");
+                                subRowForData.className = "row";
+                                ageCol.appendChild(subRowForData);
+
+                                var ageIconDiv = document.createElement("div");
+                                ageIconDiv.className="col-xs-2";
+                                ageIconDiv.style = "padding-right:0;margin-top:-2px";
+                                subRowForData.appendChild(ageIconDiv);
+
+                                var ageIcon = document.createElement("img");
+                                ageIcon.src = "/assets/common/img/salary.svg";
+                                ageIcon.setAttribute('height', '20px');
+                                ageIconDiv.appendChild(ageIcon);
+
+                                var ageDataDiv = document.createElement("div");
+                                ageDataDiv.className="col-xs-10";
+                                ageDataDiv.style="padding:0;margin-left:-2px";
+                                subRowForData.appendChild(ageDataDiv);
+
+                                var ageDiv = document.createElement("div");
+                                ageDiv.style = "display: inline-block";
+                                ageDiv.textContent = app.run.validateMaxAge(jobPost.jobPostMaxAge) + " yrs" ;
+                                ageDataDiv.appendChild(ageDiv);
+
+                                // timeshift div
+
+                                var bodyColTime = document.createElement("div");
+                                bodyColTime.className = "col-sm-6 col-md-4";
+                                bodyColTime.id = "jobLocation";
+                                jobBodyDetailsFirst.appendChild(bodyColTime);
+
+                                var subDivHint = document.createElement("div");
+                                subDivHint.className = "row";
+                                subDivHint.style= "display: inline-block;margin:0 0 0 30px;color: #9f9f9f;font-size: 12px;padding:4px";
+                                subDivHint.textContent = "Time Shift";
+                                bodyColTime.appendChild(subDivHint);
+
+                                var subRowForData = document.createElement("div");
+                                subRowForData.className = "row";
+                                bodyColTime.appendChild(subRowForData);
+
+                                var timeIconDiv = document.createElement("div");
+                                timeIconDiv.style = "padding-right:0;margin-top:-2px";
+                                timeIconDiv.className = "col-xs-2";
+                                subRowForData.appendChild(timeIconDiv);
+
+                                var timeIcon = document.createElement("img");
+                                timeIcon.src = "/assets/common/img/location.svg";
+                                timeIcon.setAttribute('height', '20px');
+                                timeIconDiv.appendChild(timeIcon);
+
+                                var timeDataDiv = document.createElement("div");
+                                timeDataDiv.className="col-xs-10";
+                                timeDataDiv.style="padding:0;margin-left:-2px";
+                                subRowForData.appendChild(timeDataDiv);
+
+                                var timeDiv = document.createElement("div");
+                                timeDiv.style = "display: inline-block";
+                                timeDiv.textContent = app.run.validateWorkShift(jobPost.jobPostShift);
+                                timeDataDiv.appendChild(timeDiv);
+
+                                var hr = document.createElement("hr");
+                                centreTag.appendChild(hr);
+
+                                //!*  apply div button *!/
+                                var rowDivApplyButton = document.createElement("div");
+                                rowDivApplyButton.className = "row";
+                                rowDivApplyButton.style = "margin: 0; padding: 0";
+                                centreTag.appendChild(rowDivApplyButton);
+
 
                                 // posted on div
                                 var postedOnDiv = document.createElement("div");
-                                postedOnDiv.className = "col-sm-2";
+                                postedOnDiv.className = "col-sm-6";
+                                postedOnDiv.style = "margin-top:12px;text-align:left";
                                 postedOnDiv.textContent = "Posted on: " + new Date(jobPost.jobPostCreateTimestamp).toDateString();
-                                jobBodyCol.appendChild(postedOnDiv);
+                                rowDivApplyButton.appendChild(postedOnDiv);
 
-                                // vacancies div
-                                var vacanciesDiv = document.createElement("div");
-                                vacanciesDiv.className = "col-sm-2";
-                                vacanciesDiv.textContent = "Vacancies: " + jobPost.jobPostVacancies;
-                                jobBodyCol.appendChild(vacanciesDiv);
-
-                                // gender div
-                                var genderDiv = document.createElement("div");
-                                genderDiv.className = "col-sm-2";
-                                genderDiv.textContent = app.run.validateGender(jobPost.gender);
-                                jobBodyCol.appendChild(genderDiv);
-
-                                // age div
-                                var ageDiv = document.createElement("div");
-                                ageDiv.className = "col-sm-2";
-                                ageDiv.textContent = app.run.validateMaxAge(jobPost.jobPostMaxAge);
-                                jobBodyCol.appendChild(ageDiv);
-
-                                // timeshift div
-                                var ageDiv = document.createElement("div");
-                                ageDiv.className = "col-sm-2";
-                                ageDiv.textContent = app.run.validateWorkShift(jobPost.jobPostShift);
-                                jobBodyCol.appendChild(ageDiv);
-
-
-                                //!*  apply div button *!/
                                 var applyBtnDiv = document.createElement("div");
-                                applyBtnDiv.className = "col-sm-2";
-                                rowDiv.appendChild(applyBtnDiv);
+                                applyBtnDiv.className = "col-sm-6";
+                                rowDivApplyButton.appendChild(applyBtnDiv);
 
 
                                 //!*  more button *!/
+                                var jobMoreCol = document.createElement("div");
+                                jobMoreCol.className = "col-sm-2";
+                                jobMoreCol.id = "jobMore";
+                                rowDiv.appendChild(jobMoreCol);
+
+                                // vacancies div
+                                var vacanciesDiv = document.createElement("div");
+                                vacanciesDiv.textContent = "Vacancies: " + jobPost.jobPostVacancies;
+                                jobMoreCol.appendChild(vacanciesDiv);
+
+
                                 var moreBtn = document.createElement("div");
                                 moreBtn.className = "jobMoreBtn";
                                 moreBtn.textContent = "More Info";
-                                applyBtnDiv.appendChild(moreBtn);
+                                jobMoreCol.appendChild(moreBtn);
                                 moreBtn.onclick = function () {
                                     var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
                                     jobPostBreak = jobPostBreak.toLowerCase();
@@ -929,6 +1075,7 @@ var app = (function ($) {
                                 applyBtn.textContent = applyJobText;
 
                                 applyBtnDiv.appendChild(applyBtn);
+
                                 applyBtn.onclick = function () {
                                     var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
                                     jobPostBreak = jobPostBreak.toLowerCase();
@@ -1028,7 +1175,7 @@ var app = (function ($) {
                 $("#gender_filter").show();
                 app.currentFilterParams.selectedGender = genderId;
 
-                console.log("gender: " + genderId);
+                console.log(genderId);
 
                 app.do.search(true);
             },
@@ -1101,7 +1248,7 @@ var app = (function ($) {
                 if(jobPostShift == null) {
                     return "";
                 } else if(jobPostShift.timeShiftName){
-                    return "Time Shift: " + jobPostShift.timeShiftName;
+                    return jobPostShift.timeShiftName;
                 }
             },
             searchValidation: function () {
@@ -1121,11 +1268,11 @@ var app = (function ($) {
             },
             validateGender : function (gender) {
                 if(gender == null || gender == 2 ){
-                    return "Gender: Any";
+                    return "Any";
                 } else if (gender == 0){
-                    return "Gender: Female";
+                    return "Female";
                 } else if (gender == 1){
-                    return "Gender: Male";
+                    return "Male";
                 }
                 return "";
             },
@@ -1133,7 +1280,7 @@ var app = (function ($) {
               if(age == null) {
                   return "";
               }  else {
-                  return "Max Age : " + age;
+                  return age;
               }
             },
             basicReset: function () {
