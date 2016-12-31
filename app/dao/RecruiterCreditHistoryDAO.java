@@ -1,5 +1,6 @@
 package dao;
 
+import api.ServerConstants;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.RawSql;
 import com.avaje.ebean.RawSqlBuilder;
@@ -7,6 +8,7 @@ import models.entity.Recruiter.RecruiterProfile;
 import models.entity.RecruiterCreditHistory;
 import play.Logger;
 
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -69,5 +71,17 @@ public class RecruiterCreditHistoryDAO {
                 .orderBy().desc("recruiter_credit_pack_no").setMaxRows(1).findUnique();
     }
 
+    public static List<RecruiterCreditHistory> getAllPacksExpiringToday(){
+        Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 0);
+
+        String dateToday = today.get(Calendar.YEAR) + "-" + (today.get(Calendar.MONTH)+1) + "-" + today.get(Calendar.DATE);
+
+        return RecruiterCreditHistory.find.where()
+            .eq("expiryDate", dateToday)
+                .eq("is_latest", 1)
+            .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
+            .findList();
+    }
 
 }

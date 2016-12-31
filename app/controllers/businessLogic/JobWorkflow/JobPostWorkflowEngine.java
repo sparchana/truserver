@@ -2501,7 +2501,6 @@ public class JobPostWorkflowEngine {
             return -1;
         }
 
-        Boolean toDeductCredit = false;
         Integer jwStatus;
         Integer interactionType;
         String interactionResult;
@@ -2511,13 +2510,11 @@ public class JobPostWorkflowEngine {
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_FEEDBACK_SELECTED;
             interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_SELECTED;
 
-            toDeductCredit = true;
         } else if (addFeedbackRequest.getFeedbackStatus() == ServerConstants.CANDIDATE_FEEDBACK_COMPLETE_REJECTED) {
             jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_REJECTED;
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_FEEDBACK_REJECTED;
             interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_REJECTED;
 
-            toDeductCredit = true;
         } else if (addFeedbackRequest.getFeedbackStatus() == ServerConstants.CANDIDATE_FEEDBACK_NO_SHOW) {
             jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW;
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_FEEDBACK_NO_SHOW;
@@ -2528,19 +2525,6 @@ public class JobPostWorkflowEngine {
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_FEEDBACK_NOT_QUALIFIED;
             interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_NOT_QUALIFIED;
 
-        }
-
-        if (toDeductCredit) {
-            RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
-            recruiterCreditHistory.setRecruiterProfile(jobPostWorkflowCurrent.getJobPost().getRecruiterProfile());
-            recruiterCreditHistory.setRecruiterCreditsAvailable(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() - 1);
-            recruiterCreditHistory.setRecruiterCreditsUsed(recruiterCreditHistoryLatest.getRecruiterCreditsUsed() + 1);
-            recruiterCreditHistory.setRecruiterCreditsAddedBy(ServerConstants.SELF_UNLOCKED_INTEVIEW);
-            recruiterCreditHistory.setUnits(-1);
-            recruiterCreditHistory.setRecruiterCreditCategory(RecruiterCreditCategory.find.where().eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK).findUnique());
-
-            //saving/updating all the rows
-            recruiterCreditHistory.save();
         }
 
         // Setting the existing jobpostworkflow status to confirmed
