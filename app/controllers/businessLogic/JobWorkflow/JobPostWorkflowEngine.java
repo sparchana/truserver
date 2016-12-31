@@ -2488,18 +2488,6 @@ public class JobPostWorkflowEngine {
         if (jobPostWorkflowCurrent == null) {
             return 0;
         }
-        RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
-                .eq("RecruiterProfileId", jobPostWorkflowCurrent.getJobPost().getRecruiterProfile().getRecruiterProfileId())
-                .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
-                .orderBy().desc("create_timestamp").setMaxRows(1).findUnique();
-
-        if (recruiterCreditHistoryLatest == null) {
-            return -1;
-        }
-
-        if (recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() == null || recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() < 1) {
-            return -1;
-        }
 
         Integer jwStatus;
         Integer interactionType;
