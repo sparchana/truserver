@@ -496,8 +496,10 @@ var app = (function ($) {
         // action perform methods
         do: {
             fillSearchTextBoxWithKeywords: function (keywordList) {
-                var searchBoxText = keywordList.join(" ") + ", ";
-                document.getElementById("searchText").value = searchBoxText.toTitleCase();
+                if(document.getElementById("searchText").value.trim().length > 0){
+                    var searchBoxText = keywordList.join(" ") + ", ";
+                    document.getElementById("searchText").value = searchBoxText.toTitleCase();
+                }
             },
             search: function (isBasicResetRequired) {
                 if(!app.shouldDoSearch){
