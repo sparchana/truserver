@@ -35,6 +35,63 @@
             <!-- Nav start -->
         <div id="nav_bar_inc"></div>
 
+        <div class="container-fluid" style="padding:0%">
+            <div id="sectionOne" style="padding: 4% 4% 0 4%">
+                <div class="container">
+                    <font color="white">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12" style="margin-top: 20px">
+                                <div class="row" style="margin: 0">
+                                    <h2 style="letter-spacing: 2px; margin:2% 0;text-align: left"><font size="5">Schedule interviews for interested jobs</font></h2>
+                                </div>
+                                <div class="row" id="searchBarDivMain">
+                                    <div class="input-group" id="searchBar">
+                                        <div class="col-xs-12 col-sm-9 col-md-8" id="mainFieldSearch">
+                                            <input type="text" id="searchText" class="form-control" onclick="showField()" placeholder="Search Jobs,Company " data-multiple>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-2 col-md-3" id="searchLocationBox" style="padding: 0">
+                                            <select id="searchLocation" class="form-control"></select>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-2 col-md-2" id="searchEducationBox">
+                                            <select id="searchEducation" class="form-control"></select>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-2 col-md-2" id="searchExperienceBox">
+                                            <select id="searchExperience" class="form-control"></select>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-1 col-md-1" style="padding: 0">
+                                            <a id="searchBtn" data-toggle="collapse" data-target="#filterDetail">
+                                                <button type="button" id="searchBtn"class="btn btn-default" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                                </button>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </font>
+                </div>
+                <div class="container hidden-md hidden-lg" style="padding: 0">
+                    <div class="row" style="margin:2%">
+                        <div class="col-xs-6 col-sm-4 col-sm-offset-2" style="padding-left: 0">
+                            <button type="button" id="searchSignUpBtn"class="btn btn-default" aria-label="Left Align">
+                                <a href="#" data-toggle="modal" data-target="#mySignUpModal" onClick="openSignUp()">
+                                    <font style="font-weight: bold;color:#ff3d00">Sign Up</font>
+                                </a>
+                            </button>
+                        </div>
+                        <div class="col-xs-6 col-sm-4" style="padding-right: 0">
+                            <button type="button" id="searchSignInBtn"class="btn btn-default" aria-label="Left Align">
+                                <a href="#" data-toggle="modal" data-target="#myLoginModal" onClick="openLogin()">
+                                    <font style="font-weight: bold;color:#ff3d00">Sign In</font>
+                                </a>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <!-- End of sectionOne -->
         <div id="fixedButton" style="display: none;">
             <div>
                 Go to top
@@ -43,37 +100,6 @@
             <img src="/assets/recruiter/img/icons/top.svg" width="48px" id="scrollToTop" style="display: block;"/>
         </div>
 
-            <!--Search bar start-->
-        <div class="container-fluid back-banner-candidate">
-            <div class="container" style="padding: 0;" id="searchBoxContainer">
-                <div class="row">
-                    <h6 style="font-weight:600; color: #fff; margin-top: 24px; font-size: 22px">Job Search</h6>
-                </div>
-                <div class="row" style="margin-top: -16px">
-                    <div class="card col s12 l12" style="margin: 0;padding: 0">
-                        <div class="card-content col s12 l12" style="margin: 0;padding: 12px 1%">
-                            <div class="input-field  col s12 l6" id="searchTextBox">
-                                <input id="searchText" type="text"  data-multiple>
-                            </div>
-                            <div class="col s12 l2" id="searchLocationBox">
-                                <select id="searchLocation" class="tokenCustomInput tokenize-sample"></select>
-                            </div>
-                            <div class="col s12 l1" id="searchEducationBox">
-                                <select id="searchEducation" class="tokenCustomInput tokenize-sample"></select>
-                            </div>
-                            <div class="col s12 l1" id="searchExperienceBox">
-                                <select id="searchExperience" class="tokenCustomInput tokenize-sample"></select>
-                            </div>
-                            <div class="col s12 l2" style="margin-top: 4px">
-                                <a class="waves-effect waves-light ascentGreen lighten-1 btn right" id="searchBtn" data-toggle="collapse" data-target="#filterDetail"><font style="color: #fff;
-                                    font-weight: 400"><b>Search</b></font>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
             <!--Search bar ends-->
         <div class="container-fluid hide-on-med-and-up" style="padding: 1%;">
             <div class="row">
@@ -91,10 +117,10 @@
                     <!-- Sort & Filter -->
                 <div class="col s12 l3">
                     <div id="sortMainBox">
-                        <div class="card-content">
-                            <font size="4">Sort by</font>
+                        <div class="card-content" style="padding:2%">
+                            <font size="5">Sort by</font>
                         </div>
-                        <ul class="collapsible" data-collapsible="expandable">
+                        <ul class="collapsible" data-collapsible="expandable" style="margin-top:12px">
                             <li>
                                 <div class="collapsible-header active"><i class="material-icons">repeat</i>
                                     Sort by</div>
@@ -119,11 +145,10 @@
                             </li>
                         </ul>
                     </div>
-                    <div>
-                        <div id="filterMainBox">
-                            <div class="card-content">
-                                <font size="4">Filters</font>
-                                <div id="resetFilters" class="waves-effect waves-light orange lighten-1" onclick="" style="padding: 4px 8px 4px 8px;
+                    <div id="filterMainBox">
+                            <div class="card-content" style="padding:2%">
+                                <font size="5">Filters</font>
+                                <div id="resetFilters" class="waves-effect waves-light orange lighten-1" onclick="" style="margin-top:8px;padding: 4px 8px 4px 8px;
                                     float: right; display: inline-block; border-radius: 4px;">
                                     <font style="color: #fff;font-weight: 400; font-size: 12px"><b>
                                         <center>
@@ -132,7 +157,7 @@
                                     </b></font>
                                 </div>
                             </div>
-                            <div class="card-content" style="padding: 0">
+                            <div class="card-content">
                                 <div class="row">
                                     <div class="col s12 l12">
                                         <ul class="collapsible" data-collapsible="expandable">
@@ -179,28 +204,10 @@
                                                 <div class="collapsible-body " style="padding: 8px 18px 8px 18px" id="salaryFilterDiv"></div>
                                             </li>
                                         </ul>
-
-                                        <div class="row">
-                                            <div class="col s8 l7" style="padding-right: 4px;"></div>
-                                            <div class="col s4 l5" style="padding-left: 0; margin: 0">
-                                                <center>
-                                                    <div id="resetFilters_" class="waves-effect waves-light orange lighten-1 btn" style="padding: 0 9px; width: 100%; display: inline-block">
-                                                        <font style="color: #fff;font-weight: 400; font-size: 12px"><b>
-                                                            <center>
-                                                            Reset Filters
-                                                            </center>
-                                                        </b></font>
-                                                    </div>
-                                                </center>
-
-                                            </div>
-                                        </div>
-
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
                 </div>
                     <!-- Job Post Details -->
                 <div class="col s12 l9">
@@ -212,7 +219,7 @@
                     </center>
                     <div id="job_cards_inc"></div>
                     <div id="jobCardControl"></div>
-
+                    
                     <div id="loadingIcon" style="display: none; padding-top: 6%">
                         <center>
                             <h6>Searching Jobs</h6>
@@ -241,6 +248,7 @@
         </div>
 
         @* register box start *@
+
         <a href ="#" class="registerBox" data-toggle="modal" data-target="#mySignUpModal" onClick="openSignUp()">
             <div class="row" id="registerBoxInner"><font size="3" style="color: #fff">Apply Now</font></div>
         </a>
