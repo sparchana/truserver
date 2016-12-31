@@ -1347,6 +1347,7 @@ var app = (function ($) {
             urlChangeDetector: function () {
                 if (window.history && window.history.pushState) {
 
+                    console.log("windows.url: "+ window.location);
                     $(window).on('popstate', function () {
                         location.reload();
                     });

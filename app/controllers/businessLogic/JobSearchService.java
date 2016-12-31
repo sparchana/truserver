@@ -442,7 +442,6 @@ public class JobSearchService {
 
         if (keywordList != null && keywordList.size() > 0) {
 
-            Logger.info("keyword List size: " + keywordList.size());
             Junction<JobPost> junction = query.select("*")
                     .fetch("jobRole")
                     .fetch("company")
@@ -452,7 +451,6 @@ public class JobSearchService {
             for (String keyword : keywordList) {
                 if (keyword != null && !keyword.trim().isEmpty()) {
                     keyword = keyword.trim();
-                    Logger.info("keyword: " + keyword);
                     query = junction
                             .add(Expr.like("jobPostTitle", keyword + "%"))
                             .add(Expr.like("jobRole.jobName", keyword + "%"))
