@@ -26,7 +26,7 @@ public class CandidateDAO {
     public static List<Candidate> getCandidateWhoUpdateProfileSinceIndexDays(Integer days) {
 
         String workFlowQueryBuilder = " select distinct objectauuid from interaction where" +
-                "  interactiontype = in (10, 11, 12) and objectatype = '4' and date(creationtimestamp) > curdate()-" + days ;
+                "  interactiontype in (10, 11, 12) and objectatype = '4' and date(creationtimestamp) > curdate()-" + days ;
 
         RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder)
                 .columnMapping("objectauuid", "objectAUUId")
@@ -39,7 +39,35 @@ public class CandidateDAO {
         List<Candidate> candidateList = new ArrayList<>();
 
         for(Interaction interaction : interactions){
-            candidateList.add(Candidate.find.where().eq("candidateUUId", interaction.getObjectAUUId()).findUnique());
+            Candidate candidate = Candidate.find.where().eq("candidateUUId", interaction.getObjectAUUId()).findUnique();
+            if(candidate != null){
+                candidateList.add(candidate);
+            }
+        }
+
+        return candidateList;
+    }
+
+    public static List<Candidate> getAllActiveCandidateWithinProvidedDays(Integer days) {
+
+        String workFlowQueryBuilder = " select distinct objectauuid from interaction where" +
+                "  objectatype = '4' and date(creationtimestamp) > curdate()-" + days ;
+
+        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder)
+                .columnMapping("objectauuid", "objectAUUId")
+                .create();
+
+        List<Interaction> interactions = Ebean.find(Interaction.class)
+                .setRawSql(rawSql)
+                .findList();
+
+        List<Candidate> candidateList = new ArrayList<>();
+
+        for(Interaction interaction : interactions){
+            Candidate candidate = Candidate.find.where().eq("candidateUUId", interaction.getObjectAUUId()).findUnique();
+            if(candidate != null){
+                candidateList.add(candidate);
+            }
         }
 
         return candidateList;

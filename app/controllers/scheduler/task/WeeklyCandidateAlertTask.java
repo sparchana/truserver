@@ -75,7 +75,7 @@ public class WeeklyCandidateAlertTask extends TimerTask {
 
             Timestamp startTime = new Timestamp(System.currentTimeMillis());
 
-            for(Candidate candidate : CandidateDAO.getCandidateWhoUpdateProfileSinceIndexDays(7)){
+            for(Candidate candidate : CandidateDAO.getAllActiveCandidateWithinProvidedDays(7)){
                 int jobsCount = 0;
                 String jobRoles = "";
 
