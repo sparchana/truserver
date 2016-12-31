@@ -500,6 +500,7 @@ var app = (function ($) {
                 document.getElementById("searchText").value = searchBoxText.toTitleCase();
                 if(document.getElementById("searchText").value == ", "){
                     document.getElementById("searchText").value = "";
+                    document.getElementById("searchText").placeholder = "Search Jobs, Company";
                 }
             },
             search: function (isBasicResetRequired) {
@@ -727,9 +728,8 @@ var app = (function ($) {
                         $('#noJobsDiv').hide();
 
                         var jobSearchTitle = app.currentSearchURL.capitalizeFirstLetter().replace(/[^a-z0-9]+/gi, ' ');
-                        console.log("jobSearchTitle: "+ jobSearchTitle);
 
-                        app.do.createAndAppendDivider(" Showing 1-5 of "+data.results.totalJobs+" jobs matching your search");
+                        app.do.createAndAppendDivider(" Showing 1-"+_jobPostList.length+" of "+data.results.totalJobs+" jobs matching your search");
                         // var _isDividerPresent = false;
                         _jobPostList.forEach(function (jobPost) {
                             _count++;
@@ -986,7 +986,7 @@ var app = (function ($) {
 
                                 var EducationDiv = document.createElement("div");
                                 EducationDiv.style = "display: inline-block";
-                                EducationDiv.textContent = jobPost.jobPostEducation.educationName;
+                                EducationDiv.textContent = app.run.validateEducation(jobPost.jobPostEducation);
                                 locDataDiv.appendChild(EducationDiv);
 
                                 // age div
@@ -1324,6 +1324,13 @@ var app = (function ($) {
         },
         // action validator methods
         run: {
+            validateEducation: function (education) {
+                if(education != null ){
+                    return education.educationName;
+                } else {
+                    return "NA"
+                }
+            },
             validateWorkShift: function (jobPostShift) {
                 if(jobPostShift == null) {
                     return "";

@@ -549,7 +549,7 @@ public class JobSearchService {
         if (locality != null && locality.getLat() != null) {
             resultJobsWithinDistance = MatchingEngineService.filterByDistance(resultJobPosts,
                     locality.getLat(), locality.getLng(),
-                    ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
+                    ServerConstants.WEB_SEARCH_MATCHING_ENGINE_RADIUS);
             doSortByDistance = true;
         } else {
             resultJobsWithinDistance = resultJobPosts;

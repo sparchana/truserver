@@ -194,6 +194,7 @@ public class ServerConstants {
     }
 
     public static final Double DEFAULT_MATCHING_ENGINE_RADIUS = 10.0; // In Kilometers
+    public static final Double WEB_SEARCH_MATCHING_ENGINE_RADIUS = 25.0; // In Kilometers
 
     // Job Post DB Constants
     public static final int EXPERIENCE_TYPE_FRESHER_ID = 1;
