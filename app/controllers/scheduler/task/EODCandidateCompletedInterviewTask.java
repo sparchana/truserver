@@ -76,9 +76,6 @@ public class EODCandidateCompletedInterviewTask extends TimerTask {
         // fetch all the application which had interviews today
         Logger.info("Starting EOD notify candidates for play store rating ..");
 
-        Calendar now = Calendar.getInstance();
-        String todayDate = now.get(Calendar.YEAR) + "-" + (now.get(Calendar.MONTH) + 1) + "-" + now.get(Calendar.DATE);
-
-        sendRateUsNotification(JobPostWorkFlowDAO.getTodaysConfirmedInterviews(todayDate));
+        sendRateUsNotification(JobPostWorkFlowDAO.getTodaysConfirmedInterviews());
     }
 }
