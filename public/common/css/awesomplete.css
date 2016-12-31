@@ -13,7 +13,7 @@
 }
 
 .awesomplete > input {
-    display: block;
+	    display: block;
 }
 
 .awesomplete > ul {
@@ -24,7 +24,6 @@
     box-sizing: border-box;
     list-style: none;
     padding: 0;
-    margin: 0;
     background: #fff;
 }
 
@@ -34,9 +33,9 @@
 
 .awesomplete > ul {
 	border-radius: .3em;
-	margin: .2em 0 0;
-	background: hsla(0,0%,100%,.9);
-	background: linear-gradient(to bottom right, white, hsla(0,0%,100%,.8));
+	margin: 40px 0 0 0;
+	background: hsla(0,0%,100%,1);
+	/*background: linear-gradient(to bottom right, white, hsla(0,0%,100%,.8));*/
 	border: 1px solid rgba(0,0,0,.3);
 	box-shadow: .05em .2em .6em rgba(0,0,0,.2);
 	text-shadow: none;
@@ -69,36 +68,40 @@
 		border: inherit;
 		border-right: 0;
 		border-bottom: 0;
+		color: #000;
 		-webkit-transform: rotate(45deg);
 		transform: rotate(45deg);
 	}
 
 	.awesomplete > ul > li {
 		position: relative;
-		padding: .2em .5em;
 		cursor: pointer;
+		color: #000;
+		text-align: left;
+		padding: 5px 20px;
+		font-size: 16px;
 	}
 	
 	.awesomplete > ul > li:hover {
-		background: hsl(200, 40%, 80%);
-		color: black;
+		color:#000;
+		background: rgba(205, 205, 201, 0.64);
 	}
 	
 	.awesomplete > ul > li[aria-selected="true"] {
-		background: hsl(205, 40%, 40%);
-		color: white;
+		color:#000;
+		background: rgba(51, 84, 205, 0.13);
 	}
 	
 		.awesomplete mark {
-			background: hsl(65, 100%, 50%);
+			background: rgba(196, 196, 192, 0.64);
 		}
 		
 		.awesomplete li:hover mark {
-			background: hsl(68, 100%, 41%);
+			background: rgba(165, 165, 161, 0.64);
 		}
 		
 		.awesomplete li[aria-selected="true"] mark {
-			background: hsl(86, 100%, 21%);
+			background: rgba(180, 180, 176, 0.64);
 			color: inherit;
 		}
 /*# sourceMappingURL=awesomplete.css.map */
