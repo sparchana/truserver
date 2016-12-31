@@ -851,6 +851,7 @@ hr{
     background: #fff;
     color:#ff3d00;
 }
+
 @media screen and (max-width: 768px) {
     #searchBarDivMain{
     padding: 2%;
@@ -1100,7 +1101,7 @@ hr{
 
     #sectionOne {
         background-size: 100%;
-        padding-top: 10%;
+        padding-top: 18%;
         padding-bottom:5%;
     }
     #sectionOneShowAll {

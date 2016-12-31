@@ -162,7 +162,7 @@
             },
             // render filter
             renderTextSearch: function () {
-                var input = $("#inputMainField");
+                var input = $("#searchText");
                 var numberOfKeywords = input.val().split(",");
                 if((input.val() == null || input.val().length < 3) ){
                     return;
@@ -210,7 +210,7 @@
             },
             fillSearchTextBoxWithKeywords: function (keywordList) {
                 var searchBoxText = keywordList.join(" ") + ", ";
-                document.getElementById("inputMainField").value = searchBoxText.toTitleCase();
+                document.getElementById("searchText").value = searchBoxText.toTitleCase();
             },
             prepNmodifyURL:function () {
                 return app.do.modifyURL(app.do.prepareURL());
@@ -221,7 +221,7 @@
                 return "/s/" + url;
             },
             prepareURL: function () {
-                var _searchStr = document.getElementById("inputMainField").value;
+                var _searchStr = document.getElementById("searchText").value;
 
                 if (_searchStr != null || _searchStr.trim() != "") {
                     _searchStr += "-'";
@@ -291,7 +291,7 @@
     app.bMethods.init();
 
     // this detect the typing even on the search bar
-    $('#inputMainField').on('keyup',function (event) {
+    $('#searchText').on('keyup',function (event) {
         if(((event.keyCode >= 48 && event.keyCode <= 57)
             || (event.keyCode >= 65 && event.keyCode <= 90) )){
             // trigger suggestion only when typing alpha numeric is happening

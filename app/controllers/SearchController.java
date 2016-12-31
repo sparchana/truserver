@@ -40,7 +40,6 @@ public class SearchController extends Controller {
     }
 
     public static Result getSearchSuggestion(String key) {
-
         /* TODO find a way to remove already added keys from the next suggestion list
         *  currently this is being done on js side.
         * */
