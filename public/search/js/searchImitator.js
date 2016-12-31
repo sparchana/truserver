@@ -20,18 +20,11 @@
     var DEFAULT_VALUES = {
         D_SEARCH_KEYWORD_IDENTIFIER: "jobs-in-bangalore",
         D_LOCALITY_IDENTIFIER: "near-",
-        D_EDU_IDENTIFIER: "-pass",
-        D_EXP_IDENTIFIER: "-experience",
-        D_EDU_ANY: {},
-        D_EXP_ANY: {},
         D_LOCATION_ALL_BANGALORE: {}
     };
     var app = {
         allJobRole: [],
         allLocation: [],
-        allEducation: [],
-        allExperience: [],
-        allLanguage: [],
         currentURL: null,
         suggestion: null,
 
@@ -41,8 +34,6 @@
                 console.log("init");
                 app.render.renderTextSearch();
                 app.render.renderLocation();
-                app.render.renderEducation();
-                app.render.renderExperience();
 
             },
             getAllJobRole: function () {
@@ -60,28 +51,6 @@
                 //ajax call || its a promise
                 if (app.allLocation.length == 0) {
                     return $.ajax({type: 'POST', url: '/getAllLocality'});
-                } else {
-                    // new promise says its already there
-                    return new Promise(function (resolve, reject) {
-                        resolve(null);
-                    });
-                }
-            },
-            getAllEducation: function () {
-                //ajax call and save data to allEducation
-                if (app.allEducation.length == 0) {
-                    return $.ajax({type: 'POST', url: '/getAllEducation'});
-                } else {
-                    // new promise says its already there
-                    return new Promise(function (resolve, reject) {
-                        resolve(null);
-                    });
-                }
-            },
-            getAllExperience: function () {
-                //ajax call and save data to allExperience
-                if (app.allExperience.length == 0) {
-                    return $.ajax({type: 'POST', url: '/getAllExperience'});
                 } else {
                     // new promise says its already there
                     return new Promise(function (resolve, reject) {
@@ -191,143 +160,6 @@
                     });
                 }
             },
-            renderEducation: function (education) {
-
-                if (education != null) {
-                    $('#searchEducation').tokenize({
-                        displayDropdownOnFocus: true,
-                        placeholder: "Education",
-                        nbDropdownElements: 1000,
-                        maxElements: 1
-                    }).tokenRemove($('#searchEducation').val()[0]).tokenAdd(education.educationId, education.educationName);
-                }
-                // this if check prevents static token suggestion from being duplicated
-                else if ($("#searchEducation option[value='1']").length == 0) {
-
-                    var promise = new Promise(function (resolve, reject) {
-                            app.bMethods.getAllEducation().then(
-                                function (returnedData) {
-                                    if (returnedData != null) {
-                                        returnedData.forEach(function (education) {
-                                            app.allEducation.push(education);
-                                        });
-                                    }
-                                    resolve();
-                                },
-                                function (xhr, state, error) {
-                                    reject(error);
-                                }
-                            );
-                        }
-                    );
-
-                    promise.then(function () {
-                        var option;
-                        var first = {};
-                        var initId = null;
-                        app.allEducation.forEach(function (education) {
-                            var id = education.educationId;
-                            var name = education.educationName;
-                            option = $('<option value=' + id + '></option>').text(name);
-                            $('#searchEducation').append(option);
-
-                            if (initId == null) {
-                                initId = id;
-                            }
-
-                            if (name == "Any") {
-                                first = {'id': id, 'name': name};
-                                DEFAULT_VALUES.D_EDU_ANY = first;
-                            }
-                        });
-
-                        $('#searchEducation').tokenize({
-                            displayDropdownOnFocus: true,
-                            placeholder: "Education",
-                            newElements: true,
-                            nbDropdownElements: 1000,
-                            maxElements: 1
-                        });
-
-                        $('#searchEducation').tokenize().tokenRemove(initId);
-                        $('#searchEducation').tokenize().tokenAdd(DEFAULT_VALUES.D_EDU_ANY.id, DEFAULT_VALUES.D_EDU_ANY.name);
-                    }).catch(function (fromReject) {
-                        console.log(fromReject);
-                    });
-                }
-
-            },
-            renderExperience: function (experience) {
-
-                if (experience != null) {
-
-                    $('#searchExperience').tokenize({
-                        displayDropdownOnFocus: true,
-                        placeholder: "Experience",
-                        nbDropdownElements: 1000,
-                        maxElements: 1
-                    }).tokenRemove($('#searchExperience').val()[0]).tokenAdd(experience.experienceId, experience.experienceType);
-                }
-                // this if check prevents static token suggestion from being duplicated
-                else if ($("#searchExperience option[value='1']").length == 0) {
-
-                    var promise = new Promise(function (resolve, reject) {
-                            app.bMethods.getAllExperience().then(
-                                function (returnedData) {
-                                    if (returnedData != null) {
-                                        returnedData.forEach(function (experience) {
-                                            app.allExperience.push(experience);
-                                        });
-                                    }
-                                    resolve();
-                                },
-                                function (xhr, state, error) {
-                                    reject(error);
-                                }
-                            );
-                        }
-                    );
-
-                    promise.then(function () {
-                        var option;
-                        var first = {};
-                        var initId = null;
-
-                        app.allExperience.forEach(function (experience) {
-                            var id = experience.experienceId;
-                            var name = experience.experienceType;
-                            option = $('<option value=' + id + '></option>').text(name);
-
-                            if (initId == null) {
-                                initId = id;
-                            }
-
-                            if (experience.experienceType == "Any") {
-                                console.log("found any");
-                                first = {'id': id, 'name': name};
-                                DEFAULT_VALUES.D_EXP_ANY = first;
-                            }
-
-                            $('#searchExperience').append(option);
-                        });
-
-                        $('#searchExperience').tokenize({
-                            displayDropdownOnFocus: true,
-                            placeholder: "Experience",
-                            newElements: true,
-                            nbDropdownElements: 1000,
-                            maxElements: 1
-                        });
-
-                        $('#searchExperience').tokenize().tokenRemove(initId);
-                        $('#searchExperience').tokenize().tokenAdd(DEFAULT_VALUES.D_EXP_ANY.id, DEFAULT_VALUES.D_EXP_ANY.name);
-
-                    }).catch(function (fromReject) {
-                        console.log(fromReject);
-                    });
-                }
-
-            },
             // render filter
             renderTextSearch: function () {
                 var input = $("#inputMainField");
@@ -409,19 +241,6 @@
                     _searchStr += "_" + DEFAULT_VALUES.D_LOCALITY_IDENTIFIER + _text.innerHTML.replace(/\s+/g, '-');
                 }
 
-                var _education = document.getElementById("searchEducation");
-                _text = _education.options[_education.selectedIndex];
-
-                if (_education.value != 0 && _text != null && _text.innerHTML.toLowerCase() != "any") {
-                    _searchStr += "_for-" + _text.innerHTML.replace(/[^a-z0-9]+/gi, '-') + DEFAULT_VALUES.D_EDU_IDENTIFIER;
-                }
-
-                var _experience = document.getElementById("searchExperience");
-                _text = _experience.options[_experience.selectedIndex];
-                if (_experience.value != 0 && _text != null && _text.innerHTML.toLowerCase() != "any") {
-                    _searchStr += "_for-" + _text.innerHTML.replace(/[^a-z0-9]+/gi, '-') + DEFAULT_VALUES.D_EXP_IDENTIFIER;
-                }
-
                 return (_searchStr + "/").toLowerCase();
             }
         },
@@ -457,25 +276,6 @@
                     }).tokenAdd(DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE.id,
                         DEFAULT_VALUES.D_LOCATION_ALL_BANGALORE.name);
                 }
-                if ($('#searchEducation').val() == null) {
-                    $('#searchEducation').tokenize({
-                        displayDropdownOnFocus: true,
-                        placeholder: "Education",
-                        nbDropdownElements: 1000,
-                        maxElements: 1
-                    }).tokenAdd(DEFAULT_VALUES.D_EDU_ANY.id,
-                        DEFAULT_VALUES.D_EDU_ANY.name);
-                }
-
-                if ($('#searchExperience').val() == null) {
-                    $('#searchExperience').tokenize({
-                        displayDropdownOnFocus: true,
-                        placeholder: "Experience",
-                        nbDropdownElements: 1000,
-                        maxElements: 1
-                    }).tokenAdd(DEFAULT_VALUES.D_EXP_ANY.id,
-                        DEFAULT_VALUES.D_EXP_ANY.name);
-                }
             }
         }
     };
@@ -499,16 +299,10 @@
         }
     });
 
-    // public methods
-    function isEmpty(str) {
-        return (!str || 0 === str.length);
-    }
 
 }(jQuery));
 
 
 function showField(){
     $('#mainFieldSearch').removeClass("col-lg-9").addClass("col-lg-5");
-    $('#experienceFieldSearch').fadeIn();
-    $('#educationFieldSearch').fadeIn();
 }
