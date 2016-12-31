@@ -1444,6 +1444,9 @@ public class CandidateService
                     jobHistory.setCandidatePastCompany(pastCompany.getCompanyName());
                     jobHistory.setJobRole(jobRole);
                     jobHistory.setCurrentJob(pastCompany.getCurrent());
+                    if(pastCompany.getCurrent()) {
+                        candidate.setCandidateIsEmployed(pastCompany.getCurrent());
+                    }
 
                     response.add(jobHistory);
                 }

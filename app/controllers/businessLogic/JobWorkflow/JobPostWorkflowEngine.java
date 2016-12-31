@@ -2295,27 +2295,9 @@ public class JobPostWorkflowEngine {
                 for (PreScreenPopulateResponse.PreScreenElement pe : response.getElementList()) {
                     if (pe.isMatching()) {
                         matchingReason += pe.getPropertyTitle() + ", ";
-//                        if(pe.isSingleEntity()) {
-//                            matchingReason += pe.getCandidateElement().getPlaceHolder() + ", ";
-//                        } else {
-//                            for(PreScreenPopulateResponse.PreScreenCustomObject customObject: pe.getCandidateElementList()){
-//                                matchingReason += customObject.getPlaceHolder() +
-//                            }
-//                        }
                         passed++;
                     } else {
                         nonMatchingReason += pe.getPropertyTitle() + ", ";
-//                        if(pe.isSingleEntity()) {
-//                            if(pe.getCandidateElement() != null) {
-//                                nonMatchingReason += pe.getCandidateElement().getPlaceHolder() + ", ";
-//                            }
-//                        } else {
-//                            if(pe.getCandidateElementList()!=null && pe.getCandidateElementList().size() > 0) {
-//                                for(PreScreenPopulateResponse.PreScreenCustomObject customObject: pe.getCandidateElementList()){
-//                                    nonMatchingReason += customObject.getPlaceHolder() + ", ";
-//                                }
-//                            }
-//                        }
                     }
                     total++;
                 }
