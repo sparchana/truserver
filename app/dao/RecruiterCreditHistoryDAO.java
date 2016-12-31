@@ -13,12 +13,13 @@ import java.util.List;
  * Created by dodo on 29/12/16.
  */
 public class RecruiterCreditHistoryDAO {
-    public static RecruiterCreditHistory getLatestRecruiterCreditPack(Integer creditType){
+    public static RecruiterCreditHistory getLatestRecruiterCreditPack(Integer creditType, RecruiterProfile recruiterProfile){
 
         String workFlowQueryBuilder = "select distinct recruiter_credit_pack_no, recruiter_credits_available, " +
                 "recruiter_credits_used, expiry_date, credit_is_expired, is_latest" +
                 " FROM trujobsdev.recruiter_credit_history where is_latest = '1' and credit_is_expired = '0' and" +
                 " recruitercreditcategory = " + creditType +
+                " and recruiterprofileid = " + recruiterProfile.getRecruiterProfileId() +
                 " order by recruiter_credit_pack_no desc";
 
         RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder)

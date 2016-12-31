@@ -157,9 +157,6 @@ public class RecruiterService {
 
             newRecruiter.save();
 
-            //assigning some free contact unlock credits for the recruiter
-            addContactCredit(newRecruiter, ServerConstants.RECRUITER_FREE_CONTACT_CREDITS);
-
             interactionType = InteractionConstants.INTERACTION_TYPE_RECRUITER_SIGN_UP;
             result = InteractionConstants.INTERACTION_RESULT_NEW_RECRUITER;
             objectAUUId = newRecruiter.getRecruiterProfileUUId();
@@ -235,7 +232,7 @@ public class RecruiterService {
                 newRecruiter.save();
 
                 //assigning free contact unlock credits for the recruiter
-                addContactCredit(newRecruiter, ServerConstants.RECRUITER_FREE_CONTACT_CREDITS);
+                addCredits(newRecruiter, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, ServerConstants.RECRUITER_FREE_CONTACT_CREDITS);
 
                 //setting all the credit values
                 setCreditHistoryValues(newRecruiter, recruiterSignUpRequest);
@@ -529,27 +526,6 @@ public class RecruiterService {
         recruiterSignUpResponse.setOtp(randomPIN);
     }
 
-    private static void addContactCredit(RecruiterProfile recruiterProfile, Integer creditCount){
-        // new recruiter hence giving  free contact unlock credits
-        RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
-
-        RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where().eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK).findUnique();
-        if(recruiterCreditCategory != null){
-            recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
-        }
-        recruiterCreditHistory.setRecruiterProfile(recruiterProfile);
-        recruiterCreditHistory.setRecruiterCreditsAvailable(creditCount);
-        recruiterCreditHistory.setRecruiterCreditsUsed(0);
-        recruiterCreditHistory.setUnits(creditCount);
-
-        if(session().get("sessionUsername") != null){
-            recruiterCreditHistory.setRecruiterCreditsAddedBy("Support: " + session().get("sessionUsername"));
-        } else{
-            recruiterCreditHistory.setRecruiterCreditsAddedBy("Not specified");
-        }
-        recruiterCreditHistory.save();
-    }
-
     public static InterviewResponse isInterviewRequired(JobPost jobPost) {
         InterviewResponse interviewResponse = new InterviewResponse();
         if (jobPost == null) {
@@ -700,7 +676,7 @@ public class RecruiterService {
 
     }
 
-    public static void addCredits(RecruiterProfile existingRecruiter, Integer creditType, int totalCredits) {
+    public static void addCredits(RecruiterProfile existingRecruiter, Integer creditType, Integer totalCredits) {
 
         Integer availableCredits = 0;
         Integer usedCredits = 0;
@@ -733,7 +709,7 @@ public class RecruiterService {
 
         //credit
         RecruiterCreditHistory latestPack = RecruiterCreditHistoryDAO.getLatestRecruiterCreditPack(
-                ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK);
+                ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, existingRecruiter);
 
         if (latestPack == null){
             recruiterCreditHistory.setRecruiterCreditPackNo(1);
