@@ -1138,7 +1138,7 @@ var app = (function ($) {
 
                                 //!*  apply button *!/
                                 var applyBtn = document.createElement("button");
-                                applyBtn.className = "jobApplyBtn";
+                                applyBtn.className = "jobApplyBtn2";
                                 var applyJobText ;
                                 if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != 4){
                                     if(jobPost.applyBtnStatus == 2) {
@@ -1208,6 +1208,10 @@ var app = (function ($) {
                         if (app.isPaginationEnabled) {
                             app.do.search(false);
                         }
+                        $(".first").hide();
+                        $(".last").hide();
+                        $(".prev a").html("<<");
+                        $(".next a").html(">>");
                         $(".page-link").click(function () {
                             $('html, body').animate({scrollTop: $("#job_cards_inc").offset().top - 100}, 800);
                         });

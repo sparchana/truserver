@@ -17,13 +17,23 @@ this css make sure at the end the override are proper
     cursor: pointer;
     color: #000;
 }
-.jobApplyBtn{
+.jobApplyBtn2{
+    border: none;
+    color: white;
+    margin-top: 20%;
+    border-radius: 4px;
+    background: linear-gradient(to left, #00b638, #019b4b);
+    padding: 6%;
+    width: 120px;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
+}
+.jobApplyBtn2{
     margin-top: 1%;
     padding:1%;
     width: 50%;
     float: right;
 }
-.jobApplyBtn:hover{
+.jobApplyBtn2:hover{
     background: linear-gradient(to left, #00a132, #019048);
 }
 
@@ -197,12 +207,24 @@ input[type=text]:focus:not([readonly]){
     border-bottom: none;
     box-shadow: none;
 }
+.awesomplete > ul{
+    z-index: 999;
+}
+#searchText{
+    box-shadow: none;
+}
 @media screen and (max-width: 768px) {
+    .jobApplyBtn2{
+        width: 100%;
+    }
     #searchBarDivMain {
         padding: 2%;
     }
-
+    .awesomplete > ul > li{
+        margin: 2% 0;
+    }
     #searchBar .form-control {
+        padding: 0;
         border-radius: 2px;
         margin: 2px;
         height: 38px;
