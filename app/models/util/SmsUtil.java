@@ -579,7 +579,7 @@ public class SmsUtil {
         String msgPost = "";
         if(hasCredits){
             msgPrefix = "Book job interviews on TruJobs! ";
-            msgPost += " Book now at www.trujobs.in or download app at bit.ly/trujobsapp";
+            msgPost += " Book interview at www.trujobs.in or download app at bit.ly/trujobsapp";
 
         } else{
             msgPrefix = "New Job Alert! ";
