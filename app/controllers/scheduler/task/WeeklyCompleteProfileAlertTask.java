@@ -54,17 +54,11 @@ public class WeeklyCompleteProfileAlertTask extends TimerTask {
             //saving stats for sms event
             String note = "SMS alert for candidate to complete profile.";
 
-            SchedulerStats newSchedulerStats = new SchedulerStats();
-            newSchedulerStats.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
-
             Timestamp endTime = new Timestamp(System.currentTimeMillis());
             SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
 
             //saving stats for fcm event
             note = "Android notification alert for candidate to complete profile.";
-
-            newSchedulerStats = new SchedulerStats();
-            newSchedulerStats.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
 
             endTime = new Timestamp(System.currentTimeMillis());
 

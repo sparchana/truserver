@@ -52,9 +52,6 @@ public class WeeklyCandidateAlertTask extends TimerTask {
             //saving stats for sms event
             String note = "SMS alert for candidate to download android app.";
 
-            SchedulerStats newSchedulerStats = new SchedulerStats();
-            newSchedulerStats.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
-
             Timestamp endTime = new Timestamp(System.currentTimeMillis());
             SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
 

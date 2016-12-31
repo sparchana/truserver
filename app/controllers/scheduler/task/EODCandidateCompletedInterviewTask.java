@@ -58,17 +58,11 @@ public class EODCandidateCompletedInterviewTask extends TimerTask {
             //saving stats for sms event
             String note = "SMS alert for candidate to rate us on play store after interview.";
 
-            SchedulerStats newSchedulerStats = new SchedulerStats();
-            newSchedulerStats.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
-
             Timestamp endTime = new Timestamp(System.currentTimeMillis());
             SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
 
             //saving stats for fcm event
             note = "Android notification alert for candidate to rate us on play store after interview.";
-
-            newSchedulerStats = new SchedulerStats();
-            newSchedulerStats.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
 
             endTime = new Timestamp(System.currentTimeMillis());
 
