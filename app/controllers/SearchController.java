@@ -11,6 +11,7 @@ import controllers.businessLogic.SearchJobService;
 import models.entity.Company;
 import models.entity.JobPost;
 import models.entity.Static.JobRole;
+import org.apache.commons.lang3.text.WordUtils;
 import play.Logger;
 import play.api.Play;
 import play.mvc.Controller;
@@ -28,7 +29,10 @@ public class SearchController extends Controller {
     private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
 
     public static Result renderSearch(String searchText) {
-        return ok(views.html.Search.search.render());
+        searchText = searchText.replaceAll("[^A-Za-z0-9 ]", " ");
+        searchText = WordUtils.capitalize(searchText);
+        Logger.info("search Text url " + searchText);
+        return ok(views.html.Search.search.render(searchText));
     }
 
     public static Result getSearchSuggestion(String key) {
@@ -110,7 +114,7 @@ public class SearchController extends Controller {
         jobPostJunction.endJunction();
 
         // extract string from  the list
-        for(JobPost jobPost:  jobPostEL.findList()){
+        for(JobPost jobPost:  jobPostEL.findList()) {
             suggestionMap.putIfAbsent(jobPost.getJobPostTitle(), jobPost.getJobPostTitle());
         }
 
