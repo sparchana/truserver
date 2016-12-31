@@ -500,7 +500,7 @@ var app = (function ($) {
                 document.getElementById("searchText").value = searchBoxText.toTitleCase();
                 if(document.getElementById("searchText").value == ", "){
                     document.getElementById("searchText").value = "";
-                    document.getElementById("searchText").placeholder = "Search Jobs, Company";
+                    document.getElementById("searchText").placeholder = "Search Jobs,Company";
                 }
             },
             search: function (isBasicResetRequired) {

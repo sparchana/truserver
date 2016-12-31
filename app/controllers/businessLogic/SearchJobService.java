@@ -26,6 +26,17 @@ import java.util.*;
  */
 public class SearchJobService {
 
+    HashMap<String, String> badWordsMap = new HashMap<String, String>() {{
+        put("p", "p");
+        put("pvt", "pvt");
+        put("ltd", "ltd");
+        put("agency", "agency");
+        put("enterprise", "enterprise");
+        put("consultancy", "consultancy");
+        put("co", "co");
+    }};
+
+
     public SearchJobResponse searchJobs(SearchJobRequest request, Long candidateId) {
         SearchJobResponse response = new SearchJobResponse();
         // figure out keyword from the list
@@ -42,6 +53,10 @@ public class SearchJobService {
 
         SearchParamsResponse searchParamsResponse = new SearchParamsResponse();
         FilterParamsResponse filterParamsResponse = new FilterParamsResponse();
+
+        // filter keyword
+        filterKeyWordList(request.getSearchParamRequest().getKeywordList());
+
         searchParamsResponse
                 .setSearchKeywords(
                         segregateKeywords(
@@ -233,6 +248,18 @@ public class SearchJobService {
         computeCTA(response.getResults().getAllJobPost(), candidateId);
 
         return response;
+    }
+
+    public void filterKeyWordList(List<String> keywordList) {
+        List<String> filteredKeywordList = new ArrayList<>();
+        for(String keyword: keywordList){
+            keyword = keyword.trim().toLowerCase();
+            if(badWordsMap.get(keyword) == null){
+                if(!keyword.isEmpty()) filteredKeywordList.add(keyword);
+            }
+        }
+        keywordList.clear();
+        keywordList.addAll(filteredKeywordList);
     }
 
     public Experience determineExperience(String experienceText) {

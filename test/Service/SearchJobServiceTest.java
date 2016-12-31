@@ -10,8 +10,10 @@ import play.Application;
 import play.Logger;
 import play.test.TestServer;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 import static play.libs.Json.toJson;
@@ -30,12 +32,14 @@ public class SearchJobServiceTest {
         searchJob,
         determineExperience,
         determineEducation,
-        determineLocality
+        determineLocality,
+        filterKeyWordList
     }
 
     private SearchJobService searchJobService;
     private MethodType type;
     private String searchText;
+    private List<String> keywordList = new ArrayList<>();
 
     @Before
     public void setUp() throws Exception {
@@ -45,6 +49,10 @@ public class SearchJobServiceTest {
     public SearchJobServiceTest(MethodType type, String searchText) {
         this.type = type;
         this.searchText = searchText;
+
+        if(type == MethodType.filterKeyWordList) {
+            keywordList.addAll(Arrays.asList(searchText.split(" ")));
+        }
     }
 
     @Parameterized.Parameters
@@ -55,6 +63,10 @@ public class SearchJobServiceTest {
                     {MethodType.determineExperience, "6 mths 2 yrs"},
                     {MethodType.determineExperience, "fresher"},
                     {MethodType.determineExperience, "4 6 yrs"},
+                    {MethodType.filterKeyWordList, "ionxy global pvt ltd"},
+                    {MethodType.filterKeyWordList, "Co co pvt ltd"},
+                    {MethodType.filterKeyWordList, " p global pvt ltd"},
+                    {MethodType.filterKeyWordList, "p pvt ltd"},
             });
     }
 
@@ -68,7 +80,7 @@ public class SearchJobServiceTest {
             });
         }
     }
-    @Test
+//    @Test
     public void determineLocalityTest() throws Exception {
         if (type == MethodType.determineLocality) {
             Application fakeApp = fakeApplication();
@@ -80,7 +92,7 @@ public class SearchJobServiceTest {
             });
         }
     }
-    @Test
+//    @Test
     public void determineEducationTest() throws Exception {
         if (type == MethodType.determineEducation) {
             Application fakeApp = fakeApplication();
@@ -92,7 +104,7 @@ public class SearchJobServiceTest {
             });
         }
     }
-    @Test
+//    @Test
     public void determineExperienceTest() throws Exception {
         if (type == MethodType.determineExperience) {
             Application fakeApp = fakeApplication();
@@ -101,6 +113,16 @@ public class SearchJobServiceTest {
                 Logger.info("testText: " + this.searchText);
                 assertNotNull(searchJobService.determineExperience(this.searchText));
                 Logger.info("data: " + toJson(searchJobService.determineExperience(this.searchText)));
+            });
+        }
+    }
+    @Test
+    public void filterKeyWordList() throws Exception {
+        if (type == MethodType.filterKeyWordList) {
+            Application fakeApp = fakeApplication();
+            TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
+            running(server, () -> {
+                searchJobService.filterKeyWordList(this.keywordList);
             });
         }
     }

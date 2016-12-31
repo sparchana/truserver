@@ -132,7 +132,7 @@ public class SearchController extends Controller {
             return badRequest();
         }
 
-        SearchJobRequest searchJobRequest= new SearchJobRequest();
+        SearchJobRequest searchJobRequest = new SearchJobRequest();
         ObjectMapper newMapper = new ObjectMapper();
 
         try {
