@@ -1137,7 +1137,7 @@ var app = (function ($) {
 
 
                                 //!*  apply button *!/
-                                var applyBtn = document.createElement("div");
+                                var applyBtn = document.createElement("button");
                                 applyBtn.className = "jobApplyBtn";
                                 var applyJobText ;
                                 if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != 4){
