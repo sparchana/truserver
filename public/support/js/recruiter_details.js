@@ -163,6 +163,9 @@ function processDataAddRecruiter(returnedData) {
 }
 
 function processDataForRecruiterInfo(returnedData) {
+
+    console.log(returnedData);
+
     $("#recruiterName").val(returnedData.recruiterProfileName);
     $("#recruiterMobile").val(returnedData.recruiterProfileMobile);
     if(returnedData.recruiterProfileLandline != null ){
@@ -177,34 +180,8 @@ function processDataForRecruiterInfo(returnedData) {
         $("#recruiterCompany").val(returnedData.company.companyId);
     }
 
-    if(returnedData.recruiterCreditHistoryList != null){
-        var creditHistoryList = returnedData.recruiterCreditHistoryList;
-        creditHistoryList.reverse();
-        var contactCreditCount = 0;
-        var interviewCreditCount = 0;
-        $("#recruiterContactCredits").val(0);
-        $("#recruiterInterviewCredits").val(0);
-        creditHistoryList.forEach(function (creditHistory){
-            if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
-                if(contactCreditCount == 0){
-                    if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
-                        $("#recruiterContactCredits").val(creditHistory.recruiterCreditsAvailable);
-                        contactCreditCount = 1;
-                    }
-                }
-            } else{
-                if(interviewCreditCount == 0){
-                    if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
-                        $("#recruiterInterviewCredits").val(creditHistory.recruiterCreditsAvailable);
-                        interviewCreditCount = 1;
-                    }
-                }
-            }
-            if(contactCreditCount > 0 && interviewCreditCount > 0){
-                return false;
-            }
-        });
-    }
+    $("#recruiterContactCredits").val(returnedData.contactCreditCount);
+    $("#recruiterInterviewCredits").val(returnedData.interviewCreditCount);
 
     //rendering datatable
     var t = $('table#creditHistory').DataTable();

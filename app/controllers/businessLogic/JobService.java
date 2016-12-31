@@ -1148,7 +1148,7 @@ public class JobService {
                 .findList();
 
         for(JobPost j: jobPostList){
-            if(j.getRecruiterProfile().totalInterviewCredits() > 0){
+            if(j.getRecruiterProfile().getInterviewCreditCount() > 0){
                 jobPostListToReturn.add(j);
             }
         }
@@ -1172,7 +1172,7 @@ public class JobService {
             Logger.info("Sending notification to " + candidateSearchMap.size() + " candidates regarding the jobPost: " + jobPost.getJobPostTitle());
 
             Boolean hasCredit = false;
-            if(jobPost.getRecruiterProfile().totalInterviewCredits() > 0){
+            if(jobPost.getRecruiterProfile().getInterviewCreditCount() > 0){
                 hasCredit = true;
             }
 

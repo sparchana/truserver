@@ -15,6 +15,7 @@ import models.entity.JobPost;
 import models.entity.Recruiter.Static.RecruiterProfileStatus;
 import models.entity.Recruiter.Static.RecruiterStatus;
 import play.Logger;
+import play.core.server.Server;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -111,6 +112,12 @@ public class RecruiterProfile extends Model {
     @JsonBackReference
     @OneToMany(mappedBy = "recruiterProfile", cascade = CascadeType.ALL)
     private List<RecruiterToCandidateUnlocked> recruiterToCandidateUnlockedList;
+
+    @Transient
+    private Integer contactCreditCount = 0;
+
+    @Transient
+    private Integer interviewCreditCount = 0;
 
     public static Finder<String, RecruiterProfile> find = new Finder(RecruiterProfile.class);
 
@@ -303,26 +310,34 @@ public class RecruiterProfile extends Model {
         this.recruiterAuth = recruiterAuth;
     }
 
-    public Integer totalContactCredits() {
-        List<RecruiterCreditHistory> creditHistoryList = this.getRecruiterCreditHistoryList();
-        Collections.reverse(creditHistoryList);
-        for(RecruiterCreditHistory creditHistory : creditHistoryList){
-            if(creditHistory.getRecruiterCreditCategory().getRecruiterCreditCategoryId() == ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK){
-                return creditHistory.getRecruiterCreditsAvailable();
-            }
-        }
-        return 0;
+    public Integer getContactCreditCount() {
+        return creditCount(ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK);
     }
 
-    public Integer totalInterviewCredits() {
-        List<RecruiterCreditHistory> creditHistoryList = this.getRecruiterCreditHistoryList();
-        Collections.reverse(creditHistoryList);
-        for(RecruiterCreditHistory creditHistory : creditHistoryList){
-            if(creditHistory.getRecruiterCreditCategory().getRecruiterCreditCategoryId() == ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK){
-                return creditHistory.getRecruiterCreditsAvailable();
-            }
-        }
-        return 0;
+    public void setContactCreditCount(Integer contactCreditCount) {
+        this.contactCreditCount = contactCreditCount;
     }
 
+    public Integer getInterviewCreditCount() {
+        return creditCount(ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK);
+    }
+
+    public void setInterviewCreditCount(Integer interviewCreditCount) {
+        this.interviewCreditCount = interviewCreditCount;
+    }
+
+    private Integer creditCount(Integer categoryId) {
+        List<RecruiterCreditHistory> creditHistoryList = this.getRecruiterCreditHistoryList();
+        Integer count = 0;
+        for(RecruiterCreditHistory history : creditHistoryList){
+            if(history.getRecruiterCreditCategory().getRecruiterCreditCategoryId() == categoryId){
+                if(!history.getCreditIsExpired()){
+                    if(history.getLatest()){
+                        count = count + history.getRecruiterCreditsAvailable();
+                    }
+                }
+            }
+        }
+        return count;
+    }
 }
