@@ -964,8 +964,6 @@ function prePopulateJobSection(jobApplication) {
         }
     }
 
-    console.log(interviewsTodayCount + " " + rescheduledCount + " " + confirmedInterviewCount);
-
     if(interviewsTodayCount > 0){
         tabTwo();
     } else if(rescheduledCount > 0){
