@@ -517,7 +517,8 @@ var app = (function ($) {
                 var d = {
                     searchParamRequest: app.currentSearchParams,
                     filterParamRequest: app.currentFilterParams,
-                    sortParamRequest: app.currentSortParams
+                    sortParamRequest: app.currentSortParams,
+                    currentSearchURL: app.currentSearchURL
                 };
 
                 console.log("/api/search/?page=" + app.page);
@@ -534,6 +535,10 @@ var app = (function ($) {
                         console.log("error: " + message);
                     }
                 });
+            },
+            renderHTMLTitle: function (htmlTitle) {
+                app.htmlTitle = htmlTitle;
+                document.title = app.htmlTitle;
             },
             prepNmodifyURL:function () {
                 return app.do.modifyURL(app.do.prepareURL());
@@ -687,6 +692,10 @@ var app = (function ($) {
                         return;
                     } else {
                         app.do.noJobsFound(false);
+                    }
+
+                    if(data.htmlTitle){
+                        app.do.renderHTMLTitle(data.htmlTitle);
                     }
 
                     var _jobPostList = data.results.allJobPost;

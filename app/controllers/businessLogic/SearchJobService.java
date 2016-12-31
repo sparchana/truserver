@@ -12,9 +12,12 @@ import models.entity.JobPost;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.OM.JobPreference;
 import models.entity.OM.LanguageKnown;
-import models.entity.Static.*;
+import models.entity.Static.Education;
+import models.entity.Static.Experience;
+import models.entity.Static.Language;
+import models.entity.Static.Locality;
 import org.apache.commons.lang3.StringUtils;
-import play.Logger;
+import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.*;
 
@@ -27,6 +30,15 @@ public class SearchJobService {
         SearchJobResponse response = new SearchJobResponse();
         // figure out keyword from the list
         boolean isUrlInvalid = false;
+
+        if(request.getCurrentSearchURL() != null){
+            String htmlTitle = request.getCurrentSearchURL();
+            htmlTitle = htmlTitle.replaceAll("[^A-Za-z0-9 ]", " ");
+            htmlTitle = WordUtils.capitalize(htmlTitle);
+            htmlTitle = htmlTitle + " | TruJobs - New Job Vacancies for " + htmlTitle;
+
+            response.setHtmlTitle(htmlTitle);
+        }
 
         SearchParamsResponse searchParamsResponse = new SearchParamsResponse();
         FilterParamsResponse filterParamsResponse = new FilterParamsResponse();

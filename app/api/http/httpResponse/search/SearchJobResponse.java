@@ -25,6 +25,7 @@ public class SearchJobResponse {
     private JobPostResponse results;
     public boolean isURLInvalid;
     public boolean isUserLoggedIn;
+    public String htmlTitle;
 
 
     public SearchJobResponse() {
@@ -101,5 +102,13 @@ public class SearchJobResponse {
 
     public void setUserLoggedIn(boolean userLoggedIn) {
         isUserLoggedIn = userLoggedIn;
+    }
+
+    public String getHtmlTitle() {
+        return htmlTitle;
+    }
+
+    public void setHtmlTitle(String htmlTitle) {
+        this.htmlTitle = htmlTitle;
     }
 }

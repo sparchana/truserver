@@ -29,9 +29,13 @@ public class SearchController extends Controller {
     private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
 
     public static Result renderSearch(String searchText) {
-        searchText = searchText.replaceAll("[^A-Za-z0-9 ]", " ");
-        searchText = WordUtils.capitalize(searchText);
-        Logger.info("search Text url " + searchText);
+        if(searchText != null && !searchText.trim().isEmpty()) {
+            searchText = searchText.replaceAll("[^A-Za-z0-9 ]", " ");
+            searchText = WordUtils.capitalize(searchText);
+            Logger.info("search Text url " + searchText);
+        } else {
+            searchText = "Jobs In Bangalore";
+        }
         return ok(views.html.Search.search.render(searchText));
     }
 

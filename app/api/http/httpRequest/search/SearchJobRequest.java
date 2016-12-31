@@ -14,6 +14,7 @@ public class SearchJobRequest {
     public FilterParamRequest filterParamRequest;
     public SortParamRequest sortParamRequest;
     public Integer page;
+    public String currentSearchURL;
 
     public SearchParamRequest getSearchParamRequest() {
         return searchParamRequest;
@@ -47,4 +48,11 @@ public class SearchJobRequest {
         this.page = page;
     }
 
+    public String getCurrentSearchURL() {
+        return currentSearchURL;
+    }
+
+    public void setCurrentSearchURL(String currentSearchURL) {
+        this.currentSearchURL = currentSearchURL;
+    }
 }

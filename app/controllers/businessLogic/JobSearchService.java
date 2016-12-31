@@ -454,9 +454,9 @@ public class JobSearchService {
                     keyword = keyword.trim();
                     Logger.info("keyword: " + keyword);
                     query = junction
-                            .add(Expr.like("jobPostTitle", "%" + keyword + "%"))
-                            .add(Expr.like("jobRole.jobName", "%" + keyword + "%"))
-                            .add(Expr.like("company.companyName", "%" + keyword + "%"))
+                            .add(Expr.like("jobPostTitle", keyword + "%"))
+                            .add(Expr.like("jobRole.jobName", keyword + "%"))
+                            .add(Expr.like("company.companyName", keyword + "%"))
                             .endJunction().query();
                 }
             }
