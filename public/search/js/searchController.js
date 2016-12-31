@@ -788,31 +788,9 @@ var app = (function ($) {
 
                                 var jobCompany= document.createElement("p");
                                 jobCompany.textContent = jobPost.jobRole.jobName + " Job | "+ jobPost.company.companyName;
-                                jobCompany.style = "color:#5d5";
+                                jobCompany.style = "color:rgba(0, 159, 219, 0.99)";
                                 jobBodyCol.appendChild(jobCompany);
 
-                                var jobRoleAddress = document.createElement("p");
-                                jobRoleAddress.style = "color:#000";
-                                jobBodyCol.appendChild(jobRoleAddress);
-
-                                var locDiv = document.createElement("div");
-                                locDiv.style = "display: inline-block";
-                                locDiv.textContent = _localities;
-                                jobRoleAddress.appendChild(locDiv);
-
-                                if (((_jobLocality.length) - 2) > 0) {
-                                    var tooltip = document.createElement("a");
-                                    tooltip.id = "locationMsg_" + jobPost.jobPostId;
-                                    tooltip.title = _allLocalities;
-                                    tooltip.style = "color: #2980b9";
-                                    tooltip.textContent = " more";
-                                    locDiv.appendChild(tooltip);
-                                }
-
-                                $("#locationMsg_" + jobPost.jobPostId).attr("data-toggle", "tooltip");
-                                $(function () {
-                                    $('[data-toggle="tooltip"]').tooltip()
-                                });
 
                                 var hr = document.createElement("hr");
                                 centreTag.appendChild(hr);
@@ -1039,41 +1017,59 @@ var app = (function ($) {
 
                                 // timeshift div
 
-                                var bodyColTime = document.createElement("div");
-                                bodyColTime.className = "col-sm-6 col-md-4";
-                                bodyColTime.id = "jobTimeShiftCard";
-                                jobBodyDetailsFirst.appendChild(bodyColTime);
+                                var bodyColLocation = document.createElement("div");
+                                bodyColLocation.className = "col-sm-6 col-md-4";
+                                bodyColLocation.id = "jobTimeShiftCard";
+                                jobBodyDetailsFirst.appendChild(bodyColLocation);
 
                                 var subDivHint = document.createElement("div");
                                 subDivHint.className = "row";
                                 subDivHint.style= "display: inline-block;margin:0 0 0 30px;color: #9f9f9f;font-size: 12px;";
-                                subDivHint.textContent = "Time Shift";
-                                bodyColTime.appendChild(subDivHint);
+                                subDivHint.textContent = "Location";
+                                bodyColLocation.appendChild(subDivHint);
 
                                 var subRowForData = document.createElement("div");
                                 subRowForData.className = "row";
                                 subRowForData.style = "margin-bottom:8px";
-                                bodyColTime.appendChild(subRowForData);
+                                bodyColLocation.appendChild(subRowForData);
 
-                                var timeIconDiv = document.createElement("div");
-                                timeIconDiv.style = "padding-right:0;margin-top:-2px";
-                                timeIconDiv.className = "col-xs-2";
-                                subRowForData.appendChild(timeIconDiv);
+                                var locationIconDiv = document.createElement("div");
+                                locationIconDiv.style = "padding-right:0;margin-top:-2px";
+                                locationIconDiv.className = "col-xs-2";
+                                subRowForData.appendChild(locationIconDiv);
 
-                                var timeIcon = document.createElement("img");
-                                timeIcon.src = "/assets/common/img/location.svg";
-                                timeIcon.setAttribute('height', '16px');
-                                timeIconDiv.appendChild(timeIcon);
+                                var locationIcon = document.createElement("img");
+                                locationIcon.src = "/assets/common/img/location.svg";
+                                locationIcon.setAttribute('height', '16px');
+                                locationIconDiv.appendChild(locationIcon);
 
-                                var timeDataDiv = document.createElement("div");
-                                timeDataDiv.className="col-xs-10";
-                                timeDataDiv.style="padding:0;margin-left:-2px";
-                                subRowForData.appendChild(timeDataDiv);
+                                var locationDataDiv = document.createElement("div");
+                                locationDataDiv.className="col-xs-10";
+                                locationDataDiv.style="padding:0;margin-left:-2px";
+                                subRowForData.appendChild(locationDataDiv);
 
-                                var timeDiv = document.createElement("div");
-                                timeDiv.style = "display: inline-block";
-                                timeDiv.textContent = app.run.validateWorkShift(jobPost.jobPostShift);
-                                timeDataDiv.appendChild(timeDiv);
+                                var jobRoleAddress = document.createElement("p");
+                                jobRoleAddress.style = "color:#000";
+                                locationDataDiv.appendChild(jobRoleAddress);
+
+                                var locDiv = document.createElement("div");
+                                locDiv.style = "display: inline-block";
+                                locDiv.textContent = _localities;
+                                jobRoleAddress.appendChild(locDiv);
+
+                                if (((_jobLocality.length) - 2) > 0) {
+                                    var tooltip = document.createElement("a");
+                                    tooltip.id = "locationMsg_" + jobPost.jobPostId;
+                                    tooltip.title = _allLocalities;
+                                    tooltip.style = "color: #2980b9";
+                                    tooltip.textContent = " more";
+                                    locDiv.appendChild(tooltip);
+                                }
+
+                                $("#locationMsg_" + jobPost.jobPostId).attr("data-toggle", "tooltip");
+                                $(function () {
+                                    $('[data-toggle="tooltip"]').tooltip()
+                                });
 
                                 var hr = document.createElement("hr");
                                 centreTag.appendChild(hr);
@@ -1106,6 +1102,7 @@ var app = (function ($) {
 
                                 // vacancies div
                                 var vacanciesDiv = document.createElement("div");
+                                vacanciesDiv.style ="margin-bottom:8px" ;
                                 vacanciesDiv.textContent = "Vacancies: " + jobPost.jobPostVacancies;
                                 jobMoreCol.appendChild(vacanciesDiv);
 
@@ -1530,8 +1527,3 @@ function openSignUp() {
     $("#myLoginModal").modal("hide");
 }
 //search bar animation effect code
-function showField(){
-    $('#mainFieldSearch').removeClass("col-md-8").addClass("col-md-4");
-    $('#searchEducationBox').fadeIn();
-    $('#searchExperienceBox').fadeIn();
-}
