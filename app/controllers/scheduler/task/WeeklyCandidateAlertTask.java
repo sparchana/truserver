@@ -80,10 +80,7 @@ public class WeeklyCandidateAlertTask extends TimerTask {
                 String jobRoles = "";
 
                 //computing list of job preferences of the candidate
-                List<Long> jobPrefIds = new ArrayList<>();
-
                 for(JobPreference jobPreference: candidate.getJobPreferencesList()){
-                    jobPrefIds.add(jobPreference.getJobRole().getJobRoleId());
                     jobRoles += jobPreference.getJobRole().getJobName() + ", ";
                 }
 
