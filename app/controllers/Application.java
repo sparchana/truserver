@@ -1,5 +1,6 @@
 package controllers;
 
+import api.http.httpResponse.hirewand.HireWandResponse;
 import dao.JobPostDAO;
 import notificationService.*;
 import api.InteractionConstants;
@@ -2294,36 +2295,39 @@ public class Application extends Controller {
             Logger.info("fileName="+fileName);
             File file = (File) resume.getFile();
             Logger.info("Uploading! " + file);
-            if(CandidateService.uploadResume(file, fileName)){ return ok("Resume uploaded"); }
-            else{ return internalServerError("Resume upload failed due to an internal error"); }
+            if(CandidateService.uploadResume(file, fileName)){
+                return ok("Resume uploaded");
+            }
+            else{
+                return internalServerError("Resume upload failed due to an internal error");
+            }
         } else {
             flash("error", "Missing file");
             return redirect(routes.Application.index());
         }
 
+
     }
 
     public static Result receiveParsedResume() {
 
-        JSONObject body = null;
+        JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+        HireWandResponse hireWandResponse = new HireWandResponse();
+        ObjectMapper newMapper = new ObjectMapper();
         try {
-            body = new JSONObject(String.valueOf(request().body().asText().trim()));
-            if(body.has("Profile") && body.getString("Profile").length() > 0){
-
-                if(body.getString("duplicate").toLowerCase() == "false"){
-                    CandidateService.updateResume(body.getString("personId"),body.getJSONObject("Profile"),Boolean.FALSE);
-                }
-                else {
-                    CandidateService.updateResume(body.getString("personId"),body.getJSONObject("Profile"),Boolean.TRUE);
-                }
-
-                return ok();
-            }
-            else return internalServerError();
-        } catch (org.json.JSONException e) {
+            hireWandResponse = newMapper.readValue(req.toString(), HireWandResponse.class);
+        } catch (IOException e) {
             e.printStackTrace();
-            return internalServerError();
         }
+        hireWandResponse.Profile.ProfileJSON = req.path("Profile").asText();
+        Logger.info("hireWandResponse.toString() = "+hireWandResponse.toString());
+
+        if(hireWandResponse.Profile != null){
+            CandidateService.updateResume(hireWandResponse.PersonId, hireWandResponse.Profile,hireWandResponse.Duplicate);
+            return ok();
+        }
+        else return internalServerError();
 
     }
 

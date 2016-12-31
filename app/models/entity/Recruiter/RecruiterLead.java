@@ -1,11 +1,11 @@
 package models.entity.Recruiter;
 
+import com.avaje.ebean.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
-import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
@@ -16,12 +16,10 @@ import models.util.Message;
 import play.Logger;
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Pattern;
-
+import com.avaje.ebean.ExpressionList;
+import static com.avaje.ebean.Expr.eq;
 import static models.util.Util.ACTION_CREATE;
 import static models.util.Util.ACTION_UPDATE;
 
@@ -356,6 +354,16 @@ public class RecruiterLead extends Model {
         }
         return messageList;
 
+    }
+
+    public List<RecruiterLead> readByAttribute(List<Map<String,String>> attrNameValueList) {
+        ExpressionList<RecruiterLead> query = find.where();
+        for(Map<String,String> each:attrNameValueList){
+            if(each.keySet().size() > 0 && each.values().size() > 0){
+                query.add(eq(each.keySet().toArray()[0].toString(),each.values().toArray()[0].toString()));
+            }
+        }
+        return query.findList();
     }
 
 }
