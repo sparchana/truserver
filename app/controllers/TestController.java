@@ -2,6 +2,7 @@ package controllers;
 
 import api.ServerConstants;
 import api.http.httpResponse.CandidateWorkflowData;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.JobService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerManager;
@@ -22,7 +23,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 
 import java.sql.Timestamp;
-import java.util.Map;
+import java.util.*;
 
 import static controllers.scheduler.SchedulerConstants.SCHEDULER_SUB_TYPE_CANDIDATE_SOD_JOB_ALERT;
 import static controllers.scheduler.SchedulerConstants.SCHEDULER_TYPE_FCM;
@@ -71,6 +72,7 @@ public class TestController extends Controller{
             NotificationUtil.addFcmToNotificationQueue("Hi", "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
             return ok("1");
         }
+
         return ok("Null token!");
 
     }

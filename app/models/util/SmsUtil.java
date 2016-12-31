@@ -576,17 +576,21 @@ public class SmsUtil {
         }
 
         String msgPrefix;
+        String msgPost = "";
         if(hasCredits){
             msgPrefix = "Book job interviews on TruJobs! ";
+            msgPost += " Book now at www.trujobs.in or download app at bit.ly/trujobsapp";
+
         } else{
             msgPrefix = "New Job Alert! ";
+            msgPost += " Apply now at www.trujobs.in or download app at bit.ly/trujobsapp";
         }
         String msg = msgPrefix + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
-                jobLocalities.substring(0, jobLocalities.length() - 2) + ". Book your interview at www.trujobs.in or download app at bit.ly/trujobsapp";
+                jobLocalities.substring(0, jobLocalities.length() - 2) + ". " + msgPost;
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
     }
 
-    public static void sendEODSmsToCandidatePostInterview(JobPost jobPost, Candidate candidate) {
+    public static void sendEODCandidateFeedbackSms(JobPost jobPost, Candidate candidate) {
         String msg = "Hi " + candidate.getCandidateFirstName() + ", you had an interview today for " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". " +
                 "How would you rate your experience with TruJobs? Please rate us on bit.ly/trujobsapp";
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);

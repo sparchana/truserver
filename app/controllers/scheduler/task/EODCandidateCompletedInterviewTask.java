@@ -1,6 +1,5 @@
 package controllers.scheduler.task;
 
-import api.ServerConstants;
 import controllers.scheduler.SchedulerManager;
 import dao.JobPostWorkFlowDAO;
 import models.entity.OM.JobPostWorkflow;
@@ -49,7 +48,7 @@ public class EODCandidateCompletedInterviewTask extends TimerTask {
             for(JobPostWorkflow jpwf : jobPostWorkflowList){
 
                 //sending sms
-                SmsUtil.sendEODSmsToCandidatePostInterview(jpwf.getJobPost(), jpwf.getCandidate());
+                SmsUtil.sendEODCandidateFeedbackSms(jpwf.getJobPost(), jpwf.getCandidate());
 
                 //sending notification
                 NotificationUtil.sendEODNotificationToCandidatePostInterview(jpwf.getJobPost(), jpwf.getCandidate());

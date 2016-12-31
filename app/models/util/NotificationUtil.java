@@ -130,12 +130,14 @@ public class NotificationUtil {
             }
         }
         String msg = jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
-                jobLocalities.substring(0, jobLocalities.length() - 2) + ". Apply now at www.trujobs.in or download app at bit.ly/trujobsapp";
+                jobLocalities.substring(0, jobLocalities.length() - 2) + ".";
 
         String notificationTitle;
         if(hasCredit){
+            msg += " Book now at www.trujobs.in or download app at bit.ly/trujobsapp";
             notificationTitle = "Book interviews Today!";
         } else{
+            msg += " Apply now at www.trujobs.in or download app at bit.ly/trujobsapp";
             notificationTitle = "New Job Alert!";
         }
 
@@ -170,7 +172,7 @@ public class NotificationUtil {
         }
     }
 
-    public static void sendWeeklyNotificationToNotifyNoOfMatchingJobs(Candidate candidate, Integer jobCount, String jobRole) {
+    public static void sendWeeklyMatchingJobsNotification(Candidate candidate, Integer jobCount, String jobRole) {
         String msg = "Hi " + candidate.getCandidateFirstName() + ", You are missing out on new jobs! There are over " + jobCount +
                 " new " + jobRole + " jobs on TruJobs platform near your locality! Apply now at www.trujobs.in or download app at bit.ly/trujobsapp.";
 

@@ -266,7 +266,10 @@ public class PartnerController {
                         response.setCandidateActiveDeactive(partnerToCandidate.getCandidate().getCandidateprofilestatus().getProfileStatusId());
                     }
                 }
-                response.setCandidateAppliedJobs(JobPostWorkFlowDAO.candidateAppliedJobs(partnerToCandidate.getCandidate().getCandidateId()).size());
+                List<JobApplication> appliedJobs = JobApplication.find.where()
+                    .eq("candidateId", partnerToCandidate.getCandidate().getCandidateId())
+                    .eq("partner_id", partnerToCandidate.getPartner().getPartnerId()).findList();
+                response.setCandidateAppliedJobs(appliedJobs.size());
                 response.setCandidateMobile(partnerToCandidate.getCandidate().getCandidateMobile());
                 responses.add(response);
             }

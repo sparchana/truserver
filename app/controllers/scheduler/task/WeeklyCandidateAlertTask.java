@@ -1,12 +1,12 @@
 package controllers.scheduler.task;
 
 import api.ServerConstants;
+import api.http.FormValidator;
 import controllers.businessLogic.JobSearchService;
 import controllers.scheduler.SchedulerManager;
 import dao.CandidateDAO;
 import models.entity.Candidate;
 import models.entity.JobPost;
-import models.entity.OM.JobPostWorkflow;
 import models.entity.OM.JobPreference;
 import models.entity.scheduler.SchedulerStats;
 import models.entity.scheduler.Static.SchedulerSubType;
@@ -17,6 +17,7 @@ import play.Logger;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.TimerTask;
 
@@ -25,9 +26,9 @@ import static controllers.scheduler.SchedulerConstants.*;
 /**
  * Created by dodo on 28/12/16.
  */
-public class WeeklyAppDownloadAlertTask extends TimerTask {
+public class WeeklyCandidateAlertTask extends TimerTask {
 
-    private void sendSmsToCandidate(List<Candidate> candidateList){
+    private void sendAppDownloadSmsToCandidate(List<Candidate> candidateList){
         new Thread(() -> {
             Logger.info("Sending sms notification to " + candidateList.size() + " candidates to download android app");
 
@@ -41,10 +42,11 @@ public class WeeklyAppDownloadAlertTask extends TimerTask {
 
             Timestamp startTime = new Timestamp(System.currentTimeMillis());
 
-            for(Candidate candidate : candidateList){
+            int i;
+            for(i = 0; i< 200; i++){
 
                 //sending sms
-                SmsUtil.sendWeeklySmsToDownloadAndroidApp(candidate);
+                SmsUtil.sendWeeklySmsToDownloadAndroidApp(candidateList.get(i));
             }
 
             //saving stats for sms event
@@ -88,26 +90,10 @@ public class WeeklyAppDownloadAlertTask extends TimerTask {
                     jobRoles += jobPreference.getJobRole().getJobName() + ", ";
                 }
 
-                if (candidate.getCandidateLocalityLat() == null || candidate.getCandidateLocalityLng() == null) {
-                    Logger.error("Candidate with mobile " + candidate.getCandidateMobile() + " doesnt have lat-long info");
-                    jobsCount = JobPost.find.where()
-                            .eq("jobPostIsHot", "1")
-                            .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
-                            .eq("Source", ServerConstants.SOURCE_INTERNAL)
-                            .findRowCount();
+                List<JobPost> jobPostList = JobSearchService.getRelevantJobsPostsForCandidate
+                        (FormValidator.convertToIndianMobileFormat(candidate.getCandidateMobile()));
 
-                } else {
-                    // fetch jobs near this candidate according to jobPreference
-
-                    jobsCount = JobSearchService.getRelevantJobPostsWithinDistance(
-                            candidate.getCandidateLocalityLat(),
-                            candidate.getCandidateLocalityLng(),
-                            jobPrefIds,
-                            null,
-                            ServerConstants.SORT_DEFAULT,
-                            false,
-                            false).size();
-                }
+                jobsCount = jobPostList.size();
 
                 if(jobsCount > 0){
 
@@ -115,7 +101,7 @@ public class WeeklyAppDownloadAlertTask extends TimerTask {
                     SmsUtil.sendWeeklySmsToNotifyNoOfMatchingJobs(candidate, jobsCount, jobRoles.substring(0, jobRoles.length() - 2));
 
                     //sending notification
-                    NotificationUtil.sendWeeklyNotificationToNotifyNoOfMatchingJobs(candidate, jobsCount, jobRoles.substring(0, jobRoles.length() - 2));
+                    NotificationUtil.sendWeeklyMatchingJobsNotification(candidate, jobsCount, jobRoles.substring(0, jobRoles.length() - 2));
                 }
             }
 
@@ -147,7 +133,10 @@ public class WeeklyAppDownloadAlertTask extends TimerTask {
         // fetch all the application which had interviews today
         Logger.info("Starting EOD notify candidates for app download ..");
 
-        sendSmsToCandidate(CandidateDAO.getCandidateWithoutAndroidApp());
+        List<Candidate> candidateList = CandidateDAO.getCandidateWithoutAndroidApp();
+        Collections.shuffle(candidateList);
+
+        sendAppDownloadSmsToCandidate(candidateList);
 
         //weekly task to notify no. of matching jobs to the candidate
         sendSmsToCandidateToNotifyNearbyJobs();

@@ -146,12 +146,12 @@ public class SchedulerManager implements Runnable {
     private void createWeeklyAppDownloadEvent(long delay){
         Logger.info("Send alert candidate not downloaded the app yet!");
 
-        WeeklyAppDownloadAlertTask weeklyAppDownloadAlertTask = new WeeklyAppDownloadAlertTask();
-        timer.schedule(weeklyAppDownloadAlertTask, delay, oneWeek);
+        WeeklyCandidateAlertTask weeklyCandidateAlertTask = new WeeklyCandidateAlertTask();
+        timer.schedule(weeklyCandidateAlertTask, delay, oneWeek);
     }
 
     private void createWeeklyProfileCompletionEvent(long delay){
-        Logger.info("Send alert candidate not downloaded the app yet!");
+        Logger.info("Send alert to candidate to complete profile!");
 
         WeeklyCompleteProfileAlertTask weeklyCompleteProfileAlertTask = new WeeklyCompleteProfileAlertTask();
         timer.schedule(weeklyCompleteProfileAlertTask, delay, oneWeek);
