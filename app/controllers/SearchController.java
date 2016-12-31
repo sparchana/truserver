@@ -94,7 +94,9 @@ public class SearchController extends Controller {
 
         // extract string from  the list
         for(Company company:  companyEL.findList()){
-            suggestionMap.putIfAbsent(company.getCompanyName(), company.getCompanyName());
+            if(company != null && company.getSource() != null && company.getSource() == ServerConstants.SOURCE_INTERNAL){
+                suggestionMap.putIfAbsent(company.getCompanyName(), company.getCompanyName());
+            }
         }
 
         // jobPostTitle name match || query to match against job with source: Internal

@@ -28,6 +28,7 @@ public class SearchJobService {
 
     HashMap<String, String> badWordsMap = new HashMap<String, String>() {{
         put("p", "p");
+        put("in", "in");
         put("pvt", "pvt");
         put("ltd", "ltd");
         put("agency", "agency");
