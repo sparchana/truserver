@@ -92,9 +92,6 @@ public class SearchJobService {
             }
         }
 
-        // if req was not null and static table doesn't have it , that means req is invalid
-        response.setURLInvalid(isUrlInvalid);
-
         // determine experience and append it to response
         if (request.getSearchParamRequest().getExperienceText() != null) {
 
@@ -105,6 +102,9 @@ public class SearchJobService {
                 isUrlInvalid = true;
             }
         }
+
+        // if req was not null and static table doesn't have it , that means req is invalid
+        response.setURLInvalid(isUrlInvalid);
 
         // if candidate has logged in then default search should be hooked with its preference
         Candidate candidate = null;
