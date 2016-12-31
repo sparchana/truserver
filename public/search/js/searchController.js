@@ -40,11 +40,11 @@ var app = (function ($) {
         allLanguage: [],
         allSalaryOptions: [
             {id: 0, name: " Any"},
-            {id: 8, name: " 8000 & More"}, // value = val * 1000
-            {id: 10, name: " 10000 & More"},
-            {id: 12, name: " 12000 & More"},
-            {id: 15, name: " 15000 & More"},
-            {id: 20, name: " 20000 & More"}
+            {id: 8, name: " More than 8000"}, // value = val * 1000
+            {id: 10, name: " More than 10000"},
+            {id: 12, name: " More than 12000"},
+            {id: 15, name: " More than 15000"},
+            {id: 20, name: " More than 20000"}
         ],
         suggestion: null,
         currentURL: window.location.pathname,
@@ -498,6 +498,9 @@ var app = (function ($) {
             fillSearchTextBoxWithKeywords: function (keywordList) {
                 var searchBoxText = keywordList.join(" ") + ", ";
                 document.getElementById("searchText").value = searchBoxText.toTitleCase();
+                if(document.getElementById("searchText").value == ", "){
+                    document.getElementById("searchText").value = "";
+                }
             },
             search: function (isBasicResetRequired) {
                 if(!app.shouldDoSearch){
