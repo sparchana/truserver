@@ -12,24 +12,21 @@ this css make sure at the end the override are proper
     transition: box-shadow 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
 }
 .jobMoreBtn:hover{
-    background: #b7b7b7;
-    border:1px solid #b7b7b7;
+    background: #cacaca;
+    border:1px solid #cacaca;
     cursor: pointer;
     color: #000;
 }
 .jobApplyBtn{
     margin-top: 1%;
-    padding:2%;
+    padding:1%;
     width: 50%;
     float: right;
 }
 .jobApplyBtn:hover{
     background: linear-gradient(to left, #00a132, #019048);
 }
-div.Tokenize ul.TokensContainer li.Token, div.Tokenize ul.TokensContainer li.TokenSearch{
-    margin:0;
-    padding: 2px;
-}
+
 .modal{
     display: none;
     overflow: hidden;
@@ -72,14 +69,9 @@ div.Tokenize ul.TokensContainer li.Token, div.Tokenize ul.TokensContainer li.Tok
 #searchBar .form-control{
     padding: 0 1%;
     font-size: 16px;
-    border:0px;
+    border:none;
     width: 100%;
     height: 42px;
-}
-#searchBar .form-control:focus{
-    border:0px;
-    box-shadow: none;
-
 }
 #searchBtn{
     border:0;
@@ -141,11 +133,18 @@ div.Tokenize ul.TokensContainer li.Token, div.Tokenize ul.TokensContainer li.Tok
 div.Tokenize ul.TokensContainer li.Token {
     border: 1px solid #8d8789;
     background-color: transparent;
-    padding: 0;
     line-height: 18px;
     color: #8d8789;
     border-radius: 15px;
 }
+div.TokenizeMeasure, div.Tokenize ul li span, div.Tokenize
+ul.TokensContainer li.TokenSearch input{
+    font-family: Lato;
+
+}div.Tokenize ul.TokensContainer li.Token, div.Tokenize ul.TokensContainer li.TokenSearch{
+    margin: 5px 0px 0 0;
+ }
+
 div.Tokenize ul.TokensContainer li.Token a.Close {
     font-family: Arial, Helvetica, sans-serif !important;
     font-size: 16px !important;
@@ -156,9 +155,6 @@ div.Tokenize ul.TokensContainer li.Token a.Close {
     cursor: pointer;
     color: #8d8789;
 }
-div.Tokenize ul.TokensContainer{
-    padding-top: 8px;
-}
 div.Tokenize ul.TokensContainer {
     min-height: 40px;
     height: auto;
@@ -166,13 +162,22 @@ div.Tokenize ul.TokensContainer {
     text-align: left;
     border:none;
 }
+div.Tokenize ul.TokensContainer li.TokenSearch input {
+    font-family: Lato;
+    font-size: 16px;
+    margin: 0px;
+}
+::-webkit-scrollbar-thumb{
+    background: none;
+}
 div.Tokenize ul.TokensContainer li.Placeholder {
     color: #8e8e8e;
     position: absolute;
     line-height: 20px;
-    font-size: 16px;
-    padding: 0;
+    font-size: 14px;
+    padding-top: 10px;
     display: none;
+    font-weight: 100;
 }
 div.Tokenize ul.Dropdown{
     height: 172px;
@@ -181,12 +186,16 @@ div.Tokenize ul.Dropdown li:hover{
     color:#000;
     background: rgba(205, 205, 201, 0.64);
 }
-.awesomplete > ul{
-    margin-top: 40px;
-    background: #fff;
-}
 .TokensContainer ul.TokenSearch input:focus{
     border: 0;
+}
+.input-group .form-control{
+    float: left;
+}
+input:not([type]):focus:not([readonly]),
+input[type=text]:focus:not([readonly]){
+    border-bottom: none;
+    box-shadow: none;
 }
 @media screen and (max-width: 768px) {
     #searchBarDivMain {
@@ -206,10 +215,10 @@ div.Tokenize ul.Dropdown li:hover{
         color: #fff;
     }
 
-    .registerBox {
+    /*.registerBox {
         width: 35px;
         height: 35px;
         bottom: 32px;
         right: 64px;
-    }
+    }*/
 }

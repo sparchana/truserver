@@ -839,7 +839,7 @@ var app = (function ($) {
 
                                 var subRowForData = document.createElement("div");
                                 subRowForData.className = "row";
-                                subRowForData.style = "margin-bottom:8px";
+                                subRowForData.style = "margin-bottom:2px";
                                 bodyCol.appendChild(subRowForData);
 
                                 var salaryIconDiv = document.createElement("div");
@@ -848,7 +848,7 @@ var app = (function ($) {
                                 subRowForData.appendChild(salaryIconDiv);
 
                                 var salaryIcon = document.createElement("img");
-                                salaryIcon.src = "/assets/common/img/salary.svg";
+                                salaryIcon.src = "/assets/common/img/details/rupee.svg";
                                 salaryIcon.setAttribute('height', '16px');
                                 salaryIconDiv.appendChild(salaryIcon);
 
@@ -881,7 +881,7 @@ var app = (function ($) {
 
                                 var subRowForData = document.createElement("div");
                                 subRowForData.className = "row";
-                                subRowForData.style = "margin-bottom:8px";
+                                subRowForData.style = "margin-bottom:2px";
                                 bodyCol.appendChild(subRowForData);
 
                                 var expIconDiv = document.createElement("div");
@@ -890,7 +890,7 @@ var app = (function ($) {
                                 subRowForData.appendChild(expIconDiv);
 
                                 var expIcon = document.createElement("img");
-                                expIcon.src = "/assets/common/img/salary.svg";
+                                expIcon.src = "/assets/common/img/details/quality.svg";
                                 expIcon.setAttribute('height', '16px');
                                 expIconDiv.appendChild(expIcon);
 
@@ -919,7 +919,7 @@ var app = (function ($) {
 
                                 var subRowForData = document.createElement("div");
                                 subRowForData.className = "row";
-                                subRowForData.style = "margin-bottom:8px";
+                                subRowForData.style = "margin-bottom:2px";
                                 genderCol.appendChild(subRowForData);
 
                                 var genderIconDiv = document.createElement("div");
@@ -928,7 +928,7 @@ var app = (function ($) {
                                 subRowForData.appendChild(genderIconDiv);
 
                                 var genderIcon = document.createElement("img");
-                                genderIcon.src = "/assets/common/img/salary.svg";
+                                genderIcon.src = "/assets/common/img/details/gender.svg";
                                 genderIcon.setAttribute('height', '16px');
                                 genderIconDiv.appendChild(genderIcon);
 
@@ -957,28 +957,28 @@ var app = (function ($) {
 
                                 var jobBodySubRowEdu = document.createElement("div");
                                 jobBodySubRowEdu.className = "row";
-                                jobBodySubRowEdu.style = "margin-bottom:8px";
+                                jobBodySubRowEdu.style = "margin-bottom:2px";
                                 bodyColEdu.appendChild(jobBodySubRowEdu);
 
-                                var locIconDiv = document.createElement("div");
-                                locIconDiv.style = "padding-right:0;margin-top:-2px";
-                                locIconDiv.className = "col-xs-2";
-                                jobBodySubRowEdu.appendChild(locIconDiv);
+                                var eduIconDiv = document.createElement("div");
+                                eduIconDiv.style = "padding-right:0;margin-top:-2px";
+                                eduIconDiv.className = "col-xs-2";
+                                jobBodySubRowEdu.appendChild(eduIconDiv);
 
-                                var locIcon = document.createElement("img");
-                                locIcon.src = "/assets/common/img/location.svg";
-                                locIcon.setAttribute('height', '16px');
-                                locIconDiv.appendChild(locIcon);
+                                var eduIcon = document.createElement("img");
+                                eduIcon.src = "/assets/common/img/details/science-book.svg";
+                                eduIcon.setAttribute('height', '16px');
+                                eduIconDiv.appendChild(eduIcon);
 
-                                var locDataDiv = document.createElement("div");
-                                locDataDiv.className="col-xs-10";
-                                locDataDiv.style="padding:0;margin-left:-2px";
-                                jobBodySubRowEdu.appendChild(locDataDiv);
+                                var eduDataDiv = document.createElement("div");
+                                eduDataDiv.className="col-xs-10";
+                                eduDataDiv.style="padding:0;margin-left:-2px";
+                                jobBodySubRowEdu.appendChild(eduDataDiv);
 
                                 var EducationDiv = document.createElement("div");
                                 EducationDiv.style = "display: inline-block";
                                 EducationDiv.textContent = jobPost.jobPostEducation.educationName;
-                                locDataDiv.appendChild(EducationDiv);
+                                eduDataDiv.appendChild(EducationDiv);
 
                                 // age div
 
@@ -995,7 +995,7 @@ var app = (function ($) {
 
                                 var subRowForData = document.createElement("div");
                                 subRowForData.className = "row";
-                                subRowForData.style = "margin-bottom:8px";
+                                subRowForData.style = "margin-bottom:2px";
                                 ageCol.appendChild(subRowForData);
 
                                 var ageIconDiv = document.createElement("div");
@@ -1004,7 +1004,7 @@ var app = (function ($) {
                                 subRowForData.appendChild(ageIconDiv);
 
                                 var ageIcon = document.createElement("img");
-                                ageIcon.src = "/assets/common/img/salary.svg";
+                                ageIcon.src = "/assets/common/img/details/age.svg";
                                 ageIcon.setAttribute('height', '16px');
                                 ageIconDiv.appendChild(ageIcon);
 
@@ -1018,7 +1018,7 @@ var app = (function ($) {
                                 ageDiv.textContent = app.run.validateMaxAge(jobPost.jobPostMaxAge) + " yrs" ;
                                 ageDataDiv.appendChild(ageDiv);
 
-                                // timeshift div
+                                // Location div
 
                                 var bodyColLocation = document.createElement("div");
                                 bodyColLocation.className = "col-sm-6 col-md-4";
@@ -1033,7 +1033,7 @@ var app = (function ($) {
 
                                 var subRowForData = document.createElement("div");
                                 subRowForData.className = "row";
-                                subRowForData.style = "margin-bottom:8px";
+                                subRowForData.style = "margin-bottom:2px";
                                 bodyColLocation.appendChild(subRowForData);
 
                                 var locationIconDiv = document.createElement("div");
@@ -1042,7 +1042,7 @@ var app = (function ($) {
                                 subRowForData.appendChild(locationIconDiv);
 
                                 var locationIcon = document.createElement("img");
-                                locationIcon.src = "/assets/common/img/location.svg";
+                                locationIcon.src = "/assets/common/img/details/buildings.svg";
                                 locationIcon.setAttribute('height', '16px');
                                 locationIconDiv.appendChild(locationIcon);
 
@@ -1087,7 +1087,7 @@ var app = (function ($) {
                                 // posted on div
                                 var postedOnDiv = document.createElement("div");
                                 postedOnDiv.className = "col-sm-6";
-                                postedOnDiv.style = "margin-top:12px;text-align:left";
+                                postedOnDiv.style = "margin-top:6px;text-align:left";
                                 postedOnDiv.textContent = "Posted: " + app.parse.createdOnDate(jobPost.jobPostCreateTimestamp);
                                 rowDivApplyButton.appendChild(postedOnDiv);
 
@@ -1105,8 +1105,8 @@ var app = (function ($) {
 
                                 // vacancies div
                                 var vacanciesDiv = document.createElement("div");
-                                vacanciesDiv.style ="margin-bottom:8px" ;
-                                vacanciesDiv.textContent = "Vacancies: " + jobPost.jobPostVacancies;
+                                vacanciesDiv.style ="margin-bottom:6px";
+                                vacanciesDiv.textContent = "Vacancies : " + jobPost.jobPostVacancies;
                                 jobMoreCol.appendChild(vacanciesDiv);
 
 
