@@ -266,10 +266,8 @@ public class PartnerController {
                         response.setCandidateActiveDeactive(partnerToCandidate.getCandidate().getCandidateprofilestatus().getProfileStatusId());
                     }
                 }
-                List<JobApplication> appliedJobs = JobApplication.find.where()
-                    .eq("candidateId", partnerToCandidate.getCandidate().getCandidateId())
-                    .eq("partner_id", partnerToCandidate.getPartner().getPartnerId()).findList();
-                response.setCandidateAppliedJobs(appliedJobs.size());
+                response.setCandidateAppliedJobs(JobPostWorkflowEngine.getPartnerAppliedJobsForCandidate(
+                        partnerToCandidate.getCandidate(), partner).size());
                 response.setCandidateMobile(partnerToCandidate.getCandidate().getCandidateMobile());
                 responses.add(response);
             }
