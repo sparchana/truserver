@@ -306,153 +306,33 @@ public class RecruiterService {
         return addRecruiterResponse;
     }
 
-    private static void setCreditHistoryValues(RecruiterProfile existingRecruiter, RecruiterSignUpRequest addRecruiterRequest)
-    {
-        String createdBy = "Not specified";
-
-        if(session().get("sessionUsername") != null){
-            createdBy = "Support: " + session().get("sessionUsername");
-        }
-
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MONTH, 1);
-        Date expiryDate = cal.getTime();
-
+    private static void setCreditHistoryValues(RecruiterProfile existingRecruiter, RecruiterSignUpRequest addRecruiterRequest) {
         //setting values for candidate contact unlock credits
         if(addRecruiterRequest.getContactCredits() != null && addRecruiterRequest.getContactCredits() != 0){
-            // Has candidate contact unlock credit, hence make an entry in recruiterPayment table
-            // RecruiterPayment recruiterPayment = new RecruiterPayment();
-            RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
-
-            //setting creditCategory
-            RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where()
-                    .eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK)
-                    .findUnique();
-
-            if (recruiterCreditCategory != null){
-                //recruiterPayment.setRecruiterCreditCategory(recruiterCreditCategory);
-                recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
-            }
-
-            recruiterCreditHistory.setUnits(addRecruiterRequest.getContactCredits());
-
-            //setting recruiter profile
-            //recruiterPayment.setRecruiterProfile(existingRecruiter);
-            recruiterCreditHistory.setRecruiterProfile(existingRecruiter);
-
-            //setting credit amount in rupees
-            //recruiterPayment.setRecruiterPaymentAmount(addRecruiterRequest.getRecruiterContactCreditAmount());
-
-            //setting credit unit price
-            //if(addRecruiterRequest.getRecruiterContactCreditUnitPrice() != null && addRecruiterRequest.getRecruiterContactCreditUnitPrice() != 0){
-            //    recruiterPayment.setRecruiterCreditUnitPrice(addRecruiterRequest.getRecruiterContactCreditUnitPrice());
-            //}
-            //setting credit mode (pre pay, post pay)
-            //if(addRecruiterRequest.getRecruiterCreditMode() != null){
-            //    recruiterPayment.setRecruiterPaymentMode(addRecruiterRequest.getRecruiterCreditMode());
-            //}
-            //computing total credits with respect to unit price
-            Integer availableCredits = 0;
-            Integer usedCredits = 0;
-
-
             if(addRecruiterRequest.getContactCredits() > 0){
 
-                //credit
-                RecruiterCreditHistory latestPack = RecruiterCreditHistoryDAO.getLatestRecruiterCreditPack(
-                        ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK);
-
-                if (latestPack == null){
-                    recruiterCreditHistory.setRecruiterCreditPackNo(1);
-                } else{
-                    RecruiterCreditHistory latest = RecruiterCreditHistoryDAO.getLatestRecruiterCreditPackDetails(existingRecruiter);
-                    recruiterCreditHistory.setRecruiterCreditPackNo(latest.getRecruiterCreditPackNo() + 1); //adding a new pack
-                }
-
-                recruiterCreditHistory.setExpiryDate(expiryDate);
-                recruiterCreditHistory.setCreditIsExpired(false);
-                recruiterCreditHistory.setLatest(true);
-                recruiterCreditHistory.setRecruiterCreditsAvailable(availableCredits + addRecruiterRequest.getContactCredits());
-                recruiterCreditHistory.setRecruiterCreditsUsed(usedCredits);
-                recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
-                recruiterCreditHistory.setCreditsAdded(addRecruiterRequest.getContactCredits());
+                addCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, addRecruiterRequest.getContactCredits());
             } else{
                 //debit
 
+                Integer creditsToDebited = addRecruiterRequest.getContactCredits() * (-1);
+                debitCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, addRecruiterRequest.getContactCredits());
             }
-
-            //saving the values
-            recruiterCreditHistory.save();
-            //recruiterPayment.save();
         }
 
         //setting values for interview unlock credits
         if(addRecruiterRequest.getInterviewCredits() != null && addRecruiterRequest.getInterviewCredits() != 0){
 
-            //has interview unlock credit, hence make an entry in recruiterPayment table
-            //RecruiterPayment recruiterPayment = new RecruiterPayment();
-            RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
-
-            //setting creditCategory
-            RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where()
-                    .eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
-                    .findUnique();
-
-            if(recruiterCreditCategory != null){
-                //recruiterPayment.setRecruiterCreditCategory(recruiterCreditCategory);
-                recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
-            }
-
-            recruiterCreditHistory.setUnits(addRecruiterRequest.getInterviewCredits());
-
-            //setting recruiter profile
-            //recruiterPayment.setRecruiterProfile(existingRecruiter);
-            recruiterCreditHistory.setRecruiterProfile(existingRecruiter);
-
-            //setting credit amount in rupees
-            //recruiterPayment.setRecruiterPaymentAmount(addRecruiterRequest.getRecruiterInterviewCreditAmount());
-
-            //setting credit unit price
-            //if(addRecruiterRequest.getRecruiterInterviewCreditUnitPrice() != null && addRecruiterRequest.getRecruiterInterviewCreditUnitPrice() != 0){
-            //    recruiterPayment.setRecruiterCreditUnitPrice(addRecruiterRequest.getRecruiterInterviewCreditUnitPrice());
-            //}
-
-            //setting credit mode (pre pay, post pay)
-            //if(addRecruiterRequest.getRecruiterCreditMode() != null){
-            //    recruiterPayment.setRecruiterPaymentMode(addRecruiterRequest.getRecruiterCreditMode());
-            //}
-
-            //computing total credits with respect to unit price
-            Integer availableCredits = 0;
-            Integer usedCredits = 0;
-
             if(addRecruiterRequest.getInterviewCredits() > 0){
-                RecruiterCreditHistory latestPack = RecruiterCreditHistoryDAO.getLatestRecruiterCreditPack(
-                        ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK);
-
-                if (latestPack == null){
-                    recruiterCreditHistory.setRecruiterCreditPackNo(1);
-                } else{
-                    RecruiterCreditHistory latest = RecruiterCreditHistoryDAO.getLatestRecruiterCreditPackDetails(existingRecruiter);
-                    recruiterCreditHistory.setRecruiterCreditPackNo(latest.getRecruiterCreditPackNo() + 1); //adding a new pack
-
-                }
-
-                recruiterCreditHistory.setExpiryDate(expiryDate);
-                recruiterCreditHistory.setCreditIsExpired(false);
-                recruiterCreditHistory.setLatest(true);
-                recruiterCreditHistory.setRecruiterCreditsAvailable(availableCredits + addRecruiterRequest.getInterviewCredits());
-                recruiterCreditHistory.setRecruiterCreditsUsed(usedCredits);
-                recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
-                recruiterCreditHistory.setCreditsAdded(addRecruiterRequest.getInterviewCredits());
+                //credit
+                addCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK, addRecruiterRequest.getInterviewCredits());
 
             } else{
                 //debit
-            }
+                Integer creditsToDebited = addRecruiterRequest.getInterviewCredits() * (-1);
+                debitCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK, addRecruiterRequest.getInterviewCredits());
 
-            //saving the values
-            recruiterCreditHistory.save();
-            //recruiterPayment.save();
+            }
         }
     }
 
@@ -709,4 +589,170 @@ public class RecruiterService {
         return interviewResponse;
     }
 
+    public static void debitCredits(RecruiterProfile existingRecruiter, Integer creditType, int credits) {
+
+        Integer creditsToBeDebited = (-1) * credits;
+        List<RecruiterCreditHistory> recruiterPacks = RecruiterCreditHistoryDAO.getAllRecruiterPack(existingRecruiter,
+                creditType);
+
+        RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where()
+                .eq("recruiter_credit_category_id", creditType)
+                .findUnique();
+
+        Integer remainingDebit = 0;
+        String createdBy = "Not specified";
+
+        if(session().get("sessionUsername") != null){
+            createdBy = "Support: " + session().get("sessionUsername");
+        }
+
+        for(RecruiterCreditHistory history : recruiterPacks){
+            if(history.getRecruiterCreditsAvailable() > 0){
+
+                if(history.getRecruiterCreditsAvailable() < creditsToBeDebited){
+                    RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
+
+
+                    if (recruiterCreditCategory != null){
+                        //recruiterPayment.setRecruiterCreditCategory(recruiterCreditCategory);
+                        recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
+                    }
+
+                    //setting recruiter profile
+                    //recruiterPayment.setRecruiterProfile(existingRecruiter);
+                    recruiterCreditHistory.setRecruiterProfile(existingRecruiter);
+
+
+                    remainingDebit = creditsToBeDebited - history.getRecruiterCreditsAvailable();
+                    creditsToBeDebited = remainingDebit;
+
+                    Integer available = history.getRecruiterCreditsAvailable();
+
+                    recruiterCreditHistory.setRecruiterCreditsUsed(history.getRecruiterCreditsUsed() + history.getRecruiterCreditsAvailable());
+                    recruiterCreditHistory.setRecruiterCreditsAvailable(0);
+                    recruiterCreditHistory.setRecruiterCreditPackNo(history.getRecruiterCreditPackNo());
+
+                    recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
+                    recruiterCreditHistory.setCreditsAdded(0);
+                    recruiterCreditHistory.setExpiryDate(history.getExpiryDate());
+                    recruiterCreditHistory.setCreditIsExpired(false);
+                    recruiterCreditHistory.setLatest(true);
+                    recruiterCreditHistory.setUnits(-available);
+
+
+                    recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
+
+                    //saving the values
+                    recruiterCreditHistory.save();
+
+                    history.setLatest(false);
+                    history.update();
+
+                    //saving the values
+                    recruiterCreditHistory.save();
+
+
+                } else{
+
+
+                    RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
+
+                    if (recruiterCreditCategory != null){
+                        //recruiterPayment.setRecruiterCreditCategory(recruiterCreditCategory);
+                        recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
+                    }
+
+                    //setting recruiter profile
+                    //recruiterPayment.setRecruiterProfile(existingRecruiter);
+                    recruiterCreditHistory.setRecruiterProfile(existingRecruiter);
+
+                    recruiterCreditHistory.setRecruiterCreditsUsed(history.getRecruiterCreditsUsed() + creditsToBeDebited);
+                    recruiterCreditHistory.setRecruiterCreditsAvailable(history.getRecruiterCreditsAvailable() - creditsToBeDebited);
+                    remainingDebit = 0;
+                    recruiterCreditHistory.setRecruiterCreditPackNo(history.getRecruiterCreditPackNo());
+
+                    recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
+                    recruiterCreditHistory.setCreditsAdded(0);
+                    recruiterCreditHistory.setUnits(-credits);
+
+                    recruiterCreditHistory.setExpiryDate(history.getExpiryDate());
+                    recruiterCreditHistory.setCreditIsExpired(false);
+                    recruiterCreditHistory.setLatest(true);
+
+
+                    //saving the values
+                    recruiterCreditHistory.save();
+
+                    history.setLatest(false);
+                    history.update();
+
+                    //saving the values
+                    recruiterCreditHistory.save();
+
+                }
+
+
+                if(remainingDebit == 0){
+                    break;
+                }
+            }
+        }
+
+    }
+
+    public static void addCredits(RecruiterProfile existingRecruiter, Integer creditType, int totalCredits) {
+
+        Integer availableCredits = 0;
+        Integer usedCredits = 0;
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, 1);
+        Date expiryDate = cal.getTime();
+
+        RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where()
+                .eq("recruiter_credit_category_id", creditType)
+                .findUnique();
+
+        String createdBy = "Not specified";
+
+        if(session().get("sessionUsername") != null){
+            createdBy = "Support: " + session().get("sessionUsername");
+        }
+
+        RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
+
+        if (recruiterCreditCategory != null){
+            //recruiterPayment.setRecruiterCreditCategory(recruiterCreditCategory);
+            recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
+        }
+
+        recruiterCreditHistory.setUnits(totalCredits);
+
+        //setting recruiter profile
+        recruiterCreditHistory.setRecruiterProfile(existingRecruiter);
+
+        //credit
+        RecruiterCreditHistory latestPack = RecruiterCreditHistoryDAO.getLatestRecruiterCreditPack(
+                ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK);
+
+        if (latestPack == null){
+            recruiterCreditHistory.setRecruiterCreditPackNo(1);
+        } else{
+
+            RecruiterCreditHistory latest = RecruiterCreditHistoryDAO.getLatestRecruiterCreditPackDetails(existingRecruiter);
+            recruiterCreditHistory.setRecruiterCreditPackNo(latest.getRecruiterCreditPackNo() + 1); //adding a new pack
+        }
+        recruiterCreditHistory.setRecruiterCreditsAvailable(availableCredits + totalCredits);
+        recruiterCreditHistory.setRecruiterCreditsUsed(usedCredits);
+        recruiterCreditHistory.setCreditsAdded(totalCredits);
+        recruiterCreditHistory.setExpiryDate(expiryDate);
+        recruiterCreditHistory.setCreditIsExpired(false);
+        recruiterCreditHistory.setLatest(true);
+
+        recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
+
+        //saving the values
+        recruiterCreditHistory.save();
+
+    }
 }

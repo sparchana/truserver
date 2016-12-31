@@ -184,12 +184,6 @@ public class TestController extends Controller{
             }
         }
 
-        List<RecruiterCreditHistory> historyList = RecruiterCreditHistory.find.all();
-        for(RecruiterCreditHistory history : historyList){
-            if(history.getRecruiterCreditPackNo() == null){
-                history.delete();
-            }
-        }
         return ok("-");
     }
 

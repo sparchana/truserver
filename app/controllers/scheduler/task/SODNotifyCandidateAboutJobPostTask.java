@@ -49,7 +49,7 @@ public class SODNotifyCandidateAboutJobPostTask extends TimerTask {
                     Logger.info("Sending notification to " + candidateSearchMap.size() + " candidates regarding the jobPost: " + jobPost.getJobPostTitle());
 
                     Boolean hasCredit = false;
-                    if(jobPost.getRecruiterProfile().totalInterviewCredits() > 0){
+                    if(jobPost.getRecruiterProfile().getInterviewCreditCount() > 0){
                         hasCredit = true;
                     }
 
