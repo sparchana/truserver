@@ -1507,7 +1507,7 @@ function getLocality(){
 };
 
 /* register box */
-$(window).scroll(function(){
+/*$(window).scroll(function(){
     console.log(app.isUserLoggedIn);
     if(!app.isUserLoggedIn){
         var w = window.innerWidth;
@@ -1524,7 +1524,7 @@ $(window).scroll(function(){
             $('.registerBox').css("width","50px");
         }
     }
-});
+});*/
 
 
 // for nav bar imports
