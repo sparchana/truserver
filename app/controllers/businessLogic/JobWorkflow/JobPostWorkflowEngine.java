@@ -1121,8 +1121,12 @@ public class JobPostWorkflowEngine {
                         isCandidateDataMissing = true;
                         break;
                     } else if (!pe.isSingleEntity()) {
-                        isCandidateDataMissing = true;
-                        break;
+                        // case when candidate data is there and jobpost data is also there but its not matching,
+                        // we don't have to show it in FE
+                        if(pe.getCandidateElementList() == null || pe.getCandidateElementList().size() == 0 ){
+                            isCandidateDataMissing = true;
+                            break;
+                        }
                     }
                 }
             }
