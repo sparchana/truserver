@@ -276,6 +276,13 @@ public class Candidate extends Model {
     public void setCandidateIsEmployed(Integer candidateIsEmployed) {
         this.candidateIsEmployed = candidateIsEmployed;
     }
+    public void setCandidateIsEmployed(boolean candidateIsEmployed) {
+        if(candidateIsEmployed){
+            this.candidateIsEmployed = 1;
+        } else {
+            this.candidateIsEmployed = 0;
+        }
+    }
 
     public void setCandidateTotalExperience(Integer candidateTotalExperience) {
         this.candidateTotalExperience = candidateTotalExperience;

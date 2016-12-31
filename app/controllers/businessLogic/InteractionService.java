@@ -419,4 +419,17 @@ public class InteractionService {
         );
         InteractionService.createInteraction(interaction);
     }
+
+    public static void createInteractionForWebSearch(String objectAUUId, String result) {
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                InteractionConstants.INTERACTION_TYPE_SEARCH,
+                InteractionConstants.INTERACTION_NOTE_BLANK,
+                result,
+                INTERACTION_CREATED_SELF,
+                INTERACTION_CHANNEL_CANDIDATE_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
+    }
 }

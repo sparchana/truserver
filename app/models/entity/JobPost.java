@@ -7,11 +7,9 @@ import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import dao.JobPostWorkFlowDAO;
-import models.entity.Recruiter.RecruiterProfile;
 import models.entity.OM.*;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
-import play.Logger;
-import play.core.server.Server;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -194,6 +192,9 @@ public class JobPost extends Model {
 
     @Transient
     private String createdBy = null;
+
+    @Transient
+    private int applyBtnStatus = 0; //  2: book Interview, 3: already applied, 4 : apply
 
     public static Finder<String, JobPost> find = new Finder(JobPost.class);
 
@@ -751,4 +752,11 @@ public class JobPost extends Model {
 
     }
 
+    public int getApplyBtnStatus() {
+        return applyBtnStatus;
+    }
+
+    public void setApplyBtnStatus(int applyBtnStatus) {
+        this.applyBtnStatus = applyBtnStatus;
+    }
 }
