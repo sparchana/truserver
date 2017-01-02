@@ -4,7 +4,6 @@ import api.http.httpRequest.Recruiter.AddCreditRequest;
 import controllers.Global;
 import models.entity.Candidate;
 import models.entity.JobPost;
-import models.entity.OM.InterviewDetails;
 import models.entity.OM.JobPostToLocality;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Partner;
@@ -325,8 +324,12 @@ public class SmsUtil {
         }
 
         if (jobApplication.getInterviewLocationLat() != null) {
-            msg += "\n\nDirections: http://maps.google.com/?q=" + jobApplication.getInterviewLocationLat() + "," + jobApplication.getInterviewLocationLng();
+            String directionURL = encodeDirectionURL("http://maps.google.com/?q=" + jobApplication.getInterviewLocationLat() + "," + jobApplication.getInterviewLocationLng());
+            if(directionURL != null) {
+                msg += "\n\nDirections: " + directionURL;
+            }
         }
+
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
     }
 
@@ -357,10 +360,15 @@ public class SmsUtil {
         }
 
         if (jobPostWorkflow.getInterviewLocationLat() != null) {
-            msg += "\n\nDirections: http://maps.google.com/?q=" + jobPostWorkflow.getInterviewLocationLat() + "," + jobPostWorkflow.getInterviewLocationLng();
+            String directionURL = encodeDirectionURL("http://maps.google.com/?q=" + jobPostWorkflow.getInterviewLocationLat() + "," + jobPostWorkflow.getInterviewLocationLng());
+            if(directionURL != null) {
+                msg += "\n\nDirections: " + directionURL;
+            }
         }
+
         return msg;
     }
+
     public static String getNextDayInterviewAlertSmsString(JobPostWorkflow jobPostWorkflow) {
 
         String msg = "Hi " + jobPostWorkflow.getCandidate().getCandidateFirstName() + ", your interview for " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() +
@@ -387,7 +395,10 @@ public class SmsUtil {
         }
 
         if (jobPostWorkflow.getInterviewLocationLat() != null) {
-            msg += "\n\nDirections: http://maps.google.com/?q=" + jobPostWorkflow.getInterviewLocationLat() + "," + jobPostWorkflow.getInterviewLocationLng();
+            String directionURL = encodeDirectionURL("http://maps.google.com/?q=" + jobPostWorkflow.getInterviewLocationLat() + "," + jobPostWorkflow.getInterviewLocationLng());
+            if(directionURL != null) {
+                msg += "\n\nDirections: " + directionURL;
+            }
         }
         return msg;
     }
@@ -621,5 +632,15 @@ public class SmsUtil {
         String msg = "Hi " + candidate.getCandidateFirstName() + ", you had an interview today for " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". " +
                 "How would you rate your experience with TruJobs? Please rate us on bit.ly/trujobsapp";
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
+    }
+
+    private static String encodeDirectionURL(String directionURL){
+        /* TODO use https://developers.google.com/url-shortener/v1/getting_started#quota, it won't require encoding */
+        try {
+            return URLEncoder.encode(directionURL, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
