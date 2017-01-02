@@ -2318,6 +2318,10 @@ public class Application extends Controller {
         Logger.info("toJson(request())="+toJson(request()));
         Logger.info("request.asFormUrlEncoded().keySet().size()="+request().body().asFormUrlEncoded().keySet().size());
 
+        for (String key : request().body().asFormUrlEncoded().keySet()) {
+            Logger.info(key + " = " + request().body().asFormUrlEncoded().get(key).toString());
+        }
+
         if(req != null){
             Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
             HireWandResponse hireWandResponse = new HireWandResponse();
