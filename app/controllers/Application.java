@@ -2313,8 +2313,9 @@ public class Application extends Controller {
 
         JsonNode req = request().body().asJson();
         Logger.info("request()="+request().toString());
-        Logger.info("request().body()="+request().body().toString());
-        Logger.info("request().getQueryString(profile)="+request().getQueryString("profile"));
+        Logger.info("request().body().asText()="+request().body().asText());
+        Logger.info("request().body().toString()="+request().body().toString());
+        Logger.info("toJson(request()).toString()="+toJson(request()));
 
         if(req != null){
             Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
