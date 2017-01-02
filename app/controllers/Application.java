@@ -2158,6 +2158,7 @@ public class Application extends Controller {
             Logger.info("No JobPost Found for jobPostId: " + jobPostId);
             return badRequest();
         }
+
         return ok(toJson(RecruiterService.isInterviewRequired(jobPost)));
     }
 
@@ -2260,6 +2261,7 @@ public class Application extends Controller {
             JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(), jobPostId, Integer.valueOf(session().get("sessionChannel")));
             JobPost jobPost = JobPostDAO.findById(jobPostId);
 
+            Logger.info(toJson(RecruiterService.isInterviewRequired(jobPost)) + " --------------");
             return ok(toJson(RecruiterService.isInterviewRequired(jobPost)));
         }
         return badRequest();

@@ -365,7 +365,9 @@ function getLocalityArray() {
 // aux methods end
 var modalOpenAttempt = 0;
 function openCandidatePreScreenModal(jobPostId, candidateMobile) {
+
     if (candidateMobile != null) {
+
         var base_api_url = "/support/api/getJobPostVsCandidate/";
         candidateMobile = candidateMobile.substring(3);
         if (base_api_url == null || jobPostId == null) {
@@ -385,8 +387,10 @@ function openCandidatePreScreenModal(jobPostId, candidateMobile) {
                 $("#preScreenModal").modal();
             }
         }
+
         if (modalOpenAttempt == 0) {
             modalOpenAttempt = 1;
+
             try {
                 $.ajax({
                     type: "POST",
@@ -394,6 +398,7 @@ function openCandidatePreScreenModal(jobPostId, candidateMobile) {
                     data: false,
                     contentType: false,
                     processData: false,
+                    async: false,
                     success: processDataForJobPostLocationPrescreen
                 });
             } catch (exception) {
@@ -425,6 +430,7 @@ function processDataForJobPostLocationPrescreen(returnedData){
 
 }
 function processPreScreenData(returnedData) {
+
     if (returnedData == null || returnedData.status != "SUCCESS") {
         if (returnedData != null && returnedData.status == "INVALID") {
             $.notify("Already Pre Screened", 'error');
@@ -438,16 +444,30 @@ function processPreScreenData(returnedData) {
         shouldShowPSModal = false;
         $("#preScreenModal").modal('hide');
 
-        if(jobPostInfo.recruiterProfile != null){
-            $("#postApplyMsg").html("We have received your job application. You can contact the recruiter directly on " +
-                jobPostInfo.recruiterProfile.recruiterProfileMobile);
-        } else{
-            $("#postApplyMsg").html("We have received your job application. You can contact the recruiter directly on " +
-                jobPostInfo.recruiterProfile.recruiterProfileMobile);
+        var showModal = true;
 
+        nfy("Interview Submitted successfully. ", 'success');
+
+        if(jobPostInfo.recruiterProfile != null){
+
+            if(jobPostInfo.recruiterProfile.contactCreditCount > 0){
+                showModal = true;
+            }
+
+            if(jobPostInfo.recruiterProfile.interviewCreditCount > 0){
+                showModal = false;
+            }
+        }  else{
+            showModal = false;
         }
 
-        $("#confirmationModal").modal("show");
+        if(showModal){
+            $("#postApplyMsg").html("We have received your job application. You can contact the recruiter directly on " +
+                jobPostInfo.recruiterProfile.recruiterProfileMobile);
+
+            $("#confirmationModal").modal("show");
+        }
+
         $.notify("Job Application Successfully Completed ", 'success');
         return;
     }
@@ -456,7 +476,16 @@ function processPreScreenData(returnedData) {
         console.log("modal visible false, hide modal");
         $.notify("Job Application Successfully Completed ", 'success');
         $("#preScreenModal").modal('hide');
-        initInterviewModal(returnedData.candidateId, returnedData.jobPostId, false);
+
+        if(returnedData.interviewRequired){
+            initInterviewModal(returnedData.candidateId, returnedData.jobPostId, false);
+        } else{
+            $("#postApplyMsg").html("We have received your job application. You can contact the recruiter directly on " +
+                jobPostInfo.recruiterProfile.recruiterProfileMobile);
+
+            $("#confirmationModal").modal("show");
+        }
+
         return;
     } else{
         console.log("adding modal-open to html");
@@ -1818,6 +1847,12 @@ function submitPreScreen() {
                             initInterviewModal(candidateId, jpId, isSupport);
                         } else if(returnedData.status == INTERVIEW_NOT_REQUIRED) {
                             $("#preScreenModal").modal('hide');
+
+                            $("#postApplyMsg").html("We have received your job application. You can contact the recruiter directly on " +
+                                jobPostInfo.recruiterProfile.recruiterProfileMobile);
+
+                            $("#confirmationModal").modal("show");
+
                             $.notify("Successfully Submitted Application form. Thanks !", 'success');
                         } else {
                             $.notify("Something went wrong. Please try again !", 'success');

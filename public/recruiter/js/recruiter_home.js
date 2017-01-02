@@ -361,36 +361,13 @@ function processDataRecruiterProfile(returnedData) {
         if(returnedData.recruiterProfileEmail != null && returnedData.recruiterProfileEmail != "")
             $("#recEmail").html(returnedData.recruiterProfileEmail);
 
-        var remainingContactCredits = 0;
-        var remainingInterviewCredits;
+        $("#remainingContactCredits").html(returnedData.contactCreditCount);
+        $("#remainingContactCreditsMobile").html(returnedData.contactCreditCount);
+        $("#remainingInterviewCredits").html(returnedData.interviewCreditCount);
+        $("#remainingInterviewCreditsMobile").html(returnedData.interviewCreditCount);
 
-        var creditHistoryList = returnedData.recruiterCreditHistoryList;
-        creditHistoryList.reverse();
-        var toCheckContactCreditCount = true;
-        var toCheckInterviewCreditCount = true;
-        creditHistoryList.forEach(function (creditHistory){
-            try{
-                if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
-                    if(toCheckContactCreditCount){
-                        $("#remainingContactCredits").html(creditHistory.recruiterCreditsAvailable);
-                        $("#remainingContactCreditsMobile").html(creditHistory.recruiterCreditsAvailable);
-                        remainingContactCredits = parseInt(creditHistory.recruiterCreditsAvailable);
-                        toCheckContactCreditCount = false;
-                    }
-                } else{
-                    if(toCheckInterviewCreditCount){
-                        if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
-                            $("#remainingInterviewCredits").html(creditHistory.recruiterCreditsAvailable);
-                            $("#remainingInterviewCreditsMobile").html(creditHistory.recruiterCreditsAvailable);
-                            toCheckInterviewCreditCount = false;
-                        }
-                    }
-                }
-                if((toCheckContactCreditCount == false) && (toCheckInterviewCreditCount ==false)){
-                    return false;
-                }
-            } catch(err){}
-        });
+        var remainingContactCredits = returnedData.contactCreditCount;
+        var remainingInterviewCredits = returnedData.interviewCreditCount;
 
         if(remainingContactCredits > 0){
             $("#contactCreditCount").html(remainingContactCredits);

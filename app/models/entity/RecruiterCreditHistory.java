@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
+import play.Logger;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -39,6 +41,21 @@ public class RecruiterCreditHistory extends Model {
 
     @Column(name = "units", columnDefinition = "int signed null")
     private Integer units;
+
+    @Column(name = "credits_added", columnDefinition = "int signed null")
+    private Integer creditsAdded;
+
+    @Column(name = "recruiter_credit_pack_no", columnDefinition = "int signed null")
+    private Integer recruiterCreditPackNo;
+
+    @Column(name = "expiry_date", columnDefinition = "date null")
+    private Date expiryDate;
+
+    @Column(name = "credit_is_expired", columnDefinition = "int signed null")
+    private Boolean creditIsExpired;
+
+    @Column(name = "is_latest", columnDefinition = "int signed null")
+    private Boolean isLatest;
 
     @ManyToOne
     @JsonBackReference
@@ -128,5 +145,45 @@ public class RecruiterCreditHistory extends Model {
 
     public void setUnits(Integer units) {
         this.units = units;
+    }
+
+    public Integer getRecruiterCreditPackNo() {
+        return recruiterCreditPackNo;
+    }
+
+    public void setRecruiterCreditPackNo(Integer recruiterCreditPackNo) {
+        this.recruiterCreditPackNo = recruiterCreditPackNo;
+    }
+
+    public Date getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(Date expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public Boolean getCreditIsExpired() {
+        return creditIsExpired;
+    }
+
+    public void setCreditIsExpired(Boolean creditIsExpired) {
+        this.creditIsExpired = creditIsExpired;
+    }
+
+    public Boolean getLatest() {
+        return isLatest;
+    }
+
+    public void setLatest(Boolean latest) {
+        isLatest = latest;
+    }
+
+    public Integer getCreditsAdded() {
+        return creditsAdded;
+    }
+
+    public void setCreditsAdded(Integer creditsAdded) {
+        this.creditsAdded = creditsAdded;
     }
 }
