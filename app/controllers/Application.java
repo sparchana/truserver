@@ -2315,7 +2315,8 @@ public class Application extends Controller {
         Logger.info("request()="+request().toString());
         Logger.info("request().body().asText()="+request().body().asText());
         Logger.info("request().body().toString()="+request().body().toString());
-        Logger.info("toJson(request()).toString()="+toJson(request()));
+        Logger.info("toJson(request())="+toJson(request()));
+        Logger.info("request.asFormUrlEncoded().keySet().size()="+request().body().asFormUrlEncoded().keySet().size());
 
         if(req != null){
             Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
