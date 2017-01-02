@@ -10,6 +10,7 @@ import java.util.List;
 public class JobPostResponse {
     List<JobPost> allJobPost;
     Integer totalJobs;
+    Integer jobsPerPage;
 
     public List<JobPost> getAllJobPost() {
         return allJobPost;
@@ -26,4 +27,13 @@ public class JobPostResponse {
     public void setTotalJobs(Integer totalJobs) {
         this.totalJobs = totalJobs;
     }
+
+    public Integer getJobsPerPage() {
+        return jobsPerPage;
+    }
+
+    public void setJobsPerPage(Integer jobsPerPage) {
+        this.jobsPerPage = jobsPerPage;
+    }
 }
+

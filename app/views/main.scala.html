@@ -25,6 +25,10 @@
 
         <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
 
+        @* search import *@
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/awesomplete.css">
+
         @*<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>*@
         <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
 
@@ -75,26 +79,60 @@
         </div>*@
         <div class="container-fluid" style="padding:0%">
             <div id="sectionOne">
-                <div class="container hidden-xs">
+                <div class="container">
                     <font color="white">
                         <div class="row">
-                            <div class="col-sm-9" style="margin: 0; padding: 0">
-                                <img src="/assets/common/img/image4.png" style="display: inline-block; margin-left: -136px" width="150px">
-                                <div style="display: inline-block; width: auto;">
-                                    <h1 style="letter-spacing: 2px; text-align: left; margin: 10px;"><b><font size="5">Find Entry Level and Experienced Jobs </font></b></h1>
-                                    <h2 style="letter-spacing: 2px; margin: 10px; text-align: left"><font size="5">Schedule interviews for interested jobs</font></h2>
-                                    <h4 style="letter-spacing: 2px; margin: 10px; text-align: left; display: inline-block; float: left">Download app from</h4>
-                                    <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank" style="padding-top: 2px; float: left">
-                                        <img src="/assets/common/img/download_btn.png" alt="PlayStore Logo" height="40px"></a>
+
+                            <div class="col-md-2 hidden-sm hidden-xs" style="margin-right:2%; padding: 0">
+                                <img src="/assets/common/img/image4.png" style="display: inline-block;" width="150px">
+                            </div>
+                            <div class="col-sm-12 col-md-6" style="margin-top: 20px">
+                                <div class="row">
+                                    <h2 style="letter-spacing: 2px; margin:2%;text-align: left"><font size="5">Schedule interviews for interested jobs</font></h2>
+                                </div>
+                                <div class="row" id="searchBarDivMain" style="padding:2%">
+                                    <div class="input-group" id="searchBar">
+                                        <div class="col-xs-12 col-sm-6 col-md-6" id="mainFieldSearch">
+                                            <p style="display: inline;float: left;margin: 0"><font style="color: #bebebe;text-align: left;font-size:12px">Search</font></p>
+                                            <input type="text" id="searchText" class="form-control" placeholder="Search for Company, Job, Title" data-multiple>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-5 col-md-5" id="locationFieldSearch" style="padding: 0">
+                                            <p style="display: inline;float: left;margin: 0"><font style="color: #bebebe;text-align: left;font-size:12px">Location</font></p>
+                                            <select id="searchLocation" type="text" class="form-control" placeholder="Location"></select>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-1 col-md-1" style="padding:8px 0 0 0">
+                                            <button type="button" id="searchBtn"class="btn btn-default" aria-label="Left Align">
+                                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </font>
                 </div>
+                <div class="container hidden-md hidden-lg" style="padding: 0">
+                    <div class="row" style="margin:2%">
+                        <div class="col-xs-6 col-sm-4 col-sm-offset-2" style="padding-left: 0">
+                            <button type="button" id="searchSignUpBtn"class="btn btn-default" aria-label="Left Align">
+                                <a href="#" data-toggle="modal" data-target="#mySignUpModal" onClick="openSignUp()">
+                                    <font style="font-weight: bold;color:#ff3d00">Sign Up</font>
+                                </a>
+                            </button>
+                        </div>
+                        <div class="col-xs-6 col-sm-4" style="padding-right: 0">
+                            <button type="button" id="searchSignInBtn"class="btn btn-default" aria-label="Left Align">
+                                <a href="#" data-toggle="modal" data-target="#myLoginModal" onClick="openLogin()">
+                                    <font style="font-weight: bold;color:#ff3d00">Sign In</font>
+                                </a>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
             <!-- End of sectionOne -->
-        <div class="container">
+        <div class="container hidden-sm hidden-xs">
             <div class="leadBox">
                 <form id="form_signup_candidate"  style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
                     <h4 style="font-weight: bold">Job Seeker Registration</h4>
@@ -447,11 +485,22 @@
             ga('send', 'pageview');
         </script>
 
+        @* bootstrap vs materialize.css overrider *@
+        <link rel="stylesheet" type="text/css" href="/assets/search/css/search_override.css">
+
         <script type="text/javascript" src="/assets/common/js/validation.js"></script>
         <script type="text/javascript" src="/assets/owl-carousel/owl.carousel.min.js"></script>
         <script type="text/javascript" src="/assets/common/js/home_page.js"></script>
         <script type="text/javascript" src="/assets/common/js/all_hot_jobs.js"></script>
         <script type="text/javascript" src="/assets/common/js/all_job_role_with_jobs.js"></script>
+
+        @* search bar import *@
+        <script type="text/javascript" src="/assets/search/js/searchImitator.js"></script>
+        <script type="text/javascript" src="/assets/common/js/awesomplete.min.js"></script>
+        <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+        <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
+        @* search bar import end *@
+
 
     </body>
 </html>
