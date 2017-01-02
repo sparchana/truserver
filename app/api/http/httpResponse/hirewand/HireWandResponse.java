@@ -103,9 +103,8 @@ public class HireWandResponse {
 
     public String Status;
     public String Message;
-    public Integer ParsingStatus;
     public Boolean Duplicate;
-    public String PersonId;
+    public String PersonID;
     public Profile Profile;
 
     @Override

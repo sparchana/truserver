@@ -2311,41 +2311,57 @@ public class Application extends Controller {
 
     public static Result receiveParsedResume() {
 
-        JsonNode req = request().body().asJson();
-        Logger.info("request()="+request().toString());
-        Logger.info("request().body().asText()="+request().body().asText());
-        Logger.info("request().body().toString()="+request().body().toString());
-        Logger.info("toJson(request())="+toJson(request()));
         Logger.info("request.asFormUrlEncoded().keySet().size()="+request().body().asFormUrlEncoded().keySet().size());
 
-        for (String key : request().body().asFormUrlEncoded().keySet()) {
-            String[] values = request().body().asFormUrlEncoded().get(key);
-            Logger.info("Key = "+key);
-            Logger.info("Value = ");
-            for(String value: values){
-                Logger.info(value);
-            }
-        }
+        // extract parsed resume from request body
+        String profile = Arrays.toString(request().body().asFormUrlEncoded().get("profile"));
 
-        if(req != null){
-            Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
-            HireWandResponse hireWandResponse = new HireWandResponse();
+        // is parsed resume available?
+        if(profile != null){
+            Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Parsed Resume Profile: " + profile);
+            HireWandResponse hireWandResponse = null;
+            // try to map it to HireWandResponse
             ObjectMapper newMapper = new ObjectMapper();
             try {
-                hireWandResponse = newMapper.readValue(req.toString(), HireWandResponse.class);
+                hireWandResponse = newMapper.readValue(profile, HireWandResponse.class);
             } catch (IOException e) {
                 e.printStackTrace();
+                Logger.info("Error while mapping from request to HireWandResponse");
+                return internalServerError();
             }
-            hireWandResponse.Profile.ProfileJSON = req.path("Profile").asText();
-            Logger.info("hireWandResponse.toString() = "+hireWandResponse.toString());
+            // Check if the mapping was successful
+            if(hireWandResponse != null && hireWandResponse.Profile != null){
 
-            if(hireWandResponse.Profile != null){
-                CandidateService.updateResume(hireWandResponse.PersonId, hireWandResponse.Profile,hireWandResponse.Duplicate);
-                return ok();
+                // keep a copy of the raw string
+                hireWandResponse.Profile.ProfileJSON = profile;
+                Logger.info("hireWandResponse.Profile.ProfileJSON="+hireWandResponse.Profile.ProfileJSON);
+
+                // set duplicate flag
+                hireWandResponse.Duplicate = ((request().body().asFormUrlEncoded().get("duplicate")[0].equalsIgnoreCase("true"))?Boolean.TRUE:Boolean.FALSE);
+                Logger.info("hireWandResponse.Duplicate="+hireWandResponse.Duplicate);
+
+                // set PersonID
+                hireWandResponse.PersonID = request().body().asFormUrlEncoded().get("personid")[0];
+                Logger.info("hireWandResponse.PersonID="+hireWandResponse.PersonID);
+
+                if(!hireWandResponse.PersonID.isEmpty()){
+                    // send it downstream for processing
+                    CandidateService.updateResume(hireWandResponse.PersonID, hireWandResponse.Profile,hireWandResponse.Duplicate);
+                    return ok();
+                }
+                else {
+                    Logger.info("Hirewand callback invoked with empty PersonID");
+                    return badRequest();
+                }
+
             }
-            else return internalServerError();
+            else {
+                Logger.info("HireWandResponse or HireWandResponse.Profile is null - Mapper could not translate from request to HireWandResponse");
+                return internalServerError();
+            }
         }
         else{
+            Logger.info("Hirewand callback invoked with empty Profile");
             return badRequest();
         }
     }
