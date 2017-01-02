@@ -108,7 +108,9 @@ public class HireWandService {
                                 Logger.info("Preset Callback URL = "+callbackurl);
                                 paramlist.add(new NameValuePair("callback", callbackurl));
                             }
-                            if(params.get("prettytype")!=null)paramlist.add(new NameValuePair("prettytype",(String) params.get("prettytype")));
+                            printtype = (String)params.get("prettytype");
+                            if(printtype==null) printtype = "simple";
+                            paramlist.add(new NameValuePair("prettytype",printtype));
                             requestEntityStream = (new InputStreamRequestEntity((InputStream) params.get("resume")));
                             httppost = new PostMethod(UPLOADURL);
                         }
