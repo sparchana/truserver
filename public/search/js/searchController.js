@@ -30,6 +30,7 @@ var app = (function ($) {
         D_LOCATION_ALL_BANGALORE: {}
     };
     var app = {
+        urlHistoryArray: [],
         isUserLoggedIn: false,
         shouldDoSearch: true,
         allJobRole: [],
@@ -546,7 +547,11 @@ var app = (function ($) {
             },
             modifyURL: function (url) {
                 // TODO ideally this should change after the result is returned
-                window.history.pushState("object or string", "Title", "/s/" + url);
+                var stateObj = {url:  "/s/" + url};
+                if(!(history.state!= null && stateObj.url === history.state.url)){
+                    window.history.pushState(stateObj, "Title", "/s/" + url);
+                    app.urlHistoryArray.push(stateObj);
+                }
                 return "/s/" + url;
             },
             prepareURL: function () {
@@ -1351,9 +1356,16 @@ var app = (function ($) {
             urlChangeDetector: function () {
                 if (window.history && window.history.pushState) {
 
-                    console.log("windows.url: "+ window.location);
                     $(window).on('popstate', function () {
-                        location.reload();
+                        app.urlHistoryArray.pop();
+                        // history.back();
+                        console.log('back ur: '+ window.location.pathname);
+                        if(app.urlHistoryArray.length == 0){
+                            history.back();
+                        } else {
+                            app.do.prepareSearchParamFromURL();
+                            app.do.search(false);
+                        }
                     });
 
                 }

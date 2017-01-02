@@ -87,7 +87,6 @@ public class SearchController extends Controller {
                             )
                     )
             );
-
         }
         companyJunction.endJunction();
 
