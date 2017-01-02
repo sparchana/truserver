@@ -2372,7 +2372,7 @@ public class JobPostWorkflowEngine {
             NotificationUtil.sendJobApplicationNotification(candidate, jobPost.getJobPostTitle(), jobPost.getCompany().getCompanyName(),
                     existingJobApplication.getLocality().getLocalityName());
 
-            return null;
+            return "OK";
         }
 
 
