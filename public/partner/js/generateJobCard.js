@@ -947,14 +947,15 @@ function prePopulateJobSection(jobApplication) {
         appliedJob.attr('onclick','').unbind('click');
     });
 
-    $("#noPendingConfirmationApplication").show();
-    $("#noPendingConfirmationApplication").show();
-    $("#myAppliedJobsConfirmed").show();
-    $("#noConfirmedApplication").show();
-    $("#myAppliedJobsCompleted").show();
-    $("#noCompletedApplication").show();
+    $("#myAppliedJobsPendingConfirmation").hide();
+    $("#noPendingConfirmationApplication").hide();
+    $("#myAppliedJobsConfirmed").hide();
+    $("#noConfirmedApplication").hide();
+    $("#myAppliedJobsCompleted").hide();
+    $("#noCompletedApplication").hide();
 
-    if(todayInterview)
+
+    if(todayInterview){
         if(parentPendingConfirmationCount == 0){
             $("#noPendingConfirmationApplication").show();
             $("#myAppliedJobsPendingConfirmation").hide();
@@ -962,6 +963,7 @@ function prePopulateJobSection(jobApplication) {
             $("#myAppliedJobsPendingConfirmation").show();
             $("#noPendingConfirmationApplication").hide();
         }
+    }
 
     if(interviewsTodayCount > 0){
         tabTwo();
