@@ -6,6 +6,7 @@ import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.JobService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerManager;
+import dao.CandidateDAO;
 import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.scheduler.SchedulerStats;
@@ -67,12 +68,15 @@ public class TestController extends Controller{
     }
 
     public static Result testnotification(){
+/*
         Candidate candidate = Candidate.find.where().eq("CandidateMobile", "+918971739586").findUnique();
         if(candidate.getCandidateAndroidToken() != null){
             NotificationUtil.addFcmToNotificationQueue("Hi", "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
             return ok("1");
         }
+*/
 
+        Logger.info(CandidateDAO.getAllActiveCandidateWithinProvidedDays(30).size() + " -  =========");
         return ok("Null token!");
 
     }

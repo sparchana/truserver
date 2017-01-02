@@ -560,7 +560,7 @@ public class SmsUtil {
         addSmsToNotificationQueue(jobApplication.getCandidate().getCandidateMobile(), msg);
     }
 
-    public static void sendSODJobPostInfoSmsToCandidate(JobPost jobPost, Candidate candidate, Boolean hasCredits) {
+    public static void sendJobAlertSmsToCandidate(JobPost jobPost, Candidate candidate, Boolean hasCredits) {
         String jobLocalities = "";
         String salary;
         if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
@@ -596,7 +596,7 @@ public class SmsUtil {
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
     }
 
-    public static void sendWeeklySmsToDownloadAndroidApp(Candidate candidate) {
+    public static void sendAppDownloadSms(Candidate candidate) {
         String msg = "Hi " + candidate.getCandidateFirstName() + ", Download TruJobs app now at bit.ly/trujobsapp to get " +
                 "instant job alerts near your location!";
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);

@@ -25,10 +25,10 @@ public class CandidateDAO {
     }
     public static List<Candidate> getCandidateWhoUpdateProfileSinceIndexDays(Integer days) {
 
-        String workFlowQueryBuilder = " select distinct objectauuid from interaction where" +
+        String candidateQueryBuilder = " select distinct objectauuid from interaction where" +
                 "  interactiontype in (10, 11, 12) and objectatype = '4' and date(creationtimestamp) > curdate()-" + days ;
 
-        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder)
+        RawSql rawSql = RawSqlBuilder.parse(candidateQueryBuilder)
                 .columnMapping("objectauuid", "objectAUUId")
                 .create();
 
@@ -50,13 +50,14 @@ public class CandidateDAO {
 
     public static List<Candidate> getAllActiveCandidateWithinProvidedDays(Integer days) {
 
-        String workFlowQueryBuilder = " select distinct objectauuid from interaction where" +
+        String candidateQueryBuilder = " select distinct objectauuid from interaction where" +
                 "  objectatype = '4' and date(creationtimestamp) > curdate()-" + days ;
 
-        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder)
+        RawSql rawSql = RawSqlBuilder.parse(candidateQueryBuilder)
                 .columnMapping("objectauuid", "objectAUUId")
                 .create();
 
+        Logger.info(candidateQueryBuilder);
         List<Interaction> interactions = Ebean.find(Interaction.class)
                 .setRawSql(rawSql)
                 .findList();
@@ -71,11 +72,6 @@ public class CandidateDAO {
         }
 
         return candidateList;
-    }
-
-    public static List<Candidate> getCandidateWithLessThanLimitProfileScore(int score) {
-
-        return Candidate.find.where().lt("candidateScore", score).findList();
     }
 
 }

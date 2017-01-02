@@ -115,7 +115,7 @@ public class NotificationUtil {
         }
     }
 
-    public static void sendJobPostNotificationToCandidate(JobPost jobPost, Candidate candidate, Boolean hasCredit) {
+    public static void sendJobAlertNotificationToCandidate(JobPost jobPost, Candidate candidate, Boolean hasCredit) {
         String jobLocalities = "";
         String salary;
         if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){

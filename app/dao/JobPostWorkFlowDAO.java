@@ -342,6 +342,12 @@ public class JobPostWorkFlowDAO {
                 .findList();
     }
 
+    /**
+     * @param jobPostIdList, accepts a list of jobPostId
+     * @param status, accepts a jobPostWorkFlowStatus
+     * @return List<JobPostWorkflow>, all the confirmed interview applications
+     */
+
     public static List<JobPostWorkflow> getConfirmedInterviewApplications(List<Long> jobPostIdList, int status){
         StringBuilder workFlowQueryBuilder = new StringBuilder(
                 " select createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
@@ -371,6 +377,11 @@ public class JobPostWorkFlowDAO {
                 .setRawSql(rawSql)
                 .findList();
     }
+
+    /**
+     *
+     * @return List<JobPostWorkflow>, all the interviews which are scheduled today where the status is no 'not going'
+     */
 
     public static List<JobPostWorkflow> getTodaysConfirmedInterviews(){
         String workFlowQueryBuilder = " select createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +

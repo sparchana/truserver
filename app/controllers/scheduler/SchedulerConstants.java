@@ -24,4 +24,12 @@ public class SchedulerConstants {
     public static int INTERVIEW_TIME_SLOT_1_PM = 2;
     public static int INTERVIEW_TIME_SLOT_4_PM = 3;
 
+    public static final int WEEKLY_TASK_DEFAULT_PROFILE_SCORE = 80;
+    public static final int NEW_JOB_ALERT_LIMIT = 500;
+    public static final int CANDIDATE_ALERT_TASK_WEEKLY_LIMIT = 200;
+    public static final int CANDIDATE_JOB_POST_ALERT_MAX_LIMIT = 3;
+    public static final int CANDIDATE_ALERT_TASK_LAST_ACTIVE_DEFAULT_DAYS = 30;
+    public static final double NEW_JOB_MATCHING_DEFAULT_DISTANCE_RADIUS = 20.00;
+
+
 }

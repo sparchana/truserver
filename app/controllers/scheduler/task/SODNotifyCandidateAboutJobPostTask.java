@@ -1,11 +1,12 @@
 package controllers.scheduler.task;
 
+import api.ServerConstants;
 import api.http.httpResponse.CandidateWorkflowData;
 import controllers.businessLogic.JobService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import controllers.scheduler.SchedulerConstants;
 import controllers.scheduler.SchedulerManager;
 import models.entity.JobPost;
-import models.entity.scheduler.SchedulerStats;
 import models.entity.scheduler.Static.SchedulerSubType;
 import models.entity.scheduler.Static.SchedulerType;
 import models.util.NotificationUtil;
@@ -35,10 +36,27 @@ public class SODNotifyCandidateAboutJobPostTask extends TimerTask {
 
         new Thread(() -> {
 
+            SchedulerSubType subType = SchedulerSubType.find.where()
+                    .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_SOD_JOB_ALERT)
+                    .findUnique();
+
+            SchedulerType type = SchedulerType.find.where()
+                    .eq("schedulerTypeId", SCHEDULER_TYPE_SMS).findUnique();
+
+            SchedulerType typeFcm = SchedulerType.find.where()
+                    .eq("schedulerTypeId", SCHEDULER_TYPE_FCM).findUnique();
+
+
             //map for storing the no of jobs matched to an individual candidate
             Map<Long, Integer> candidateToCountMap = new HashMap<>();
 
             Logger.info("Send alert to all the matching candidates of " + jobPostList.size() + " job posts");
+
+            //recruiter has interview credits
+            Timestamp startTime = new Timestamp(System.currentTimeMillis());
+
+            Integer totalAlerts = 0;
+
             for(JobPost jobPost : jobPostList){
                 Map<Long, CandidateWorkflowData> candidateSearchMap = JobPostWorkflowEngine.getCandidateForRecruiterSearch(
                         null, //age
@@ -53,23 +71,14 @@ public class SODNotifyCandidateAboutJobPostTask extends TimerTask {
                         20.00);
 
                 if(candidateSearchMap != null){
-                    Logger.info("Sending notification to " + candidateSearchMap.size() + " candidates regarding the jobPost: " + jobPost.getJobPostTitle());
+                    Logger.info("Sending notification to " + candidateSearchMap.size() + " candidates regarding the jobPost: " + jobPost.getJobPostTitle()
+                    + " of company: " + jobPost.getCompany().getCompanyName());
 
                     Boolean hasCredit = false;
                     if(jobPost.getRecruiterProfile().totalInterviewCredits() > 0){
                         hasCredit = true;
                     }
 
-                    //sms event
-                    SchedulerSubType subType = SchedulerSubType.find.where()
-                            .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_SOD_JOB_ALERT)
-                            .findUnique();
-
-                    SchedulerType type = SchedulerType.find.where()
-                            .eq("schedulerTypeId", SCHEDULER_TYPE_SMS).findUnique();
-
-                    //recruiter has interview credits
-                    Timestamp startTime = new Timestamp(System.currentTimeMillis());
 
                     //adding to notification Handler queue
                     for (Map.Entry<Long, CandidateWorkflowData> candidate : candidateSearchMap.entrySet()) {
@@ -77,35 +86,39 @@ public class SODNotifyCandidateAboutJobPostTask extends TimerTask {
                         Integer count = candidateToCountMap.get(candidate.getValue().getCandidate().getCandidateId());
                         candidateToCountMap.put(candidate.getValue().getCandidate().getCandidateId(), (count == null) ? 1 : count + 1);
 
-                        if(candidateToCountMap.get(candidate.getValue().getCandidate().getCandidateId()) < 3){
+                        if(candidateToCountMap.get(candidate.getValue().getCandidate().getCandidateId())
+                                < SchedulerConstants.CANDIDATE_JOB_POST_ALERT_MAX_LIMIT)
+                        {
+
+                            totalAlerts++;
+
                             //sending sms
-                            SmsUtil.sendSODJobPostInfoSmsToCandidate(jobPost, candidate.getValue().getCandidate(), hasCredit);
+                            SmsUtil.sendJobAlertSmsToCandidate(jobPost, candidate.getValue().getCandidate(), hasCredit);
 
                             //sending notification
-                            NotificationUtil.sendJobPostNotificationToCandidate(jobPost, candidate.getValue().getCandidate(), hasCredit);
+                            NotificationUtil.sendJobAlertNotificationToCandidate(jobPost, candidate.getValue().getCandidate(), hasCredit);
 
                         } else{
-                            Logger.info("Not sending as matching crossed more than 3. Val: "
-                                    + candidateToCountMap.get(candidate.getValue().getCandidate().getCandidateId()));
+
+                            Logger.info("Not sending as matching crossed more than " +
+                                    SchedulerConstants.CANDIDATE_JOB_POST_ALERT_MAX_LIMIT + " for candidate id: " +
+                                    candidate.getValue().getCandidate().getCandidateId());
                         }
                     }
-
-                    //saving stats for sms event
-                    Timestamp endTime = new Timestamp(System.currentTimeMillis());
-
-                    String note = "SMS alert for New Job alert.";
-
-                    SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
-
-                    //saving stats for fcm event
-                    note = "Android notification alert for New Job alert.";
-
-                    SchedulerType typeFcm = SchedulerType.find.where()
-                            .eq("schedulerTypeId", SCHEDULER_TYPE_FCM).findUnique();
-
-                    SchedulerManager.saveNewSchedulerStats(startTime, typeFcm, subType, note, endTime, true);
                 }
             }
+
+            //saving stats for sms event
+            Timestamp endTime = new Timestamp(System.currentTimeMillis());
+
+            String note = "SMS alert for " + jobPostList.size() + " new Job posts. Total alerts: " + totalAlerts;
+
+            SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
+
+            //saving stats for fcm event
+            note = "Android notification alert for " + jobPostList.size() + " new Job posts. Total alerts: " + totalAlerts;
+
+            SchedulerManager.saveNewSchedulerStats(startTime, typeFcm, subType, note, endTime, true);
 
         }).start();
     }

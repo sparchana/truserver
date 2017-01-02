@@ -358,5 +358,4 @@ public class ServerConstants {
     public static final int ANDROID_INTENT_ACTIVITY_INTERVIEW_TIPS = 8;
 
     public static final String CREATED_BY = "Candidate";
-
 }

@@ -14,6 +14,7 @@ import api.http.httpResponse.interview.InterviewResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Model;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import controllers.scheduler.SchedulerConstants;
 import dao.JobPostDAO;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
@@ -1166,7 +1167,7 @@ public class JobService {
                 null, //education
                 null, //locality
                 null, //language list
-                20.00);
+                SchedulerConstants.NEW_JOB_MATCHING_DEFAULT_DISTANCE_RADIUS);
 
         if(candidateSearchMap != null){
             Logger.info("Sending notification to " + candidateSearchMap.size() + " candidates regarding the jobPost: " + jobPost.getJobPostTitle());
@@ -1180,8 +1181,12 @@ public class JobService {
             for (Map.Entry<Long, CandidateWorkflowData> candidate : candidateSearchMap.entrySet()) {
 
                 //here there are 2 types of sms/fcm notification is being triggered. It is being differentiated by 'hasCredit' flag
-                SmsUtil.sendSODJobPostInfoSmsToCandidate(jobPost, candidate.getValue().getCandidate(), hasCredit);
-                NotificationUtil.sendJobPostNotificationToCandidate(jobPost, candidate.getValue().getCandidate(), hasCredit);
+                // limiting it to 500
+
+                for(int i = 0; i< SchedulerConstants.NEW_JOB_ALERT_LIMIT; i++){
+                    SmsUtil.sendJobAlertSmsToCandidate(jobPost, candidate.getValue().getCandidate(), hasCredit);
+                    NotificationUtil.sendJobAlertNotificationToCandidate(jobPost, candidate.getValue().getCandidate(), hasCredit);
+                }
             }
         }
     }

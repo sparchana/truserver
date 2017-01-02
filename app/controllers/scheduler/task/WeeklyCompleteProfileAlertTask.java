@@ -2,6 +2,7 @@ package controllers.scheduler.task;
 
 import api.http.FormValidator;
 import controllers.businessLogic.CandidateService;
+import controllers.scheduler.SchedulerConstants;
 import controllers.scheduler.SchedulerManager;
 import dao.CandidateDAO;
 import models.entity.Candidate;
@@ -39,7 +40,7 @@ public class WeeklyCompleteProfileAlertTask extends TimerTask {
                         .convertToIndianMobileFormat(candidate.getCandidateMobile())) * 100 * scale) / scale;
                 candidate.setCandidateScore((int) percentValue);
 
-                if(percentValue < 80){
+                if(percentValue < SchedulerConstants.WEEKLY_TASK_DEFAULT_PROFILE_SCORE){
                     candidateList.add(candidate);
                 }
 

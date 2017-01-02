@@ -70,7 +70,7 @@ public class SchedulerManager implements Runnable {
         long sdiDelay = computeDelayForSDI(sameDayInterviewAlertEventPeriod);
 
         // weekly tasks
-        long weeklyAppDownloadTaskDelay = computeDelayForWeeklyTask(mWeeklyNotifyAppDownloadDay, mWeeklyNotifyAppDownloadHr,
+        long weeklyCandidateAlertTaskDelay = computeDelayForWeeklyTask(mWeeklyNotifyAppDownloadDay, mWeeklyNotifyAppDownloadHr,
                 mWeeklyNotifyAppDownloadMin , mWeeklyNotifyAppDownloadSec);
 
         long weeklyProfileCompletionTaskDelay = computeDelayForWeeklyTask(mWeeklyProfileCompletionDay, mWeeklyProfileCompletionHr,
@@ -89,7 +89,7 @@ public class SchedulerManager implements Runnable {
 
 //        createEODRateUsPostInterviewEvent(rateUsPostInterviewDelay);
 
-//        createWeeklyAppDownloadEvent(weeklyAppDownloadTaskDelay);
+//        createWeeklyAppDownloadEvent(weeklyCandidateAlertTaskDelay);
 
 //        createWeeklyProfileCompletionEvent(weeklyProfileCompletionTaskDelay);
     }

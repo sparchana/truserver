@@ -1,8 +1,8 @@
 package controllers.scheduler.task;
 
-import api.ServerConstants;
 import api.http.FormValidator;
 import controllers.businessLogic.JobSearchService;
+import controllers.scheduler.SchedulerConstants;
 import controllers.scheduler.SchedulerManager;
 import dao.CandidateDAO;
 import models.entity.Candidate;
@@ -16,7 +16,6 @@ import models.util.SmsUtil;
 import play.Logger;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.TimerTask;
@@ -43,10 +42,10 @@ public class WeeklyCandidateAlertTask extends TimerTask {
             Timestamp startTime = new Timestamp(System.currentTimeMillis());
 
             int i;
-            for(i = 0; i< 200; i++){
+            for(i = 0; i< SchedulerConstants.CANDIDATE_ALERT_TASK_WEEKLY_LIMIT; i++){
 
                 //sending sms
-                SmsUtil.sendWeeklySmsToDownloadAndroidApp(candidateList.get(i));
+                SmsUtil.sendAppDownloadSms(candidateList.get(i));
             }
 
             //saving stats for sms event
@@ -58,7 +57,7 @@ public class WeeklyCandidateAlertTask extends TimerTask {
         }).start();
     }
 
-    private void sendSmsToCandidateToNotifyNearbyJobs(){
+    private void sendSmsToCandidateToNotifyNearbyJobs(Integer noOfDays){
         new Thread(() -> {
 
             Logger.info("Sending sms notification to candidates to tell them the no. of matching jobs around them");
@@ -75,7 +74,12 @@ public class WeeklyCandidateAlertTask extends TimerTask {
 
             Timestamp startTime = new Timestamp(System.currentTimeMillis());
 
-            for(Candidate candidate : CandidateDAO.getAllActiveCandidateWithinProvidedDays(7)){
+            List<Candidate> candidateList = CandidateDAO.getAllActiveCandidateWithinProvidedDays(noOfDays);
+
+            Collections.shuffle(candidateList);
+
+            int smsCount = 0;
+            for(Candidate candidate : candidateList){
                 int jobsCount = 0;
                 String jobRoles = "";
 
@@ -91,8 +95,12 @@ public class WeeklyCandidateAlertTask extends TimerTask {
 
                 if(jobsCount > 0){
 
-                    //sending sms
-                    SmsUtil.sendWeeklySmsToNotifyNoOfMatchingJobs(candidate, jobsCount, jobRoles.substring(0, jobRoles.length() - 2));
+                    //checking for daily limit for sms
+                    if(smsCount <= SchedulerConstants.CANDIDATE_ALERT_TASK_WEEKLY_LIMIT){
+                        //sending sms
+                        SmsUtil.sendWeeklySmsToNotifyNoOfMatchingJobs(candidate, jobsCount, jobRoles.substring(0, jobRoles.length() - 2));
+                        smsCount++;
+                    }
 
                     //sending notification
                     NotificationUtil.sendWeeklyMatchingJobsNotification(candidate, jobsCount, jobRoles.substring(0, jobRoles.length() - 2));
@@ -103,17 +111,11 @@ public class WeeklyCandidateAlertTask extends TimerTask {
             //saving stats for sms event
             String note = "SMS alert for candidate to notify about no. of matching jobs.";
 
-            SchedulerStats newSchedulerStats = new SchedulerStats();
-            newSchedulerStats.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
-
             Timestamp endTime = new Timestamp(System.currentTimeMillis());
             SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
 
             //saving stats for fcm event
             note = "Android notification alert for candidate to notify about no. of matching jobs.";
-
-            newSchedulerStats = new SchedulerStats();
-            newSchedulerStats.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
 
             endTime = new Timestamp(System.currentTimeMillis());
 
@@ -133,6 +135,6 @@ public class WeeklyCandidateAlertTask extends TimerTask {
         sendAppDownloadSmsToCandidate(candidateList);
 
         //weekly task to notify no. of matching jobs to the candidate
-        sendSmsToCandidateToNotifyNearbyJobs();
+        sendSmsToCandidateToNotifyNearbyJobs(SchedulerConstants.CANDIDATE_ALERT_TASK_LAST_ACTIVE_DEFAULT_DAYS);
     }
 }
