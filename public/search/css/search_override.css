@@ -1,6 +1,5 @@
 /*
 this css make sure at the end the override are proper
-
 */
 .jobMoreBtn{
     margin-top:1%;
@@ -213,12 +212,48 @@ input[type=text]:focus:not([readonly]){
 #searchText{
     box-shadow: none;
 }
+#sortByMobileViewBtn{
+    color: #000;
+    background-color: #fff;
+    width: 100%;
+}
+#filterMobileViewBtn{
+    color: #000;
+    background-color: #fff;
+    width: 100%;
+}
+#searchBarOuterMainCol{
+    margin-top: 4%;
+}
+div.form-control.Tokenize.OnlyOne{
+    z-index: 0;
+}
 @media screen and (max-width: 768px) {
+    div.Tokenize ul.TokensContainer li.Placeholder{
+        margin: 0;
+    }
+    div.Tokenize ul.Dropdown li{
+        margin: 10px 0px;
+
+    }
+    #searchBarOuterMainCol{
+        margin-top: 16%;
+    }
+    #searchLocationBox{
+        margin:5px 0;
+    }
+    #searchEducationBox{
+        margin: 5px 0;
+    }
+    #searchExperienceBox{
+        margin: 5px 0;
+    }
     .jobApplyBtn2{
+        margin: 5px;
         width: 100%;
     }
     #searchBarDivMain {
-        padding: 2%;
+        padding: 4%;
     }
     .awesomplete > ul > li{
         margin: 2% 0;
@@ -229,12 +264,17 @@ input[type=text]:focus:not([readonly]){
         margin: 2px;
         height: 38px;
     }
-
     #searchBtn {
         margin-top: 10px;
         border-radius: 2px;
         background: #ff3d00;
         color: #fff;
+    }
+    #sortMainBox{
+        display: none;
+    }
+    #filterMainBox{
+        display: none;
     }
 
     /*.registerBox {
