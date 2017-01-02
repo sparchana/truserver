@@ -1301,7 +1301,7 @@ var app = (function ($) {
 
                 app.currentFilterParams.selectedGender = null;
                 app.currentFilterParams.selectedLanguageIdList = [];
-                app.currentSortParams.sortBy = 1; // default set to sort by relevance
+                app.currentSortParams.sortBy = 5; // default set to sort by relevance
 
                 app.do.search(true);
             }
@@ -1362,9 +1362,9 @@ var app = (function ($) {
                 if(gender == null || gender == 2 ){
                     return "Any";
                 } else if (gender == 0){
-                    return "Female";
-                } else if (gender == 1){
                     return "Male";
+                } else if (gender == 1){
+                    return "Female";
                 }
                 return "";
             },

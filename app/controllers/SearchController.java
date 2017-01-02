@@ -82,7 +82,7 @@ public class SearchController extends Controller {
                     Expr.and(
                             Expr.eq("CompStatus", ServerConstants.COMPANY_STATUS_ACTIVE),
                             Expr.and(
-                                    Expr.eq("Source", ServerConstants.SOURCE_INTERNAL),
+                                    Expr.ne("Source", ServerConstants.SOURCE_BABAJOBS),
                                     Expr.like("companyName", keyword + "%")
                             )
                     )
@@ -93,7 +93,9 @@ public class SearchController extends Controller {
 
         // extract string from  the list
         for(Company company:  companyEL.findList()){
-            if(company != null && company.getSource() != null && company.getSource() == ServerConstants.SOURCE_INTERNAL){
+            // TODO: Weird !! above query is unable to filter data for source in company status hence source check added
+            if(company != null && ( company.getSource() == null ||
+                    company.getSource() != ServerConstants.SOURCE_BABAJOBS)){
                 suggestionMap.putIfAbsent(company.getCompanyName(), company.getCompanyName());
             }
         }
@@ -106,7 +108,7 @@ public class SearchController extends Controller {
             if(keyword.replace(" ", "").trim().isEmpty()){
                 continue;
             }
-            companyJunction.add(
+            jobPostJunction.add(
                     Expr.and(
                             Expr.eq("Source", ServerConstants.SOURCE_INTERNAL),
                             Expr.and(

@@ -533,7 +533,7 @@ public class JobSearchService {
             query = query.orderBy().desc("JobPostIsHot");
             query = query.orderBy().desc("jobPostUpdateTimestamp");
 
-            Logger.info("sort by null");
+            Logger.info("sort by " + sortBy);
             modifiedSortBy = SORT_BY_DATE_POSTED;
             doSortByDistance = false;
         }
