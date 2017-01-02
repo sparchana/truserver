@@ -2312,23 +2312,31 @@ public class Application extends Controller {
     public static Result receiveParsedResume() {
 
         JsonNode req = request().body().asJson();
-        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
-        HireWandResponse hireWandResponse = new HireWandResponse();
-        ObjectMapper newMapper = new ObjectMapper();
-        try {
-            hireWandResponse = newMapper.readValue(req.toString(), HireWandResponse.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        hireWandResponse.Profile.ProfileJSON = req.path("Profile").asText();
-        Logger.info("hireWandResponse.toString() = "+hireWandResponse.toString());
+        Logger.info("request()="+request().toString());
+        Logger.info("request().body()="+request().body().toString());
+        Logger.info("request().getQueryString(profile)="+request().getQueryString("profile"));
 
-        if(hireWandResponse.Profile != null){
-            CandidateService.updateResume(hireWandResponse.PersonId, hireWandResponse.Profile,hireWandResponse.Duplicate);
-            return ok();
-        }
-        else return internalServerError();
+        if(req != null){
+            Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+            HireWandResponse hireWandResponse = new HireWandResponse();
+            ObjectMapper newMapper = new ObjectMapper();
+            try {
+                hireWandResponse = newMapper.readValue(req.toString(), HireWandResponse.class);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            hireWandResponse.Profile.ProfileJSON = req.path("Profile").asText();
+            Logger.info("hireWandResponse.toString() = "+hireWandResponse.toString());
 
+            if(hireWandResponse.Profile != null){
+                CandidateService.updateResume(hireWandResponse.PersonId, hireWandResponse.Profile,hireWandResponse.Duplicate);
+                return ok();
+            }
+            else return internalServerError();
+        }
+        else{
+            return badRequest();
+        }
     }
 
 }
