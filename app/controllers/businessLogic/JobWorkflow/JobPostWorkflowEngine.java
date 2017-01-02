@@ -2358,19 +2358,22 @@ public class JobPostWorkflowEngine {
             return null;
         }
 
+
+        /* TODO remove commented out code after further clarification */
         if(RecruiterService.isInterviewRequired(jobPostWorkflowCurrent.getJobPost()).getStatus() == ServerConstants.INTERVIEW_NOT_REQUIRED) {
 
-            JobPost jobPost = jobPostWorkflowCurrent.getJobPost();
-            JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", candidate.getCandidateId()).eq("jobPostId", jobPost.getJobPostId()).findUnique();
-
-
-            SmsUtil.sendJobApplicationSms(
-                    candidate.getCandidateFirstName(), jobPost.getJobPostTitle(), jobPost.getCompany().getCompanyName(), candidate.getCandidateMobile(),
-                    existingJobApplication.getLocality().getLocalityName(), channel);
-
-            //sending notification
-            NotificationUtil.sendJobApplicationNotification(candidate, jobPost.getJobPostTitle(), jobPost.getCompany().getCompanyName(),
-                    existingJobApplication.getLocality().getLocalityName());
+//            JobPost jobPost = jobPostWorkflowCurrent.getJobPost();
+//            JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", candidate.getCandidateId()).eq("jobPostId", jobPost.getJobPostId()).findUnique();
+//
+//
+                /* TODO fix this, when support moves a candidate, it doesn't go to 'jobapplication' table, hence 'existingJobApplication' will be null */
+////            SmsUtil.sendJobApplicationSms(
+////                    candidate.getCandidateFirstName(), jobPost.getJobPostTitle(), jobPost.getCompany().getCompanyName(), candidate.getCandidateMobile(),
+////                    existingJobApplication.getLocality().getLocalityName(), channel);
+////
+////            //sending notification
+////            NotificationUtil.sendJobApplicationNotification(candidate, jobPost.getJobPostTitle(), jobPost.getCompany().getCompanyName(),
+////                    existingJobApplication.getLocality().getLocalityName());
 
             return "OK";
         }
