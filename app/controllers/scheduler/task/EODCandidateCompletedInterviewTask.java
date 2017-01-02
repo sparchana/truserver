@@ -3,7 +3,6 @@ package controllers.scheduler.task;
 import controllers.scheduler.SchedulerManager;
 import dao.JobPostWorkFlowDAO;
 import models.entity.OM.JobPostWorkflow;
-import models.entity.scheduler.SchedulerStats;
 import models.entity.scheduler.Static.SchedulerSubType;
 import models.entity.scheduler.Static.SchedulerType;
 import models.util.NotificationUtil;
@@ -51,7 +50,7 @@ public class EODCandidateCompletedInterviewTask extends TimerTask {
                 SmsUtil.sendEODCandidateFeedbackSms(jpwf.getJobPost(), jpwf.getCandidate());
 
                 //sending notification
-                NotificationUtil.sendEODNotificationToCandidatePostInterview(jpwf.getJobPost(), jpwf.getCandidate());
+                NotificationUtil.EODCandidatefeedbackNotification(jpwf.getJobPost(), jpwf.getCandidate());
 
             }
 

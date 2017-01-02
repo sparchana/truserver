@@ -148,7 +148,7 @@ public class NotificationUtil {
         }
     }
 
-    public static void sendEODNotificationToCandidatePostInterview(JobPost jobPost, Candidate candidate) {
+    public static void EODCandidatefeedbackNotification(JobPost jobPost, Candidate candidate) {
         String msg = "Hi " + candidate.getCandidateFirstName() + ", you had an interview today for " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". " +
                 "How would you rate your experience with TruJobs? Please rate us on bit.ly/trujobsapp";
 

@@ -6,6 +6,7 @@ import controllers.businessLogic.JobService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerConstants;
 import controllers.scheduler.SchedulerManager;
+import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.scheduler.Static.SchedulerSubType;
 import models.entity.scheduler.Static.SchedulerType;
@@ -14,10 +15,7 @@ import models.util.SmsUtil;
 import play.Logger;
 
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimerTask;
+import java.util.*;
 
 import static controllers.scheduler.SchedulerConstants.*;
 
@@ -56,9 +54,11 @@ public class SODNotifyCandidateAboutJobPostTask extends TimerTask {
             Timestamp startTime = new Timestamp(System.currentTimeMillis());
 
             Integer totalAlerts = 0;
+            Integer candidateCount = 0;
 
             for(JobPost jobPost : jobPostList){
-                Map<Long, CandidateWorkflowData> candidateSearchMap = JobPostWorkflowEngine.getCandidateForRecruiterSearch(
+                Map<Long, CandidateWorkflowData> candidateSearchMap = JobPostWorkflowEngine.getMatchingCandidate(
+                        jobPost.getJobPostId(),
                         null, //age
                         null, //min salary
                         null, //max salary
@@ -67,11 +67,20 @@ public class SODNotifyCandidateAboutJobPostTask extends TimerTask {
                         jobPost.getJobRole().getJobRoleId(), //jobRole
                         null, //education
                         null, //locality
-                        null, //language list
+                        null, //language list,
+                        null, //document List
+                        null, //asset list
                         20.00);
 
                 if(candidateSearchMap != null){
-                    Logger.info("Sending notification to " + candidateSearchMap.size() + " candidates regarding the jobPost: " + jobPost.getJobPostTitle()
+                    List<Candidate> candidateList = new ArrayList<>();
+                    for (Map.Entry<Long, CandidateWorkflowData> candidate : candidateSearchMap.entrySet()) {
+                        candidateList.add(candidate.getValue().getCandidate());
+                    }
+
+                    Collections.shuffle(candidateList);
+
+                    Logger.info("Sending notification to " + SchedulerConstants.JOB_ALERT_DEFAULT_LIMIT + " candidates regarding the jobPost: " + jobPost.getJobPostTitle()
                     + " of company: " + jobPost.getCompany().getCompanyName());
 
                     Boolean hasCredit = false;
@@ -79,30 +88,34 @@ public class SODNotifyCandidateAboutJobPostTask extends TimerTask {
                         hasCredit = true;
                     }
 
+                    candidateCount = 0;
 
-                    //adding to notification Handler queue
-                    for (Map.Entry<Long, CandidateWorkflowData> candidate : candidateSearchMap.entrySet()) {
+                   //adding to notification Handler queue
+                    for (Candidate candidate : candidateList) {
 
-                        Integer count = candidateToCountMap.get(candidate.getValue().getCandidate().getCandidateId());
-                        candidateToCountMap.put(candidate.getValue().getCandidate().getCandidateId(), (count == null) ? 1 : count + 1);
+                        candidateCount++;
+                        Integer count = candidateToCountMap.get(candidate.getCandidateId());
+                        candidateToCountMap.put(candidate.getCandidateId(), (count == null) ? 1 : count + 1);
 
-                        if(candidateToCountMap.get(candidate.getValue().getCandidate().getCandidateId())
+                        if(candidateToCountMap.get(candidate.getCandidateId())
                                 < SchedulerConstants.CANDIDATE_JOB_POST_ALERT_MAX_LIMIT)
                         {
+                            if(candidateCount <= SchedulerConstants.JOB_ALERT_DEFAULT_LIMIT){
+                                totalAlerts++;
 
-                            totalAlerts++;
+                                //sending sms
+                                SmsUtil.sendJobAlertSmsToCandidate(jobPost, candidate, hasCredit);
 
-                            //sending sms
-                            SmsUtil.sendJobAlertSmsToCandidate(jobPost, candidate.getValue().getCandidate(), hasCredit);
+                                //sending notification
+                                NotificationUtil.sendJobAlertNotificationToCandidate(jobPost, candidate, hasCredit);
 
-                            //sending notification
-                            NotificationUtil.sendJobAlertNotificationToCandidate(jobPost, candidate.getValue().getCandidate(), hasCredit);
+                            }
 
                         } else{
 
                             Logger.info("Not sending as matching crossed more than " +
                                     SchedulerConstants.CANDIDATE_JOB_POST_ALERT_MAX_LIMIT + " for candidate id: " +
-                                    candidate.getValue().getCandidate().getCandidateId());
+                                    candidate.getCandidateId());
                         }
                     }
                 }

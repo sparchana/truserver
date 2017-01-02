@@ -89,7 +89,7 @@ public class SchedulerManager implements Runnable {
 
 //        createEODRateUsPostInterviewEvent(rateUsPostInterviewDelay);
 
-//        createWeeklyAppDownloadEvent(weeklyCandidateAlertTaskDelay);
+//        createWeeklyAlertEvent(weeklyCandidateAlertTaskDelay);
 
 //        createWeeklyProfileCompletionEvent(weeklyProfileCompletionTaskDelay);
     }
@@ -143,8 +143,8 @@ public class SchedulerManager implements Runnable {
         timer.schedule(eodCandidateCompletedInterviewTask, delay, oneDay);
     }
 
-    private void createWeeklyAppDownloadEvent(long delay){
-        Logger.info("Send alert candidate not downloaded the app yet!");
+    private void createWeeklyAlertEvent(long delay){
+        Logger.info("Send alert candidate who have not downloaded the app yet!");
 
         WeeklyCandidateAlertTask weeklyCandidateAlertTask = new WeeklyCandidateAlertTask();
         timer.schedule(weeklyCandidateAlertTask, delay, oneWeek);
