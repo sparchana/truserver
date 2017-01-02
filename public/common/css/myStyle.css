@@ -759,9 +759,13 @@ hr{
     display: block;
 }
 #searchBar .form-control{
-    border:0px;
+    border-radius: 0;
+    border-right:0;
+    border-top:0;
+    border-bottom:0;
+    border-left:1px solid rgba(170, 170, 170, 0.33);
     width: 100%;
-    height: 42px;
+    height: 38px;
 }
 #searchBar .form-control:focus{
     border:0px;
@@ -851,12 +855,22 @@ hr{
     background: #fff;
     color:#ff3d00;
 }
-
+#searchBtnCol{
+    padding:6px 0 0 0;
+}
 @media screen and (max-width: 768px) {
+    #searchBtnCol{
+        padding:6px 0 10px 0;
+    }
     #searchBarDivMain{
     padding: 2%;
     }
     #searchBar .form-control{
+        border-radius: 0;
+        border-right:0;
+        border-top:0;
+        border-bottom:1px solid rgba(170, 170, 170, 0.33);
+        border-left:0;
         border-radius:2px;
         margin: 2px;
         height: 38px;
