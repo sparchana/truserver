@@ -2319,19 +2319,21 @@ public class Application extends Controller {
         // is parsed resume available?
         if(profile != null){
             Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Parsed Resume Profile: " + profile);
-            HireWandResponse hireWandResponse = null;
+            HireWandResponse.Profile hireWandResponse = null;
             // try to map it to HireWandResponse
             ObjectMapper newMapper = new ObjectMapper();
             try {
-                hireWandResponse = newMapper.readValue(profile, HireWandResponse.class);
+                hireWandResponse = newMapper.readValue(profile, HireWandResponse.Profile.class);
             } catch (IOException e) {
                 e.printStackTrace();
                 Logger.info("Error while mapping from request to HireWandResponse");
                 return internalServerError();
             }
             // Check if the mapping was successful
-            if(hireWandResponse != null && hireWandResponse.Profile != null){
-
+            if(hireWandResponse != null /*&& hireWandResponse.Profile != null*/){
+                Logger.info("Mapper converted successfully");
+                return ok();
+                /*
                 // keep a copy of the raw string
                 hireWandResponse.Profile.ProfileJSON = profile;
                 Logger.info("hireWandResponse.Profile.ProfileJSON="+hireWandResponse.Profile.ProfileJSON);
@@ -2352,7 +2354,7 @@ public class Application extends Controller {
                 else {
                     Logger.info("Hirewand callback invoked with empty PersonID");
                     return badRequest();
-                }
+                }*/
 
             }
             else {
