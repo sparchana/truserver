@@ -2319,7 +2319,12 @@ public class Application extends Controller {
         Logger.info("request.asFormUrlEncoded().keySet().size()="+request().body().asFormUrlEncoded().keySet().size());
 
         for (String key : request().body().asFormUrlEncoded().keySet()) {
-            Logger.info(key + " = " + request().body().asFormUrlEncoded().get(key).toString());
+            String[] values = request().body().asFormUrlEncoded().get(key);
+            Logger.info("Key = "+key);
+            Logger.info("Value = ");
+            for(String value: values){
+                Logger.info(value);
+            }
         }
 
         if(req != null){
