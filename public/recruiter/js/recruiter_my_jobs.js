@@ -34,7 +34,6 @@ $(document).ready(function(){
             type: "POST",
             url: "/getAllRecruiterJobPosts",
             data: false,
-            async: false,
             contentType: false,
             processData: false,
             success: processDataGenerateJobPostView,

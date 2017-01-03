@@ -106,7 +106,6 @@ $(document).ready(function(){
             type: "POST",
             url: "/getAllRecruiterJobPosts",
             data: false,
-            async: false,
             contentType: false,
             processData: false,
             success: processDataGetJobPostDetails
@@ -154,7 +153,6 @@ function processDataGetJobPostDetails(returnedData) {
             $.ajax({
                 type: "POST",
                 url: "/getTodayInterviewDetails",
-                async: false,
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(d),
                 success: processDataInterviewToday,
