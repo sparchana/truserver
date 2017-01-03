@@ -805,7 +805,7 @@ var app = (function ($) {
 
                                 var jobCompany= document.createElement("p");
                                 jobCompany.textContent = jobPost.jobRole.jobName + " Job | "+ jobPost.company.companyName;
-                                jobCompany.style = "color:rgba(0, 159, 219, 0.99)";
+                                jobCompany.style = "color:rgba(0, 159, 219, 0.99);font-weight:600";
                                 jobBodyCol.appendChild(jobCompany);
 
 
@@ -1473,10 +1473,9 @@ var app = (function ($) {
 
     // this detect the typing even on the search bar
     $('#searchText').on('keyup',function (event) {
-        if(((event.keyCode >= 48 && event.keyCode <= 57)
-            || (event.keyCode >= 65 && event.keyCode <= 90) )){
-            // trigger suggestion only when typing alpha numeric is happening
+        if(!(event.keyCode >= 32 && event.keyCode <= 47) && (event.keyCode != 13)){
             app.render.renderTextSearch();
+            // trigger suggestion only when typing alpha numeric is happening
         }
     });
 
