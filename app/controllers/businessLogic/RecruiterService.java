@@ -580,24 +580,16 @@ public class RecruiterService {
                     recruiterCreditHistory.setRecruiterCreditPackNo(history.getRecruiterCreditPackNo());
 
                     recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
-                    recruiterCreditHistory.setCreditsAdded(0);
                     recruiterCreditHistory.setExpiryDate(history.getExpiryDate());
                     recruiterCreditHistory.setCreditIsExpired(false);
                     recruiterCreditHistory.setLatest(true);
                     recruiterCreditHistory.setUnits(-available);
-
-
-                    recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
 
                     //saving the values
                     recruiterCreditHistory.save();
 
                     history.setLatest(false);
                     history.update();
-
-                    //saving the values
-                    recruiterCreditHistory.save();
-
 
                 } else{
 
@@ -619,8 +611,7 @@ public class RecruiterService {
                     recruiterCreditHistory.setRecruiterCreditPackNo(history.getRecruiterCreditPackNo());
 
                     recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
-                    recruiterCreditHistory.setCreditsAdded(0);
-                    recruiterCreditHistory.setUnits(-credits);
+                    recruiterCreditHistory.setUnits(credits);
 
                     recruiterCreditHistory.setExpiryDate(history.getExpiryDate());
                     recruiterCreditHistory.setCreditIsExpired(false);
@@ -632,10 +623,6 @@ public class RecruiterService {
 
                     history.setLatest(false);
                     history.update();
-
-                    //saving the values
-                    recruiterCreditHistory.save();
-
                 }
 
 
@@ -679,19 +666,16 @@ public class RecruiterService {
         recruiterCreditHistory.setRecruiterProfile(existingRecruiter);
 
         //credit
-        RecruiterCreditHistory latestPack = RecruiterCreditHistoryDAO.getLatestRecruiterCreditPack(
-                ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, existingRecruiter);
+        RecruiterCreditHistory latestPack = RecruiterCreditHistoryDAO.getLatestRecruiterCreditPackDetails(
+                existingRecruiter);
 
         if (latestPack == null){
             recruiterCreditHistory.setRecruiterCreditPackNo(1);
         } else{
-
-            RecruiterCreditHistory latest = RecruiterCreditHistoryDAO.getLatestRecruiterCreditPackDetails(existingRecruiter);
-            recruiterCreditHistory.setRecruiterCreditPackNo(latest.getRecruiterCreditPackNo() + 1); //adding a new pack
+            recruiterCreditHistory.setRecruiterCreditPackNo(latestPack.getRecruiterCreditPackNo() + 1); //adding a new pack
         }
         recruiterCreditHistory.setRecruiterCreditsAvailable(availableCredits + totalCredits);
         recruiterCreditHistory.setRecruiterCreditsUsed(usedCredits);
-        recruiterCreditHistory.setCreditsAdded(totalCredits);
         recruiterCreditHistory.setExpiryDate(expiryDate);
         recruiterCreditHistory.setCreditIsExpired(false);
         recruiterCreditHistory.setLatest(true);

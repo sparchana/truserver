@@ -56,11 +56,7 @@ public class EODDebitCreditInterviewCreditTask extends TimerTask {
 
             List<RecruiterCreditHistory> packList = RecruiterCreditHistoryDAO.getAllPacksExpiringToday();
 
-            Integer creditsExpiring;
             for(RecruiterCreditHistory pack : packList){
-                creditsExpiring = pack.getRecruiterCreditsAvailable();
-                pack.setRecruiterCreditsAvailable(0);
-                pack.setRecruiterCreditsUsed(pack.getRecruiterCreditsUsed() + creditsExpiring);
                 pack.setCreditIsExpired(true);
                 pack.update();
             }
@@ -94,17 +90,17 @@ public class EODDebitCreditInterviewCreditTask extends TimerTask {
 
     public static Map<RecruiterProfile, Integer> returnMapData(List<JobPostWorkflow> jobPostWorkflowList){
 
-        Map<RecruiterProfile, Integer> recruiterCreditMap = new HashMap<RecruiterProfile, Integer>();
+        Map<RecruiterProfile, Integer> recruiterToCreditCountMap = new HashMap<RecruiterProfile, Integer>();
 
         for(JobPostWorkflow jobPostWorkflow : jobPostWorkflowList){
             if(jobPostWorkflow.getJobPost().getRecruiterProfile() != null){
                 RecruiterProfile recruiterProfile = jobPostWorkflow.getJobPost().getRecruiterProfile();
 
-                Integer count = recruiterCreditMap.get(recruiterProfile);
-                recruiterCreditMap.put(recruiterProfile, (count == null) ? 1 : count + 1);
+                Integer count = recruiterToCreditCountMap.get(recruiterProfile);
+                recruiterToCreditCountMap.put(recruiterProfile, (count == null) ? 1 : count + 1);
             }
         }
 
-        return recruiterCreditMap;
+        return recruiterToCreditCountMap;
     }
 }
