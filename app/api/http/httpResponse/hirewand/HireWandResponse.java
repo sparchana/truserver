@@ -1,6 +1,7 @@
 package api.http.httpResponse.hirewand;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import models.entity.Static.Skill;
 import play.Logger;
 import java.lang.reflect.Field;
 import java.util.Date;
@@ -82,7 +83,7 @@ public class HireWandResponse {
         public static class Education {
 
             @JsonIgnoreProperties(ignoreUnknown=true)
-            public class College {
+            public static class College {
                 public String name;
                 public String city;
                 public String tier;
@@ -160,7 +161,7 @@ public class HireWandResponse {
 
         @JsonIgnoreProperties(ignoreUnknown=true)
         public static class WorkExperience {
-            public class Skill{
+            public static class Skill{
                 public String skill;
                 public Integer duration;
 
