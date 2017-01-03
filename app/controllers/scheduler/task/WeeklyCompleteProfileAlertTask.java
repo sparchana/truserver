@@ -50,6 +50,8 @@ public class WeeklyCompleteProfileAlertTask extends TimerTask {
 
             Logger.info("Sending profile completion alert to " + candidateList.size() + " candidates");
 
+            int totalAlertCount = 0;
+
             SchedulerSubType subType = SchedulerSubType.find.where()
                     .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_PROFILE_COMPLETE)
                     .findUnique();
@@ -69,6 +71,7 @@ public class WeeklyCompleteProfileAlertTask extends TimerTask {
 
                 //sending notification
                 NotificationUtil.sendWeeklyNotificationToCompleteProfile(candidate);
+                totalAlertCount++;
             }
 
             //saving stats for sms event
@@ -83,6 +86,8 @@ public class WeeklyCompleteProfileAlertTask extends TimerTask {
             endTime = new Timestamp(System.currentTimeMillis());
 
             SchedulerManager.saveNewSchedulerStats(startTime, typeFcm, subType, note, endTime, true);
+
+            Logger.info("[Weekly candidate alert task to complete profile completed] alerts sent: " + totalAlertCount);
 
         }).start();
     }

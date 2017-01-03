@@ -67,6 +67,7 @@ public class EODCandidateCompletedInterviewTask extends TimerTask {
 
             SchedulerManager.saveNewSchedulerStats(startTime, typeFcm, subType, note, endTime, true);
 
+            Logger.info("[Completed] Sending alert to " + jobPostWorkflowList.size() + " candidates to rate us on play store");
         }).start();
     }
 

@@ -78,6 +78,8 @@ public class WeeklyCandidateAlertTask extends TimerTask {
 
             Collections.shuffle(candidateList);
 
+            int totalSmsAlertCount = 0;
+            int totalFCMAlertCount = 0;
             int smsCount = 0;
             for(Candidate candidate : candidateList){
                 int jobsCount = 0;
@@ -100,10 +102,12 @@ public class WeeklyCandidateAlertTask extends TimerTask {
                         //sending sms
                         SmsUtil.sendWeeklySmsToNotifyNoOfMatchingJobs(candidate, jobsCount, jobRoles.substring(0, jobRoles.length() - 2));
                         smsCount++;
+                        totalSmsAlertCount++;
                     }
 
                     //sending notification
                     NotificationUtil.sendWeeklyMatchingJobsNotification(candidate, jobsCount, jobRoles.substring(0, jobRoles.length() - 2));
+                    totalFCMAlertCount++;
                 }
             }
 
@@ -120,6 +124,8 @@ public class WeeklyCandidateAlertTask extends TimerTask {
             endTime = new Timestamp(System.currentTimeMillis());
 
             SchedulerManager.saveNewSchedulerStats(startTime, typeFcm, subType, note, endTime, true);
+
+            Logger.info("[Weekly candidate alert task Complete] SMS sent: " + totalSmsAlertCount + ", android notifications sent: " + totalFCMAlertCount);
 
         }).start();
     }
