@@ -154,7 +154,7 @@ public class SchedulerManager implements Runnable {
             shouldRunThisTask = true;
 
         } else {
-            if((schedulerStats.getStartTimestamp().getDate() < (today).getDate())) {
+            if((schedulerStats.getStartTimestamp().before(today) || schedulerStats.getStartTimestamp().equals(today))) {
                 // last run was 'x++' hr back, hence re run
                 shouldRunThisTask = true;
             }
