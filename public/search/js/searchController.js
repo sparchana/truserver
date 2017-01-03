@@ -1473,9 +1473,9 @@ var app = (function ($) {
 
     // this detect the typing even on the search bar
     $('#searchText').on('keyup',function (event) {
+        // remove action on key press of special char ASCII value and enter
         if(!(event.keyCode >= 32 && event.keyCode <= 47) && (event.keyCode != 13)){
             app.render.renderTextSearch();
-            // trigger suggestion only when typing alpha numeric is happening
         }
     });
 
