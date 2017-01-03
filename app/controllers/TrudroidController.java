@@ -1878,6 +1878,14 @@ public class TrudroidController {
             if (updateCandidateDocumentRequest.getIdProofList().size() < 1) {
                 // nothing to update
                 responseBuilder.setStatus(GenericResponse.Status.SUCCESS);
+
+                // Even though the list is empty, prescreen has been attempted from app hence make entry to jpwf
+                // with prescreen completed status.
+                if (updateCandidateDocumentRequest.getIsFinalFragment()) {
+                    JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(),
+                            updateCandidateDocumentRequest.getJobPostId(),
+                            InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
+                }
                 return ok(Base64.encodeBase64String(responseBuilder.build().toByteArray()));
             }
 

@@ -1,11 +1,11 @@
 package controllers.businessLogic;
 
+import api.GoogleSheetHttpRequest;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpRequest.ApplyJobRequest;
-import api.GoogleSheetHttpRequest;
 import api.http.httpResponse.AddJobPostResponse;
 import api.http.httpResponse.ApplyJobResponse;
 import api.http.httpResponse.CandidateWorkflowData;
@@ -15,9 +15,12 @@ import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Model;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import dao.JobPostDAO;
-import models.entity.Recruiter.RecruiterProfile;
-import models.entity.*;
+import models.entity.Candidate;
+import models.entity.Company;
+import models.entity.JobPost;
 import models.entity.OM.*;
+import models.entity.Partner;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
 import models.util.EmailUtil;
 import models.util.NotificationUtil;
@@ -25,19 +28,18 @@ import models.util.SmsUtil;
 import play.Logger;
 import play.api.Play;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.*;
 
-import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
-import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
-import static api.InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
+import static api.InteractionConstants.*;
 import static controllers.businessLogic.InteractionService.createInteractionForNewJobPost;
 import static models.util.EmailUtil.sendRecruiterJobPostLiveEmail;
-import static models.util.SmsUtil.*;
+import static models.util.SmsUtil.sendRecruiterFreeJobPostingSms;
+import static models.util.SmsUtil.sendRecruiterJobPostActivationSms;
 import static play.mvc.Controller.session;
-import static play.mvc.Results.ok;
 
 /**
  * Created by batcoder1 on 17/6/16.

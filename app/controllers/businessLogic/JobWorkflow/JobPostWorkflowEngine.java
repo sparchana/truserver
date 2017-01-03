@@ -1270,6 +1270,7 @@ public class JobPostWorkflowEngine {
         String interactionResult = "";
         Integer interactionType = null;
         if (preScreenRequest.isPass() != null) {
+
             JobPostWorkflowStatus status;
             if (preScreenRequest.isPass()) {
                 // passed
@@ -2359,7 +2360,6 @@ public class JobPostWorkflowEngine {
         }
 
 
-        /* TODO remove commented out code after further clarification */
         if(RecruiterService.isInterviewRequired(jobPostWorkflowCurrent.getJobPost()).getStatus() == ServerConstants.INTERVIEW_NOT_REQUIRED) {
 
             JobPost jobPost = jobPostWorkflowCurrent.getJobPost();
