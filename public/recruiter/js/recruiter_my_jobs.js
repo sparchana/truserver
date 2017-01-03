@@ -37,7 +37,12 @@ $(document).ready(function(){
             async: false,
             contentType: false,
             processData: false,
-            success: processDataGenerateJobPostView
+            success: processDataGenerateJobPostView,
+            error: function (jqXHR, exception) {
+                $("#somethingWentWrong").show();
+                $("#loadingIcon").hide();
+            }
+
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
@@ -69,6 +74,7 @@ function processDataGenerateJobPostView(returnedData) {
     if(returnedData == "0"){
         logoutRecruiter();
     } else{
+        $("#jobTable").show();
         newCount = 0;
         var jobPostList = [];
         $.each(returnedData, function (key, value) {
@@ -242,6 +248,7 @@ function processDataGenerateJobPostView(returnedData) {
             $("#noJobs").show();
             $("#jobTable").hide();
         }
+        $("#loadingIcon").hide();
     }
 }
 

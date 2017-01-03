@@ -136,6 +136,7 @@ function processDataGetJobPostDetails(returnedData) {
 
     if(jobPostList.length == 0){
         $("#noInterviews").show();
+        $("#loadingIcon").hide();
     }
 
     var jpId = [];
@@ -156,7 +157,11 @@ function processDataGetJobPostDetails(returnedData) {
                 async: false,
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(d),
-                success: processDataInterviewToday
+                success: processDataInterviewToday,
+                error: function (jqXHR, exception) {
+                    $("#somethingWentWrong").show();
+                    $("#loadingIcon").hide();
+                }
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);
@@ -247,6 +252,8 @@ function processDataInterviewToday(returnedData) {
         $("#noInterviews").show();
         $("#todayInterviewTable").hide();
     }
+
+    $("#loadingIcon").hide();
 }
 
 function openFeedbackModal(candidateId, jpId) {
