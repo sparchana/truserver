@@ -2312,8 +2312,9 @@ public class Application extends Controller {
 
     public static Result receiveParsedResume() {
 
-        Logger.info("request.asFormUrlEncoded().keySet().size()="+request().body().asFormUrlEncoded().keySet().size());
+        //Logger.info("request.asFormUrlEncoded().keySet().size()="+request().body().asFormUrlEncoded().keySet().size());
 
+        // build json string
         String json = "{";
         for(String key:request().body().asFormUrlEncoded().keySet()){
             json += "\""+key+"\":";
@@ -2346,12 +2347,25 @@ public class Application extends Controller {
             return internalServerError();
         }
         if(hireWandResponse != null){
-            Logger.info("hireWandResponse.personid="+hireWandResponse.personid);
-            Logger.info("hireWandResponse.profile.toString()="+hireWandResponse.profile.toString());
-            return ok();
+            // mapped successfully
+            Logger.info("Successfully mapped json to hireWandResponse");
+            // keep a copy of the raw profile string
+            hireWandResponse.getProfile().setProfileJSON(StringUtils.join(request().body().asFormUrlEncoded().get("profile"),null));
+            Logger.info("hireWandResponse.Profile.ProfileJSON="+hireWandResponse.getProfile().getProfileJSON());
+            // ensure external key (PersonId) is filled before calling business logic
+            if(!hireWandResponse.getPersonid().isEmpty()){
+                // send for processing
+                Logger.info("Updating resume for HireWand PersonID = "+hireWandResponse.getPersonid());
+                CandidateService.updateResume(hireWandResponse.getPersonid(), hireWandResponse.getProfile(),hireWandResponse.getDuplicate());
+                return ok();
+            }
+            else {
+                Logger.info("Hirewand callback invoked with empty PersonID");
+                return badRequest();
+            }
         }
         else{
-            Logger.info("hireWandResponse is null");
+            Logger.info("Failed to map json to hireWandResponse");
             return internalServerError();
         }
 /*
