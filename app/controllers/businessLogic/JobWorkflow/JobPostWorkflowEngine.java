@@ -2358,6 +2358,33 @@ public class JobPostWorkflowEngine {
             return null;
         }
 
+
+        /* TODO remove commented out code after further clarification */
+        if(RecruiterService.isInterviewRequired(jobPostWorkflowCurrent.getJobPost()).getStatus() == ServerConstants.INTERVIEW_NOT_REQUIRED) {
+
+            JobPost jobPost = jobPostWorkflowCurrent.getJobPost();
+            JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", candidate.getCandidateId()).eq("jobPostId", jobPost.getJobPostId()).findUnique();
+
+            String jobApplicationLocationName = null;
+
+            if(existingJobApplication != null && existingJobApplication.getLocality() != null) {
+                jobApplicationLocationName = existingJobApplication.getLocality().getLocalityName();
+            }
+
+            // null company and location name is handled within the sms module
+            SmsUtil.sendJobApplicationSms(
+                    candidate.getCandidateFirstName(), jobPost.getJobPostTitle(), jobPost.getCompany().getCompanyName(), candidate.getCandidateMobile(),
+                    jobApplicationLocationName, channel);
+
+            // sending notification
+            // null company and location name is handled within the notification module
+            NotificationUtil.sendJobApplicationNotification(candidate, jobPost.getJobPostTitle(), jobPost.getCompany().getCompanyName(),
+                    jobApplicationLocationName);
+
+            return "OK";
+        }
+
+
         // TODO find a better way to handle applicants who applied to a job directly and didn't went through prescreen, but choosen interview slot
         // we create prescreen completed here for them to process them to interview stage
         // hint to find all these candidate would be interview slot set in jobPostworkflow table with status 4
