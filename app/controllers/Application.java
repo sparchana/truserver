@@ -42,6 +42,7 @@ import models.util.NotificationUtil;
 import models.util.ParseCSV;
 import models.util.SmsUtil;
 import models.util.Util;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import models.util.*;
 import play.Logger;
@@ -2313,6 +2314,19 @@ public class Application extends Controller {
 
         Logger.info("request.asFormUrlEncoded().keySet().size()="+request().body().asFormUrlEncoded().keySet().size());
 
+        String json = "{";
+        for(String key:request().body().asFormUrlEncoded().keySet()){
+            json += "\""+key+"\":";
+            json += "\""+Arrays.toString(request().body().asFormUrlEncoded().get(key))+"\"";
+            json += ",";
+        }
+        json = StringUtils.removeEnd(json,",");
+        json += "}";
+
+        Logger.info("json = "+json);
+        return ok();
+
+/*
         // extract parsed resume from request body
         String profile = Arrays.toString(request().body().asFormUrlEncoded().get("profile"));
 
@@ -2330,10 +2344,13 @@ public class Application extends Controller {
                 return internalServerError();
             }
             // Check if the mapping was successful
-            if(hireWandResponse != null /*&& hireWandResponse.Profile != null*/){
+            if(hireWandResponse != null */
+/*&& hireWandResponse.Profile != null*//*
+){
                 Logger.info("Mapper converted successfully");
                 return ok();
-                /*
+                */
+/*
                 // keep a copy of the raw string
                 hireWandResponse.Profile.ProfileJSON = profile;
                 Logger.info("hireWandResponse.Profile.ProfileJSON="+hireWandResponse.Profile.ProfileJSON);
@@ -2354,7 +2371,8 @@ public class Application extends Controller {
                 else {
                     Logger.info("Hirewand callback invoked with empty PersonID");
                     return badRequest();
-                }*/
+                }*//*
+
 
             }
             else {
@@ -2366,6 +2384,7 @@ public class Application extends Controller {
             Logger.info("Hirewand callback invoked with empty Profile");
             return badRequest();
         }
+*/
     }
 
 }
