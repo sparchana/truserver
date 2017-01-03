@@ -1,35 +1,17 @@
 package controllers;
 
 import api.ServerConstants;
-import api.http.httpResponse.CandidateWorkflowData;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import controllers.businessLogic.JobService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerManager;
-import controllers.scheduler.task.SODNotifyCandidateAboutJobPostTask;
-import dao.CandidateDAO;
 import models.entity.Candidate;
-import models.entity.JobPost;
-import models.entity.scheduler.SchedulerStats;
-import models.entity.scheduler.Static.SchedulerSubType;
-import models.entity.scheduler.Static.SchedulerType;
 import models.util.NotificationUtil;
-import models.util.SmsUtil;
 import models.util.Validator;
 import notificationService.EmailEvent;
-import notificationService.FCMEvent;
 import notificationService.NotificationEvent;
 import notificationService.SMSEvent;
-import play.Logger;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import java.sql.Timestamp;
-import java.util.*;
-
-import static controllers.scheduler.SchedulerConstants.SCHEDULER_SUB_TYPE_CANDIDATE_SOD_JOB_ALERT;
-import static controllers.scheduler.SchedulerConstants.SCHEDULER_TYPE_FCM;
-import static controllers.scheduler.SchedulerConstants.SCHEDULER_TYPE_SMS;
 import static play.libs.Json.toJson;
 
 /**

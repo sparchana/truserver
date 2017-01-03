@@ -28,7 +28,7 @@ import static controllers.scheduler.SchedulerConstants.*;
  * Send notification and sms to all candidates matching
  *
  * */
-public class SODNotifyCandidateAboutJobPostTask extends TimerTask {
+public class SamedayJobPostNotificationTask extends TimerTask {
 
     private void sendJobPostAlert(List<JobPost> jobPostList){
 

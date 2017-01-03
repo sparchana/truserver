@@ -36,16 +36,12 @@ public class CandidateDAO {
                 .setRawSql(rawSql)
                 .findList();
 
-        List<Candidate> candidateList = new ArrayList<>();
-
+        List<String> uuidList = new ArrayList<>();
         for(Interaction interaction : interactions){
-            Candidate candidate = Candidate.find.where().eq("candidateUUId", interaction.getObjectAUUId()).findUnique();
-            if(candidate != null){
-                candidateList.add(candidate);
-            }
+            uuidList.add(interaction.getObjectAUUId());
         }
 
-        return candidateList;
+        return Candidate.find.where().in("candidateUUId", uuidList).findList();
     }
 
     public static List<Candidate> getAllActiveCandidateWithinProvidedDays(Integer days) {

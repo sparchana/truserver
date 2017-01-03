@@ -132,8 +132,8 @@ public class SchedulerManager implements Runnable {
     private void createStartOfTheDayJobPostEvent(long delay){
         Logger.info("Send job post message to candidate!");
 
-        SODNotifyCandidateAboutJobPostTask sodNotifyCandidateAboutJobPostTask = new SODNotifyCandidateAboutJobPostTask();
-        timer.schedule(sodNotifyCandidateAboutJobPostTask, delay, oneDay);
+        SamedayJobPostNotificationTask samedayJobPostNotificationTask = new SamedayJobPostNotificationTask();
+        timer.schedule(samedayJobPostNotificationTask, delay, oneDay);
     }
 
     private void createEODRateUsPostInterviewEvent(long delay){
