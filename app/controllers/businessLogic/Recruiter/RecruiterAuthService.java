@@ -87,8 +87,14 @@ public class RecruiterAuthService {
                     recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.STATUS_FAILURE);
                 }
 
+                String createdBy = "Not specified";
+
+                if(session().get("sessionUsername") != null){
+                    createdBy = "Support: " + session().get("sessionUsername");
+                }
+
                 //assigning some free contact unlock credits for the recruiter
-                addCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, ServerConstants.RECRUITER_FREE_CONTACT_CREDITS);
+                addCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, ServerConstants.RECRUITER_FREE_CONTACT_CREDITS, createdBy);
 
                 existingRecruiter.update();
                 Logger.info("recruiter status confirmed");

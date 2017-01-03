@@ -5,6 +5,7 @@ import api.http.httpResponse.CandidateWorkflowData;
 import controllers.businessLogic.JobService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerManager;
+import controllers.scheduler.task.EODDebitCreditInterviewCreditTask;
 import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.Recruiter.RecruiterProfile;
@@ -94,6 +95,13 @@ public class TestController extends Controller{
     }
 
     public static Result testnotification() {
+        EODDebitCreditInterviewCreditTask eODDebitCreditInterviewCreditTask = new EODDebitCreditInterviewCreditTask();
+        eODDebitCreditInterviewCreditTask.run();
+
+        return ok("-");
+    }
+
+/*    public static Result testnotification() {
         List<RecruiterProfile> allRecs = RecruiterProfile.find.all();
 
         String createdBy = "Not specified";
@@ -188,6 +196,6 @@ public class TestController extends Controller{
         }
 
         return ok("-");
-    }
+    }*/
 
 }

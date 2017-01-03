@@ -13,6 +13,7 @@ import java.util.*;
 
 import static controllers.businessLogic.RecruiterService.addCredits;
 import static controllers.businessLogic.RecruiterService.debitCredits;
+import static play.mvc.Controller.session;
 
 /**
  * Created by dodo on 26/12/16.
@@ -26,29 +27,39 @@ import static controllers.businessLogic.RecruiterService.debitCredits;
 public class EODDebitCreditInterviewCreditTask extends TimerTask {
 
     private static void startCreditDebitTask(Map<RecruiterProfile, Integer> recruiterCreditMap, Boolean isDebit){
+
+        String createdBy = "Not specified";
+
+        if(session().get("sessionUsername") != null){
+            createdBy = "Support: " + session().get("sessionUsername");
+        }
+
+        String finalCreatedBy = createdBy;
         new Thread(() -> {
 
-            //in this map, we have recruiterProfile as key and valus as no of credits to be debited
-            for (Map.Entry<RecruiterProfile, Integer> entry : recruiterCreditMap.entrySet()) {
+        //in this map, we have recruiterProfile as key and values as no of credits to be debited
+        for (Map.Entry<RecruiterProfile, Integer> entry : recruiterCreditMap.entrySet()) {
 
-                //getting key and value
-                RecruiterProfile recruiterProfile = entry.getKey();
-                Integer creditCount = entry.getValue();
+            //getting key and value
+            RecruiterProfile recruiterProfile = entry.getKey();
+            Integer creditCount = entry.getValue();
 
-                Logger.info("Recruiter: " + recruiterProfile.getRecruiterProfileName() + " | Credits: " + creditCount);
+            Logger.info("Recruiter: " + recruiterProfile.getRecruiterProfileName() + " | Credits: " + creditCount);
 
 
-                if (isDebit) {
+            if (isDebit) {
 
-                    //debits credits from pack
-                    debitCredits(recruiterProfile, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK, creditCount * (-1));
-                } else {
+                //debits credits from pack
+                debitCredits(recruiterProfile, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK, creditCount * (-1), finalCreatedBy);
+            } else {
 
-                    //credit the oldest active pack
-                    addCredits(recruiterProfile, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK, creditCount);
-                }
+                //credit the oldest active pack
+                addCredits(recruiterProfile, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK, creditCount, finalCreatedBy);
             }
+        }
+
         }).start();
+
     }
 
     private static void expireRecruiterInterviewCredits(){
