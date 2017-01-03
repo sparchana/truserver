@@ -2317,7 +2317,17 @@ public class Application extends Controller {
         String json = "{";
         for(String key:request().body().asFormUrlEncoded().keySet()){
             json += "\""+key+"\":";
-            json += StringUtils.join(request().body().asFormUrlEncoded().get(key),"");
+            switch(key){
+                case "profilemergedto":
+                case "personid":
+                case "status":
+                case "message":
+                case "type":
+                    json += "\""+StringUtils.join(request().body().asFormUrlEncoded().get(key),"")+"\"";
+                    break;
+                default:
+                    json += StringUtils.join(request().body().asFormUrlEncoded().get(key),"");
+            }
             json += ",";
         }
         json = StringUtils.removeEnd(json,",");
