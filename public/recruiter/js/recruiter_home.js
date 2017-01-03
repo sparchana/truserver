@@ -136,6 +136,7 @@ function processDataGetJobPostDetails(returnedData) {
 
     if(jobPostList.length == 0){
         $("#noInterviews").show();
+        $("#loadingIcon").hide();
     }
 
     var jpId = [];
@@ -247,6 +248,8 @@ function processDataInterviewToday(returnedData) {
         $("#noInterviews").show();
         $("#todayInterviewTable").hide();
     }
+
+    $("#loadingIcon").hide();
 }
 
 function openFeedbackModal(candidateId, jpId) {

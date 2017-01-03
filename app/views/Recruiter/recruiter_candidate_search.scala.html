@@ -328,14 +328,17 @@
                         </center>
 
                     </div>
-                    <div id="loadingIcon" style="display: none; padding-top: 6%">
+
+                    <div style="display: none; padding-top: 6%" id="loadingIcon">
                         <center>
                             <h6>Searching Candidates</h6>
-                            <svg viewBox="0 0 32 32" width="24" height="24">
-                                <circle id="loadingSpinner" cx="16" cy="16" r="14" fill="none"></circle>
-                            </svg>
+                            <div class="spinner">
+                                <div class="double-bounce1"></div>
+                                <div class="double-bounce2"></div>
+                            </div>
                         </center>
                     </div>
+
                     <div id="noCandidateDiv" style="padding: 120px 6% 0 6%; display: none">
                         <center>
                             <img src="/assets/recruiter/img/empty_box.svg" width="96px">
