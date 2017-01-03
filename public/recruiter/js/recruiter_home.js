@@ -157,7 +157,11 @@ function processDataGetJobPostDetails(returnedData) {
                 async: false,
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(d),
-                success: processDataInterviewToday
+                success: processDataInterviewToday,
+                error: function (jqXHR, exception) {
+                    $("#somethingWentWrong").show();
+                    $("#loadingIcon").hide();
+                }
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);

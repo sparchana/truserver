@@ -37,7 +37,12 @@ $(document).ready(function(){
             async: false,
             contentType: false,
             processData: false,
-            success: processDataGenerateJobPostView
+            success: processDataGenerateJobPostView,
+            error: function (jqXHR, exception) {
+                $("#somethingWentWrong").show();
+                $("#loadingIcon").hide();
+            }
+
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
