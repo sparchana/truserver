@@ -3,7 +3,9 @@ package controllers.businessLogic;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
-import api.http.httpRequest.*;
+import api.http.httpRequest.PartnerProfileRequest;
+import api.http.httpRequest.PartnerSignUpRequest;
+import api.http.httpRequest.VerifyCandidateRequest;
 import api.http.httpResponse.*;
 import models.entity.*;
 import models.entity.OM.PartnerToCandidate;
@@ -18,7 +20,6 @@ import javax.persistence.NonUniqueResultException;
 import java.util.List;
 import java.util.UUID;
 
-import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static api.InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
 import static controllers.businessLogic.PartnerInteractionService.*;
 import static models.util.Util.generateOtp;
