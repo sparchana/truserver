@@ -1483,11 +1483,6 @@ function submitPreScreen() {
         var d = {};
         var msg;
 
-        $("#preScreenInterviewSetBtn").prop("disabled", true);
-        $("#preScreenInterviewSetBtn").click(function(){ return false});
-        $("#preScreenInterviewSetBtn").unbind();
-        $("#preScreenInterviewSetBtn").removeAttr("onclick");
-
         // prep d
         $.each(propertyIdArray, function (index, propId) {
             okToSubmit = true;
@@ -1792,6 +1787,12 @@ function submitPreScreen() {
         // ajax to submit d
         var isSupport = false;
         if (okToSubmitList.length == 0) {
+            // disable apply btn when its okay to submit (i.e submission is validated)..
+            $("#preScreenInterviewSetBtn").prop("disabled", true);
+            $("#preScreenInterviewSetBtn").click(function(){ return false});
+            $("#preScreenInterviewSetBtn").unbind();
+            $("#preScreenInterviewSetBtn").removeAttr("onclick");
+
             try {
                 $.ajax({
                     type: "POST",
