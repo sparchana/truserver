@@ -2362,18 +2362,24 @@ public class JobPostWorkflowEngine {
         /* TODO remove commented out code after further clarification */
         if(RecruiterService.isInterviewRequired(jobPostWorkflowCurrent.getJobPost()).getStatus() == ServerConstants.INTERVIEW_NOT_REQUIRED) {
 
-//            JobPost jobPost = jobPostWorkflowCurrent.getJobPost();
-//            JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", candidate.getCandidateId()).eq("jobPostId", jobPost.getJobPostId()).findUnique();
-//
-//
-                /* TODO fix this, when support moves a candidate, it doesn't go to 'jobapplication' table, hence 'existingJobApplication' will be null */
-////            SmsUtil.sendJobApplicationSms(
-////                    candidate.getCandidateFirstName(), jobPost.getJobPostTitle(), jobPost.getCompany().getCompanyName(), candidate.getCandidateMobile(),
-////                    existingJobApplication.getLocality().getLocalityName(), channel);
-////
-////            //sending notification
-////            NotificationUtil.sendJobApplicationNotification(candidate, jobPost.getJobPostTitle(), jobPost.getCompany().getCompanyName(),
-////                    existingJobApplication.getLocality().getLocalityName());
+            JobPost jobPost = jobPostWorkflowCurrent.getJobPost();
+            JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", candidate.getCandidateId()).eq("jobPostId", jobPost.getJobPostId()).findUnique();
+
+            String jobApplicationLocationName = null;
+
+            if(existingJobApplication != null && existingJobApplication.getLocality() != null) {
+                jobApplicationLocationName = existingJobApplication.getLocality().getLocalityName();
+            }
+
+            // null company and location name is handled within the sms module
+            SmsUtil.sendJobApplicationSms(
+                    candidate.getCandidateFirstName(), jobPost.getJobPostTitle(), jobPost.getCompany().getCompanyName(), candidate.getCandidateMobile(),
+                    jobApplicationLocationName, channel);
+
+            // sending notification
+            // null company and location name is handled within the notification module
+            NotificationUtil.sendJobApplicationNotification(candidate, jobPost.getJobPostTitle(), jobPost.getCompany().getCompanyName(),
+                    jobApplicationLocationName);
 
             return "OK";
         }

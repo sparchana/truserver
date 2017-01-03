@@ -4,7 +4,6 @@ import api.http.httpRequest.Recruiter.AddCreditRequest;
 import controllers.Global;
 import models.entity.Candidate;
 import models.entity.JobPost;
-import models.entity.OM.InterviewDetails;
 import models.entity.OM.JobPostToLocality;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Partner;
@@ -73,12 +72,24 @@ public class SmsUtil {
     }
 
     public static void sendJobApplicationSms(String candidateName, String jobTitle, String company, String mobile, String prescreenLocation, int channelType) {
-        String msg = "Hi " + candidateName + ", you have initiated your application for " + jobTitle + " job at " + company + " @" + prescreenLocation + ". Your application is under review " +
-                "and you will get a notification once the recruiter shortlists you for interview. All the best! www.trujobs.in.";
-        if(channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
-            msg += " Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Hi " + candidateName + ", you have initiated your application for " + jobTitle + " job ");
+
+        if(company != null) {
+            stringBuilder.append( "at " + company + " ");
         }
-        addSmsToNotificationQueue(mobile, msg);
+        if(prescreenLocation != null){
+            stringBuilder.append( "@ " + prescreenLocation);
+        }
+
+        stringBuilder.append(". Your application is under review " +
+                "and you will get a notification once the recruiter shortlists you for interview. All the best! www.trujobs.in.");
+
+        if(channelType == INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
+            stringBuilder.append(" Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!");
+        }
+
+        addSmsToNotificationQueue(mobile, stringBuilder.toString());
     }
 
     public static void sendWelcomeSmsFromSupport(String name, String mobile, String password)
