@@ -43,8 +43,8 @@ public class CandidateResumeService extends TruService {
         TruResponse candidateResumeResponse = (TruResponse) super.update(request);
         // save, if allowed
         if(checkSaveAllowed(candidateResumeResponse)) {
-            save();
-            candidateResumeResponse.setStatus(TruResponse.STATUS_SUCCESS);
+            if(save()) candidateResumeResponse.setStatus(TruResponse.STATUS_SUCCESS);
+            else candidateResumeResponse.setStatus(TruResponse.STATUS_FAILURE);
         }
 
         return candidateResumeResponse;

@@ -2003,9 +2003,9 @@ public class CandidateService
         CandidateResume candidateResume = CandidateResume.find.where().eq("external_key",personId).findUnique();
         // recreate existing AWS object key
         String existingKey = candidateResume.getFilePath();
-        existingKey = existingKey.replace("https://s3.amazonaws.com/","");
+        existingKey = existingKey.replace("https://s3.amazonaws.com/trujobs.in/","");
         // create new key
-        String awsName = candidateId+"_"+candidateName;
+        String awsName = "candidateResumes/"+candidateId+"_"+candidateName;
         awsName += "_"+new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date());
         awsName += existingKey.substring(existingKey.lastIndexOf("."));
         // rename (copy and delete) resume in AWS
@@ -2015,13 +2015,14 @@ public class CandidateService
 
         // Update CandidateResume Object
         CandidateResumeRequest candidateResumeRequest = new CandidateResumeRequest();
+        candidateResumeRequest.setCandidateResumeId(candidateResume.getCandidateResumeId());
         if(isNew) candidateResumeRequest.setCandidate(candidateId);
         else candidateResumeRequest.setCandidate(candidateResume.getCandidate().getCandidateId());
         candidateResumeRequest.setParsedResume(profile.ProfileJSON);
-        List<String> changedFields = new ArrayList<String>(Arrays.asList("ParsedResume"));
+        List<String> changedFields = new ArrayList<String>(Arrays.asList("parsedResume","candidate"));
         candidateResumeRequest.setChangedFields(changedFields);
         CandidateResumeService candidateResumeService = new CandidateResumeService();
-        Logger.info("UpdateResume(): About to call candidateResumeService.update");
+        Logger.info("UpdateResume(): About to call candidateResumeService.update for id = "+candidateResume.getCandidateResumeId()+" referencing Candidate Id = "+candidateId);
         if(candidateResumeService.update(candidateResumeRequest).getStatus() == TruResponse.STATUS_SUCCESS) return Boolean.TRUE;
         else return Boolean.FALSE;
 
