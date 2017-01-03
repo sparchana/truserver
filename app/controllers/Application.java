@@ -2334,8 +2334,26 @@ public class Application extends Controller {
         json += "}";
 
         Logger.info("json = "+json);
-        return ok();
 
+        HireWandResponse hireWandResponse = null;
+        // try to map it to HireWandResponse
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            hireWandResponse = newMapper.readValue(json, HireWandResponse.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Logger.info("Error while mapping from request to HireWandResponse");
+            return internalServerError();
+        }
+        if(hireWandResponse != null){
+            Logger.info("hireWandResponse.personid="+hireWandResponse.personid);
+            Logger.info("hireWandResponse.profile.toString()="+hireWandResponse.profile.toString());
+            return ok();
+        }
+        else{
+            Logger.info("hireWandResponse is null");
+            return internalServerError();
+        }
 /*
         // extract parsed resume from request body
         String profile = Arrays.toString(request().body().asFormUrlEncoded().get("profile"));

@@ -101,11 +101,12 @@ public class HireWandResponse {
         public String ProfileJSON;
     }
 
-    public String Status;
-    public String Message;
-    public Boolean Duplicate;
-    public String PersonID;
-    public Profile Profile;
+    public String status;
+    public String message;
+    public Boolean duplicate;
+    public String personid;
+    public Integer accountid;
+    public Profile profile;
 
     @Override
     public String toString() {
