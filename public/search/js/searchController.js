@@ -733,7 +733,7 @@ var app = (function ($) {
 
                         var jobSearchTitle = app.currentSearchURL.capitalizeFirstLetter().replace(/[^a-z0-9]+/gi, ' ');
 
-                        app.do.createAndAppendDivider(" Showing 1-"+_jobPostList.length+" of "+data.results.totalJobs+" jobs matching your search");
+                        app.do.createAndAppendDivider(" Showing "+ parseInt((app.page -1)*5 + 1 )+"-"+parseInt((app.page -1)*5 + parseInt(_jobPostList.length))+" of "+data.results.totalJobs+" jobs matching your search");
                         // var _isDividerPresent = false;
 
                         genNewJobCard(_jobPostList, _parent);
