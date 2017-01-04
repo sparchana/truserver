@@ -662,6 +662,8 @@ public class JobService {
         Candidate existingCandidate = CandidateService.isCandidateExists(applyJobRequest.getCandidateMobile());
         if(existingCandidate != null){
             JobPost existingJobPost = JobPostDAO.findById(Long.valueOf(applyJobRequest.getJobId()));
+            Boolean limitJobApplication = false;
+
             if(existingJobPost == null ){
                 applyJobResponse.setStatus(ApplyJobResponse.STATUS_NO_JOB);
                 Logger.info("JobPost with jobId: " + applyJobRequest.getJobId() + " does not exists");
@@ -670,12 +672,32 @@ public class JobService {
                 JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).eq("jobPostId", applyJobRequest.getJobId()).findUnique();
                 if(existingJobApplication == null){
 
-                    Boolean limitJobApplication = false;
                     if(existingJobPost.getRecruiterProfile() != null){
                         if((existingJobPost.getRecruiterProfile().getContactCreditCount() == 0) &&
                                 (existingJobPost.getRecruiterProfile().getInterviewCreditCount() == 0)){
 
-                            limitJobApplication = true;
+                            Calendar newCalendar = Calendar.getInstance();
+
+                            // 1-> sunday
+                            // 2-> Monday
+                            int todayDate = newCalendar.get(Calendar.DAY_OF_WEEK);
+                            int weekDaysDeduct;
+                            if(todayDate > 1){
+                                weekDaysDeduct = todayDate - 2;
+                            } else{
+                                weekDaysDeduct = 6;
+                            }
+
+                            //checking weekly job application limit
+                            if(JobPostDAO.getThisWeeksApplication(existingJobPost, weekDaysDeduct).size()
+                                    > ServerConstants.FREE_JOB_APPLICATION_DEFAULT_LIMIT_IN_A_WEEK){
+
+                                Logger.info("Free Job weekly limit of " + ServerConstants.FREE_JOB_APPLICATION_DEFAULT_LIMIT_IN_A_WEEK
+                                    + " crossed for job Post title: " + existingJobPost.getJobPostTitle() + " and ID: " + existingJobPost.getJobPostId());
+
+                                //setting flag to limit job application for this job role
+                                limitJobApplication = true;
+                            }
                         }
                     }
 
@@ -753,21 +775,24 @@ public class JobService {
                     Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " already applied to jobPost with jobId:" + existingJobPost.getJobPostId());
                 }
 
-                // assuming job apply to a particular jobpost is a one time event, this will push candidate into selected state
-                String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_SELECTED_FOR_PRESCREEN;
-                interactionResult += existingJobPost.getJobPostId() + ": " + existingJobPost.getJobRole().getJobName();
-                if (existingJobPost.getCompany() != null) {
-                    interactionResult += "@" + existingJobPost.getCompany().getCompanyName();
+                if(!limitJobApplication){
+                    // assuming job apply to a particular jobpost is a one time event, this will push candidate into selected state
+                    String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_SELECTED_FOR_PRESCREEN;
+                    interactionResult += existingJobPost.getJobPostId() + ": " + existingJobPost.getJobRole().getJobName();
+                    if (existingJobPost.getCompany() != null) {
+                        interactionResult += "@" + existingJobPost.getCompany().getCompanyName();
+                    }
+
+
+                    //  Each initial application should also have initial job post workflow entry, this methods takes care
+                    //  of job Post workflow entry + corresponding interaction
+                    createJobPostWorkflowEntry( existingCandidate, existingJobPost, channelType,
+                            ServerConstants.JWF_STATUS_SELECTED,
+                            InteractionConstants.INTERACTION_TYPE_CANDIDATE_SELECTED_FOR_PRESCREEN,
+                            interactionResult);
                 }
-
-
-                //  Each initial application should also have initial job post workflow entry, this methods takes care
-                //  of job Post workflow entry + corresponding interaction
-                createJobPostWorkflowEntry( existingCandidate, existingJobPost, channelType,
-                                            ServerConstants.JWF_STATUS_SELECTED,
-                                            InteractionConstants.INTERACTION_TYPE_CANDIDATE_SELECTED_FOR_PRESCREEN,
-                                            interactionResult);
             }
+
             PreScreenPopulateResponse populateResponse = JobPostWorkflowEngine.getJobPostVsCandidate(Long.valueOf(applyJobRequest.getJobId()),
                     existingCandidate.getCandidateId(), false);
             if(populateResponse.isVisible()){
