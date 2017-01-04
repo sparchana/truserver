@@ -456,10 +456,6 @@ var app = (function ($) {
             renderTextSearch: function () {
                 var input = $("#searchText");
                 var numberOfKeywords = input.val().split(",");
-                if((input.val() == null || input.val().length < 3) ){
-                    console.log("no need to get suggestion");
-                    return;
-                }
                 if(app.suggestion == null){
                     app.suggestion = new Awesomplete('input[data-multiple]', {
                         minChars: 1,
@@ -473,7 +469,14 @@ var app = (function ($) {
                             this.input.value = before + text + ", ";
                         }
                     });
+
+                    $('.awesomplete').css('width', '100%');
                 }
+                if((input.val() == null || input.val().length < 3) ){
+                    console.log("no need to get suggestion");
+                    return;
+                }
+
 
                 $.ajax({
                     url: '/ss/?key=' + input.val(),
@@ -491,7 +494,7 @@ var app = (function ($) {
                         // when no suggestions are returned. do something here...
                     }
                 });
-                $('.awesomplete').css('width', '100%')
+
             }
         },
         // action perform methods
