@@ -320,7 +320,8 @@ function saveForm() {
                 companyPinCode: $("#rec_company_pincode").val(),
                 companyLocality: localitySelectedVal,
                 companyLogo: logo,
-                companyType: typeSelectedVal
+                companyType: typeSelectedVal,
+                source: 0 // SOURCE_INTERNAL
             };
 
             try {
