@@ -450,16 +450,25 @@ hr{
 #firstNameLastName {
     height: 34px;
 }
-.jobApplyBtn{
+.jobApplyBtn2{
     border: none;
     color: white;
-    margin-top: 12%;
-    background: #09ac58;
-    padding: 6%;
-    width: 120px;
+    border-radius: 4px;
+    background: linear-gradient(to left, #00b638, #019b4b);
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
+    margin-top: 1%;
+    padding:1%;
+    width: 50%;
+    float: right;
+}
+.jobApplyBtn2:hover{
+    background: linear-gradient(to left, #00a132, #019048);
 }
 @media screen and (max-width: 768px) {
+    .jobApplyBtn2{
+        margin: 5px;
+        width: 100%;
+    }
     #customModal {
         margin-left: 2%;
         margin-right: 2%;
