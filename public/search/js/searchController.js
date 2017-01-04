@@ -80,7 +80,7 @@ var app = (function ($) {
                 app.render.renderSalaryFilter();
                 app.run.urlChangeDetector();
 
-                app.do.search(true);
+                app.do.search(true, false);
 
                 document.getElementById('sortByRelevance').checked = true;
             },
@@ -507,14 +507,14 @@ var app = (function ($) {
                     document.getElementById("searchText").placeholder = "Search Jobs,Company";
                 }
             },
-            search: function (isBasicResetRequired) {
+            search: function (isBasicResetRequired, shouldScrollToTop) {
                 if(!app.shouldDoSearch){
                     console.log("no search!");
                     return;
                 }
                 console.log("do search ");
                 if (isBasicResetRequired) {
-                    app.run.basicReset();
+                    app.run.basicReset(shouldScrollToTop);
                 }
 
 
@@ -778,15 +778,13 @@ var app = (function ($) {
 
                         }
                         if (app.isPaginationEnabled) {
-                            app.do.search(false);
+                            app.do.search(false, true);
                         }
                         $(".first").hide();
                         $(".last").hide();
                         $(".prev a").html("<<");
                         $(".next a").html(">>");
-                        $(".page-link").click(function () {
-                            $('html, body').animate({scrollTop: $("#job_cards_inc").offset().top - 100}, 800);
-                        });
+
                     }
                 });
                 app.isPaginationEnabled = true;
@@ -825,7 +823,7 @@ var app = (function ($) {
                     $("#language_filter").hide();
                 }
 
-                app.do.search(true);
+                app.do.search(true, true);
             },
             updateGenderFilter: function (genderId) {
                 $("#gender_filter").show();
@@ -833,7 +831,7 @@ var app = (function ($) {
 
                 console.log(genderId);
 
-                app.do.search(true);
+                app.do.search(true, true);
             },
             updateSalaryFilter: function (salaryId) {
                 $("#salary_filter").show();
@@ -841,7 +839,7 @@ var app = (function ($) {
 
                 console.log("salary gt : " + salaryId);
 
-                app.do.search(true);
+                app.do.search(true, true);
             },
             updateSortBy: function (value) {
                 /*
@@ -856,7 +854,7 @@ var app = (function ($) {
 
                 console.log("sort by : " + value);
 
-                app.do.search(true);
+                app.do.search(true, true);
             },
             resetFilters: function () {
                 console.log("reset filter");
@@ -875,7 +873,7 @@ var app = (function ($) {
                 app.currentFilterParams.selectedLanguageIdList = [];
                 app.currentSortParams.sortBy = 5; // default set to sort by relevance
 
-                app.do.search(true);
+                app.do.search(true, true);
             }
         },
         // ui filter marking
@@ -931,7 +929,7 @@ var app = (function ($) {
                             history.back();
                         } else {
                             app.do.prepareSearchParamFromURL();
-                            app.do.search(false);
+                            app.do.search(false, false);
                         }
                     });
 
@@ -954,9 +952,11 @@ var app = (function ($) {
                     return age;
                 }
             },
-            basicReset: function () {
+            basicReset: function (scrollTop) {
                 console.log("basic reset");
-                $('html, body').animate({scrollTop: $("#job_cards_inc").offset().top - 100}, 800);
+                if(scrollTop){
+                    $('html, body').animate({scrollTop: $("#job_cards_inc").offset().top - 100}, 800);
+                }
                 app.page = 1;
                 app.isPaginationEnabled = false;
 
@@ -1031,7 +1031,7 @@ var app = (function ($) {
         app.page = 1; // reset page to 1 for new search
         app.currentURL = app.do.prepNmodifyURL();
         app.do.prepareSearchParamFromURL();
-        app.do.search(true);
+        app.do.search(true, false);
     });
 
     // scroll to top listener
