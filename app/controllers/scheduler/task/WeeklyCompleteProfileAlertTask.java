@@ -99,4 +99,6 @@ public class WeeklyCompleteProfileAlertTask extends TimerTask {
         //list of candidates whose profile score is less than 80% last 'n' no. of days
         sendProfileCompletionAlert();
     }
+
+
 }

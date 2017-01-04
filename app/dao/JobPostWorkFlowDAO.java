@@ -9,6 +9,7 @@ import models.entity.OM.JobPostWorkflow;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -144,7 +145,6 @@ public class JobPostWorkFlowDAO {
     }
 
     public static List<JobPostWorkflow> getTodayInterview(List<Long> jobPostIdList, int status, Date today){
-
 
         SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
 

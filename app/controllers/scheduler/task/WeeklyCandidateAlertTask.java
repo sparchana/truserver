@@ -8,7 +8,6 @@ import dao.CandidateDAO;
 import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.OM.JobPreference;
-import models.entity.scheduler.SchedulerStats;
 import models.entity.scheduler.Static.SchedulerSubType;
 import models.entity.scheduler.Static.SchedulerType;
 import models.util.NotificationUtil;
@@ -74,7 +73,7 @@ public class WeeklyCandidateAlertTask extends TimerTask {
 
             Timestamp startTime = new Timestamp(System.currentTimeMillis());
 
-            List<Candidate> candidateList = CandidateDAO.getAllActiveCandidateWithinProvidedDays(noOfDays);
+            List<Candidate> candidateList = CandidateDAO.getAllActiveCandidateBeyondProvidedDays(noOfDays);
 
             Collections.shuffle(candidateList);
 
@@ -90,6 +89,10 @@ public class WeeklyCandidateAlertTask extends TimerTask {
                     jobRoles += jobPreference.getJobRole().getJobName() + ", ";
                 }
 
+                if(candidate.getJobPreferencesList().size() > 0){
+                    jobRoles = jobRoles.substring(0, jobRoles.length() - 2);
+                }
+
                 List<JobPost> jobPostList = JobSearchService.getRelevantJobsPostsForCandidate
                         (FormValidator.convertToIndianMobileFormat(candidate.getCandidateMobile()));
 
@@ -100,13 +103,13 @@ public class WeeklyCandidateAlertTask extends TimerTask {
                     //checking for daily limit for sms
                     if(smsCount <= SchedulerConstants.CANDIDATE_ALERT_TASK_WEEKLY_LIMIT){
                         //sending sms
-                        SmsUtil.sendWeeklySmsToNotifyNoOfMatchingJobs(candidate, jobsCount, jobRoles.substring(0, jobRoles.length() - 2));
+                        SmsUtil.sendWeeklySmsToNotifyNoOfMatchingJobs(candidate, jobsCount, jobRoles);
                         smsCount++;
                         totalSmsAlertCount++;
                     }
 
                     //sending notification
-                    NotificationUtil.sendWeeklyMatchingJobsNotification(candidate, jobsCount, jobRoles.substring(0, jobRoles.length() - 2));
+                    NotificationUtil.sendWeeklyMatchingJobsNotification(candidate, jobsCount, jobRoles);
                     totalFCMAlertCount++;
                 }
             }
