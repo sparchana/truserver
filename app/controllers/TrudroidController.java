@@ -8,8 +8,7 @@ import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlotDetail;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
-import api.http.httpResponse.CandidateSignUpResponse;
-import api.http.httpResponse.LoginResponse;
+import api.http.httpResponse.*;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import com.amazonaws.util.json.JSONException;
 import com.google.api.client.util.Base64;
@@ -22,6 +21,9 @@ import dao.staticdao.RejectReasonDAO;
 import dao.staticdao.TrudroidFeedbackReasonDAO;
 import in.trujobs.proto.*;
 import in.trujobs.proto.ApplyJobRequest;
+import in.trujobs.proto.ApplyJobResponse;
+import in.trujobs.proto.JobPostResponse;
+import in.trujobs.proto.ResetPasswordResponse;
 import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
@@ -400,7 +402,12 @@ public class TrudroidController {
             api.http.httpResponse.ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
 
             //setting status response
-            applyJobResponseBuilder.setStatus(ApplyJobResponse.Status.valueOf(applyJobResponse.getStatus()));
+
+            if(applyJobResponse.getStatus() == api.http.httpResponse.ApplyJobResponse.STATUS_NO_CANDIDATE){ //TODO: change these status values in APK
+                applyJobResponseBuilder.setStatus(ApplyJobResponse.Status.valueOf(4));
+            } else{
+                applyJobResponseBuilder.setStatus(ApplyJobResponse.Status.valueOf(applyJobResponse.getStatus()));
+            }
             applyJobResponseBuilder.setIsPreScreenAvailable(applyJobResponse.isPreScreenAvailable());
             applyJobResponseBuilder.setIsInterviewAvailable(applyJobResponse.isInterviewAvailable());
             applyJobResponseBuilder.setCompanyName(applyJobResponse.getCompanyName());
@@ -415,6 +422,7 @@ public class TrudroidController {
             Logger.info("Invalid message");
             return badRequest();
         }
+
         return ok(Base64.encodeBase64String(applyJobResponseBuilder.build().toByteArray()));
     }
 
