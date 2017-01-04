@@ -196,4 +196,11 @@ function processDataForCompanyInfo(returnedData) {
         $("#companyStatus").val(returnedData.compStatus.companyStatusId);
     }
 
+    if(returnedData.source == null || returnedData.source == 0) {
+        var source = returnedData.source;
+        if(returnedData.source == null) {
+            source = 0; // internal jobs
+        }
+        $("#companySource").val(source);
+    }
 }

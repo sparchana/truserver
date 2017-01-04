@@ -2,25 +2,30 @@ package controllers.businessLogic;
 
 import api.ServerConstants;
 import api.http.FormValidator;
+import api.http.httpRequest.search.helper.FilterParamRequest;
+import api.http.httpResponse.JobPostResponse;
 import com.avaje.ebean.Expr;
+import com.avaje.ebean.Junction;
 import com.avaje.ebean.PagedList;
 import com.avaje.ebean.Query;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
-import in.trujobs.proto.*;
+import in.trujobs.proto.JobFilterRequest;
 import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.OM.JobPreference;
+import models.entity.Static.Education;
+import models.entity.Static.Experience;
 import models.entity.Static.JobRole;
+import models.entity.Static.Locality;
 import play.Logger;
 
-import api.http.httpResponse.JobPostResponse;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static api.ServerConstants.SORT_BY_DATE_POSTED;
-import static api.ServerConstants.SORT_BY_SALARY;
+import static api.ServerConstants.*;
 
 /**
  * Created by zero on 15/8/16.
@@ -99,7 +104,7 @@ public class JobSearchService {
                         latitude, longitude,
                         ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
 
-                if (sortBy == ServerConstants.SORT_DEFAULT) {
+                if (sortBy == SORT_DEFAULT) {
                     //segregation
                     resultJobPosts = sortJobPostListAccordingToHotJobs(sortByDistance(exactJobsWithinDistance), sortByDistance(relatedJobsWithinDistance));
 
@@ -199,7 +204,7 @@ public class JobSearchService {
                         latitude, longitude,
                         ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
 
-                if (sortBy == ServerConstants.SORT_DEFAULT) {
+                if (sortBy == SORT_DEFAULT) {
                     resultJobPosts.addAll(sortByDistance(exactJobsWithinDistance));
                 }
                 else {
@@ -414,6 +419,183 @@ public class JobSearchService {
         }
 
         return query.findList();
+    }
+
+    public static JobPostResponse queryAndReturnJobPosts(List<String> keywordList,
+                                                         Locality locality,
+                                                         Education education,
+                                                         Experience experience,
+                                                         Integer sortBy,
+                                                         boolean isHot,
+                                                         Integer source,
+                                                         int page,
+                                                         FilterParamRequest filterParamRequest) {
+        int MAX_ROW = 5;
+        JobPostResponse response = new JobPostResponse();
+        response.setJobsPerPage(MAX_ROW);
+
+        if (source == null) {
+            source = ServerConstants.SOURCE_INTERNAL;
+        }
+
+        Query<JobPost> query = JobPost.find.query();
+
+        if (keywordList != null && keywordList.size() > 0) {
+
+            Junction<JobPost> junction = query.select("*")
+                    .fetch("jobRole")
+                    .fetch("company")
+                    .where()
+                    .disjunction();
+
+            for (String keyword : keywordList) {
+                if (keyword != null && !keyword.trim().isEmpty()) {
+                    keyword = keyword.trim();
+                    query = junction
+                            .add(Expr.like("jobPostTitle", keyword + "%"))
+                            .add(Expr.like("jobRole.jobName", keyword + "%"))
+                            .add(Expr.like("company.companyName", keyword + "%"))
+                            .endJunction().query();
+                }
+            }
+        }
+
+        if (education != null) {
+            query = query.select("*").fetch("jobPostEducation")
+                    .where()
+                    .eq("jobPostEducation.educationId", education.getEducationId())
+                    .query();
+        }
+        if (experience != null) {
+            query = query.select("*").fetch("jobPostExperience")
+                    .where()
+                    .eq("jobPostExperience.experienceId", experience.getExperienceId())
+                    .query();
+        }
+
+        if (filterParamRequest != null) {
+
+            // apply gender filter
+            if (filterParamRequest.getSelectedGender() != null) {
+                if (filterParamRequest.getSelectedGender() == ServerConstants.GENDER_MALE) {
+                    query = query
+                            .where()
+                            .or(Expr.isNull("gender"), Expr.or(
+                                    Expr.eq("gender", ServerConstants.GENDER_MALE),
+                                    Expr.eq("gender", ServerConstants.GENDER_ANY)))
+                            .query();
+
+                } else if (filterParamRequest.getSelectedGender() == ServerConstants.GENDER_FEMALE) {
+                    query = query
+                            .where()
+                            .or(Expr.isNull("gender"), Expr.or(
+                                    Expr.eq("gender", ServerConstants.GENDER_FEMALE),
+                                    Expr.eq("gender", ServerConstants.GENDER_ANY)))
+                            .query();
+                }
+            }
+
+            // apply language filter
+            if (filterParamRequest.getSelectedLanguageIdList() != null
+                                && filterParamRequest.getSelectedLanguageIdList().size() > 0) {
+
+                query = query.select("*").fetch("jobPostLanguageRequirements")
+                             .where()
+                             .in("jobPostLanguageRequirements.language.languageId", filterParamRequest.getSelectedLanguageIdList())
+                             .query();
+            }
+            // apply salary filter
+            if (filterParamRequest.getSelectedSalary() != null
+                                && filterParamRequest.getSelectedSalary() != 0) {
+
+                query = query.where().or(Expr.ge("jobPostMinSalary", filterParamRequest.getSelectedSalary()),
+                                         Expr.ge("jobPostMaxSalary", filterParamRequest.getSelectedSalary())).query();
+            }
+        }
+
+//       commented out for now,  to have more results
+//        if (isHot) {
+//            query = query.where().eq("jobPostIsHot", "1").query();
+//        }
+
+        query = query.where().eq("source", source).query();
+
+        query = query.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).query();
+
+        boolean doSortByDistance = false;
+        int modifiedSortBy = sortBy;
+
+        // sort params, this should ideally not exist now as we are externally sorting it anyways
+        if ((sortBy == ServerConstants.SORT_BY_RELEVANCE) && locality == null) {
+
+            // default orders
+            query = query.orderBy().asc("source");
+            query = query.orderBy().desc("JobPostIsHot");
+            query = query.orderBy().desc("jobPostUpdateTimestamp");
+
+            Logger.info("sort by " + sortBy);
+            modifiedSortBy = SORT_BY_DATE_POSTED;
+            doSortByDistance = false;
+        }
+
+//        query = query.setFirstRow((page - 1) * MAX_ROW).setMaxRows(MAX_ROW);
+
+        List<JobPost> resultJobPosts = query.findList();
+
+        // sort by relevance {hot jobs + internal + distance}
+        List<JobPost> resultJobsWithinDistance;
+        if (locality != null && locality.getLat() != null) {
+            resultJobsWithinDistance = MatchingEngineService.filterByDistance(resultJobPosts,
+                    locality.getLat(), locality.getLng(),
+                    ServerConstants.WEB_SEARCH_MATCHING_ENGINE_RADIUS);
+            doSortByDistance = true;
+        } else {
+            resultJobsWithinDistance = resultJobPosts;
+        }
+
+        // our current logic for sory by relevance is this
+        // if relevant sort is not set then we dont segregate hotJobs with nonHotJobs
+        // relevant criteria : {hot : with filters} then {nonHot: with filter} (Active, source->internal)
+        if(sortBy == ServerConstants.SORT_BY_RELEVANCE){
+            List<JobPost> hotJobPostList = new LinkedList<>();
+            List<JobPost> nonHotJobPostList = new LinkedList<>();
+
+            modifiedSortBy = SORT_BY_DATE_POSTED;
+
+            // segregate hot with non H
+            for(JobPost jobPost : resultJobsWithinDistance) {
+                if(jobPost.getJobPostIsHot()){
+                    hotJobPostList.add(jobPost);
+                } else {
+                    nonHotJobPostList.add(jobPost);
+                }
+            }
+
+            // sort individually
+            MatchingEngineService.sortJobPostList(hotJobPostList, modifiedSortBy, doSortByDistance);
+            MatchingEngineService.sortJobPostList(nonHotJobPostList, modifiedSortBy, doSortByDistance);
+
+            resultJobsWithinDistance.clear();
+            resultJobsWithinDistance.addAll(hotJobPostList);
+            resultJobsWithinDistance.addAll(nonHotJobPostList);
+        } else {
+            MatchingEngineService.sortJobPostList(resultJobsWithinDistance, modifiedSortBy, doSortByDistance);
+        }
+
+
+        response.setTotalJobs(resultJobsWithinDistance.size());
+        Logger.info("total jobs: " + response.getTotalJobs());
+
+        // find every thing and trim off the result based on page number
+        List<JobPost> trimmedJobPosts = new ArrayList<>();
+        int i = (page - 1) * MAX_ROW;
+        for (int j = 0; j < MAX_ROW && i < resultJobsWithinDistance.size(); ++j) {
+            trimmedJobPosts.add(resultJobsWithinDistance.get(i++));
+        }
+
+        response.setAllJobPost(trimmedJobPosts);
+
+        return response;
     }
 
     private static Long getSalaryValue(Integer id) {

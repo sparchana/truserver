@@ -1,8 +1,8 @@
 package controllers.scheduler.task;
 
+import api.ServerConstants;
 import controllers.Global;
 import controllers.scheduler.SchedulerConstants;
-import api.ServerConstants;
 import controllers.scheduler.SchedulerManager;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.scheduler.SchedulerStats;
@@ -15,7 +15,10 @@ import play.Logger;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.TimerTask;
 
 import static api.ServerConstants.SOURCE_INTERNAL;
 import static controllers.scheduler.SchedulerConstants.SCHEDULER_SUB_TYPE_SAME_DAY_INTERVIEW;
@@ -25,21 +28,25 @@ import static controllers.scheduler.SchedulerConstants.SCHEDULER_TYPE_SMS;
  * Created by zero on 12/12/16.
  */
 public class SameDayInterviewAlertTask extends TimerTask {
-    private final Date mXHrBack;
+    private Date mXHrBack;
     private final int mXHr;
     private final ClassLoader classLoader;
 
     public SameDayInterviewAlertTask(int x, ClassLoader classLoader){
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
-        cal.add(Calendar.HOUR, - x);
-        mXHrBack = cal.getTime();
+
         this.mXHr = x;
         this.classLoader = classLoader;
+        mXHrBack = new Date();
     }
 
     @Override
     public void run() {
+        // shifted here to avoid creating cal with time of instantiation of this object but not the run time of this object
+         Calendar cal = Calendar.getInstance();
+         cal.setTime(new Date());
+         cal.add(Calendar.HOUR, - this.mXHr);
+         mXHrBack = cal.getTime();
+
         Logger.info("SDI Alert started...");
         // Determine if this task is required to launch
         boolean shouldRunThisTask = false;
@@ -55,16 +62,20 @@ public class SameDayInterviewAlertTask extends TimerTask {
 
         if(schedulerStats == null) {
             // task has definitely not yet running so run it
+            Logger.info("scheduler status is null for SDI.");
             shouldRunThisTask = true;
 
         } else {
-            if(schedulerStats.getEndTimestamp().getHours() < mXHrBack.getHours()) {
-                // last run was 'x++' hr back, hence re run
+            if(schedulerStats.getEndTimestamp().getDate() != mXHrBack.getDate()
+                    || (schedulerStats.getEndTimestamp().before(mXHrBack) || schedulerStats.getEndTimestamp().equals(mXHrBack))) {
+
+                // last run was at or before 'x' hr back, hence re run
                 shouldRunThisTask = true;
             }
         }
 
         if(shouldRunThisTask) {
+            Logger.info("SDI Alert running...");
             Timestamp startTime = new Timestamp(System.currentTimeMillis());
             SchedulerSubType subType = SchedulerSubType.find.where()
                     .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_SAME_DAY_INTERVIEW)
@@ -103,6 +114,8 @@ public class SameDayInterviewAlertTask extends TimerTask {
             Timestamp endTime = new Timestamp(System.currentTimeMillis());
 
             SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
+        } else {
+            Logger.info("SDI Alert not running !");
         }
     }
 

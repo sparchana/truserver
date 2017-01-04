@@ -578,6 +578,9 @@ public class Application extends Controller {
 
     public static Result getJobPostInfo(long jobPostId, Integer isSupport) {
         JobPost jobPost = JobPostDAO.findById(jobPostId);
+        SearchJobService searchJobService = new SearchJobService();
+        Long candidateId = null;
+
         if(jobPost!=null){
             if(isSupport == 0){
                 String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
@@ -587,6 +590,7 @@ public class Application extends Controller {
                     if(candidate == null) {
                         return badRequest();
                     }
+                    candidateId = candidate.getCandidateId();
                     objAUUID = candidate.getCandidateUUId();
                 }
                 InteractionService.createInteractionForJobApplicationAttemptViaWebsite(
@@ -596,6 +600,7 @@ public class Application extends Controller {
                 );
             }
 
+            searchJobService.computeCTA(jobPost, candidateId);
             return ok(toJson(jobPost));
         }
         return ok("0");
@@ -984,7 +989,6 @@ public class Application extends Controller {
         return ok(toJson(pricingPlanTypeList));
     }
 
-    @Security.Authenticated(SecuredUser.class)
     public static Result getAllExperience() {
         List<Experience> experienceList = Experience.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(experienceList));
@@ -1338,10 +1342,12 @@ public class Application extends Controller {
 
         UrlValidatorUtil urlValidatorUtil = new UrlValidatorUtil();
         UrlParameters urlParameters = urlValidatorUtil.parseJobsContentPageUrl(urlString);
-
+        SearchJobService searchJobService = new SearchJobService();
+        Long candidateId = session().get("candidateId") == null? null : Long.parseLong(session().get("candidateId"));
         if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_DETAILS_WITH_JOB_POST_ID_REQUEST){
             JobPost jobPost = JobPost.find.where().eq("JobPostId", urlParameters.getJobPostId()).findUnique();
             if (jobPost != null) {
+                searchJobService.computeCTA(jobPost, candidateId);
                 return ok(toJson(jobPost));
             }
             else {

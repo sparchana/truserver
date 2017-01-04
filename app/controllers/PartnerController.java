@@ -17,6 +17,7 @@ import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.SecuredUser;
 import dao.JobPostDAO;
+import dao.JobPostWorkFlowDAO;
 import models.entity.*;
 import models.entity.OM.JobApplication;
 import models.entity.OM.JobPostWorkflow;
@@ -105,7 +106,7 @@ public class PartnerController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.info("req JSON: " + req );
+        Logger.info("partner login mobile: : " + loginRequest.getCandidateLoginMobile());
         String loginMobile = loginRequest.getCandidateLoginMobile();
         String loginPassword = loginRequest.getCandidateLoginPassword();
         return ok(toJson(PartnerService.login(loginMobile, loginPassword, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE)));
@@ -265,10 +266,8 @@ public class PartnerController {
                         response.setCandidateActiveDeactive(partnerToCandidate.getCandidate().getCandidateprofilestatus().getProfileStatusId());
                     }
                 }
-                List<JobApplication> appliedJobs = JobApplication.find.where()
-                        .eq("candidateId", partnerToCandidate.getCandidate().getCandidateId())
-                        .eq("partner_id", partnerToCandidate.getPartner().getPartnerId()).findList();
-                response.setCandidateAppliedJobs(appliedJobs.size());
+                response.setCandidateAppliedJobs(JobPostWorkflowEngine.getPartnerAppliedJobsForCandidate(
+                    partnerToCandidate.getCandidate(), partner).size());
                 response.setCandidateMobile(partnerToCandidate.getCandidate().getCandidateMobile());
                 responses.add(response);
             }

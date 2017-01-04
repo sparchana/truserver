@@ -105,11 +105,21 @@ public class NotificationUtil {
     }
 
     public static void sendJobApplicationNotification(Candidate candidate, String jobTitle, String company, String prescreenLocation) {
-        String msg = "You have initiated your application for " + jobTitle + " job at " + company + " @" + prescreenLocation + ". Your application is under review " +
-                "and you will get a notification once the recruiter shortlists you for interview.";
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("You have initiated your application for "  + jobTitle + " ");
+
+        if(company != null) {
+            stringBuilder.append("at " + company + " ");
+        }
+        if(prescreenLocation != null){
+            stringBuilder.append("@ " + prescreenLocation);
+        }
+
+        stringBuilder.append(". Your application is under review " +
+                "and you will get a notification once the recruiter shortlists you for interview.");
 
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "Job Application Initiated!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
+            addFcmToNotificationQueue(stringBuilder.toString(), "Job Application Initiated!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
         } else{
             Logger.info("Token not available");
         }

@@ -56,9 +56,10 @@ public class SchedulerManager implements Runnable {
         long jobPostInfoDelay = computeDelay(mSODJobPostInfoStartHr, mSODJobPostInfoStartMin , mSODJobPostInfoStartSec);
         long rateUsPostInterviewDelay = computeDelay(mEODRateUsPostInterviewHr, mEODRateUsPostInterviewMin , mEODRateUsPostInterviewSec);
 
+        long sdiDelay = computeDelayForSDI(sameDayInterviewAlertEventPeriod);
 
         // createSameDayInterviewAlertEvent method takes time period (in hrs) as input
-        createSameDayInterviewAlertEvent(sameDayInterviewAlertEventPeriod);
+        createSameDayInterviewAlertEvent(sameDayInterviewAlertEventPeriod, sdiDelay);
 
         createNextDayInterviewAlertEvent(ndiMailDelay);
 
@@ -71,16 +72,16 @@ public class SchedulerManager implements Runnable {
 //        createEODRateUsPostInterview(rateUsPostInterviewDelay);
     }
 
-    private void createSameDayInterviewAlertEvent(int hr) {
+    public void createSameDayInterviewAlertEvent(int periodInHr, long delay) {
         Logger.info("Same Day Interview Alert Event Scheduled!");
-        if (hr < 1) return;
+        if (periodInHr < 1) return;
 
-        long xHr = hr * 1000 * 60 * 60; // 3 hr
+        long xHr = periodInHr * 1000 * 60 * 60; // 3 hr
 
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-        SameDayInterviewAlertTask sameDayInterviewTask = new SameDayInterviewAlertTask(hr, classLoader);
-        timer.schedule(sameDayInterviewTask, 0, xHr);
+        SameDayInterviewAlertTask sameDayInterviewTask = new SameDayInterviewAlertTask(periodInHr, classLoader);
+        timer.schedule(sameDayInterviewTask, delay, xHr);
     }
 
     private void createNextDayInterviewAlertEvent(long delay) {
@@ -153,7 +154,7 @@ public class SchedulerManager implements Runnable {
             shouldRunThisTask = true;
 
         } else {
-            if((schedulerStats.getStartTimestamp().getDate() < (today).getDate())) {
+            if((schedulerStats.getStartTimestamp().before(today) || schedulerStats.getStartTimestamp().equals(today))) {
                 // last run was 'x++' hr back, hence re run
                 shouldRunThisTask = true;
             }
@@ -188,5 +189,40 @@ public class SchedulerManager implements Runnable {
         }
 
         return (hour * 60 * 60 + min * 60 + sec) * 1000;
+    }
+
+    public long computeDelayForSDI(int period) {
+
+        Calendar cal = Calendar.getInstance();
+        // current time
+        int hour = cal.getTime().getHours() ;
+        int min = cal.getTime().getMinutes() ;
+        int sec = cal.getTime().getSeconds() ;
+
+        int delayedHr = 0;
+        int delayedMin = 0;
+        int delayedSec = 0;
+
+        // this should run at 7(10), 10(1), 1(4)
+        // 4 + 3 = 7
+        if (hour > 13){
+            // delay by 24 - currentHour + 7
+            delayedHr =  24 - hour + 10 - period;
+        } else if(hour > 10) {
+            delayedHr = 16 - hour - period;
+        } else if(hour > 7) {
+            delayedHr = 13 - hour - period;
+        } else if(hour < 7){
+            delayedHr = 7 - hour;
+        } else {
+            delayedHr = 0;
+        }
+
+        if(delayedHr!= 0 && min > 0) {
+            delayedMin = 60 - min;
+            delayedHr-- ;
+        }
+
+        return (delayedHr * 60 * 60 + delayedMin * 60) * 1000;
     }
 }

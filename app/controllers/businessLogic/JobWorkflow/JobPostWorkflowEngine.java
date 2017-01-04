@@ -45,7 +45,6 @@ import java.util.*;
 import static api.ServerConstants.*;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
 import static models.util.SmsUtil.*;
-import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 import static play.mvc.Results.ok;
 
@@ -1122,8 +1121,12 @@ public class JobPostWorkflowEngine {
                         isCandidateDataMissing = true;
                         break;
                     } else if (!pe.isSingleEntity()) {
-                        isCandidateDataMissing = true;
-                        break;
+                        // case when candidate data is there and jobpost data is also there but its not matching,
+                        // we don't have to show it in FE
+                        if(pe.getCandidateElementList() == null || pe.getCandidateElementList().size() == 0 ){
+                            isCandidateDataMissing = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -1271,6 +1274,7 @@ public class JobPostWorkflowEngine {
         String interactionResult = "";
         Integer interactionType = null;
         if (preScreenRequest.isPass() != null) {
+
             JobPostWorkflowStatus status;
             if (preScreenRequest.isPass()) {
                 // passed
@@ -1320,8 +1324,8 @@ public class JobPostWorkflowEngine {
             preScreenResponse.save();
         }
         if (preScreenRequest.isPass() != null && !(preScreenRequest.isPass())) {
-            // candidate failed prescren, then don't show interview
-            interviewResponse.setStatus(ServerConstants.ERROR);
+            // candidate failed prescreen, then don't show interview
+            interviewResponse.setStatus(ServerConstants.INTERVIEW_NOT_REQUIRED);
             return interviewResponse;
         }
         return RecruiterService.isInterviewRequired(jobPostWorkflowNew.getJobPost());
@@ -2292,27 +2296,9 @@ public class JobPostWorkflowEngine {
                 for (PreScreenPopulateResponse.PreScreenElement pe : response.getElementList()) {
                     if (pe.isMatching()) {
                         matchingReason += pe.getPropertyTitle() + ", ";
-//                        if(pe.isSingleEntity()) {
-//                            matchingReason += pe.getCandidateElement().getPlaceHolder() + ", ";
-//                        } else {
-//                            for(PreScreenPopulateResponse.PreScreenCustomObject customObject: pe.getCandidateElementList()){
-//                                matchingReason += customObject.getPlaceHolder() +
-//                            }
-//                        }
                         passed++;
                     } else {
                         nonMatchingReason += pe.getPropertyTitle() + ", ";
-//                        if(pe.isSingleEntity()) {
-//                            if(pe.getCandidateElement() != null) {
-//                                nonMatchingReason += pe.getCandidateElement().getPlaceHolder() + ", ";
-//                            }
-//                        } else {
-//                            if(pe.getCandidateElementList()!=null && pe.getCandidateElementList().size() > 0) {
-//                                for(PreScreenPopulateResponse.PreScreenCustomObject customObject: pe.getCandidateElementList()){
-//                                    nonMatchingReason += customObject.getPlaceHolder() + ", ";
-//                                }
-//                            }
-//                        }
                     }
                     total++;
                 }
@@ -2358,6 +2344,32 @@ public class JobPostWorkflowEngine {
 
             return null;
         }
+
+
+        if(RecruiterService.isInterviewRequired(jobPostWorkflowCurrent.getJobPost()).getStatus() == ServerConstants.INTERVIEW_NOT_REQUIRED) {
+
+            JobPost jobPost = jobPostWorkflowCurrent.getJobPost();
+            JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", candidate.getCandidateId()).eq("jobPostId", jobPost.getJobPostId()).findUnique();
+
+            String jobApplicationLocationName = null;
+
+            if(existingJobApplication != null && existingJobApplication.getLocality() != null) {
+                jobApplicationLocationName = existingJobApplication.getLocality().getLocalityName();
+            }
+
+            // null company and location name is handled within the sms module
+            SmsUtil.sendJobApplicationSms(
+                    candidate.getCandidateFirstName(), jobPost.getJobPostTitle(), jobPost.getCompany().getCompanyName(), candidate.getCandidateMobile(),
+                    jobApplicationLocationName, channel);
+
+            // sending notification
+            // null company and location name is handled within the notification module
+            NotificationUtil.sendJobApplicationNotification(candidate, jobPost.getJobPostTitle(), jobPost.getCompany().getCompanyName(),
+                    jobApplicationLocationName);
+
+            return "OK";
+        }
+
 
         // TODO find a better way to handle applicants who applied to a job directly and didn't went through prescreen, but choosen interview slot
         // we create prescreen completed here for them to process them to interview stage

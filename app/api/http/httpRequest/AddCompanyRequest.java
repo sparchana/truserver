@@ -15,6 +15,7 @@ public class AddCompanyRequest {
     public Integer companyLocality;
     public Integer companyType;
     public Integer companyStatus;
+    public Integer source;
 
     public Long getCompanyId() {
         return companyId;
@@ -102,5 +103,13 @@ public class AddCompanyRequest {
 
     public void setCompanyStatus(Integer companyStatus) {
         this.companyStatus = companyStatus;
+    }
+
+    public Integer getSource() {
+        return source;
+    }
+
+    public void setSource(Integer source) {
+        this.source = source;
     }
 }

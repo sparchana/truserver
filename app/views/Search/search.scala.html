@@ -1,0 +1,332 @@
+@(searchText: String)
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        @* TODO dynamic naming based on search keyword using 'document.title' *@
+        <title>@searchText | TruJobs - New Job Vacancies for @searchText</title>
+
+        <meta name="keywords" content="driving jobs, fresher jobs, jobs for freshers, job search sites, job posting, sales jobs, beautician jobs,
+        medical transcription jobs, online job search, find jobs, receptionist jobs, admin jobs, office assistant jobs,
+        plumbing work, teacher job, online teaching jobs, jobs in schools, teacher vacancy, teacher recruitment, entry level jobs,
+        delivery boy jobs,call center jobs, BPO jobs, kpo jobs, job job job, data entry jobs, back office jobs,
+        receptionist jobs, beautician jobs, experienced jobs, jobs in Bangalore, cashier jobs, entry level jobs,
+        plumber jobs, electrician jobs, job search, accountant jobs, job vacancy, bangalore vacancy">
+
+        <meta name="description" content="Search and apply for jobs online. Register for FREE and find best
+        @searchText. Give a missed call at 8880007799 for best jobs." />
+
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+
+            <!-- Bootstrap Core CSS -->
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.min.css">
+
+        <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        @* TODO move this to commmon *@
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/awesomplete.css">
+
+        <link rel="stylesheet" href="/assets/support/css/nprogress.css">
+
+        @*job card is the only one direclty dependent on bootstrap, hence included *@
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
+        <link rel="stylesheet" type="text/css" href="/assets/search/css/search.css">
+
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+
+        <meta name="theme-color" content="#286ab6">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    </head>
+    <style>
+    #playStoreLogoNavBar{
+        display: none;
+    }
+    </style>
+    <body>
+            <!-- Nav start -->
+        <div id="nav_bar_inc"></div>
+
+        <div class="container-fluid" style="padding:0%">
+            <div id="sectionOne" style="padding: 4% 4% 0 4%">
+                <div class="container">
+                    <font color="white">
+                        <div class="row">
+                            <div class="col-sm-12 col-md-12" id="searchBarOuterMainCol">
+                                <div class="row" style="margin: 0">
+                                    <h2 style="letter-spacing: 2px; margin:2% 0;text-align: left"><font size="5">Schedule interviews for interested jobs</font></h2>
+                                </div>
+                                <div class="row" id="searchBarDivMain">
+                                    <div class="input-group" id="searchBar">
+                                        <div class="col-xs-12 col-sm-9 col-md-4" id="mainFieldSearch">
+                                            <p style="display: inline;float: left;margin: 0 14px">
+                                                <font style="color: #bebebe;text-align: left;font-size:12px">Search</font></p>
+                                            <input type="text" id="searchText" class="form-control" placeholder="Type job role, job title of company name" data-multiple>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-2 col-md-3" id="searchLocationBox">
+                                            <p style="display: inline;float: left;margin: 0 14px"><font style="color: #bebebe;text-align: left;font-size:12px">Select your Location</font></p>
+                                            <select id="searchLocation" class="form-control"></select>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-2 col-md-2" id="searchEducationBox">
+                                            <p style="display: inline;float: left;margin: 0 14px"><font style="color: #bebebe;text-align: left;font-size:12px">Select your Education</font></p>
+                                            <select id="searchEducation" class="form-control"></select>
+                                        </div>
+                                        <div class="col-xs-12 col-sm-2 col-md-2" id="searchExperienceBox">
+                                            <p style="display: inline;float: left;margin: 0 14px"><font style="color: #bebebe;text-align: left;font-size:12px">Select your Experience</font></p>
+                                            <select id="searchExperience" class="form-control"></select>
+                                        </div>
+
+                                        <div class="col-xs-12 col-sm-1 col-md-1" style="padding-top:24px">
+                                            <a>
+                                                <button type="button" id="searchBtn" class="btn btn-default" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                                </button>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </font>
+                </div>
+            </div>
+        </div>
+            <!-- End of sectionOne -->
+        <div id="fixedButton" style="display: none;">
+            <div>
+                Go to top
+            </div>
+            @* TODO move this to commmon *@
+            <img src="/assets/recruiter/img/icons/top.svg" width="48px" id="scrollToTop" style="display: block;"/>
+        </div>
+
+            <!--Search bar ends-->
+        <div class="container hide-on-med-and-up" style="padding: 1%;margin-top: 10px">
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="waves-effect waves-light btn" id="sortByMobileViewBtn" onclick="showSort()" style="padding: 6px 9px; width: 100%;">Sort By</div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="waves-effect waves-light btn" id="filterMobileViewBtn" onclick="showFilter()" style="padding: 6px 9px; width: 100%;">Filter</div>
+                </div>
+            </div>
+        </div>
+            <!-- Details container -->
+        <div class="container" style="padding: 0;margin-top: 2%">
+            <div class="row">
+                    <!-- Sort & Filter -->
+                <div class="col s12 l3">
+                    <div id="sortMainBox">
+                        <div class="card-content" style="padding:2%">
+                            <font size="5">Sort by</font>
+                        </div>
+                        <ul class="collapsible" data-collapsible="expandable" style="margin-top:12px">
+                            <li>
+                                <div class="collapsible-header active"><i class="material-icons">repeat</i>
+                                    Sort by</div>
+                                <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                    <div>
+                                        <input name="sortBy" type="radio" value="5" id="sortByRelevance" />
+                                        <label style="font-size: 12px" for="sortByRelevance">Relevance</label>
+                                    </div>
+                                    <div>
+                                        <input name="sortBy" type="radio" value="4" id="sortByMinSalary" />
+                                        <label style="font-size: 12px" for="sortByMinSalary">Salary (Low to High)</label>
+                                    </div>
+                                    <div>
+                                        <input name="sortBy" type="radio" value="3" id="sortByMaxSalary" />
+                                        <label style="font-size: 12px" for="sortByMaxSalary">Salary (High to Low)</label>
+                                    </div>
+                                    <div>
+                                        <input name="sortBy" type="radio" value="2" id="latestPosted" />
+                                        <label style="font-size: 12px" for="latestPosted">Posted on (Newest to oldest)</label>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="filterMainBox">
+                            <div class="card-content" style="padding:2%">
+                                <font size="5">Filters</font>
+                                <div id="resetFilters" class="waves-effect waves-light orange lighten-1" onclick="" style="margin-top:8px;padding: 4px 8px 4px 8px;
+                                    float: right; display: inline-block; border-radius: 4px;">
+                                    <font style="color: #fff;font-weight: 400; font-size: 12px"><b>
+                                        <center>
+                                            RESET FILTERS
+                                        </center>
+                                    </b></font>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="row">
+                                    <div class="col s12 l12">
+                                        <ul class="collapsible" data-collapsible="expandable">
+                                            <li>
+                                                <div class="collapsible-header active">
+                                                    <img src="/assets/recruiter/img/icons/gender.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                    Gender
+                                                    <span style="float: right; display: none" id="gender_filter">
+                                                        <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                    </span>
+                                                </div>
+
+                                                <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                                    <div>
+                                                        <input name="filterGender" type="radio" value="0" id="gender_0" />
+                                                        <label style="font-size: 12px" for="gender_0">Male</label>
+                                                    </div>
+                                                    <div>
+                                                        <input name="filterGender" type="radio" value="1" id="gender_1" />
+                                                        <label style="font-size: 12px" for="gender_1">Female</label>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li>
+                                                <div class="collapsible-header active ">
+                                                    <img src="/assets/recruiter/img/icons/language.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                    Language
+                                                    <span style="float: right; display: none" id="language_filter">
+                                                        <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                    </span>
+                                                </div>
+
+                                                <div class="collapsible-body " style="padding: 8px 18px 8px 18px" id="languageFilterDiv"></div>
+                                            </li>
+                                            <li>
+                                                <div class="collapsible-header active ">
+                                                    <img src="/assets/recruiter/img/icons/salary.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                    Salary
+                                                    <span style="float: right; display: none" id="salary_filter">
+                                                        <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                    </span>
+                                                </div>
+
+                                                <div class="collapsible-body " style="padding: 8px 18px 8px 18px" id="salaryFilterDiv"></div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                    <!-- Job Post Details -->
+                <div class="col s12 l9">
+                    <center id="jobLoaderDiv" style="position: relative; text-align: center; width: 100%">
+                        <h4>Loading Jobs</h4>
+                        <svg viewBox="0 0 32 32" width="32" height="32">
+                            <circle id="loadingSpinner" cx="16" cy="16" r="14" fill="none"></circle>
+                        </svg>
+                    </center>
+                    <div id="job_cards_inc"></div>
+                    <div id="jobCardControl"></div>
+                    
+                    <div id="loadingIcon" style="display: none; padding-top: 6%">
+                        <center>
+                            <h6>Searching Jobs</h6>
+                            <svg viewBox="0 0 32 32" width="24" height="24">
+                                <circle id="loadingSpinner" cx="16" cy="16" r="14" fill="none"></circle>
+                            </svg>
+                        </center>
+                    </div>
+                    <div id="noJobsDiv" style="padding: 120px 6% 0 6%; display: none">
+                        <center>
+                            <img src="/assets/recruiter/img/empty_box.svg" width="96px">
+                            <h5>No Jobs found!</h5>
+                            <h6>Looks like there are no jobs matching your search. Please edit search/filter options and try again</h6>
+                        </center>
+                    </div>
+                    <div id="endOfResultsDiv" style="padding: 20px 6% 0 6%; display: none">
+                        <center>
+                            <img src="/assets/recruiter/img/empty_box.svg" width="96px">
+                            <h5>That's all we have for now!</h5>
+                            <h6>Showing all the jobs according to your filter preferences</h6>
+                        </center>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        @* register box start *@
+        @*<a href ="#" class="registerBox" data-toggle="modal" data-target="#mySignUpModal" onClick="openSignUp()">
+            <div class="row" id="registerBoxInner"><font size="3" style="color: #fff">Apply Now</font></div>
+        </a>*@
+        @* register box end*@
+
+        <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
+        <script type="text/javascript" src="/assets/common/js/materialize.min.js"></script>
+        <script type="text/javascript" src="/assets/common/js/awesomplete.min.js"></script>
+        <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+        <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
+        <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
+        <script type="text/javascript" src="/assets/common/js/jquery.twbsPagination.js"></script>
+        <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/assets/search/js/searchController.js"></script>
+        <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
+
+        @* bootstrap vs materialize.css overrider *@
+        <link rel="stylesheet" type="text/css" href="/assets/search/css/search_override.css">
+
+        <script>
+        $(window).resize(function(){
+            var width = $(window).width();
+            if(width < 780){
+                $("#editBtn").removeClass("btn-large").addClass("btn-small");
+            } else{
+                $("#editBtn").removeClass("btn-small").addClass("btn-large");
+            }
+        });
+        </script>
+
+
+        @* Analytics begins here *@
+            <!--  google page view -->
+        <script>
+            (function (i, s, o, g, r, a, m) {
+                i['GoogleAnalyticsObject'] = r;
+                i[r] = i[r] || function () {
+                            (i[r].q = i[r].q || []).push(arguments)
+                        }, i[r].l = 1 * new Date();
+                a = s.createElement(o),
+                        m = s.getElementsByTagName(o)[0];
+                a.async = 1;
+                a.src = g;
+                m.parentNode.insertBefore(a, m)
+            })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+            ga('create', 'UA-77156203-1', 'auto');
+            ga('send', 'pageview');
+        </script>
+
+            <!-- Facebook Pixel Code [consversion] -->
+        <script>
+        !function (f, b, e, v, n, t, s) {
+            if (f.fbq)return;
+            n = f.fbq = function () {
+                n.callMethod ?
+                        n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+            };
+            if (!f._fbq)f._fbq = n;
+            n.push = n;
+            n.loaded = !0;
+            n.version = '2.0';
+            n.queue = [];
+            t = b.createElement(e);
+            t.async = !0;
+            t.src = v;
+            s = b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t, s)
+        }(window,
+                document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '535139956654403');
+        fbq('track', 'CompleteRegistration');
+        </script>
+
+        <noscript>
+            <img height="1" width="1" style="display: none"
+            src="https://www.facebook.com/tr?id=535139956654403&ev=PageView&noscript=1"/>
+        </noscript>
+            <!-- End Facebook Pixel Code -->
+    </body>
+</html>

@@ -143,7 +143,8 @@ function updateForm() {
             companyLogo: logo,
             companyLocality: parseInt($("#companyLocality").val()),
             companyType: $("#companyType").val(),
-            companyStatus: $("#companyStatus").val()
+            companyStatus: $("#companyStatus").val(),
+            source: $("#companySource").val() //  SOURCE_INTERNAL: 0
         };
 
         try {
@@ -185,7 +186,7 @@ function saveForm(){
         if($("#companyName").val() == ""){
             alert("Please Enter company Name");
             status=0;
-        } else if((f.type).substring(0,1) != "i"){
+        } else if(document.getElementById("companyLogo").value != "" && (f.type).substring(0,1) != "i"){
             alert("Please select a valid image for logo");
             status=0;
         } else{
@@ -217,7 +218,8 @@ function saveForm(){
                 companyLogo: logo,
                 companyLocality: parseInt($("#companyLocality").val()),
                 companyType: $("#companyType").val(),
-                companyStatus: $("#companyStatus").val()
+                companyStatus: $("#companyStatus").val(),
+                source: 0 // SOURCE_INTERNAL
             };
             try {
                 $.ajax({

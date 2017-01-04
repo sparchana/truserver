@@ -79,7 +79,12 @@ function requestServerSearchCall(sortBy) {
             async: true,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(d),
-            success: processDataMatchCandidate
+            success: processDataMatchCandidate,
+            error: function (jqXHR, exception) {
+                $("#somethingWentWrong").show();
+                $("#loadingIcon").hide();
+                NProgress.done();
+            }
         });
     } catch (exception) {
         console.log("exception occured!!" + exception.stack);
@@ -222,7 +227,12 @@ $(document).ready(function(){
             async: true,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(d),
-            success: processDataMatchCandidate
+            success: processDataMatchCandidate,
+            error: function (jqXHR, exception) {
+                $("#somethingWentWrong").show();
+                $("#loadingIcon").hide();
+                NProgress.done();
+            }
         });
     } catch (exception) {
         console.log("exception occured!!" + exception.stack);
@@ -539,7 +549,12 @@ function performSearch() {
                 async: true,
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(d),
-                success: processDataMatchCandidate
+                success: processDataMatchCandidate,
+                error: function (jqXHR, exception) {
+                    $("#somethingWentWrong").show();
+                    $("#loadingIcon").hide();
+                    NProgress.done();
+                }
             });
         } catch (exception) {
             console.log("exception occured!!" + exception.stack);
