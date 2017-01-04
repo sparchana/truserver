@@ -54,31 +54,33 @@
                 <div class="container">
                     <font color="white">
                         <div class="row">
-                            <div class="col-sm-12 col-md-12" style="margin-top: 20px">
+                            <div class="col-sm-12 col-md-12" id="searchBarOuterMainCol">
                                 <div class="row" style="margin: 0">
                                     <h2 style="letter-spacing: 2px; margin:2% 0;text-align: left"><font size="5">Schedule interviews for interested jobs</font></h2>
                                 </div>
                                 <div class="row" id="searchBarDivMain">
                                     <div class="input-group" id="searchBar">
                                         <div class="col-xs-12 col-sm-9 col-md-4" id="mainFieldSearch">
-                                            <label id="searchTextLabel" for="searchText" style="display: inline;float: left;margin: 0"><font style="color: #bebebe;text-align: left;font-size:12px">Search</font></label>
+                                            <p style="display: inline;float: left;margin: 0 14px">
+                                                <font style="color: #bebebe;text-align: left;font-size:12px">Search</font></p>
                                             <input type="text" id="searchText" class="form-control" placeholder="Type job role, job title of company name" data-multiple>
                                         </div>
-                                        <div class="col-xs-12 col-sm-2 col-md-3" id="searchLocationBox" style="padding: 0">\
-                                            <p style="display: inline;float: left;margin: 0"><font style="color: #bebebe;text-align: left;font-size:12px">Select your Location</font></p>
+                                        <div class="col-xs-12 col-sm-2 col-md-3" id="searchLocationBox">
+                                            <p style="display: inline;float: left;margin: 0 14px"><font style="color: #bebebe;text-align: left;font-size:12px">Select your Location</font></p>
                                             <select id="searchLocation" class="form-control"></select>
                                         </div>
                                         <div class="col-xs-12 col-sm-2 col-md-2" id="searchEducationBox">
-                                            <p style="display: inline;float: left;margin: 0"><font style="color: #bebebe;text-align: left;font-size:12px">Select your Education</font></p>
+                                            <p style="display: inline;float: left;margin: 0 14px"><font style="color: #bebebe;text-align: left;font-size:12px">Select your Education</font></p>
                                             <select id="searchEducation" class="form-control"></select>
                                         </div>
                                         <div class="col-xs-12 col-sm-2 col-md-2" id="searchExperienceBox">
-                                            <p style="display: inline;float: left;margin: 0"><font style="color: #bebebe;text-align: left;font-size:12px">Select your Experience</font></p>
+                                            <p style="display: inline;float: left;margin: 0 14px"><font style="color: #bebebe;text-align: left;font-size:12px">Select your Experience</font></p>
                                             <select id="searchExperience" class="form-control"></select>
                                         </div>
-                                        <div class="col-xs-12 col-sm-1 col-md-1" style="padding-top:10px">
+
+                                        <div class="col-xs-12 col-sm-1 col-md-1" style="padding-top:24px">
                                             <a>
-                                                <button type="button" id="searchBtn"class="btn btn-default" aria-label="Left Align">
+                                                <button type="button" id="searchBtn" class="btn btn-default" aria-label="Left Align">
                                                     <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
                                                 </button>
                                             </a>
@@ -101,13 +103,13 @@
         </div>
 
             <!--Search bar ends-->
-        <div class="container-fluid hide-on-med-and-up" style="padding: 1%;">
+        <div class="container hide-on-med-and-up" style="padding: 1%;margin-top: 10px">
             <div class="row">
-                <div class="col s6">
-                    <div class="waves-effect waves-light btn" id="sortByMobileViewBtn" onclick="showSort()" style="padding: 0 9px; width: 100%;">Sort By</div>
+                <div class="col-xs-6">
+                    <div class="waves-effect waves-light btn" id="sortByMobileViewBtn" onclick="showSort()" style="padding: 6px 9px; width: 100%;">Sort By</div>
                 </div>
-                <div class="col s6">
-                    <div class="waves-effect waves-light btn" id="filterMobileViewBtn" onclick="showFilter()" style="padding: 0 9px; width: 100%;">Filter</div>
+                <div class="col-xs-6">
+                    <div class="waves-effect waves-light btn" id="filterMobileViewBtn" onclick="showFilter()" style="padding: 6px 9px; width: 100%;">Filter</div>
                 </div>
             </div>
         </div>

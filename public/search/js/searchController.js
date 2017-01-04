@@ -30,6 +30,7 @@ var app = (function ($) {
         D_LOCATION_ALL_BANGALORE: {}
     };
     var app = {
+        urlHistoryArray: [],
         isUserLoggedIn: false,
         shouldDoSearch: true,
         allJobRole: [],
@@ -546,7 +547,11 @@ var app = (function ($) {
             },
             modifyURL: function (url) {
                 // TODO ideally this should change after the result is returned
-                window.history.pushState("object or string", "Title", "/s/" + url);
+                var stateObj = {url:  "/s/" + url};
+                if(!(history.state!= null && stateObj.url === history.state.url)){
+                    window.history.pushState(stateObj, "Title", "/s/" + url);
+                    app.urlHistoryArray.push(stateObj);
+                }
                 return "/s/" + url;
             },
             prepareURL: function () {
@@ -800,7 +805,7 @@ var app = (function ($) {
 
                                 var jobCompany= document.createElement("p");
                                 jobCompany.textContent = jobPost.jobRole.jobName + " Job | "+ jobPost.company.companyName;
-                                jobCompany.style = "color:rgba(0, 159, 219, 0.99)";
+                                jobCompany.style = "color:rgba(0, 159, 219, 0.99);font-weight:600";
                                 jobBodyCol.appendChild(jobCompany);
 
 
@@ -1301,7 +1306,7 @@ var app = (function ($) {
 
                 app.currentFilterParams.selectedGender = null;
                 app.currentFilterParams.selectedLanguageIdList = [];
-                app.currentSortParams.sortBy = 1; // default set to sort by relevance
+                app.currentSortParams.sortBy = 5; // default set to sort by relevance
 
                 app.do.search(true);
             }
@@ -1351,9 +1356,16 @@ var app = (function ($) {
             urlChangeDetector: function () {
                 if (window.history && window.history.pushState) {
 
-                    console.log("windows.url: "+ window.location);
                     $(window).on('popstate', function () {
-                        location.reload();
+                        app.urlHistoryArray.pop();
+                        // history.back();
+                        console.log('back ur: '+ window.location.pathname);
+                        if(app.urlHistoryArray.length == 0){
+                            history.back();
+                        } else {
+                            app.do.prepareSearchParamFromURL();
+                            app.do.search(false);
+                        }
                     });
 
                 }
@@ -1362,9 +1374,9 @@ var app = (function ($) {
                 if(gender == null || gender == 2 ){
                     return "Any";
                 } else if (gender == 0){
-                    return "Female";
-                } else if (gender == 1){
                     return "Male";
+                } else if (gender == 1){
+                    return "Female";
                 }
                 return "";
             },
@@ -1461,9 +1473,8 @@ var app = (function ($) {
 
     // this detect the typing even on the search bar
     $('#searchText').on('keyup',function (event) {
-        if(((event.keyCode >= 48 && event.keyCode <= 57)
-            || (event.keyCode >= 65 && event.keyCode <= 90) )){
-            // trigger suggestion only when typing alpha numeric is happening
+        // remove action on key press of special char ASCII value and enter
+        if(!(event.keyCode >= 32 && event.keyCode <= 47) && (event.keyCode != 13)){
             app.render.renderTextSearch();
         }
     });
@@ -1551,3 +1562,32 @@ function openSignUp() {
     $("#myLoginModal").modal("hide");
 }
 //search bar animation effect code
+
+var countSort = 0 ;
+function showSort() {
+    countSort = countSort + 1;
+    if(countSort==1)
+    {
+        $('#sortMainBox').show();
+        $('#filterMainBox').hide();
+    }
+    if(countSort == 2){
+        $('#sortMainBox').hide();
+        $('#filterMainBox').hide();
+        countSort = 0;
+    }
+}
+var countFilter = 0;
+function showFilter() {
+    countFilter = countFilter + 1;
+    if(countFilter==1){
+        $('#sortMainBox').hide();
+        $('#filterMainBox').show();
+    }
+    if(countFilter==2){
+        $('#filterMainBox').hide();
+        $('#sortMainBox').hide();
+        countFilter = 0;
+    }
+
+}

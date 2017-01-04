@@ -111,6 +111,8 @@ public class CompanyService {
             Locality locality = Locality.find.where().eq("localityId", addCompanyRequest.getCompanyLocality()).findUnique();
             newCompany.setCompanyLocality(locality);
         }
+
+        newCompany.setSource(addCompanyRequest.getSource());
         return newCompany;
     }
 }
