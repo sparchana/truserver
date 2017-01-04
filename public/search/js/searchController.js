@@ -1070,6 +1070,9 @@ var app = (function ($) {
         return (!str || 0 === str.length);
     }
 
+    /* render footer */
+    $('#footer_inc').load('/footer');
+
     return app;
 }(jQuery));
 
