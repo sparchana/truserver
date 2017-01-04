@@ -3,6 +3,7 @@ package controllers.businessLogic;
 import api.ServerConstants;
 import api.http.httpRequest.search.SearchJobRequest;
 import api.http.httpResponse.JobPostResponse;
+import api.http.httpResponse.interview.InterviewResponse;
 import api.http.httpResponse.search.SearchJobResponse;
 import api.http.httpResponse.search.helper.FilterParamsResponse;
 import api.http.httpResponse.search.helper.SearchParamsResponse;
@@ -335,8 +336,11 @@ public class SearchJobService {
             }
             // change only if its not set prev, i.e its set to default value
             if(jobPost.getApplyBtnStatus() == 0){
-                if(RecruiterService.isInterviewRequired(jobPost).getStatus() == ServerConstants.INTERVIEW_REQUIRED){
+                InterviewResponse response = RecruiterService.isInterviewRequired(jobPost);
+                if(response.getStatus() == ServerConstants.INTERVIEW_REQUIRED){
                     jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_REQUIRED);
+                } else if(response.getStatus() == ServerConstants.INTERVIEW_CLOSED){
+                    jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_CLOSED);
                 } else {
                     jobPost.setApplyBtnStatus(ServerConstants.APPLY);
                 }

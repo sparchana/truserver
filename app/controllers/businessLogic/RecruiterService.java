@@ -18,6 +18,7 @@ import api.http.httpResponse.interview.InterviewResponse;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
+import dao.JobPostDAO;
 import dao.RecruiterCreditHistoryDAO;
 import models.entity.OM.InterviewDetails;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
@@ -533,6 +534,33 @@ public class RecruiterService {
             // don't show interview modal if no recruiter is set for a jobpost
             interviewResponse.setStatus(ServerConstants.INTERVIEW_NOT_REQUIRED);
             return interviewResponse;
+        }
+
+        if (jobPost.getRecruiterProfile().getInterviewCreditCount() == 0
+                && jobPost.getRecruiterProfile().getContactCreditCount() == 0) {
+
+            Calendar newCalendar = Calendar.getInstance();
+
+            // 1-> sunday
+            // 2-> Monday
+            int todayDate = newCalendar.get(Calendar.DAY_OF_WEEK);
+            int weekDaysDeduct;
+            if(todayDate > 1){
+                weekDaysDeduct = todayDate - 2;
+            } else{
+                weekDaysDeduct = 6;
+            }
+
+            //checking weekly job application limit
+            if(JobPostDAO.getThisWeeksApplication(jobPost, weekDaysDeduct).size()
+                    > ServerConstants.FREE_JOB_APPLICATION_DEFAULT_LIMIT_IN_A_WEEK){
+
+                Logger.info("Interview closed for this week");
+                // interview closed
+                interviewResponse.setStatus(ServerConstants.INTERVIEW_CLOSED);
+                return interviewResponse;
+            }
+
         }
 
         List<InterviewDetails> interviewDetailsList = InterviewDetails.find.where().eq("JobPostId", jobPost.getJobPostId()).findList();

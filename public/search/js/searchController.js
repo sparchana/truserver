@@ -1148,6 +1148,10 @@ var app = (function ($) {
                                         applyJobText = "Already Applied";
                                         applyBtn.disabled =  true;
                                         applyBtn.style = "background:#ffa726";
+                                    } else if(jobPost.applyBtnStatus == 5) {
+                                        applyJobText = "Application closed";
+                                        applyBtn.disabled =  true;
+                                        applyBtn.style = "background:#ffa726";
                                     }
                                 } else {
                                     applyJobText = "Apply";
