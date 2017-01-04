@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static api.ServerConstants.*;
+import static play.mvc.Controller.session;
 
 /**
  * Created by zero on 15/8/16.
@@ -630,6 +631,7 @@ public class JobSearchService {
      */
     public static JobPostResponse getAllHotJobsPaginated(Long index) {
         JobPostResponse jobPostResponse = new JobPostResponse();
+        SearchJobService service = new SearchJobService();
         if (index != null) {
             PagedList<JobPost> pagedList = JobPost.find
                     .where()
@@ -642,9 +644,16 @@ public class JobSearchService {
                     .orderBy().desc("jobPostUpdateTimestamp")
                     .findPagedList();
             List<JobPost> jobPostList = pagedList.getList();
-            jobPostResponse.setAllJobPost(jobPostList);
-            jobPostResponse.setTotalJobs(JobPost.find.where().eq("jobPostIsHot", "1").eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).eq("Source", ServerConstants.SOURCE_INTERNAL).findRowCount());
 
+            Long cId = null;
+            if((session().get("candidateId") != null)){
+                cId = Long.valueOf(session().get("candidateId"));
+            }
+
+            service.computeCTA(jobPostList, cId);
+            jobPostResponse.setAllJobPost(jobPostList);
+
+            jobPostResponse.setTotalJobs(JobPost.find.where().eq("jobPostIsHot", "1").eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).eq("Source", ServerConstants.SOURCE_INTERNAL).findRowCount());
         }
         return jobPostResponse;
 
@@ -668,6 +677,7 @@ public class JobSearchService {
                                           .orderBy().desc("jobPostUpdateTimestamp")
                                           .findPagedList();
             List<JobPost> jobPostList = pagedList.getList();
+
             jobPostResponse.setAllJobPost(jobPostList);
             jobPostResponse.setTotalJobs(JobPost.find.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).eq("Source", ServerConstants.SOURCE_INTERNAL).findRowCount());
         }
@@ -676,6 +686,7 @@ public class JobSearchService {
 
     public static JobPostResponse getActiveJobsForJobRolePaginated(Long jobRoleId, Long index){
         JobPostResponse jobPostResponse = new JobPostResponse();
+        SearchJobService service = new SearchJobService();
         if(index!=null){
             List<JobPost> jobPostList = JobPost.find.where()
                     .eq("jobRole.jobRoleId",jobRoleId)
@@ -686,7 +697,14 @@ public class JobSearchService {
                     .orderBy().asc("source")
                     .orderBy().desc("jobPostUpdateTimestamp")
                     .findList();
+
+            Long cId = null;
+            if((session().get("candidateId") != null)){
+                cId = Long.valueOf(session().get("candidateId"));
+            }
+            service.computeCTA(jobPostList, cId);
             jobPostResponse.setAllJobPost(jobPostList);
+
             jobPostResponse.setTotalJobs(JobPost.find.where().eq("jobRole.jobRoleId",jobRoleId).eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).eq("Source", ServerConstants.SOURCE_INTERNAL).findRowCount());
         }
     return jobPostResponse;
