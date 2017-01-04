@@ -5,6 +5,7 @@ import api.http.httpResponse.CandidateWorkflowData;
 import controllers.businessLogic.JobService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerManager;
+import controllers.scheduler.task.EODDebitCreditInterviewCreditTask;
 import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.Recruiter.RecruiterProfile;
@@ -138,7 +139,6 @@ public class TestController extends Controller{
                 recruiterCreditHistory.setRecruiterCreditsUsed(usedCredits);
                 recruiterCreditHistory.setRecruiterProfile(recruiterProfile);
                 recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
-                recruiterCreditHistory.setCreditsAdded(availableCredits);
                 recruiterCreditHistory.save();
             }
 
@@ -179,13 +179,12 @@ public class TestController extends Controller{
                 recruiterCreditHistory.setRecruiterCreditsUsed(usedCredits);
                 recruiterCreditHistory.setRecruiterProfile(recruiterProfile);
                 recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
-                recruiterCreditHistory.setCreditsAdded(availableCredits);
                 recruiterCreditHistory.save();
             }
         }
 
-        List<RecruiterCreditHistory> allList = RecruiterCreditHistory.find.where().isNull("recruiter_credit_pack_no").findList();
-        for(RecruiterCreditHistory history : allList){
+        List<RecruiterCreditHistory> list = RecruiterCreditHistory.find.where().isNull("recruiter_credit_pack_no").findList();
+        for(RecruiterCreditHistory history : list){
             history.delete();
         }
 

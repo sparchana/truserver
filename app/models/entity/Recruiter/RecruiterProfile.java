@@ -341,6 +341,7 @@ public class RecruiterProfile extends Model {
                 }
             }
         }
+
         return count;
     }
 }

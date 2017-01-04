@@ -42,9 +42,6 @@ public class RecruiterCreditHistory extends Model {
     @Column(name = "units", columnDefinition = "int signed null")
     private Integer units;
 
-    @Column(name = "credits_added", columnDefinition = "int signed null")
-    private Integer creditsAdded;
-
     @Column(name = "recruiter_credit_pack_no", columnDefinition = "int signed null")
     private Integer recruiterCreditPackNo;
 
@@ -177,13 +174,5 @@ public class RecruiterCreditHistory extends Model {
 
     public void setLatest(Boolean latest) {
         isLatest = latest;
-    }
-
-    public Integer getCreditsAdded() {
-        return creditsAdded;
-    }
-
-    public void setCreditsAdded(Integer creditsAdded) {
-        this.creditsAdded = creditsAdded;
     }
 }

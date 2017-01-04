@@ -18,6 +18,7 @@ import models.entity.Static.Language;
 import models.entity.Static.Locality;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import play.Logger;
 
 import java.util.*;
 

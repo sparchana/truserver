@@ -1140,6 +1140,7 @@ var app = (function ($) {
                                 var applyBtn = document.createElement("button");
                                 applyBtn.className = "jobApplyBtn2";
                                 var applyJobText ;
+                                console.log(jobPost.applyBtnStatus);
                                 if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != 4){
                                     if(jobPost.applyBtnStatus == 2) {
                                         applyJobText = "Book Interview";
