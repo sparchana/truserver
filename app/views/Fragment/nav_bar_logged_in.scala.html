@@ -27,7 +27,7 @@
                 <li class="candidateProfile"><a href="/dashboard/editProfile" >Profile</a></li>
                 <li class="viewAppliedJob"><a href="/dashboard/appliedJobs/">View Applied Jobs</a></li>
                 <li class="viewAllJobs"><a href="/s/jobs-in-bangalore/" target="_blank">Search Jobs</a></li>
-                <li><a href="#" onclick="logoutUser()">Log Out</a></li>
+                <li><a href="/" onclick="logoutUser()">Log Out</a></li>
             </ul>
         </div>
     </div>
@@ -43,6 +43,17 @@
     }
   function logoutUser() {
     localStorage.clear();
-    window.location = "/logoutUser";
+    /*window.location = "/logoutUser";*/
+    try {
+      $.ajax({
+        type: "GET",
+        url: "/logoutUser",
+        data: false,
+        contentType: false,
+        processData: false
+      });
+    } catch (exception) {
+      console.log("exception occured!!" + exception);
+    }
   }
 </script>
