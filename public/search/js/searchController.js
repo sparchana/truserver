@@ -953,6 +953,7 @@ var app = (function ($) {
             },
             basicReset: function () {
                 console.log("basic reset");
+                $('html, body').animate({scrollTop: $("#job_cards_inc").offset().top - 100}, 800);
                 app.page = 1;
                 app.isPaginationEnabled = false;
 
