@@ -19,7 +19,7 @@
         <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
 
             <!-- Bootstrap Core CSS -->
-        <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.min.css">
+        @*<link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.min.css">*@
 
         <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
         <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -50,7 +50,7 @@
         <div id="nav_bar_inc"></div>
 
         <div class="container-fluid" style="padding:0%">
-            <div id="sectionOne" style="padding: 2% 4% 0 4%">
+            <div id="sectionOne" style="padding: 2% 4% 4% 4%">
                 <div class="container">
                     <font color="white">
                         <div class="row">
@@ -103,7 +103,7 @@
         </div>
 
             <!--Search bar ends-->
-        <div class="container hide-on-med-and-up" style="padding: 1%;margin-top: 10px">
+        <div class="container hidden-md hidden-lg " style="padding: 1%;margin-top: 10px">
             <div class="row">
                 <div class="col-xs-6">
                     <div class="waves-effect waves-light btn" id="sortByMobileViewBtn" onclick="showSort()" style="padding: 6px 9px; width: 100%;">Sort By</div>
@@ -114,105 +114,121 @@
             </div>
         </div>
             <!-- Details container -->
-        <div class="container" style="padding: 0;margin-top: 2%">
+        <div class="container" style="padding: 0;
+            margin-top: 2%">
             <div class="row">
                     <!-- Sort & Filter -->
-                <div class="col s12 l3">
+                <div class="col-sm-12 col-md-3">
                     <div id="sortMainBox">
-                        <div class="card-content" style="padding:2%">
+                        <div class="sorting-card" style="padding: 2%">
                             <font size="5">Sort by</font>
                         </div>
-                        <ul class="collapsible" data-collapsible="expandable" style="margin-top:12px">
-                            <li>
-                                <div class="collapsible-header active"><i class="material-icons">repeat</i>
-                                    Sort by</div>
-                                <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
-                                    <div>
-                                        <input name="sortBy" type="radio" value="5" id="sortByRelevance" />
-                                        <label style="font-size: 12px" for="sortByRelevance">Relevance</label>
+                        <div class="sort-card-body" style="margin-top: 12px">
+                            <div class="panel-group">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" data-toggle="collapse" href="#sortByOpener">
+                                        <h4 class="panel-title">
+                                            <a>Sort By</a>
+                                        </h4>
                                     </div>
-                                    <div>
-                                        <input name="sortBy" type="radio" value="4" id="sortByMinSalary" />
-                                        <label style="font-size: 12px" for="sortByMinSalary">Salary (Low to High)</label>
+                                    <div id="sortByOpener" class="panel-collapse collapse in">
+                                        <div>
+                                            <input name="sortBy" type="radio" value="5" id="sortByRelevance" />
+                                            <label for="sortByRelevance">Relevance</label>
+                                        </div>
+                                        <div>
+                                            <input name="sortBy" type="radio" value="4" id="sortByMinSalary" />
+                                            <label for="sortByMinSalary">Salary (Low to High)</label>
+                                        </div>
+                                        <div>
+                                            <input name="sortBy" type="radio" value="3" id="sortByMaxSalary" />
+                                            <label for="sortByMaxSalary">Salary (High to Low)</label>
+                                        </div>
+                                        <div>
+                                            <input name="sortBy" type="radio" value="2" id="latestPosted" />
+                                            <label for="latestPosted">
+                                                Posted on (Newest to oldest)</label>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <input name="sortBy" type="radio" value="3" id="sortByMaxSalary" />
-                                        <label style="font-size: 12px" for="sortByMaxSalary">Salary (High to Low)</label>
-                                    </div>
-                                    <div>
-                                        <input name="sortBy" type="radio" value="2" id="latestPosted" />
-                                        <label style="font-size: 12px" for="latestPosted">Posted on (Newest to oldest)</label>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div id="filterMainBox">
-                            <div class="card-content" style="padding:2%">
-                                <font size="5">Filters</font>
-                                <div id="resetFilters" class="waves-effect waves-light orange lighten-1" onclick="" style="margin-top:8px;padding: 4px 8px 4px 8px;
-                                    float: right; display: inline-block; border-radius: 4px;">
-                                    <font style="color: #fff;font-weight: 400; font-size: 12px"><b>
-                                        <center>
-                                            RESET FILTERS
-                                        </center>
-                                    </b></font>
                                 </div>
                             </div>
-                            <div class="card-content">
-                                <div class="row">
-                                    <div class="col s12 l12">
-                                        <ul class="collapsible" data-collapsible="expandable">
-                                            <li>
-                                                <div class="collapsible-header active">
+                    </div>
+                    </div>
+                    <div id="filterMainBox">
+                        <div class="filter-card" style="padding: 2%">
+                            <font size="5">Filters</font>
+                            <button id="resetFilters" class="btn btn-default">
+                                <font style="color: #fff;font-weight: 400;font-size: 12px"><b>
+                                    <center>RESET FILTERS</center>
+                                </b></font>
+                            </button>
+                        </div>
+                        <div class="filter-card-body">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="panel-group">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading" data-toggle="collapse" data-target="#filterGenderOpener">
+                                                <h4 class="panel-title">
                                                     <img src="/assets/recruiter/img/icons/gender.svg" height="18px" style="margin: 0 18px 0 6px">
                                                     Gender
-                                                    <span style="float: right; display: none" id="gender_filter">
+                                                    <span style="float: right;
+                                                        display: none" id="gender_filter">
                                                         <img src="/assets/dashboard/img/save.svg" width="20px">
                                                     </span>
+                                                </h4>
+                                            </div>
+                                            <div id="filterGenderOpener" class="panel-collapse collapse in">
+                                                <div>
+                                                    <input name="filterGender" type="radio" value="0" id="gender_0" />
+                                                    <label for="gender_0">Male</label>
                                                 </div>
-
-                                                <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
-                                                    <div>
-                                                        <input name="filterGender" type="radio" value="0" id="gender_0" />
-                                                        <label style="font-size: 12px" for="gender_0">Male</label>
-                                                    </div>
-                                                    <div>
-                                                        <input name="filterGender" type="radio" value="1" id="gender_1" />
-                                                        <label style="font-size: 12px" for="gender_1">Female</label>
-                                                    </div>
+                                                <div>
+                                                    <input name="filterGender" type="radio" value="1" id="gender_1" />
+                                                    <label for="gender_1">Female</label>
                                                 </div>
-                                            </li>
-                                            <li>
-                                                <div class="collapsible-header active ">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-group">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading" data-toggle="collapse" data-target="#languageFilterDiv">
+                                                <h4 class="panel-title">
                                                     <img src="/assets/recruiter/img/icons/language.svg" height="18px" style="margin: 0 18px 0 6px">
                                                     Language
-                                                    <span style="float: right; display: none" id="language_filter">
+                                                    <span style="float: right;
+                                                        display: none" id="language_filter">
                                                         <img src="/assets/dashboard/img/save.svg" width="20px">
                                                     </span>
-                                                </div>
-
-                                                <div class="collapsible-body " style="padding: 8px 18px 8px 18px" id="languageFilterDiv"></div>
-                                            </li>
-                                            <li>
-                                                <div class="collapsible-header active ">
+                                                </h4>
+                                            </div>
+                                            <div id="languageFilterDiv" class="panel-collapse collapse in">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel-group">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading" data-toggle="collapse" data-target="#salaryFilterDiv">
+                                                <h4 class="panel-title">
                                                     <img src="/assets/recruiter/img/icons/salary.svg" height="18px" style="margin: 0 18px 0 6px">
                                                     Salary
-                                                    <span style="float: right; display: none" id="salary_filter">
+                                                    <span style="float: right;
+                                                        display: none" id="salary_filter">
                                                         <img src="/assets/dashboard/img/save.svg" width="20px">
                                                     </span>
-                                                </div>
-
-                                                <div class="collapsible-body " style="padding: 8px 18px 8px 18px" id="salaryFilterDiv"></div>
-                                            </li>
-                                        </ul>
+                                                </h4>
+                                            </div>
+                                            <div id="salaryFilterDiv" class="panel-collapse collapse in">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
                 </div>
                     <!-- Job Post Details -->
-                <div class="col s12 l9">
+                <div class="col-sm-3 col-md-9">
                     <center id="jobLoaderDiv" style="position: relative; text-align: center; width: 100%">
                         <h4>Loading Jobs</h4>
                         <svg viewBox="0 0 32 32" width="32" height="32">
@@ -221,7 +237,7 @@
                     </center>
                     <div id="job_cards_inc"></div>
                     <div id="jobCardControl"></div>
-                    
+
                     <div id="loadingIcon" style="display: none; padding-top: 6%">
                         <center>
                             <h6>Searching Jobs</h6>
@@ -257,7 +273,7 @@
         @* register box end*@
 
         <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
-        <script type="text/javascript" src="/assets/common/js/materialize.min.js"></script>
+       @* <script type="text/javascript" src="/assets/common/js/materialize.min.js"></script>*@
         <script type="text/javascript" src="/assets/common/js/awesomplete.min.js"></script>
         <script type="text/javascript" src="/assets/common/js/validation.js"></script>
         <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>

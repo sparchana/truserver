@@ -1,6 +1,13 @@
 /*
 this css make sure at the end the override are proper
 */
+nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i{
+    height: auto;
+    font-size: 14px;
+}
+nav ul a{
+    font-size: 14px;
+}
 .jobMoreBtn{
     margin-top:1%;
     padding:2%;
