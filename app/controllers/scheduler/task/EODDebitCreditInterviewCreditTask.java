@@ -1,6 +1,7 @@
 package controllers.scheduler.task;
 
 import api.ServerConstants;
+import controllers.businessLogic.RecruiterService;
 import dao.JobPostWorkFlowDAO;
 import dao.RecruiterCreditHistoryDAO;
 import models.entity.OM.JobPostWorkflow;
@@ -49,8 +50,14 @@ public class EODDebitCreditInterviewCreditTask extends TimerTask {
                 Logger.info("Adding " + creditCount + " no. of interview credits for Recruiter: " + recruiterProfile.getRecruiterProfileName()
                         + " | " + recruiterProfile.getRecruiterProfileId());
 
-                //credit the oldest active pack
-                addCredits(recruiterProfile, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK, creditCount, createdBy);
+                RecruiterCreditHistory history = RecruiterCreditHistoryDAO.getOldestActivePack(recruiterProfile);
+                if(history != null){
+
+                    //credit the oldest active pack
+                    RecruiterService.updateExistingRecruiterPack(recruiterProfile, history.getRecruiterCreditPackNo(),
+                            creditCount);
+
+                }
             }
         }
 

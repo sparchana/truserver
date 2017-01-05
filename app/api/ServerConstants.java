@@ -371,6 +371,6 @@ public class ServerConstants {
     public static final String CREATED_BY = "Candidate";
 
     //reason type
-    public static final int FREE_JOB_APPLICATION_DEFAULT_LIMIT_IN_A_WEEK = 7;
+    public static final int FREE_JOB_APPLICATION_DEFAULT_LIMIT_IN_A_WEEK = 1;
 
 }

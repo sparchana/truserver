@@ -402,8 +402,7 @@ public class TrudroidController {
             api.http.httpResponse.ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
 
             //setting status response
-
-            if(applyJobResponse.getStatus() == api.http.httpResponse.ApplyJobResponse.STATUS_NO_CANDIDATE){ //TODO: change these status values in APK
+            if(applyJobResponse.getStatus() == api.http.httpResponse.ApplyJobResponse.STATUS_APPLICATION_LIMIT_REACHED){ //TODO: change these status values in APK
                 applyJobResponseBuilder.setStatus(ApplyJobResponse.Status.valueOf(4));
             } else{
                 applyJobResponseBuilder.setStatus(ApplyJobResponse.Status.valueOf(applyJobResponse.getStatus()));

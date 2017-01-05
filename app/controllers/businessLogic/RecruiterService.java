@@ -696,4 +696,92 @@ public class RecruiterService {
             Logger.info("recruiter category static table empty");
         }
     }
+
+    public static AddRecruiterResponse updateExistingRecruiterPack(RecruiterProfile recruiterProfile, Integer packId, Integer credits) {
+        String createdBy = "Not specified";
+
+        if(session().get("sessionUsername") != null){
+            createdBy = "Support: " + session().get("sessionUsername");
+        }
+
+        AddRecruiterResponse addRecruiterResponse = new AddRecruiterResponse();
+
+        RecruiterCreditHistory history = RecruiterCreditHistory.find.where()
+                .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
+                .eq("recruiter_credit_pack_no", packId)
+                .eq("is_latest", 1)
+                .eq("credit_is_expired", 0)
+                .setMaxRows(1)
+                .findUnique();
+
+        if(history != null){
+
+            history.setLatest(false);
+            history.update();
+
+            RecruiterCreditHistory newHistory = new RecruiterCreditHistory();
+
+            newHistory.setRecruiterCreditsAvailable(history.getRecruiterCreditsAvailable() + (credits));
+            if(credits > 0){
+
+                //credit
+                newHistory.setRecruiterCreditsUsed(0);
+            } else{
+
+                //debit
+                newHistory.setRecruiterCreditsUsed(history.getRecruiterCreditsUsed() + ((-1) * credits));
+            }
+
+            newHistory.setRecruiterCreditPackNo(history.getRecruiterCreditPackNo());
+            newHistory.setRecruiterProfile(history.getRecruiterProfile());
+            newHistory.setCreditIsExpired(history.getCreditIsExpired());
+            newHistory.setRecruiterCreditsAddedBy(createdBy);
+            newHistory.setUnits(credits);
+            newHistory.setRecruiterCreditCategory(history.getRecruiterCreditCategory());
+            newHistory.setLatest(true);
+            newHistory.setExpiryDate(history.getExpiryDate());
+
+            Logger.info("Creating a new Entry");
+            newHistory.save();
+            addRecruiterResponse.setStatus(AddRecruiterResponse.STATUS_SUCCESS);
+        } else{
+
+            //No pack found
+            addRecruiterResponse.setStatus(AddRecruiterResponse.STATUS_FAILURE);
+        }
+
+        return addRecruiterResponse;
+    }
+
+    public static AddRecruiterResponse expireCreditPack(AddRecruiterRequest addRecruiterRequest) {
+        AddRecruiterResponse addRecruiterResponse = new AddRecruiterResponse();
+
+        RecruiterProfile recruiterProfile = RecruiterProfile.find.where()
+                .eq("RecruiterProfileMobile", FormValidator.convertToIndianMobileFormat(addRecruiterRequest.getRecruiterMobile()))
+                .findUnique();
+
+        if(recruiterProfile != null){
+            RecruiterCreditHistory history = RecruiterCreditHistory.find.where()
+                    .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
+                    .eq("recruiter_credit_pack_no", addRecruiterRequest.getPackId())
+                    .eq("is_latest", 1)
+                    .eq("credit_is_expired", 0)
+                    .setMaxRows(1)
+                    .findUnique();
+
+            if(history != null) {
+
+                history.setLatest(false);
+                history.setCreditIsExpired(true);
+
+                history.update();
+                addRecruiterResponse.setStatus(AddRecruiterResponse.STATUS_SUCCESS);
+            } else{
+                addRecruiterResponse.setStatus(AddRecruiterResponse.STATUS_FAILURE);
+            }
+        } else{
+            addRecruiterResponse.setStatus(AddRecruiterResponse.STATUS_FAILURE);
+        }
+        return addRecruiterResponse;
+    }
 }

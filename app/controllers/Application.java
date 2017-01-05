@@ -1,7 +1,7 @@
 package controllers;
 
+import api.http.httpRequest.Recruiter.AddRecruiterRequest;
 import dao.JobPostDAO;
-import notificationService.*;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
@@ -2278,5 +2278,45 @@ public class Application extends Controller {
         }
 
         return ok(toJson(JobPostWorkflowEngine.updateFeedback(addFeedbackRequest, Integer.valueOf(session().get("sessionChannel")))));
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result updateRecruiterCreditPack() {
+        JsonNode req = request().body().asJson();
+        AddRecruiterRequest addRecruiterRequest = new AddRecruiterRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addRecruiterRequest = newMapper.readValue(req.toString(), AddRecruiterRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        RecruiterProfile recruiterProfile = RecruiterProfile.find.where()
+                .eq("RecruiterProfileMobile", FormValidator.convertToIndianMobileFormat(addRecruiterRequest.getRecruiterMobile()))
+                .findUnique();
+
+        if(recruiterProfile != null){
+
+            return ok(toJson(RecruiterService.updateExistingRecruiterPack(recruiterProfile, addRecruiterRequest.getPackId(),
+                    addRecruiterRequest.getCreditCount())));
+        }
+
+        return ok("0");
+
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result expireCreditPack() {
+        JsonNode req = request().body().asJson();
+        AddRecruiterRequest addRecruiterRequest = new AddRecruiterRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addRecruiterRequest = newMapper.readValue(req.toString(), AddRecruiterRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ok(toJson(RecruiterService.expireCreditPack(addRecruiterRequest)));
+
     }
 }

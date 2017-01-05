@@ -690,7 +690,7 @@ public class JobService {
 
                             //checking weekly job application limit
                             if(JobPostDAO.getThisWeeksApplication(existingJobPost, weekDaysDeduct).size()
-                                    > ServerConstants.FREE_JOB_APPLICATION_DEFAULT_LIMIT_IN_A_WEEK){
+                                    >= ServerConstants.FREE_JOB_APPLICATION_DEFAULT_LIMIT_IN_A_WEEK){
 
                                 Logger.info("Free Job weekly limit of " + ServerConstants.FREE_JOB_APPLICATION_DEFAULT_LIMIT_IN_A_WEEK
                                     + " crossed for job Post title: " + existingJobPost.getJobPostTitle() + " and ID: " + existingJobPost.getJobPostId());
