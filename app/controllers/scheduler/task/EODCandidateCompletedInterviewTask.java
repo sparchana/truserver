@@ -3,6 +3,7 @@ package controllers.scheduler.task;
 import controllers.scheduler.SchedulerManager;
 import dao.JobPostWorkFlowDAO;
 import models.entity.OM.JobPostWorkflow;
+import models.entity.scheduler.SchedulerStats;
 import models.entity.scheduler.Static.SchedulerSubType;
 import models.entity.scheduler.Static.SchedulerType;
 import models.util.NotificationUtil;
@@ -25,6 +26,12 @@ import static controllers.scheduler.SchedulerConstants.*;
  * */
 
 public class EODCandidateCompletedInterviewTask extends TimerTask {
+    private final ClassLoader classLoader;
+
+    public EODCandidateCompletedInterviewTask(ClassLoader classLoader){
+
+        this.classLoader = classLoader;
+    }
 
     private void sendRateUsNotification(List<JobPostWorkflow> jobPostWorkflowList){
         new Thread(() -> {
@@ -73,9 +80,39 @@ public class EODCandidateCompletedInterviewTask extends TimerTask {
 
     @Override
     public void run() {
-        // fetch all the application which had interviews today
-        Logger.info("Starting EOD notify candidates for play store rating ..");
 
-        sendRateUsNotification(JobPostWorkFlowDAO.getTodaysConfirmedInterviews());
+        Thread.currentThread().setContextClassLoader(classLoader);
+
+        // Determine if this task is required to launch
+        boolean shouldRunThisTask = false;
+
+        SchedulerStats schedulerStats = SchedulerStats.find.where()
+                .eq("schedulerType.schedulerTypeId", SCHEDULER_TYPE_SMS)
+                .eq("schedulerSubType.schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_EOD_RATE_US)
+                .orderBy().desc("startTimestamp").setMaxRows(1).findUnique();
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        Date today = cal.getTime();
+
+        if(schedulerStats == null) {
+            // task has definitely not yet running so run it
+            Logger.info("scheduler status is null for EOD rate us.");
+            shouldRunThisTask = true;
+
+        } else {
+            if(schedulerStats.getEndTimestamp().getDate() != today.getDate()) {
+
+                //task was not executed today
+                shouldRunThisTask = true;
+            }
+        }
+
+        if(shouldRunThisTask){
+            // fetch all the application which had interviews today
+            Logger.info("Starting EOD notify candidates for play store rating ..");
+
+            sendRateUsNotification(JobPostWorkFlowDAO.getTodaysConfirmedInterviews());
+        }
     }
 }

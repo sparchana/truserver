@@ -386,7 +386,8 @@ public class JobPostWorkFlowDAO {
     public static List<JobPostWorkflow> getTodaysConfirmedInterviews(){
         String workFlowQueryBuilder = " select createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
                 " job_post_id, status_id from job_post_workflow i " +
-                " where status_id >= 9 and status_id not in (10)" + //not '10' because candidate reported as not going
+                " where status_id >= '" + ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED + "'" +
+                " and status_id not in (" + ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING + ")" + //not '10' because candidate reported as not going
                 " and DATE(scheduled_interview_date) = curdate()" +
                 " and job_post_workflow_id = " +
                 " (select max(job_post_workflow_id) from job_post_workflow " +

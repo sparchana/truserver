@@ -8,6 +8,7 @@ import dao.CandidateDAO;
 import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.OM.JobPreference;
+import models.entity.scheduler.SchedulerStats;
 import models.entity.scheduler.Static.SchedulerSubType;
 import models.entity.scheduler.Static.SchedulerType;
 import models.util.NotificationUtil;
@@ -15,9 +16,7 @@ import models.util.SmsUtil;
 import play.Logger;
 
 import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.List;
-import java.util.TimerTask;
+import java.util.*;
 
 import static controllers.scheduler.SchedulerConstants.*;
 
@@ -25,6 +24,11 @@ import static controllers.scheduler.SchedulerConstants.*;
  * Created by dodo on 28/12/16.
  */
 public class WeeklyCandidateAlertTask extends TimerTask {
+    private final ClassLoader classLoader;
+
+    public WeeklyCandidateAlertTask(ClassLoader classLoader){
+        this.classLoader = classLoader;
+    }
 
     private void sendAppDownloadSmsToCandidate(List<Candidate> candidateList){
         new Thread(() -> {
@@ -138,15 +142,46 @@ public class WeeklyCandidateAlertTask extends TimerTask {
 
     @Override
     public void run() {
-        // fetch all the application which had interviews today
-        Logger.info("Starting EOD notify candidates for app download ..");
 
-        List<Candidate> candidateList = CandidateDAO.getCandidateWithoutAndroidApp();
-        Collections.shuffle(candidateList);
+        Thread.currentThread().setContextClassLoader(classLoader);
 
-        //sendAppDownloadSmsToCandidate(candidateList);
+        // Determine if this task is required to launch
+        boolean shouldRunThisTask = false;
 
-        //weekly task to notify no. of matching jobs to the candidate
-        sendSmsToCandidateToNotifyNearbyJobs(SchedulerConstants.CANDIDATE_ALERT_TASK_LAST_ACTIVE_DEFAULT_DAYS);
+        SchedulerStats schedulerStats = SchedulerStats.find.where()
+                .eq("schedulerType.schedulerTypeId", SCHEDULER_TYPE_SMS)
+                .eq("schedulerSubType.schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_NOTIFY_NEARBY_JOBS)
+                .orderBy().desc("startTimestamp").setMaxRows(1).findUnique();
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        Date today = cal.getTime();
+
+        if(schedulerStats == null) {
+            // task has definitely not yet running so run it
+            Logger.info("scheduler status is null for Weekly candidate alert task.");
+            shouldRunThisTask = true;
+
+        } else {
+            if(schedulerStats.getEndTimestamp().getDate() != today.getDate()) {
+
+                //task was not executed today
+                shouldRunThisTask = true;
+            }
+        }
+
+        if(shouldRunThisTask){
+            // fetch all the application which had interviews today
+            Logger.info("Starting EOD notify candidates for app download ..");
+
+            List<Candidate> candidateList = CandidateDAO.getCandidateWithoutAndroidApp();
+            Collections.shuffle(candidateList);
+
+            //sendAppDownloadSmsToCandidate(candidateList);
+
+            //weekly task to notify no. of matching jobs to the candidate
+            sendSmsToCandidateToNotifyNearbyJobs(SchedulerConstants.CANDIDATE_ALERT_TASK_LAST_ACTIVE_DEFAULT_DAYS);
+        }
+
     }
 }

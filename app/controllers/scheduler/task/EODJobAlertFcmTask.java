@@ -7,6 +7,7 @@ import controllers.scheduler.SchedulerConstants;
 import controllers.scheduler.SchedulerManager;
 import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.scheduler.SchedulerStats;
 import models.entity.scheduler.Static.SchedulerSubType;
 import models.entity.scheduler.Static.SchedulerType;
 import models.util.NotificationUtil;
@@ -15,13 +16,18 @@ import play.Logger;
 import java.sql.Timestamp;
 import java.util.*;
 
-import static controllers.scheduler.SchedulerConstants.SCHEDULER_SUB_TYPE_CANDIDATE_EOD_JOB_ALERT;
-import static controllers.scheduler.SchedulerConstants.SCHEDULER_TYPE_FCM;
+import static controllers.scheduler.SchedulerConstants.*;
 
 /**
  * Created by dodo on 5/1/17.
  */
 public class EODJobAlertFcmTask extends TimerTask {
+
+    private final ClassLoader classLoader;
+
+    public EODJobAlertFcmTask(ClassLoader classLoader){
+        this.classLoader = classLoader;
+    }
 
     private void sendJobPostAlert(List<JobPost> jobPostList){
         new Thread(() -> {
@@ -119,9 +125,40 @@ public class EODJobAlertFcmTask extends TimerTask {
 
     @Override
     public void run() {
-        // fetch all the jobPost whose recruiter has interview credits
-        Logger.info("Starting EOD notify candidates about job post ..");
 
-        sendJobPostAlert(JobService.getAllJobPostWithRecruitersWithInterviewCredits());
+        Thread.currentThread().setContextClassLoader(classLoader);
+
+        // Determine if this task is required to launch
+        boolean shouldRunThisTask = false;
+
+        SchedulerStats schedulerStats = SchedulerStats.find.where()
+                .eq("schedulerType.schedulerTypeId", SCHEDULER_TYPE_FCM)
+                .eq("schedulerSubType.schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_EOD_JOB_ALERT)
+                .orderBy().desc("startTimestamp").setMaxRows(1).findUnique();
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        Date today = cal.getTime();
+
+        if(schedulerStats == null) {
+            // task has definitely not yet running so run it
+            Logger.info("scheduler status is null for EOD job alert.");
+            shouldRunThisTask = true;
+
+        } else {
+            if(schedulerStats.getEndTimestamp().getDate() != today.getDate()) {
+
+                //task was not executed today
+                shouldRunThisTask = true;
+            }
+        }
+
+        if(shouldRunThisTask){
+
+            // fetch all the jobPost whose recruiter has interview credits
+            Logger.info("Starting EOD notify candidates about job post ..");
+
+            sendJobPostAlert(JobService.getAllJobPostWithRecruitersWithInterviewCredits());
+        }
     }
 }

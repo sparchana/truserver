@@ -141,35 +141,41 @@ public class SchedulerManager implements Runnable {
     private void createStartOfTheDayJobPostEvent(long delay){
         Logger.info("Send job post message to candidate!");
 
-        SODJobPostNotificationTask SODJobPostNotificationTask = new SODJobPostNotificationTask();
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        SODJobPostNotificationTask SODJobPostNotificationTask = new SODJobPostNotificationTask(classLoader);
         timer.schedule(SODJobPostNotificationTask, delay, oneDay);
     }
 
     private void createEODRateUsPostInterviewEvent(long delay){
         Logger.info("Send alert to rate on play store after interview to candidate!");
 
-        EODCandidateCompletedInterviewTask eodCandidateCompletedInterviewTask = new EODCandidateCompletedInterviewTask();
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+
+        EODCandidateCompletedInterviewTask eodCandidateCompletedInterviewTask = new EODCandidateCompletedInterviewTask(classLoader);
         timer.schedule(eodCandidateCompletedInterviewTask, delay, oneDay);
     }
 
     private void createWeeklyAlertEvent(long delay){
         Logger.info("Send alert candidate who have not downloaded the app yet!");
 
-        WeeklyCandidateAlertTask weeklyCandidateAlertTask = new WeeklyCandidateAlertTask();
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        WeeklyCandidateAlertTask weeklyCandidateAlertTask = new WeeklyCandidateAlertTask(classLoader);
         timer.schedule(weeklyCandidateAlertTask, delay, oneWeek);
     }
 
     private void createWeeklyProfileCompletionEvent(long delay){
         Logger.info("Send alert to candidate to complete profile!");
 
-        WeeklyCompleteProfileAlertTask weeklyCompleteProfileAlertTask = new WeeklyCompleteProfileAlertTask();
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        WeeklyCompleteProfileAlertTask weeklyCompleteProfileAlertTask = new WeeklyCompleteProfileAlertTask(classLoader);
         timer.schedule(weeklyCompleteProfileAlertTask, delay, oneWeek);
     }
 
     private void createEndOfTheDayJobPostEvent(long delay){
         Logger.info("Send job post fcm notification to candidate!");
 
-        EODJobAlertFcmTask eodJobAlertFcmTask = new EODJobAlertFcmTask();
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        EODJobAlertFcmTask eodJobAlertFcmTask = new EODJobAlertFcmTask(classLoader);
         timer.schedule(eodJobAlertFcmTask, delay, oneDay);
     }
 

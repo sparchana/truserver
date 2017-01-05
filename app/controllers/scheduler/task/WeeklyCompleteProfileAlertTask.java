@@ -14,18 +14,19 @@ import models.util.SmsUtil;
 import play.Logger;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimerTask;
+import java.util.*;
 
-import static controllers.scheduler.SchedulerConstants.SCHEDULER_SUB_TYPE_CANDIDATE_PROFILE_COMPLETE;
-import static controllers.scheduler.SchedulerConstants.SCHEDULER_TYPE_FCM;
-import static controllers.scheduler.SchedulerConstants.SCHEDULER_TYPE_SMS;
+import static controllers.scheduler.SchedulerConstants.*;
 
 /**
  * Created by dodo on 29/12/16.
  */
 public class WeeklyCompleteProfileAlertTask extends TimerTask {
+    private final ClassLoader classLoader;
+
+    public WeeklyCompleteProfileAlertTask(ClassLoader classLoader){
+        this.classLoader = classLoader;
+    }
 
     private void sendProfileCompletionAlert(){
 
@@ -94,10 +95,39 @@ public class WeeklyCompleteProfileAlertTask extends TimerTask {
 
     @Override
     public void run() {
-        Logger.info("Starting weekly task to notify candidates to complete profile ..");
+        Thread.currentThread().setContextClassLoader(classLoader);
 
-        //list of candidates whose profile score is less than 80% last 'n' no. of days
-        sendProfileCompletionAlert();
+        // Determine if this task is required to launch
+        boolean shouldRunThisTask = false;
+
+        SchedulerStats schedulerStats = SchedulerStats.find.where()
+                .eq("schedulerType.schedulerTypeId", SCHEDULER_TYPE_SMS)
+                .eq("schedulerSubType.schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_PROFILE_COMPLETE)
+                .orderBy().desc("startTimestamp").setMaxRows(1).findUnique();
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        Date today = cal.getTime();
+
+        if(schedulerStats == null) {
+            // task has definitely not yet running so run it
+            Logger.info("scheduler status is null for Weekly candidate complete profile task.");
+            shouldRunThisTask = true;
+
+        } else {
+            if(schedulerStats.getEndTimestamp().getDate() != today.getDate()) {
+
+                //task was not executed today
+                shouldRunThisTask = true;
+            }
+        }
+
+        if(shouldRunThisTask){
+            Logger.info("Starting weekly task to notify candidates to complete profile ..");
+
+            //list of candidates whose profile score is less than 80% last 'n' no. of days
+            sendProfileCompletionAlert();
+        }
     }
 
 

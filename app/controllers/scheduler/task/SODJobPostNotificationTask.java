@@ -8,6 +8,7 @@ import controllers.scheduler.SchedulerConstants;
 import controllers.scheduler.SchedulerManager;
 import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.scheduler.SchedulerStats;
 import models.entity.scheduler.Static.SchedulerSubType;
 import models.entity.scheduler.Static.SchedulerType;
 import models.util.NotificationUtil;
@@ -29,6 +30,11 @@ import static controllers.scheduler.SchedulerConstants.*;
  *
  * */
 public class SODJobPostNotificationTask extends TimerTask {
+    private final ClassLoader classLoader;
+
+    public SODJobPostNotificationTask(ClassLoader classLoader){
+        this.classLoader = classLoader;
+    }
 
     private void sendJobPostAlert(List<JobPost> jobPostList){
 
@@ -143,9 +149,39 @@ public class SODJobPostNotificationTask extends TimerTask {
 
     @Override
     public void run() {
-        // fetch all the jobPost whose recruiter has interview credits
-        Logger.info("Starting SOD notify matching candidates..");
 
-        sendJobPostAlert(JobService.getAllJobPostWithRecruitersWithInterviewCredits());
+        Thread.currentThread().setContextClassLoader(classLoader);
+
+        // Determine if this task is required to launch
+        boolean shouldRunThisTask = false;
+
+        SchedulerStats schedulerStats = SchedulerStats.find.where()
+                .eq("schedulerType.schedulerTypeId", SCHEDULER_TYPE_SMS)
+                .eq("schedulerSubType.schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_SOD_JOB_ALERT)
+                .orderBy().desc("startTimestamp").setMaxRows(1).findUnique();
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(new Date());
+        Date today = cal.getTime();
+
+        if(schedulerStats == null) {
+            // task has definitely not yet running so run it
+            Logger.info("scheduler status is null for SOD candidate job alert.");
+            shouldRunThisTask = true;
+
+        } else {
+            if(schedulerStats.getEndTimestamp().getDate() != today.getDate()) {
+
+                //task was not executed today
+                shouldRunThisTask = true;
+            }
+        }
+
+        if(shouldRunThisTask){
+            // fetch all the jobPost whose recruiter has interview credits
+            Logger.info("Starting SOD notify matching candidates..");
+
+            sendJobPostAlert(JobService.getAllJobPostWithRecruitersWithInterviewCredits());
+        }
     }
 }

@@ -56,16 +56,12 @@ public class TestController extends Controller{
     }
 
     public static Result testnotification(){
-/*
         Candidate candidate = Candidate.find.where().eq("CandidateMobile", "+918971739586").findUnique();
         if(candidate.getCandidateAndroidToken() != null){
             NotificationUtil.addFcmToNotificationQueue("Hi", "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
             return ok("1");
         }
-*/
 
-        WeeklyCandidateAlertTask sODJobPostNotificationTask = new WeeklyCandidateAlertTask();
-        sODJobPostNotificationTask.run();
         return ok("Null token!");
 
     }
