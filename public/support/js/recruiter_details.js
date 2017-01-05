@@ -164,8 +164,6 @@ function processDataAddRecruiter(returnedData) {
 
 function processDataForRecruiterInfo(returnedData) {
 
-    console.log(returnedData);
-
     $("#recruiterName").val(returnedData.recruiterProfileName);
     $("#recruiterMobile").val(returnedData.recruiterProfileMobile);
     if(returnedData.recruiterProfileLandline != null ){

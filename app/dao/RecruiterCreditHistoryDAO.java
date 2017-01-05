@@ -15,7 +15,7 @@ import java.util.List;
  * Created by dodo on 29/12/16.
  */
 public class RecruiterCreditHistoryDAO {
-    public static List<RecruiterCreditHistory> getAllRecruiterPack(RecruiterProfile recruiterProfile, Integer creditType){
+    public static List<RecruiterCreditHistory> getAllActiveRecruiterPacks(RecruiterProfile recruiterProfile, Integer creditType){
 
         String creditQueryBuilder = "select distinct recruiter_credit_pack_no, recruiter_credit_history_id, recruiter_credits_available, " +
                 "recruiter_credits_used, expiry_date, credit_is_expired, is_latest" +
@@ -40,14 +40,14 @@ public class RecruiterCreditHistoryDAO {
                 .findList();
     }
 
-    public static RecruiterCreditHistory getLatestRecruiterCreditPackDetails(RecruiterProfile recruiterProfile){
+    public static RecruiterCreditHistory getLastAddedRecruiterCreditPack(RecruiterProfile recruiterProfile){
 
         return RecruiterCreditHistory.find.where()
                 .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
                 .orderBy().desc("recruiter_credit_pack_no").setMaxRows(1).findUnique();
     }
 
-    public static List<RecruiterCreditHistory> getAllPacksExpiringToday(){
+    public static List<RecruiterCreditHistory> getAllInterviewPacksExpiringToday(){
         Calendar today = Calendar.getInstance();
         today.set(Calendar.HOUR_OF_DAY, 0);
 

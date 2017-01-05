@@ -31,9 +31,7 @@ import models.entity.Recruiter.Static.RecruiterStatus;
 import models.util.EmailUtil;
 import models.util.SmsUtil;
 import models.util.Util;
-import play.Application;
 import play.Logger;
-import play.mvc.Http;
 import play.mvc.Result;
 
 import java.util.*;
@@ -587,7 +585,7 @@ public class RecruiterService {
     public static void debitCredits(RecruiterProfile existingRecruiter, Integer creditType, int credits, String createdBy) {
 
         Integer creditsToBeDebited = (-1) * credits;
-        List<RecruiterCreditHistory> recruiterPacks = RecruiterCreditHistoryDAO.getAllRecruiterPack(existingRecruiter,
+        List<RecruiterCreditHistory> recruiterPacks = RecruiterCreditHistoryDAO.getAllActiveRecruiterPacks(existingRecruiter,
                 creditType);
 
         RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where()
@@ -599,49 +597,56 @@ public class RecruiterService {
         Boolean toBreak;
 
         for(RecruiterCreditHistory history : recruiterPacks){
-            if(history.getRecruiterCreditsAvailable() > 0){
-                RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
-                if (recruiterCreditCategory != null){
-                    recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
+            if(history.getRecruiterCreditsAvailable() != null && history.getRecruiterCreditsUsed() != null){
+
+                //if both available credits and used credits atre not null
+                if(history.getRecruiterCreditsAvailable() > 0){
+                    RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
+                    if (recruiterCreditCategory != null){
+                        recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
+                    } else{
+                        Logger.info("recruiter category static table empty");
+                        break;
+                    }
+
+                    if(history.getRecruiterCreditsAvailable() < creditsToBeDebited){
+                        recruiterCreditHistory.setRecruiterCreditsUsed(history.getRecruiterCreditsUsed() + history.getRecruiterCreditsAvailable());
+                        recruiterCreditHistory.setUnits(-history.getRecruiterCreditsAvailable());
+                        remainingDebit = creditsToBeDebited - history.getRecruiterCreditsAvailable();
+                        recruiterCreditHistory.setRecruiterCreditsAvailable(0);
+                        creditsToBeDebited = remainingDebit;
+                        toBreak = false;
+
+                    } else {
+                        toBreak = true;
+                        recruiterCreditHistory.setUnits(-creditsToBeDebited);
+                        recruiterCreditHistory.setRecruiterCreditsUsed(history.getRecruiterCreditsUsed() + creditsToBeDebited);
+                        recruiterCreditHistory.setRecruiterCreditsAvailable(history.getRecruiterCreditsAvailable() - creditsToBeDebited);
+                    }
+
+                    //setting recruiter profile
+                    recruiterCreditHistory.setRecruiterProfile(existingRecruiter);
+
+                    recruiterCreditHistory.setRecruiterCreditPackNo(history.getRecruiterCreditPackNo());
+
+                    recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
+                    recruiterCreditHistory.setExpiryDate(history.getExpiryDate());
+                    recruiterCreditHistory.setCreditIsExpired(false);
+                    recruiterCreditHistory.setLatest(true);
+
+                    history.setLatest(false);
+                    history.update();
+
+                    //saving the values
+                    recruiterCreditHistory.save();
+
+                    if(toBreak){
+                        break;
+                    }
                 }
 
-                if(history.getRecruiterCreditsAvailable() < creditsToBeDebited){
-                    recruiterCreditHistory.setRecruiterCreditsUsed(history.getRecruiterCreditsUsed() + history.getRecruiterCreditsAvailable());
-                    recruiterCreditHistory.setUnits(-history.getRecruiterCreditsAvailable());
-                    recruiterCreditHistory.setRecruiterCreditsAvailable(0);
-                    remainingDebit = creditsToBeDebited - history.getRecruiterCreditsAvailable();
-                    creditsToBeDebited = remainingDebit;
-                    toBreak = false;
-
-                } else {
-                    toBreak = true;
-                    recruiterCreditHistory.setUnits(-creditsToBeDebited);
-                    recruiterCreditHistory.setRecruiterCreditsUsed(history.getRecruiterCreditsUsed() + creditsToBeDebited);
-                    recruiterCreditHistory.setRecruiterCreditsAvailable(history.getRecruiterCreditsAvailable() - creditsToBeDebited);
-                }
-
-                //setting recruiter profile
-                recruiterCreditHistory.setRecruiterProfile(existingRecruiter);
-
-                recruiterCreditHistory.setRecruiterCreditPackNo(history.getRecruiterCreditPackNo());
-
-                recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
-                recruiterCreditHistory.setExpiryDate(history.getExpiryDate());
-                recruiterCreditHistory.setCreditIsExpired(false);
-                recruiterCreditHistory.setLatest(true);
-
-                history.setLatest(false);
-                history.update();
-
-                //saving the values
-                recruiterCreditHistory.save();
-
-                if(toBreak){
-                    break;
-                }
             }
         }
-
     }
 
     public static void addCredits(RecruiterProfile existingRecruiter, Integer creditType, Integer totalCredits, String createdBy) {
@@ -661,34 +666,34 @@ public class RecruiterService {
         RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
 
         if (recruiterCreditCategory != null){
-            //recruiterPayment.setRecruiterCreditCategory(recruiterCreditCategory);
             recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
-        }
+            recruiterCreditHistory.setUnits(totalCredits);
 
-        recruiterCreditHistory.setUnits(totalCredits);
+            //setting recruiter profile
+            recruiterCreditHistory.setRecruiterProfile(existingRecruiter);
 
-        //setting recruiter profile
-        recruiterCreditHistory.setRecruiterProfile(existingRecruiter);
+            //credit
+            RecruiterCreditHistory latestPack = RecruiterCreditHistoryDAO.getLastAddedRecruiterCreditPack(
+                    existingRecruiter);
 
-        //credit
-        RecruiterCreditHistory latestPack = RecruiterCreditHistoryDAO.getLatestRecruiterCreditPackDetails(
-                existingRecruiter);
+            if (latestPack == null){
+                recruiterCreditHistory.setRecruiterCreditPackNo(1);
+            } else{
+                recruiterCreditHistory.setRecruiterCreditPackNo(latestPack.getRecruiterCreditPackNo() + 1); //adding a new pack
+            }
+            recruiterCreditHistory.setRecruiterCreditsAvailable(availableCredits + totalCredits);
+            recruiterCreditHistory.setRecruiterCreditsUsed(usedCredits);
+            recruiterCreditHistory.setExpiryDate(expiryDate);
+            recruiterCreditHistory.setCreditIsExpired(false);
+            recruiterCreditHistory.setLatest(true);
 
-        if (latestPack == null){
-            recruiterCreditHistory.setRecruiterCreditPackNo(1);
+            recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
+
+            //saving the values
+            recruiterCreditHistory.save();
+
         } else{
-            recruiterCreditHistory.setRecruiterCreditPackNo(latestPack.getRecruiterCreditPackNo() + 1); //adding a new pack
+            Logger.info("recruiter category static table empty");
         }
-        recruiterCreditHistory.setRecruiterCreditsAvailable(availableCredits + totalCredits);
-        recruiterCreditHistory.setRecruiterCreditsUsed(usedCredits);
-        recruiterCreditHistory.setExpiryDate(expiryDate);
-        recruiterCreditHistory.setCreditIsExpired(false);
-        recruiterCreditHistory.setLatest(true);
-
-        recruiterCreditHistory.setRecruiterCreditsAddedBy(createdBy);
-
-        //saving the values
-        recruiterCreditHistory.save();
-
     }
 }

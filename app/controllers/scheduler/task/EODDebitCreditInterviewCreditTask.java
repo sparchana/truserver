@@ -5,7 +5,6 @@ import dao.JobPostWorkFlowDAO;
 import dao.RecruiterCreditHistoryDAO;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Recruiter.RecruiterProfile;
-import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
 import play.Logger;
 
@@ -25,36 +24,33 @@ import static play.mvc.Controller.session;
  * */
 
 public class EODDebitCreditInterviewCreditTask extends TimerTask {
+    private String createdBy = "Not specified";
 
-    private static void startCreditDebitTask(Map<RecruiterProfile, Integer> recruiterCreditMap, Boolean isDebit){
+    private void startCreditDebitTask(Map<RecruiterProfile, Integer> recruiterToInterviewCountMap, Boolean isDebit){
 
-        String createdBy = "Not specified";
-
-        if(session().get("sessionUsername") != null){
-            createdBy = "Support: " + session().get("sessionUsername");
-        }
-
-        String finalCreatedBy = createdBy;
         new Thread(() -> {
 
         //in this map, we have recruiterProfile as key and values as no of credits to be debited
-        for (Map.Entry<RecruiterProfile, Integer> entry : recruiterCreditMap.entrySet()) {
+        for (Map.Entry<RecruiterProfile, Integer> entry : recruiterToInterviewCountMap.entrySet()) {
 
             //getting key and value
             RecruiterProfile recruiterProfile = entry.getKey();
             Integer creditCount = entry.getValue();
 
-            Logger.info("Recruiter: " + recruiterProfile.getRecruiterProfileName() + " | Credits: " + creditCount);
-
-
             if (isDebit) {
+                Logger.info("Debiting " + creditCount + " no. of interview credits for Recruiter: " + recruiterProfile.getRecruiterProfileName()
+                                + " | " + recruiterProfile.getRecruiterProfileId());
+
 
                 //debits credits from pack
-                debitCredits(recruiterProfile, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK, creditCount * (-1), finalCreatedBy);
+                debitCredits(recruiterProfile, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK, creditCount * (-1), createdBy);
             } else {
 
+                Logger.info("Adding " + creditCount + " no. of interview credits for Recruiter: " + recruiterProfile.getRecruiterProfileName()
+                        + " | " + recruiterProfile.getRecruiterProfileId());
+
                 //credit the oldest active pack
-                addCredits(recruiterProfile, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK, creditCount, finalCreatedBy);
+                addCredits(recruiterProfile, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK, creditCount, createdBy);
             }
         }
 
@@ -65,7 +61,7 @@ public class EODDebitCreditInterviewCreditTask extends TimerTask {
     private static void expireRecruiterInterviewCredits(){
         new Thread(() -> {
 
-            List<RecruiterCreditHistory> packList = RecruiterCreditHistoryDAO.getAllPacksExpiringToday();
+            List<RecruiterCreditHistory> packList = RecruiterCreditHistoryDAO.getAllInterviewPacksExpiringToday();
 
             for(RecruiterCreditHistory pack : packList){
                 pack.setCreditIsExpired(true);
@@ -80,26 +76,30 @@ public class EODDebitCreditInterviewCreditTask extends TimerTask {
         // fetch all today's interviews
         Logger.info("Starting EOD auto debit interview credits ...");
 
+        if(session().get("sessionUsername") != null){
+            createdBy = "Support: " + session().get("sessionUsername");
+        }
+
         //getting list of today's confirmed interview
         List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkFlowDAO.getTodaysConfirmedInterviews();
 
-        Map<RecruiterProfile, Integer> recruiterCreditMap = returnMapData(jobPostWorkflowList);
+        Map<RecruiterProfile, Integer> recruiterToCreditCountMap = returnMapData(jobPostWorkflowList);
 
         //debiting credits
-        startCreditDebitTask(recruiterCreditMap, true);
+        startCreditDebitTask(recruiterToCreditCountMap, true);
 
         jobPostWorkflowList = JobPostWorkFlowDAO.getAllTodaysFeedbackApplications();
 
-        recruiterCreditMap = returnMapData(jobPostWorkflowList);
+        Map<RecruiterProfile, Integer> recruiterToInterviewCountMap = returnMapData(jobPostWorkflowList);
 
         //crediting credits if feedback provided
-        startCreditDebitTask(recruiterCreditMap, false);
+        startCreditDebitTask(recruiterToInterviewCountMap, false);
 
         //task to expire all the interview credits which are expiring today
         expireRecruiterInterviewCredits();
     }
 
-    public static Map<RecruiterProfile, Integer> returnMapData(List<JobPostWorkflow> jobPostWorkflowList){
+    private static Map<RecruiterProfile, Integer> returnMapData(List<JobPostWorkflow> jobPostWorkflowList){
 
         Map<RecruiterProfile, Integer> recruiterToCreditCountMap = new HashMap<RecruiterProfile, Integer>();
 
