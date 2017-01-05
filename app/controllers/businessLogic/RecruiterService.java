@@ -662,7 +662,6 @@ public class RecruiterService {
                 .eq("recruiter_credit_category_id", creditType)
                 .findUnique();
 
-
         RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
 
         if (recruiterCreditCategory != null){
@@ -706,13 +705,7 @@ public class RecruiterService {
 
         AddRecruiterResponse addRecruiterResponse = new AddRecruiterResponse();
 
-        RecruiterCreditHistory history = RecruiterCreditHistory.find.where()
-                .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
-                .eq("recruiter_credit_pack_no", packId)
-                .eq("is_latest", 1)
-                .eq("credit_is_expired", 0)
-                .setMaxRows(1)
-                .findUnique();
+        RecruiterCreditHistory history = RecruiterCreditHistoryDAO.getCreditPackByPackNo(recruiterProfile, packId);
 
         if(history != null){
 
@@ -761,13 +754,8 @@ public class RecruiterService {
                 .findUnique();
 
         if(recruiterProfile != null){
-            RecruiterCreditHistory history = RecruiterCreditHistory.find.where()
-                    .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
-                    .eq("recruiter_credit_pack_no", addRecruiterRequest.getPackId())
-                    .eq("is_latest", 1)
-                    .eq("credit_is_expired", 0)
-                    .setMaxRows(1)
-                    .findUnique();
+
+            RecruiterCreditHistory history = RecruiterCreditHistoryDAO.getCreditPackByPackNo(recruiterProfile, addRecruiterRequest.getPackId());
 
             if(history != null) {
 
