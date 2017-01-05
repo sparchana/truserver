@@ -67,7 +67,8 @@ function processJobPostInterviewSlot(returnedData, isSupport) {
             }
 
         }
-        for (; i < 9; i++) {
+        var endDate = i + 3;
+        for (; i < endDate; i++) {
             // 0 - > sun 1 -> mon ...
             var x = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
             if (checkSlotAvailability(x, interviewDays)) {
