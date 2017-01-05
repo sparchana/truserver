@@ -551,7 +551,7 @@ public class RecruiterService {
 
             //checking weekly job application limit
             if(JobPostDAO.getThisWeeksApplication(jobPost, weekDaysDeduct).size()
-                    > ServerConstants.FREE_JOB_APPLICATION_DEFAULT_LIMIT_IN_A_WEEK){
+                    >= ServerConstants.FREE_JOB_APPLICATION_DEFAULT_LIMIT_IN_A_WEEK){
 
                 Logger.info("Interview closed for this week");
                 // interview closed
