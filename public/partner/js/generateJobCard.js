@@ -954,7 +954,6 @@ function prePopulateJobSection(jobApplication) {
     $("#myAppliedJobsCompleted").hide();
     $("#noCompletedApplication").hide();
 
-
     if(todayInterview){
         if(parentPendingConfirmationCount == 0){
             $("#noPendingConfirmationApplication").show();

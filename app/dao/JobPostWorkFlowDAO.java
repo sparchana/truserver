@@ -9,6 +9,7 @@ import models.entity.OM.JobPostWorkflow;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -144,7 +145,6 @@ public class JobPostWorkFlowDAO {
     }
 
     public static List<JobPostWorkflow> getTodayInterview(List<Long> jobPostIdList, int status, Date today){
-
 
         SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
 
@@ -342,6 +342,12 @@ public class JobPostWorkFlowDAO {
                 .findList();
     }
 
+    /**
+     * @param jobPostIdList, accepts a list of jobPostId
+     * @param status, accepts a jobPostWorkFlowStatus
+     * @return List<JobPostWorkflow>, all the confirmed interview applications
+     */
+
     public static List<JobPostWorkflow> getConfirmedInterviewApplications(List<Long> jobPostIdList, int status){
         StringBuilder workFlowQueryBuilder = new StringBuilder(
                 " select createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
@@ -370,5 +376,36 @@ public class JobPostWorkFlowDAO {
         return Ebean.find(JobPostWorkflow.class)
                 .setRawSql(rawSql)
                 .findList();
+    }
+
+    /**
+     *
+     * @return List<JobPostWorkflow>, all the interviews which are scheduled today where the status is no 'not going'
+     */
+
+    public static List<JobPostWorkflow> getTodaysConfirmedInterviews(){
+        String workFlowQueryBuilder = " select createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
+                " job_post_id, status_id from job_post_workflow i " +
+                " where status_id >= 9 and status_id not in (10)" + //not '10' because candidate reported as not going
+                " and DATE(scheduled_interview_date) = curdate()" +
+                " and job_post_workflow_id = " +
+                " (select max(job_post_workflow_id) from job_post_workflow " +
+                "       where i.candidate_id = job_post_workflow.candidate_id " +
+                "       and i.job_post_id = job_post_workflow.job_post_id)" +
+                " order by job_post_workflow_id desc ";
+
+                RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder)
+                    .columnMapping("creation_timestamp", "creationTimestamp")
+                    .columnMapping("job_post_id", "jobPost.jobPostId")
+                    .columnMapping("status_id", "status.statusId")
+                    .columnMapping("candidate_id", "candidate.candidateId")
+                    .columnMapping("createdby", "createdBy")
+                    .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
+                    .columnMapping("scheduled_interview_date", "scheduledInterviewDate")
+                    .create();
+
+                return Ebean.find(JobPostWorkflow.class)
+                    .setRawSql(rawSql)
+                    .findList();
     }
 }

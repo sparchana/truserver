@@ -1,9 +1,8 @@
 package controllers.scheduler.task;
 
-import api.ServerConstants;
 import controllers.scheduler.SchedulerManager;
+import dao.JobPostWorkFlowDAO;
 import models.entity.OM.JobPostWorkflow;
-import models.entity.scheduler.SchedulerStats;
 import models.entity.scheduler.Static.SchedulerSubType;
 import models.entity.scheduler.Static.SchedulerType;
 import models.util.NotificationUtil;
@@ -29,49 +28,46 @@ public class EODCandidateCompletedInterviewTask extends TimerTask {
 
     private void sendRateUsNotification(List<JobPostWorkflow> jobPostWorkflowList){
         new Thread(() -> {
+
+            Logger.info("Sending alert to " + jobPostWorkflowList.size() + " candidates to rate us on play store");
+            
+            SchedulerSubType subType = SchedulerSubType.find.where()
+                    .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_EOD_RATE_US)
+                    .findUnique();
+
+            SchedulerType type = SchedulerType.find.where()
+                    .eq("schedulerTypeId", SCHEDULER_TYPE_SMS).findUnique();
+
+
+            SchedulerType typeFcm = SchedulerType.find.where()
+                    .eq("schedulerTypeId", SCHEDULER_TYPE_FCM).findUnique();
+
+            Timestamp startTime = new Timestamp(System.currentTimeMillis());
+
             for(JobPostWorkflow jpwf : jobPostWorkflowList){
-                //recruiter has interview credits
-                Timestamp startTime = new Timestamp(System.currentTimeMillis());
-                SchedulerSubType subType = SchedulerSubType.find.where()
-                        .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_EOD_RATE_US)
-                        .findUnique();
-
-                SchedulerType type = SchedulerType.find.where()
-                        .eq("schedulerTypeId", SCHEDULER_TYPE_SMS).findUnique();
-
-                String note = "SMS alert for candidate to rate us on play store after interview.";
-
-                SchedulerStats newSchedulerStats = new SchedulerStats();
-                newSchedulerStats.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
 
                 //sending sms
-                SmsUtil.sendEODSmsToCandidatePostInterview(jpwf.getJobPost(), jpwf.getCandidate());
-
-                Timestamp endTime = new Timestamp(System.currentTimeMillis());
-                SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
-
-                            /* Notification part */
-                startTime = new Timestamp(System.currentTimeMillis());
-                subType = SchedulerSubType.find.where()
-                        .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_EOD_RATE_US)
-                        .findUnique();
-
-                type = SchedulerType.find.where()
-                        .eq("schedulerTypeId", SCHEDULER_TYPE_FCM).findUnique();
-
-                note = "Android notification alert for candidate to rate us on play store after interview.";
-
-                newSchedulerStats = new SchedulerStats();
-                newSchedulerStats.setStartTimestamp(new Timestamp(System.currentTimeMillis()) );
+                SmsUtil.sendEODCandidateFeedbackSms(jpwf.getJobPost(), jpwf.getCandidate());
 
                 //sending notification
-                NotificationUtil.sendEODNotificationToCandidatePostInterview(jpwf.getJobPost(), jpwf.getCandidate());
-
-                endTime = new Timestamp(System.currentTimeMillis());
-                SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
-
+                NotificationUtil.EODCandidatefeedbackNotification(jpwf.getJobPost(), jpwf.getCandidate());
 
             }
+
+            //saving stats for sms event
+            String note = "SMS alert for candidate to rate us on play store after interview.";
+
+            Timestamp endTime = new Timestamp(System.currentTimeMillis());
+            SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
+
+            //saving stats for fcm event
+            note = "Android notification alert for candidate to rate us on play store after interview.";
+
+            endTime = new Timestamp(System.currentTimeMillis());
+
+            SchedulerManager.saveNewSchedulerStats(startTime, typeFcm, subType, note, endTime, true);
+
+            Logger.info("[Completed] Sending alert to " + jobPostWorkflowList.size() + " candidates to rate us on play store");
         }).start();
     }
 
@@ -80,14 +76,6 @@ public class EODCandidateCompletedInterviewTask extends TimerTask {
         // fetch all the application which had interviews today
         Logger.info("Starting EOD notify candidates for play store rating ..");
 
-        Calendar now = Calendar.getInstance();
-        String todayDate = now.get(Calendar.YEAR) + "-" + (now.get(Calendar.MONTH) + 1) + "-" + now.get(Calendar.DATE);
-
-        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
-                .eq("scheduled_interview_date", todayDate)
-                .eq("status_id", ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED)
-                .findList();
-
-        sendRateUsNotification(jobPostWorkflowList);
+        sendRateUsNotification(JobPostWorkFlowDAO.getTodaysConfirmedInterviews());
     }
 }

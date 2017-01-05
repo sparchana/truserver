@@ -23,6 +23,7 @@ public class SchedulerManager implements Runnable {
 
     private final Timer timer = new Timer(); // Instantiate Timer Object
     private final long oneDay = 24 * 1000 * 60 * 60; // 24 hr
+    private final long oneWeek = oneDay * 7; // 1 week
 
 
     @Override
@@ -43,20 +44,43 @@ public class SchedulerManager implements Runnable {
         int mSODJobPostInfoStartMin = (play.Play.application().configuration().getInt("schedulertask.sod.jobpost.notifier.start.min"));
         int mSODJobPostInfoStartSec = (play.Play.application().configuration().getInt("schedulertask.sod.jobpost.notifier.start.sec"));
 
+        int mEODJobPostInfoStartHr = (play.Play.application().configuration().getInt("schedulertask.eod.jobalert.notifier.start.hr"));
+        int mEODJobPostInfoStartMin = (play.Play.application().configuration().getInt("schedulertask.eod.jobalert.notifier.start.min"));
+        int mEODJobPostInfoStartSec = (play.Play.application().configuration().getInt("schedulertask.eod.jobalert.notifier.start.sec"));
+
         int mEODRateUsPostInterviewHr = (play.Play.application().configuration().getInt("schedulertask.eod.rateus.notifier.start.hr"));
         int mEODRateUsPostInterviewMin = (play.Play.application().configuration().getInt("schedulertask.eod.rateus.notifier.start.min"));
         int mEODRateUsPostInterviewSec = (play.Play.application().configuration().getInt("schedulertask.eod.rateus.notifier.start.sec"));
 
         int sameDayInterviewAlertEventPeriod = Integer.parseInt(play.Play.application().configuration().getString("schedulertask.sameDay.alert.period"));
 
+        int mWeeklyNotifyAppDownloadDay = (play.Play.application().configuration().getInt("schedulertask.weekly.appdownload.notifier.start.day"));
+        int mWeeklyNotifyAppDownloadHr = (play.Play.application().configuration().getInt("schedulertask.weekly.appdownload.notifier.start.hr"));
+        int mWeeklyNotifyAppDownloadMin = (play.Play.application().configuration().getInt("schedulertask.weekly.appdownload.notifier.start.min"));
+        int mWeeklyNotifyAppDownloadSec = (play.Play.application().configuration().getInt("schedulertask.weekly.appdownload.notifier.start.sec"));
+
+        int mWeeklyProfileCompletionDay = (play.Play.application().configuration().getInt("schedulertask.weekly.profilecompletion.notifier.start.day"));
+        int mWeeklyProfileCompletionHr = (play.Play.application().configuration().getInt("schedulertask.weekly.profilecompletion.notifier.start.hr"));
+        int mWeeklyProfileCompletionMin = (play.Play.application().configuration().getInt("schedulertask.weekly.profilecompletion.notifier.start.min"));
+        int mWeeklyProfileCompletionSec = (play.Play.application().configuration().getInt("schedulertask.weekly.profilecompletion.notifier.start.sec"));
+
         long eodMailDelay = computeDelay(mEODMailTaskStartHr, mEODMailTaskStartMin , mEODMailTaskStartSec);
         long ndiMailDelay = computeDelay(mEODNextDayInterviewTaskStartHr, mEODNextDayInterviewStartMin , mEODNextDayInterviewStartSec);
         long aadhaarVerificationDelay = computeDelay(mEODAadhaarTaskStartHr, mEODAadhaarTaskStartMin , mEODAadhaarTaskStartSec);
 
         long jobPostInfoDelay = computeDelay(mSODJobPostInfoStartHr, mSODJobPostInfoStartMin , mSODJobPostInfoStartSec);
+        long eodJobPostInfoDelay = computeDelay(mEODJobPostInfoStartHr, mEODJobPostInfoStartMin, mEODJobPostInfoStartSec);
+
         long rateUsPostInterviewDelay = computeDelay(mEODRateUsPostInterviewHr, mEODRateUsPostInterviewMin , mEODRateUsPostInterviewSec);
 
         long sdiDelay = computeDelayForSDI(sameDayInterviewAlertEventPeriod);
+
+        // weekly tasks
+        long weeklyCandidateAlertTaskDelay = computeDelayForWeeklyTask(mWeeklyNotifyAppDownloadDay, mWeeklyNotifyAppDownloadHr,
+                mWeeklyNotifyAppDownloadMin , mWeeklyNotifyAppDownloadSec);
+
+        long weeklyProfileCompletionTaskDelay = computeDelayForWeeklyTask(mWeeklyProfileCompletionDay, mWeeklyProfileCompletionHr,
+                mWeeklyProfileCompletionMin , mWeeklyProfileCompletionSec);
 
         // createSameDayInterviewAlertEvent method takes time period (in hrs) as input
         createSameDayInterviewAlertEvent(sameDayInterviewAlertEventPeriod, sdiDelay);
@@ -69,7 +93,14 @@ public class SchedulerManager implements Runnable {
 
 //        createStartOfTheDayJobPostEvent(jobPostInfoDelay);
 
-//        createEODRateUsPostInterview(rateUsPostInterviewDelay);
+//        createEndOfTheDayJobPostEvent(eodJobPostInfoDelay);
+
+//        createEODRateUsPostInterviewEvent(rateUsPostInterviewDelay);
+
+//        createWeeklyAlertEvent(weeklyCandidateAlertTaskDelay);
+
+//        createWeeklyProfileCompletionEvent(weeklyProfileCompletionTaskDelay);
+
     }
 
     public void createSameDayInterviewAlertEvent(int periodInHr, long delay) {
@@ -110,16 +141,38 @@ public class SchedulerManager implements Runnable {
     private void createStartOfTheDayJobPostEvent(long delay){
         Logger.info("Send job post message to candidate!");
 
-        SODNotifyCandidateAboutJobPostTask sodNotifyCandidateAboutJobPostTask = new SODNotifyCandidateAboutJobPostTask();
-        timer.schedule(sodNotifyCandidateAboutJobPostTask, delay, oneDay);
+        SODJobPostNotificationTask SODJobPostNotificationTask = new SODJobPostNotificationTask();
+        timer.schedule(SODJobPostNotificationTask, delay, oneDay);
     }
 
-    private void createEODRateUsPostInterview(long delay){
+    private void createEODRateUsPostInterviewEvent(long delay){
         Logger.info("Send alert to rate on play store after interview to candidate!");
 
         EODCandidateCompletedInterviewTask eodCandidateCompletedInterviewTask = new EODCandidateCompletedInterviewTask();
         timer.schedule(eodCandidateCompletedInterviewTask, delay, oneDay);
     }
+
+    private void createWeeklyAlertEvent(long delay){
+        Logger.info("Send alert candidate who have not downloaded the app yet!");
+
+        WeeklyCandidateAlertTask weeklyCandidateAlertTask = new WeeklyCandidateAlertTask();
+        timer.schedule(weeklyCandidateAlertTask, delay, oneWeek);
+    }
+
+    private void createWeeklyProfileCompletionEvent(long delay){
+        Logger.info("Send alert to candidate to complete profile!");
+
+        WeeklyCompleteProfileAlertTask weeklyCompleteProfileAlertTask = new WeeklyCompleteProfileAlertTask();
+        timer.schedule(weeklyCompleteProfileAlertTask, delay, oneWeek);
+    }
+
+    private void createEndOfTheDayJobPostEvent(long delay){
+        Logger.info("Send job post fcm notification to candidate!");
+
+        EODJobAlertFcmTask eodJobAlertFcmTask = new EODJobAlertFcmTask();
+        timer.schedule(eodJobAlertFcmTask, delay, oneDay);
+    }
+
 
 
     public static void saveNewSchedulerStats(Timestamp startTime, SchedulerType schedulerType,
@@ -189,6 +242,41 @@ public class SchedulerManager implements Runnable {
         }
 
         return (hour * 60 * 60 + min * 60 + sec) * 1000;
+    }
+
+    public long computeDelayForWeeklyTask(int day, int hour, int min, int sec) {
+
+        if(min>60) {
+            ++hour;
+            min -= 60;
+        }
+        if(sec>60) {
+            ++min;
+            sec -= 60;
+        }
+
+        Calendar cal = Calendar.getInstance();
+
+        min = min - cal.getTime().getMinutes() ;
+        if(min < 0) {
+            --hour;
+            min += 60;
+        }
+
+        hour = hour - cal.getTime().getHours();
+
+        // start time already passed hence delay for a day
+        if(hour < 0) {
+            hour += 24;
+            day += 6;
+        }
+
+        day = day - cal.get(Calendar.DAY_OF_WEEK);
+        if(day < 0){
+            day += 6;
+        }
+
+        return ((day * 60 * 60 * 24) + hour * 60 * 60 + min * 60 + sec) * 1000;
     }
 
     public long computeDelayForSDI(int period) {

@@ -14,6 +14,7 @@ import api.http.httpResponse.interview.InterviewResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Model;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import controllers.scheduler.SchedulerConstants;
 import dao.JobPostDAO;
 import models.entity.Candidate;
 import models.entity.Company;
@@ -1158,7 +1159,8 @@ public class JobService {
     }
 
     public static void sendSmsToCandidateMatchingWithJobPost(JobPost jobPost){
-        Map<Long, CandidateWorkflowData> candidateSearchMap = JobPostWorkflowEngine.getCandidateForRecruiterSearch(
+        Map<Long, CandidateWorkflowData> candidateSearchMap = JobPostWorkflowEngine.getMatchingCandidate(
+                jobPost.getJobPostId(),
                 null, //age
                 null, //min salary
                 null, //max salary
@@ -1167,31 +1169,33 @@ public class JobService {
                 jobPost.getJobRole().getJobRoleId(), //jobRole
                 null, //education
                 null, //locality
-                null, //language list
-                20.00);
+                null, //language list,
+                null, //document List
+                null, //asset list
+                SchedulerConstants.NEW_JOB_MATCHING_DEFAULT_DISTANCE_RADIUS);
 
         if(candidateSearchMap != null){
-            Logger.info("Sending notification to " + candidateSearchMap.size() + " candidates regarding the jobPost: " + jobPost.getJobPostTitle());
+            Logger.info("Total matched candidate: " + candidateSearchMap.size() + " for jobPost: " + jobPost.getJobPostTitle());
 
             Boolean hasCredit = false;
             if(jobPost.getRecruiterProfile().totalInterviewCredits() > 0){
                 hasCredit = true;
             }
 
-            //adding to notification Handler queue
+            List<Candidate> candidateList = new ArrayList<>();
             for (Map.Entry<Long, CandidateWorkflowData> candidate : candidateSearchMap.entrySet()) {
-                if(hasCredit){
-                    //recruiter has interview credits
-                    SmsUtil.sendJobPostSmsToCandidateRecHasCredits(jobPost, candidate.getValue().getCandidate());
-                    NotificationUtil.sendJobPostNotificationToCandidateRecHasNoCredits(jobPost, candidate.getValue().getCandidate());
+                candidateList.add(candidate.getValue().getCandidate());
+            }
 
-                } else{
-                    //recruiter doesn't have interview credits
-                    SmsUtil.sendJobPostSmsToCandidateRecHasNoCredits(jobPost, candidate.getValue().getCandidate());
-                    NotificationUtil.sendJobPostNotificationToCandidateRecHasNoCredits(jobPost, candidate.getValue().getCandidate());
-                }
+            Collections.shuffle(candidateList);
+
+            Logger.info("Sending notification to " + SchedulerConstants.NEW_JOB_ALERT_LIMIT + " candidates regarding the jobPost: " + jobPost.getJobPostTitle());
+
+            //adding to notification Handler queue
+            for(int i = 0; i< SchedulerConstants.NEW_JOB_ALERT_LIMIT; i++){
+                    SmsUtil.sendJobAlertSmsToCandidate(jobPost, candidateList.get(i), hasCredit);
+                    NotificationUtil.sendJobAlertNotificationToCandidate(jobPost, candidateList.get(i), hasCredit);
             }
         }
     }
-
 }
