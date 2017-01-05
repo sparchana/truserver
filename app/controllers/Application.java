@@ -1,7 +1,6 @@
 package controllers;
 
 import dao.JobPostDAO;
-import notificationService.*;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
@@ -67,6 +66,11 @@ public class Application extends Controller {
         if(sessionId != null){
             String partnerId = session().get("partnerId");
             String recruiterId = session().get("recruiterId");
+
+            if (!FlashSessionController.isEmpty()) {
+                return redirect(FlashSessionController.getFlashFromSession());
+            }
+
             if(partnerId != null){
                 return redirect("/partner/home");
             } else if(recruiterId != null){
@@ -327,6 +331,9 @@ public class Application extends Controller {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result dashboard() {
+        if (!FlashSessionController.isEmpty()) {
+            return redirect(FlashSessionController.getFlashFromSession());
+        }
         return ok(views.html.CandidateDashboard.candidate_home.render());
     }
 
@@ -662,7 +669,8 @@ public class Application extends Controller {
     }
 
     public static Result logout() {
-        session().clear();
+        FlashSessionController.clearSessionExceptFlash();
+
         flash("success", "You've been logged out");
         return redirect(
                 routes.Application.supportAuth()
@@ -670,7 +678,8 @@ public class Application extends Controller {
     }
 
     public static Result logoutUser() {
-        session().clear();
+        FlashSessionController.clearSessionExceptFlash();
+
         Logger.info("Candidate Logged Out");
         return ok(views.html.main.render());
     }

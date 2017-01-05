@@ -9,8 +9,6 @@ import play.mvc.Http.Context;
 import play.mvc.Result;
 import play.mvc.Security;
 
-import static play.mvc.Controller.session;
-
 public class SecuredUser extends Security.Authenticator {
 
     @Override
@@ -36,6 +34,9 @@ public class SecuredUser extends Security.Authenticator {
 
     @Override
     public Result onUnauthorized(Context ctx) {
+
+        FlashSessionController.setFlashToSession(ctx.request().uri());
+
         return redirect(routes.Application.index());
     }
 }
