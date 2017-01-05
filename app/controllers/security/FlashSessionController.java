@@ -29,7 +29,7 @@ public class FlashSessionController {
      * put method overrides flash value
      *
      */
-    public static void setFlashToSession(String url) {
+    public static void setFlashInSession(String url) {
 
         if (url != null) {
             session().put("flash", url);
@@ -53,7 +53,7 @@ public class FlashSessionController {
             String flashToPreserve = FlashSessionController.flashPeek();
             Logger.info("flashToPreserve: " + flashToPreserve);
             session().clear();
-            FlashSessionController.setFlashToSession(flashToPreserve);
+            FlashSessionController.setFlashInSession(flashToPreserve);
         }
     }
 

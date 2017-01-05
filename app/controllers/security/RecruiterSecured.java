@@ -34,7 +34,7 @@ public class RecruiterSecured extends Security.Authenticator {
 
     @Override
     public Result onUnauthorized(Http.Context ctx) {
-        FlashSessionController.setFlashToSession(ctx.request().uri());
+        FlashSessionController.setFlashInSession(ctx.request().uri());
 
         return redirect(routes.RecruiterController.recruiterIndex());
     }

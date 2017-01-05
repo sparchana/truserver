@@ -43,7 +43,7 @@ public class PartnerSecured extends Security.Authenticator {
 
     @Override
     public Result onUnauthorized(Context ctx) {
-        FlashSessionController.setFlashToSession(ctx.request().uri());
+        FlashSessionController.setFlashInSession(ctx.request().uri());
 
         return redirect(routes.Application.supportAuth());
     }
