@@ -2297,8 +2297,14 @@ public class Application extends Controller {
 
         if(recruiterProfile != null){
 
+            String createdBy = "Not specified";
+
+            if(session().get("sessionUsername") != null){
+                createdBy = "Support: " + session().get("sessionUsername");
+            }
+
             return ok(toJson(RecruiterService.updateExistingRecruiterPack(recruiterProfile, addRecruiterRequest.getPackId(),
-                    addRecruiterRequest.getCreditCount())));
+                    addRecruiterRequest.getCreditCount(), createdBy)));
         }
 
         return ok("0");

@@ -15,6 +15,7 @@ import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
 import api.http.httpResponse.ResetPasswordResponse;
 import api.http.httpResponse.interview.InterviewResponse;
+import com.avaje.ebeaninternal.server.lib.util.Str;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
@@ -696,12 +697,10 @@ public class RecruiterService {
         }
     }
 
-    public static AddRecruiterResponse updateExistingRecruiterPack(RecruiterProfile recruiterProfile, Integer packId, Integer credits) {
-        String createdBy = "Not specified";
-
-        if(session().get("sessionUsername") != null){
-            createdBy = "Support: " + session().get("sessionUsername");
-        }
+    public static AddRecruiterResponse updateExistingRecruiterPack(RecruiterProfile recruiterProfile,
+                                                                   Integer packId,
+                                                                   Integer credits,
+                                                                   String createdBy) {
 
         AddRecruiterResponse addRecruiterResponse = new AddRecruiterResponse();
 
@@ -718,7 +717,7 @@ public class RecruiterService {
             if(credits > 0){
 
                 //credit
-                newHistory.setRecruiterCreditsUsed(0);
+                newHistory.setRecruiterCreditsUsed(history.getRecruiterCreditsUsed());
             } else{
 
                 //debit
@@ -734,7 +733,8 @@ public class RecruiterService {
             newHistory.setLatest(true);
             newHistory.setExpiryDate(history.getExpiryDate());
 
-            Logger.info("Creating a new Entry");
+            Logger.info("Creating a new row for the updated pack by debiting/crediting by " + credits + " for recruiter: " +
+                recruiterProfile.getRecruiterProfileName() + ", ID: " + recruiterProfile.getRecruiterProfileId());
             newHistory.save();
             addRecruiterResponse.setStatus(AddRecruiterResponse.STATUS_SUCCESS);
         } else{
@@ -758,11 +758,19 @@ public class RecruiterService {
             RecruiterCreditHistory history = RecruiterCreditHistoryDAO.getCreditPackByPackNo(recruiterProfile, addRecruiterRequest.getPackId());
 
             if(history != null) {
+                RecruiterCreditHistory newHistory = new RecruiterCreditHistory();
+                copyCreditObject(newHistory, history);
 
+                newHistory.setCreditIsExpired(true);
+                newHistory.setLatest(true);
+                newHistory.setUnits(0);
+
+                //updating the old pack's isLatest value
                 history.setLatest(false);
-                history.setCreditIsExpired(true);
-
                 history.update();
+
+                newHistory.save();
+
                 addRecruiterResponse.setStatus(AddRecruiterResponse.STATUS_SUCCESS);
             } else{
                 addRecruiterResponse.setStatus(AddRecruiterResponse.STATUS_FAILURE);
@@ -771,5 +779,27 @@ public class RecruiterService {
             addRecruiterResponse.setStatus(AddRecruiterResponse.STATUS_FAILURE);
         }
         return addRecruiterResponse;
+    }
+
+    public static RecruiterCreditHistory copyCreditObject(RecruiterCreditHistory newHistory, RecruiterCreditHistory oldHistory) {
+
+        String createdBy = "Not specified";
+
+        if(session().get("sessionUsername") != null){
+            createdBy = "Support: " + session().get("sessionUsername");
+        }
+
+        newHistory.setRecruiterCreditsAddedBy(createdBy);
+        newHistory.setCreditIsExpired(oldHistory.getCreditIsExpired());
+        newHistory.setLatest(oldHistory.getLatest());
+        newHistory.setExpiryDate(oldHistory.getExpiryDate());
+        newHistory.setRecruiterProfile(oldHistory.getRecruiterProfile());
+        newHistory.setRecruiterCreditPackNo(oldHistory.getRecruiterCreditPackNo());
+        newHistory.setRecruiterCreditsAvailable(oldHistory.getRecruiterCreditsAvailable());
+        newHistory.setRecruiterCreditsUsed(oldHistory.getRecruiterCreditsUsed());
+        newHistory.setRecruiterCreditCategory(oldHistory.getRecruiterCreditCategory());
+        newHistory.setUnits(oldHistory.getUnits());
+
+        return newHistory;
     }
 }

@@ -1410,9 +1410,7 @@ function processDataAllJobPosts(returnedData) {
                     joiningIncentiveVal.className = "incentiveBody";
                 }
                 incentiveIconDiv.appendChild(joiningIncentiveVal);
-
-                console.log(jobPost);
-
+                
                 //!*  apply button *!/
                 var applyBtnDiv = document.createElement("div");
                 applyBtnDiv.className = "col-sm-2";

@@ -4,13 +4,10 @@ import api.ServerConstants;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.RawSql;
 import com.avaje.ebean.RawSqlBuilder;
-import models.entity.OM.CandidateInterviewStatusUpdate;
 import models.entity.OM.JobPostWorkflow;
 import org.apache.commons.lang3.StringUtils;
-import play.Logger;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -406,7 +403,6 @@ public class JobPostWorkFlowDAO {
                 "       and i.job_post_id = job_post_workflow.job_post_id)" +
                 " order by job_post_workflow_id desc ";
 
-        Logger.info(workFlowQueryBuilder);
         RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder)
                 .columnMapping("creation_timestamp", "creationTimestamp")
                 .columnMapping("job_post_id", "jobPost.jobPostId")

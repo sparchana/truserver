@@ -1140,14 +1140,14 @@ var app = (function ($) {
                                 var applyBtn = document.createElement("button");
                                 applyBtn.className = "jobApplyBtn2";
                                 var applyJobText ;
-                                if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != 4){
-                                    if(jobPost.applyBtnStatus == 2) {
+                                if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != CTA_BTN_APPLY){
+                                    if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_REQUIRED) {
                                         applyJobText = "Book Interview";
-                                    } else if(jobPost.applyBtnStatus == 3) {
+                                    } else if(jobPost.applyBtnStatus == CTA_BTN_ALREADY_APPLIED) {
                                         applyJobText = "Already Applied";
                                         applyBtn.disabled =  true;
                                         applyBtn.style = "background:#ffa726";
-                                    } else if(jobPost.applyBtnStatus == 5) {
+                                    } else if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_CLOSED) {
                                         applyJobText = "Application closed";
                                         applyBtn.disabled =  true;
                                         applyBtn.style = "background:#ffa726";

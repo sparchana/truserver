@@ -592,10 +592,10 @@ function processDataForHotJobPost(returnedData) {
             $("div#aboutCompanyTitle").hide();
         }
 
-        if(returnedData.applyBtnStatus != null && returnedData.applyBtnStatus != 4){
-            if(returnedData.applyBtnStatus == 2) {
+        if(returnedData.applyBtnStatus != null && returnedData.applyBtnStatus != CTA_BTN_APPLY){
+            if(returnedData.applyBtnStatus == CTA_BTN_INTERVIEW_REQUIRED) {
                 $(".jobApplyBtnV2").html("Book Interview");
-            } else if(returnedData.applyBtnStatus == 5) {
+            } else if(returnedData.applyBtnStatus == CTA_BTN_INTERVIEW_CLOSED) {
                 $(".jobApplyBtnV2").removeClass("btn-primary").addClass("appliedBtn").prop('disabled',true).html("Application Closed");
                 $('.jobApplyBtnV2').attr('onclick','').unbind('click');
                 $('.jobApplyBtnV2').css("background", "#f4cb6c");

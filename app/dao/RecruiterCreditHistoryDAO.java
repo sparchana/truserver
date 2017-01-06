@@ -79,4 +79,15 @@ public class RecruiterCreditHistoryDAO {
                 .findUnique();
     }
 
+    public static RecruiterCreditHistory getOldestActivePackByCategory(RecruiterProfile recruiterProfile, Integer category){
+        return RecruiterCreditHistory.find.where()
+                .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
+                .eq("is_latest", 1)
+                .eq("credit_is_expired", 0)
+                .eq("recruitercreditcategory", category)
+                .setMaxRows(1)
+                .orderBy().asc("recruiter_credit_pack_no").setMaxRows(1).findUnique();
+    }
+
+
 }
