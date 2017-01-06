@@ -142,6 +142,14 @@ var app = (function ($) {
         },
         // basic ui rendering methods
         render: {
+            renderLoaderStart:function(){
+                $("#backgroundLoader").show();
+                $("#jobLoaderDiv").show();
+            },
+            renderLoaderStop:function(){
+                $("#backgroundLoader").hide();
+                $("#jobLoaderDiv").hide();
+            },
             renderJobRole: function () {
                 var promise = new Promise(function (resolve, reject) {
                         app.bMethods.getAllJobRole().then(
@@ -508,6 +516,7 @@ var app = (function ($) {
                 }
             },
             search: function (isBasicResetRequired, shouldScrollToTop) {
+                app.render.renderLoaderStart();
                 if(!app.shouldDoSearch){
                     console.log("no search!");
                     return;
@@ -535,9 +544,11 @@ var app = (function ($) {
                     data: JSON.stringify(d),
                     success: function (returnedData) {
                         app.do.parseSearchResponse(returnedData);
+
                     },
                     error: function (xhr, a, message) {
                         console.log("error: " + message);
+                        app.render.renderLoaderStop();
                     }
                 });
             },
@@ -668,7 +679,7 @@ var app = (function ($) {
                 }
                 $("#hotJobs").html("");
 
-                $("#jobLoaderDiv").hide();
+                app.render.renderLoaderStop();
 
                 return;
             },
@@ -731,6 +742,10 @@ var app = (function ($) {
                         var _parent = $("#hotJobs");
                         //returnedData.reverse();
 
+                        var loaderBackgroundDiv = document.createElement("div");
+                        loaderBackgroundDiv.id = "backgroundLoader";
+                        _parent.append(loaderBackgroundDiv);
+
                         $("#jobLoaderDiv").hide();
                         $('#noJobsDiv').hide();
 
@@ -761,6 +776,7 @@ var app = (function ($) {
                 $(".last").hide();
                 $(".prev a").html("<<");
                 $(".next a").html(">>");
+                app.render.renderLoaderStop();
             },
             pagination: function (noOfPages) {
                 // this boolean prevents from looping into pagination when search is triggered
@@ -780,6 +796,9 @@ var app = (function ($) {
                         if (app.isPaginationEnabled) {
                             app.do.search(false, true);
                         }
+                        $(".page-link").click(function(){
+                            $('html, body').animate({scrollTop: $("#job_cards_inc").offset().top - 100}, 800);
+                        });
                         $(".first").hide();
                         $(".last").hide();
                         $(".prev a").html("<<");
