@@ -154,7 +154,6 @@ function processDataGetJobPostDetails(returnedData) {
             $.ajax({
                 type: "POST",
                 url: "/getTodayInterviewDetails",
-                async: false,
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(d),
                 success: processDataInterviewToday,

@@ -267,7 +267,7 @@ public class PartnerController {
                     }
                 }
                 response.setCandidateAppliedJobs(JobPostWorkflowEngine.getPartnerAppliedJobsForCandidate(
-                    partnerToCandidate.getCandidate(), partner).size());
+                        partnerToCandidate.getCandidate(), partner).size());
                 response.setCandidateMobile(partnerToCandidate.getCandidate().getCandidateMobile());
                 responses.add(response);
             }
