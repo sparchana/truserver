@@ -41,6 +41,10 @@ function resetPassword() {
 }
 
 $(window).load(function() {
+    if(window.location.href.indexOf('#signin') != -1) {
+        $('#partnerLoginModal').modal('show');
+    }
+
     $('html, body').css({
         'overflow': 'auto',
         'height': 'auto'

@@ -1,6 +1,5 @@
 package controllers.security;
 
-import controllers.routes;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -36,6 +35,6 @@ public class RecruiterSecured extends Security.Authenticator {
     public Result onUnauthorized(Http.Context ctx) {
         FlashSessionController.setFlashInSession(ctx.request().uri());
 
-        return redirect(routes.RecruiterController.recruiterIndex());
+        return redirect("/recruiter#signin");
     }
 }

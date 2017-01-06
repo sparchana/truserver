@@ -1,50 +1,39 @@
 package controllers.security;
 
-/**
- * Created by zero on 30/4/16.
- */
-
-import api.ServerConstants;
-import controllers.routes;
-import models.entity.Developer;
-import play.Logger;
-import play.mvc.Http.Context;
+import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 
 /**
- * Authenticator class for 'Support' role and above
+ * Created by zero on 7/1/17.
  */
 public class PartnerSecured extends Security.Authenticator {
 
     @Override
-    public String getUsername(Context ctx) {
-        String sessionId = ctx.session().get("sessionId");
-        if(sessionId != null) {
-            Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
+    public String getUsername(Http.Context ctx) {
 
-            if(developer != null ) {
-                if (developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN
-                    || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_ADMIN
-                    || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_REC
-                    || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE
-                    || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_PARTNER_ROLE)
-                {
-                    return ctx.session().get("sessionId");
-                }
-                else {
-                    Logger.warn("SECURITY WARNING: User " + developer.getDeveloperName() + " tried accessing " + ctx.request().uri());
-                    return null;
-                }
+        //Logger.info("dev session id in Secured Class is "+ctx.session().get("sessionId"));
+        /* TODO getSessionId and match it in auth table + separate partner from using this secured class, modify old partner secured class and make use of that for all partner api end-points */
+        /*
+        String sessionId = ctx.session().get("sessionId");
+        String candidateId = ctx.session().get("candidateId");
+        if(sessionId != null && !sessionId.isEmpty()){
+            Auth auth = Auth.find.where().eq("authSessionId", sessionId).findUnique();
+            if (auth != null && candidateId!=null && Long.parseLong(candidateId) == auth.getCandidateId()){
+                return ctx.session().get("sessionId");
             }
         }
-        return null;
+        */
+        if(ctx.session().get("sessionChannel") == null){
+            return null;
+        }
+        return ctx.session().get("sessionId");
     }
 
     @Override
-    public Result onUnauthorized(Context ctx) {
+    public Result onUnauthorized(Http.Context ctx) {
         FlashSessionController.setFlashInSession(ctx.request().uri());
 
-        return redirect(routes.Application.supportAuth());
+        return redirect("/partner#signin");
     }
 }
