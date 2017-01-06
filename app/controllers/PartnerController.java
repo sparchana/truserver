@@ -5,41 +5,28 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.CandidateSignUpResponse;
-import api.http.httpResponse.PartnerSignUpResponse;
-import api.http.httpResponse.SupportDashboardElementResponse;
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.RawSql;
-import com.avaje.ebean.RawSqlBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.SecuredUser;
+import controllers.security.FlashSessionController;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import models.entity.*;
 import models.entity.OM.JobApplication;
-import models.entity.OM.JobPostWorkflow;
 import models.entity.OM.PartnerToCandidate;
-import models.entity.OM.PreScreenRequirement;
 import models.entity.Static.LeadSource;
 import models.entity.Static.PartnerType;
-import models.util.SmsUtil;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;
 
 import static play.mvc.Controller.request;
@@ -55,6 +42,12 @@ public class PartnerController {
     public static Result partnerIndex() {
         String sessionId = session().get("partnerId");
         if(sessionId != null){
+
+            // if flash is available, redirect there
+            if(!FlashSessionController.isEmpty()){
+                return redirect(FlashSessionController.getFlashFromSession());
+            }
+
             return redirect("/partner/home");
         }
         return ok(views.html.Partner.partner_index.render());
@@ -306,7 +299,8 @@ public class PartnerController {
     }
 
     public static Result logoutPartner() {
-        session().clear();
+        FlashSessionController.clearSessionExceptFlash();
+
         Logger.info("Partner Logged Out");
         return ok(views.html.Partner.partner_index.render());
     }

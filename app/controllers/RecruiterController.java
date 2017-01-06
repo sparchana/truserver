@@ -12,13 +12,12 @@ import api.http.httpResponse.CandidateWorkflowData;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import controllers.security.RecruiterSecured;
-import controllers.security.SecuredUser;
+import controllers.security.FlashSessionController;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import models.entity.JobPost;
@@ -28,14 +27,11 @@ import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
-import org.apache.commons.logging.Log;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
@@ -53,6 +49,9 @@ public class RecruiterController {
     public static Result recruiterIndex() {
         String sessionId = session().get("recruiterId");
         if(sessionId != null){
+            if(!FlashSessionController.isEmpty()){
+                return redirect(FlashSessionController.getFlashFromSession());
+            }
                 return redirect("/recruiter/home");
         }
         return ok(views.html.Recruiter.recruiter_index.render());
@@ -60,11 +59,15 @@ public class RecruiterController {
 
     @Security.Authenticated(RecruiterSecured.class)
     public static Result recruiterHome() {
+        /* Adding it here, assuming , login always redirect to home first */
+        if(!FlashSessionController.isEmpty()){
+            return redirect(FlashSessionController.getFlashFromSession());
+        }
         return ok(views.html.Recruiter.recruiter_home.render());
     }
 
     public static Result logoutRecruiter() {
-        session().clear();
+        FlashSessionController.clearSessionExceptFlash();
         Logger.info("Recruiter Logged Out");
         return ok(views.html.Recruiter.recruiter_index.render());
     }

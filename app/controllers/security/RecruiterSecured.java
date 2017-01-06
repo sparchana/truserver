@@ -25,6 +25,7 @@ public class RecruiterSecured extends Security.Authenticator {
             }
         }
         */
+
         if(ctx.session().get("sessionChannel") == null) {
             return null;
         }
@@ -33,6 +34,8 @@ public class RecruiterSecured extends Security.Authenticator {
 
     @Override
     public Result onUnauthorized(Http.Context ctx) {
+        FlashSessionController.setFlashInSession(ctx.request().uri());
+
         return redirect(routes.RecruiterController.recruiterIndex());
     }
 }
