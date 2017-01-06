@@ -34,8 +34,7 @@ public class CandidateDAO {
                 InteractionConstants.INTERACTION_TYPE_CANDIDATE_PROFILE_CREATED + ")" +
                 " and objectatype = " + ServerConstants.OBJECT_TYPE_CANDIDATE +
                 " and date(creationtimestamp) > curdate()-" + days ;
-
-        Logger.info(candidateQueryBuilder);
+        
         RawSql rawSql = RawSqlBuilder.parse(candidateQueryBuilder)
                 .columnMapping("objectauuid", "objectAUUId")
                 .create();

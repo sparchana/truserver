@@ -91,15 +91,15 @@ public class SchedulerManager implements Runnable {
 
         createAadhaarVerificationEvent(aadhaarVerificationDelay);
 
-//        createStartOfTheDayJobPostEvent(jobPostInfoDelay);
+        createStartOfTheDayJobPostEvent(jobPostInfoDelay);
 
-//        createEndOfTheDayJobPostEvent(eodJobPostInfoDelay);
+        createEndOfTheDayJobPostEvent(eodJobPostInfoDelay);
 
-//        createEODRateUsPostInterviewEvent(rateUsPostInterviewDelay);
+        createEODRateUsPostInterviewEvent(rateUsPostInterviewDelay);
 
-//        createWeeklyAlertEvent(weeklyCandidateAlertTaskDelay);
+        createWeeklyAlertEvent(weeklyCandidateAlertTaskDelay);
 
-//        createWeeklyProfileCompletionEvent(weeklyProfileCompletionTaskDelay);
+        createWeeklyProfileCompletionEvent(weeklyProfileCompletionTaskDelay);
 
     }
 

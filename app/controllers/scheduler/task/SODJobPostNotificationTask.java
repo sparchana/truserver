@@ -6,6 +6,7 @@ import controllers.businessLogic.JobService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerConstants;
 import controllers.scheduler.SchedulerManager;
+import dao.JobPostDAO;
 import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.scheduler.SchedulerStats;
@@ -181,7 +182,7 @@ public class SODJobPostNotificationTask extends TimerTask {
             // fetch all the jobPost whose recruiter has interview credits
             Logger.info("Starting SOD notify matching candidates..");
 
-            sendJobPostAlert(JobService.getAllJobPostWithRecruitersWithInterviewCredits());
+            sendJobPostAlert(JobPostDAO.getAllJobPostWithRecruitersWithInterviewCredits());
         }
     }
 }

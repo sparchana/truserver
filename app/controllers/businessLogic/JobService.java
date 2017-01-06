@@ -146,16 +146,12 @@ public class JobService {
             //send email to recruiter
             sendRecruiterJobPostLiveEmail(existingJobPost.getRecruiterProfile(), existingJobPost);
 
-            //TODO uncomment this when we want to start notifying candidates about the job post
-/*
             //send sms to all the matching candidate
             JobPost jobPost = existingJobPost;
 
             new Thread(() -> {
                 sendSmsToCandidateMatchingWithJobPost(jobPost);
             }).start();
-*/
-
 
         }
 
@@ -1139,23 +1135,6 @@ public class JobService {
             jobPostToLocalityList.add(jobPostToLocality);
         }
         return jobPostToLocalityList;
-    }
-
-    public static List<JobPost> getAllJobPostWithRecruitersWithInterviewCredits() {
-        List<JobPost> jobPostListToReturn = new ArrayList<>();
-
-        List<JobPost> jobPostList = JobPost.find.where()
-                .isNotNull("JobRecruiterId")
-                .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
-                .eq("Source", ServerConstants.SOURCE_INTERNAL)
-                .findList();
-
-        for(JobPost j: jobPostList){
-            if(j.getRecruiterProfile().totalInterviewCredits() > 0){
-                jobPostListToReturn.add(j);
-            }
-        }
-        return jobPostListToReturn;
     }
 
     public static void sendSmsToCandidateMatchingWithJobPost(JobPost jobPost){

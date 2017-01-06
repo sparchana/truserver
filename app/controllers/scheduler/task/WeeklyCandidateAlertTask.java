@@ -150,7 +150,7 @@ public class WeeklyCandidateAlertTask extends TimerTask {
 
         SchedulerStats schedulerStats = SchedulerStats.find.where()
                 .eq("schedulerType.schedulerTypeId", SCHEDULER_TYPE_SMS)
-                .eq("schedulerSubType.schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_NOTIFY_NEARBY_JOBS)
+                .eq("schedulerSubType.schedulerSubTypeId", SCHEDULER_SUB_TYPE_CANDIDATE_APP_DOWNLOAD)
                 .orderBy().desc("startTimestamp").setMaxRows(1).findUnique();
 
         Calendar cal = Calendar.getInstance();
@@ -177,7 +177,8 @@ public class WeeklyCandidateAlertTask extends TimerTask {
             List<Candidate> candidateList = CandidateDAO.getCandidateWithoutAndroidApp();
             Collections.shuffle(candidateList);
 
-            //sendAppDownloadSmsToCandidate(candidateList);
+            //weekly task to notify no. candidates to download android app
+            sendAppDownloadSmsToCandidate(candidateList);
 
             //weekly task to notify no. of matching jobs to the candidate
             sendSmsToCandidateToNotifyNearbyJobs(SchedulerConstants.CANDIDATE_ALERT_TASK_LAST_ACTIVE_DEFAULT_DAYS);
