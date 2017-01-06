@@ -164,9 +164,7 @@
             renderTextSearch: function () {
                 var input = $("#searchText");
                 var numberOfKeywords = input.val().split(",");
-                if((input.val() == null || input.val().length < 3) ){
-                    return;
-                }
+
                 if(app.suggestion == null){
                     app.suggestion = new Awesomplete('input[data-multiple]', {
                         minChars: 1,
@@ -180,6 +178,11 @@
                             this.input.value = before + text + ", ";
                         }
                     });
+                }
+                $('.awesomplete').css('width', '100%');
+
+                if((input.val() == null || input.val().length < 3) ){
+                    return;
                 }
 
                 $.ajax({
@@ -198,7 +201,6 @@
                         // when no suggestions are returned. do something here...
                     }
                 });
-                $('.awesomplete').css('width', '100%')
             }
         },
         // action perform methods

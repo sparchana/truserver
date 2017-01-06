@@ -19,14 +19,9 @@ this css make sure at the end the override are proper
 .jobApplyBtn2{
     border: none;
     color: white;
-    margin-top: 20%;
     border-radius: 4px;
     background: linear-gradient(to left, #00b638, #019b4b);
-    padding: 6%;
-    width: 120px;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
-}
-.jobApplyBtn2{
     margin-top: 1%;
     padding:1%;
     width: 50%;
@@ -61,7 +56,6 @@ this css make sure at the end the override are proper
 }
 #searchBarDivMain{
     background-color: #fff;
-    padding:1%;
     border-radius: 2px;
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16),0 0 0 1px rgba(0,0,0,0.08);
     transition: box-shadow 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
@@ -251,13 +245,6 @@ input[type=text]:focus:not([readonly]){
 }
 #searchBarOuterMainCol{
     margin-top: 4%;
-}
-/*temp fixes for search page*/
-nav ul li{
-    float: none;
-}
-#tempFix{
-    width: 100%;
 }
 
 @media screen and (max-width: 768px) {

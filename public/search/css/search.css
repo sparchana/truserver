@@ -1,0 +1,10 @@
+@media screen and (max-width: 768px) {
+    /*temp fixes for search page*/
+    nav ul li {
+        float: none;
+    }
+
+    #tempFix {
+        width: 100%;
+    }
+}
