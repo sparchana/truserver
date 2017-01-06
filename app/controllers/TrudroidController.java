@@ -344,8 +344,14 @@ public class TrudroidController {
             jobPostBuilder.setJobPostCompanyLogo(jobPost.getCompany().getCompanyLogo());
 
             ExperienceObject.Builder experienceBuilder = ExperienceObject.newBuilder();
-            experienceBuilder.setExperienceId(jobPost.getJobPostExperience().getExperienceId());
-            experienceBuilder.setExperienceType(jobPost.getJobPostExperience().getExperienceType());
+            if(jobPost.getJobPostExperience() != null){
+                experienceBuilder.setExperienceId(jobPost.getJobPostExperience().getExperienceId());
+                experienceBuilder.setExperienceType(jobPost.getJobPostExperience().getExperienceType());
+            } else {
+                /* override experience when its null */
+                experienceBuilder.setExperienceType("Not specified ");
+            }
+
             jobPostBuilder.setJobPostExperience(experienceBuilder);
 
             if (jobPost.getJobPostShift() != null) {
