@@ -549,7 +549,7 @@ function processDataAllJobPosts(returnedData) {
 
                 var expDiv = document.createElement("div");
                 expDiv.style = "display: inline-block; font-size: 14px";
-                expDiv.textContent = "Exp: " + jobPost.jobPostExperience.experienceType;
+                expDiv.textContent = validateExperience(jobPost.jobPostExperience);
                 jobBodySubRowColExp.appendChild(expDiv);
 
                 //!*  Location  *!/
@@ -1338,6 +1338,14 @@ function processDataForJobPostLocation(returnedData) {
     // } else{
     //     $('#interviewSection').hide();
     // }
+}
+
+function validateExperience(jobPostExperience) {
+    if(jobPostExperience == null){
+        return "Exp: Not Specified";
+    } else {
+        return "Exp: " + jobPostExperience.experienceType;
+    }
 }
 
 function getDayVal(month){
