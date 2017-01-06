@@ -57,7 +57,7 @@ function computeCreditValue() {
 
         if(parseInt($("#candidateContactCredits").val()) < availableInterviewCredits){
             candidateCreditTypeStatus = 0;
-            notifyError("Contact credits should be greater than 0")
+            notifyError("Contact credits should be greater than existing credits")
         } else{
             contactCredits = parseInt($("#candidateContactCredits").val());
             $("#addCreditInfoDiv").show();
@@ -69,7 +69,7 @@ function computeCreditValue() {
 
         if(parseInt($("#interviewCredits").val()) < availableInterviewCredits){
             interviewCreditTypeStatus = 0;
-            notifyError("Interview credits should be greater");
+            notifyError("Interview credits should be greater than existing credits");
         } else{
             interviewCredits = parseInt($("#interviewCredits").val());
             $("#addCreditInfoDiv").show();
@@ -85,13 +85,16 @@ function computeCreditValue() {
 function computeNewCreditValue() {
     var checkStatus = 1;
 
+    if(availableCredits > 0){
+        availableCredits = availableCredits * (-1);
+    }
     if($("#recruiterAddCredit").val() == ""){
         checkStatus = 0;
         notifyError("Please enter a value")
 
     } else if(parseInt($("#recruiterAddCredit").val()) < -(availableCredits)){
         checkStatus = 0;
-        notifyError("Contact credits should be greater than 0")
+        notifyError("Credits should be greater than available credits")
     }
     if(checkStatus == 1){
         var d = {
