@@ -376,7 +376,11 @@ public class PartnerController {
     public static Result getCandidateMatchingJobs(long id) {
         Candidate existingCandidate = Candidate.find.where().eq("candidateId", id).findUnique();
         if(existingCandidate != null){
-            return ok(toJson(JobSearchService.getAllJobsForCandidate(FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()))));
+            List<JobPost> matchingJobList = JobSearchService
+                    .getAllJobsForCandidate(FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()));
+
+            SearchJobService.computeCTA(matchingJobList, id);
+            return ok(toJson(matchingJobList));
         }
         return ok("ok");
     }

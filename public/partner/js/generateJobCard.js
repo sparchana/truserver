@@ -942,9 +942,11 @@ function prePopulateJobSection(jobApplication) {
             titleRowTwo.appendChild(divAppliedDate);
         }
 
+/*
         var appliedJob = $("#apply_btn_" + jobPost.jobPost.jobPostId);
         appliedJob.addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
         appliedJob.attr('onclick','').unbind('click');
+*/
     });
 
     $("#myAppliedJobsPendingConfirmation").hide();
@@ -1146,6 +1148,20 @@ function processDataAllJobPosts(returnedData) {
         //returnedData.reverse();
         createAndAppendDivider("Popular Jobs");
         var isDividerPresent = false;
+
+        var nextMonday = new Date();
+        nextMonday.setDate(nextMonday.getDate() + (1 + 7 - nextMonday.getDay()) % 7);
+
+        var day = nextMonday.getDate();
+        if(day < 10){
+            day = "0" + day;
+        }
+
+        var month = nextMonday.getMonth() + 1;
+        if(month < 10){
+            month = "0" + month;
+        }
+
         returnedData.forEach(function (jobPost){
             count++;
             if(count){
@@ -1410,7 +1426,7 @@ function processDataAllJobPosts(returnedData) {
                     joiningIncentiveVal.className = "incentiveBody";
                 }
                 incentiveIconDiv.appendChild(joiningIncentiveVal);
-                
+
                 //!*  apply button *!/
                 var applyBtnDiv = document.createElement("div");
                 applyBtnDiv.className = "col-sm-2";
@@ -1420,14 +1436,36 @@ function processDataAllJobPosts(returnedData) {
                 var applyBtn = document.createElement("div");
                 applyBtn.className = "jobApplyBtn";
                 applyBtn.id = "apply_btn_" + jobPost.jobPostId;
-                applyBtn.textContent = "Apply";
+                var applyJobText ;
+
+                if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != CTA_BTN_APPLY){
+                    if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_REQUIRED) {
+                        applyJobText = "Book Interview";
+                    } else if(jobPost.applyBtnStatus == CTA_BTN_ALREADY_APPLIED) {
+                        applyJobText = "Applied";
+                        applyBtn.disabled =  true;
+                        applyBtn.style = "cursor: default; background: #ffa726";
+                    } else if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_CLOSED) {
+                        applyJobText = "Application closed";
+                        applyBtn.disabled =  true;
+                        applyBtn.style = "cursor: default; background: #ffa726";
+                    }
+                } else {
+                    applyJobText = "Apply";
+                }
+
+                applyBtn.textContent = applyJobText;
                 applyBtnDiv.appendChild(applyBtn);
-                applyBtn.onclick = function () {
-                    $('#jobApplyConfirm').modal();
-                    jobPostId = jobPost.jobPostId;
-                    jobLocalityArray = [];
-                    addLocalitiesToModal(jobPostId);
-                };
+                if(jobPost.applyBtnStatus != CTA_BTN_ALREADY_APPLIED
+                    && jobPost.applyBtnStatus != CTA_BTN_INTERVIEW_CLOSED){
+
+                    applyBtn.onclick = function () {
+                        $('#jobApplyConfirm').modal();
+                        jobPostId = jobPost.jobPostId;
+                        jobLocalityArray = [];
+                        addLocalitiesToModal(jobPostId);
+                    };
+                }
 
                 var infoBtn = document.createElement("div");
                 infoBtn.className = "jobInfoBtn";
@@ -1442,6 +1480,15 @@ function processDataAllJobPosts(returnedData) {
                         $(this).text('Hide Info');
                     }
                 };
+
+                var helpText = document.createElement("div");
+                if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_CLOSED) {
+                    helpText.textContent = "Will reopen on " + day + "-" + month + "-" + nextMonday.getFullYear();
+                }
+
+                helpText.style = "font-size: 11px";
+                applyBtnDiv.appendChild(helpText);
+
 
                 // job post info view
                 var jobDetailDiv = document.createElement("div");
@@ -1615,7 +1662,7 @@ function processDataAllJobPosts(returnedData) {
 
                 //second line of details
                 var jobPostIncentive = document.createElement("div");
-                jobPostIncentive.style = "display : inline-block; margin: 6px 4px 6px 4px";
+                jobPostIncentive.style = "display : inline-block; margin: 6px 12px 6px 18px";
                 jobDetailDiv.appendChild(jobPostIncentive);
 
                 var jobPostIncentiveIcon = document.createElement("img");
@@ -1645,7 +1692,7 @@ function processDataAllJobPosts(returnedData) {
 
                 //Third line of details
                 var jobPostMinimumRequirement = document.createElement("div");
-                jobPostMinimumRequirement.style = "display : inline-block; margin: 6px 4px 6px 4px";
+                jobPostMinimumRequirement.style = "display : inline-block; margin: 6px 12px 6px 18px";
                 jobDetailDiv.appendChild(jobPostMinimumRequirement);
 
                 var jobPostMinimumRequirementIcon = document.createElement("img");
@@ -1675,7 +1722,7 @@ function processDataAllJobPosts(returnedData) {
 
                 //Job Description
                 var jobPostDescription = document.createElement("div");
-                jobPostDescription.style = "display : inline-block; margin: 6px 4px 6px 4px";
+                jobPostDescription.style = "display : inline-block; margin: 6px 12px 6px 18px";
                 jobDetailDiv.appendChild(jobPostDescription);
 
                 var jobPostDescriptionIcon = document.createElement("img");
@@ -1793,7 +1840,7 @@ function processDataAllJobPosts(returnedData) {
 
                 //Job Description
                 var companyDescription = document.createElement("div");
-                companyDescription.style = "display : inline-block; margin: 6px 4px 6px 4px";
+                companyDescription.style = "display : inline-block; margin: 6px 12px 6px 18px";
                 jobDetailDiv.appendChild(companyDescription);
 
                 var companyDescriptionIcon = document.createElement("img");

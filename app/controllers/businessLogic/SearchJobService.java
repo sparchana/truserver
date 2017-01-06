@@ -314,7 +314,7 @@ public class SearchJobService {
      * @param jobPostList
      * @return
      */
-    public void computeCTA(List<JobPost> jobPostList, Long candidateId){
+    public static void computeCTA(List<JobPost> jobPostList, Long candidateId){
 
         List<Long> jobPostIdList = new ArrayList<>();
         Map<Long, JobPostWorkflow> jobApplicationMap = new HashMap<>();
