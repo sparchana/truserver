@@ -4,6 +4,8 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 
+import static play.mvc.Controller.session;
+
 /**
  * Created by zero on 7/1/17.
  */
@@ -32,6 +34,9 @@ public class PartnerSecured extends Security.Authenticator {
 
     @Override
     public Result onUnauthorized(Http.Context ctx) {
+        // on Unauthorized access clear prev session data
+        session().clear();
+
         FlashSessionController.setFlashInSession(ctx.request().uri());
 
         return redirect("/partner#signin");

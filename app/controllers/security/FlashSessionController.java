@@ -31,18 +31,12 @@ public class FlashSessionController {
      * flash should be store for only one request
      */
     public static void setFlashInSession(String url) {
-        Logger.info("set flash");
-
-        if(flashPeek() != null){
-            removeFlash();
-        } else {
-            if (url != null) {
-                /* TODO find a better way to avoid adding non page rendering api to flash memory*/
+        if (url != null) {
+                /* TODO find a better way to avoid adding 'non page rendering' api to flash memory*/
                 /* since most of api don't render pages, they need not be saved for redirection */
-                if(!url.toLowerCase().contains("get")){
-                    session().put("flash", url);
-                    Logger.info("set flash done");
-                }
+            if (!(url.toLowerCase().startsWith("/get")) && !url.toLowerCase().contains("/api/")) {
+                session().put("flash", url);
+                Logger.info("flash set");
             }
         }
     }
