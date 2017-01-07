@@ -376,6 +376,7 @@ public class Application extends Controller {
 
         if (companyLogo != null) {
             String fileName = companyLogo.getFilename();
+            Logger.info(fileName + " ------");
 
             File file = (File) companyLogo.getFile();
             Logger.info("uploaded! " + fileName);
@@ -556,7 +557,6 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    @Security.Authenticated(RecSecured.class)
     public static Result getCompanyInfo(long companyId) {
         Company company = Company.find.where().eq("companyId", companyId).findUnique();
         if(company!=null){

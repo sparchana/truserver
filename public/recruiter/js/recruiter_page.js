@@ -150,7 +150,6 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-
 });
 
 $(window).load(function() {
