@@ -217,6 +217,7 @@ public class RecruiterController {
         return ok("-1");
     }
 
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result getAllJobApplicants(long jobPostId) {
         JobPost jobPost = JobPostDAO.findById(jobPostId);
         if(jobPost != null){
@@ -247,6 +248,7 @@ public class RecruiterController {
         return ok("0");
     }
 
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result getAllRecruiterJobPosts() {
         if(session().get("recruiterId") != null){
 
@@ -567,6 +569,7 @@ public class RecruiterController {
         return ok(toJson(JobService.addJobPost(addJobPostRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE)));
     }
 
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result renderAllRecruiterJobPosts() {
         return ok(views.html.Recruiter.recruiter_my_jobs.render());
     }
@@ -608,6 +611,7 @@ public class RecruiterController {
         return JobPostWorkflowEngine.updateInterviewStatus(interviewStatusRequest, InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE);
     }
 
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result getTodayInterviewDetails() {
         JsonNode req = request().body().asJson();
 
@@ -622,6 +626,7 @@ public class RecruiterController {
         return ok(toJson(JobPostWorkflowEngine.getTodaysInterviewDetails(interviewTodayRequest)));
     }
 
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result getPendingCandidateApproval() {
         JsonNode req = request().body().asJson();
 
@@ -678,10 +683,12 @@ public class RecruiterController {
         }
     }
 
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result renderAllApplications(long id) {
         return ok(views.html.Recruiter.recruiter_applied_candidates.render());
     }
 
+    @Security.Authenticated(RecruiterSecured.class)
     public static Result renderAllUnlockedCandidates() {
         return ok(views.html.Recruiter.recruiter_unlocked_candidate.render());
     }
