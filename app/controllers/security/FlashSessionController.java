@@ -1,10 +1,9 @@
 package controllers.security;
 
 import play.Logger;
-import play.mvc.Result;
+import play.mvc.Http;
 
 import static play.mvc.Controller.session;
-import static play.mvc.Results.redirect;
 
 /**
  * Created by zero on 5/1/17.
@@ -29,6 +28,8 @@ public class FlashSessionController {
      * put method overrides flash value
      *
      * flash should be store for only one request
+     *
+     * pass onto this method only after checking if the req is non ajax req
      */
     public static void setFlashInSession(String url) {
         if (url != null) {
@@ -62,13 +63,9 @@ public class FlashSessionController {
         }
     }
 
-    public static Result flashRedirect(){
-
-        return redirect(getFlashFromSession());
-    }
-
-    public static void removeFlash(){
-        Logger.info("flash removed");
-        session().remove("flash");
+    public static boolean isRequestAjax(Http.Request request){
+        boolean ajax = "XMLHttpRequest".equals(
+                request.getHeader("X-Requested-With"));
+        return ajax;
     }
 }

@@ -38,7 +38,10 @@ public class SecuredUser extends Security.Authenticator {
         // on Unauthorized access clear prev session data
         session().clear();
 
-        FlashSessionController.setFlashInSession(ctx.request().uri());
+        // set flash for all non ajax call only
+        if (!FlashSessionController.isRequestAjax(ctx.request())) {
+            FlashSessionController.setFlashInSession(ctx.request().uri());
+        }
 
         return redirect("/#signin");
     }
