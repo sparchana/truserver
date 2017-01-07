@@ -116,9 +116,11 @@ public class RecruiterService {
         String objectAUUId = "";
         Integer interactionType;
         recruiterSignUpResponse.setRecruiterMobile(recruiterSignUpRequest.getRecruiterMobile());
+
         if(recruiterProfile == null) {
+
             //checking if company exists or not
-            Company existingCompany = Company.find.where().eq("companyName", recruiterSignUpRequest.getRecruiterCompany()).findUnique();
+            Company existingCompany = Company.find.where().eq("companyId", recruiterSignUpRequest.getRecruiterCompany()).findUnique();
             if(existingCompany == null) {
                 AddCompanyResponse addCompanyResponse;
                 AddCompanyRequest addCompanyRequest = new AddCompanyRequest();

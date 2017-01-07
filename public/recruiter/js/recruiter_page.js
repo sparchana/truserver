@@ -4,6 +4,7 @@
 
 var localityArray = [];
 var jobArray = [];
+var companyArray = [];
 
 function getLocality(){
     return localityArray;
@@ -64,6 +65,20 @@ function processDataCheckJobs(returnedData) {
         $('#jobRoleOptionModal').append(option);
     });
 }
+
+function processDataCompany(returnedData) {
+    returnedData.forEach(function(company) {
+        var id = company.companyId;
+        var name = company.companyName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        companyArray.push(item);
+        var option = $('<option value=' + id + '></option>').text(name);
+        $('#rec_company').append(option);
+    });
+}
+
 ///modal
 $(document).ready(function(){
     $('select').material_select();
@@ -122,4 +137,18 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/getAllCompany",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataCompany
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
 });

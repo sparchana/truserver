@@ -980,7 +980,6 @@ public class Application extends Controller {
         return ok(toJson(new RejectReasonDAO().getByType(ServerConstants.INTERVIEW_NOT_SELECED_TYPE_REASON)));
     }
 
-    @Security.Authenticated(RecSecured.class)
     public static Result getAllCompany() {
         List<Company> companyList = Company.find.where().orderBy("companyName").findList();
         return ok(toJson(companyList));
