@@ -263,9 +263,6 @@ input[type=text]:focus:not([readonly]){
     background-color: #fff;
     border-bottom: 1px solid #ddd;
 }
-.collapse.in{
-    background: rgba(251,251,251,1);
-}
 input[type="checkbox"]{
     margin: 8px 10px 0 0;
     background: transparent;
