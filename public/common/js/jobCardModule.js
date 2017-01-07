@@ -131,7 +131,7 @@ var cardModule = (function ($) {
 
                     var subDivHint = document.createElement("div");
                     subDivHint.className = "row";
-                    subDivHint.style= "display: inline-block;margin:0 0 0 30px;color: #9f9f9f;font-size: 12px;";
+                    subDivHint.id = "hintTextProp";
                     subDivHint.textContent = "Salary";
                     bodyCol.appendChild(subDivHint);
 
@@ -142,7 +142,7 @@ var cardModule = (function ($) {
 
                     var salaryIconDiv = document.createElement("div");
                     salaryIconDiv.className="col-xs-2";
-                    salaryIconDiv.style = "padding-right:0;margin-top:-2px";
+                    salaryIconDiv.id="iconsProp";
                     subRowForData.appendChild(salaryIconDiv);
 
                     var salaryIcon = document.createElement("img");
@@ -152,7 +152,7 @@ var cardModule = (function ($) {
 
                     var salaryDataDiv = document.createElement("div");
                     salaryDataDiv.className="col-xs-10";
-                    salaryDataDiv.style="padding:0;margin-left:-2px";
+                    salaryDataDiv.id="textContentProp";
                     subRowForData.appendChild(salaryDataDiv);
 
                     var salaryDiv = document.createElement("div");
@@ -173,7 +173,7 @@ var cardModule = (function ($) {
 
                     var subDivHint = document.createElement("div");
                     subDivHint.className = "row";
-                    subDivHint.style= "display: inline-block;margin:0 0 0 30px;color: #9f9f9f;font-size: 12px;";
+                    subDivHint.id = "hintTextProp";
                     subDivHint.textContent = "Experience";
                     bodyCol.appendChild(subDivHint);
 
@@ -184,7 +184,7 @@ var cardModule = (function ($) {
 
                     var expIconDiv = document.createElement("div");
                     expIconDiv.className="col-xs-2";
-                    expIconDiv.style = "padding-right:0;margin-top:-2px";
+                    expIconDiv.id="iconsProp";
                     subRowForData.appendChild(expIconDiv);
 
                     var expIcon = document.createElement("img");
@@ -194,7 +194,7 @@ var cardModule = (function ($) {
 
                     var expDataDiv = document.createElement("div");
                     expDataDiv.className="col-xs-10";
-                    expDataDiv.style="padding:0;margin-left:-2px";
+                    expDataDiv.id="textContentProp";
                     subRowForData.appendChild(expDataDiv);
 
                     var expDiv = document.createElement("div");
@@ -211,7 +211,7 @@ var cardModule = (function ($) {
 
                     var subDivHint = document.createElement("div");
                     subDivHint.className = "row";
-                    subDivHint.style= "display: inline-block;margin:0 0 0 30px;color: #9f9f9f;font-size: 12px;";
+                    subDivHint.id = "hintTextProp";
                     subDivHint.textContent = "Gender";
                     genderCol.appendChild(subDivHint);
 
@@ -222,7 +222,7 @@ var cardModule = (function ($) {
 
                     var genderIconDiv = document.createElement("div");
                     genderIconDiv.className="col-xs-2";
-                    genderIconDiv.style = "padding-right:0;margin-top:-2px";
+                    genderIconDiv.id="iconsProp";
                     subRowForData.appendChild(genderIconDiv);
 
                     var genderIcon = document.createElement("img");
@@ -232,7 +232,7 @@ var cardModule = (function ($) {
 
                     var genderDataDiv = document.createElement("div");
                     genderDataDiv.className="col-xs-10";
-                    genderDataDiv.style="padding:0;margin-left:-2px";
+                    genderDataDiv.id="textContentProp";
                     subRowForData.appendChild(genderDataDiv);
 
                     var genderDiv = document.createElement("div");
@@ -249,7 +249,7 @@ var cardModule = (function ($) {
 
                     var subDivHint = document.createElement("div");
                     subDivHint.className = "row";
-                    subDivHint.style= "display: inline-block;margin:0 0 0 30px;color: #9f9f9f;font-size: 12px;";
+                    subDivHint.id = "hintTextProp";
                     subDivHint.textContent = "Education";
                     bodyColEdu.appendChild(subDivHint);
 
@@ -259,7 +259,7 @@ var cardModule = (function ($) {
                     bodyColEdu.appendChild(jobBodySubRowEdu);
 
                     var eduIconDiv = document.createElement("div");
-                    eduIconDiv.style = "padding-right:0;margin-top:-2px";
+                    eduIconDiv.id="iconsProp";
                     eduIconDiv.className = "col-xs-2";
                     jobBodySubRowEdu.appendChild(eduIconDiv);
 
@@ -270,7 +270,7 @@ var cardModule = (function ($) {
 
                     var eduDataDiv = document.createElement("div");
                     eduDataDiv.className="col-xs-10";
-                    eduDataDiv.style="padding:0;margin-left:-2px";
+                    eduDataDiv.id="textContentProp";
                     jobBodySubRowEdu.appendChild(eduDataDiv);
 
                     var EducationDiv = document.createElement("div");
@@ -287,7 +287,7 @@ var cardModule = (function ($) {
 
                     var subDivHint = document.createElement("div");
                     subDivHint.className = "row";
-                    subDivHint.style= "display: inline-block;margin:0 0 0 30px;color: #9f9f9f;font-size: 12px;";
+                    subDivHint.id = "hintTextProp";
                     subDivHint.textContent = "Max Age";
                     ageCol.appendChild(subDivHint);
 
@@ -298,7 +298,7 @@ var cardModule = (function ($) {
 
                     var ageIconDiv = document.createElement("div");
                     ageIconDiv.className="col-xs-2";
-                    ageIconDiv.style = "padding-right:0;margin-top:-2px";
+                    ageIconDiv.id="iconsProp";
                     subRowForData.appendChild(ageIconDiv);
 
                     var ageIcon = document.createElement("img");
@@ -308,12 +308,12 @@ var cardModule = (function ($) {
 
                     var ageDataDiv = document.createElement("div");
                     ageDataDiv.className="col-xs-10";
-                    ageDataDiv.style="padding:0;margin-left:-2px";
+                    ageDataDiv.id="textContentProp";
                     subRowForData.appendChild(ageDataDiv);
 
                     var ageDiv = document.createElement("div");
                     ageDiv.style = "display: inline-block";
-                    ageDiv.textContent = cardModule.validate.maxAge(jobPost.jobPostMaxAge) + " yrs" ;
+                    ageDiv.textContent = cardModule.validate.maxAge(jobPost.jobPostMaxAge);
                     ageDataDiv.appendChild(ageDiv);
 
                     // Location div
@@ -325,7 +325,7 @@ var cardModule = (function ($) {
 
                     var subDivHint = document.createElement("div");
                     subDivHint.className = "row";
-                    subDivHint.style= "display: inline-block;margin:0 0 0 30px;color: #9f9f9f;font-size: 12px;";
+                    subDivHint.id = "hintTextProp";
                     subDivHint.textContent = "Location";
                     bodyColLocation.appendChild(subDivHint);
 
@@ -335,7 +335,7 @@ var cardModule = (function ($) {
                     bodyColLocation.appendChild(subRowForData);
 
                     var locationIconDiv = document.createElement("div");
-                    locationIconDiv.style = "padding-right:0;margin-top:-2px";
+                    locationIconDiv.id="iconsProp";
                     locationIconDiv.className = "col-xs-2";
                     subRowForData.appendChild(locationIconDiv);
 
@@ -346,7 +346,7 @@ var cardModule = (function ($) {
 
                     var locationDataDiv = document.createElement("div");
                     locationDataDiv.className="col-xs-10";
-                    locationDataDiv.style="padding:0;margin-left:-2px";
+                    locationDataDiv.id="textContentProp";
                     subRowForData.appendChild(locationDataDiv);
 
                     var jobRoleAddress = document.createElement("p");
@@ -396,6 +396,7 @@ var cardModule = (function ($) {
 
                     var applyBtnRow = document.createElement("div");
                     applyBtnRow.className = "row";
+                    applyBtnRow.style = "margin:0";
 
                     var reopenRow = document.createElement("div");
                     reopenRow.className = "row";
@@ -492,7 +493,7 @@ var cardModule = (function ($) {
                 if(education != null ){
                     return education.educationName;
                 } else {
-                    return "NA"
+                    return "Not Specified"
                 }
             },
             workShift: function (jobPostShift) {
@@ -510,13 +511,13 @@ var cardModule = (function ($) {
                 } else if (gender == 1){
                     return "Female";
                 }
-                return "";
+                return "Not Specified";
             },
             maxAge: function (age) {
                 if(age == null) {
-                    return "";
+                    return "Not Specified";
                 }  else {
-                    return age;
+                    return age+" yrs";
                 }
             },
             experience: function (jobPostExperience) {
