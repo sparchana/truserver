@@ -544,7 +544,9 @@ function processDataForHotJobPost(returnedData) {
              });
             $("#postedJobAssets").html(assetArray );
          }
-        if (returnedData.jobPostExperience.experienceType!= null && returnedData.jobPostExperience.experienceType!= "") {
+        if (returnedData.jobPostExperience!= null &&
+            returnedData.jobPostExperience.experienceType!= null
+            && returnedData.jobPostExperience.experienceType!= "") {
             $("#postedJobExperience").html(returnedData.jobPostExperience.experienceType);
         }
         if (returnedData.jobPostEducation != null && returnedData.jobPostEducation != "") {

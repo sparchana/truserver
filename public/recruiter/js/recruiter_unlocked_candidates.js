@@ -50,6 +50,8 @@ function processDataForUnlockedCandidates(returnedData) {
         $("#noCandidate").show();
         $("#candidateSection").hide();
     }
+    $("#loadingIcon").hide();
+
 }
 
 function checkRecruiterLogin() {

@@ -199,7 +199,7 @@ var cardModule = (function ($) {
 
                     var expDiv = document.createElement("div");
                     expDiv.style = "display: inline-block;";
-                    expDiv.textContent = jobPost.jobPostExperience.experienceType;
+                    expDiv.textContent = cardModule.validate.experience(jobPost.jobPostExperience);
                     expDataDiv.appendChild(expDiv);
 
                     // gender div
@@ -518,6 +518,13 @@ var cardModule = (function ($) {
                     return "Not Specified";
                 }  else {
                     return age+" yrs";
+                }
+            },
+            experience: function (jobPostExperience) {
+                if(jobPostExperience == null){
+                    return "NA";
+                } else {
+                    return jobPostExperience.experienceType;
                 }
             }
         },

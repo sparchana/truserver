@@ -60,7 +60,7 @@ public class TrudroidController {
             pseudoTestMessage.setTestName("Testing");
             pseudoTestMessage.setTestPage("Page 1");
 
-            testMessage = testMessage.parseFrom(Base64.decodeBase64(Base64.encodeBase64String(pseudoTestMessage.build().toByteArray())));
+            testMessage = TestMessage.parseFrom(Base64.decodeBase64(Base64.encodeBase64String(pseudoTestMessage.build().toByteArray())));
         } catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");
         }
@@ -88,15 +88,16 @@ public class TrudroidController {
                     loginRequest.getCandidateLoginPassword(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
 
 
+            loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(loginResponse.getStatus()));
             //TODO: to handle the new status in the new APK
             //since we have a new status in the web version stating no auth record but candidate exists, android doesn't have
             // hence we are setting status as 'no user' where the status is 'no auth'
             if(loginResponse.getStatus() == LoginResponse.STATUS_NO_PASSWORD){
                 loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(LoginResponse.STATUS_NO_USER));
-            } else{
             }
 
-            if (loginResponse.getStatus() == loginResponse.STATUS_SUCCESS) {
+            if (loginResponse.getStatus() == LoginResponse.STATUS_SUCCESS) {
+                loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(LoginResponse.STATUS_SUCCESS));
                 loginResponseBuilder.setCandidateFirstName(loginResponse.getCandidateFirstName());
                 if (loginResponse.getCandidateLastName() != null) {
                     loginResponseBuilder.setCandidateLastName(loginResponse.getCandidateLastName());
@@ -120,6 +121,7 @@ public class TrudroidController {
                     loginResponseBuilder.setCandidatePrefJobRoleIdTwo(loginResponse.getCandidatePrefJobRoleIdTwo());
                 if (loginResponse.getCandidatePrefJobRoleIdThree() != null)
                     loginResponseBuilder.setCandidatePrefJobRoleIdThree(loginResponse.getCandidatePrefJobRoleIdThree());
+
             }
 
             Logger.info("Status returned = " + loginResponseBuilder.getStatus());
@@ -177,7 +179,7 @@ public class TrudroidController {
                     pLoginRequest.getCandidatePassword(),
                     InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID
             );
-            if (candidateSignUpResponse.getStatus() == candidateSignUpResponse.STATUS_SUCCESS) {
+            if (candidateSignUpResponse.getStatus() == CandidateSignUpResponse.STATUS_SUCCESS) {
                 loginResponseBuilder.setCandidateFirstName(candidateSignUpResponse.getCandidateFirstName());
                 if (candidateSignUpResponse.getCandidateLastName() != null) {
                     loginResponseBuilder.setCandidateLastName(candidateSignUpResponse.getCandidateLastName());
@@ -344,8 +346,14 @@ public class TrudroidController {
             jobPostBuilder.setJobPostCompanyLogo(jobPost.getCompany().getCompanyLogo());
 
             ExperienceObject.Builder experienceBuilder = ExperienceObject.newBuilder();
-            experienceBuilder.setExperienceId(jobPost.getJobPostExperience().getExperienceId());
-            experienceBuilder.setExperienceType(jobPost.getJobPostExperience().getExperienceType());
+            if(jobPost.getJobPostExperience() != null){
+                experienceBuilder.setExperienceId(jobPost.getJobPostExperience().getExperienceId());
+                experienceBuilder.setExperienceType(jobPost.getJobPostExperience().getExperienceType());
+            } else {
+                /* override experience when its null */
+                experienceBuilder.setExperienceType("Not specified ");
+            }
+
             jobPostBuilder.setJobPostExperience(experienceBuilder);
 
             if (jobPost.getJobPostShift() != null) {
@@ -1878,6 +1886,14 @@ public class TrudroidController {
             if (updateCandidateDocumentRequest.getIdProofList().size() < 1) {
                 // nothing to update
                 responseBuilder.setStatus(GenericResponse.Status.SUCCESS);
+
+                // Even though the list is empty, prescreen has been attempted from app hence make entry to jpwf
+                // with prescreen completed status.
+                if (updateCandidateDocumentRequest.getIsFinalFragment()) {
+                    JobPostWorkflowEngine.savePreScreenResultForCandidateUpdate(candidate.getCandidateId(),
+                            updateCandidateDocumentRequest.getJobPostId(),
+                            InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
+                }
                 return ok(Base64.encodeBase64String(responseBuilder.build().toByteArray()));
             }
 

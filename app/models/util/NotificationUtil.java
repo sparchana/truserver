@@ -30,8 +30,6 @@ public class NotificationUtil {
                 ". Congratulations!";
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(msg, "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_COMPLETED);
-        } else{
-            Logger.info("Token not available");
         }
     }
 
@@ -39,8 +37,6 @@ public class NotificationUtil {
         String msg = "Hi " + candidate.getCandidateFirstName() + "! You were not selected for the job: " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName();
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(msg, "Interview Rejected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_COMPLETED);
-        } else{
-            Logger.info("Token not available");
         }
     }
 
@@ -58,8 +54,6 @@ public class NotificationUtil {
 
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(msg, "Interview Confirmed", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
-        } else{
-            Logger.info("Token not available");
         }
     }
 
@@ -77,8 +71,6 @@ public class NotificationUtil {
 
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(msg, "Interview Rescheduled", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
-        } else{
-            Logger.info("Token not available");
         }
     }
 
@@ -88,8 +80,6 @@ public class NotificationUtil {
 
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(msg, "Application not shortlisted", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
-        } else{
-            Logger.info("Token not available");
         }
     }
 
@@ -99,23 +89,29 @@ public class NotificationUtil {
 
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(msg, "Application Shortlisted", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
-        } else{
-            Logger.info("Token not available");
         }
     }
 
     public static void sendJobApplicationNotification(Candidate candidate, String jobTitle, String company, String prescreenLocation) {
-        String msg = "You have initiated your application for " + jobTitle + " job at " + company + " @" + prescreenLocation + ". Your application is under review " +
-                "and you will get a notification once the recruiter shortlists you for interview.";
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("You have initiated your application for "  + jobTitle + " ");
+
+        if(company != null) {
+            stringBuilder.append("at " + company + " ");
+        }
+        if(prescreenLocation != null){
+            stringBuilder.append("@ " + prescreenLocation);
+        }
+
+        stringBuilder.append(". Your application is under review " +
+                "and you will get a notification once the recruiter shortlists you for interview.");
 
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "Job Application Initiated!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
-        } else{
-            Logger.info("Token not available");
+            addFcmToNotificationQueue(stringBuilder.toString(), "Job Application Initiated!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
         }
     }
 
-    public static void sendJobPostNotificationToCandidateRecHasCredits(JobPost jobPost, Candidate candidate) {
+    public static void sendJobAlertNotificationToCandidate(JobPost jobPost, Candidate candidate, Boolean hasCredit) {
         String jobLocalities = "";
         String salary;
         if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
@@ -130,74 +126,49 @@ public class NotificationUtil {
             }
         }
         String msg = jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
-                jobLocalities.substring(0, jobLocalities.length() - 2) + ". Book your interview at www.trujobs.in or download app at bit.ly/trujobsapp";
+                jobLocalities.substring(0, jobLocalities.length() - 2) + ".";
+
+        String notificationTitle;
+        if(hasCredit){
+            msg += " Book interview at www.trujobs.in or download app at bit.ly/trujobsapp";
+            notificationTitle = "Book interviews Today!";
+        } else{
+            msg += " Apply now at www.trujobs.in or download app at bit.ly/trujobsapp";
+            notificationTitle = "New Job Alert!";
+        }
 
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "New Job Alert!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
-        } else{
-            Logger.info("Token not available");
-        }
-
-    }
-
-    public static void sendJobPostNotificationToCandidateRecHasNoCredits(JobPost jobPost, Candidate candidate) {
-        String jobLocalities = "";
-        String salary;
-        if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
-            salary = jobPost.getJobPostMinSalary() + " - " + jobPost.getJobPostMaxSalary();
-        } else {
-            salary = String.valueOf(jobPost.getJobPostMinSalary());
-        }
-
-        if(jobPost.getJobPostToLocalityList() != null){
-            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
-                jobLocalities += jobPostToLocality.getLocality().getLocalityName() + ", ";
-            }
-        }
-        String msg = jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
-                jobLocalities.substring(0, jobLocalities.length() - 2) + ". Apply now at www.trujobs.in or download app at bit.ly/trujobsapp";
-
-        if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "New Job Alert!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
-        } else{
-            Logger.info("Token not available");
+            addFcmToNotificationQueue(msg, notificationTitle, candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
         }
     }
 
-    public static void sendSODNotificationToCandidateRecHasCredits(JobPost jobPost, Candidate candidate) {
-        String jobLocalities = "";
-        String salary;
-        if(jobPost.getJobPostMaxSalary() != null || jobPost.getJobPostMaxSalary() != 0){
-            salary = jobPost.getJobPostMinSalary() + " - " + jobPost.getJobPostMaxSalary();
-        } else {
-            salary = String.valueOf(jobPost.getJobPostMinSalary());
-        }
-
-        if(jobPost.getJobPostToLocalityList() != null){
-            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
-                jobLocalities += jobPostToLocality.getLocality().getLocalityName() + ", ";
-            }
-        }
-        String msg = jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
-                jobLocalities.substring(0, jobLocalities.length() - 2) + ". Book your interview at www.trujobs.in or download app at bit.ly/trujobsapp";
-
-        if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "Book interviews Today!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
-        } else{
-            Logger.info("Token not available");
-        }
-    }
-
-    public static void sendEODNotificationToCandidatePostInterview(JobPost jobPost, Candidate candidate) {
+    public static void EODCandidatefeedbackNotification(JobPost jobPost, Candidate candidate) {
         String msg = "Hi " + candidate.getCandidateFirstName() + ", you had an interview today for " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". " +
                 "How would you rate your experience with TruJobs? Please rate us on bit.ly/trujobsapp";
 
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(msg, "We value your feedback!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
-        } else{
-            Logger.info("Token not available");
         }
 
+    }
+
+    public static void sendWeeklyNotificationToCompleteProfile(Candidate candidate) {
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", We noticed that your TruJobs profile is not complete. " +
+                "Did you know that a complete profile will get you a job 5 times faster? Complete profile now at www.trujobs.in or" +
+                " download app at bit.ly/trujobsapp";
+
+        if(candidate.getCandidateAndroidToken() != null){
+            addFcmToNotificationQueue(msg, "Your TruJobs profile is incomplete", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+        }
+    }
+
+    public static void sendWeeklyMatchingJobsNotification(Candidate candidate, Integer jobCount, String jobRole) {
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", You are missing out on new jobs! There are over " + jobCount +
+                " new " + jobRole + " jobs on TruJobs platform near your locality! Apply now at www.trujobs.in or download app at bit.ly/trujobsapp.";
+
+        if(candidate.getCandidateAndroidToken() != null){
+            addFcmToNotificationQueue(msg, jobCount + " new jobs near you!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+        }
     }
 
 

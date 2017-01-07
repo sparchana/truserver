@@ -123,3 +123,9 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 });
+
+$(window).load(function() {
+    if(window.location.href.indexOf('#signin') != -1) {
+        $("#modalLogIn").openModal();
+    }
+});
