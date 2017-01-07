@@ -152,3 +152,9 @@ $(document).ready(function(){
     }
 
 });
+
+$(window).load(function() {
+    if(window.location.href.indexOf('#signin') != -1) {
+        $("#modalLogIn").openModal();
+    }
+});

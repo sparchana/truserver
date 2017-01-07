@@ -464,13 +464,18 @@ public class JobSearchService {
         if (education != null) {
             query = query.select("*").fetch("jobPostEducation")
                     .where()
+                    .or(Expr.eq("jobPostEducation.educationId", education.getEducationId()),
+                            Expr.eq("jobPostEducation.educationId", ServerConstants.EDUCATION_TYPE_ANY))
                     .eq("jobPostEducation.educationId", education.getEducationId())
                     .query();
         }
         if (experience != null) {
             query = query.select("*").fetch("jobPostExperience")
                     .where()
-                    .eq("jobPostExperience.experienceId", experience.getExperienceId())
+                    .or(
+                            Expr.eq("jobPostExperience.experienceId", experience.getExperienceId()),
+                            Expr.eq("jobPostExperience.experienceId", ServerConstants.EXPERIENCE_TYPE_ANY_ID)
+                    )
                     .query();
         }
 

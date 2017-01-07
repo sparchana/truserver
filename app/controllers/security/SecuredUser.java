@@ -4,10 +4,11 @@ package controllers.security;
  * Created by BatCoder_1 on 30/4/16.
  */
 
-import controllers.routes;
 import play.mvc.Http.Context;
 import play.mvc.Result;
 import play.mvc.Security;
+
+import static play.mvc.Controller.session;
 
 public class SecuredUser extends Security.Authenticator {
 
@@ -34,9 +35,14 @@ public class SecuredUser extends Security.Authenticator {
 
     @Override
     public Result onUnauthorized(Context ctx) {
+        // on Unauthorized access clear prev session data
+        session().clear();
 
-        FlashSessionController.setFlashInSession(ctx.request().uri());
+        // set flash for all non ajax call only
+        if (!FlashSessionController.isRequestAjax(ctx.request())) {
+            FlashSessionController.setFlashInSession(ctx.request().uri());
+        }
 
-        return redirect(routes.Application.index());
+        return redirect("/#signin");
     }
 }

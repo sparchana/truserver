@@ -1,10 +1,9 @@
 package controllers.security;
 
 import play.Logger;
-import play.mvc.Result;
+import play.mvc.Http;
 
 import static play.mvc.Controller.session;
-import static play.mvc.Results.redirect;
 
 /**
  * Created by zero on 5/1/17.
@@ -28,11 +27,18 @@ public class FlashSessionController {
      * it only set if url is not null, else it would throw NPE
      * put method overrides flash value
      *
+     * flash should be store for only one request
+     *
+     * pass onto this method only after checking if the req is non ajax req
      */
     public static void setFlashInSession(String url) {
-
         if (url != null) {
-            session().put("flash", url);
+                /* TODO find a better way to avoid adding 'non page rendering' api to flash memory*/
+                /* since most of api don't render pages, they need not be saved for redirection */
+            if (!(url.toLowerCase().startsWith("/get")) && !url.toLowerCase().contains("/api/")) {
+                session().put("flash", url);
+                Logger.info("flash set");
+            }
         }
     }
 
@@ -51,14 +57,16 @@ public class FlashSessionController {
         if (session()!= null) {
 
             String flashToPreserve = FlashSessionController.flashPeek();
-            Logger.info("flashToPreserve: " + flashToPreserve);
             session().clear();
-            FlashSessionController.setFlashInSession(flashToPreserve);
+            if(flashToPreserve != null){
+                FlashSessionController.setFlashInSession(flashToPreserve);
+            }
         }
     }
 
-    public static Result flashRedirect(){
-
-        return redirect(getFlashFromSession());
+    public static boolean isRequestAjax(Http.Request request){
+        boolean ajax = "XMLHttpRequest".equals(
+                request.getHeader("X-Requested-With"));
+        return ajax;
     }
 }
