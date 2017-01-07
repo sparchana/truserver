@@ -394,6 +394,29 @@ var cardModule = (function ($) {
                     applyBtnDiv.className = "col-sm-6";
                     rowDivApplyButton.appendChild(applyBtnDiv);
 
+                    var applyBtnRow = document.createElement("div");
+                    applyBtnRow.className = "row";
+
+                    var reopenRow = document.createElement("div");
+                    reopenRow.className = "row";
+                    reopenRow.style = "margin-top:10px;float:right";
+
+                    var nextMonday = new Date();
+                    nextMonday.setDate(nextMonday.getDate() + (1 + 7 - nextMonday.getDay()) % 7);
+
+                    var day = nextMonday.getDate();
+                    if(day < 10){
+                        day = "0" + day;
+                    }
+
+                    var month = nextMonday.getMonth() + 1;
+                    if(month < 10){
+                        month = "0" + month;
+                    }
+                    var textReopen = document.createElement("font");
+                    textReopen.textContent = "Application will reopen on " + day + "-" + month + "-" + nextMonday.getFullYear();
+                    textReopen.style = "font-size:12px";
+                    reopenRow.appendChild(textReopen);
 
                     //!*  more button *!/
                     var jobMoreCol = document.createElement("div");
@@ -441,14 +464,15 @@ var cardModule = (function ($) {
                             applyBtn.disabled =  true;
                             applyBtn.style = "background:#ffa726";
                         }
-
                     } else {
                         applyJobText = "Apply";
                     }
                     applyBtn.textContent = applyJobText;
-
-                    applyBtnDiv.appendChild(applyBtn);
-
+                    applyBtnRow.appendChild(applyBtn);
+                    applyBtnDiv.appendChild(applyBtnRow);
+                    if(jobPost.applyBtnStatus == 5){
+                        applyBtnDiv.appendChild(reopenRow);
+                    }
                     applyBtn.onclick = function () {
                         var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
                         jobPostBreak = jobPostBreak.toLowerCase();
