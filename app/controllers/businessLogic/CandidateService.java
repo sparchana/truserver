@@ -1335,8 +1335,14 @@ public class CandidateService
 
     private static List<LanguageKnown> getLanguagesKnown(List<CandidateKnownLanguage> languagesList, Candidate candidate)
     {
-        List<LanguageKnown> languageKnownList = new ArrayList<>();
+        List<LanguageKnown> languageKnownList = candidate.getLanguageKnownList();
+        if(languageKnownList == null) languageKnownList = new ArrayList<>();
+
         for(CandidateKnownLanguage candidateKnownLanguage : languagesList) {
+            if(languageKnownList.contains(candidateKnownLanguage)){
+               continue;
+            }
+
             LanguageKnown languageKnown = new LanguageKnown();
             Language language = Language.find.where().eq("LanguageId", candidateKnownLanguage.getId()).findUnique();
 
@@ -1438,6 +1444,9 @@ public class CandidateService
                     jobHistory.setCandidatePastCompany(pastCompany.getCompanyName());
                     jobHistory.setJobRole(jobRole);
                     jobHistory.setCurrentJob(pastCompany.getCurrent());
+                    if(pastCompany.getCurrent()) {
+                        candidate.setCandidateIsEmployed(pastCompany.getCurrent());
+                    }
 
                     response.add(jobHistory);
                 }

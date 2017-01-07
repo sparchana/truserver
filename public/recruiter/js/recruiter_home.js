@@ -10,6 +10,9 @@ var globalJpId;
 var allReason = [];
 
 $(window).load(function() {
+    if(window.location.href.indexOf('#signin') != -1) {
+        $("#modalLogIn").openModal();
+    }
 
     setTimeout(function(){
         $(".homeNav").addClass("active");
@@ -128,10 +131,7 @@ function processDataNotSelectedReason(returnedData){
 }
 
 function processDataGetJobPostDetails(returnedData) {
-    var jobPostList = [];
-    $.each(returnedData, function (key, value) {
-        jobPostList.push(value);
-    });
+    var jobPostList = returnedData;
     newCount = 0;
 
     if(jobPostList.length == 0){
@@ -154,7 +154,6 @@ function processDataGetJobPostDetails(returnedData) {
             $.ajax({
                 type: "POST",
                 url: "/getTodayInterviewDetails",
-                async: false,
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(d),
                 success: processDataInterviewToday,

@@ -38,7 +38,7 @@ GET         /support/ifExists/:mobile                                     contro
 GET         /support/isRecruiterExists/:mobile                            controllers.Application.isRecruiterExists(mobile: String)
 GET         /support/api/getJobPostMatchingParams/:jobPostId              controllers.Application.getJobPostMatchingParams(jobPostId: Long)
 GET         /support/workflow/:jobPostId/                                 controllers.Application.renderWorkflow(jobPostId: Long, view: String ?= null)
-GET         /support/api/getJobPostVsCandidate/                           controllers.Application.getJobPostVsCandidate(candidateId: java.lang.Long ?= null,  jobPostId: java.lang.Long ?= null, rePreScreen: java.lang.Boolean?= null, candidateMobile: String)
+GET         /support/api/getJobPostVsCandidate/                           controllers.Application.getJobPostVsCandidate(candidateId: java.lang.Long ?= null,  jobPostId: java.lang.Long ?= null, rePreScreen: java.lang.Boolean?= null, candidateMobile: String ?=null)
 GET         /support/api/updatePreScreenAttempt/                          controllers.Application.updatePreScreenAttempt(candidateId: java.lang.Long ?= null,  jobPostId: java.lang.Long ?= null, callStatus: String ?= null)
 GET         /support/api/getDocumentReqForJobRole/                        controllers.Application.getDocumentReqForJobRole(job_post_id: java.lang.Long ?= null, job_role_id: java.lang.Long ?= null)
 GET         /support/api/getAssetReqForJobRole/                           controllers.Application.getAssetReqForJobRole(job_post_id: java.lang.Long ?= null, job_role_id: java.lang.Long ?= null, job_role_ids: String ?= null)
@@ -176,6 +176,12 @@ POST        /recruiter/api/addJobPost                                     contro
 POST        /getRecruiterJobPostInfo/:id                                  controllers.RecruiterController.getRecruiterJobPostInfo(id : Long)
 POST        /getTodayInterviewDetails                                     controllers.RecruiterController.getTodayInterviewDetails()
 POST        /getPendingCandidateApproval                                  controllers.RecruiterController.getPendingCandidateApproval()
+
+# Search API
+# ~~~~~~~~~~~~~
+GET         /s/:searchText/                                               controllers.SearchController.renderSearch(searchText : String)
+GET         /ss/                                                          controllers.SearchController.getSearchSuggestion(key : String)
+POST        /api/search/                                                  controllers.SearchController.search(page: Integer?=null)
 
 
 #new routes

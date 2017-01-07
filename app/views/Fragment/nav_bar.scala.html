@@ -6,7 +6,8 @@
 <script>
     function renderShowJobsPage(){
         try {
-            window.location.href = "/jobs/" +"jobs-in-bangalore";
+            /*window.location.href = "/jobs/" +"jobs-in-bangalore";*/
+            window.location.href = "/s/jobs-in-bangalore/";
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
@@ -26,7 +27,7 @@
                     <a class="navbar-brand" href="/">
                         <img id="navLogo" itemprop="Brand" src="/assets/common/img/logo-color.gif" alt="TruJobs Logo"></a>
                     <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" style="padding: 0px">
-                        <img id="playStoreLogoNavBar"  src="/assets/common/img/download_btn.png" alt="PlayStore Logo" height="54%"></a>
+                        <img id="playStoreLogoNavBar"  src="/assets/common/img/download_btn.png" alt="PlayStore Logo" height="26px"></a>
                 </div>
             </div>
             <div class="collapse navbar-collapse" id="navigationbar">
@@ -37,7 +38,7 @@
                         </a>
                     </li>
                     <li> <a href="/"><font id="navItem1" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">HOME</font></a></li>
-                    <li> <a href="#" onclick="renderShowJobsPage()"><font id="navItem2" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">APPLY TO JOBS</font></a></li>
+                    <li> <a href="#" onclick="renderShowJobsPage()"><font id="navItem2" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">SEARCH JOBS</font></a></li>
                     <li> <a href="/recruiter" target="_blank">
                         <font id="navItem4" color="#0065a4"  style="font-size: 12px; letter-spacing: 1px;">FOR EMPLOYERS</font></a></li>
                     <li> <a href="/partner">

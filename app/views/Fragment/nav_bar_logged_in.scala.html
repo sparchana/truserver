@@ -7,13 +7,12 @@
                 <span class="icon-bar" style="border: 1px solid #fff;"></span>
                 <span class="icon-bar" style="border: 1px solid #fff;"></span>
                 <span class="icon-bar" style="border: 1px solid #fff;"></span>
-
             </button>
             <div itemscope itemtype ="http://schema.org/logo">
                 <a class="navbar-brand" href="/dashboard">
                     <img id="navLogo" itemprop="Brand" src="/assets/common/img/logo-main.gif" alt="TruJobs Logo" style="padding: 0px"></a>
-                <a class="hidden-xs" href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid">
-                    <img id="playStoreLogoNavBar"  src="/assets/common/img/download_btn.png" alt="PlayStore Logo" height="54%"></a>
+                <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid">
+                    <img id="playStoreLogoNavBar"  src="/assets/common/img/download_btn.png" alt="PlayStore Logo" height="26px"></a>
             </div>
         </div>
 
@@ -27,8 +26,8 @@
                 <li class="candidateDashboard"><a href="/dashboard" >Candidate Dashboard</a></li>
                 <li class="candidateProfile"><a href="/dashboard/editProfile" >Profile</a></li>
                 <li class="viewAppliedJob"><a href="/dashboard/appliedJobs/">View Applied Jobs</a></li>
-                <li class="viewAllJobs"><a href="#" onclick="renderShowJobsPage()" >View All Jobs</a></li>
-                <li><a href="#" onclick="logoutUser()">Log Out</a></li>
+                <li class="viewAllJobs"><a href="/s/jobs-in-bangalore/">Search Jobs</a></li>
+                <li><a href="/" onclick="logoutUser()">Log Out</a></li>
             </ul>
         </div>
     </div>
@@ -44,7 +43,7 @@
     }
   function logoutUser() {
     localStorage.clear();
-    window.location = "/";
+    /*window.location = "/logoutUser";*/
     try {
       $.ajax({
         type: "GET",

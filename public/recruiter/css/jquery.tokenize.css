@@ -50,7 +50,7 @@ div.Tokenize ul.TokensContainer li.Token {
     background-color: transparent;
     padding: 0 5px 0 0;
     line-height: 18px;
-    color: #2ec866;
+    color: #8e8e8e;
     border-radius: 15px;
 }
 
@@ -109,7 +109,7 @@ div.Tokenize ul.TokensContainer li.Token a.Close {
     margin: 1px 4px 0 5px;
     padding: 0;
     cursor: pointer;
-    color: #2ec866;
+    color: #000;
 }
 
 div.Tokenize.Disabled ul.TokensContainer li.Token a.Close {

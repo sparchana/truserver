@@ -36,6 +36,8 @@ paths = {
     supportCss: "./public/support/css/",
     supportJs: "./public/support/js/",
     commonJs: "./public/common/js/",
+    searchCss: "./public/search/css/",
+    searchJs: "./public/search/js/",
 };
 
 jsOrder = {
@@ -53,9 +55,12 @@ jsOrder = {
     datetimeMomentJs: paths.supportJs+"datetime-moment.js",
     jqueryUi: paths.supportJs+"jquery-ui.js",
     bsNotify: paths.supportJs+"bootstrap-notify.min.js",
-    searchController: paths.supportJs+"searchController.js",
+    supportSearchController: paths.supportJs+"supportSearchController.js",
     workFlowController: paths.supportJs+"workFlowController.js",
-    preScreenCandidate: paths.commonJs+"pre_screen_candidate.js"
+    preScreenCandidate: paths.commonJs+"pre_screen_candidate.js",
+    searchController: paths.searchJs+"searchController.js",
+    searchImitator: paths.searchJs+"searchImitator.js",
+    jobCardModule: paths.commonJs+"jobCardModule.js"
 };
 
 cssOrder = {
@@ -139,9 +144,9 @@ gulp.task('datatableBundleStyle', function() {
 });
 
 // individual JS minify
-gulp.task('searchControllerScript', function() {
-    gulp.src([jsOrder.searchController])
-        .pipe(concat('searchController.min.js'))
+gulp.task('supportSearchControllerScript', function() {
+    gulp.src([jsOrder.supportSearchController])
+        .pipe(concat('supportSearchController.min.js'))
         .pipe(gulpif(argv.prod, uglify(), beautify()))
         .pipe(gulpif(argv.prod, stripDebug()))
         .pipe(gulp.dest('./public/build/support/'));
@@ -163,44 +168,78 @@ gulp.task('preScreenCandidateScript', function() {
         .pipe(gulp.dest('./public/build/scripts/'));
 });
 
+// searchController JS minify
+gulp.task('searchControllerScript', function() {
+    gulp.src([jsOrder.searchController])
+        .pipe(concat('searchController.min.js'))
+        .pipe(gulpif(argv.prod, uglify(), beautify()))
+        .pipe(gulpif(argv.prod, stripDebug()))
+        .pipe(gulp.dest('./public/build/scripts/'));
+});
+
+// searchController JS minify
+gulp.task('searchImitatorScript', function() {
+    gulp.src([jsOrder.searchImitator])
+        .pipe(concat('searchImitator.min.js'))
+        .pipe(gulpif(argv.prod, uglify(), beautify()))
+        .pipe(gulpif(argv.prod, stripDebug()))
+        .pipe(gulp.dest('./public/build/scripts/'));
+});
+
+// jobCardModule JS minify
+gulp.task('jobCardModuleScript', function() {
+    gulp.src([jsOrder.jobCardModule])
+        .pipe(concat('jobCardModule.min.js'))
+        .pipe(gulpif(argv.prod, uglify(), beautify()))
+        .pipe(gulpif(argv.prod, stripDebug()))
+        .pipe(gulp.dest('./public/build/scripts/'));
+});
+
 // default gulp task
 gulp.task('default', ['clean', 'scripts', 'styles', 'supportScripts', 'supportStyles', 'datatableBundleScript',
-    'datatableBundleStyle', 'searchControllerScript', 'workFlowControllerScript', 'preScreenCandidateScript'], function() {
+    'datatableBundleStyle', 'supportSearchControllerScript', 'workFlowControllerScript', 'preScreenCandidateScript',
+    'searchControllerScript', 'searchImitatorScript', 'jobCardModuleScript'], function() {
     // watch for CSS changes
     gulp.watch(paths.css+'*.css', function() {
         gulp.run('styles');
-    });
-    // watch for js changes
-    gulp.watch(paths.css+'*.css', function() {
         gulp.run('scripts');
     });
+
     // watch for support CSS changes
     gulp.watch(paths.supportCss+'*.css', function() {
         gulp.run('supportStyles');
+        gulp.run('datatableBundleStyles');
     });
+
     // watch for support js changes
     gulp.watch(paths.supportJs+'*.js', function() {
         gulp.run('supportScripts');
-    });
-    // watch for datatable bundle css changes
-    gulp.watch(paths.supportJs+'*.css', function() {
-        gulp.run('datatableBundleStyles');
-    });
-    // watch for datatable bundle js changes
-    gulp.watch(paths.supportJs+'*.js', function() {
         gulp.run('datatableBundleScript');
-    });
-    // watch for searchController solo js changes
-    gulp.watch(paths.supportJs+'*.js', function() {
-        gulp.run('searchControllerScript');
-    });
-    // watch for workFlowControllerScript solo js changes
-    gulp.watch(paths.supportJs+'*.js', function() {
         gulp.run('workFlowControllerScript');
     });
+
+    // individual watch
+    // watch for searchController solo js changes
+    gulp.watch(jsOrder.supportSearchController, function() {
+        gulp.run('supportSearchControllerScript');
+    });
+
     // watch for preScreenCandidateScript solo js changes
     gulp.watch(paths.commonJs+'*.js', function() {
         gulp.run('preScreenCandidateScript');
+    });
+
+    // watch for searchController solo js changes
+    gulp.watch(jsOrder.searchController, function() {
+        gulp.run('searchControllerScript');
+    });
+    // watch for searchImitator solo js changes
+    gulp.watch(jsOrder.searchImitator, function() {
+        gulp.run('searchImitatorScript');
+    });
+    // watch for jobCardModule solo js changes
+    gulp.watch(jsOrder.jobCardModule, function() {
+        gulp.run('jobCardModuleScript');
     });
 });
 

@@ -15,8 +15,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static api.ServerConstants.*;
-import static com.avaje.ebean.Expr.eq;
-import static com.avaje.ebean.Expr.in;
 
 /**
  * Matching Engine Service receives a {latitude, longitude} pair along with jobRoleId list
@@ -134,12 +132,16 @@ public class MatchingEngineService {
         return c * earthRadius;
     }
 
-    private static void sortJobPostList(List<JobPost> jobPostsResponseList, Integer sortOrder, boolean doDefaultSort) {
+    public static void sortJobPostList(List<JobPost> jobPostsResponseList, Integer sortOrder, boolean doDefaultSort) {
         switch (sortOrder) {
             case SORT_BY_SALARY:
                 Logger.info("In mGetAllJobPostsRaw : sorting on Salary");
                 Collections.sort(jobPostsResponseList, (a, b) -> b.getJobPostMinSalary()
                         .compareTo(a.getJobPostMinSalary()));
+                break;
+            case SORT_BY_SALARY_MIN_MAX:
+                Collections.sort(jobPostsResponseList, (a, b) -> a.getJobPostMinSalary()
+                        .compareTo(b.getJobPostMinSalary()));
                 break;
             case SORT_BY_DATE_POSTED:
                 Logger.info("In mGetAllJobPostsRaw : sorting on date posted");

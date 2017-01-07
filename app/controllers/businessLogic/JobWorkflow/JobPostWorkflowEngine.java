@@ -1121,8 +1121,12 @@ public class JobPostWorkflowEngine {
                         isCandidateDataMissing = true;
                         break;
                     } else if (!pe.isSingleEntity()) {
-                        isCandidateDataMissing = true;
-                        break;
+                        // case when candidate data is there and jobpost data is also there but its not matching,
+                        // we don't have to show it in FE
+                        if(pe.getCandidateElementList() == null || pe.getCandidateElementList().size() == 0 ){
+                            isCandidateDataMissing = true;
+                            break;
+                        }
                     }
                 }
             }
@@ -1320,7 +1324,7 @@ public class JobPostWorkflowEngine {
             preScreenResponse.save();
         }
         if (preScreenRequest.isPass() != null && !(preScreenRequest.isPass())) {
-            // candidate failed prescren, then don't show interview
+            // candidate failed prescreen, then don't show interview
             interviewResponse.setStatus(ServerConstants.INTERVIEW_NOT_REQUIRED);
             return interviewResponse;
         }
@@ -2292,27 +2296,9 @@ public class JobPostWorkflowEngine {
                 for (PreScreenPopulateResponse.PreScreenElement pe : response.getElementList()) {
                     if (pe.isMatching()) {
                         matchingReason += pe.getPropertyTitle() + ", ";
-//                        if(pe.isSingleEntity()) {
-//                            matchingReason += pe.getCandidateElement().getPlaceHolder() + ", ";
-//                        } else {
-//                            for(PreScreenPopulateResponse.PreScreenCustomObject customObject: pe.getCandidateElementList()){
-//                                matchingReason += customObject.getPlaceHolder() +
-//                            }
-//                        }
                         passed++;
                     } else {
                         nonMatchingReason += pe.getPropertyTitle() + ", ";
-//                        if(pe.isSingleEntity()) {
-//                            if(pe.getCandidateElement() != null) {
-//                                nonMatchingReason += pe.getCandidateElement().getPlaceHolder() + ", ";
-//                            }
-//                        } else {
-//                            if(pe.getCandidateElementList()!=null && pe.getCandidateElementList().size() > 0) {
-//                                for(PreScreenPopulateResponse.PreScreenCustomObject customObject: pe.getCandidateElementList()){
-//                                    nonMatchingReason += customObject.getPlaceHolder() + ", ";
-//                                }
-//                            }
-//                        }
                     }
                     total++;
                 }
