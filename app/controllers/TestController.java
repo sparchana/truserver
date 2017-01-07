@@ -2,12 +2,8 @@ package controllers;
 
 import api.ServerConstants;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
-import controllers.scheduler.SchedulerConstants;
 import controllers.scheduler.SchedulerManager;
-import controllers.scheduler.task.EODCandidateCompletedInterviewTask;
-import controllers.scheduler.task.SODJobPostNotificationTask;
 import controllers.scheduler.task.WeeklyCandidateAlertTask;
-import controllers.scheduler.task.WeeklyCompleteProfileAlertTask;
 import models.entity.Candidate;
 import models.util.NotificationUtil;
 import models.util.Validator;
