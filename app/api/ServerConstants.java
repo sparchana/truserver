@@ -334,6 +334,7 @@ public class ServerConstants {
     public static final int INTERVIEW_REQUIRED = 2;     // "INTERVIEW"
     public static final int ALREADY_APPLIED = 3;     // "JOB POST ALREADY APPLIED"
     public static final int APPLY = 4;     // "JOB POST ALREADY APPLIED"
+    public static final int DEACTIVE = 6;     // "CANDIDATE DEACTIVATED"
 
     // rescheduled Interview status
     public static final int RESCHEULED_INTERVIEW_STATUS_ACCEPTED = 1;

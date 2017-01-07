@@ -316,35 +316,47 @@ public class SearchJobService {
 
         List<Long> jobPostIdList = new ArrayList<>();
         Map<Long, JobPostWorkflow> jobApplicationMap = new HashMap<>();
+        Candidate candidate = null;
+        boolean deacitveApply = false;
 
         if(candidateId != null) {
             List<JobPostWorkflow> candidateAppliedJobs = JobPostWorkFlowDAO.candidateAppliedJobs(candidateId);
             for(JobPostWorkflow jobPostWorkflow: candidateAppliedJobs){
                 jobApplicationMap.putIfAbsent(jobPostWorkflow.getJobPost().getJobPostId(), jobPostWorkflow);
+                if(candidate == null) {
+                    candidate = jobPostWorkflow.getCandidate();
+                }
             }
         }
 
+        // de-active message for deactivated candidate, msg is handled at Front end
+        if(candidate != null && candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_ACTIVE){
+            deacitveApply = true;
+        }
         for(JobPost jobPost: jobPostList){
 
-            // Add a check for already applied candidate
-            if(candidateId != null) {
-                if(jobApplicationMap.get(jobPost.getJobPostId()) != null){
-                    jobPost.setApplyBtnStatus(ServerConstants.ALREADY_APPLIED);
+            if(deacitveApply) {
+                jobPost.setApplyBtnStatus(ServerConstants.DEACTIVE);
+            } else {
+                // Add a check for already applied candidate
+                if(candidateId != null) {
+                    if(jobApplicationMap.get(jobPost.getJobPostId()) != null) {
+                        jobPost.setApplyBtnStatus(ServerConstants.ALREADY_APPLIED);
+                    }
                 }
-            }
-            // change only if its not set prev, i.e its set to default value
-            if(jobPost.getApplyBtnStatus() == 0){
-                if(RecruiterService.isInterviewRequired(jobPost).getStatus() == ServerConstants.INTERVIEW_REQUIRED){
-                    jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_REQUIRED);
-                } else {
-                    jobPost.setApplyBtnStatus(ServerConstants.APPLY);
+                // change only if its not set prev, i.e its set to default value
+                if(jobPost.getApplyBtnStatus() == 0) {
+                    if(RecruiterService.isInterviewRequired(jobPost).getStatus() == ServerConstants.INTERVIEW_REQUIRED){
+                        jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_REQUIRED);
+                    } else {
+                        jobPost.setApplyBtnStatus(ServerConstants.APPLY);
+                    }
                 }
             }
 
             jobPostIdList.add(jobPost.getJobPostId());
         }
 
-        return;
     }
 
     public void computeCTA(JobPost jobPost, Long candidateId){

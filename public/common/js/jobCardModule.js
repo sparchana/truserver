@@ -460,10 +460,17 @@ var cardModule = (function ($) {
                             applyJobText = "Already Applied";
                             applyBtn.disabled =  true;
                             applyBtn.style = "background:#ffa726";
-                        }else if(jobPost.applyBtnStatus == 5) {
+                        } else if(jobPost.applyBtnStatus == 5) {
                             applyJobText = "Application Closed";
                             applyBtn.disabled =  true;
                             applyBtn.style = "background:#ffa726";
+                        } else if(jobPost.applyBtnStatus == 6) {
+                            applyJobText = "Apply";
+                            applyBtn.disabled =  true;
+                            applyBtn.style = "background:#ffa726";
+                            applyBtn.onclick = function () {
+                                alert("Looks like your profile is temporarily suspended for new job applications. Please check back after 'deactivation expiry date' or call us at 8880007799 to request re-activation.'")
+                            };
                         }
                     } else {
                         applyJobText = "Apply";
