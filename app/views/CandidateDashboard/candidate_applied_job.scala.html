@@ -307,7 +307,8 @@
                 var pathElement = window.location.search.split('&');
                 var prescreenElement = pathElement[(pathElement.length) - 3];
 
-                if (prescreenElement != null && prescreenElement.split("=")[(pathElement.length) - 3] == "?ps" && prescreenElement.split("=")[(pathElement.length) - 2] == "true") {
+                if (prescreenElement != null && prescreenElement.split("=")[(pathElement.length) - 3] ==
+                    "?ps" && prescreenElement.split("=")[(pathElement.length) - 2] == "true") {
                     var jpElement = pathElement[(pathElement.length) - 2];
 
                     if (jpElement.split("=")[0] == "jp_id") {
