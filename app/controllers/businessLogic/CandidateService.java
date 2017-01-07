@@ -1107,9 +1107,15 @@ public class CandidateService
         {
             // Add Canidate to candidateStatusDetail and Change candidateStatus to Cold
             candidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_DEACTIVE).findUnique());
-            candidateStatusDetail.setReason(Reason.find.where().eq("ReasonId", supportCandidateRequest.getDeactivationReason()).findUnique());
+            Reason deactivationReason = Reason.find.where().eq("ReasonId", supportCandidateRequest.getDeactivationReason()).findUnique();
+            candidateStatusDetail.setReason(deactivationReason);
+
             candidateStatusDetail.setStatusExpiryDate(supportCandidateRequest.getDeactivationExpiryDate());
+
             InteractionService.createInteractionForDeactivateCandidate(candidate.getCandidateUUId(), true);
+
+            SmsUtil.sendDeactivationSmsFromSupport(candidate, deactivationReason), supportCandidateRequest.getDeactivationExpiryDate();
+
             return candidateStatusDetail;
         }
         else if(candidate.getCandidateStatusDetail() != null && !supportCandidateRequest.getDeactivationStatus()) {
