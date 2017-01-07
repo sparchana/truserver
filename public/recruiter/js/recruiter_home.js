@@ -10,6 +10,9 @@ var globalJpId;
 var allReason = [];
 
 $(window).load(function() {
+    if(window.location.href.indexOf('#signin') != -1) {
+        $("#modalLogIn").openModal();
+    }
 
     setTimeout(function(){
         $(".homeNav").addClass("active");
@@ -154,7 +157,6 @@ function processDataGetJobPostDetails(returnedData) {
             $.ajax({
                 type: "POST",
                 url: "/getTodayInterviewDetails",
-                async: false,
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(d),
                 success: processDataInterviewToday,

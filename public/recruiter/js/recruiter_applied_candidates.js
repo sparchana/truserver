@@ -30,8 +30,8 @@ $(document).scroll(function(){
     }
 });
 
-$(document).ready(function(){
-    checkRecruiterLogin();
+$(document).ready(function() {
+    // checkRecruiterLogin();
     getRecruiterInfo();
     $('ul.tabs').tabs();
     var pathname = window.location.pathname; // Returns path only
@@ -970,7 +970,7 @@ function logoutRecruiter() {
 }
 
 function processDataLogoutRecruiter() {
-    window.location = "/recruiter";
+    window.location = "/recruiter#signin";
 }
 
 function notifyError(msg){

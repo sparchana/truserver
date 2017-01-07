@@ -42,7 +42,7 @@ public class FCMEvent extends NotificationEvent {
 
         try {
             if(isDevMode()){
-                Logger.info("DevMode: No Notification sent");
+                Logger.info("DevMode: No Notification sent. Msg: " + messageText);
             } else{
                 result = sender.send(message, recipient, 1);
             }

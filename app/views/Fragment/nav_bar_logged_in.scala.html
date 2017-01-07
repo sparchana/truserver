@@ -7,7 +7,6 @@
                 <span class="icon-bar" style="border: 1px solid #fff;"></span>
                 <span class="icon-bar" style="border: 1px solid #fff;"></span>
                 <span class="icon-bar" style="border: 1px solid #fff;"></span>
-
             </button>
             <div itemscope itemtype ="http://schema.org/logo">
                 <a class="navbar-brand" href="/dashboard">
@@ -27,8 +26,8 @@
                 <li class="candidateDashboard"><a href="/dashboard" >Candidate Dashboard</a></li>
                 <li class="candidateProfile"><a href="/dashboard/editProfile" >Profile</a></li>
                 <li class="viewAppliedJob"><a href="/dashboard/appliedJobs/">View Applied Jobs</a></li>
-                <li class="viewAllJobs"><a href="/s/jobs-in-bangalore/" target="_blank">Search Jobs</a></li>
-                <li><a href="#" onclick="logoutUser()">Log Out</a></li>
+                <li class="viewAllJobs"><a href="/s/jobs-in-bangalore/">Search Jobs</a></li>
+                <li><a href="/" onclick="logoutUser()">Log Out</a></li>
             </ul>
         </div>
     </div>
@@ -44,7 +43,7 @@
     }
   function logoutUser() {
     localStorage.clear();
-    window.location = "/";
+    /*window.location = "/logoutUser";*/
     try {
       $.ajax({
         type: "GET",

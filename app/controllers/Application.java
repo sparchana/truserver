@@ -1,7 +1,6 @@
 package controllers;
 
 import dao.JobPostDAO;
-import notificationService.*;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
@@ -67,6 +66,11 @@ public class Application extends Controller {
         if(sessionId != null){
             String partnerId = session().get("partnerId");
             String recruiterId = session().get("recruiterId");
+
+            if (!FlashSessionController.isEmpty()) {
+                return redirect(FlashSessionController.getFlashFromSession());
+            }
+
             if(partnerId != null){
                 return redirect("/partner/home");
             } else if(recruiterId != null){
@@ -83,12 +87,12 @@ public class Application extends Controller {
         return ok(views.html.Recs.company_and_job.render());
     }
 
-    @Security.Authenticated(PartnerSecured.class)
+    @Security.Authenticated(PartnerInternalSecured.class)
     public static Result support() {
         return ok(views.html.support.render());
     }
 
-    @Security.Authenticated(PartnerSecured.class)
+    @Security.Authenticated(PartnerInternalSecured.class)
     public static Result candidateInteraction(long id) {
         return ok(views.html.candidate_interaction.render());
     }
@@ -169,7 +173,7 @@ public class Application extends Controller {
         int channelType = INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
         return ok(toJson(CandidateService.signUpCandidate(candidateSignUpRequest, channelType, ServerConstants.LEAD_SOURCE_UNKNOWN)));
     }
-    @Security.Authenticated(PartnerSecured.class)
+    @Security.Authenticated(PartnerInternalSecured.class)
     public static Result signUpSupport() {
         JsonNode req = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
@@ -327,6 +331,9 @@ public class Application extends Controller {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result dashboard() {
+        if (!FlashSessionController.isEmpty()) {
+            return redirect(FlashSessionController.getFlashFromSession());
+        }
         return ok(views.html.CandidateDashboard.candidate_home.render());
     }
 
@@ -507,7 +514,7 @@ public class Application extends Controller {
 
         return ok(toJson(responses));
     }
-    @Security.Authenticated(PartnerSecured.class)
+    @Security.Authenticated(PartnerInternalSecured.class)
     public static Result getLeadMobile(long id) {
         if (id != 0) {
             try {
@@ -537,7 +544,7 @@ public class Application extends Controller {
     }
 
     /* this method is used by support */
-    @Security.Authenticated(PartnerSecured.class)
+    @Security.Authenticated(PartnerInternalSecured.class)
     public static Result getCandidateInfo(long leadId) {
             Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
             if(lead != null) {
@@ -662,7 +669,8 @@ public class Application extends Controller {
     }
 
     public static Result logout() {
-        session().clear();
+        FlashSessionController.clearSessionExceptFlash();
+
         flash("success", "You've been logged out");
         return redirect(
                 routes.Application.supportAuth()
@@ -670,7 +678,8 @@ public class Application extends Controller {
     }
 
     public static Result logoutUser() {
-        session().clear();
+        FlashSessionController.clearSessionExceptFlash();
+
         Logger.info("Candidate Logged Out");
         return ok(views.html.main.render());
     }
@@ -1012,7 +1021,7 @@ public class Application extends Controller {
         return ok(toJson(jobStatusList));
     }
 
-    @Security.Authenticated(PartnerSecured.class)
+    @Security.Authenticated(PartnerInternalSecured.class)
     public static Result candidateSignupSupport(Long candidateId, String isCallTrigger) {
         return ok(views.html.signup_support.render(candidateId, isCallTrigger));
     }
@@ -1022,7 +1031,7 @@ public class Application extends Controller {
         return ok(views.html.Recs.create_company.render());
     }
 
-    @Security.Authenticated(PartnerSecured.class)
+    @Security.Authenticated(PartnerInternalSecured.class)
     public static Result createCandidateForm() {
         return redirect("/candidateSignupSupport/0/false");
     }
@@ -1061,12 +1070,12 @@ public class Application extends Controller {
         return ok(resp);
     }
 
-    @Security.Authenticated(PartnerSecured.class)
+    @Security.Authenticated(PartnerInternalSecured.class)
     public static Result getAllLeadSource() {
         List<LeadSource> leadSources = LeadSource.find.orderBy("leadSourceName").findList();
         return ok(toJson(leadSources));
     }
-    @Security.Authenticated(PartnerSecured.class)
+    @Security.Authenticated(PartnerInternalSecured.class)
     public static Result getSupportAgent() {
 
         String agentMobile = "+91" + session().get("sessionUserId");
@@ -1100,7 +1109,7 @@ public class Application extends Controller {
         return ok(toJson(FollowUpService.CreateOrUpdateFollowUp(addOrUpdateFollowUpRequest)));
     }
 
-    @Security.Authenticated(PartnerSecured.class)
+    @Security.Authenticated(PartnerInternalSecured.class)
     public static Result getInteractionNote(Long leadId, Long limit) {
         Lead lead = Lead.find.where().eq("leadId",leadId).findUnique();
         if(lead !=null){
@@ -1196,7 +1205,7 @@ public class Application extends Controller {
         return ok(views.html.uploadcsv.render());
     }
 
-    @Security.Authenticated(PartnerSecured.class)
+    @Security.Authenticated(PartnerInternalSecured.class)
     public static Result ifExists(String mobile) {
         if(mobile != null){
             mobile = FormValidator.convertToIndianMobileFormat(mobile);
@@ -1233,7 +1242,7 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    @Security.Authenticated(PartnerSecured.class)
+    @Security.Authenticated(PartnerInternalSecured.class)
     public static Result getAllDeactivationReason() {
         List<Reason> deactivationReasons = Reason.find.all();
         return ok(toJson(deactivationReasons));

@@ -6,7 +6,8 @@
 <script>
     function renderShowJobsPage(){
         try {
-            window.location.href = "/jobs/" +"jobs-in-bangalore";
+            /*window.location.href = "/jobs/" +"jobs-in-bangalore";*/
+            window.location.href = "/s/jobs-in-bangalore/";
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
@@ -14,7 +15,7 @@
 </script>
 
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container" id="tempFix">
+    <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigationbar">
                     <span class="sr-only">Toggle navigation</span>
@@ -37,7 +38,7 @@
                         </a>
                     </li>
                     <li> <a href="/"><font id="navItem1" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">HOME</font></a></li>
-                    <li> <a href="#" onclick="renderShowJobsPage()"><font id="navItem2" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">APPLY TO JOBS</font></a></li>
+                    <li> <a href="#" onclick="renderShowJobsPage()"><font id="navItem2" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">SEARCH JOBS</font></a></li>
                     <li> <a href="/recruiter" target="_blank">
                         <font id="navItem4" color="#0065a4"  style="font-size: 12px; letter-spacing: 1px;">FOR EMPLOYERS</font></a></li>
                     <li> <a href="/partner">

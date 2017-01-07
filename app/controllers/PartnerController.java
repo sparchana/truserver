@@ -5,41 +5,29 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.CandidateSignUpResponse;
-import api.http.httpResponse.PartnerSignUpResponse;
-import api.http.httpResponse.SupportDashboardElementResponse;
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.RawSql;
-import com.avaje.ebean.RawSqlBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import controllers.security.PartnerSecured;
 import controllers.security.SecuredUser;
+import controllers.security.FlashSessionController;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import models.entity.*;
 import models.entity.OM.JobApplication;
-import models.entity.OM.JobPostWorkflow;
 import models.entity.OM.PartnerToCandidate;
-import models.entity.OM.PreScreenRequirement;
 import models.entity.Static.LeadSource;
 import models.entity.Static.PartnerType;
-import models.util.SmsUtil;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;
 
 import static play.mvc.Controller.request;
@@ -55,6 +43,12 @@ public class PartnerController {
     public static Result partnerIndex() {
         String sessionId = session().get("partnerId");
         if(sessionId != null){
+
+            // if flash is available, redirect there
+            if(!FlashSessionController.isEmpty()){
+                return redirect(FlashSessionController.getFlashFromSession());
+            }
+
             return redirect("/partner/home");
         }
         return ok(views.html.Partner.partner_index.render());
@@ -112,7 +106,7 @@ public class PartnerController {
         return ok(toJson(PartnerService.login(loginMobile, loginPassword, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE)));
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result partnerHome() {
         return ok(views.html.Partner.partner_home.render());
     }
@@ -141,7 +135,7 @@ public class PartnerController {
         return ok(toJson(partnerTypeList));
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result getPartnerProfileInfo() {
         Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
         if(partner != null) {
@@ -159,12 +153,12 @@ public class PartnerController {
         }
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result partnerEditProfile() {
         return ok(views.html.Partner.partner_edit_profile.render());
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result partnerCreateCandidate(long candidateId) {
         return ok(views.html.Partner.partner_create_candidate.render(candidateId));
     }
@@ -230,12 +224,12 @@ public class PartnerController {
         }
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result partnerCandidates() {
         return ok(views.html.Partner.partner_candidates.render());
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result getMyCandidates(){
         Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
         if(partner != null){
@@ -267,7 +261,7 @@ public class PartnerController {
                     }
                 }
                 response.setCandidateAppliedJobs(JobPostWorkflowEngine.getPartnerAppliedJobsForCandidate(
-                    partnerToCandidate.getCandidate(), partner).size());
+                        partnerToCandidate.getCandidate(), partner).size());
                 response.setCandidateMobile(partnerToCandidate.getCandidate().getCandidateMobile());
                 responses.add(response);
             }
@@ -280,7 +274,7 @@ public class PartnerController {
         return ok("0");
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result getPartnerCandidate(long leadId) {
         Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
         if(partner != null){ //checking if partner is logged in or not
@@ -306,12 +300,13 @@ public class PartnerController {
     }
 
     public static Result logoutPartner() {
-        session().clear();
+        FlashSessionController.clearSessionExceptFlash();
+
         Logger.info("Partner Logged Out");
         return ok(views.html.Partner.partner_index.render());
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result sendCandidateVerificationSMS(String mobile) {
         Logger.info("trying to send verification SMS to mobile no: " + FormValidator.convertToIndianMobileFormat(mobile));
         Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(mobile));
@@ -359,7 +354,7 @@ public class PartnerController {
         return ok("0");
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result getAppliedJobsByPartnerForCandidate(long id) {
         Logger.info(id + " candidateId");
         Candidate candidate = Candidate.find.where().eq("candidateId", id).findUnique();
@@ -400,7 +395,7 @@ public class PartnerController {
         return ok("0");
     }
 
-    @Security.Authenticated(SecuredUser.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result confirmInterview(long cId, long jpId, long value){
         if(session().get("sessionChannel") == null){
             Logger.warn("Partner session channel not set, logged out partner");
