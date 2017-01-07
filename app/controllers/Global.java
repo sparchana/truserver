@@ -22,18 +22,19 @@ public class Global extends GlobalSettings {
 
         //started the thread
         if(notificationHandlerShouldRun) {
-
+            Logger.warn("[Conf] Notification Handler started");
             new Thread(mNotificationHandler).start();
 
             if(schedulerManagerShouldRun){
+                Logger.warn("[Conf] Scheduler Manager started");
                 new Thread(mSchedulerManager).start();
             } else {
-                Logger.info("Scheduler Manager not running");
+                Logger.warn("[Conf] Scheduler Manager not running");
             }
 
         } else {
-            Logger.info("NH not running");
-            Logger.info("Scheduler Manager not running");
+            Logger.warn("[Conf] Notification Handler not running");
+            Logger.warn("[Conf] Scheduler Manager not running");
         }
 
         Logger.info("Global settings started");
