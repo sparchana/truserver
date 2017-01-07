@@ -19,10 +19,7 @@ $(window).load(function(){
 });
 
 function processDataGetJobPostDetails(returnedData){
-    var jobPostList = [];
-    $.each(returnedData, function (key, value) {
-        jobPostList.push(value);
-    });
+    var jobPostList = returnedData;
     var newCount = 0;
 
     if(jobPostList.length == 0){
