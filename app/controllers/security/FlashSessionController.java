@@ -57,9 +57,10 @@ public class FlashSessionController {
         if (session()!= null) {
 
             String flashToPreserve = FlashSessionController.flashPeek();
-            Logger.info("flashToPreserve: " + flashToPreserve);
             session().clear();
-            FlashSessionController.setFlashInSession(flashToPreserve);
+            if(flashToPreserve != null){
+                FlashSessionController.setFlashInSession(flashToPreserve);
+            }
         }
     }
 
