@@ -472,6 +472,7 @@ function validateCompanyVal(val, text) {
 function resetCompanyIdval(val, text) {
     companyId = null;
     returnedCompanyName = "";
+    clearCompanyDetails();
 }
 
 function clearCompanyDetails() {
@@ -484,6 +485,10 @@ function clearCompanyDetails() {
     $("#rec_company_pincode").val('');
     $("#rec_company_address").val('');
     $("#rec_company_desc").val('');
+    $('#rec_company_logo_old')
+        .attr('src', "");
+
     $("#rec_company_old_logo").val('');
+
 
 }
