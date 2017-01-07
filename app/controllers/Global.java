@@ -13,13 +13,29 @@ public class Global extends GlobalSettings {
     private static NotificationHandler mNotificationHandler;
 
     public void onStart(play.Application app) {
+        boolean notificationHandlerShouldRun = (play.Play.application().configuration().getBoolean("notification.handler.run"));
+        boolean schedulerManagerShouldRun = (play.Play.application().configuration().getBoolean("scheduler.manager.run"));
+
         //mNotificationHandler class instantiated
         mNotificationHandler = new NotificationHandler();
         SchedulerManager mSchedulerManager = new SchedulerManager();
 
         //started the thread
-        new Thread(mNotificationHandler).start();
-        new Thread(mSchedulerManager).start();
+        if(notificationHandlerShouldRun) {
+            Logger.warn("[Conf] Notification Handler started");
+            new Thread(mNotificationHandler).start();
+
+            if(schedulerManagerShouldRun){
+                Logger.warn("[Conf] Scheduler Manager started");
+                new Thread(mSchedulerManager).start();
+            } else {
+                Logger.warn("[Conf] Scheduler Manager not running");
+            }
+
+        } else {
+            Logger.warn("[Conf] Notification Handler not running");
+            Logger.warn("[Conf] Scheduler Manager not running");
+        }
 
         Logger.info("Global settings started");
     }
