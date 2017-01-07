@@ -10,6 +10,9 @@ var globalJpId;
 var allReason = [];
 
 $(window).load(function() {
+    if(window.location.href.indexOf('#signin') != -1) {
+        $("#modalLogIn").openModal();
+    }
 
     setTimeout(function(){
         $(".homeNav").addClass("active");
@@ -136,6 +139,7 @@ function processDataGetJobPostDetails(returnedData) {
 
     if(jobPostList.length == 0){
         $("#noInterviews").show();
+        $("#loadingIcon").hide();
     }
 
     var jpId = [];
@@ -153,10 +157,13 @@ function processDataGetJobPostDetails(returnedData) {
             $.ajax({
                 type: "POST",
                 url: "/getTodayInterviewDetails",
-                async: false,
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(d),
-                success: processDataInterviewToday
+                success: processDataInterviewToday,
+                error: function (jqXHR, exception) {
+                    $("#somethingWentWrong").show();
+                    $("#loadingIcon").hide();
+                }
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);
@@ -247,6 +254,8 @@ function processDataInterviewToday(returnedData) {
         $("#noInterviews").show();
         $("#todayInterviewTable").hide();
     }
+
+    $("#loadingIcon").hide();
 }
 
 function openFeedbackModal(candidateId, jpId) {

@@ -623,7 +623,7 @@ function saveJob() {
             notifyError("Please select job end time");
             status = 0;
         }
-    } else if(jobPostExperience == null){
+    } else if(jobPostExperience == null || jobPostExperience == ""){
         notifyError("Please select min experience");
         status = 0;
     } else if($('#jobPostEducation').val() == null){

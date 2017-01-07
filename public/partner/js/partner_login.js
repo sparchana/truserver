@@ -11,7 +11,7 @@ var applyJobId = 0;
 function processDataLogin(returnedData) {
     if(returnedData.status == 1) {
         // Store
-        window.location = "/partner/home";
+        window.location = "/partner";
     } else if(returnedData.status == 3){
         $('#errorMsgReset').show();
         $('#incorrectMsgLogin').hide();

@@ -143,7 +143,8 @@ function updateForm() {
             companyLogo: logo,
             companyLocality: parseInt($("#companyLocality").val()),
             companyType: $("#companyType").val(),
-            companyStatus: $("#companyStatus").val()
+            companyStatus: $("#companyStatus").val(),
+            source: $("#companySource").val() //  SOURCE_INTERNAL: 0
         };
 
         try {
@@ -217,7 +218,8 @@ function saveForm(){
                 companyLogo: logo,
                 companyLocality: parseInt($("#companyLocality").val()),
                 companyType: $("#companyType").val(),
-                companyStatus: $("#companyStatus").val()
+                companyStatus: $("#companyStatus").val(),
+                source: 0 // SOURCE_INTERNAL
             };
             try {
                 $.ajax({

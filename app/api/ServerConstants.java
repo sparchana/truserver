@@ -163,6 +163,9 @@ public class ServerConstants {
     public static final int REVIEW_APPLICATION_AUTO = 1;
     public static Map<String, String> devTeamMobile;
 
+    // company status
+    public static final int COMPANY_STATUS_ACTIVE = 2;
+
     // rec sorting keys
     public static Integer REC_SORT_LASTEST_ACTIVE = 1;
     public static Integer REC_SORT_SALARY_H_TO_L = 2;
@@ -191,6 +194,7 @@ public class ServerConstants {
     }
 
     public static final Double DEFAULT_MATCHING_ENGINE_RADIUS = 10.0; // In Kilometers
+    public static final Double WEB_SEARCH_MATCHING_ENGINE_RADIUS = 25.0; // In Kilometers
 
     // Job Post DB Constants
     public static final int EXPERIENCE_TYPE_FRESHER_ID = 1;
@@ -208,7 +212,9 @@ public class ServerConstants {
     public static final int SORT_BY_NEARBY = 1;
     public static final int SORT_BY_DATE_POSTED = 2;
     public static final int SORT_BY_SALARY = 3;
+    public static final int SORT_BY_SALARY_MIN_MAX = 4;
     public static final int SORT_DEFAULT = SORT_BY_NEARBY;
+    public static final int SORT_BY_RELEVANCE = 5;
 
     public static final int GENDER_MALE = 0;
     public static final int GENDER_FEMALE = 1;
@@ -221,6 +227,7 @@ public class ServerConstants {
 
     /* Non Logged In Search Result UUID */
     public static final String TRU_DROID_NOT_LOGGED_UUID = "TRU-DROID-NOT-LOGGEDIN-UUID";
+    public static final String TRU_WEB_NOT_LOGGED_UUID = "TRU-WEB-NOT-LOGGEDIN-UUID";
     public static final String SUPPORT_DEFAULT_UUID = "SUPPORT-DEFAULT-UUID";
 
     public static final String SELF_UNLOCKED_CANDIDATE_CONTACT = "Self unlocked contact";
@@ -320,10 +327,13 @@ public class ServerConstants {
     public static final int INTERVIEW_STATUS_RESCHEDULED = 3;
     public static final int INTERVIEW_STATUS_REJECTED_BY_CANDIDATE = 4;
 
-    // is_interview_required response
+    // is_interview_required response ||  Apply Job Button status
+
     public static final int ERROR = 0;
     public static final int INTERVIEW_NOT_REQUIRED = 1; // "OK"
     public static final int INTERVIEW_REQUIRED = 2;     // "INTERVIEW"
+    public static final int ALREADY_APPLIED = 3;     // "JOB POST ALREADY APPLIED"
+    public static final int APPLY = 4;     // "JOB POST ALREADY APPLIED"
 
     // rescheduled Interview status
     public static final int RESCHEULED_INTERVIEW_STATUS_ACCEPTED = 1;
@@ -358,5 +368,4 @@ public class ServerConstants {
     public static final int ANDROID_INTENT_ACTIVITY_INTERVIEW_TIPS = 8;
 
     public static final String CREATED_BY = "Candidate";
-
 }
