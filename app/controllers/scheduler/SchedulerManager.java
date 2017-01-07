@@ -101,6 +101,7 @@ public class SchedulerManager implements Runnable {
 
         createWeeklyProfileCompletionEvent(weeklyProfileCompletionTaskDelay);
 
+        createEODCreditDebitAndExpireInterviewCredit(aadhaarVerificationDelay);
     }
 
     public void createSameDayInterviewAlertEvent(int periodInHr, long delay) {
@@ -180,6 +181,14 @@ public class SchedulerManager implements Runnable {
     }
 
 
+    private void createEODCreditDebitAndExpireInterviewCredit(long delay){
+        Logger.info("Auto debit interview credit + auto credit interview credit if feedback provided and expire interview credits" +
+                " which needs to be expired task started");
+
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        EODDebitCreditInterviewCreditTask eODDebitCreditInterviewCreditTask = new EODDebitCreditInterviewCreditTask(classLoader);
+        timer.schedule(eODDebitCreditInterviewCreditTask, delay, oneDay);
+    }
 
     public static void saveNewSchedulerStats(Timestamp startTime, SchedulerType schedulerType,
                                              SchedulerSubType schedulerSubType,

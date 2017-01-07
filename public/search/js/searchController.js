@@ -739,7 +739,104 @@ var app = (function ($) {
                         app.do.createAndAppendDivider(" Showing "+ parseInt((app.page -1)*5 + 1 )+"-"+parseInt((app.page -1)*5 + parseInt(_jobPostList.length))+" of "+data.results.totalJobs+" jobs matching your search");
                         // var _isDividerPresent = false;
 
+<<<<<<< HEAD
                         genNewJobCard(_jobPostList, _parent);
+=======
+                                $("#locationMsg_" + jobPost.jobPostId).attr("data-toggle", "tooltip");
+                                $(function () {
+                                    $('[data-toggle="tooltip"]').tooltip()
+                                });
+
+                                var hr = document.createElement("hr");
+                                centreTag.appendChild(hr);
+
+                                //!*  apply div button *!/
+                                var rowDivApplyButton = document.createElement("div");
+                                rowDivApplyButton.className = "row";
+                                rowDivApplyButton.style = "margin: 0; padding: 0";
+                                centreTag.appendChild(rowDivApplyButton);
+
+
+                                // posted on div
+                                var postedOnDiv = document.createElement("div");
+                                postedOnDiv.className = "col-sm-6";
+                                postedOnDiv.style = "margin-top:6px;text-align:left";
+                                postedOnDiv.textContent = "Posted: " + app.parse.createdOnDate(jobPost.jobPostCreateTimestamp);
+                                rowDivApplyButton.appendChild(postedOnDiv);
+
+
+                                var applyBtnDiv = document.createElement("div");
+                                applyBtnDiv.className = "col-sm-6";
+                                rowDivApplyButton.appendChild(applyBtnDiv);
+
+
+                                //!*  more button *!/
+                                var jobMoreCol = document.createElement("div");
+                                jobMoreCol.className = "col-sm-2";
+                                jobMoreCol.id = "jobMore";
+                                rowDiv.appendChild(jobMoreCol);
+
+                                // vacancies div
+                                var vacanciesDiv = document.createElement("div");
+                                vacanciesDiv.style ="margin-bottom:6px";
+                                vacanciesDiv.textContent = "Vacancies : " + jobPost.jobPostVacancies;
+                                jobMoreCol.appendChild(vacanciesDiv);
+
+
+                                var moreBtn = document.createElement("div");
+                                moreBtn.className = "jobMoreBtn";
+                                moreBtn.textContent = "More Info";
+                                jobMoreCol.appendChild(moreBtn);
+                                moreBtn.onclick = function () {
+                                    var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
+                                    jobPostBreak = jobPostBreak.toLowerCase();
+                                    var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
+                                    jobCompany = jobCompany.toLowerCase();
+                                    try {
+                                        window.location.href = "/jobs/" + jobPostBreak + "-jobs-in-bengaluru-at-" + jobCompany + "-" + jobPost.jobPostId;
+                                    } catch (exception) {
+                                        console.log("exception occured!!" + exception);
+                                    }
+                                };
+
+
+                                //!*  apply button *!/
+                                var applyBtn = document.createElement("button");
+                                applyBtn.className = "jobApplyBtn2";
+                                var applyJobText ;
+                                if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != CTA_BTN_APPLY){
+                                    if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_REQUIRED) {
+                                        applyJobText = "Book Interview";
+                                    } else if(jobPost.applyBtnStatus == CTA_BTN_ALREADY_APPLIED) {
+                                        applyJobText = "Already Applied";
+                                        applyBtn.disabled =  true;
+                                        applyBtn.style = "background:#ffa726";
+                                    } else if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_CLOSED) {
+                                        applyJobText = "Application closed";
+                                        applyBtn.disabled =  true;
+                                        applyBtn.style = "background:#ffa726";
+                                    }
+                                } else {
+                                    applyJobText = "Apply";
+                                }
+                                applyBtn.textContent = applyJobText;
+
+                                applyBtnDiv.appendChild(applyBtn);
+
+                                applyBtn.onclick = function () {
+                                    var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
+                                    jobPostBreak = jobPostBreak.toLowerCase();
+                                    var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
+                                    jobCompany = jobCompany.toLowerCase();
+                                    try {
+                                        window.location.href = "/jobs/" + jobPostBreak + "-jobs-in-bengaluru-at-" + jobCompany + "-" + jobPost.jobPostId;
+                                    } catch (exception) {
+                                        console.log("exception occured!!" + exception);
+                                    }
+                                };
+                            }
+                        });
+>>>>>>> job-cta
 
                     } else {
                         // no jobs found

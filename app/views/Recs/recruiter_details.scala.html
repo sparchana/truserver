@@ -74,8 +74,6 @@
           </div>
 
           <br>
-          <h3>Credits Section <div class="btn btn-default" data-toggle="modal" data-target="#creditModal" style="color: #328234; border-color: #328234">Add Credits</div></h3>
-          <hr>
           <div class="row" style="margin-top: 8px">
             <div class="col-sm-3"><h5>Recruiter's Contact Unlock Credits</h5></div>
             <div class="col-sm-9">
@@ -89,6 +87,8 @@
               <input id="recruiterInterviewCredits" value="0" name="recruiterInterviewCredits" placeholder="Recruiter Interview credits" type="text" class="form-control input-md" disabled>
             </div>
           </div>
+          <br>
+          <h3>Credits Section <div class="btn btn-default" onclick="openCreditModal()" style="color: #328234; border-color: #328234">Add New Pack</div></h3>
 
           <div id="addCreditInfoDiv" style="display: none; margin-top: 24px">
             <h4>You are adding the following no. of credits for this recruiter::</h4>
@@ -110,32 +110,31 @@
 
           <hr>
           <br>
-          <div class="btn btn-default" onclick="saveRecruiter()">Save</div>
           <br>
+          <div class="btn btn-default" style="background: green; color: white" onclick="saveRecruiter()">Save Information</div>
           <br>
 
-          <hr>
-
-          <br>
-          <h3>Credit history</h3>
-          <hr>
-          <table id="creditHistory" class="table table-striped table-bordered" style="margin-top: 16px" cellspacing="0" width="100%">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Timestamp</th>
-                <th>Category</th>
-                <th>Transaction Units (Cr/Dr) </th>
-                <th>Total Credits Available</th>
-                <th>Total Credits Used</th>
-                <th>User</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
 
         </form>
       </div>
+      <h3>Credit Packs</h3>
+      <hr>
+      <table id="creditHistory" class="table table-striped table-bordered" style="margin-top: 16px" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>Pack No</th>
+            <th>Category</th>
+            <th>Available</th>
+            <th>Used</th>
+            <th>Is Expired</th>
+            <th>Expiry Date</th>
+            <th>Add Credits</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+
     </div>
 
       <!-- modal code for credits -->
@@ -146,7 +145,7 @@
           <div style="float: right"><img src="/assets/recruiter/img/cancel.png" onclick="closeCreditModal()"></div>
           <div class="modal-body" id="model_size">
             <form id="add_credits" class="form-horizontal" role="form">
-              <div class="line_up" id="signInPopup"><h4>Add Credits</h4></div>
+              <div class="line_up" id="signInPopup"><h4>Add New Credit pack</h4></div>
               <br>
 
               <h5 style="color: #0D47A1; font-weight: bold">Purchased Candidate Contact Unlock Credits?</h5>
@@ -207,6 +206,36 @@
         </div>
       </div>
     </div>
+
+
+    <div id="editCreditModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+          <!-- Modal content-->
+        <div class="modal-content">
+          <div style="float: right"><img src="/assets/recruiter/img/cancel.png" onclick="closeEditCreditModal()"></div>
+          <div class="modal-body" id="model_size">
+            <form id="add_credits" class="form-horizontal" role="form">
+              <div class="line_up" id="packInfo"><h4></h4></div>
+              <center>
+                <div id="packCredits"><h5></h5></div>
+              </center>
+              <br>
+
+              <div class="row" style="margin-top: 8px">
+                <div class="col-sm-5" style="margin-top: 4px">
+                                 No. of credits:
+                </div>
+                <div class="col-sm-7">
+                  <input style="width: 90%; display: inline-block"  id="recruiterAddCredit" placeholder="Enter no. of credits" type="tel" class="form-control input-md">
+                </div>
+              </div>
+              <div class="btn btn-default" style="background: #37a12f; color: #fff; margin: 24px 0 24px 0; width: 100%" onclick="computeNewCreditValue()">Update Pack</div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
     <!-- Javascript import -->
 
