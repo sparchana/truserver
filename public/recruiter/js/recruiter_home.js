@@ -131,10 +131,7 @@ function processDataNotSelectedReason(returnedData){
 }
 
 function processDataGetJobPostDetails(returnedData) {
-    var jobPostList = [];
-    $.each(returnedData, function (key, value) {
-        jobPostList.push(value);
-    });
+    var jobPostList = returnedData;
     newCount = 0;
 
     if(jobPostList.length == 0){
