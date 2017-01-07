@@ -44,6 +44,7 @@ $(document).ready(function(){
             type: "POST",
             url: "/getAllLocality",
             data: false,
+            async: false,
             contentType: false,
             processData: false,
             success: processDataCheckLocality
@@ -57,6 +58,7 @@ $(document).ready(function(){
             type: "POST",
             url: "/getAllCompanyType",
             data: false,
+            async: false,
             contentType: false,
             processData: false,
             success: processDataCompanyType
@@ -380,7 +382,8 @@ function processDataCompany(returnedData) {
 
 
 function processDataUpdateCompany(returnedData) {
-    if(returnedData.status == 2){
+    companyId = returnedData.companyId;
+    if(returnedData.status == 1 || returnedData.status == 2){
         try{
             var rec = {
                 recruiterMobile: ($("#rec_mobile").val()).substring(3, 13),
@@ -447,6 +450,8 @@ function validateCompanyVal(val, text) {
     returnedCompanyName = text;
     if(isNaN(parseInt(val))){
         val = 0;
+        companyId = 0;
+        returnedCompanyName = text;
         clearCompanyDetails();
     } else{
         val = parseInt(val);
@@ -476,7 +481,7 @@ function resetCompanyIdval(val, text) {
 }
 
 function clearCompanyDetails() {
-    $('#rec_company_name').tokenize().clear();
+//    $('#rec_company_name').tokenize().clear();
     $('#rec_company_type').tokenize().clear();
     $('#rec_company_locality').tokenize().clear();
 

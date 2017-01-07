@@ -376,7 +376,6 @@ public class Application extends Controller {
 
         if (companyLogo != null) {
             String fileName = companyLogo.getFilename();
-            Logger.info(fileName + " ------");
 
             File file = (File) companyLogo.getFile();
             Logger.info("uploaded! " + fileName);
