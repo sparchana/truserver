@@ -1593,11 +1593,22 @@ public class CandidateService
         return 0;
     }
 
-    public static Boolean uploadResume(File resume, String fileName) {
+    public static Boolean uploadResume(File resume, String fileName, Long candidateId) {
 
         JSONObject responseJson = null;
         JSONObject profileJson = null;
         String personId;
+
+        Candidate existingCandidate = null;
+        if(candidateId > 0) {
+            // we already have an existing candidate for this resume
+            existingCandidate = Candidate.find.byId(Long.toString(candidateId));
+            if(existingCandidate == null) candidateId = 0L;
+            else {
+                // update filename
+                fileName = createCandidateResumeFilename(Long.toString(candidateId),existingCandidate.getCandidateFirstName(),fileName);
+            }
+        }
 
         // get handle to HireWand
         HireWandService hw = HireWandService.get();
@@ -1652,119 +1663,16 @@ public class CandidateService
                 personId = String.valueOf(result.getString("personid"));
                 Logger.info("personId="+personId);
 
-/*
-                // check for parsed resume from HW (max 30 seconds)
-                Integer i = 0;
-                HashMap profilesParamMap = new HashMap();
-                profilesParamMap.put("personid",personId);
-
-                // FOR TESTING HARD CODED PERSON ID
-                profilesParamMap.put("personid","5846cd49e4b077021f62fe6d");
-
-                response = null;
-
-                while(i++ <= 30) {
-                    try {
-                        long millis = System.currentTimeMillis();
-                        Logger.info("i="+i);
-
-                        // try to get the parsed resume from HW
-                        response = hw.call("profile", profilesParamMap);
-                        if(response != null) {Logger.info("response="+response);}
-
-                        //parse HW response
-
-                        try {
-                            responseJson = new JSONObject(String.valueOf(response.trim()));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            return Boolean.FALSE;
-                        }
-                        if(responseJson.has("Status") && responseJson.getString("Status").equalsIgnoreCase("success") ){
-                            Logger.info("responseJson.get(\"Status\")="+responseJson.getString("Status").toString());
-                            profileJson = responseJson.getJSONObject("Profile");
-                            Logger.info("profileJson="+profileJson.toString());
-                            break;
-                        }
-                        else if(responseJson != null || response != null) {
-                            if(responseJson != null) {Logger.info("responseJson="+responseJson);}
-                            if(response != null) {Logger.info("response="+response);}
-                        }
-
-                        Thread.sleep(1000 - millis % 1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                        return Boolean.FALSE;
+                    String awsName;
+                    if(candidateId > 0){
+                        // store resume in AWS with standard naming (candidateId_firstName_TimeStamp)
+                        awsName = fileName;
                     }
-                }
-*/
-
-/*
-                // did we get the response back?
-                if(profileJson == null) {
-                    // no we did not --> Timed out
-                    return Boolean.FALSE;
-                }
-                else{
-                    // yes we did...
-
-                    // get all phone number(s) for this candidate
-                    List<String> mobileNos = new ArrayList<>();
-                    if(profileJson.has("PhoneNos")){
-                        JSONArray mobiles = profileJson.getJSONArray("PhoneNos");
-                        for (int j = 0; j < mobiles.length(); j++) {
-                            mobileNos.add(mobiles.getString(j));
-                            Logger.info("mobiles.getString(j)="+mobiles.getString(j));
-                        }
+                    else {
+                        // store resume in AWS with person Id
+                        awsName = personId;
+                        awsName += fileName.substring(fileName.lastIndexOf("."));
                     }
-*/
-/*
-
-                    // primary key missing!!! Cannot create candidate
-                    if(mobileNos.size() == 0) return Boolean.FALSE;
-
-                    // get first matching candidate
-                    Candidate candidate = null;
-                    for(String m:mobileNos){
-                        candidate = isCandidateExists(m);
-                        if(candidate != null) {
-                            Logger.info("Candidate found for mobile no = "+m);
-                            break;
-                        }
-                        Logger.info("Candidate not found for mobile no = "+m);
-                    }
-                    Long candidateId = 0L;
-                    String candidateName = "";
-
-                    // no candidate found... Create
-                    if(candidate == null) {
-                        Logger.info("Candidate not found. Attempting to create");
-
-                        // map to candidate request
-                        AddSupportCandidateRequest addSupportCandidateRequest = mapFromHWToCandidate(profileJson);
-
-                        // create candidate
-                        Logger.info("About to call CandidateService.createCandidateProfile");
-                        CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                                InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE,
-                                ServerConstants.UPDATE_ALL_BY_SUPPORT);
-
-                        // get candidate Id, Name
-                        candidateId = candidateSignUpResponse.getCandidateId();
-                        candidateName = candidateSignUpResponse.getCandidateFirstName();
-                        Logger.info("New candidateId ="+candidateId);
-
-                    }
-                    // candidate found... Update
-                    else{
-
-                    }
-*/
-
-                    // store resume in AWS with person Id
-                    String awsName = personId;//candidateId+"_"+candidateName;
-                    //awsName += "_"+new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date());
-                    awsName += fileName.substring(fileName.lastIndexOf("."));
                     Logger.info("AWS upload fileName ="+awsName);
 
                     String path = uploadResumeToAWS(resume,awsName);
@@ -1783,7 +1691,7 @@ public class CandidateService
                         CandidateResumeRequest candidateResumeRequest = new CandidateResumeRequest();
 
                         // Prepare the Request
-                        //candidateResumeRequest.setCandidate(candidateId);
+                        if(candidateId > 0) candidateResumeRequest.setCandidate(candidateId);
                         candidateResumeRequest.setCreatedBy("Self");
                         candidateResumeRequest.setExternalKey(personId);
                         candidateResumeRequest.setFilePath(path);
@@ -1794,7 +1702,7 @@ public class CandidateService
 
                         if(candidateResumeResponse.getStatus() == TruResponse.STATUS_FAILURE) {
                             // error reported, delete the AWS entry
-                            removeResumeFromAws(path.replace("https://s3.amazonaws.com/",""));
+                            removeResumeFromAws(path.replace("https://s3.amazonaws.com/trujobs.in/",""));
                             return Boolean.FALSE;
                         }
 
@@ -1812,13 +1720,13 @@ public class CandidateService
 
     }
 
-    public static AddSupportCandidateRequest mapFromHWToCandidate(HireWandResponse.Profile profile){
+
+    public static AddSupportCandidateRequest mapFromHWToCandidate(HireWandResponse.Profile profile, Candidate existingCandidate){
         Logger.info("Entering mapFromHWToCandidate");
         AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
 
         // initialize all lists (else, we're looking at NPEs during creation)
         List<Integer> candidateIdProof = new ArrayList<>();
-        //addSupportCandidateRequest.setCandidateIdProof(candidateIdProof);
         List<CandidateSkills> candidateSkills = new ArrayList<>();
         addSupportCandidateRequest.setCandidateSkills(candidateSkills);
         List<CandidateKnownLanguage> candidateLanguageKnown = new ArrayList<>();
@@ -1826,7 +1734,7 @@ public class CandidateService
         addSupportCandidateRequest.setDeactivationStatus(Boolean.FALSE);
 
         if(profile == null) return addSupportCandidateRequest;
-        else{
+        else if (existingCandidate == null){
 
             // candidate firstName and secondName
             String candidateName = profile.Name;
@@ -1855,32 +1763,9 @@ public class CandidateService
                 else break;
             }
 
-
-
-/*
-            // Date candidateDob
-            if(!(profile.path("personaldetails").isMissingNode()) &&
-               !(profile.path("personaldetails").path("dateofbirth").isMissingNode())){
-                DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-                try {
-                    Date date = format.parse(profile.path("personaldetails").path("dateofbirth").asText());
-                    addSupportCandidateRequest.setCandidateDob(date);
-                } catch (java.text.ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            // Integer candidateGender
-            if(!(profile.path("gender").isMissingNode()) &&
-                    !(profile.path("gender").path("display").isMissingNode())){
-                if(profile.path("gender").path("display").asText() == "male"){
-                    addSupportCandidateRequest.setCandidateGender(ServerConstants.GENDER_MALE);
-                }
-                else{
-                    addSupportCandidateRequest.setCandidateGender(ServerConstants.GENDER_FEMALE);
-                }
-            }
-*/
+        }
+        else if (existingCandidate == null) {
+            addSupportCandidateRequest.setCandidateMobile(existingCandidate.getCandidateMobile());
         }
 
         Logger.info("Exiting mapFromHWToCandidate");
@@ -1926,9 +1811,9 @@ public class CandidateService
 
             AmazonS3 s3client = new AmazonS3Client(credentials);
             String bucketName = ServerConstants.AWS_S3_BUCKET_NAME;
-            s3client.copyObject(bucketName,fromKey,bucketName,toKey);
+            s3client.copyObject(bucketName,(ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+fromKey),bucketName,(ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+toKey));
         } catch (Exception e){
-            Logger.info("Exception while copying resume from AWS with key ="+fromKey+" Exception: " + e);
+            Logger.info("Exception while copying resume from AWS with key ="+(ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+fromKey)+" Exception: " + e);
         }
     }
 
@@ -1940,40 +1825,47 @@ public class CandidateService
 
             AmazonS3 s3client = new AmazonS3Client(credentials);
             String bucketName = ServerConstants.AWS_S3_BUCKET_NAME;
-            s3client.deleteObject(bucketName,key);
+            s3client.deleteObject(bucketName,(ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+key));
         } catch (Exception e){
-            Logger.info("Exception while deleting resume from AWS with key ="+key+" Exception: " + e);
+            Logger.info("Exception while deleting resume from AWS with key ="+(ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+key)+" Exception: " + e);
         }
     }
 
     public static Boolean updateResume(String personId, HireWandResponse.Profile profile, Boolean duplicate){
 
-        //get candidate mobile number
-        // get all phone number(s) for this candidate
-        List<String> mobileNos = new ArrayList<>();
+        // get the existing entry from CandidateResume
+        CandidateResume candidateResume = CandidateResume.find.where().eq("external_key",personId).findUnique();
+        Candidate candidate = null;
         Boolean isNew = Boolean.FALSE;
 
-        for (int j = 0; j < profile.PhoneNos.size(); j++) {
-            mobileNos.add(StringUtils.right(profile.PhoneNos.get(j).toString(),10));
-            Logger.info("mobileNos(j)="+mobileNos.get(j));
+        // check if candidate is already known
+        if(candidateResume.getCandidate() != null){
+            candidate = candidateResume.getCandidate();
+            Logger.info("Updating resume for existing candidate with ID = "+candidate.getCandidateId());
         }
+        else{
+            //get candidate mobile number
+            // get all phone number(s) for this candidate
+            List<String> mobileNos = new ArrayList<>();
 
-        // primary key missing!!! Cannot create candidate
-        if(mobileNos.size() == 0) return Boolean.FALSE;
-
-        // get first matching candidate
-        Candidate candidate = null;
-        for(String m:mobileNos){
-            candidate = isCandidateExists(m);
-            if(candidate != null) {
-                Logger.info("Candidate found for mobile no = "+m);
-                break;
+            for (int j = 0; j < profile.PhoneNos.size(); j++) {
+                mobileNos.add(StringUtils.right(profile.PhoneNos.get(j).toString(),10));
+                Logger.info("mobileNos(j)="+mobileNos.get(j));
             }
-            Logger.info("Candidate not found for mobile no = "+m);
-        }
 
-        Long candidateId = 0L;
-        String candidateName = "";
+            // primary key missing!!! Cannot create candidate
+            if(mobileNos.size() == 0) return Boolean.FALSE;
+
+            // get first matching candidate
+            for(String m:mobileNos){
+                candidate = isCandidateExists(m);
+                if(candidate != null) {
+                    Logger.info("Candidate found for mobile no = "+m);
+                    break;
+                }
+                Logger.info("Candidate not found for mobile no = "+m);
+            }
+        }
 
         // no candidate found... Create
         if(candidate == null) {
@@ -1986,7 +1878,7 @@ public class CandidateService
         }
 
         // map to candidate request
-        AddSupportCandidateRequest addSupportCandidateRequest = mapFromHWToCandidate(profile);
+        AddSupportCandidateRequest addSupportCandidateRequest = mapFromHWToCandidate(profile, candidate);
 
         // create/update candidate
         Logger.info("About to call CandidateService.createCandidateProfile");
@@ -1994,38 +1886,57 @@ public class CandidateService
                 InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE,
                 ServerConstants.UPDATE_ALL_BY_SUPPORT);
 
+        Long candidateId = 0L;
+        String candidateName = "";
+
         // get candidate Id, Name
         candidateId = candidateSignUpResponse.getCandidateId();
         candidateName = candidateSignUpResponse.getCandidateFirstName();
         Logger.info("New/Updated candidateId ="+candidateId);
 
-        // get the existing entry from CandidateResume
-        CandidateResume candidateResume = CandidateResume.find.where().eq("external_key",personId).findUnique();
-        // recreate existing AWS object key
-        String existingKey = candidateResume.getFilePath();
-        existingKey = existingKey.replace("https://s3.amazonaws.com/trujobs.in/","");
-        // create new key
-        String awsName = "candidateResumes/"+candidateId+"_"+candidateName;
-        awsName += "_"+new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date());
-        awsName += existingKey.substring(existingKey.lastIndexOf("."));
-        // rename (copy and delete) resume in AWS
-        Logger.info("AWS replacing old key="+existingKey+ " with new key="+awsName);
-        copyResumeinAws(existingKey,awsName);
-        removeResumeFromAws(existingKey);
+        if(candidateResume.getCandidate() == null){
+            // recreate existing AWS object key
+            String existingKey = candidateResume.getFilePath();
+            existingKey = existingKey.replace("https://s3.amazonaws.com/trujobs.in/","");
+            // create new key
+            String awsName = createCandidateResumeFilename(Long.toString(candidateId),candidateName,existingKey);//"candidateResumes/"+candidateId+"_"+candidateName;
+            // rename (copy and delete) resume in AWS
+            Logger.info("AWS replacing old key="+existingKey+ " with new key="+awsName);
+            copyResumeinAws(existingKey,awsName);
+            removeResumeFromAws(existingKey);
+        }
 
         // Update CandidateResume Object
         CandidateResumeRequest candidateResumeRequest = new CandidateResumeRequest();
         candidateResumeRequest.setCandidateResumeId(candidateResume.getCandidateResumeId());
-        if(isNew) candidateResumeRequest.setCandidate(candidateId);
-        else candidateResumeRequest.setCandidate(candidateResume.getCandidate().getCandidateId());
         candidateResumeRequest.setParsedResume(profile.ProfileJSON);
-        List<String> changedFields = new ArrayList<String>(Arrays.asList("parsedResume","candidate"));
+
+        List<String> changedFields;
+        // check if candidate is already known
+        if(candidateResume.getCandidate() == null){
+            // not known - need to set candidate reference
+            if(isNew) candidateResumeRequest.setCandidate(candidateId);
+            else candidateResumeRequest.setCandidate(candidateResume.getCandidate().getCandidateId());
+            changedFields = new ArrayList<String>(Arrays.asList("parsedResume","candidate"));
+        }
+        else{
+            // already known - only updating parsed resume string
+            changedFields = new ArrayList<String>(Arrays.asList("parsedResume"));
+        }
+
         candidateResumeRequest.setChangedFields(changedFields);
         CandidateResumeService candidateResumeService = new CandidateResumeService();
         Logger.info("UpdateResume(): About to call candidateResumeService.update for id = "+candidateResume.getCandidateResumeId()+" referencing Candidate Id = "+candidateId);
         if(candidateResumeService.update(candidateResumeRequest).getStatus() == TruResponse.STATUS_SUCCESS) return Boolean.TRUE;
         else return Boolean.FALSE;
 
+    }
+
+    public static String createCandidateResumeFilename(String candidateId, String candidateName, String fileName){
+        String name = candidateId+"_"+candidateName;
+        name += "_"+new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date());
+        name += fileName.substring(fileName.lastIndexOf("."));
+        return name;
     }
 
 }

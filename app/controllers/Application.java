@@ -42,6 +42,7 @@ import models.util.NotificationUtil;
 import models.util.ParseCSV;
 import models.util.SmsUtil;
 import models.util.Util;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import models.util.*;
@@ -2287,16 +2288,29 @@ public class Application extends Controller {
         return ok(views.html.resumeUpload.render());
     }
 
-    public static Result doResumeUpload(){
+    public static Result doResumeUpload(String candidateId){
 
         Http.MultipartFormData body = request().body().asMultipartFormData();
         Http.MultipartFormData.FilePart resume = body.getFile("resume");
+
+        Long cId = 0L;
+        if(candidateId != null) {
+            Logger.info("candidateId = "+ candidateId);
+            try{
+                cId = Long.parseLong(candidateId, 10);
+            } catch (NumberFormatException e){
+                Logger.info("Could not convert "+candidateId+" to Long. Throws "+ e.getMessage());
+            }
+            Logger.info("cId = "+ cId);
+        }
+        else Logger.info("candidateId is null");
+
         if (resume != null) {
             String fileName = resume.getFilename();
             Logger.info("fileName="+fileName);
             File file = (File) resume.getFile();
             Logger.info("Uploading! " + file);
-            if(CandidateService.uploadResume(file, fileName)){
+            if(CandidateService.uploadResume(file, fileName, cId)){
                 return ok("Resume uploaded");
             }
             else{
@@ -2368,65 +2382,6 @@ public class Application extends Controller {
             Logger.info("Failed to map json to hireWandResponse");
             return internalServerError();
         }
-/*
-        // extract parsed resume from request body
-        String profile = Arrays.toString(request().body().asFormUrlEncoded().get("profile"));
-
-        // is parsed resume available?
-        if(profile != null){
-            Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Parsed Resume Profile: " + profile);
-            HireWandResponse.Profile hireWandResponse = null;
-            // try to map it to HireWandResponse
-            ObjectMapper newMapper = new ObjectMapper();
-            try {
-                hireWandResponse = newMapper.readValue(profile, HireWandResponse.Profile.class);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Logger.info("Error while mapping from request to HireWandResponse");
-                return internalServerError();
-            }
-            // Check if the mapping was successful
-            if(hireWandResponse != null */
-/*&& hireWandResponse.Profile != null*//*
-){
-                Logger.info("Mapper converted successfully");
-                return ok();
-                */
-/*
-                // keep a copy of the raw string
-                hireWandResponse.Profile.ProfileJSON = profile;
-                Logger.info("hireWandResponse.Profile.ProfileJSON="+hireWandResponse.Profile.ProfileJSON);
-
-                // set duplicate flag
-                hireWandResponse.Duplicate = ((request().body().asFormUrlEncoded().get("duplicate")[0].equalsIgnoreCase("true"))?Boolean.TRUE:Boolean.FALSE);
-                Logger.info("hireWandResponse.Duplicate="+hireWandResponse.Duplicate);
-
-                // set PersonID
-                hireWandResponse.PersonID = request().body().asFormUrlEncoded().get("personid")[0];
-                Logger.info("hireWandResponse.PersonID="+hireWandResponse.PersonID);
-
-                if(!hireWandResponse.PersonID.isEmpty()){
-                    // send it downstream for processing
-                    CandidateService.updateResume(hireWandResponse.PersonID, hireWandResponse.Profile,hireWandResponse.Duplicate);
-                    return ok();
-                }
-                else {
-                    Logger.info("Hirewand callback invoked with empty PersonID");
-                    return badRequest();
-                }*//*
-
-
-            }
-            else {
-                Logger.info("HireWandResponse or HireWandResponse.Profile is null - Mapper could not translate from request to HireWandResponse");
-                return internalServerError();
-            }
-        }
-        else{
-            Logger.info("Hirewand callback invoked with empty Profile");
-            return badRequest();
-        }
-*/
     }
 
 }

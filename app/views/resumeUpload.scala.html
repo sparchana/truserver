@@ -8,17 +8,26 @@
 
 <form id="resumeUploadForm">
     <input type="file" multiple id="resumes" name="resumes">
+    <input type="number" id="candidateId" name="candidateId">
     <br><div id="list"></div>
 </form>
 
 <script>
 
   function handleFileSelect(evt) {
+
+    console.log("entered handleFileSelect");
     // FileList object
     var files = evt.target.files;
 
-    // files is a FileList of File objects. List some properties.
+    var url = "/addResume/";
+    console.log("candidateId.val()= "+$('#candidateId').val());
+    if($('#candidateId').val() > 0) url += "?candidateId="+Number($('#candidateId').val()).toString();
+    console.log("url= "+url);
+
     var output = [];
+
+    // files is a FileList of File objects. List some properties.
     for (var i = 0, f; f = files[i]; i++) {
 
       output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
@@ -32,7 +41,7 @@
 	        try {
 	            $.ajax({
 	                type: "POST",
-	                url: "/addResume",
+	                url: url,
 	                data: data,
 	                async: true,
 	                cache: false,
