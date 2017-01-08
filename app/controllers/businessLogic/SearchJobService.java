@@ -208,8 +208,10 @@ public class SearchJobService {
         // create interaction params
         StringBuilder result = new StringBuilder();
         result.append("Search for ");
-        result.append(StringUtils.join(", ", searchParamsResponse.getSearchKeywords()) + " jobs ");
-        result.append("@" + (searchParamsResponse.getLocality() != null ? searchParamsResponse.getLocality().getLocalityName() : "All Bangalore"));
+        if(searchParamsResponse.getSearchKeywords() != null && searchParamsResponse.getSearchKeywords().size() > 0){
+            result.append(StringUtils.join(", ", searchParamsResponse.getSearchKeywords()));
+        }
+        result.append(" jobs @" + (searchParamsResponse.getLocality() != null ? searchParamsResponse.getLocality().getLocalityName() : "All Bangalore"));
         result.append(" with filter ");
         result.append(" Edu: " + (searchParamsResponse.getEducation() != null ? searchParamsResponse.getEducation().getEducationName() : " ANY_EDUCATION"));
         result.append(" Exp: " + (searchParamsResponse.getExperience() != null ? searchParamsResponse.getExperience().getExperienceType() : " ANY_EXPERIENCE"));
