@@ -143,10 +143,12 @@ var app = (function ($) {
         // basic ui rendering methods
         render: {
             renderLoaderStart:function(){
+                console.log("start loader");
                 $("#backgroundLoader").show();
                 $("#jobLoaderDiv").show();
             },
             renderLoaderStop:function(){
+                console.log("stop loader");
                 $("#backgroundLoader").hide();
                 $("#jobLoaderDiv").hide();
             },
@@ -512,13 +514,14 @@ var app = (function ($) {
                 document.getElementById("searchText").value = searchBoxText.toTitleCase();
                 if(document.getElementById("searchText").value == ", "){
                     document.getElementById("searchText").value = "";
-                    document.getElementById("searchText").placeholder = "Search Jobs,Company";
+                    document.getElementById("searchText").placeholder = "Type company name or job role or title";
                 }
             },
             search: function (isBasicResetRequired, shouldScrollToTop) {
                 app.render.renderLoaderStart();
                 if(!app.shouldDoSearch){
                     console.log("no search!");
+                    app.render.renderLoaderStop();
                     return;
                 }
                 console.log("do search ");
@@ -544,7 +547,7 @@ var app = (function ($) {
                     data: JSON.stringify(d),
                     success: function (returnedData) {
                         app.do.parseSearchResponse(returnedData);
-
+                        app.render.renderLoaderStop();
                     },
                     error: function (xhr, a, message) {
                         console.log("error: " + message);
@@ -666,7 +669,6 @@ var app = (function ($) {
             noJobsFound: function (data) {
                 if(data){
                     $('#noJobsDiv').show();
-
                     $('#job_cards_inc').hide();
                     $('#jobCardControl').hide();
                     app.shouldDoSearch = false;
@@ -776,7 +778,6 @@ var app = (function ($) {
                 $(".last").hide();
                 $(".prev a").html("<<");
                 $(".next a").html(">>");
-                app.render.renderLoaderStop();
             },
             pagination: function (noOfPages) {
                 // this boolean prevents from looping into pagination when search is triggered
