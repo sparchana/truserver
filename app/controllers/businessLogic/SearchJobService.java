@@ -250,6 +250,9 @@ public class SearchJobService {
         // modify result jobPosts add CTA in it
         computeCTA(response.getResults().getAllJobPost(), candidateId);
 
+        // modify result jobPosts & remove sensitive information
+        removeSensitiveDetail(response.getResults().getAllJobPost());
+
         return response;
     }
 
@@ -316,7 +319,6 @@ public class SearchJobService {
      */
     public void computeCTA(List<JobPost> jobPostList, Long candidateId){
 
-        List<Long> jobPostIdList = new ArrayList<>();
         Map<Long, JobPostWorkflow> jobApplicationMap = new HashMap<>();
 
         if(candidateId != null) {
@@ -343,10 +345,7 @@ public class SearchJobService {
                 }
             }
 
-            jobPostIdList.add(jobPost.getJobPostId());
         }
-
-        return;
     }
 
     public void computeCTA(JobPost jobPost, Long candidateId){
@@ -354,5 +353,13 @@ public class SearchJobService {
         jobPostList.add(jobPost);
 
         computeCTA(jobPostList, candidateId);
+    }
+
+
+    public void removeSensitiveDetail(List<JobPost> jobPostList) {
+
+        for(JobPost jobPost: jobPostList){
+            jobPost.setRecruiterProfile(null);
+        }
     }
 }
