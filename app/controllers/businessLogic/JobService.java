@@ -16,6 +16,7 @@ import com.avaje.ebean.Model;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerConstants;
 import dao.JobPostDAO;
+import dao.JobPostWorkFlowDAO;
 import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
@@ -291,6 +292,22 @@ public class JobService {
 
             if(addJobPostRequest.getJobPostStatusId() == ServerConstants.JOB_STATUS_PAUSED){
                 newJobPost.setResumeApplicationDate(addJobPostRequest.getResumeApplicationDate());
+
+                if(newJobPost.getJobPostId() != null){
+                    Calendar now = Calendar.getInstance();
+                    Date today = now.getTime();
+
+                    List<JobPostWorkflow> jobPostWorkflowList =
+                            JobPostWorkFlowDAO.getConfirmedInterviewsBetweenDate(
+                                    newJobPost.getJobPostId(),
+                                    today, addJobPostRequest.getResumeApplicationDate());
+
+                    for(JobPostWorkflow jobPostWorkflow : jobPostWorkflowList){
+                        SmsUtil.sendPausedJobSmsAlert(jobPostWorkflow.getCandidate());
+                    }
+                }
+
+
             } else{
                 newJobPost.setResumeApplicationDate(null);
             }

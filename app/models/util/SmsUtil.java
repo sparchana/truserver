@@ -628,4 +628,10 @@ public class SmsUtil {
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
     }
 
+    public static void sendPausedJobSmsAlert(Candidate candidate) {
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", TODO paused interview msg";
+
+        addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
+    }
+
 }
