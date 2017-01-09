@@ -504,10 +504,14 @@ var cardModule = (function ($) {
             },
             getDeActivateMessage: function () {
                 //ajax call || its a promise
-                $.ajax({type: 'GET', url: '/getDeactivationMessage'}).then(function (returnedData) {
-                        if (returnedData != null) {
-                            console.log(returnedData);
+                $.ajax({type: 'POST', url: '/getDeActivationMessage'}).then(function (returnedData) {
+                        if (returnedData != null
+                            && returnedData.deActivationMessage != null
+                            && cardModule.deActivationMessage == null) {
+
                             cardModule.deActivationMessage = returnedData.deActivationMessage;
+                        } else {
+                            cardModule.deActivationMessage = "";
                         }
                     },
                     function (xhr, state, error) {
