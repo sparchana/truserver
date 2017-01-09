@@ -340,7 +340,19 @@ public class RecruiterController {
                 }
             }
 
-            return ok(toJson(recruiterJobPostResponseMap));
+            List<RecruiterJobPostObject> listToBeReturned = new ArrayList<>();
+
+            for(Map.Entry<?, RecruiterJobPostObject> map : recruiterJobPostResponseMap.entrySet()) {
+                RecruiterJobPostObject object = new RecruiterJobPostObject();
+                object.setJobPost(map.getValue().getJobPost());
+                object.setTotalCount(map.getValue().getTotalCount());
+                object.setPendingCount(map.getValue().getPendingCount());
+                object.setUpcomingCount(map.getValue().getUpcomingCount());
+
+                listToBeReturned.add(object);
+            }
+
+            return ok(toJson(listToBeReturned));
         }
         return ok("0");
     }

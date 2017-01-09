@@ -466,9 +466,9 @@ public class JobSearchService {
                     .where()
                     .or(Expr.eq("jobPostEducation.educationId", education.getEducationId()),
                             Expr.eq("jobPostEducation.educationId", ServerConstants.EDUCATION_TYPE_ANY))
-                    .eq("jobPostEducation.educationId", education.getEducationId())
                     .query();
         }
+
         if (experience != null) {
             query = query.select("*").fetch("jobPostExperience")
                     .where()

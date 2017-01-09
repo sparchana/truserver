@@ -1,5 +1,6 @@
 package Scheduler;
 
+import api.ServerConstants;
 import common.TestConstants;
 import controllers.scheduler.SchedulerManager;
 import dao.CandidateDAO;
@@ -11,8 +12,11 @@ import play.Application;
 import play.Logger;
 import play.test.TestServer;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 
 import static play.test.Helpers.*;
 
@@ -25,6 +29,11 @@ import static play.test.Helpers.*;
 
 @RunWith(Parameterized.class)
 public class SchedulerManagerTest {
+
+
+    private Calendar mCalendar = Calendar.getInstance();
+    private Date mToday = mCalendar.getTime();
+
     enum MethodType {
         SMS,
         EMAIL,
@@ -32,6 +41,7 @@ public class SchedulerManagerTest {
         COMPUTE_DELAY,
         COMPUTE_DELAY_SDI,
         SDI,
+        TEST,
         DC // DeActive candidate
     }
 
@@ -68,6 +78,7 @@ public class SchedulerManagerTest {
                 {MethodType.SDI, 0, 2, 0},
                 {MethodType.COMPUTE_DELAY_SDI, 2, 0, 0},
                 {MethodType.DC, 2, 0, 0},
+                {MethodType.TEST, 2, 0, 0},
         });
     }
 
@@ -91,12 +102,13 @@ public class SchedulerManagerTest {
             ));
         }
     }
+
     public void testCreateSameDayInterviewAlertEvent() {
         if (type == MethodType.SDI) {
             Application fakeApp = fakeApplication();
             TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
             running(server, () -> {
-//                schedulerManager.createSameDayInterviewAlertEvent(this.min);
+            //  schedulerManager.createSameDayInterviewAlertEvent(this.min);
             });
         }
     }
@@ -112,6 +124,23 @@ public class SchedulerManagerTest {
                             " status: " + candidate.getCandidateStatusDetail().getCandidateStatusDetailId()
                             + " expiry: " + candidate.getCandidateStatusDetail().getStatusExpiryDate());
                 }
+            });
+        }
+    }
+
+    public void test(){
+        if (type == MethodType.TEST) {
+            Application fakeApp = fakeApplication();
+            TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
+            running(server, () -> {
+                SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
+
+                mCalendar.set(Calendar.DAY_OF_MONTH, mToday.getDate() + 1);
+                Date tomorrow = mCalendar.getTime();
+
+                mCalendar = Calendar.getInstance(); // reset calendar back to current state
+
+                Logger.info("date: " + sdf.format(tomorrow));
             });
         }
     }

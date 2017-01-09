@@ -76,10 +76,7 @@ function processDataGenerateJobPostView(returnedData) {
     } else{
         $("#jobTable").show();
         newCount = 0;
-        var jobPostList = [];
-        $.each(returnedData, function (key, value) {
-            jobPostList.push(value);
-        });
+        var jobPostList = returnedData;
         var parent = $('.myJobsRecruiter');
         if(Object.keys(jobPostList).length){
             jobPostList.reverse();

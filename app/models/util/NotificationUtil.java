@@ -30,8 +30,6 @@ public class NotificationUtil {
                 ". Congratulations!";
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(msg, "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_COMPLETED);
-        } else{
-            Logger.info("Token not available");
         }
     }
 
@@ -39,8 +37,6 @@ public class NotificationUtil {
         String msg = "Hi " + candidate.getCandidateFirstName() + "! You were not selected for the job: " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName();
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(msg, "Interview Rejected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_COMPLETED);
-        } else{
-            Logger.info("Token not available");
         }
     }
 
@@ -58,8 +54,6 @@ public class NotificationUtil {
 
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(msg, "Interview Confirmed", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
-        } else{
-            Logger.info("Token not available");
         }
     }
 
@@ -77,8 +71,6 @@ public class NotificationUtil {
 
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(msg, "Interview Rescheduled", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
-        } else{
-            Logger.info("Token not available");
         }
     }
 
@@ -88,8 +80,6 @@ public class NotificationUtil {
 
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(msg, "Application not shortlisted", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
-        } else{
-            Logger.info("Token not available");
         }
     }
 
@@ -99,8 +89,6 @@ public class NotificationUtil {
 
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(msg, "Application Shortlisted", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
-        } else{
-            Logger.info("Token not available");
         }
     }
 
@@ -120,8 +108,6 @@ public class NotificationUtil {
 
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(stringBuilder.toString(), "Job Application Initiated!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
-        } else{
-            Logger.info("Token not available");
         }
     }
 
@@ -153,8 +139,6 @@ public class NotificationUtil {
 
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(msg, notificationTitle, candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
-        } else{
-            Logger.info("Token not available");
         }
     }
 
@@ -164,8 +148,6 @@ public class NotificationUtil {
 
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(msg, "We value your feedback!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
-        } else{
-            Logger.info("Token not available");
         }
 
     }
@@ -177,8 +159,6 @@ public class NotificationUtil {
 
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(msg, "Your TruJobs profile is incomplete", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
-        } else{
-            Logger.info("Token not available");
         }
     }
 
@@ -188,8 +168,6 @@ public class NotificationUtil {
 
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(msg, jobCount + " new jobs near you!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
-        } else{
-            Logger.info("Token not available");
         }
     }
 
