@@ -66,7 +66,12 @@ public class SODCandidateActivationTask extends TimerTask {
                 Logger.info("No Candidates found due activation for tomorrow !");
                 return;
             }
-            DeactivationService.activateCandidates(candidateList);
+
+            /**
+             *  when task runner runs, there is no session available, to avoid 'No HTTP Context found Exception'
+             *  we pass false as param
+             * */
+            DeactivationService.activateCandidates(candidateList, false);
             // Scheduler Task Actual work ends
 
             // building scheduler stat obj resume

@@ -2,29 +2,26 @@ package Scheduler;
 
 import common.TestConstants;
 import controllers.scheduler.SchedulerManager;
+import dao.CandidateDAO;
+import models.entity.Candidate;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
 import play.Application;
 import play.Logger;
 import play.test.TestServer;
+
 import java.util.Arrays;
 import java.util.Collection;
 
+import static play.test.Helpers.*;
+
 /**
  * Created by zero on 8/12/16.
- *
- *
+ * <p>
+ * <p>
  * prod/activator-1.3.9-minimal/bin/activator "test-only Scheduler.SchedulerManagerTest"
- *
  */
-
-
-import static play.test.Helpers.fakeApplication;
-import static play.test.Helpers.running;
-import static play.test.Helpers.testServer;
 
 @RunWith(Parameterized.class)
 public class SchedulerManagerTest {
@@ -34,7 +31,8 @@ public class SchedulerManagerTest {
         IN_APP_NOTIFICATION,
         COMPUTE_DELAY,
         COMPUTE_DELAY_SDI,
-        SDI
+        SDI,
+        DC // DeActive candidate
     }
 
     private SchedulerManagerTest.MethodType type;
@@ -69,6 +67,7 @@ public class SchedulerManagerTest {
                 {MethodType.COMPUTE_DELAY, 20, 00, 0},
                 {MethodType.SDI, 0, 2, 0},
                 {MethodType.COMPUTE_DELAY_SDI, 2, 0, 0},
+                {MethodType.DC, 2, 0, 0},
         });
     }
 
@@ -92,13 +91,27 @@ public class SchedulerManagerTest {
             ));
         }
     }
-    @Test
     public void testCreateSameDayInterviewAlertEvent() {
         if (type == MethodType.SDI) {
             Application fakeApp = fakeApplication();
             TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
             running(server, () -> {
 //                schedulerManager.createSameDayInterviewAlertEvent(this.min);
+            });
+        }
+    }
+
+    public void testDeactiveCandidate() {
+        if (type == MethodType.DC) {
+            Application fakeApp = fakeApplication();
+            TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
+            running(server, () -> {
+                for(Candidate candidate: CandidateDAO.getNextDayDueDeActivatedCandidates()){
+                    Logger.info("candidate deActivated");
+                    Logger.info("candidateId: " + candidate.getCandidateId() +
+                            " status: " + candidate.getCandidateStatusDetail().getCandidateStatusDetailId()
+                            + " expiry: " + candidate.getCandidateStatusDetail().getStatusExpiryDate());
+                }
             });
         }
     }

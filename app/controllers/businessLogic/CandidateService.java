@@ -1122,7 +1122,7 @@ public class CandidateService
             // Remove from candidateStatusDetail and change candidateStatus to Active
             candidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique());
 
-            InteractionService.createInteractionForActivateCandidate(candidate.getCandidateUUId(), true);
+            InteractionService.createInteractionForActivateCandidate(candidate.getCandidateUUId(), true, session().get("sessionUsername"));
             return null;
         }
         return null;

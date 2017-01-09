@@ -230,7 +230,6 @@ public class Candidate extends Model {
     }
 
     public void candidateUpdate() {
-        Logger.info("inside CandidateUpdate(), Candidate updated" );
         this.candidateUpdateTimestamp = new Timestamp(System.currentTimeMillis());
         this.update();
     }

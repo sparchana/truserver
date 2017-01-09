@@ -90,14 +90,14 @@ public class CandidateDAO {
     }
 
     public static List<Candidate> getNextDayDueDeActivatedCandidates() {
-        Calendar cal = new GregorianCalendar();
-        java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
+        Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, 1);
         java.sql.Date tomorrow = new java.sql.Date(cal.getTimeInMillis());
 
         DeactivatedCandidateRequest deactivatedCandidateRequest = new DeactivatedCandidateRequest();
-        deactivatedCandidateRequest.setFromThisDate(today);
         deactivatedCandidateRequest.setFromThisDate(tomorrow);
+        deactivatedCandidateRequest.setToThisDate(tomorrow);
+
         return DeactivationService.getDeActivatedCandidates(deactivatedCandidateRequest);
     }
 }

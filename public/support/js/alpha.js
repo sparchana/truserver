@@ -295,7 +295,7 @@ function renderDeactivatedCandidateResult(deactivatedCandidateList) {
         console.log(JSON.stringify(deactivatedCandidateList));
         deactivatedCandidateList.forEach(function (candidate) {
             returnedDataArray.push({
-                'cLID': '<a href="/candidateSignupSupport/'+candidate.lead.leadId+'" target="_blank">'+candidate.lead.leadId+'</a>',
+                'cLID': '<a href="/candidateSignupSupport/'+candidate.lead.leadId+'/false" target="_blank">'+candidate.lead.leadId+'</a>',
                 'candidateFirstName' : candidate.candidateFirstName +" "+candidate.candidateLastName,
                 'candidateMobile' : candidate.candidateMobile,
                 'isActive' : constructCheckBox(candidate.lead.leadId, candidate.candidateprofilestatus),
