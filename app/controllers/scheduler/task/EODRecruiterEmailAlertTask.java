@@ -31,7 +31,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
     private static final String BASE_URL = "http://trujobs.in/recruiter";
 
     private Calendar mCalendar = Calendar.getInstance();
-    private final Date mToday = mCalendar.getTime();
+    private Date mToday = mCalendar.getTime();
 
     private final SimpleDateFormat mSdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
 
@@ -91,7 +91,6 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
         mCalendar.set(Calendar.DAY_OF_MONTH, mToday.getDate() + 1);
         Date tomorrow = mCalendar.getTime();
 
-        mCalendar = Calendar.getInstance(); // reset calendar back to current state
 
         String subject = "TruJobs.in : Tomorrow's line up details inside! ";
         // Get all interview that are scheduled for tomorrow, reminder
@@ -109,6 +108,8 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
         Timestamp endTime = new Timestamp(System.currentTimeMillis());
 
         SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
+
+        mCalendar = Calendar.getInstance(); // reset calendar back to current state
     }
 
     private void sendEODSummary() {
