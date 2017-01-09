@@ -31,7 +31,10 @@ var app = (function ($) {
     };
     var app = {
         urlHistoryArray: [],
+        isNavBarLoaded: false,
         isUserLoggedIn: false,
+        prevUserLoginStatus: null,
+        hasLoginStatusChanged: false,
         shouldDoSearch: true,
         allJobRole: [],
         allLocation: [],
@@ -693,10 +696,21 @@ var app = (function ($) {
                 if (data != null) {
 
                     app.isUserLoggedIn = data.isUserLoggedIn;
-                    if(app.isUserLoggedIn){
-                        $('#nav_bar_inc').load('/navBarLoggedIn');
-                    } else {
-                        $('#nav_bar_inc').load('/navBar');
+                    if(app.prevUserLoginStatus == null) {
+                        app.prevUserLoginStatus = app.isUserLoggedIn;
+                    }
+                    if(app.prevUserLoginStatus != app.isUserLoggedIn){
+                        app.prevUserLoginStatus = app.isUserLoggedIn;
+                        app.hasLoginStatusChanged = true;
+                    }
+                    if(!app.isNavBarLoaded || app.hasLoginStatusChanged ) {
+                        app.hasLoginStatusChanged = false;
+                        if(app.isUserLoggedIn) {
+                            $('#nav_bar_inc').load('/navBarLoggedIn');
+                        } else {
+                            $('#nav_bar_inc').load('/navBar');
+                        }
+                        app.isNavBarLoaded = true;
                     }
 
                     // append search params to the UI
