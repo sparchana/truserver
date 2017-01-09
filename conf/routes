@@ -93,6 +93,7 @@ GET         /privacy                                                      contro
 GET         /updateIsAssessedToAssessed                                   controllers.Application.updateIsAssessedToAssessed()
 GET         /getAssessmentQuestions/                                      controllers.Application.getAssessmentQuestion(jobRoleIds: String ?= null, jobPostIds: String ?= null, limit: Integer ?= null)
 GET         /getJobPostAppliedStatus/:jobPostId                           controllers.Application.getJobPostAppliedStatus(jobPostId: Long)
+GET         /getDeactivationMessage                                       controllers.Application.getDeactivationMessage()
 
 POST        /addLead                                                      controllers.Application.addLead()
 POST        /addPassword                                                  controllers.Application.addPassword()

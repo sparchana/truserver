@@ -6,7 +6,7 @@
  *
  * Created by Hawk on 04/01/17.
  *
- * Dependency: jQuery, validation.js
+ * Dependency: jQuery, validation.js, bootstrap.min.js
  *
  * Pass a parent div to which needs JobCard appended
  *
@@ -25,8 +25,13 @@ var cardModule = (function ($) {
     };
 
     var cardModule = {
+        deActivationMessage: null,
         method: {
             genNewJobCard: function (_jobPostList, _parent) {
+                if(cardModule.deActivationMessage == null) {
+                    cardModule.method.getDeActivateMessage();
+                }
+
                 _jobPostList.forEach(function (jobPost) {
                     //!* get all localities of the jobPost *!/
                     var _jobLocality = jobPost.jobPostToLocalityList;
@@ -453,29 +458,8 @@ var cardModule = (function ($) {
                     var applyBtn = document.createElement("button");
                     applyBtn.className = "jobApplyBtn2";
                     var applyJobText ;
-                    if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != 4){
-                        if(jobPost.applyBtnStatus == 2) {
-                            applyJobText = "Book Interview";
-                        } else if(jobPost.applyBtnStatus == 3) {
-                            applyJobText = "Already Applied";
-                            applyBtn.disabled =  true;
-                            applyBtn.style = "background:#ffa726";
-                        } else if(jobPost.applyBtnStatus == 5) {
-                            applyJobText = "Application Closed";
-                            applyBtn.disabled =  true;
-                            applyBtn.style = "background:#ffa726";
-                        } else if(jobPost.applyBtnStatus == 6) {
-                            applyJobText = "Apply";
-                            applyBtn.disabled =  true;
-                            applyBtn.style = "background:#ffa726";
-                            applyBtn.onclick = function () {
-                                alert("Looks like your profile is temporarily suspended for new job applications. Please check back after 'deactivation expiry date' or call us at 8880007799 to request re-activation.'")
-                            };
-                        }
-                    } else {
-                        applyJobText = "Apply";
-                    }
-                    applyBtn.textContent = applyJobText;
+                    console.log("btnStatus: " + jobPost.applyBtnStatus);
+
                     applyBtnRow.appendChild(applyBtn);
                     applyBtnDiv.appendChild(applyBtnRow);
                     if(jobPost.applyBtnStatus == 5){
@@ -492,7 +476,42 @@ var cardModule = (function ($) {
                             console.log("exception occured!!" + exception);
                         }
                     };
+
+                    if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != 4){
+                        if(jobPost.applyBtnStatus == 2) {
+                            applyJobText = "Book Interview";
+                        } else if(jobPost.applyBtnStatus == 3) {
+                            applyJobText = "Already Applied";
+                            applyBtn.disabled =  true;
+                            applyBtn.style = "background:#ffa726";
+                        } else if(jobPost.applyBtnStatus == 5) {
+                            applyJobText = "Application Closed";
+                            applyBtn.disabled =  true;
+                            applyBtn.style = "background:#ffa726";
+                        } else if(jobPost.applyBtnStatus == 6) {
+                            applyJobText = "Apply";
+                            applyBtn.style = "background:#ffa726";
+                            applyBtn.onclick = function () {
+                                console.log(cardModule.deActivationMessage);
+                                notifyMsg(cardModule.deActivationMessage, 'danger');
+                            };
+                        }
+                    } else {
+                        applyJobText = "Apply";
+                    }
+                    applyBtn.textContent = applyJobText;
                 });
+            },
+            getDeActivateMessage: function () {
+                //ajax call || its a promise
+                $.ajax({type: 'GET', url: '/getDeactivationMessage'}).then(function (returnedData) {
+                        if (returnedData != null) {
+                            console.log(returnedData);
+                            cardModule.deActivationMessage = returnedData.deActivationMessage;
+                        }
+                    },
+                    function (xhr, state, error) {
+                    });
             }
         },
         validate: {
@@ -561,9 +580,29 @@ var cardModule = (function ($) {
     return cardModule;
 }(jQuery));
 
-
 // public card module handler
 function genNewJobCard(_jobPostList, parent) {
     console.log("jobcard working on " + _jobPostList.length + " jobpost");
     cardModule.method.genNewJobCard(_jobPostList, parent);
 }
+
+
+function notifyMsg(msg, type) {
+    if(typeof $.notify == 'function'){
+        $.notify({
+            message: msg,
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        }, {
+            type: type,
+            placement: {
+                from: "top",
+                align: "center"
+            }
+        });
+    } else {
+        alert(msg);
+    }
+};

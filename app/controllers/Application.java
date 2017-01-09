@@ -1,5 +1,6 @@
 package controllers;
 
+import dao.CandidateDAO;
 import dao.JobPostDAO;
 import api.InteractionConstants;
 import api.ServerConstants;
@@ -2286,5 +2287,26 @@ public class Application extends Controller {
         }
 
         return ok(toJson(JobPostWorkflowEngine.updateFeedback(addFeedbackRequest, Integer.valueOf(session().get("sessionChannel")))));
+    }
+
+    public static Result getDeactivationMessage() {
+        DeActivationStatusResponse response = new DeActivationStatusResponse();
+
+        if(session().get("candidateId") != null) {
+            Candidate candidate = CandidateDAO.getById(Long.parseLong(session().get("candidateId")));
+            SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_DDMMYYYY);
+
+            if(candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
+                String message = "Dear "+candidate.getCandidateFullName()+", " +
+                        "Looks like your profile is temporarily suspended for new job applications. " +
+                        "Please check back after "+sdf.format(candidate.getCandidateStatusDetail().getStatusExpiryDate())+" " +
+                        "or call us at 8880007799 to request re-activation.'";
+
+                response.setDeActivationMessage(message);
+                Logger.info("de Activation is available");
+                return ok(toJson(response));
+            }
+        }
+        return ok(toJson(response));
     }
 }

@@ -100,4 +100,8 @@ public class CandidateDAO {
 
         return DeactivationService.getDeActivatedCandidates(deactivatedCandidateRequest);
     }
+
+    public static Candidate getById(long candidateId) {
+        return Candidate.find.where().eq("candidateId", candidateId).findUnique();
+    }
 }

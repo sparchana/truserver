@@ -317,7 +317,7 @@ public class SearchJobService {
         List<Long> jobPostIdList = new ArrayList<>();
         Map<Long, JobPostWorkflow> jobApplicationMap = new HashMap<>();
         Candidate candidate = null;
-        boolean deacitveApply = false;
+        boolean deActiveApply = false;
 
         if(candidateId != null) {
             List<JobPostWorkflow> candidateAppliedJobs = JobPostWorkFlowDAO.candidateAppliedJobs(candidateId);
@@ -330,12 +330,12 @@ public class SearchJobService {
         }
 
         // de-active message for deactivated candidate, msg is handled at Front end
-        if(candidate != null && candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_ACTIVE){
-            deacitveApply = true;
+        if(candidate != null && candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE){
+            deActiveApply = true;
         }
         for(JobPost jobPost: jobPostList){
 
-            if(deacitveApply) {
+            if(deActiveApply) {
                 jobPost.setApplyBtnStatus(ServerConstants.DEACTIVE);
             } else {
                 // Add a check for already applied candidate
