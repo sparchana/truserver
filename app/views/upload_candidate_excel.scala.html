@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h2 class="form-signin-heading">Upload Excel File <a href="/logout"><button class="btn btn-danger">Logout</button></a></h2>
+    <form id="upload_excel" class="form-horizontal" name="upload_excel" enctype="multipart/form-data">
+        <label class="sr-only">Select File to Upload</label>
+        <input type="file" name="excelfile" id="excelfile" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+        <p>
+            <input type="submit" value="Upload" id="submit">
+        </p>
+    </form>
+</div> <!-- /container -->
+<script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>
+<script type="text/javascript" src="/assets/support/js/uploadCandidateExcel.js"></script>
+</body>
+</html>
