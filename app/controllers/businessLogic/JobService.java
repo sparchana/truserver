@@ -288,9 +288,16 @@ public class JobService {
         if (addJobPostRequest.getJobPostStatusId() != null) {
             JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
             newJobPost.setJobPostStatus(jobStatus);
+
+            if(addJobPostRequest.getJobPostStatusId() == ServerConstants.JOB_STATUS_PAUSED){
+                newJobPost.setResumeApplicationDate(addJobPostRequest.getResumeApplicationDate());
+            } else{
+                newJobPost.setResumeApplicationDate(null);
+            }
         } else{
             JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", ServerConstants.JOB_STATUS_ACTIVE).findUnique();
             newJobPost.setJobPostStatus(jobStatus);
+            newJobPost.setResumeApplicationDate(null);
         }
 
         if (addJobPostRequest.getJobPostJobRoleId() != null) {
