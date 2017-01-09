@@ -40,10 +40,6 @@ public class SchedulerManager implements Runnable {
         int mEODAadhaarTaskStartMin = (play.Play.application().configuration().getInt("schedulertask.eod.aadhaar.verification.start.min"));
         int mEODAadhaarTaskStartSec = (play.Play.application().configuration().getInt("schedulertask.eod.aadhaar.verification.start.sec"));
 
-        int mSODJobPostInfoStartHr = (play.Play.application().configuration().getInt("schedulertask.sod.jobpost.notifier.start.hr"));
-        int mSODJobPostInfoStartMin = (play.Play.application().configuration().getInt("schedulertask.sod.jobpost.notifier.start.min"));
-        int mSODJobPostInfoStartSec = (play.Play.application().configuration().getInt("schedulertask.sod.jobpost.notifier.start.sec"));
-
         int mEODJobPostInfoStartHr = (play.Play.application().configuration().getInt("schedulertask.eod.jobalert.notifier.start.hr"));
         int mEODJobPostInfoStartMin = (play.Play.application().configuration().getInt("schedulertask.eod.jobalert.notifier.start.min"));
         int mEODJobPostInfoStartSec = (play.Play.application().configuration().getInt("schedulertask.eod.jobalert.notifier.start.sec"));
@@ -53,6 +49,14 @@ public class SchedulerManager implements Runnable {
         int mEODRateUsPostInterviewSec = (play.Play.application().configuration().getInt("schedulertask.eod.rateus.notifier.start.sec"));
 
         int sameDayInterviewAlertEventPeriod = Integer.parseInt(play.Play.application().configuration().getString("schedulertask.sameDay.alert.period"));
+
+        int mSODJobPostInfoStartHr = (play.Play.application().configuration().getInt("schedulertask.sod.jobpost.notifier.start.hr"));
+        int mSODJobPostInfoStartMin = (play.Play.application().configuration().getInt("schedulertask.sod.jobpost.notifier.start.min"));
+        int mSODJobPostInfoStartSec = (play.Play.application().configuration().getInt("schedulertask.sod.jobpost.notifier.start.sec"));
+
+        int mSODCandidateActivationStartHr = (play.Play.application().configuration().getInt("schedulertask.sod.candidate.activation.start.hr"));
+        int mSODCandidateActivationStartMin = (play.Play.application().configuration().getInt("schedulertask.sod.candidate.activation.start.min"));
+        int mSODCandidateActivationStartSec = (play.Play.application().configuration().getInt("schedulertask.sod.candidate.activation.start.sec"));
 
         int mWeeklyNotifyAppDownloadDay = (play.Play.application().configuration().getInt("schedulertask.weekly.appdownload.notifier.start.day"));
         int mWeeklyNotifyAppDownloadHr = (play.Play.application().configuration().getInt("schedulertask.weekly.appdownload.notifier.start.hr"));
@@ -70,6 +74,7 @@ public class SchedulerManager implements Runnable {
 
         long jobPostInfoDelay = computeDelay(mSODJobPostInfoStartHr, mSODJobPostInfoStartMin , mSODJobPostInfoStartSec);
         long eodJobPostInfoDelay = computeDelay(mEODJobPostInfoStartHr, mEODJobPostInfoStartMin, mEODJobPostInfoStartSec);
+        long sodActivationDelay = computeDelay(mSODCandidateActivationStartHr, mSODCandidateActivationStartMin, mSODCandidateActivationStartSec);
 
         long rateUsPostInterviewDelay = computeDelay(mEODRateUsPostInterviewHr, mEODRateUsPostInterviewMin , mEODRateUsPostInterviewSec);
 
@@ -100,6 +105,8 @@ public class SchedulerManager implements Runnable {
         createWeeklyAlertEvent(weeklyCandidateAlertTaskDelay);
 
         createWeeklyProfileCompletionEvent(weeklyProfileCompletionTaskDelay);
+
+        createSODCandidateActivationEvent(sodActivationDelay);
 
     }
 
@@ -179,6 +186,13 @@ public class SchedulerManager implements Runnable {
         timer.schedule(eodJobAlertFcmTask, delay, oneDay);
     }
 
+    private void createSODCandidateActivationEvent(long delay){
+        Logger.info("Re-Activate candidates, due next day!");
+
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        SODCandidateActivationTask SODCandidateActivationTask = new SODCandidateActivationTask(classLoader);
+        timer.schedule(SODCandidateActivationTask, delay, oneDay);
+    }
 
 
     public static void saveNewSchedulerStats(Timestamp startTime, SchedulerType schedulerType,

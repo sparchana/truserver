@@ -1114,7 +1114,7 @@ public class CandidateService
 
             InteractionService.createInteractionForDeactivateCandidate(candidate.getCandidateUUId(), true);
 
-            SmsUtil.sendDeactivationSmsFromSupport(candidate, deactivationReason), supportCandidateRequest.getDeactivationExpiryDate();
+            SmsUtil.sendDeactivationSmsFromSupport(candidate, deactivationReason, supportCandidateRequest.getDeactivationExpiryDate());
 
             return candidateStatusDetail;
         }

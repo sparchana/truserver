@@ -2,15 +2,13 @@ package dao;
 
 import api.InteractionConstants;
 import api.ServerConstants;
+import api.http.httpRequest.DeactivatedCandidateRequest;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.RawSql;
 import com.avaje.ebean.RawSqlBuilder;
+import controllers.businessLogic.DeactivationService;
 import models.entity.Candidate;
 import models.entity.Interaction;
-import models.entity.OM.JobPostWorkflow;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.logging.Log;
-import play.Logger;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -89,5 +87,17 @@ public class CandidateDAO {
         }
 
         return Candidate.find.where().in("candidateUUId", uuidList).findList();
+    }
+
+    public static List<Candidate> getNextDayDueDeActivatedCandidates() {
+        Calendar cal = new GregorianCalendar();
+        java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
+        cal.add(Calendar.DAY_OF_MONTH, 1);
+        java.sql.Date tomorrow = new java.sql.Date(cal.getTimeInMillis());
+
+        DeactivatedCandidateRequest deactivatedCandidateRequest = new DeactivatedCandidateRequest();
+        deactivatedCandidateRequest.setFromThisDate(today);
+        deactivatedCandidateRequest.setFromThisDate(tomorrow);
+        return DeactivationService.getDeActivatedCandidates(deactivatedCandidateRequest);
     }
 }

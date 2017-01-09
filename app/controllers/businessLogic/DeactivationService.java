@@ -2,8 +2,8 @@ package controllers.businessLogic;
 
 import api.ServerConstants;
 import api.http.httpRequest.DeactivatedCandidateRequest;
-import api.http.httpRequest.DeactiveToActiveRequest;
-import api.http.httpResponse.DeactiveToActiveResponse;
+import api.http.httpRequest.DeActiveToActiveRequest;
+import api.http.httpResponse.DeActiveToActiveResponse;
 import com.avaje.ebean.Query;
 import models.entity.Candidate;
 import models.entity.OO.CandidateStatusDetail;
@@ -16,7 +16,7 @@ import java.util.List;
  * Created by zero on 19/7/16.
  */
 public class DeactivationService {
-    public static List<Candidate> getDeactivatedCandidates(DeactivatedCandidateRequest deactivatedCandidateRequest)
+    public static List<Candidate> getDeActivatedCandidates(DeactivatedCandidateRequest deactivatedCandidateRequest)
     {
         Query<Candidate> query = Candidate.find.query();
 
@@ -48,13 +48,13 @@ public class DeactivationService {
         return deactivatedCandidateList;
     }
 
-    public static DeactiveToActiveResponse deactivateToActive(DeactiveToActiveRequest deactiveToActiveRequest) {
-        DeactiveToActiveResponse response = new DeactiveToActiveResponse();
+    public static DeActiveToActiveResponse deactivateToActive(DeActiveToActiveRequest deActiveToActiveRequest) {
+        DeActiveToActiveResponse response = new DeActiveToActiveResponse();
 
-        if (deactiveToActiveRequest.getDeactiveToActiveList()!= null && !deactiveToActiveRequest.getDeactiveToActiveList().isEmpty())
+        if (deActiveToActiveRequest.getDeactiveToActiveList()!= null && !deActiveToActiveRequest.getDeactiveToActiveList().isEmpty())
         {
             Query<Candidate> query = Candidate.find.query();
-            List<Long> leadList = deactiveToActiveRequest.getDeactiveToActiveList();
+            List<Long> leadList = deActiveToActiveRequest.getDeactiveToActiveList();
             query = query.select("*").fetch("lead")
                         .where()
                         .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_DEACTIVE)
@@ -62,23 +62,34 @@ public class DeactivationService {
                         .query();
 
             List<Candidate> candidateList = query.findList();
-            CandidateProfileStatus active = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique();
 
-            for (Candidate candidate: candidateList) {
-                candidate.setCandidateprofilestatus(active);
-                Integer candidateStatusDetailId = candidate.getCandidateStatusDetail().getCandidateStatusDetailId();
-                candidate.setCandidateStatusDetail(null);
-                candidate.candidateUpdate();
-                // remove candidate deactivation residue
-                CandidateStatusDetail candidateStatusDetail = CandidateStatusDetail.find.where().eq("candidateStatusDetailId", candidateStatusDetailId).findUnique();
-                candidateStatusDetail.delete();
-            }
+            activateCandidates(candidateList);
+
             response.setCandidateList(candidateList);
-            response.setStatus(DeactiveToActiveResponse.STATUS_SUCCESS);
+            response.setStatus(DeActiveToActiveResponse.STATUS_SUCCESS);
         } else {
-            response.setStatus(DeactiveToActiveResponse.STATUS_FAILURE);
+            response.setStatus(DeActiveToActiveResponse.STATUS_FAILURE);
         }
 
         return response;
+    }
+
+    public static void activateCandidates(List<Candidate> candidateList){
+        CandidateProfileStatus active = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique();
+
+        for (Candidate candidate: candidateList) {
+            candidate.setCandidateprofilestatus(active);
+
+            Integer candidateStatusDetailId = candidate.getCandidateStatusDetail().getCandidateStatusDetailId();
+            candidate.setCandidateStatusDetail(null);
+            candidate.candidateUpdate();
+
+            // remove candidate deactivation residue
+            CandidateStatusDetail candidateStatusDetail = CandidateStatusDetail.find.where().eq("candidateStatusDetailId", candidateStatusDetailId).findUnique();
+            candidateStatusDetail.delete();
+
+            // create interaction for activation action
+            InteractionService.createInteractionForActivateCandidate(candidate.getCandidateUUId(), true);
+        }
     }
 }

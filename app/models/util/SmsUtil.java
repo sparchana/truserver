@@ -667,8 +667,10 @@ public class SmsUtil {
                         " please check back after 'deactivation duration' or call us at 8880007799 to request re-activation. www.trujobs.in");
                 break;
 
-            case 4: // 'Negative feedback from recruiter'
-                break;
+            case 4:
+                // 'Negative feedback from recruiter'
+                // do nothing, i.e don't send any sms
+                return;
 
             case 5: // 'No show for interview'
                 message.append("Due to repeated cases of not turning up for the interview," +
@@ -682,10 +684,14 @@ public class SmsUtil {
                         "please check back after " + sdf.format(expiryDate)+ "or call us at 8880007799 to request re-activation. www.trujobs.in");
                 break;
 
-            case 7: // 'Invalid mobile number': do nothing
-                break;
+            case 7:
+                // 'Invalid mobile number':
+                // do nothing, i.e don't send any sms
+                return;
 
-            default: break;
+            default:
+                // for non handled case do nothing
+                return;
         }
 
         addSmsToNotificationQueue(candidate.getCandidateMobile(), message.toString());

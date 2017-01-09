@@ -1265,7 +1265,7 @@ public class Application extends Controller {
             e.printStackTrace();
         }
 
-        return ok(toJson(DeactivationService.getDeactivatedCandidates(deactivatedCandidateRequest)));
+        return ok(toJson(DeactivationService.getDeActivatedCandidates(deactivatedCandidateRequest)));
     }
 
     public static Result deactiveToActive() {
@@ -1275,15 +1275,15 @@ public class Application extends Controller {
             return badRequest();
         }
 
-        DeactiveToActiveRequest deactiveToActiveRequest= new DeactiveToActiveRequest();
+        DeActiveToActiveRequest deActiveToActiveRequest = new DeActiveToActiveRequest();
         ObjectMapper newMapper = new ObjectMapper();
         Logger.info("deactivatedCandidateJsonNode: "+deactiveToActiveJson);
         try {
-            deactiveToActiveRequest = newMapper.readValue(deactiveToActiveJson.toString(), DeactiveToActiveRequest.class);
+            deActiveToActiveRequest = newMapper.readValue(deactiveToActiveJson.toString(), DeActiveToActiveRequest.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(DeactivationService.deactivateToActive(deactiveToActiveRequest)));
+        return ok(toJson(DeactivationService.deactivateToActive(deActiveToActiveRequest)));
     }
 
     public static Result postJob() {
