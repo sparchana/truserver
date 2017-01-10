@@ -1953,7 +1953,7 @@ public class CandidateService
         if(candidateResume.getCandidate() == null){
             // recreate existing AWS object key
             String existingKey = candidateResume.getFilePath();
-            existingKey = existingKey.replace("https://s3.amazonaws.com/trujobs.in/","");
+            existingKey = existingKey.replace("https://s3.amazonaws.com/trujobs.in/candidateResumes/","");
             // create new key
             String awsName = createCandidateResumeFilename(Long.toString(candidateId),candidateName,existingKey);//"candidateResumes/"+candidateId+"_"+candidateName;
             // rename (copy and delete) resume in AWS
