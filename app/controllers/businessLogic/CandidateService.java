@@ -1776,13 +1776,15 @@ public class CandidateService
                 List<AddSupportCandidateRequest.PastCompany> pastCompanyList = new ArrayList<>();
                 for (int i = 0; i < profile.WorkExperience.size(); i++) {
                     HireWandResponse.Profile.WorkExperience each = profile.WorkExperience.get(i);
-                    if(each.getCompany().size() > 0) {
+                    if(each!= null && each.getCompany()!= null && each.getCompany().size() > 0) {
                         AddSupportCandidateRequest.PastCompany pastCompany = new AddSupportCandidateRequest.PastCompany();
                         pastCompany.setCompanyName(each.getCompany().get(0));
-                        for(String latest:profile.getLatestCompanies()){
-                            if(latest.equalsIgnoreCase(each.getCompany().get(0))) {
-                                pastCompany.setCurrent(Boolean.TRUE);
-                                break;
+                        if(profile.getLatestCompanies() != null){
+                            for(String latest:profile.getLatestCompanies()){
+                                if(latest.equalsIgnoreCase(each.getCompany().get(0))) {
+                                    pastCompany.setCurrent(Boolean.TRUE);
+                                    break;
+                                }
                             }
                         }
                         pastCompanyList.add(pastCompany);
