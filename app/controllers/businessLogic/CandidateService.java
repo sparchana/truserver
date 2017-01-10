@@ -1788,6 +1788,7 @@ public class CandidateService
                         pastCompanyList.add(pastCompany);
                     }
                 }
+                if(pastCompanyList.size() > 0) addSupportCandidateRequest.setPastCompanyList(pastCompanyList);
             }
 
             // Candidate Gender
@@ -1801,18 +1802,17 @@ public class CandidateService
             else if (!profile.getPersonalDetails().getMarried()) addSupportCandidateRequest.setCandidateMaritalStatus(0);
 
             // Candidate education
-            AddCandidateEducationRequest educationRequest = new AddCandidateEducationRequest();
             int c = 0;
             for(HireWandResponse.Profile.Education each:profile.getEducation()){
                 if(each != null && each.getCollege() != null) c++;
             }
-            if(c == 4) educationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_PG);
-            else if(c == 3) educationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_UG);
-            else if(c == 2) educationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_12TH_PASS_ID);
-            else if(c == 1) educationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_10TH_PASS_ID);
+            if(c == 4) addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_PG);
+            else if(c == 3) addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_UG);
+            else if(c == 2) addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_12TH_PASS_ID);
+            else if(c == 1) addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_10TH_PASS_ID);
             if(c > 0 && profile.getEducation() != null) {
                 try{
-                    educationRequest.setCandidateEducationInstitute(profile.getEducation().get(0).getCollege().getName()+((profile.getEducation().get(0).getCollege().getCity()!=null)?" "+profile.getEducation().get(0).getCollege().getCity():""));
+                    addSupportCandidateRequest.setCandidateEducationInstitute(profile.getEducation().get(0).getCollege().getName()+((profile.getEducation().get(0).getCollege().getCity()!=null)?" "+profile.getEducation().get(0).getCollege().getCity():""));
                 } catch (NullPointerException e){
                     e.printStackTrace();
                     Logger.info("Could not set college");
