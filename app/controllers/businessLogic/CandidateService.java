@@ -1606,7 +1606,7 @@ public class CandidateService
         Candidate existingCandidate = null;
         if(candidateId > 0) {
             // we already have an existing candidate for this resume
-            existingCandidate = Candidate.find.where().eq("candidateid",candidateId).findUnique();
+            existingCandidate = Candidate.find.where().eq("candidateId",candidateId).findUnique();
             if(existingCandidate == null) {
                 Logger.info("Could not find candidate with Id = "+candidateId);
                 candidateId = 0L;
