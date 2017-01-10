@@ -487,14 +487,20 @@
 
                     <div id="map_parent" style="width: 100%; height: 480px;"></div>
 
-                    <div class="row" style="margin-top: 24px">
+                    <div class="row" id="submissionBtn" style="margin-top: 24px">
                         <a class="waves-effect waves-light ascentGreen btn right" id="saveEdit" onclick="saveJob()"><font style="color: #fff;
                             font-weight: 400"><b>Save</b></font>
                         </a>
                         <a class="waves-effect waves-light orange lighten-1 btn right" id="previousTab" onclick="toJobDetail()"><font style="color: #fff;
                             font-weight: 400"><b>Back</b></font>
                         </a>
-                  </div>
+                    </div>
+
+                    <div class="row" id="notAllowed" style="margin-top: 24px; display: none">
+                      <center>
+                        <h5 style="color: red"><b>You are not allowed to edit this job post!</b></h5>
+                      </center>
+                    </div>
 
                   </div>
                 </div>
