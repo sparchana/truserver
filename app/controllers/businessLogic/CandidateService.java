@@ -51,6 +51,8 @@ import org.json.JSONObject;
 
 import javax.persistence.NonUniqueResultException;
 import java.io.*;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -1802,6 +1804,18 @@ public class CandidateService
             // Candidate Marital Status
             if(profile.getPersonalDetails().getMarried()) addSupportCandidateRequest.setCandidateMaritalStatus(1);
             else if (!profile.getPersonalDetails().getMarried()) addSupportCandidateRequest.setCandidateMaritalStatus(0);
+
+            // Candidate DOB
+            if(profile.getPersonalDetails().getDateofbirth()!=null){
+                String dob = profile.getPersonalDetails().getDateofbirth();
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                try {
+                    addSupportCandidateRequest.setCandidateDob(format.parse(dob));
+                } catch (ParseException e) {
+                    Logger.info("Could not convert "+dob+" to date");
+                    e.printStackTrace();
+                }
+            }
 
             // Candidate education
             int c = 0;
