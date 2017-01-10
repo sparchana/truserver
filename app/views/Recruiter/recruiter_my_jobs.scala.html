@@ -95,6 +95,31 @@
             </div>
         </div>
       </div>
+
+      <!-- pause interview modal -->
+    <div id="pauseInterviewModal" class="modal" style="background: transparent; box-shadow: none">
+      <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closePauseModal()"></div>
+      <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+        <center><font style="color: #fff"><h5>Pause Job Applications!</h5></font></center>
+      </div>
+      <div style="background: #fff; padding: 12px">
+        <center>
+          <h6>You are going to pause the job applications for the job: </h6>
+          <h5 id="jobPostName"></h5>
+
+          <h6 style="margin-top: 36px">Please select a date on which the job will be active: </h6>
+          <div>
+            <input type="date" id="resume_date" class="datepicker" style="width: 24%">
+          </div>
+
+          <div id="confirmPause" class="waves-effect waves-light red lighten-1 btn" data-toggle="collapse" onclick="confirmPauseAction()">
+            <font style="color: #fff;
+            font-weight: 400"><b>Pause Interview!</b></font>
+          </div>
+        </center>
+      </div>
+    </div>
+
     <!--Footer start-->
     <footer class="page-footer" style="background-color: #424242;">
       <div class="container">

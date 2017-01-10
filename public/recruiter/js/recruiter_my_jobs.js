@@ -3,6 +3,7 @@
  */
 
 var newCount = 0;
+var jobPostObj;
 
 $(window).load(function() {
     setTimeout(function(){
@@ -176,9 +177,9 @@ function processDataGenerateJobPostView(returnedData) {
                 upcomingCounter.className = "newCounter";
                 colApplicant.appendChild(upcomingCounter);
 
-                var colJobStatus = document.createElement("div");
+                var colJobStatus = document.createElement("span");
                 colJobStatus.className = 'col s12 m2 l2';
-                colJobStatus.style = 'margin-top:8px';
+                colJobStatus.style = 'margin-top: 8px';
                 outerRow.appendChild(colJobStatus);
 
                 var spanStatus  = document.createElement("div");
@@ -187,19 +188,68 @@ function processDataGenerateJobPostView(returnedData) {
                 spanStatus.style = "font-weight: 600;font-size:12px";
                 colJobStatus.appendChild(spanStatus);
 
+                var pauseIconImg = document.createElement("img");
+                pauseIconImg.src = "/assets/recruiter/img/icons/pause.svg";
+                pauseIconImg.style = "cursor: pointer; text-decoration: none; margin-top: -4px; margin-left: 6px";
+                pauseIconImg.setAttribute('height', '24px');
+                pauseIconImg.className = "tooltipped";
+                pauseIconImg.setAttribute("data-postiton", "top");
+                pauseIconImg.setAttribute("data-delay", "50");
+                pauseIconImg.setAttribute("data-tooltip", "Pause Interviews");
+                pauseIconImg.onclick = function () {
+                    jobPostObj = jobPost.jobPost;
+                    openPauseInterviewModal();
+                };
+
+                var resumeIconImg = document.createElement("img");
+                resumeIconImg.src = "/assets/recruiter/img/icons/resume.svg";
+                resumeIconImg.style = "cursor: pointer; text-decoration: none; margin-top: -4px; margin-left: 6px";
+                resumeIconImg.setAttribute('height', '24px');
+                resumeIconImg.className = "tooltipped";
+                resumeIconImg.setAttribute("data-postiton", "top");
+                resumeIconImg.setAttribute("data-delay", "50");
+                resumeIconImg.setAttribute("data-tooltip", "Resume Interviews");
+                resumeIconImg.onclick = function () {
+                    jobPostObj = jobPost.jobPost;
+                    resumeJobApplication();
+                };
+
+
+                var stopIconImg = document.createElement("img");
+                stopIconImg.src = "/assets/recruiter/img/icons/stop.svg";
+                stopIconImg.style = "cursor: pointer; text-decoration: none; margin-top: -4px; margin-left: 6px";
+                stopIconImg.setAttribute('height', '24px');
+                stopIconImg.className = "tooltipped";
+                stopIconImg.setAttribute("data-postiton", "top");
+                stopIconImg.setAttribute("data-delay", "50");
+                stopIconImg.setAttribute("data-tooltip", "Close job applications");
+                stopIconImg.onclick = function () {
+                    jobPostObj = jobPost.jobPost;
+                    stopJobApplication();
+                };
+
+
                 if(jobPost.jobPost.jobPostStatus != null){
                     if(jobPost.jobPost.jobPostStatus.jobStatusId == 1){
                         colJobStatus.textContent = "Under review";
-                        colJobStatus.style = "color: #F4A407; margin-top:8px; margin-bottom:8px; text-align:center";
+                        colJobStatus.style = "color: #F4A407; margin-top: 8px; margin-bottom: 8px; text-align: center";
+                        colJobStatus.appendChild(stopIconImg);
                     } else if(jobPost.jobPost.jobPostStatus.jobStatusId == 2){
                         colJobStatus.textContent = "Active";
-                        colJobStatus.style = "color: #69CF37; margin-top:8px; margin-bottom:8px; text-align:center";
+                        colJobStatus.style = "color: #69CF37; margin-top: 8px; margin-bottom: 8px; text-align: center";
+                        colJobStatus.appendChild(pauseIconImg);
+                        colJobStatus.appendChild(stopIconImg);
+                    } else if(jobPost.jobPost.jobPostStatus.jobStatusId == 5){
+                        colJobStatus.textContent = jobPost.jobPost.jobPostStatus.jobStatusName;
+                        colJobStatus.appendChild(resumeIconImg);
+                        colJobStatus.appendChild(stopIconImg);
                     } else{
                         colJobStatus.textContent = jobPost.jobPost.jobPostStatus.jobStatusName;
                     }
                 } else{
                     colJobStatus.textContent = "Not specified";
                 }
+
 
                 applicantBtn.textContent = jobPost.totalCount;
                 if(jobPost.pendingCount > 0){
@@ -242,6 +292,8 @@ function processDataGenerateJobPostView(returnedData) {
                 hr.style='margin:2px 1%';
                 mainDiv.appendChild(hr);
             });
+
+            $('.tooltipped').tooltip({delay: 50});
         } else{
             $("#noJobs").show();
             $("#jobTable").hide();
@@ -256,6 +308,72 @@ function openJobPost(jobId) {
 
 function openAppliedCandidate(jobId) {
     window.location = "/recruiter/jobApplicants/" + jobId;
+}
+
+function openPauseInterviewModal() {
+    $("#jobPostName").html(jobPostObj.jobPostTitle);
+    $("#pauseInterviewModal").openModal();
+}
+
+function resumeJobApplication() {
+    changeJobStatus(1, null);
+}
+
+function stopJobApplication() {
+    changeJobStatus(4, null);
+}
+
+function confirmPauseAction() {
+
+    if($("#resume_date").val() == ''){
+        notifyError("Please select a date ");
+    } else{
+        var selectedDate = new Date($("#resume_date").val());
+        var todaysDate = new Date();
+
+        if(selectedDate < todaysDate){
+            notifyError("Please select a date greater than today");
+        } else{
+            var jobPostResumeDate = selectedDate.getFullYear() + "-" + (selectedDate.getMonth() + 1) + "-" + selectedDate.getDate();
+            changeJobStatus(5, jobPostResumeDate);
+        }
+    }
+}
+
+function changeJobStatus(jobStatus, jobPostResumeDate) {
+    try {
+        var d = {
+            jobPostId: jobPostObj.jobPostId,
+            jobPostStatusId: jobStatus,
+            resumeApplicationDate: jobPostResumeDate
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/recruiter/api/addJobPost",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(d),
+            success: processDataAddJobPost
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+}
+function processDataAddJobPost(returnedData) {
+    if(returnedData.status == 2 ){
+        $("#pauseInterviewModal").closeModal();
+        notifySuccess("Job Status updated successfully!");
+        setTimeout(function(){
+            window.location = "/recruiter/allRecruiterJobPosts";
+        }, 2500);
+    } else{
+        notifyError("Something went wrong. Please try again later!");
+    }
+}
+
+function closePauseModal() {
+    $("#pauseInterviewModal").closeModal();
 }
 
 function getMonthVal(month){
@@ -317,4 +435,12 @@ function logoutRecruiter() {
 
 function processDataLogoutRecruiter() {
     window.location = "/recruiter";
+}
+
+function notifyError(msg){
+    Materialize.toastError(msg, 3000, 'rounded');
+}
+
+function notifySuccess(msg){
+    Materialize.toastSuccess(msg, 3000, 'rounded');
 }

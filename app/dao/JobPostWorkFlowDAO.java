@@ -419,7 +419,7 @@ public class JobPostWorkFlowDAO {
                 " where i.job_post_id = " + jobPostId +
                 " and scheduled_interview_date > '" + sdf.format(startDate) + "' " +
                 " and scheduled_interview_date < '" + sdf.format(endDate) + "' " +
-                " and status_id => " + ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED +
+                " and status_id >= " + ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED +
                 " and job_post_workflow_id = " +
                 " (select max(job_post_workflow_id) from job_post_workflow " +
                 "       where i.candidate_id = job_post_workflow.candidate_id " +

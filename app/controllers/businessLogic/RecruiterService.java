@@ -25,12 +25,15 @@ import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.Recruiter.Static.RecruiterStatus;
+import models.entity.Static.JobStatus;
 import models.util.EmailUtil;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 import play.mvc.Result;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
@@ -577,6 +580,18 @@ public class RecruiterService {
     private static RecruiterProfile getAndSetRecruiterValues(AddRecruiterRequest addRecruiterRequest, RecruiterProfile newRecruiter, Company existingCompany){
         if(existingCompany != null){
             newRecruiter.setRecCompany(existingCompany);
+
+            //if a recruiter is switching to a new company, close all the previous jobs assocoated with the recruiter
+            if(newRecruiter.getCompany() != null && newRecruiter.getRecruiterProfileId() != null){
+                if(!Objects.equals(newRecruiter.getCompany().getCompanyId(), existingCompany.getCompanyId())){
+                    JobStatus statusClosed = JobStatus.find.where().eq("JobStatusId", ServerConstants.JOB_STATUS_CLOSED).findUnique();
+                    List<JobPost> recruiterJobPostList = JobPost.find.where().eq("JobRecruiterId", newRecruiter.getRecruiterProfileId()).findList();
+                    for(JobPost jobPost : recruiterJobPostList){
+                        jobPost.setJobPostStatus(statusClosed);
+                        jobPost.update();
+                    }
+                }
+            }
         }
         if(addRecruiterRequest.getRecruiterName() != null){
             newRecruiter.setRecruiterProfileName(addRecruiterRequest.getRecruiterName());
