@@ -1806,7 +1806,7 @@ public class CandidateService
             for(HireWandResponse.Profile.Education each:profile.getEducation()){
                 if(each != null && each.getCollege() != null) c++;
             }
-            if(c == 4) addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_PG);
+            if(c > 3) addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_PG);
             else if(c == 3) addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_UG);
             else if(c == 2) addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_12TH_PASS_ID);
             else if(c == 1) addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_10TH_PASS_ID);
