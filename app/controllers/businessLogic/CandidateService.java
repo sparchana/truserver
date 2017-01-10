@@ -1825,7 +1825,7 @@ public class CandidateService
             if(profile.getSkillRatings()!=null){
                 List<CandidateKnownLanguage> candidateKnownLanguages = new ArrayList<>();
                 for(HireWandResponse.Profile.SkillRating each:profile.getSkillRatings()){
-                    if(each.getSkill()!= null){
+                    if(each!=null && each.getSkill()!= null){
                         switch (each.getSkill()){
                             case "English":
                             case "Hindi":
