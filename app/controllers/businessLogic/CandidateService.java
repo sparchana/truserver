@@ -1766,25 +1766,27 @@ public class CandidateService
             }
 
             // candidate EMail (Only take the 1st entry)
-            if(profile.Emails.size() > 0) addSupportCandidateRequest.setCandidateEmail(profile.Emails.get(0));
+            if(profile.Emails != null && profile.Emails.size() > 0) addSupportCandidateRequest.setCandidateEmail(profile.Emails.get(0));
 
             // total work experience
-            if(profile.getTotalExperience() > 0) addSupportCandidateRequest.setCandidateTotalExperience(profile.getTotalExperience());
+            if(profile.getTotalExperience() != null && profile.getTotalExperience() > 0) addSupportCandidateRequest.setCandidateTotalExperience(profile.getTotalExperience());
 
             // Candidate work experience
-            List<AddSupportCandidateRequest.PastCompany> pastCompanyList = new ArrayList<>();
-            for (int i = 0; i < profile.WorkExperience.size(); i++) {
-                HireWandResponse.Profile.WorkExperience each = profile.WorkExperience.get(i);
-                if(each.getCompany().size() > 0) {
-                    AddSupportCandidateRequest.PastCompany pastCompany = new AddSupportCandidateRequest.PastCompany();
-                    pastCompany.setCompanyName(each.getCompany().get(0));
-                    for(String latest:profile.getLatestCompanies()){
-                        if(latest.equalsIgnoreCase(each.getCompany().get(0))) {
-                            pastCompany.setCurrent(Boolean.TRUE);
-                            break;
+            if(profile.WorkExperience != null) {
+                List<AddSupportCandidateRequest.PastCompany> pastCompanyList = new ArrayList<>();
+                for (int i = 0; i < profile.WorkExperience.size(); i++) {
+                    HireWandResponse.Profile.WorkExperience each = profile.WorkExperience.get(i);
+                    if(each.getCompany().size() > 0) {
+                        AddSupportCandidateRequest.PastCompany pastCompany = new AddSupportCandidateRequest.PastCompany();
+                        pastCompany.setCompanyName(each.getCompany().get(0));
+                        for(String latest:profile.getLatestCompanies()){
+                            if(latest.equalsIgnoreCase(each.getCompany().get(0))) {
+                                pastCompany.setCurrent(Boolean.TRUE);
+                                break;
+                            }
                         }
+                        pastCompanyList.add(pastCompany);
                     }
-                    pastCompanyList.add(pastCompany);
                 }
             }
 
@@ -1802,13 +1804,20 @@ public class CandidateService
             AddCandidateEducationRequest educationRequest = new AddCandidateEducationRequest();
             int c = 0;
             for(HireWandResponse.Profile.Education each:profile.getEducation()){
-                if(each.getCollege() != null) c++;
+                if(each != null && each.getCollege() != null) c++;
             }
             if(c == 4) educationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_PG);
             else if(c == 3) educationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_UG);
             else if(c == 2) educationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_12TH_PASS_ID);
             else if(c == 1) educationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_10TH_PASS_ID);
-            if(c > 0) educationRequest.setCandidateEducationInstitute(profile.getEducation().get(0).getCollege().getName()+((profile.getEducation().get(0).getCollege().getCity()!=null)?" "+profile.getEducation().get(0).getCollege().getCity():""));
+            if(c > 0 && profile.getEducation() != null) {
+                try{
+                    educationRequest.setCandidateEducationInstitute(profile.getEducation().get(0).getCollege().getName()+((profile.getEducation().get(0).getCollege().getCity()!=null)?" "+profile.getEducation().get(0).getCollege().getCity():""));
+                } catch (NullPointerException e){
+                    e.printStackTrace();
+                    Logger.info("Could not set college");
+                }
+            }
 
         }
         else if (existingCandidate != null) {
