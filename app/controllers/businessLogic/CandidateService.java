@@ -1606,7 +1606,7 @@ public class CandidateService
         Candidate existingCandidate = null;
         if(candidateId > 0) {
             // we already have an existing candidate for this resume
-            existingCandidate = Candidate.find.byId(Long.toString(candidateId));
+            existingCandidate = Candidate.find.where().eq("candidateid",candidateId).findUnique();
             if(existingCandidate == null) {
                 Logger.info("Could not find candidate with Id = "+candidateId);
                 candidateId = 0L;
@@ -1806,8 +1806,10 @@ public class CandidateService
             }
 
             // Candidate Marital Status
-            if(profile.getPersonalDetails().getMarried()) addSupportCandidateRequest.setCandidateMaritalStatus(1);
-            else if (!profile.getPersonalDetails().getMarried()) addSupportCandidateRequest.setCandidateMaritalStatus(0);
+            if(profile.getPersonalDetails().getMarried()!=null && profile.getPersonalDetails().getMarried())
+                addSupportCandidateRequest.setCandidateMaritalStatus(1);
+            else if (profile.getPersonalDetails().getMarried()!=null  && !profile.getPersonalDetails().getMarried())
+                addSupportCandidateRequest.setCandidateMaritalStatus(0);
 
             // Candidate DOB
             if(profile.getPersonalDetails().getDateofbirth()!=null){
