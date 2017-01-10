@@ -1607,7 +1607,10 @@ public class CandidateService
         if(candidateId > 0) {
             // we already have an existing candidate for this resume
             existingCandidate = Candidate.find.byId(Long.toString(candidateId));
-            if(existingCandidate == null) candidateId = 0L;
+            if(existingCandidate == null) {
+                Logger.info("Could not find candidate with Id = "+candidateId);
+                candidateId = 0L;
+            }
             else {
                 // update filename
                 fileName = createCandidateResumeFilename(Long.toString(candidateId),existingCandidate.getCandidateFirstName(),fileName);
