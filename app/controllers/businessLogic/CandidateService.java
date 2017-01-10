@@ -1819,6 +1819,29 @@ public class CandidateService
                 }
             }
 
+            // candidate Languages
+            if(profile.getSkillRatings()!=null){
+                List<CandidateKnownLanguage> candidateKnownLanguages = new ArrayList<>();
+                for(HireWandResponse.Profile.SkillRating each:profile.getSkillRatings()){
+                    if(each.getSkill()!= null){
+                        switch (each.getSkill()){
+                            case "English":
+                            case "Hindi":
+                            case "Kannada":
+                            case "Tamil":
+                            case "Telugu":
+                                Language language = Language.find.where().ieq("languagename",each.getSkill().trim()).findUnique();
+                                if(language != null){
+                                    CandidateKnownLanguage candidateKnownLanguage = new CandidateKnownLanguage();
+                                    candidateKnownLanguage.setId(Integer.toString(language.getLanguageId()));
+                                    candidateKnownLanguages.add(candidateKnownLanguage);
+                                }
+                                break;
+                        }
+                    }
+                }
+                if(candidateKnownLanguages.size() > 0) addSupportCandidateRequest.setCandidateLanguageKnown(candidateKnownLanguages);
+            }
         }
         else if (existingCandidate != null) {
             addSupportCandidateRequest.setCandidateMobile(existingCandidate.getCandidateMobile());
