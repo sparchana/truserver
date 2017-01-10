@@ -12,6 +12,7 @@ import api.http.httpResponse.LoginResponse;
 import api.http.httpResponse.ResetPasswordResponse;
 import api.http.httpResponse.TruResponse;
 import api.http.httpResponse.hirewand.HireWandResponse;
+import au.com.bytecode.opencsv.CSVReader;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
@@ -21,6 +22,7 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.avaje.ebean.Query;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.hirewand.HWHTTPException;
 import controllers.businessLogic.hirewand.HireWandService;
 import controllers.businessLogic.hirewand.InvalidRequestException;
@@ -1725,7 +1727,7 @@ public class CandidateService
         Logger.info("Entering mapFromHWToCandidate");
         AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
 
-        // initialize all lists (else, we're looking at NPEs during creation)
+        // initialize required lists (else, we're looking at NPEs during creation)
         List<Integer> candidateIdProof = new ArrayList<>();
         List<CandidateSkills> candidateSkills = new ArrayList<>();
         addSupportCandidateRequest.setCandidateSkills(candidateSkills);
@@ -1763,8 +1765,53 @@ public class CandidateService
                 else break;
             }
 
+            // candidate EMail (Only take the 1st entry)
+            if(profile.Emails.size() > 0) addSupportCandidateRequest.setCandidateEmail(profile.Emails.get(0));
+
+            // total work experience
+            if(profile.getTotalExperience() > 0) addSupportCandidateRequest.setCandidateTotalExperience(profile.getTotalExperience());
+
+            // Candidate work experience
+            List<AddSupportCandidateRequest.PastCompany> pastCompanyList = new ArrayList<>();
+            for (int i = 0; i < profile.WorkExperience.size(); i++) {
+                HireWandResponse.Profile.WorkExperience each = profile.WorkExperience.get(i);
+                if(each.getCompany().size() > 0) {
+                    AddSupportCandidateRequest.PastCompany pastCompany = new AddSupportCandidateRequest.PastCompany();
+                    pastCompany.setCompanyName(each.getCompany().get(0));
+                    for(String latest:profile.getLatestCompanies()){
+                        if(latest.equalsIgnoreCase(each.getCompany().get(0))) {
+                            pastCompany.setCurrent(Boolean.TRUE);
+                            break;
+                        }
+                    }
+                    pastCompanyList.add(pastCompany);
+                }
+            }
+
+            // Candidate Gender
+            if(profile.getGender() != null){
+                if(profile.getGender().equalsIgnoreCase("male")) addSupportCandidateRequest.setCandidateGender(ServerConstants.GENDER_MALE);
+                else if(profile.getGender().equalsIgnoreCase("female")) addSupportCandidateRequest.setCandidateGender(ServerConstants.GENDER_FEMALE);
+            }
+
+            // Candidate Marital Status
+            if(profile.getPersonalDetails().getMarried()) addSupportCandidateRequest.setCandidateMaritalStatus(1);
+            else if (!profile.getPersonalDetails().getMarried()) addSupportCandidateRequest.setCandidateMaritalStatus(0);
+
+            // Candidate education
+            AddCandidateEducationRequest educationRequest = new AddCandidateEducationRequest();
+            int c = 0;
+            for(HireWandResponse.Profile.Education each:profile.getEducation()){
+                if(each.getCollege() != null) c++;
+            }
+            if(c == 4) educationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_PG);
+            else if(c == 3) educationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_UG);
+            else if(c == 2) educationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_12TH_PASS_ID);
+            else if(c == 1) educationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_10TH_PASS_ID);
+            if(c > 0) educationRequest.setCandidateEducationInstitute(profile.getEducation().get(0).getCollege().getName()+((profile.getEducation().get(0).getCollege().getCity()!=null)?" "+profile.getEducation().get(0).getCollege().getCity():""));
+
         }
-        else if (existingCandidate == null) {
+        else if (existingCandidate != null) {
             addSupportCandidateRequest.setCandidateMobile(existingCandidate.getCandidateMobile());
         }
 
@@ -1937,6 +1984,143 @@ public class CandidateService
         name += "_"+new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date());
         name += fileName.substring(fileName.lastIndexOf("."));
         return name;
+    }
+
+    public static Integer bulkUploadCandidates(File file, String fileName){
+
+        Integer count = 0;
+        try {
+            CSVReader reader = new CSVReader(new FileReader(file));
+            String[] header;
+            String[] nextLine;
+
+            header = reader.readNext();
+            if(header != null){
+                while((nextLine = reader.readNext()) != null){
+
+                    AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
+                    List<CandidateSkills> candidateSkills = new ArrayList<>();
+                    addSupportCandidateRequest.setCandidateSkills(candidateSkills);
+                    List<CandidateKnownLanguage> candidateLanguageKnown = new ArrayList<>();
+                    addSupportCandidateRequest.setCandidateLanguageKnown(candidateLanguageKnown);
+                    addSupportCandidateRequest.setDeactivationStatus(Boolean.FALSE);
+
+                    Boolean isNew = Boolean.TRUE;
+                    String tempMobile = "";
+                    for(int i = 0; i < nextLine.length ; i++){
+                        if(!nextLine[i].isEmpty()){
+                            Logger.info("nextLine["+i+"]="+nextLine[i]);
+                            Logger.info("header["+i+"]="+header[i]);
+                            tempMobile = "";
+                            switch (header[i]){
+                                case "Name":
+                                    String fName = nextLine[i].split(" ")[0];
+                                    String lName = nextLine[i].replace(fName,"").trim();
+                                    addSupportCandidateRequest.setCandidateFirstName(fName);
+                                    Logger.info("addSupportCandidateRequest.setCandidateFirstName ="+fName);
+                                    addSupportCandidateRequest.setCandidateSecondName(lName);
+                                    Logger.info("addSupportCandidateRequest.setCandidateSecondName ="+lName);
+                                    break;
+                                case "Email":
+                                    addSupportCandidateRequest.setCandidateEmail(nextLine[i]);
+                                    Logger.info("addSupportCandidateRequest.setCandidateEmail ="+nextLine[i]);
+                                    break;
+                                case "Mobile":
+                                    //Logger.info("About to check for "+nextLine[i]);
+                                    isNew = ((Candidate.find.where().eq("candidatemobile",FormValidator.convertToIndianMobileFormat(nextLine[i])).findRowCount() > 0)? Boolean.FALSE: Boolean.TRUE);
+                                    //Logger.info("Candidate.find.where().eq(\"candidatemobile\",FormValidator.convertToIndianMobileFormat(nextLine[i])).findRowCount()"+Candidate.find.where().eq("candidatemobile",FormValidator.convertToIndianMobileFormat(nextLine[i])).findRowCount());
+                                    addSupportCandidateRequest.setCandidateMobile(FormValidator.convertToIndianMobileFormat(nextLine[i]));
+                                    tempMobile = addSupportCandidateRequest.getCandidateMobile();
+                                    Logger.info("addSupportCandidateRequest.setCandidateMobile ="+addSupportCandidateRequest.getCandidateMobile());
+                                    break;
+                                case "current salary per month":
+                                    addSupportCandidateRequest.setCandidateLastWithdrawnSalary(Long.valueOf(nextLine[i],10));
+                                    Logger.info("addSupportCandidateRequest.setCandidateLastWithdrawnSalary ="+addSupportCandidateRequest.getCandidateLastWithdrawnSalary());
+                                    break;
+                                case "Role":
+                                    List<JobRole> jobRoleList = JobRole.find.where().ilike("jobname","%"+nextLine[i]+"%").findPagedList(0,3).getList();
+                                    if(jobRoleList != null && jobRoleList.size() > 0){
+                                        addSupportCandidateRequest.setCandidateCurrentJobRoleId(jobRoleList.get(0).getJobRoleId());
+                                        List<Integer> ids = new ArrayList<>();
+                                        for(JobRole jobRole:jobRoleList){
+                                            ids.add(Math.toIntExact(jobRole.getJobRoleId()));
+                                        }
+                                        addSupportCandidateRequest.setCandidateJobPref(ids);
+                                    }
+                                    // Default is "Others" --> Id 34
+                                    else addSupportCandidateRequest.setCandidateCurrentJobRoleId(34L);
+                                    Logger.info("addSupportCandidateRequest.setCandidateCurrentJobRoleId ="+addSupportCandidateRequest.getCandidateCurrentJobRoleId());
+                                    break;
+                                case "Role Experience (in Years)":
+                                    addSupportCandidateRequest.setCandidateTotalExperience(Integer.valueOf(nextLine[i])*12);
+                                    Logger.info("addSupportCandidateRequest.setCandidateTotalExperience ="+addSupportCandidateRequest.getCandidateTotalExperience());
+                                    break;
+                                case "Languages known":
+                                    String[] languages = nextLine[i].split(" ");
+                                    List<CandidateKnownLanguage> candidateKnownLanguages = new ArrayList<>();
+                                    for(String lang:languages){
+                                        Language language = Language.find.where().ieq("languagename",lang.trim()).findUnique();
+                                        if(language != null){
+                                            CandidateKnownLanguage candidateKnownLanguage = new CandidateKnownLanguage();
+                                            candidateKnownLanguage.setId(Integer.toString(language.getLanguageId()));
+                                            candidateKnownLanguages.add(candidateKnownLanguage);
+                                        }
+                                    }
+                                    if(candidateKnownLanguages.size() > 0) {
+                                        addSupportCandidateRequest.setCandidateLanguageKnown(candidateKnownLanguages);
+                                        Logger.info("Count of addSupportCandidateRequest.setCandidateLanguageKnown ="+addSupportCandidateRequest.getCandidateLanguageKnown().size());
+                                    }
+                                    break;
+                                case "Education":
+                                    String educationString = nextLine[i].toLowerCase();
+                                    AddCandidateEducationRequest addCandidateEducationRequest = new AddCandidateEducationRequest();
+                                    if(educationString.startsWith("8th")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_LT_10TH_ID);}
+                                    else if(educationString.startsWith("10th")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_10TH_PASS_ID);}
+                                    else if(educationString.startsWith("12th")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_12TH_PASS_ID);}
+                                    else if(educationString.startsWith("diploma")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_UG);}
+                                    else if(educationString.startsWith("graduat")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_UG);}
+                                    else if(educationString.startsWith("postgraduat")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_PG);}
+                                    if(addCandidateEducationRequest.getCandidateEducationLevel() > 0){
+                                        addSupportCandidateRequest.setCandidateEducationLevel(addCandidateEducationRequest.getCandidateEducationLevel());
+                                        Logger.info("addSupportCandidateRequest.setCandidateEducationLevel ="+addSupportCandidateRequest.getCandidateEducationLevel());
+                                    }
+                                    break;
+                                case "Company":
+                                    List<AddSupportCandidateRequest.PastCompany> pastCompanyList = new ArrayList<>();
+                                    AddSupportCandidateRequest.PastCompany pastCompany = new AddSupportCandidateRequest.PastCompany();
+                                    pastCompany.setCompanyName(nextLine[i]);
+                                    pastCompanyList.add(pastCompany);
+                                    addSupportCandidateRequest.setPastCompanyList(pastCompanyList);
+                                    Logger.info("pastCompany.setCompanyName ="+pastCompany.getCompanyName());
+                                    break;
+                                default:
+                                    String misc = addSupportCandidateRequest.getSupportNote();
+                                    misc = ((misc == null)?header[i]+":"+nextLine[i]: misc+" || "+header[i]+":"+nextLine[i]);
+                                    addSupportCandidateRequest.setSupportNote(misc);
+                            }
+                        }
+                    }
+
+                    // create candidate
+                    if(isNew){
+                        CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
+                                InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE,
+                                ServerConstants.UPDATE_ALL_BY_SUPPORT);
+                        // keep count
+                        if(candidateSignUpResponse.getCandidateId() > 0) {
+                            count++;
+                            Logger.info("Candidate Created with Id = "+candidateSignUpResponse.getCandidateId());
+                        }
+                    }
+                    else { Logger.info("Candidate exists for Mobile Number "+tempMobile); }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Logger.info("Exiting bulkUploadCandidates(). Count = "+count);
+        return count;
     }
 
 }
