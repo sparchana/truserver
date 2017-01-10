@@ -224,11 +224,6 @@ public class JobPostWorkflowEngine {
                 .notIn("candidateId", selectedCandidateIdList)
                 .query();
 
-        // should be an active candidate
-        query = query.select("*").fetch("candidateprofilestatus")
-                .where()
-                .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
-                .query();
 
         List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList, radius, true);
 
