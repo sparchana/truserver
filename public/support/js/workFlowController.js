@@ -1103,32 +1103,13 @@ $(function () {
                     } else if(app.currentView == "pending_interview_schedule"){
                         var candidateStatus;
                         if (Object.keys(jobPostInfo.interviewDetailsList).length > 0) {
-                            var availableCredits = 0;
-                            var interviewCreditCount = 0;
+                            var availableCredits = jobPostInfo.recruiterProfile.interviewCreditCount;
+
                             if(jobPostInfo.recruiterProfile != null){
-                                if(jobPostInfo.recruiterProfile.recruiterCreditHistoryList != null){
-                                    var creditHistoryList = jobPostInfo.recruiterProfile.recruiterCreditHistoryList;
-                                    creditHistoryList.reverse();
-                                    creditHistoryList.forEach(function (creditHistory){
-                                        try{
-                                            if(interviewCreditCount == 0){
-                                                if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
-                                                    availableCredits = parseInt(creditHistory.recruiterCreditsAvailable);
-                                                    interviewCreditCount = 1;
-                                                }
-                                            }
-
-                                            if(interviewCreditCount > 0){
-                                                return false;
-                                            }
-                                        } catch(err){}
-                                    });
-
-                                    if(availableCredits > 0){
-                                        candidateStatus = '<input style="margin-left: 6px" type="button" class="btn btn-primary" value="Schedule" onclick="initInterviewModal('+ newCandidate.candidate.candidateId + ', ' + jobPostId + ', '+ true + ')">';
-                                    } else{
-                                        candidateStatus = "No interview credits with the Recruiter";
-                                    }
+                                if(availableCredits > 0){
+                                    candidateStatus = '<input style="margin-left: 6px" type="button" class="btn btn-primary" value="Schedule" onclick="initInterviewModal('+ newCandidate.candidate.candidateId + ', ' + jobPostId + ', '+ true + ')">';
+                                } else{
+                                    candidateStatus = "No interview credits with the Recruiter";
                                 }
                             }
                         } else{

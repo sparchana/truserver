@@ -109,6 +109,8 @@ POST        /confirmInterview/:jpId/:value                                contro
 POST        /partnerConfirmInterview/:cId/:jpId/:value                    controllers.PartnerController.confirmInterview(cId : Long, jpId : Long, value : Long)
 POST        /updateCandidateDetailsViaPreScreen/                          controllers.Application.updateCandidateDetailsViaPreScreen(propertyIdList: String?= null, candidateMobile: String?= null,  jobPostId: java.lang.Long ?= null)
 POST        /updateFeedback                                               controllers.Application.updateFeedback()
+POST        /updateRecruiterCreditPack                                    controllers.Application.updateRecruiterCreditPack()
+POST        /expireCreditPack                                             controllers.Application.expireCreditPack()
 
 # partner routes
 #~~~~~~~~~~~~~~~~~~~~

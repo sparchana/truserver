@@ -809,30 +809,10 @@ function getRecruiterInfo() {
 }
 
 function processDataRecruiterProfile(returnedData) {
-    var creditHistoryList = returnedData.recruiterCreditHistoryList;
-    creditHistoryList.reverse();
-    var contactCreditCount = 0;
-    var interviewCreditCount = 0;
-    creditHistoryList.forEach(function (creditHistory){
-        if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
-            if(contactCreditCount == 0){
-                $("#remainingContactCredits").html(creditHistory.recruiterCreditsAvailable);
-                $("#remainingContactCreditsMobile").html(creditHistory.recruiterCreditsAvailable);
-                contactCreditCount = 1;
-            }
-        } else{
-            if(interviewCreditCount == 0){
-                if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
-                    $("#remainingInterviewCredits").html(creditHistory.recruiterCreditsAvailable);
-                    $("#remainingInterviewCreditsMobile").html(creditHistory.recruiterCreditsAvailable);
-                    interviewCreditCount = 1;
-                }
-            }
-        }
-        if(contactCreditCount > 0 && interviewCreditCount > 0){
-            return false;
-        }
-    });
+    $("#remainingContactCredits").html(returnedData.contactCreditCount);
+    $("#remainingContactCreditsMobile").html(returnedData.contactCreditCount);
+    $("#remainingInterviewCredits").html(returnedData.interviewCreditCount);
+    $("#remainingInterviewCreditsMobile").html(returnedData.interviewCreditCount);
 }
 
 

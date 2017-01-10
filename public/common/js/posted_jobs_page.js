@@ -593,6 +593,34 @@ function processDataForHotJobPost(returnedData) {
             $(".posted_jobs_company_details").hide();
             $("div#aboutCompanyTitle").hide();
         }
+
+        if(returnedData.applyBtnStatus != null && returnedData.applyBtnStatus != CTA_BTN_APPLY){
+            if(returnedData.applyBtnStatus == CTA_BTN_INTERVIEW_REQUIRED) {
+                $(".jobApplyBtnV2").html("Book Interview");
+            } else if(returnedData.applyBtnStatus == CTA_BTN_INTERVIEW_CLOSED) {
+                $(".jobApplyBtnV2").removeClass("btn-primary").addClass("appliedBtn").prop('disabled',true).html("Application Closed");
+                $('.jobApplyBtnV2').attr('onclick','').unbind('click');
+                $('.jobApplyBtnV2').css("background", "#f4cb6c");
+                $('.jobApplyBtnV2').css("box-shadow", "none");
+                $('.jobApplyBtnV2').css("cursor", "default");
+
+                var nextMonday = new Date();
+                nextMonday.setDate(nextMonday.getDate() + (1 + 7 - nextMonday.getDay()) % 7);
+
+                var day = nextMonday.getDate();
+                if(day < 10){
+                    day = "0" + day;
+                }
+
+                var month = nextMonday.getMonth() + 1;
+                if(month < 10){
+                    month = "0" + month;
+                }
+
+                $("#reopenDate").html("Will reopen on " + day + "-" + month + "-" + nextMonday.getFullYear());
+            }
+        }
+
         try {
             $.ajax({
                 type: "GET",

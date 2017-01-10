@@ -3,15 +3,42 @@ var INTERVIEW_ERROR = 0;
 var INTERVIEW_NOT_REQUIRED = 1; // "OK"
 var INTERVIEW_REQUIRED = 2;     // "INTERVIEW"
 
+var jobPostInfo;
+
 var jpTitle;
 var compName;
 function processJobPostInterviewSlot(returnedData, isSupport) {
+
     if(returnedData.interviewDetailsList == null || returnedData.interviewDetailsList.length == 0) {
         $('body').removeClass('open-interview-selector-modal');
         bootbox.hideAll();
+
+        var showModal = true;
+        if(jobPostInfo.recruiterProfile != null){
+
+            if(jobPostInfo.recruiterProfile.contactCreditCount > 0){
+                showModal = true;
+            }
+
+            if(jobPostInfo.recruiterProfile.interviewCreditCount > 0){
+                showModal = false;
+            }
+        }  else{
+            showModal = false;
+        }
+
+        if(showModal){
+            $("#postApplyMsg").html("We have received your job application. You can contact the recruiter directly on " +
+                jobPostInfo.recruiterProfile.recruiterProfileMobile);
+
+            $("#confirmationModal").modal("show");
+        }
+
         nfy("Submitted Successfully.", 'success');
         return;
     }
+
+    jobPostInfo = returnedData;
 
     // document.getElementById("applyJobCandidateName").innerHTML = candidateInfo.candidateFirstName;
     jpTitle = returnedData.jobPostTitle;
@@ -295,14 +322,40 @@ function finalInterviewSlotSubmission(candidateId, jobPostId) {
 function processInterviewSubmissionResponse(returnData) {
     // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
     if(returnData == "OK"){
-        nfy("Interview Submitted successfully. Refreshing ..", 'success');
-        setTimeout(function () {
-            if(window.location.pathname == "/dashboard/appliedJobs/"){
-                window.location.href = "/dashboard/appliedJobs/";
-            } else {
-                location.reload();
+
+        var showModal = true;
+        if(jobPostInfo.recruiterProfile != null){
+
+            if(jobPostInfo.recruiterProfile.contactCreditCount > 0){
+                showModal = true;
             }
-        }, 2000);
+
+            if(jobPostInfo.recruiterProfile.interviewCreditCount > 0){
+                showModal = false;
+            }
+        }  else{
+            showModal = false;
+        }
+
+        if(showModal){
+            nfy("Interview Submitted successfully.", 'success');
+
+            $("#postApplyMsg").html("We have received your job application. You can contact the recruiter directly on " +
+                jobPostInfo.recruiterProfile.recruiterProfileMobile);
+
+            $("#confirmationModal").modal("show");
+        } else {
+
+            nfy("Interview Submitted successfully. Refreshing ..", 'success');
+            setTimeout(function () {
+                if(window.location.pathname == "/dashboard/appliedJobs/"){
+                    window.location.href = "/dashboard/appliedJobs/";
+                } else {
+                    location.reload();
+                }
+            }, 2000);
+        }
+
     } else {
         nfy("Something went wrong. Refreshing page. After refresh please try again.", 'error');
         setTimeout(function () {
