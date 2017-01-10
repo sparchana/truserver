@@ -1614,6 +1614,7 @@ public class CandidateService
             else {
                 // update filename
                 fileName = createCandidateResumeFilename(Long.toString(candidateId),existingCandidate.getCandidateFirstName(),fileName);
+                Logger.info("Found candidate with id = "+candidateId+". Updating resume filename to "+fileName);
             }
         }
 
