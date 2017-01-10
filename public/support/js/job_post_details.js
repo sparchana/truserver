@@ -541,6 +541,16 @@ $(document).ready(function () {
         }
         $('#jobPostEndTime').append(option);
     }
+
+    $('#jobPostStatus').change(function() {
+        if($('#jobPostStatus').val() == 5){
+            $(".resumeDate").show(200);
+        } else{
+            $("#resume_date").val('');
+            $(".resumeDate").hide(200);
+        }
+    });
+
 });
 
 function processDataGetCreditCategory(returnedData) {
@@ -738,6 +748,20 @@ function processDataForJobPost(returnedData) {
 
     if(returnedData.jobPostStatus != null ){
         $("#jobPostStatus").val(returnedData.jobPostStatus.jobStatusId);
+        if(returnedData.jobPostStatus.jobStatusId == 5){
+            //paused. Show resume date
+            $(".resumeDate").show();
+
+            var resumeDate = new Date(returnedData.resumeApplicationDate);
+
+            var day = ("0" + resumeDate.getDate()).slice(-2);
+            var month = ("0" + (resumeDate.getMonth() + 1)).slice(-2);
+
+            var parsedDate = resumeDate.getFullYear()+"-"+(month)+"-"+(day) ;
+
+            $("#resume_date").val(parsedDate);
+
+        }
     }
 
     if(returnedData.reviewApplication == null || returnedData.reviewApplication == 1){

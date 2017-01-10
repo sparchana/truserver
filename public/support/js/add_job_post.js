@@ -351,6 +351,9 @@ $(function() {
             slotArray.push(parseInt(slotId));
         }).get();
 
+        var pauseApplication = $('#jobPostStatus').val();
+        var jobPostResumeDate = "";
+
 
         if(interviewDays == "0000000"){
             notifyError("Please specify interview days", 'danger');
@@ -366,6 +369,20 @@ $(function() {
             notifyError("Please enter interview address", "danger");
             status = 0;
             $('#interviewAddress').val('');
+        } else if((pauseApplication == 5) && $("#resume_date").val() == ""){
+            notifyError("Please select application resume date", "danger");
+            status = 0;
+        } else if((pauseApplication == 5) && $("#resume_date").val() != ""){
+            var selectedDate = new Date($("#resume_date").val());
+            var todaysDate = new Date();
+
+            if(selectedDate < todaysDate){
+                notifyError("Please select a date greater than today", "danger");
+                status = 0;
+            } else{
+                jobStatusId = 5;
+                jobPostResumeDate = selectedDate.getFullYear() + "-" + (selectedDate.getMonth() + 1) + "-" + selectedDate.getDate();
+            }
         }
 
         if(status == 1){
@@ -453,7 +470,8 @@ $(function() {
                     jobPostInterviewLocationLng: interviewLng,
                     reviewApplications: reviewApplication,
                     jobPostAddressBuildingNo: addressBuildingNo,
-                    jobPostAddressLandmark: addressLandmark
+                    jobPostAddressLandmark: addressLandmark,
+                    resumeApplicationDate: jobPostResumeDate
                 };
                 $.ajax({
                     type: "POST",
