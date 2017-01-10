@@ -2357,7 +2357,7 @@ public class Application extends Controller {
             hireWandResponse = newMapper.readValue(json, HireWandResponse.class);
         } catch (IOException e) {
             e.printStackTrace();
-            Logger.info("Error while mapping from request to HireWandResponse");
+            Logger.info("Error while mapping from request to HireWandResponse"+e.getMessage());
             return internalServerError();
         }
         if(hireWandResponse != null){

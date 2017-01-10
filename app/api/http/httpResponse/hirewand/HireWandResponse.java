@@ -52,7 +52,7 @@ public class HireWandResponse {
         public static class Location {
             public String city;
             public String country;
-            public Integer zipcode;
+            public String zip;
 
             public String getCity() {
                 return city;
@@ -70,12 +70,12 @@ public class HireWandResponse {
                 this.country = country;
             }
 
-            public Integer getZipcode() {
-                return zipcode;
+            public String getZip() {
+                return zip;
             }
 
-            public void setZipcode(Integer zipcode) {
-                this.zipcode = zipcode;
+            public void setZip(String zip) {
+                this.zip = zip;
             }
         }
 
@@ -182,8 +182,8 @@ public class HireWandResponse {
                 }
             }
             public List<String> role;
-            public Date start;
-            public Date end;
+            public String start;
+            public String end;
             public List<String> company;
             public List<Skill> skill;
             public List<String> city;
@@ -197,19 +197,19 @@ public class HireWandResponse {
                 this.role = role;
             }
 
-            public Date getStart() {
+            public String getStart() {
                 return start;
             }
 
-            public void setStart(Date start) {
+            public void setStart(String start) {
                 this.start = start;
             }
 
-            public Date getEnd() {
+            public String getEnd() {
                 return end;
             }
 
-            public void setEnd(Date end) {
+            public void setEnd(String end) {
                 this.end = end;
             }
 
@@ -249,13 +249,22 @@ public class HireWandResponse {
         @JsonIgnoreProperties(ignoreUnknown=true)
         public static class ProjectExperience{
             public String title;
+            public List<String> company;
             public List<String> role;
-            public Date start;
-            public Date end;
+            public String start;
+            public String end;
             public List<String> client;
-            public List<WorkExperience.Skill> skill;
+            public List<String> skill;
             public List<String> city;
             public Integer duration;
+
+            public List<String> getCompany() {
+                return company;
+            }
+
+            public void setCompany(List<String> company) {
+                this.company = company;
+            }
 
             public String getTitle() {
                 return title;
@@ -273,19 +282,19 @@ public class HireWandResponse {
                 this.role = role;
             }
 
-            public Date getStart() {
+            public String getStart() {
                 return start;
             }
 
-            public void setStart(Date start) {
+            public void setStart(String start) {
                 this.start = start;
             }
 
-            public Date getEnd() {
+            public String getEnd() {
                 return end;
             }
 
-            public void setEnd(Date end) {
+            public void setEnd(String end) {
                 this.end = end;
             }
 
@@ -297,11 +306,11 @@ public class HireWandResponse {
                 this.client = client;
             }
 
-            public List<Profile.WorkExperience.Skill> getSkill() {
+            public List<String> getSkill() {
                 return skill;
             }
 
-            public void setSkill(List<Profile.WorkExperience.Skill> skill) {
+            public void setSkill(List<String> skill) {
                 this.skill = skill;
             }
 
@@ -325,7 +334,7 @@ public class HireWandResponse {
         @JsonIgnoreProperties(ignoreUnknown=true)
         public static class PersonalDetails{
             public Boolean married;
-            public Date dateofbirth;
+            public String dateofbirth;
 
             public Boolean getMarried() {
                 return married;
@@ -335,11 +344,11 @@ public class HireWandResponse {
                 this.married = married;
             }
 
-            public Date getDateofbirth() {
+            public String getDateofbirth() {
                 return dateofbirth;
             }
 
-            public void setDateofbirth(Date dateofbirth) {
+            public void setDateofbirth(String dateofbirth) {
                 this.dateofbirth = dateofbirth;
             }
         }
@@ -353,7 +362,7 @@ public class HireWandResponse {
         public List<String> Companies;
         public Integer TotalExperience;
         public String Resumepath;
-        public Date UpdateDate;
+        public String UpdateDate;
         public Long UpdateDateMS;
         public String Source;
         public List<SkillRating> SkillRatings;
@@ -436,11 +445,11 @@ public class HireWandResponse {
             Resumepath = resumepath;
         }
 
-        public Date getUpdateDate() {
+        public String getUpdateDate() {
             return UpdateDate;
         }
 
-        public void setUpdateDate(Date updateDate) {
+        public void setUpdateDate(String updateDate) {
             UpdateDate = updateDate;
         }
 
