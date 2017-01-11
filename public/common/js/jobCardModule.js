@@ -385,7 +385,8 @@ var cardModule = (function ($) {
                     // posted on div
                     var postedOnDiv = document.createElement("div");
                     postedOnDiv.className = "col-sm-6";
-                    postedOnDiv.style = "margin-top:6px;text-align:left";
+                    postedOnDiv.id = "postedDate";
+                    postedOnDiv.style = "";
                     postedOnDiv.textContent = "Posted: " + cardModule.parse.createdOnDate(jobPost.jobPostCreateTimestamp);
                     rowDivApplyButton.appendChild(postedOnDiv);
 

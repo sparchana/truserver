@@ -870,11 +870,27 @@ hr{
     padding:0;
     margin-left:-14px
 }
+#postedDate{
+    margin-top:6px;
+    text-align:left;
+}
 /* Post Card Css End*/
 #searchBtnCol{
     padding: 0;
 }
 @media screen and (max-width: 768px) {
+    #postedDate{
+        text-align:center;
+    }
+    #hintTextProp{
+        margin:0 0 0 20px;
+    }
+    #iconsProp{
+        padding:0 0 0 10px;
+    }
+    #textContentProp{
+        margin-left:0;
+    }
     #searchBtnCol{
         padding:6px 0 10px 0;
     }
