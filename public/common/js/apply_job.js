@@ -64,6 +64,12 @@ function processDataApplyJob(returnedData, jobPostId, candidateId, isPartner) {
 
         $('#customMsgIcon').attr('src', "/assets/common/img/logo.gif");
         $("#customMsg").html("Oops! Candidate does't Exists");
+    } else if(returnedData.status == 6){
+        $("#messagePromptModal").modal("show");
+        $('body').addClass('open-modal');
+
+        $('#customMsgIcon').attr('src', "/assets/common/img/warning.svg");
+        $("#customMsg").html("Sorry! this job post is not accepting any more applications this week. Please check back again next week");
     } else{
         $("#messagePromptModal").modal("show");
         $('body').addClass('open-modal');
