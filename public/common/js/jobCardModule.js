@@ -348,15 +348,11 @@ var cardModule = (function ($) {
                     locationDataDiv.className="col-xs-10";
                     locationDataDiv.id="textContentProp";
                     subRowForData.appendChild(locationDataDiv);
-
-                    var jobRoleAddress = document.createElement("p");
-                    jobRoleAddress.style = "color:#000";
-                    locationDataDiv.appendChild(jobRoleAddress);
-
+                    
                     var locDiv = document.createElement("div");
                     locDiv.style = "display: inline-block";
                     locDiv.textContent = _localities;
-                    jobRoleAddress.appendChild(locDiv);
+                    locationDataDiv.appendChild(locDiv);
 
                     if (((_jobLocality.length) - 2) > 0) {
                         var tooltip = document.createElement("a");
