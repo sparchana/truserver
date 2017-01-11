@@ -1606,7 +1606,7 @@ public class CandidateService
         Candidate existingCandidate = null;
         if(candidateId > 0) {
             // we already have an existing candidate for this resume
-            existingCandidate = Candidate.find.where().eq("CandidateId",candidateId).findUnique();
+            existingCandidate = Candidate.find.where().eq("candidateId",candidateId).findUnique();
             if(existingCandidate == null) {
                 Logger.info("Could not find candidate with Id = "+candidateId);
                 candidateId = 0L;
@@ -1970,31 +1970,35 @@ public class CandidateService
             }
         }
 
+        Long candidateId = 0L;
+        String candidateName = "";
+
         // no candidate found... Create
         if(candidate == null) {
             isNew = Boolean.TRUE;
             Logger.info("Attempting to create new candidate ...");
+            // map to candidate request
+            AddSupportCandidateRequest addSupportCandidateRequest = mapFromHWToCandidate(profile, candidate);
+
+            // create/update candidate
+            Logger.info("About to call CandidateService.createCandidateProfile");
+            CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
+                    InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE,
+                    ServerConstants.UPDATE_ALL_BY_SUPPORT);
+
+            // get candidate Id, Name
+            candidateId = candidateSignUpResponse.getCandidateId();
+            candidateName = candidateSignUpResponse.getCandidateFirstName();
         }
         else {
             Logger.info("Attempting to update existing candidate ...");
             isNew = Boolean.FALSE;
+
+            // get candidate Id, Name
+            candidateId = candidate.getCandidateId();
+            candidateName = candidate.getCandidateFirstName();
         }
 
-        // map to candidate request
-        AddSupportCandidateRequest addSupportCandidateRequest = mapFromHWToCandidate(profile, candidate);
-
-        // create/update candidate
-        Logger.info("About to call CandidateService.createCandidateProfile");
-        CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE,
-                ServerConstants.UPDATE_ALL_BY_SUPPORT);
-
-        Long candidateId = 0L;
-        String candidateName = "";
-
-        // get candidate Id, Name
-        candidateId = candidateSignUpResponse.getCandidateId();
-        candidateName = candidateSignUpResponse.getCandidateFirstName();
         Logger.info("New/Updated candidateId ="+candidateId);
 
         if(candidateResume.getCandidate() == null){
