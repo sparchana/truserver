@@ -1831,26 +1831,30 @@ public class CandidateService
             }
 
             // Candidate education --> Only consider the first entry
+            int c = 0; // this adjusts for cases where there is an "education" entry without corresponding "degree" entry
             for(HireWandResponse.Profile.Education each:profile.getEducation()){
-                if(each != null && each.getDegree() != null) {
+                if(each != null){
+                    c++; // set a flag for every education entry
+                    if(each.getDegree() != null) {
+                        c--; // reset the flag for every education entry that also has a degree entry
+                        if(each.getDegree().toLowerCase().contains("master"))
+                            addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_PG+c);
+                        else if(each.getDegree().toLowerCase().contains("bachelor"))
+                            addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_UG+c);
+                        else if(each.getDegree().toLowerCase().contains("diploma") || each.getDegree().toLowerCase().contains("12th"))
+                            addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_12TH_PASS_ID+c);
+                        else if(each.getDegree().toLowerCase().contains("10th"))
+                            addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_10TH_PASS_ID+c);
 
-                    if(each.getDegree().toLowerCase().contains("master"))
-                        addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_PG);
-                    else if(each.getDegree().toLowerCase().contains("bachelor"))
-                        addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_UG);
-                    else if(each.getDegree().toLowerCase().contains("diploma") || each.getDegree().toLowerCase().contains("12"))
-                        addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_12TH_PASS_ID);
-                    else if(each.getDegree().toLowerCase().contains("10"))
-                        addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_10TH_PASS_ID);
+                        try{
+                            addSupportCandidateRequest.setCandidateEducationInstitute(each.getCollege().getName()+((each.getCollege().getCity()!=null)?" "+each.getCollege().getCity():""));
+                        } catch (NullPointerException e){
+                            e.printStackTrace();
+                            Logger.info("Could not set college");
+                        }
 
-                    try{
-                        addSupportCandidateRequest.setCandidateEducationInstitute(each.getCollege().getName()+((each.getCollege().getCity()!=null)?" "+each.getCollege().getCity():""));
-                    } catch (NullPointerException e){
-                        e.printStackTrace();
-                        Logger.info("Could not set college");
+                        break;
                     }
-
-                    break;
                 }
             }
 
