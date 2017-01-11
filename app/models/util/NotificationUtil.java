@@ -18,10 +18,10 @@ import java.util.Date;
  * Created by dodo on 1/12/16.
  */
 public class NotificationUtil {
-    public static void addFcmToNotificationQueue(String messageText, String title, String token, int intentType){
+    public static void addFcmToNotificationQueue(String messageText, String title, String token, int intentType, Long jpId){
 
         //adding to notificationHandler Queue
-        NotificationEvent notificationEvent = new FCMEvent(token, messageText, title, intentType);
+        NotificationEvent notificationEvent = new FCMEvent(token, messageText, title, intentType, jpId);
         Global.getmNotificationHandler().addToQueue(notificationEvent);
     }
 
@@ -29,14 +29,14 @@ public class NotificationUtil {
         String msg = "Hi " + candidate.getCandidateFirstName() + "! You have been selected for the job: " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() +
                 ". Congratulations!";
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_COMPLETED);
+            addFcmToNotificationQueue(msg, "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_COMPLETED, null);
         }
     }
 
     public static void sendInterviewRejectionNotification(Candidate candidate, JobPostWorkflow jobPostWorkflow){
         String msg = "Hi " + candidate.getCandidateFirstName() + "! You were not selected for the job: " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName();
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "Interview Rejected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_COMPLETED);
+            addFcmToNotificationQueue(msg, "Interview Rejected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_COMPLETED, null);
         }
     }
 
@@ -53,7 +53,7 @@ public class NotificationUtil {
         " has been confirmed on " + interviewDate + " between " + jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName();
 
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "Interview Confirmed", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
+            addFcmToNotificationQueue(msg, "Interview Confirmed", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED, null);
         }
     }
 
@@ -70,7 +70,7 @@ public class NotificationUtil {
                 " has been rescheduled on " + interviewDateString + " between " + slot.getInterviewTimeSlotName();
 
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "Interview Rescheduled", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
+            addFcmToNotificationQueue(msg, "Interview Rescheduled", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING, null);
         }
     }
 
@@ -79,7 +79,7 @@ public class NotificationUtil {
                 " was not shortlisted";
 
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "Application not shortlisted", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
+            addFcmToNotificationQueue(msg, "Application not shortlisted", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING, null);
         }
     }
 
@@ -88,7 +88,7 @@ public class NotificationUtil {
                 " has been shortlisted for the interview. We will get in touch with you shortly to confirm interview date and time!";
 
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "Application Shortlisted", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
+            addFcmToNotificationQueue(msg, "Application Shortlisted", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED, null);
         }
     }
 
@@ -107,7 +107,7 @@ public class NotificationUtil {
                 "and you will get a notification once the recruiter shortlists you for interview.");
 
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(stringBuilder.toString(), "Job Application Initiated!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING);
+            addFcmToNotificationQueue(stringBuilder.toString(), "Job Application Initiated!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_PENDING, null);
         }
     }
 
@@ -138,7 +138,7 @@ public class NotificationUtil {
         }
 
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, notificationTitle, candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+            addFcmToNotificationQueue(msg, notificationTitle, candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS, null);
         }
     }
 
@@ -147,7 +147,7 @@ public class NotificationUtil {
                 "How would you rate your experience with TruJobs? Please rate us on bit.ly/trujobsapp";
 
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "We value your feedback!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+            addFcmToNotificationQueue(msg, "We value your feedback!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS, null);
         }
 
     }
@@ -158,7 +158,7 @@ public class NotificationUtil {
                 " download app at bit.ly/trujobsapp";
 
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "Your TruJobs profile is incomplete", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+            addFcmToNotificationQueue(msg, "Your TruJobs profile is incomplete", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS, null);
         }
     }
 
@@ -167,7 +167,7 @@ public class NotificationUtil {
                 " new " + jobRole + " jobs on TruJobs platform near your locality! Apply now at www.trujobs.in or download app at bit.ly/trujobsapp.";
 
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, jobCount + " new jobs near you!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+            addFcmToNotificationQueue(msg, jobCount + " new jobs near you!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS, null);
         }
     }
 
