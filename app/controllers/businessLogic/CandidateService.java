@@ -1806,13 +1806,15 @@ public class CandidateService
             }
 
             // Candidate Marital Status
-            if(profile.getPersonalDetails().getMarried()!=null && profile.getPersonalDetails().getMarried())
-                addSupportCandidateRequest.setCandidateMaritalStatus(1);
-            else if (profile.getPersonalDetails().getMarried()!=null  && !profile.getPersonalDetails().getMarried())
-                addSupportCandidateRequest.setCandidateMaritalStatus(0);
+            if(profile.getPersonalDetails() != null){
+                if(profile.getPersonalDetails().getMarried()!=null && profile.getPersonalDetails().getMarried())
+                    addSupportCandidateRequest.setCandidateMaritalStatus(1);
+                else if (profile.getPersonalDetails().getMarried()!=null  && !profile.getPersonalDetails().getMarried())
+                    addSupportCandidateRequest.setCandidateMaritalStatus(0);
+            }
 
             // Candidate DOB
-            if(profile.getPersonalDetails().getDateofbirth()!=null){
+            if(profile.getPersonalDetails()!= null && profile.getPersonalDetails().getDateofbirth()!=null){
                 String dob = profile.getPersonalDetails().getDateofbirth();
                 DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
                 try {
