@@ -678,8 +678,8 @@ public class JobService {
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_SUCCESS);
                     applyJobResponse.setCandidateDeActive(true);
                     String deActivationMessage = "Dear "+existingCandidate.getCandidateFullName()+", Looks like your profile is temporarily suspended for new job applications. Please check back after "+sdf.format(expiryDate)+" or call us at 8880007799 to request re-activation.";
-                    applyJobResponse.setDeActiveHeadMessage("Application Failed");
-                    applyJobResponse.setDeActiveTitleMessage("Your Profile is De-Activated !");
+                    applyJobResponse.setDeActiveHeadMessage("Unable to process your application");
+                    applyJobResponse.setDeActiveTitleMessage("Application failed !");
                     applyJobResponse.setDeActiveBodyMessage(deActivationMessage);
 
                     return applyJobResponse;
