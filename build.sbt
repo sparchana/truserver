@@ -8,7 +8,7 @@ routesGenerator := StaticRoutesGenerator
 
 testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a"))
 
-lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
+lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean, SbtWeb)
 
 unmanagedJars in Compile += file(Path.userHome+"/truprojects/trucommon/tru-proto/repos/in.trujobs.proto/tru-proto/1.0.0/tru-proto-1.0.0.jar")
 
@@ -51,3 +51,5 @@ libraryDependencies += "com.googlecode.json-simple" % "json-simple" % "1.1"
 libraryDependencies += "com.google.gcm" % "gcm-server" % "1.0.0"
 
 libraryDependencies += evolutions
+
+pipelineStages := Seq(digest)

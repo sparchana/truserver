@@ -1,289 +1,306 @@
 <!doctype html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
-  <head>
-    <meta charset="UTF-8">
-    <title>Create Company & Recruiter - Support | Trujobs.in</title>
-    <link rel="stylesheet" href="/assets/support/css/material.indigo-pink.min.css">
+    <head>
+        <meta charset="UTF-8">
+        <title>Create Company & Recruiter - Support | Trujobs.in</title>
+        <link rel="stylesheet" href="@routes.Assets.versioned("support/css/material.indigo-pink.min.css")">
 
-    <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css">
+        <link rel="stylesheet" href="@routes.Assets.versioned("support/css/bootstrap.min.css")">
 
-    <script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>
-    <link rel="stylesheet" href="/assets/common/css/token-input.css" type="text/css" />
-    <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
+        <script type="text/javascript" src="@routes.Assets.versioned("support/js/jquery-1.12.0.min.js")"></script>
+        <link rel="stylesheet" href="@routes.Assets.versioned("common/css/token-input.css")" type="text/css" />
+        <link rel="stylesheet" href="@routes.Assets.versioned("common/css/token-input-facebook.css")" type="text/css" />
 
-    <link rel="stylesheet" href="/assets/support/css/style.css">
-    <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
-    <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/dashboard.css">
+        <link rel="stylesheet" href="@routes.Assets.versioned("support/css/style.css")">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("common/css/myStyle.css")">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("dashboard/css/dashboard.css")">
 
-    <link rel="stylesheet" href="/assets/support/css/bootstrap-datetimepicker.min.css">
-    <script type="text/javascript" src="/assets/support/js/Moment.js"></script>
+        <link rel="stylesheet" href="@routes.Assets.versioned("support/css/bootstrap-datetimepicker.min.css")">
+        <script type="text/javascript" src="@routes.Assets.versioned("support/js/Moment.js")"></script>
 
-    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
-    <link rel="stylesheet" href="/assets/support/css/nprogress.css">
-    <link rel="stylesheet" href="/assets/support/css/animate.css">
-    <script type="text/javascript" src="/assets/support/js/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
+        <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
+        <link rel="stylesheet" href="@routes.Assets.versioned("support/css/nprogress.css")">
+        <link rel="stylesheet" href="@routes.Assets.versioned("support/css/animate.css")">
+        <script type="text/javascript" src="@routes.Assets.versioned("support/js/jquery-1.11.1.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("common/js/jquery.tokeninput.js")"></script>
 
-      <script type="text/javascript" src="/assets/common/js/validation.js"></script>
-    <script type="text/javascript" src="/assets/support/js/create_company.js"></script>
-    <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
-    <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
-  </head>
+        <script type="text/javascript" src="@routes.Assets.versioned("common/js/validation.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("support/js/create_company.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("support/js/pace.min.js")"></script>
+        <link rel="stylesheet" href="@routes.Assets.versioned("support/css/pace-dataloader.css")">
+    </head>
 
-  <div style="font-size: 13px;">
-    <div class="container">
-      <h2>
+    <body>
+        <div style="font-size: 13px;">
+            <div class="container">
+                <h2>
         Company and Recruiter Section
-        <a href="/support">
-          <button class="btn" style="align-items: flex-end">Support Home</button>
-        </a>
-        <a href="/logout">
-          <button class="btn btn-danger" style="align-items: flex-end">Logout</button>
-        </a>
-      </h2>
-      <hr>
+                    <a href="/support">
+                        <button class="btn" style="align-items: flex-end">Support Home</button>
+                    </a>
+                    <a href="/logout">
+                        <button class="btn btn-danger" style="align-items: flex-end">Logout</button>
+                    </a>
+                </h2>
+                <hr>
 
-      <div id="recruiterSection" style="width: 68%">
-        <form id="recruiter_form">
-          <div class="row">
-            <div class="col-sm-3"><h5>Recruiter Name:<font color="red">*</font></h5></div>
-            <div class="col-sm-9">
-              <input id="recruiterName" name="recruiterName" placeholder="Recruiter Name" type="text" class="form-control input-md" >
-            </div>
-          </div>
+                <div id="recruiterSection" style="width: 68%">
+                    <form id="recruiter_form">
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Recruiter Name:<font color="red">*</font></h5></div>
+                            <div class="col-sm-9">
+                                <input id="recruiterName" name="recruiterName" placeholder="Recruiter Name" type="text" class="form-control input-md" >
+                            </div>
+                        </div>
 
-          <div class="row">
-            <div class="col-sm-3"><h5>Recruiter Mobile:<font color="red">*</font></h5></div>
-            <div class="col-sm-9">
-              <input id="recruiterMobile" name="recruiterMobile" maxlength="10" placeholder="Recruiter Mobile" type="text" class="form-control input-md" >
-            </div>
-          </div>
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Recruiter Mobile:<font color="red">*</font></h5></div>
+                            <div class="col-sm-9">
+                                <input id="recruiterMobile" name="recruiterMobile" maxlength="10" placeholder="Recruiter Mobile" type="text" class="form-control input-md" >
+                            </div>
+                        </div>
 
-          <div class="row">
-            <div class="col-sm-3"><h5>Recruiter Landline (optional) :</h5></div>
-            <div class="col-sm-9">
-              <input id="recruiterLandline" name="recruiterLandline" placeholder="Recruiter Landline" maxlength="13" type="text" class="form-control input-md" >
-            </div>
-          </div>
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Recruiter Landline (optional) :</h5></div>
+                            <div class="col-sm-9">
+                                <input id="recruiterLandline" name="recruiterLandline" placeholder="Recruiter Landline" maxlength="13" type="text" class="form-control input-md" >
+                            </div>
+                        </div>
 
-          <div class="row">
-            <div class="col-sm-3"><h5>Recruiter Email:<font color="red">*</font></h5></div>
-            <div class="col-sm-9">
-              <input id="recruiterEmail" name="recruiterEmail" placeholder="Recruiter Email" type="text" class="form-control input-md" >
-            </div>
-          </div>
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Recruiter Email:<font color="red">*</font></h5></div>
+                            <div class="col-sm-9">
+                                <input id="recruiterEmail" name="recruiterEmail" placeholder="Recruiter Email" type="text" class="form-control input-md" >
+                            </div>
+                        </div>
 
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Your Company:<font color="red">*</font></h5></div>
-            <div class="col-sm-9">
-              <select id="recruiterCompany" class="selectDropdown" ></select>
-              Company Not listed? <a onclick="showCompanyForm()">Click Here</a>
-            </div>
-          </div>
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h5>Your Company:<font color="red">*</font></h5></div>
+                            <div class="col-sm-9">
+                                <select id="recruiterCompany" class="selectDropdown" ></select>
+                                Company Not listed? <a onclick="showCompanyForm()">Click Here</a>
+                            </div>
+                        </div>
 
-            <br>
-            <h3>Credits Section <div class="btn btn-default" data-toggle="modal" data-target="#creditModal" style="color: #328234; border-color: #328234">Add Credits</div></h3>
-            <hr>
-            <div id="addCreditInfoDiv" style="display: none; margin-top: 24px">
-                <h4>You are adding the following no. of credits for this recruiter::</h4>
-                <div class="row">
-                    <div class="col-sm-3"><h5>Candidate Contact unlock credits:</h5></div>
-                    <div class="col-sm-9" style="margin-top: 12px">
-                        <div id="contactUnlockCreditInfo" style="color: #00c853">N/A</div>
-                    </div>
+                        <br>
+                        <h3>Credits Section <div class="btn btn-default" data-toggle="modal" data-target="#creditModal" style="color: #328234;
+                            border-color: #328234">Add Credits</div></h3>
+                        <hr>
+                        <div id="addCreditInfoDiv" style="display: none;
+                            margin-top: 24px">
+                            <h4>You are adding the following no. of credits for this recruiter::</h4>
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Candidate Contact unlock credits:</h5></div>
+                                <div class="col-sm-9" style="margin-top: 12px">
+                                    <div id="contactUnlockCreditInfo" style="color: #00c853">N/A</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Candidate interview unlock credits:</h5></div>
+                                <div class="col-sm-9" style="margin-top: 12px">
+                                    <div id="interviewUnlockCreditInfo" style="color: #00c853">N/A</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
                 </div>
 
-                <div class="row">
-                    <div class="col-sm-3"><h5>Candidate interview unlock credits:</h5></div>
-                    <div class="col-sm-9" style="margin-top: 12px">
-                        <div id="interviewUnlockCreditInfo" style="color: #00c853">N/A</div>
-                    </div>
+                <div id="companySection" style="display: none;
+                    width: 68%;
+                    padding: 2%;
+                    background: #f8f2f8 ;
+                    margin: 2%">
+                    <form id="company_form">
+                            <!-- hidden field -->
+                        <input id="companyId" style="display: none">
+
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Company Name:<font color="red">*</font></h5></div>
+                            <div class="col-sm-9">
+                                <input id="companyName" style="display: inline-block;
+                                    width: 94%" name="companyName" placeholder="Company Name" type="text" class="form-control input-md" >
+                                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h5>Company Locality:</h5></div>
+                            <div class="col-sm-9">
+                                <input type="text" id="companyLocality">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Company Address:</h5></div>
+                            <div class="col-sm-9">
+                                <textarea rows="4" cols="80" id="companyAddress" class="form-control input-md" maxlength="1000"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Company Pincode:</h5></div>
+                            <div class="col-sm-9">
+                                <input id="companyPinCode" name="companyPinCode" placeholder="Company PinCode" type="number" max="999999" class="form-control input-md" >
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Company Website:</h5></div>
+                            <div class="col-sm-9">
+                                <input id="companyWebsite" name="companyWebsite" placeholder="Company Website" type="text" class="form-control input-md" >
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Company Logo:</h5></div>
+                            <div class="col-sm-9">
+                                <img id="companyLogoOld" width="120px">
+                                <input type="file" id="companyLogo" style="display: inline-block;
+                                    float: left;
+                                    width: 40%" onchange="readURL(this)" accept='image/*'>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Company Description:</h5></div>
+                            <div class="col-sm-9">
+                                <textarea rows="4" cols="80" id="companyDescription" class="form-control input-md" maxlength="5000"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Company Employee Count:</h5></div>
+                            <div class="col-sm-9">
+                                <input id="companyEmployeeCount" maxlength="14" placeholder="Company Employee Count" type="text" class="form-control input-md">
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h5>Company Type:</h5></div>
+                            <div class="col-sm-9">
+                                <select id="companyType" class="selectDropdown" ></select>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h5>Company Status:</h5></div>
+                            <div class="col-sm-9">
+                                <select id="companyStatus" class="selectDropdown" ></select>
+                            </div>
+                        </div>
+                        @* source *@
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h5>Company Source:</h5></div>
+                            <div class="col-sm-9">
+                                <select id="companySource" class="selectDropdown" >
+                                    <option value="0" selected>Internal</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
                 </div>
+                <button class="btn btn-default" onclick="saveForm()">Save</button>
+                <br>
             </div>
 
-        </form>
-      </div>
+                <!-- modal code for credits -->
+            <div id="creditModal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                        <!-- Modal content-->
+                    <div class="modal-content">
+                        <div style="float: right"><img src="/assets/recruiter/img/cancel.png" onclick="closeCreditModal()"></div>
+                        <div class="modal-body" id="model_size">
+                            <form id="add_credits" class="form-horizontal" role="form">
+                                <div class="line_up" id="signInPopup"><h4>Add Credits</h4></div>
+                                <br>
 
-      <div id="companySection" style="display: none; width: 68%; padding: 2%; background: #f8f2f8 ; margin: 2%">
-        <form id="company_form">
-            <!-- hidden field -->
-          <input id="companyId" style="display: none">
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Company Name:<font color="red">*</font></h5></div>
-            <div class="col-sm-9">
-              <input id="companyName" style="display: inline-block; width: 94%" name="companyName" placeholder="Company Name" type="text" class="form-control input-md" >
-              <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
-            </div>
-          </div>
-
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Company Locality:</h5></div>
-            <div class="col-sm-9">
-              <input type="text" id="companyLocality">
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Company Address:</h5></div>
-            <div class="col-sm-9">
-              <textarea rows="4" cols="80" id="companyAddress" class="form-control input-md" maxlength="1000"></textarea>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Company Pincode:</h5></div>
-            <div class="col-sm-9">
-              <input id="companyPinCode" name="companyPinCode" placeholder="Company PinCode" type="number" max="999999" class="form-control input-md" >
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Company Website:</h5></div>
-            <div class="col-sm-9">
-              <input id="companyWebsite" name="companyWebsite" placeholder="Company Website" type="text" class="form-control input-md" >
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Company Logo:</h5></div>
-            <div class="col-sm-9">
-              <img id="companyLogoOld" width="120px">
-              <input type="file" id="companyLogo" style="display: inline-block; float: left; width: 40%" onchange="readURL(this)"  accept='image/*'>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Company Description:</h5></div>
-            <div class="col-sm-9">
-              <textarea rows="4" cols="80" id="companyDescription" class="form-control input-md" maxlength="5000"></textarea>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Company Employee Count:</h5></div>
-            <div class="col-sm-9">
-              <input id="companyEmployeeCount" maxlength="14" placeholder="Company Employee Count" type="text" class="form-control input-md">
-            </div>
-          </div>
-
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Company Type:</h5></div>
-            <div class="col-sm-9">
-              <select id="companyType" class="selectDropdown" ></select>
-            </div>
-          </div>
-
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Company Status:</h5></div>
-            <div class="col-sm-9">
-              <select id="companyStatus" class="selectDropdown" ></select>
-            </div>
-          </div>
-
-            @* source *@
-            <div class="row" style="margin-top: 4px">
-                <div class="col-sm-3"><h5>Company Source:</h5></div>
-                <div class="col-sm-9">
-                    <select id="companySource" class="selectDropdown" >
-                        <option value="0" selected>Internal</option>
-                    </select>
-                </div>
-            </div>
-        </form>
-      </div>
-      <button class="btn btn-default" onclick="saveForm()">Save</button>
-      <br>
-    </div>
-
-          <!-- modal code for credits -->
-      <div id="creditModal" class="modal fade" role="dialog">
-          <div class="modal-dialog">
-                  <!-- Modal content-->
-              <div class="modal-content">
-                  <div style="float: right"><img src="/assets/recruiter/img/cancel.png" onclick="closeCreditModal()"></div>
-                  <div class="modal-body" id="model_size">
-                      <form id="add_credits" class="form-horizontal" role="form">
-                          <div class="line_up" id="signInPopup"><h4>Add Credits</h4></div>
-                          <br>
-
-                          <h5 style="color: #0D47A1; font-weight: bold">Purchased Candidate Contact Unlock Credits?</h5>
-                          <div class="row" style="margin-top: 8px">
-                              <div class="col-sm-12" style="margin-top: 4px">
-                                  <div style="width: 100%;height: 34px;" class="btn-group" data-toggle="buttons">
-                                      <label class="btn btn-custom-check" style="width: 80px">
-                                          <input type="radio" name="candidateCreditType" id="candidateCreditYes" value="1"> &nbsp;Yes&nbsp;&nbsp;
-                                      </label>
-                                      <label class="btn btn-custom-check" style="width: 80px">
-                                          <input type="radio" name="candidateCreditType" id="candidateCreditNo" value="0"> &nbsp;No&nbsp;&nbsp;
-                                      </label>
-                                  </div>
-                              </div>
-                          </div>
-                              <!-- candidate contact credit details -->
-                          <div id="candidateCreditSection" style="display: none;">
+                                <h5 style="color: #0D47A1;
+                                    font-weight: bold">Purchased Candidate Contact Unlock Credits?</h5>
+                                <div class="row" style="margin-top: 8px">
+                                    <div class="col-sm-12" style="margin-top: 4px">
+                                        <div style="width: 100%;
+                                            height: 34px;" class="btn-group" data-toggle="buttons">
+                                            <label class="btn btn-custom-check" style="width: 80px">
+                                                <input type="radio" name="candidateCreditType" id="candidateCreditYes" value="1"> &nbsp;Yes&nbsp;&nbsp;
+                                            </label>
+                                            <label class="btn btn-custom-check" style="width: 80px">
+                                                <input type="radio" name="candidateCreditType" id="candidateCreditNo" value="0"> &nbsp;No&nbsp;&nbsp;
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                    <!-- candidate contact credit details -->
+                                <div id="candidateCreditSection" style="display: none;">
                              Candidate contact unlock credit details::
-                              <div class="row" style="margin-top: 8px">
-                                  <div class="col-sm-5" style="margin-top: 4px">
+                                    <div class="row" style="margin-top: 8px">
+                                        <div class="col-sm-5" style="margin-top: 4px">
                                  No. of contact credits:
-                                  </div>
-                                  <div class="col-sm-7">
-                                      <input style="width: 90%; display: inline-block"  id="candidateContactCredits" placeholder="Contact credits" type="number" class="form-control input-md">
-                                  </div>
-                              </div>
-                          </div>
+                                        </div>
+                                        <div class="col-sm-7">
+                                            <input style="width: 90%;
+                                                display: inline-block" id="candidateContactCredits" placeholder="Contact credits" type="number" class="form-control input-md">
+                                        </div>
+                                    </div>
+                                </div>
 
-                          <hr>
-                          <h5 style="color: #0D47A1; font-weight: bold">Purchased Interview Unlock Credits?</h5>
-                          <div class="row" style="margin-top: 8px">
-                              <div class="col-sm-12" style="margin-top: 4px">
-                                  <div style="width: 100%;height: 34px;" class="btn-group" data-toggle="buttons">
-                                      <label class="btn btn-custom-check" style="width: 80px">
-                                          <input type="radio" name="interviewCreditType" id="interviewCreditYes" value="1"> &nbsp;Yes&nbsp;&nbsp;
-                                      </label>
-                                      <label class="btn btn-custom-check" style="width: 80px">
-                                          <input type="radio" name="interviewCreditType" id="interviewCreditNo" value="0"> &nbsp;No&nbsp;&nbsp;
-                                      </label>
-                                  </div>
-                              </div>
-                          </div>
-                              <!-- candidate contact credit details -->
-                          <div id="interviewCreditSection" style="display: none;">
+                                <hr>
+                                <h5 style="color: #0D47A1;
+                                    font-weight: bold">Purchased Interview Unlock Credits?</h5>
+                                <div class="row" style="margin-top: 8px">
+                                    <div class="col-sm-12" style="margin-top: 4px">
+                                        <div style="width: 100%;
+                                            height: 34px;" class="btn-group" data-toggle="buttons">
+                                            <label class="btn btn-custom-check" style="width: 80px">
+                                                <input type="radio" name="interviewCreditType" id="interviewCreditYes" value="1"> &nbsp;Yes&nbsp;&nbsp;
+                                            </label>
+                                            <label class="btn btn-custom-check" style="width: 80px">
+                                                <input type="radio" name="interviewCreditType" id="interviewCreditNo" value="0"> &nbsp;No&nbsp;&nbsp;
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                    <!-- candidate contact credit details -->
+                                <div id="interviewCreditSection" style="display: none;">
                              Interview unlock credit details::
-                              <div class="row" style="margin-top: 8px">
-                                  <div class="col-sm-5" style="margin-top: 4px">
+                                    <div class="row" style="margin-top: 8px">
+                                        <div class="col-sm-5" style="margin-top: 4px">
                                  No. of Interview credits:
-                                  </div>
-                                  <div class="col-sm-7">
-                                      <input id="interviewCredits" placeholder="Interview credits" type="number" class="form-control input-md">
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="btn btn-default" style="background: #37a12f; color: #fff; margin: 24px 0 24px 0; width: 100%" onclick="computeCreditValue()">Done</div>
-                      </form>
-                  </div>
-              </div>
-          </div>
-      </div>
+                                        </div>
+                                        <div class="col-sm-7">
+                                            <input id="interviewCredits" placeholder="Interview credits" type="number" class="form-control input-md">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="btn btn-default" style="background: #37a12f;
+                                    color: #fff;
+                                    margin: 24px 0 24px 0;
+                                    width: 100%" onclick="computeCreditValue()">Done</div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-
-    <script>
-      function showCompanyForm(){
-        $("#recruiterCompany").val("");
-        if($("#recruiterCompany").is(':enabled')){
-          $("#recruiterCompany").prop('disabled', true);
-        } else{
-          $("#recruiterCompany").prop('disabled', false);
-        }
-        $("#companySection").toggle();
+        </div>
+        <script>
+      function showCompanyForm() {
+          $("#recruiterCompany").val("");
+          if ($("#recruiterCompany").is(':enabled')) {
+              $("#recruiterCompany").prop('disabled', true);
+          } else {
+              $("#recruiterCompany").prop('disabled', false);
+          }
+          $("#companySection").toggle();
       }
     </script>
-    <script type="text/javascript" src="/assets/common/js/validation.js"></script>
-    <script type="text/javascript" src="/assets/support/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/assets/common/js/apply_job.js"></script>
-    <script type="text/javascript" src="/assets/support/js/add_company.js"></script>
-    <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
-    <script type="text/javascript" src="/assets/support/js/bootstrap-datetimepicker.min.js"></script>
-    <script type="text/javascript" src="/assets/support/js/bootstrap-notify.min.js"></script>
-  </body>
+        <script type="text/javascript" src="@routes.Assets.versioned("common/js/validation.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("support/js/bootstrap.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("common/js/apply_job.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("support/js/add_company.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("common/js/jquery.tokeninput.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("support/js/bootstrap-datetimepicker.min.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("support/js/bootstrap-notify.min.js")"></script>
+    </body>
 </html>

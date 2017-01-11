@@ -2713,8 +2713,6 @@ public class JobPostWorkflowEngine {
             preScreenRequirementMap.putIfAbsent(preScreenRequirement.getJobPost().getJobPostId(), preScreenRequirement);
         }
 
-        Logger.info("preScreenReqList: " + preScreenRequirementList.size());
-
         for (JobPostWorkflow jobPostWorkflowObj : appliedJobsList) {
             if (preScreenRequirementMap.get(jobPostWorkflowObj.getJobPost().getJobPostId()) == null) {
                 jobPostWorkflowObj.setPreScreenRequired(false);
