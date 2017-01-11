@@ -1606,7 +1606,7 @@ public class CandidateService
         Candidate existingCandidate = null;
         if(candidateId > 0) {
             // we already have an existing candidate for this resume
-            existingCandidate = Candidate.find.where().eq("candidateId",candidateId).findUnique();
+            existingCandidate = Candidate.find.where().eq("CandidateId",candidateId).findUnique();
             if(existingCandidate == null) {
                 Logger.info("Could not find candidate with Id = "+candidateId);
                 candidateId = 0L;
@@ -2083,7 +2083,7 @@ public class CandidateService
                                     break;
                                 case "Mobile":
                                     //Logger.info("About to check for "+nextLine[i]);
-                                    isNew = ((Candidate.find.where().eq("candidatemobile",FormValidator.convertToIndianMobileFormat(nextLine[i])).findRowCount() > 0)? Boolean.FALSE: Boolean.TRUE);
+                                    isNew = ((Candidate.find.where().eq("candidateMobile",FormValidator.convertToIndianMobileFormat(nextLine[i])).findRowCount() > 0)? Boolean.FALSE: Boolean.TRUE);
                                     //Logger.info("Candidate.find.where().eq(\"candidatemobile\",FormValidator.convertToIndianMobileFormat(nextLine[i])).findRowCount()"+Candidate.find.where().eq("candidatemobile",FormValidator.convertToIndianMobileFormat(nextLine[i])).findRowCount());
                                     addSupportCandidateRequest.setCandidateMobile(FormValidator.convertToIndianMobileFormat(nextLine[i]));
                                     tempMobile = addSupportCandidateRequest.getCandidateMobile();
