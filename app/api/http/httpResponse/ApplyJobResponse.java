@@ -9,6 +9,7 @@ public class ApplyJobResponse {
     public static final int STATUS_EXISTS = 3;
     public static final int STATUS_NO_CANDIDATE = 4;
     public static final int STATUS_NO_JOB = 5;
+    public static final int STATUS_APPLICATION_LIMIT_REACHED = 6;
 
     public int status;
     public boolean isPreScreenAvailable;

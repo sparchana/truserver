@@ -64,10 +64,23 @@
                         <div class="row" id="inputContainerModalSignup">
                             <div class="input-field col s12">
                                 <form id="signUpForm">
-                                    <input placeholder="Name" id="rec_name" type="text" class="validate">
-                                    <input placeholder="Mobile" id="rec_mobile" type="text" maxlength="10" class="validate">
-                                    <input placeholder="Email" id="rec_email" type="email" class="validate">
-                                    <input placeholder="Company" id="rec_company" type="text" class="validate">
+                                    <input style="border-bottom: 1px solid #e0e0e0" placeholder="Name" id="rec_name" type="text" class="validate">
+                                    <input style="border-bottom: 1px solid #e0e0e0" placeholder="Mobile" id="rec_mobile" type="text" maxlength="10" class="validate">
+                                    <input style="border-bottom: 1px solid #e0e0e0" placeholder="Email" id="rec_email" type="email" class="validate">
+
+                                    <select id="rec_company" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                                    <script type="text/javascript">
+                                        $('#rec_company').tokenize({
+                                            displayDropdownOnFocus: true,
+                                            placeholder: "Enter your company",
+                                            nbDropdownElements: 1000,
+                                            newElements: true,
+                                            maxElements: 1,
+                                            onAddToken: function (value, text) {
+                                                validateCompanyVal(value, text);
+                                            }
+                                        });
+                                    </script>
                                 </form>
                             </div>
                             <div class="input-field col s12">

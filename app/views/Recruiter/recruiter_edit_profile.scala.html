@@ -88,8 +88,24 @@
                         <div class="row">
                             <div class="input-field col s12 m6 l6">
                                 <i class="material-icons prefix">business</i>
-                                <input placeholder="Enter your company name" id="rec_company_name" maxlength="35" type="text" class="validate">
-                                <label for="rec_name">Name<font color="red">*</font></label>
+
+                                <select id="rec_company_name" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                                <script type="text/javascript">
+                                        $('#rec_company_name').tokenize({
+                                            displayDropdownOnFocus: true,
+                                            nbDropdownElements: 1000,
+                                            newElements: true,
+                                            placeholder: "Enter your Company name or Select a Company",
+                                            maxElements: 1,
+                                            onRemoveToken: function (value, text) {
+                                                resetCompanyIdval(value, text);
+                                            },
+                                            onAddToken: function (value, text) {
+                                                validateCompanyVal(value, text);
+                                            }
+                                        });
+                                    </script>
+
                             </div>
                             <div class="input-field col s12 m6 l6">
                                 <i class="material-icons prefix">web</i>

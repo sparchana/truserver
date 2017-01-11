@@ -3,8 +3,11 @@ package controllers;
 import api.ServerConstants;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerManager;
-import controllers.scheduler.task.WeeklyCandidateAlertTask;
+import controllers.scheduler.task.EODDebitCreditInterviewCreditTask;
 import models.entity.Candidate;
+import models.entity.Recruiter.RecruiterProfile;
+import models.entity.Recruiter.Static.RecruiterCreditCategory;
+import models.entity.RecruiterCreditHistory;
 import models.util.NotificationUtil;
 import models.util.Validator;
 import notificationService.EmailEvent;
@@ -13,6 +16,9 @@ import notificationService.SMSEvent;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import static play.libs.Json.toJson;
 
 /**
@@ -57,7 +63,6 @@ public class TestController extends Controller{
             NotificationUtil.addFcmToNotificationQueue("Hi", "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_CONFIRMED);
             return ok("1");
         }
-
         return ok("Null token!");
 
     }
@@ -71,4 +76,80 @@ public class TestController extends Controller{
         }
         return ok("-");
     }
+
+    public static Result convertOldData() {
+        List<RecruiterProfile> allRecs = RecruiterProfile.find.all();
+
+        List<RecruiterCreditHistory> allHistory = RecruiterCreditHistory.find.all();
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.MONTH, 1);
+        Date expiryDate = cal.getTime();
+
+        for(RecruiterCreditHistory history : allHistory){
+            history.setRecruiterCreditPackNo(1);
+            history.setCreditIsExpired(false);
+            history.setLatest(false);
+            history.update();
+        }
+
+        for(RecruiterProfile recruiterProfile : allRecs){
+            RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
+                    .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
+                    .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK)
+                    .setMaxRows(1)
+                    .orderBy("create_timestamp desc")
+                    .findUnique();
+
+            Boolean hasContactCredits = false;
+
+            if(recruiterCreditHistoryLatest != null){
+
+                hasContactCredits = true;
+
+                recruiterCreditHistoryLatest.setRecruiterCreditPackNo(1);
+                recruiterCreditHistoryLatest.setCreditIsExpired(false);
+                recruiterCreditHistoryLatest.setLatest(true);
+
+                recruiterCreditHistoryLatest.update();
+            }
+
+            List<RecruiterCreditHistory> allInterviewCreditHistory = RecruiterCreditHistory.find
+                    .where()
+                    .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK).findList();
+
+            Integer packNo = 1;
+            if(hasContactCredits){
+                packNo = 2;
+            }
+
+            for(RecruiterCreditHistory history : allInterviewCreditHistory){
+                history.setRecruiterCreditPackNo(packNo);
+                history.update();
+            }
+
+            recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
+                    .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
+                    .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
+                    .setMaxRows(1)
+                    .orderBy("create_timestamp desc")
+                    .findUnique();
+
+            if(recruiterCreditHistoryLatest != null){
+                if(hasContactCredits){
+                    recruiterCreditHistoryLatest.setRecruiterCreditPackNo(2);
+                } else{
+                    recruiterCreditHistoryLatest.setRecruiterCreditPackNo(1);
+                }
+
+                recruiterCreditHistoryLatest.setCreditIsExpired(false);
+                recruiterCreditHistoryLatest.setLatest(true);
+                recruiterCreditHistoryLatest.setExpiryDate(expiryDate);
+
+                recruiterCreditHistoryLatest.update();
+            }
+        }
+        return ok("-");
+    }
+
 }
