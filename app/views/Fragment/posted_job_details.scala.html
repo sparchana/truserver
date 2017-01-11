@@ -204,6 +204,10 @@
                         <div class="col-sm-2" id="jobApplyBtnId">
                             <div style="display: inline-block;">
                                 <button class="jobApplyBtnV2" style="float: right" onclick="applyJobBtnAction()">Apply</button>
+                                <center>
+                                    <span style="font-size: 11px" id="reopenDate">
+                                    </span>
+                                </center>
                             </div>
                         </div>
                     </div>
@@ -501,6 +505,24 @@
             </div>
         </div>
         <br>
+
+            <!--Final Modal -->
+        <div class="modal fade" id="confirmationModal" role="dialog">
+            <div class="modal-dialog">
+
+                    <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Job Application Complete!</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p id="postApplyMsg"></p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
             <!-- Start Footer-->
         <div id="footer_inc"></div>
         <script>
@@ -580,6 +602,7 @@
                 ga('send', 'pageview');
         </script>
 
+        <script type="text/javascript" src="/assets/common/js/script_constants.js"></script>
         <script type="text/javascript" src="/assets/common/js/posted_jobs_page.js"></script>
         <script type="text/javascript" src="/assets/js/interview_modal.js"></script>
         <script type="text/javascript" src="/assets/common/js/all_job_role_footer.js"></script>

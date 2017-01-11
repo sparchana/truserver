@@ -319,8 +319,25 @@ label{
     padding:0;
     margin-left:-2px
 }
+#postedDate{
+    margin-top:6px;
+    text-align:left;
+}
 /* Post Card Css End*/
 @media screen and (max-width: 768px) {
+    #postedDate{
+        margin-top:6px;
+        text-align:center;
+    }
+    #hintTextProp{
+        margin:0 0 0 20px;
+    }
+    #iconsProp{
+        padding:0 0 0 10px;
+    }
+    #textContentProp{
+        margin-left:0;
+    }
     .sort-card-body, .filter-card-body{
         margin: 20px 15px 0 15px;
         box-shadow: 0 1px 8px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12);
