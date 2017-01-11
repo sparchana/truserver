@@ -60,15 +60,6 @@ public class RecruiterCreditHistoryDAO {
             .findList();
     }
 
-    public static RecruiterCreditHistory getOldestActivePack(RecruiterProfile recruiterProfile){
-        return RecruiterCreditHistory.find.where()
-                .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
-                .eq("is_latest", 1)
-                .eq("credit_is_expired", 0)
-                .setMaxRows(1)
-                .orderBy().asc("recruiter_credit_pack_no").setMaxRows(1).findUnique();
-    }
-
     public static RecruiterCreditHistory getCreditPackByPackNo(RecruiterProfile recruiterProfile, Integer packId){
         return RecruiterCreditHistory.find.where()
                 .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
