@@ -91,12 +91,6 @@ public class TrudroidController {
 
 
             loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(loginResponse.getStatus()));
-            //TODO: to handle the new status in the new APK
-            //since we have a new status in the web version stating no auth record but candidate exists, android doesn't have
-            // hence we are setting status as 'no user' where the status is 'no auth'
-            if(loginResponse.getStatus() == LoginResponse.STATUS_NO_PASSWORD){
-                loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(LoginResponse.STATUS_NO_USER));
-            }
 
             if (loginResponse.getStatus() == LoginResponse.STATUS_SUCCESS) {
                 loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(LoginResponse.STATUS_SUCCESS));
@@ -255,15 +249,7 @@ public class TrudroidController {
                     InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID
             );
 
-            //TODO: to handle the new status in the new APK
-            //since we have a new status in the web version stating no auth record but candidate exists, android doesn't have
-            // hence we are setting status as 'no user' where the status is 'no auth'
-            if(resetPasswordResponse.getStatus() == LoginResponse.STATUS_NO_PASSWORD){
-                resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(LoginResponse.STATUS_NO_USER));
-            } else{
-                resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(resetPasswordResponse.getStatus()));
-            }
-
+            resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(resetPasswordResponse.getStatus()));
             resetPasswordResponseBuilder.setOtp(resetPasswordResponse.getOtp());
 
             Logger.info("Status returned = " + resetPasswordResponseBuilder.getStatus());
@@ -1043,7 +1029,7 @@ public class TrudroidController {
                 List<JobPostWorkFlowObject> jobApplicationListToReturn = new ArrayList<JobPostWorkFlowObject>();
 
                 //Getting list of all the job applications applied by a user from model
-                List<JobPostWorkflow> appliedJobsList = new JobPostWorkFlowDAO().candidateAppliedJobs(existingCandidate.getCandidateId());
+                List<JobPostWorkflow> appliedJobsList = JobPostWorkFlowDAO.candidateAppliedJobs(existingCandidate.getCandidateId());
 
                 //Job Application Object (Proto) to get all the job application applied by the candidate (list object)
                 JobPostWorkFlowObject.Builder jobPostWorkFlowObjBuilder = JobPostWorkFlowObject.newBuilder();
@@ -1108,6 +1094,7 @@ public class TrudroidController {
                         jobPostObjectBuilder.setRecruiterName("Not Available");
                         if(jwpf.getJobPost().getRecruiterProfile() != null){
                             jobPostObjectBuilder.setRecruiterName(jwpf.getJobPost().getRecruiterProfile().getRecruiterProfileName());
+                            jobPostObjectBuilder.setRecruiterMobile(jwpf.getJobPost().getRecruiterProfile().getRecruiterProfileMobile());
                         }
 
                         //salary

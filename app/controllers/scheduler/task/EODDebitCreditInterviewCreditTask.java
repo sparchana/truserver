@@ -62,7 +62,7 @@ public class EODDebitCreditInterviewCreditTask extends TimerTask {
 
                 RecruiterCreditHistory history = RecruiterCreditHistoryDAO.getOldestActivePackByCategory(recruiterProfile,
                         ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK);
-                
+
                 if(history != null){
                     if (isDebit) {
                         Logger.info("Debiting " + creditCount + " no. of interview credits for Recruiter: " + recruiterProfile.getRecruiterProfileName()

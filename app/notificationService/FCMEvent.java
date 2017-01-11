@@ -15,12 +15,14 @@ public class FCMEvent extends NotificationEvent {
     private boolean isDevMode;
     private String myTitle;
     private Integer myIntentType;
+    private Long jobPostId;
 
-    public FCMEvent(String recipient, String message, String title, Integer intentType) {
+    public FCMEvent(String recipient, String message, String title, Integer intentType, Long jpId) {
         this.setMessage(message);
         this.setRecipient(recipient);
         this.setMyTitle(title);
         this.setMyIntentType(intentType);
+        this.setJobPostId(jpId);
     }
 
     @Override
@@ -38,6 +40,7 @@ public class FCMEvent extends NotificationEvent {
                 .addData("title", myTitle)
                 .addData("message", messageText)
                 .addData("type", String.valueOf(myIntentType))
+                .addData("jpId", String.valueOf(jobPostId))
                 .build();
 
         try {
@@ -67,6 +70,14 @@ public class FCMEvent extends NotificationEvent {
 
     public void setMyIntentType(Integer myIntentType) {
         this.myIntentType = myIntentType;
+    }
+
+    public Long getJobPostId() {
+        return jobPostId;
+    }
+
+    public void setJobPostId(Long jobPostId) {
+        this.jobPostId = jobPostId;
     }
 
     public boolean isDevMode() {
