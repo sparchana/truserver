@@ -55,7 +55,7 @@ public class RecruiterCreditHistoryDAO {
 
         return RecruiterCreditHistory.find.where()
             .eq("expiryDate", dateToday)
-                .eq("is_latest", 1)
+            .eq("is_latest", 1)
             .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
             .findList();
     }

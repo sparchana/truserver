@@ -260,7 +260,26 @@ function processDataAllJobPosts(returnedData) {
                 var applyBtn = document.createElement("div");
                 applyBtn.className = "jobApplyBtn";
                 applyBtn.id = "apply_btn_" + jobPost.jobPostId;
-                applyBtn.textContent = "View & Apply";
+
+                var applyJobText;
+                if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != CTA_BTN_APPLY){
+                    if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_REQUIRED) {
+                        applyJobText = "Book Interview";
+                    } else if(jobPost.applyBtnStatus == CTA_BTN_ALREADY_APPLIED) {
+                        applyJobText = "Applied";
+                        applyBtn.disabled =  true;
+                        applyBtn.style = "cursor: default; background: #ffa726";
+                    } else if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_CLOSED) {
+                        applyJobText = "Application closed";
+                        applyBtn.disabled =  true;
+                        applyBtn.style = "cursor: default; background: #ffa726";
+                    }
+                } else {
+                    applyJobText = "Apply";
+                }
+
+                applyBtn.textContent = applyJobText;
+
                 applyBtnDiv.appendChild(applyBtn);
                 applyBtn.onclick=function(){
                     var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
