@@ -35,9 +35,11 @@ public class FlashSessionController {
         if (url != null) {
                 /* TODO find a better way to avoid adding 'non page rendering' api to flash memory*/
                 /* since most of api don't render pages, they need not be saved for redirection */
-            if (!(url.toLowerCase().startsWith("/get")) && !url.toLowerCase().contains("/api/")) {
+            if (!(url.toLowerCase().startsWith("/get")) && !url.toLowerCase().contains("/api/")
+                    && !url.equalsIgnoreCase("/street")
+                    && !url.equalsIgnoreCase("/support")) {
                 session().put("flash", url);
-                Logger.info("flash set");
+                Logger.info("flash set : " + url);
             }
         }
     }
