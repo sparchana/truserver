@@ -1779,21 +1779,26 @@ public class CandidateService
 
             // Candidate work experience
             if(profile.WorkExperience != null) {
+                Boolean isCurrentSet = false;
                 List<AddSupportCandidateRequest.PastCompany> pastCompanyList = new ArrayList<>();
-                for (int i = 0; i < profile.WorkExperience.size(); i++) {
-                    HireWandResponse.Profile.WorkExperience each = profile.WorkExperience.get(i);
+                for (HireWandResponse.Profile.WorkExperience each: profile.WorkExperience) {
                     if(each!= null && each.getCompany()!= null && each.getCompany().size() > 0) {
-                        AddSupportCandidateRequest.PastCompany pastCompany = new AddSupportCandidateRequest.PastCompany();
-                        pastCompany.setCompanyName(each.getCompany().get(0));
-                        if(profile.getLatestCompanies() != null){
-                            for(String latest:profile.getLatestCompanies()){
-                                if(latest.equalsIgnoreCase(each.getCompany().get(0))) {
-                                    pastCompany.setCurrent(Boolean.TRUE);
-                                    break;
+                        for(String eachCompany:each.getCompany()){
+                            AddSupportCandidateRequest.PastCompany pastCompany = new AddSupportCandidateRequest.PastCompany();
+                            pastCompany.setCompanyName(eachCompany);
+                            // default is "Others" (34L) --> This is needed since company will not be registered without job role
+                            pastCompany.setJobRoleId(34);
+                            if(profile.getLatestCompanies() != null && !isCurrentSet){
+                                for(String latest:profile.getLatestCompanies()){
+                                    if(latest.equalsIgnoreCase(eachCompany)) {
+                                        pastCompany.setCurrent(Boolean.TRUE);
+                                        isCurrentSet = Boolean.TRUE;
+                                        break;
+                                    }
                                 }
                             }
+                            pastCompanyList.add(pastCompany);
                         }
-                        pastCompanyList.add(pastCompany);
                     }
                 }
                 if(pastCompanyList.size() > 0) addSupportCandidateRequest.setPastCompanyList(pastCompanyList);
@@ -1825,21 +1830,27 @@ public class CandidateService
                 }
             }
 
-            // Candidate education
-            int c = 0;
+            // Candidate education --> Only consider the first entry
             for(HireWandResponse.Profile.Education each:profile.getEducation()){
-                if(each != null && each.getCollege() != null) c++;
-            }
-            if(c > 3) addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_PG);
-            else if(c == 3) addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_UG);
-            else if(c == 2) addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_12TH_PASS_ID);
-            else if(c == 1) addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_10TH_PASS_ID);
-            if(c > 0 && profile.getEducation() != null) {
-                try{
-                    addSupportCandidateRequest.setCandidateEducationInstitute(profile.getEducation().get(0).getCollege().getName()+((profile.getEducation().get(0).getCollege().getCity()!=null)?" "+profile.getEducation().get(0).getCollege().getCity():""));
-                } catch (NullPointerException e){
-                    e.printStackTrace();
-                    Logger.info("Could not set college");
+                if(each != null && each.getDegree() != null) {
+
+                    if(each.getDegree().toLowerCase().contains("master"))
+                        addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_PG);
+                    else if(each.getDegree().toLowerCase().contains("bachelor"))
+                        addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_UG);
+                    else if(each.getDegree().toLowerCase().contains("diploma") || each.getDegree().toLowerCase().contains("12"))
+                        addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_12TH_PASS_ID);
+                    else if(each.getDegree().toLowerCase().contains("10"))
+                        addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_10TH_PASS_ID);
+
+                    try{
+                        addSupportCandidateRequest.setCandidateEducationInstitute(each.getCollege().getName()+((each.getCollege().getCity()!=null)?" "+each.getCollege().getCity():""));
+                    } catch (NullPointerException e){
+                        e.printStackTrace();
+                        Logger.info("Could not set college");
+                    }
+
+                    break;
                 }
             }
 
@@ -2149,6 +2160,8 @@ public class CandidateService
                                     List<AddSupportCandidateRequest.PastCompany> pastCompanyList = new ArrayList<>();
                                     AddSupportCandidateRequest.PastCompany pastCompany = new AddSupportCandidateRequest.PastCompany();
                                     pastCompany.setCompanyName(nextLine[i]);
+                                    // Default is "Others" --> Id 34 (This is needed since company will not be created if job role is missing)
+                                    pastCompany.setJobRoleId(34);
                                     pastCompanyList.add(pastCompany);
                                     addSupportCandidateRequest.setPastCompanyList(pastCompanyList);
                                     Logger.info("pastCompany.setCompanyName ="+pastCompany.getCompanyName());
