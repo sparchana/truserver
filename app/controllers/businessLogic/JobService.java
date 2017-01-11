@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static api.InteractionConstants.*;
@@ -665,6 +666,25 @@ public class JobService {
                 Logger.info("JobPost with jobId: " + applyJobRequest.getJobId() + " does not exists");
             }
             else{
+
+                Logger.info("req app version: " +applyJobRequest.getAppVersion());
+                /* this takes care of deactivated candidate in app*/
+                if(applyJobRequest.getAppVersion() >= ServerConstants.DEACTIVATION_APP_VERSION && existingCandidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
+                    Logger.info("Couldn't proceed with Job Application (JPID: "+applyJobRequest.getJobId()+") as candidate  is deactivated (candidateId: " + existingCandidate.getCandidateId() + ")");
+
+                    SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_DDMMYYYY);
+                    Date expiryDate = existingCandidate.getCandidateStatusDetail().getStatusExpiryDate();
+
+                    applyJobResponse.setStatus(ApplyJobResponse.STATUS_SUCCESS);
+                    applyJobResponse.setCandidateDeActive(true);
+                    String deActivationMessage = "Dear "+existingCandidate.getCandidateFullName()+", Looks like your profile is temporarily suspended for new job applications. Please check back after "+sdf.format(expiryDate)+" or call us at 8880007799 to request re-activation.";
+                    applyJobResponse.setDeActiveHeadMessage("Application Failed");
+                    applyJobResponse.setDeActiveTitleMessage("Your Profile is De-Activated !");
+                    applyJobResponse.setDeActiveBodyMessage(deActivationMessage);
+
+                    return applyJobResponse;
+                }
+
                 JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).eq("jobPostId", applyJobRequest.getJobId()).findUnique();
                 if(existingJobApplication == null){
                     JobApplication jobApplication = new JobApplication();

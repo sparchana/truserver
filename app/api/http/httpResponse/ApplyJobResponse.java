@@ -14,11 +14,21 @@ public class ApplyJobResponse {
     public boolean isPreScreenAvailable;
     public boolean isInterviewAvailable;
 
+    /* req for deactive candidate in app*/
+    public boolean isCandidateDeActive;
+    public String deActiveHeadMessage;
+    public String deActiveTitleMessage;
+    public String deActiveBodyMessage;
+
     /* applied job post details req to show interview*/
     public String companyName;
     public String jobRoleTitle;
     public String jobTitle;
     public Long jobPostId;
+
+    public ApplyJobResponse() {
+        this.isCandidateDeActive = false;
+    }
 
     public int getStatus() {
         return status;
@@ -75,4 +85,37 @@ public class ApplyJobResponse {
     public void setJobPostId(Long jobPostId) {
         this.jobPostId = jobPostId;
     }
+
+    public boolean isCandidateDeActive() {
+        return isCandidateDeActive;
+    }
+
+    public void setCandidateDeActive(boolean candidateDeActive) {
+        isCandidateDeActive = candidateDeActive;
+    }
+
+    public String getDeActiveHeadMessage() {
+        return deActiveHeadMessage;
+    }
+
+    public void setDeActiveHeadMessage(String deActiveHeadMessage) {
+        this.deActiveHeadMessage = deActiveHeadMessage;
+    }
+
+    public String getDeActiveTitleMessage() {
+        return deActiveTitleMessage;
+    }
+
+    public void setDeActiveTitleMessage(String deActiveTitleMessage) {
+        this.deActiveTitleMessage = deActiveTitleMessage;
+    }
+
+    public String getDeActiveBodyMessage() {
+        return deActiveBodyMessage;
+    }
+
+    public void setDeActiveBodyMessage(String deActiveBodyMessage) {
+        this.deActiveBodyMessage = deActiveBodyMessage;
+    }
+
 }

@@ -171,6 +171,11 @@ public class ServerConstants {
     public static Integer REC_SORT_SALARY_H_TO_L = 2;
     public static Integer REC_SORT_SALARY_L_TO_H = 3;
 
+
+    /* Various App version */
+    public static double CURRENT_APP_VERSION = 2.2;
+    public static double DEACTIVATION_APP_VERSION = 2.1;
+
     static {
         devTeamMobile = new HashMap<String, String>();
         devTeamMobile.put("Archana", "+918197222248");
