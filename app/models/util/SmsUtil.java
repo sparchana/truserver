@@ -628,4 +628,36 @@ public class SmsUtil {
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
     }
 
+    public static void sendPausedJobSmsAlert(JobPostWorkflow jobPostWorkflow) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(jobPostWorkflow.getScheduledInterviewDate());
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+
+        String interviewDate = day + "-" + (month + 1) + "-" + year;
+
+        String msg = "Hi " + jobPostWorkflow.getCandidate().getCandidateFirstName() + ", your interview for " + jobPostWorkflow.getJobPost().getJobPostTitle()
+                + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() + " on " + interviewDate
+                + " has been temporarily cancelled by the recruiter. Please call recruiter on " + jobPostWorkflow.getJobPost().getRecruiterProfile().getRecruiterProfileMobile()
+                + " to reschedule your interview. Thanks! Download Trujobs app at bit.ly/trujobsapp to apply to more jobs.";
+
+        addSmsToNotificationQueue(jobPostWorkflow.getCandidate().getCandidateMobile(), msg);
+    }
+
+    public static void sendClosedJobSmsAlert(JobPostWorkflow jobPostWorkflow) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(jobPostWorkflow.getScheduledInterviewDate());
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+
+        String interviewDate = day + "-" + (month + 1) + "-" + year;
+        String msg = "Hi " + jobPostWorkflow.getCandidate().getCandidateFirstName() + ", The recruiter has closed vacancies for " + jobPostWorkflow.getJobPost().getJobPostTitle()
+                + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() + ". Your interview scheduled on " + interviewDate
+                + " is hence cancelled. Download TruJobs app at bit.ly/trujobsapp and apply to more jobs";
+
+        addSmsToNotificationQueue(jobPostWorkflow.getCandidate().getCandidateMobile(), msg);
+    }
+
 }

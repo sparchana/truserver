@@ -17,6 +17,7 @@ import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerConstants;
 import dao.JobPostDAO;
+import dao.JobPostWorkFlowDAO;
 import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
@@ -70,7 +71,9 @@ public class JobService {
             existingJobPost = getAndSetJobPostValues(addJobPostRequest, existingJobPost, jobPostLocalityList);
 
             existingJobPost.save();
-            createInterviewDetails(addJobPostRequest, existingJobPost);
+
+            if(addJobPostRequest.getInterviewTimeSlot() != null)
+                createInterviewDetails(addJobPostRequest, existingJobPost);
 
             saveOrUpdatePreScreenRequirements(existingJobPost);
 
@@ -121,8 +124,10 @@ public class JobService {
                 }
             }
 
-            resetInterviewDetails(addJobPostRequest, existingJobPost);
-            createInterviewDetails(addJobPostRequest, existingJobPost);
+            if(addJobPostRequest.getInterviewTimeSlot() != null){
+                resetInterviewDetails(addJobPostRequest, existingJobPost);
+                createInterviewDetails(addJobPostRequest, existingJobPost);
+            }
             existingJobPost.update();
 
             saveOrUpdatePreScreenRequirements(existingJobPost);
@@ -228,53 +233,94 @@ public class JobService {
             }
             Logger.info("Interview details saved");
         }
-
     }
 
     public static JobPost getAndSetJobPostValues(AddJobPostRequest addJobPostRequest,
                                                  JobPost newJobPost,
                                                  List<Integer> jobPostLocalityList)
     {
-        newJobPost.setJobPostMinSalary(addJobPostRequest.getJobPostMinSalary());
-        newJobPost.setJobPostMaxSalary(addJobPostRequest.getJobPostMaxSalary());
 
-        newJobPost.setJobPostStartTime(addJobPostRequest.getJobPostStartTime());
-        newJobPost.setJobPostEndTime(addJobPostRequest.getJobPostEndTime());
+        if(addJobPostRequest.getJobPostMinSalary() != null)
+            newJobPost.setJobPostMinSalary(addJobPostRequest.getJobPostMinSalary());
 
-        newJobPost.setJobPostIsHot(addJobPostRequest.getJobPostIsHot());
+        if(addJobPostRequest.getJobPostMaxSalary() != null)
+            newJobPost.setJobPostMaxSalary(addJobPostRequest.getJobPostMaxSalary());
 
-        newJobPost.setJobPostDescription(addJobPostRequest.getJobPostDescription());
-        newJobPost.setJobPostTitle(addJobPostRequest.getJobPostTitle());
+        if(addJobPostRequest.getJobPostStartTime() != null)
+            newJobPost.setJobPostStartTime(addJobPostRequest.getJobPostStartTime());
 
-        newJobPost.setJobPostIncentives(addJobPostRequest.getJobPostIncentives());
-        newJobPost.setJobPostMinRequirement(addJobPostRequest.getJobPostMinRequirement());
+        if(addJobPostRequest.getJobPostEndTime() != null)
+            newJobPost.setJobPostEndTime(addJobPostRequest.getJobPostEndTime());
 
-        newJobPost.setLatitude(addJobPostRequest.getJobPostInterviewLocationLat());
-        newJobPost.setLongitude(addJobPostRequest.getJobPostInterviewLocationLng());
+        if(addJobPostRequest.getJobPostIsHot() != null)
+            newJobPost.setJobPostIsHot(addJobPostRequest.getJobPostIsHot());
 
-        newJobPost.setReviewApplication(addJobPostRequest.getReviewApplications());
+        if(addJobPostRequest.getJobPostDescription() != null)
+            newJobPost.setJobPostDescription(addJobPostRequest.getJobPostDescription());
 
-        newJobPost.setJobPostAddress(addJobPostRequest.getJobPostAddress());
-        newJobPost.setJobPostPinCode(addJobPostRequest.getJobPostPinCode());
+        if(addJobPostRequest.getJobPostTitle() != null)
+            newJobPost.setJobPostTitle(addJobPostRequest.getJobPostTitle());
 
-        newJobPost.setInterviewBuildingNo(addJobPostRequest.getJobPostAddressBuildingNo());
-        newJobPost.setInterviewLandmark(addJobPostRequest.getJobPostAddressLandmark());
+        if(addJobPostRequest.getJobPostIncentives() != null)
+            newJobPost.setJobPostIncentives(addJobPostRequest.getJobPostIncentives());
 
-        newJobPost.setJobPostVacancies(addJobPostRequest.getJobPostVacancies());
-        newJobPost.setJobPostDescriptionAudio(addJobPostRequest.getJobPostDescriptionAudio());
-        newJobPost.setJobPostWorkFromHome(addJobPostRequest.getJobPostWorkFromHome());
+        if(addJobPostRequest.getJobPostMinRequirement() != null)
+            newJobPost.setJobPostMinRequirement(addJobPostRequest.getJobPostMinRequirement());
 
-        newJobPost.setJobPostPartnerInterviewIncentive(addJobPostRequest.getPartnerInterviewIncentive());
-        newJobPost.setJobPostPartnerJoiningIncentive(addJobPostRequest.getPartnerJoiningIncentive());
+        if(addJobPostRequest.getJobPostInterviewLocationLat() != null)
+            newJobPost.setLatitude(addJobPostRequest.getJobPostInterviewLocationLat());
 
-        newJobPost.setJobPostToLocalityList(getJobPostLocality(jobPostLocalityList, newJobPost));
+        if(addJobPostRequest.getJobPostInterviewLocationLng() != null)
+            newJobPost.setLongitude(addJobPostRequest.getJobPostInterviewLocationLng());
 
-        newJobPost.setGender(addJobPostRequest.getJobPostGender());
-        newJobPost.setJobPostLanguageRequirements(getJobPostLanguageRequirement(addJobPostRequest.getJobPostLanguage(), newJobPost));
-        newJobPost.setJobPostAssetRequirements(getJobPostAssetRequirement(addJobPostRequest.getJobPostAsset(), newJobPost));
-        newJobPost.setJobPostDocumentRequirements(getJobPostDocumentRequirement(addJobPostRequest.getJobPostDocument(), newJobPost));
+        if(addJobPostRequest.getReviewApplications() != null)
+            newJobPost.setReviewApplication(addJobPostRequest.getReviewApplications());
 
-        newJobPost.setJobPostMaxAge(addJobPostRequest.getJobPostMaxAge());
+        if(addJobPostRequest.getJobPostAddress() != null)
+            newJobPost.setJobPostAddress(addJobPostRequest.getJobPostAddress());
+
+        if(addJobPostRequest.getJobPostPinCode() != null)
+            newJobPost.setJobPostPinCode(addJobPostRequest.getJobPostPinCode());
+
+        if(addJobPostRequest.getJobPostAddressBuildingNo() != null)
+            newJobPost.setInterviewBuildingNo(addJobPostRequest.getJobPostAddressBuildingNo());
+
+        if(addJobPostRequest.getJobPostAddressLandmark() != null)
+            newJobPost.setInterviewLandmark(addJobPostRequest.getJobPostAddressLandmark());
+
+        if(addJobPostRequest.getJobPostVacancies() != null)
+            newJobPost.setJobPostVacancies(addJobPostRequest.getJobPostVacancies());
+
+        if(addJobPostRequest.getJobPostDescriptionAudio() != null)
+            newJobPost.setJobPostDescriptionAudio(addJobPostRequest.getJobPostDescriptionAudio());
+
+        if(addJobPostRequest.getJobPostWorkFromHome() != null)
+            newJobPost.setJobPostWorkFromHome(addJobPostRequest.getJobPostWorkFromHome());
+
+        if(addJobPostRequest.getPartnerInterviewIncentive() != null)
+            newJobPost.setJobPostPartnerInterviewIncentive(addJobPostRequest.getPartnerInterviewIncentive());
+
+        if(addJobPostRequest.getPartnerJoiningIncentive() != null)
+            newJobPost.setJobPostPartnerJoiningIncentive(addJobPostRequest.getPartnerJoiningIncentive());
+
+        if(jobPostLocalityList != null){
+            newJobPost.setJobPostToLocalityList(getJobPostLocality(jobPostLocalityList, newJobPost));
+        }
+
+        if(addJobPostRequest.getJobPostGender() != null)
+            newJobPost.setGender(addJobPostRequest.getJobPostGender());
+
+        if(addJobPostRequest.getJobPostLanguage() != null)
+            newJobPost.setJobPostLanguageRequirements(getJobPostLanguageRequirement(addJobPostRequest.getJobPostLanguage(), newJobPost));
+
+        if(addJobPostRequest.getJobPostAsset() != null)
+            newJobPost.setJobPostAssetRequirements(getJobPostAssetRequirement(addJobPostRequest.getJobPostAsset(), newJobPost));
+
+        if(addJobPostRequest.getJobPostDocument() != null)
+            newJobPost.setJobPostDocumentRequirements(getJobPostDocumentRequirement(addJobPostRequest.getJobPostDocument(), newJobPost));
+
+        if(addJobPostRequest.getJobPostMaxAge() != null)
+            newJobPost.setJobPostMaxAge(addJobPostRequest.getJobPostMaxAge());
 
         if (addJobPostRequest.getJobPostWorkingDays() != null) {
             Byte workingDayByte = Byte.parseByte(addJobPostRequest.getJobPostWorkingDays(), 2);
@@ -289,9 +335,45 @@ public class JobService {
         if (addJobPostRequest.getJobPostStatusId() != null) {
             JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
             newJobPost.setJobPostStatus(jobStatus);
+
+            if(addJobPostRequest.getJobPostStatusId() == ServerConstants.JOB_STATUS_PAUSED){
+                newJobPost.setResumeApplicationDate(addJobPostRequest.getResumeApplicationDate());
+
+                if(newJobPost.getJobPostId() != null){
+                    Calendar now = Calendar.getInstance();
+                    Date today = now.getTime();
+
+                    List<JobPostWorkflow> jobPostWorkflowList =
+                            JobPostWorkFlowDAO.getConfirmedInterviewsBetweenDate(
+                                    newJobPost.getJobPostId(),
+                                    today, addJobPostRequest.getResumeApplicationDate());
+
+                    for(JobPostWorkflow jobPostWorkflow : jobPostWorkflowList){
+                        SmsUtil.sendPausedJobSmsAlert(jobPostWorkflow);
+                    }
+                }
+
+            } else{
+                newJobPost.setResumeApplicationDate(null);
+            }
+
+            if(addJobPostRequest.getJobPostStatusId() == ServerConstants.JOB_STATUS_CLOSED){
+                Calendar now = Calendar.getInstance();
+                Date today = now.getTime();
+
+                List<JobPostWorkflow> jobPostWorkflowList =
+                        JobPostWorkFlowDAO.getAllConfirmedInterviewsFromToday(
+                                newJobPost.getJobPostId(),
+                                today);
+
+                for(JobPostWorkflow jobPostWorkflow : jobPostWorkflowList){
+                    SmsUtil.sendClosedJobSmsAlert(jobPostWorkflow);
+                }
+            }
         } else{
             JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", ServerConstants.JOB_STATUS_ACTIVE).findUnique();
             newJobPost.setJobPostStatus(jobStatus);
+            newJobPost.setResumeApplicationDate(null);
         }
 
         if (addJobPostRequest.getJobPostJobRoleId() != null) {

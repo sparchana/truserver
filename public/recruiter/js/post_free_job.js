@@ -504,6 +504,15 @@ $(document).ready(function () {
             $("#reviewApplicationLabel").html('Confirm interviews for all applications');
         }
     });
+
+    $('#pause_interview').change(function() {
+        if($('#pause_interview').prop('checked')){
+            $(".resumeDate").show(200);
+        } else{
+            $("#resume_date").val('');
+            $(".resumeDate").hide(200);
+        }
+    });
 });
 
 function saveJob() {
@@ -694,6 +703,10 @@ function saveJob() {
         }
     }
 
+    var pauseApplication = $('#pause_interview').prop('checked');
+    var jobPostStatus = JOB_STATUS_NEW;
+    var jobPostResumeDate = "";
+
     if(interviewDays == "0000000"){
         notifyError("Please specify interview days");
         status = 0;
@@ -707,7 +720,20 @@ function saveJob() {
     } else if(interviewLat == 12.975568542471832){ //if address is by default
         notifyError("Please enter interview address");
         status = 0;
-        $('#interviewAddress').val('');
+    } else if(pauseApplication && $("#resume_date").val() == ""){
+        notifyError("Please select application resume date");
+        status = 0;
+    } else if(pauseApplication && $("#resume_date").val() != ""){
+        var selectedDate = new Date($("#resume_date").val());
+        var todaysDate = new Date();
+
+        if(selectedDate < todaysDate){
+            notifyError("Please select a date greater than today");
+            status = 0;
+        } else{
+            jobPostStatus = JOB_STATUS_PAUSED;
+            jobPostResumeDate = selectedDate.getFullYear() + "-" + (selectedDate.getMonth() + 1) + "-" + selectedDate.getDate();
+        }
     }
 
     if(status == 1){
@@ -753,7 +779,7 @@ function saveJob() {
                 jobPostShiftId: jobPostWorkShift,
                 jobPostPricingPlanId: 1,
                 jobPostEducationId: jobPostEducation,
-                jobPostStatusId: 1,
+                jobPostStatusId: jobPostStatus,
                 jobPostExperienceId: jobPostExperience,
                 jobPostRecruiterId: jpRecruiterId,
                 partnerInterviewIncentive: 400,
@@ -770,7 +796,8 @@ function saveJob() {
                 jobPostAddress: fullAddress,
                 reviewApplications: reviewApplication,
                 jobPostAddressBuildingNo: addressBuildingNo,
-                jobPostAddressLandmark: addressLandmark
+                jobPostAddressLandmark: addressLandmark,
+                resumeApplicationDate: jobPostResumeDate
             };
 
             $.ajax({
@@ -975,9 +1002,22 @@ function processDataForJobPost(returnedData) {
         }
 
         //checking previous posted job in previous company
-        if(recruiterObj.company.companyId != returnedData.company.companyId){
+        if(recruiterObj.company.companyId != returnedData.company.companyId) {
             $("#submissionBtn").html('');
             $("#notAllowed").show();
+        }
+
+        if(returnedData.jobPostStatus.jobStatusId == JOB_STATUS_PAUSED){
+            $("#pause_interview" ).prop( "checked", true);
+            $(".resumeDate").show(200);
+            var resumeDate = new Date(returnedData.resumeApplicationDate);
+
+            var day = ("0" + resumeDate.getDate()).slice(-2);
+            var month = ("0" + (resumeDate.getMonth() + 1)).slice(-2);
+
+            var parsedDate = resumeDate.getFullYear()+"-"+(month)+"-"+(day) ;
+
+            $("#resume_date").val(parsedDate);
         }
 
         if(Object.keys(returnedData.interviewDetailsList).length > 0){
