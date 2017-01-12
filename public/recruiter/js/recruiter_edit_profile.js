@@ -3,7 +3,7 @@
  */
 
 var f;
-var d;
+var d = null;
 var initialCompanyId;
 var initialCompanyName;
 var companyId;
@@ -374,16 +374,18 @@ function closeConfirmModal() {
 
 
 function performEditProfileTask() {
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/addCompany",
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(d),
-            success: processDataUpdateCompany
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
+    if(d != null){
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/addCompany",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processDataUpdateCompany
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
     }
 }
 function processDataCompany(returnedData) {

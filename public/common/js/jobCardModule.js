@@ -465,7 +465,7 @@ var cardModule = (function ($) {
                             applyBtn.disabled =  true;
                             applyBtn.style = "background:#ffa726";
                         }
-                        
+
                     } else {
                         applyJobText = "Apply";
                     }
