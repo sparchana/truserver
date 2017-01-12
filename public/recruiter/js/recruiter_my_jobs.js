@@ -191,6 +191,7 @@ function processDataGenerateJobPostView(returnedData) {
                 colJobStatus.appendChild(spanStatus);
 
                 var pauseIconImg = document.createElement("img");
+                pauseIconImg.id = jobPost.jobPost.jobPostId + "_pause";
                 pauseIconImg.src = "/assets/recruiter/img/icons/pause.svg";
                 pauseIconImg.style = "cursor: pointer; text-decoration: none; margin: 4px";
                 pauseIconImg.setAttribute('height', '24px');
@@ -205,6 +206,7 @@ function processDataGenerateJobPostView(returnedData) {
 
                 var resumeIconImg = document.createElement("img");
                 resumeIconImg.src = "/assets/recruiter/img/icons/resume.svg";
+                resumeIconImg.id = jobPost.jobPost.jobPostId + "_resume";
                 resumeIconImg.style = "cursor: pointer; text-decoration: none; margin: 4px";
                 resumeIconImg.setAttribute('height', '24px');
                 resumeIconImg.className = "tooltipped";
@@ -218,6 +220,7 @@ function processDataGenerateJobPostView(returnedData) {
 
                 var stopIconImg = document.createElement("img");
                 stopIconImg.src = "/assets/recruiter/img/icons/stop.svg";
+                stopIconImg.id = jobPost.jobPost.jobPostId + "_stop";
                 stopIconImg.style = "cursor: pointer; text-decoration: none; margin: 4px";
                 stopIconImg.setAttribute('height', '24px');
                 stopIconImg.className = "tooltipped";
@@ -345,11 +348,15 @@ function openPauseInterviewModal() {
 }
 
 function resumeJobApplication() {
-    changeJobStatus(1, null);
+    document.getElementById(jobPostObj.jobPostId + '_resume').style.pointerEvents = 'none';
+
+    changeJobStatus(JOB_STATUS_NEW, null);
 }
 
 function stopJobApplication() {
-    changeJobStatus(4, null);
+    document.getElementById(jobPostObj.jobPostId + '_stop').style.pointerEvents = 'none';
+
+    changeJobStatus(JOB_STATUS_CLOSED, null);
 }
 
 function confirmPauseAction() {
@@ -364,7 +371,8 @@ function confirmPauseAction() {
             notifyError("Please select a date greater than today");
         } else{
             var jobPostResumeDate = selectedDate.getFullYear() + "-" + (selectedDate.getMonth() + 1) + "-" + selectedDate.getDate();
-            changeJobStatus(5, jobPostResumeDate);
+            document.getElementById(jobPostObj.jobPostId + '_pause').style.pointerEvents = 'none';
+            changeJobStatus(JOB_STATUS_PAUSED, jobPostResumeDate);
         }
     }
 }
@@ -393,12 +401,12 @@ function processDataAddJobPost(returnedData) {
     if(returnedData.status == 2 ){
         $("#pauseInterviewModal").closeModal();
         notifySuccess("Job Status updated successfully!");
-        setTimeout(function(){
-            window.location = "/recruiter/allRecruiterJobPosts";
-        }, 2500);
     } else{
         notifyError("Something went wrong. Please try again later!");
     }
+    setTimeout(function(){
+        window.location = "/recruiter/allRecruiterJobPosts";
+    }, 2500);
 }
 
 function closePauseModal() {
