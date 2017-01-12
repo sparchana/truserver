@@ -339,6 +339,7 @@ public class ServerConstants {
     public static final int INTERVIEW_REQUIRED = 2;     // "INTERVIEW"
     public static final int ALREADY_APPLIED = 3;     // "JOB POST ALREADY APPLIED"
     public static final int APPLY = 4;     // "JOB POST ALREADY APPLIED"
+    public static final int INTERVIEW_CLOSED = 5;     // "INTERVIEW CLOSED FOR THE WEEK"
     public static final int DEACTIVE = 6;     // "CANDIDATE DEACTIVATED"
 
     // rescheduled Interview status
@@ -374,4 +375,7 @@ public class ServerConstants {
     public static final int ANDROID_INTENT_ACTIVITY_INTERVIEW_TIPS = 8;
 
     public static final String CREATED_BY = "Candidate";
+
+    //reason type
+    public static final int FREE_JOB_APPLICATION_DEFAULT_LIMIT_IN_A_WEEK = 7;
 }

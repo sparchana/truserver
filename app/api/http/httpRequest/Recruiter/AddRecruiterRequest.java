@@ -21,6 +21,10 @@ public class AddRecruiterRequest {
     private Integer contactCredits;
     private Integer interviewCredits;
 
+    private Integer packId;
+    private Integer creditCount;
+    private Integer expiryDays;
+
     public String getRecruiterName() {
         return recruiterName;
     }
@@ -147,5 +151,29 @@ public class AddRecruiterRequest {
 
     public void setInterviewCredits(Integer interviewCredits) {
         this.interviewCredits = interviewCredits;
+    }
+
+    public Integer getPackId() {
+        return packId;
+    }
+
+    public void setPackId(Integer packId) {
+        this.packId = packId;
+    }
+
+    public Integer getExpiryDays() {
+        return expiryDays;
+    }
+
+    public void setExpiryDays(Integer expiryDays) {
+        this.expiryDays = expiryDays;
+    }
+
+    public Integer getCreditCount() {
+        return creditCount;
+    }
+
+    public void setCreditCount(Integer creditCount) {
+        this.creditCount = creditCount;
     }
 }

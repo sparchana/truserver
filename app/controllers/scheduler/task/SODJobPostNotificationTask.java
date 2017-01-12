@@ -95,7 +95,7 @@ public class SODJobPostNotificationTask extends TimerTask {
                     + " of company: " + jobPost.getCompany().getCompanyName());
 
                     Boolean hasCredit = false;
-                    if(jobPost.getRecruiterProfile().totalInterviewCredits() > 0){
+                    if(jobPost.getRecruiterProfile().getInterviewCreditCount() > 0){
                         hasCredit = true;
                     }
 
@@ -126,7 +126,6 @@ public class SODJobPostNotificationTask extends TimerTask {
                                         SchedulerConstants.CANDIDATE_JOB_POST_ALERT_MAX_LIMIT + " for candidate id: " +
                                         candidate.getCandidateId());
                             }
-
                         }
                     }
                 }

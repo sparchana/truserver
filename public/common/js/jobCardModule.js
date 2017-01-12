@@ -353,15 +353,11 @@ var cardModule = (function ($) {
                     locationDataDiv.className="col-xs-10";
                     locationDataDiv.id="textContentProp";
                     subRowForData.appendChild(locationDataDiv);
-
-                    var jobRoleAddress = document.createElement("p");
-                    jobRoleAddress.style = "color:#000";
-                    locationDataDiv.appendChild(jobRoleAddress);
-
+                    
                     var locDiv = document.createElement("div");
                     locDiv.style = "display: inline-block";
                     locDiv.textContent = _localities;
-                    jobRoleAddress.appendChild(locDiv);
+                    locationDataDiv.appendChild(locDiv);
 
                     if (((_jobLocality.length) - 2) > 0) {
                         var tooltip = document.createElement("a");
@@ -390,7 +386,7 @@ var cardModule = (function ($) {
                     // posted on div
                     var postedOnDiv = document.createElement("div");
                     postedOnDiv.className = "col-sm-6";
-                    postedOnDiv.style = "margin-top:6px;text-align:left";
+                    postedOnDiv.id = "postedDate";
                     postedOnDiv.textContent = "Posted: " + cardModule.parse.createdOnDate(jobPost.jobPostCreateTimestamp);
                     rowDivApplyButton.appendChild(postedOnDiv);
 

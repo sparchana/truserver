@@ -3,6 +3,7 @@ package controllers.businessLogic;
 import api.ServerConstants;
 import api.http.httpRequest.search.SearchJobRequest;
 import api.http.httpResponse.JobPostResponse;
+import api.http.httpResponse.interview.InterviewResponse;
 import api.http.httpResponse.search.SearchJobResponse;
 import api.http.httpResponse.search.helper.FilterParamsResponse;
 import api.http.httpResponse.search.helper.SearchParamsResponse;
@@ -18,6 +19,7 @@ import models.entity.Static.Language;
 import models.entity.Static.Locality;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import play.Logger;
 
 import java.util.*;
 
@@ -208,8 +210,10 @@ public class SearchJobService {
         // create interaction params
         StringBuilder result = new StringBuilder();
         result.append("Search for ");
-        result.append(StringUtils.join(", ", searchParamsResponse.getSearchKeywords()) + " jobs ");
-        result.append("@" + (searchParamsResponse.getLocality() != null ? searchParamsResponse.getLocality().getLocalityName() : "All Bangalore"));
+        if(searchParamsResponse.getSearchKeywords() != null && searchParamsResponse.getSearchKeywords().size() > 0){
+            result.append(StringUtils.join(", ", searchParamsResponse.getSearchKeywords()));
+        }
+        result.append(" jobs @" + (searchParamsResponse.getLocality() != null ? searchParamsResponse.getLocality().getLocalityName() : "All Bangalore"));
         result.append(" with filter ");
         result.append(" Edu: " + (searchParamsResponse.getEducation() != null ? searchParamsResponse.getEducation().getEducationName() : " ANY_EDUCATION"));
         result.append(" Exp: " + (searchParamsResponse.getExperience() != null ? searchParamsResponse.getExperience().getExperienceType() : " ANY_EXPERIENCE"));
@@ -247,6 +251,9 @@ public class SearchJobService {
 
         // modify result jobPosts add CTA in it
         computeCTA(response.getResults().getAllJobPost(), candidateId);
+
+        // modify result jobPosts & remove sensitive information
+        removeSensitiveDetail(response.getResults().getAllJobPost());
 
         return response;
     }
@@ -312,9 +319,8 @@ public class SearchJobService {
      * @param jobPostList
      * @return
      */
-    public void computeCTA(List<JobPost> jobPostList, Long candidateId){
+    public static void computeCTA(List<JobPost> jobPostList, Long candidateId){
 
-        List<Long> jobPostIdList = new ArrayList<>();
         Map<Long, JobPostWorkflow> jobApplicationMap = new HashMap<>();
         Candidate candidate = null;
         boolean deActiveApply = false;
@@ -344,19 +350,21 @@ public class SearchJobService {
                         jobPost.setApplyBtnStatus(ServerConstants.ALREADY_APPLIED);
                     }
                 }
-                // change only if its not set prev, i.e its set to default value
-                if(jobPost.getApplyBtnStatus() == 0) {
-                    if(RecruiterService.isInterviewRequired(jobPost).getStatus() == ServerConstants.INTERVIEW_REQUIRED){
-                        jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_REQUIRED);
-                    } else {
-                        jobPost.setApplyBtnStatus(ServerConstants.APPLY);
-                    }
+
+            }
+            // change only if its not set prev, i.e its set to default value
+            if(jobPost.getApplyBtnStatus() == 0){
+                InterviewResponse response = RecruiterService.isInterviewRequired(jobPost);
+                if(response.getStatus() == ServerConstants.INTERVIEW_REQUIRED){
+                    jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_REQUIRED);
+                } else if(response.getStatus() == ServerConstants.INTERVIEW_CLOSED){
+                    jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_CLOSED);
+                } else {
+                    jobPost.setApplyBtnStatus(ServerConstants.APPLY);
                 }
             }
 
-            jobPostIdList.add(jobPost.getJobPostId());
         }
-
     }
 
     public void computeCTA(JobPost jobPost, Long candidateId){
@@ -364,5 +372,13 @@ public class SearchJobService {
         jobPostList.add(jobPost);
 
         computeCTA(jobPostList, candidateId);
+    }
+
+
+    public void removeSensitiveDetail(List<JobPost> jobPostList) {
+
+        for(JobPost jobPost: jobPostList){
+            jobPost.setRecruiterProfile(null);
+        }
     }
 }

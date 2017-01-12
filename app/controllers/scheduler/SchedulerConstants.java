@@ -20,7 +20,8 @@ public class SchedulerConstants {
     public static int SCHEDULER_SUB_TYPE_CANDIDATE_PROFILE_COMPLETE = 9;
     public static int SCHEDULER_SUB_TYPE_CANDIDATE_NOTIFY_NEARBY_JOBS = 10;
     public static int SCHEDULER_SUB_TYPE_CANDIDATE_EOD_JOB_ALERT = 11;
-    public static int SCHEDULER_SUB_TYPE_CANDIDATE_ACTIVATION = 12;
+    public static int SCHEDULER_SUB_TYPE_EOD_CREDIT_DEBIT_TASK = 12;
+    public static int SCHEDULER_SUB_TYPE_CANDIDATE_ACTIVATION = 13;
 
 
     public static int INTERVIEW_TIME_SLOT_10_AM = 1;
