@@ -304,7 +304,7 @@ public class RecruiterProfile extends Model {
     }
 
     public Integer totalContactCredits() {
-        List<RecruiterCreditHistory> creditHistoryList = this.getRecruiterCreditHistoryList();
+        List<RecruiterCreditHistory> creditHistoryList = RecruiterCreditHistory.find.where().eq("RecruiterProfileId", this.getRecruiterProfileId()).findList();
         Collections.reverse(creditHistoryList);
         for(RecruiterCreditHistory creditHistory : creditHistoryList){
             if(creditHistory.getRecruiterCreditCategory().getRecruiterCreditCategoryId() == ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK){
@@ -315,7 +315,7 @@ public class RecruiterProfile extends Model {
     }
 
     public Integer totalInterviewCredits() {
-        List<RecruiterCreditHistory> creditHistoryList = this.getRecruiterCreditHistoryList();
+        List<RecruiterCreditHistory> creditHistoryList = RecruiterCreditHistory.find.where().eq("RecruiterProfileId", this.getRecruiterProfileId()).findList();
         Collections.reverse(creditHistoryList);
         for(RecruiterCreditHistory creditHistory : creditHistoryList){
             if(creditHistory.getRecruiterCreditCategory().getRecruiterCreditCategoryId() == ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK){
