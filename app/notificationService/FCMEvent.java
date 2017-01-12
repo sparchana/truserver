@@ -17,6 +17,13 @@ public class FCMEvent extends NotificationEvent {
     private Integer myIntentType;
     private Long jobPostId;
 
+    public FCMEvent(String recipient, String message, String title, Integer intentType) {
+        this.setMessage(message);
+        this.setRecipient(recipient);
+        this.setMyTitle(title);
+        this.setMyIntentType(intentType);
+    }
+
     public FCMEvent(String recipient, String message, String title, Integer intentType, Long jpId) {
         this.setMessage(message);
         this.setRecipient(recipient);
