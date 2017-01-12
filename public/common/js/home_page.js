@@ -197,6 +197,8 @@ function pagination(noOfPages){
                 index = 0;
             }
             getAllJobs(index);
+            $("#backgroundLoader").show();
+            $("#jobLoaderDiv").show();
             $(".page-link").click(function(){
                 $('html, body').animate({scrollTop: $("#job_cards_inc").offset().top - 100}, 800);
             });
@@ -218,9 +220,17 @@ function processDataAllJobPosts(returnedData) {
         }
         $("#hotJobs").html("");
         var parent = $("#hotJobs");
+
+        var loaderBackgroundDiv = document.createElement("div");
+        loaderBackgroundDiv.id = "backgroundLoader";
+        parent.append(loaderBackgroundDiv);
+
+
+        $("#backgroundLoader").hide();
         $("#jobLoaderDiv").hide();
         cardModule.method.genNewJobCard(_jobPostList, parent);
     }else{
+        $("#backgroundLoader").hide();
         $("#jobLoaderDiv").hide();
         var parent = $("#hotJobs");
         var hotJobItem = document.createElement("div");
