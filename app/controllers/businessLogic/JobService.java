@@ -348,13 +348,26 @@ public class JobService {
                                     today, addJobPostRequest.getResumeApplicationDate());
 
                     for(JobPostWorkflow jobPostWorkflow : jobPostWorkflowList){
-                        SmsUtil.sendPausedJobSmsAlert(jobPostWorkflow.getCandidate());
+                        SmsUtil.sendPausedJobSmsAlert(jobPostWorkflow);
                     }
                 }
 
-
             } else{
                 newJobPost.setResumeApplicationDate(null);
+            }
+
+            if(addJobPostRequest.getJobPostStatusId() == ServerConstants.JOB_STATUS_CLOSED){
+                Calendar now = Calendar.getInstance();
+                Date today = now.getTime();
+
+                List<JobPostWorkflow> jobPostWorkflowList =
+                        JobPostWorkFlowDAO.getAllConfirmedInterviewsFromToday(
+                                newJobPost.getJobPostId(),
+                                today);
+
+                for(JobPostWorkflow jobPostWorkflow : jobPostWorkflowList){
+                    SmsUtil.sendClosedJobSmsAlert(jobPostWorkflow);
+                }
             }
         } else{
             JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", ServerConstants.JOB_STATUS_ACTIVE).findUnique();

@@ -177,10 +177,12 @@ function processDataGenerateJobPostView(returnedData) {
                 upcomingCounter.className = "newCounter";
                 colApplicant.appendChild(upcomingCounter);
 
-                var colJobStatus = document.createElement("span");
+                var colJobStatus = document.createElement("div");
                 colJobStatus.className = 'col s12 m2 l2';
                 colJobStatus.style = 'margin-top: 8px';
                 outerRow.appendChild(colJobStatus);
+
+                var br = document.createElement("br");
 
                 var spanStatus  = document.createElement("div");
                 spanStatus.className = "col s4 hide-on-med-and-up right-align";
@@ -190,7 +192,7 @@ function processDataGenerateJobPostView(returnedData) {
 
                 var pauseIconImg = document.createElement("img");
                 pauseIconImg.src = "/assets/recruiter/img/icons/pause.svg";
-                pauseIconImg.style = "cursor: pointer; text-decoration: none; margin-top: -4px; margin-left: 6px";
+                pauseIconImg.style = "cursor: pointer; text-decoration: none; margin: 4px";
                 pauseIconImg.setAttribute('height', '24px');
                 pauseIconImg.className = "tooltipped";
                 pauseIconImg.setAttribute("data-postiton", "top");
@@ -203,7 +205,7 @@ function processDataGenerateJobPostView(returnedData) {
 
                 var resumeIconImg = document.createElement("img");
                 resumeIconImg.src = "/assets/recruiter/img/icons/resume.svg";
-                resumeIconImg.style = "cursor: pointer; text-decoration: none; margin-top: -4px; margin-left: 6px";
+                resumeIconImg.style = "cursor: pointer; text-decoration: none; margin: 4px";
                 resumeIconImg.setAttribute('height', '24px');
                 resumeIconImg.className = "tooltipped";
                 resumeIconImg.setAttribute("data-postiton", "top");
@@ -214,10 +216,9 @@ function processDataGenerateJobPostView(returnedData) {
                     resumeJobApplication();
                 };
 
-
                 var stopIconImg = document.createElement("img");
                 stopIconImg.src = "/assets/recruiter/img/icons/stop.svg";
-                stopIconImg.style = "cursor: pointer; text-decoration: none; margin-top: -4px; margin-left: 6px";
+                stopIconImg.style = "cursor: pointer; text-decoration: none; margin: 4px";
                 stopIconImg.setAttribute('height', '24px');
                 stopIconImg.className = "tooltipped";
                 stopIconImg.setAttribute("data-postiton", "top");
@@ -228,28 +229,56 @@ function processDataGenerateJobPostView(returnedData) {
                     stopJobApplication();
                 };
 
+                var statusName = document.createElement("div");
+                colJobStatus.appendChild(statusName);
 
                 if(jobPost.jobPost.jobPostStatus != null){
                     if(jobPost.jobPost.jobPostStatus.jobStatusId == 1){
-                        colJobStatus.textContent = "Under review";
-                        colJobStatus.style = "color: #F4A407; margin-top: 8px; margin-bottom: 8px; text-align: center";
+                        statusName.textContent = "Under review";
+                        statusName.style = "color: #F4A407; margin-bottom: 2px; text-align: center";
                         colJobStatus.appendChild(stopIconImg);
+
+                        var optionName = document.createElement("span");
+                        optionName.textContent = "Close Job";
+                        colJobStatus.appendChild(optionName);
+
+
                     } else if(jobPost.jobPost.jobPostStatus.jobStatusId == 2){
-                        colJobStatus.textContent = "Active";
-                        colJobStatus.style = "color: #69CF37; margin-top: 8px; margin-bottom: 8px; text-align: center";
+                        statusName.textContent = "Active";
+                        statusName.style = "color: #69CF37; margin-bottom: 2px; text-align: center";
                         colJobStatus.appendChild(pauseIconImg);
+
+                        optionName = document.createElement("span");
+                        optionName.textContent = "Pause Job";
+                        colJobStatus.appendChild(optionName);
+
+                        colJobStatus.appendChild(br);
+
                         colJobStatus.appendChild(stopIconImg);
+                        optionName = document.createElement("span");
+                        optionName.textContent = "Close Job";
+                        colJobStatus.appendChild(optionName);
+
                     } else if(jobPost.jobPost.jobPostStatus.jobStatusId == 5){
-                        colJobStatus.textContent = jobPost.jobPost.jobPostStatus.jobStatusName;
+                        statusName.textContent = jobPost.jobPost.jobPostStatus.jobStatusName;
                         colJobStatus.appendChild(resumeIconImg);
+                        optionName = document.createElement("span");
+                        optionName.textContent = "Resume Job";
+                        colJobStatus.appendChild(optionName);
+
+                        colJobStatus.appendChild(br);
+
                         colJobStatus.appendChild(stopIconImg);
+                        optionName = document.createElement("span");
+                        optionName.textContent = "Close Job";
+                        colJobStatus.appendChild(optionName);
+
                     } else{
-                        colJobStatus.textContent = jobPost.jobPost.jobPostStatus.jobStatusName;
+                        statusName.textContent = jobPost.jobPost.jobPostStatus.jobStatusName;
                     }
                 } else{
-                    colJobStatus.textContent = "Not specified";
+                    statusName.textContent = "Not specified";
                 }
-
 
                 applicantBtn.textContent = jobPost.totalCount;
                 if(jobPost.pendingCount > 0){

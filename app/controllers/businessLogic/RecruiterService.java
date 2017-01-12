@@ -584,6 +584,8 @@ public class RecruiterService {
             //if a recruiter is switching to a new company, close all the previous jobs assocoated with the recruiter
             if(newRecruiter.getCompany() != null && newRecruiter.getRecruiterProfileId() != null){
                 if(!Objects.equals(newRecruiter.getCompany().getCompanyId(), existingCompany.getCompanyId())){
+
+                    //TODO: RE-association of credits on company change
                     JobStatus statusClosed = JobStatus.find.where().eq("JobStatusId", ServerConstants.JOB_STATUS_CLOSED).findUnique();
                     List<JobPost> recruiterJobPostList = JobPost.find.where().eq("JobRecruiterId", newRecruiter.getRecruiterProfileId()).findList();
                     for(JobPost jobPost : recruiterJobPostList){

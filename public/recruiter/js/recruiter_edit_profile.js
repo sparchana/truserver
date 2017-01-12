@@ -3,6 +3,9 @@
  */
 
 var f;
+var d;
+var initialCompanyId;
+var initialCompanyName;
 var companyId;
 var companyArray = [];
 
@@ -197,6 +200,9 @@ function processDataRecruiterProfile(returnedData) {
             $("#rec_alternate_mobile").val(returnedData.recruiterAlternateMobile);
         }
         if(returnedData.company != null){
+            initialCompanyId = returnedData.company.companyId;
+            initialCompanyName = returnedData.company.companyName;
+
             companyId = returnedData.company.companyId;
             returnedCompanyName = returnedData.company.companyName;
 
@@ -338,7 +344,7 @@ function saveForm() {
                 typeSelectedVal = companyTypeSelected[0];
             }
 
-            var d = {
+            d = {
                 companyId: companyId,
                 companyName: returnedCompanyName,
                 companyEmployeeCount: $("#rec_company_employees").val(),
@@ -352,21 +358,34 @@ function saveForm() {
                 source: 0 // SOURCE_INTERNAL
             };
 
-            try {
-                $.ajax({
-                    type: "POST",
-                    url: "/addCompany",
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(d),
-                    success: processDataUpdateCompany
-                });
-            } catch (exception) {
-                console.log("exception occured!!" + exception);
+            if(initialCompanyId != companyId){
+                $("#confirmationMsg").html("Changing to a new will close any existing job applications that you have posted for company: " + initialCompanyName + ". Please confirm.");
+                $("#confirmationModal").openModal();
+            } else{
+                performEditProfileTask();
             }
         } catch (err){}
     }
 }
 
+function closeConfirmModal() {
+    $("#confirmationModal").closeModal();
+}
+
+
+function performEditProfileTask() {
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/addCompany",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(d),
+            success: processDataUpdateCompany
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
 function processDataCompany(returnedData) {
     returnedData.forEach(function(company) {
         var id = company.companyId;
