@@ -305,6 +305,10 @@ label{
     width: 100%;
 }
 /* Post Card Css */
+#jobSalaryCard,#jobExperienceCard,#jobGenderCard,#jobEducationCard,
+#jobAgeCard,#jobTimeShiftCard{
+    margin:0;
+}
 #hintTextProp{
     display: inline-block;
     margin:0 0 0 30px;
@@ -325,6 +329,10 @@ label{
 }
 /* Post Card Css End*/
 @media screen and (max-width: 768px) {
+    #jobSalaryCard,#jobExperienceCard,#jobGenderCard,#jobEducationCard,
+    #jobAgeCard,#jobTimeShiftCard{
+        margin:6px 0;
+    }
     #postedDate{
         margin-top:6px;
         text-align:center;
