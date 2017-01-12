@@ -454,6 +454,10 @@ function readURL(input) {
 function processDataAddRecruiter(returnedData) {
     if(returnedData.status == 4){
         notifySuccess("Profile updated successfully!");
+        setTimeout(function(){
+            window.location = "/recruiter/profile";
+        }, 2500);
+
     } else{
         notifyError("Something went wrong. Please try again later!");
     }
