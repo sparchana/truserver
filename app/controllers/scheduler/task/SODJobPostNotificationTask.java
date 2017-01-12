@@ -91,8 +91,11 @@ public class SODJobPostNotificationTask extends TimerTask {
 
                     Collections.shuffle(candidateList);
 
-                    Logger.info("Sending notification to random " + SchedulerConstants.JOB_ALERT_DEFAULT_LIMIT + " candidates regarding the jobPost: " + jobPost.getJobPostTitle()
-                    + " of company: " + jobPost.getCompany().getCompanyName());
+                    Logger.info("Sending notification to random " + SchedulerConstants.JOB_ALERT_DEFAULT_LIMIT
+                            + " candidates regarding the jobPost: " + jobPost.getJobPostTitle() + " of company: "
+                            + jobPost.getCompany().getCompanyName() + " | recruiter ID/name: "
+                            + jobPost.getRecruiterProfile().getRecruiterProfileId() + " - "
+                            + jobPost.getRecruiterProfile().getRecruiterProfileName());
 
                     Boolean hasCredit = false;
                     if(jobPost.getRecruiterProfile().getInterviewCreditCount() > 0){
