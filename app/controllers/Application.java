@@ -1,11 +1,10 @@
 package controllers;
 
-import api.http.httpRequest.Recruiter.AddRecruiterRequest;
-import dao.JobPostDAO;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
+import api.http.httpRequest.Recruiter.AddRecruiterRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlotDetail;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
@@ -22,26 +21,29 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
-import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
+import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.*;
 import dao.CompanyDAO;
+import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
-import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.Intelligence.RelatedJobRole;
-import models.entity.OM.*;
+import models.entity.OM.JobApplication;
+import models.entity.OM.JobPreference;
+import models.entity.OM.JobToSkill;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
-import models.util.*;
+import models.util.ParseCSV;
+import models.util.SmsUtil;
+import models.util.UrlValidatorUtil;
+import models.util.Util;
 import play.Logger;
 import play.api.Play;
 import play.data.Form;
-import play.mvc.Controller;
-import play.mvc.Http;
-import play.mvc.Result;
-import play.mvc.Security;
+import play.mvc.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +57,7 @@ import static api.InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
 import static com.avaje.ebean.Expr.eq;
 import static play.libs.Json.toJson;
 
+@With(ForceHttps.class)
 public class Application extends Controller {
 
     private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());

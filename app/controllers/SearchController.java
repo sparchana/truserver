@@ -8,6 +8,7 @@ import com.avaje.ebean.Junction;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.SearchJobService;
+import controllers.security.ForceHttps;
 import models.entity.Company;
 import models.entity.JobPost;
 import models.entity.Static.JobRole;
@@ -16,6 +17,7 @@ import play.Logger;
 import play.api.Play;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.With;
 
 import java.io.IOException;
 import java.util.*;
@@ -25,6 +27,8 @@ import static play.libs.Json.toJson;
 /**
  * Created by zero on 23/12/16.
  */
+
+@With(ForceHttps.class)
 public class SearchController extends Controller {
     private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
 
