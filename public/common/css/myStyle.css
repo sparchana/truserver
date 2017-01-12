@@ -376,7 +376,7 @@ a:hover{
 }
 
 #jobLogo{
-    margin-top: 12%;
+    margin-top: 0;
     width: 84%;
     max-height: 90px;
 }
@@ -554,6 +554,7 @@ hr{
     height: 65%;
     margin-top:4%;
 }
+
 @media screen and (max-width: 280px) {
     .panel{
         padding: 0px;
