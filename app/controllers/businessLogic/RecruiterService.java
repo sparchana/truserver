@@ -579,9 +579,8 @@ public class RecruiterService {
 
     private static RecruiterProfile getAndSetRecruiterValues(AddRecruiterRequest addRecruiterRequest, RecruiterProfile newRecruiter, Company existingCompany){
         if(existingCompany != null){
-            newRecruiter.setRecCompany(existingCompany);
 
-            //if a recruiter is switching to a new company, close all the previous jobs assocoated with the recruiter
+            //if a recruiter is switching to a new company, close all the previous jobs associated with the recruiter
             if(newRecruiter.getCompany() != null && newRecruiter.getRecruiterProfileId() != null){
                 if(!Objects.equals(newRecruiter.getCompany().getCompanyId(), existingCompany.getCompanyId())){
 
@@ -594,6 +593,9 @@ public class RecruiterService {
                     }
                 }
             }
+
+            //assigning new company
+            newRecruiter.setRecCompany(existingCompany);
         }
         if(addRecruiterRequest.getRecruiterName() != null){
             newRecruiter.setRecruiterProfileName(addRecruiterRequest.getRecruiterName());
