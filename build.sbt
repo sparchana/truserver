@@ -52,4 +52,4 @@ libraryDependencies += "com.google.gcm" % "gcm-server" % "1.0.0"
 
 libraryDependencies += evolutions
 
-pipelineStages := Seq(digest)
+pipelineStages := Seq(digest, gzip)
