@@ -52,4 +52,7 @@ libraryDependencies += "com.google.gcm" % "gcm-server" % "1.0.0"
 
 libraryDependencies += evolutions
 
-pipelineStages := Seq(digest, gzip)
+/* for some reason with default setting of gzip, image were not getting gzipped hence this line was addec */
+includeFilter in gzip := "*.html" || "*.js" || "*.css" || "*.png" || "*.jpg" || "*.jpeg" || "*.svg"
+
+pipelineStages := Seq(imagemin, digest, gzip)
