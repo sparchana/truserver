@@ -26,17 +26,18 @@
     console.log("url= "+url);
 
     var output = [];
+    var data = new FormData();
 
     // files is a FileList of File objects. List some properties.
     for (var i = 0, f; f = files[i]; i++) {
-
       output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
                   f.size, ' bytes, last modified: ',
                   f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
                   '</li>');
 
-            var data = new FormData();
-	        data.append('resume',f);
+	  data.append('resume'+(i+1),f);
+	  console.log("resume(i+1)= "+'resume'+(i+1));
+    }
 
 	        try {
 	            $.ajax({
@@ -54,11 +55,10 @@
 	            console.log(new Error().stack);
 	        }
 
-    }
     document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
   }
 
-  function processDataForAddResume(r){ console.log("Successfully uploaded resume"); }
+  function processDataForAddResume(r){ console.log("r="+r); }
 
   document.getElementById('resumes').addEventListener('change', handleFileSelect, false);
 

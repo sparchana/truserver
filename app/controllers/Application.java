@@ -1,8 +1,8 @@
 package controllers;
 
 import api.http.httpResponse.hirewand.HireWandResponse;
+import com.avaje.ebean.text.json.JsonWriter;
 import dao.JobPostDAO;
-import notificationService.*;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
@@ -36,16 +36,14 @@ import models.entity.Intelligence.RelatedJobRole;
 import models.entity.OM.JobApplication;
 import models.entity.OM.JobPreference;
 import models.entity.OM.JobToSkill;
-import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
-import models.util.NotificationUtil;
 import models.util.ParseCSV;
 import models.util.SmsUtil;
 import models.util.Util;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import models.util.*;
+import org.json.simple.JSONArray;
 import play.Logger;
 import play.api.Play;
 import play.data.Form;
@@ -56,6 +54,7 @@ import play.mvc.Security;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -2291,36 +2290,52 @@ public class Application extends Controller {
     public static Result doResumeUpload(String candidateId){
 
         Http.MultipartFormData body = request().body().asMultipartFormData();
-        Http.MultipartFormData.FilePart resume = body.getFile("resume");
 
-        Long cId = 0L;
-        if(candidateId != null) {
-            Logger.info("candidateId = "+ candidateId);
-            try{
-                cId = Long.parseLong(candidateId, 10);
-            } catch (NumberFormatException e){
-                Logger.info("Could not convert "+candidateId+" to Long. Throws "+ e.getMessage());
+        int i = 0;
+        JSONArray list = new JSONArray();
+
+        while(Boolean.TRUE){
+            i++;
+            Http.MultipartFormData.FilePart resume = body.getFile("resume"+i);
+            Logger.info("Fetching file against key --> resume"+i);
+
+            if(resume == null) {
+                Logger.info("Could not fetch file against key --> resume"+i);
+                break;
             }
-            Logger.info("cId = "+ cId);
+
+            Long cId = 0L;
+            if(candidateId != null) {
+                Logger.info("candidateId = "+ candidateId);
+                try{
+                    cId = Long.parseLong(candidateId, 10);
+                } catch (NumberFormatException e){
+                    Logger.info("Could not convert "+candidateId+" to Long. Throws "+ e.getMessage());
+                }
+                Logger.info("cId = "+ cId);
+            }
+            else Logger.info("candidateId is null");
+
+            if (resume != null) {
+                String fileName = resume.getFilename();
+                Logger.info("fileName="+fileName);
+                File file = (File) resume.getFile();
+                Logger.info("Uploading! " + file);
+                JSONObject obj = CandidateService.uploadResume(file, fileName, cId);
+                try {
+                    obj.put("key","resume"+i);
+                } catch (org.json.JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Logger.info("obj.toString() ="+obj.toString());
+                list.add(obj);
+            }
         }
-        else Logger.info("candidateId is null");
 
-        if (resume != null) {
-            String fileName = resume.getFilename();
-            Logger.info("fileName="+fileName);
-            File file = (File) resume.getFile();
-            Logger.info("Uploading! " + file);
-            if(CandidateService.uploadResume(file, fileName, cId)){
-                return ok("Resume uploaded");
-            }
-            else{
-                return internalServerError("Resume upload failed due to an internal error");
-            }
-        } else {
-            flash("error", "Missing file");
-            return redirect(routes.Application.index());
-        }
+        Logger.info("list.toString() = "+list.toString());
 
+        return ok(list+"");
 
     }
 
@@ -2370,8 +2385,8 @@ public class Application extends Controller {
             if(!hireWandResponse.getPersonid().isEmpty()){
                 // send for processing
                 Logger.info("Updating resume for HireWand PersonID = "+hireWandResponse.getPersonid());
-                CandidateService.updateResume(hireWandResponse.getPersonid(), hireWandResponse.getProfile(),hireWandResponse.getDuplicate());
-                return ok();
+                JSONObject resp = CandidateService.updateResume(hireWandResponse.getPersonid(), hireWandResponse.getProfile(),hireWandResponse.getDuplicate());
+                return ok(resp+"");
             }
             else {
                 Logger.info("Hirewand callback invoked with empty PersonID");

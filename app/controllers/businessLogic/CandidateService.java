@@ -1597,11 +1597,18 @@ public class CandidateService
         return 0;
     }
 
-    public static Boolean uploadResume(File resume, String fileName, Long candidateId) {
+    public static JSONObject uploadResume(File resume, String fileName, Long candidateId) {
 
-        JSONObject responseJson = null;
-        JSONObject profileJson = null;
+        // resume = filename, status = Success/Fail, msg = "Success"/"<Error Message>"
+        JSONObject responseJson = new JSONObject();
         String personId;
+
+        try {
+            responseJson.put("resume",fileName);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return responseJson;
+        }
 
         Candidate existingCandidate = null;
         if(candidateId > 0) {
@@ -1625,7 +1632,14 @@ public class CandidateService
             hw.setCallback("http://trujobs.in/receive-parsed-resume");
         } catch (HWHTTPException e) {
             e.printStackTrace();
-            return Boolean.FALSE;
+            try {
+                responseJson.put("status","Fail");
+                responseJson.put("msg",e.getMessage());
+            } catch (JSONException ee) {
+                ee.printStackTrace();
+                return responseJson;
+            }
+            return responseJson;
         }
 
         HashMap paramMap = new HashMap();
@@ -1638,7 +1652,14 @@ public class CandidateService
             Logger.info("Sending to HireWand with filename = "+fileName);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            return Boolean.FALSE;
+            try {
+                responseJson.put("status","Fail");
+                responseJson.put("msg",e.getMessage());
+            } catch (JSONException ee) {
+                ee.printStackTrace();
+                return responseJson;
+            }
+            return responseJson;
         }
 
         // Upload resume to HireWand
@@ -1647,7 +1668,14 @@ public class CandidateService
             response = hw.call("upload",paramMap);
         } catch (InvalidRequestException | HWHTTPException e) {
             e.printStackTrace();
-            return Boolean.FALSE;
+            try {
+                responseJson.put("status","Fail");
+                responseJson.put("msg",e.getMessage());
+            } catch (JSONException ee) {
+                ee.printStackTrace();
+                return responseJson;
+            }
+            return responseJson;
         }
 
         Logger.info("response= "+response);
@@ -1656,7 +1684,14 @@ public class CandidateService
                 result = new JSONObject(String.valueOf(response));
             } catch (JSONException e) {
                 e.printStackTrace();
-                return Boolean.FALSE;
+                try {
+                    responseJson.put("status","Fail");
+                    responseJson.put("msg",e.getMessage());
+                } catch (JSONException ee) {
+                    ee.printStackTrace();
+                    return responseJson;
+                }
+                return responseJson;
             }
 
         try {
@@ -1686,7 +1721,14 @@ public class CandidateService
                     String path = uploadResumeToAWS(resume,awsName);
                     if(path == "") {
                         // Resume could not be uploaded to S3
-                        return  Boolean.FALSE;
+                        try {
+                            responseJson.put("status","Fail");
+                            responseJson.put("msg","Resume could not be uploaded into AWS");
+                        } catch (JSONException ee) {
+                            ee.printStackTrace();
+                            return responseJson;
+                        }
+                        return responseJson;
                     }
                     else {
 
@@ -1711,7 +1753,14 @@ public class CandidateService
                         if(candidateResumeResponse.getStatus() == TruResponse.STATUS_FAILURE) {
                             // error reported, delete the AWS entry
                             removeResumeFromAws(path.replace("https://s3.amazonaws.com/trujobs.in/",""));
-                            return Boolean.FALSE;
+                            try {
+                                responseJson.put("status","Fail");
+                                responseJson.put("msg","Resume could not be updated in TruJobs Database");
+                            } catch (JSONException ee) {
+                                ee.printStackTrace();
+                                return responseJson;
+                            }
+                            return responseJson;
                         }
 
                     }
@@ -1721,10 +1770,25 @@ public class CandidateService
             }
             catch (JSONException e){
                 e.printStackTrace();
-                return Boolean.FALSE;
+                try {
+                    responseJson.put("status","Fail");
+                    responseJson.put("msg",e.getMessage());
+                } catch (JSONException ee) {
+                    ee.printStackTrace();
+                    return responseJson;
+                }
+                return responseJson;
             }
 
-        return Boolean.TRUE;
+        try {
+            responseJson.put("status","Success");
+            responseJson.put("msg","Success");
+        } catch (JSONException ee) {
+            ee.printStackTrace();
+            return responseJson;
+        }
+
+        return responseJson;
 
     }
 
@@ -1949,7 +2013,15 @@ public class CandidateService
         }
     }
 
-    public static Boolean updateResume(String personId, HireWandResponse.Profile profile, Boolean duplicate){
+    // response: key = personId, candidateExists = true/false, alreadyParsed = true/false, status = success/fail, msg = error message (if any)
+    public static JSONObject updateResume(String personId, HireWandResponse.Profile profile, Boolean duplicate){
+
+        JSONObject responseJson = new JSONObject();
+        try {
+            responseJson.put("key",personId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         // get the existing entry from CandidateResume
         CandidateResume candidateResume = CandidateResume.find.where().eq("external_key",personId).findUnique();
@@ -1959,6 +2031,20 @@ public class CandidateService
         // check if candidate is already known
         if(candidateResume.getCandidate() != null){
             candidate = candidateResume.getCandidate();
+            // check if parsed resume already available
+            if(candidateResume.getParsedResume()!= null && !candidateResume.getParsedResume().isEmpty()){
+                // this candidate's parsed resume is already available
+                Logger.info("Parsed resume for existing candidate with ID "+candidate.getCandidateId()+" already available!");
+                try {
+                    responseJson.put("candidateExists",Boolean.TRUE);
+                    responseJson.put("alreadyParsed",Boolean.TRUE);
+                    responseJson.put("status","Success");
+                    responseJson.put("msg","Candidate exists. Parsed Resume exists. No further action required");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return responseJson;
+            }
             Logger.info("Updating resume for existing candidate with ID = "+candidate.getCandidateId());
         }
         else{
@@ -1972,12 +2058,28 @@ public class CandidateService
             }
 
             // primary key missing!!! Cannot create candidate
-            if(mobileNos.size() == 0) return Boolean.FALSE;
+            if(mobileNos.size() == 0) {
+                try {
+                    responseJson.put("candidateExists",Boolean.FALSE);
+                    responseJson.put("alreadyParsed",Boolean.FALSE);
+                    responseJson.put("status","Fail");
+                    responseJson.put("msg","No mobile detected in parsed resume. Cannot proceed");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return responseJson;
+            }
 
             // get first matching candidate
             for(String m:mobileNos){
                 candidate = isCandidateExists(m);
                 if(candidate != null) {
+                    try {
+                        responseJson.put("candidateExists",Boolean.TRUE);
+                        responseJson.put("alreadyParsed",Boolean.FALSE);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     Logger.info("Candidate found for mobile no = "+m);
                     break;
                 }
@@ -1990,6 +2092,12 @@ public class CandidateService
 
         // no candidate found... Create
         if(candidate == null) {
+            try {
+                responseJson.put("candidateExists",Boolean.FALSE);
+                responseJson.put("alreadyParsed",Boolean.FALSE);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
             isNew = Boolean.TRUE;
             Logger.info("Attempting to create new candidate ...");
             // map to candidate request
@@ -2008,6 +2116,13 @@ public class CandidateService
         else {
             Logger.info("Attempting to update existing candidate ...");
             isNew = Boolean.FALSE;
+
+            try {
+                responseJson.put("candidateExists",Boolean.FALSE);
+                responseJson.put("alreadyParsed",Boolean.FALSE);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
 
             // get candidate Id, Name
             candidateId = candidate.getCandidateId();
@@ -2049,8 +2164,23 @@ public class CandidateService
         candidateResumeRequest.setChangedFields(changedFields);
         CandidateResumeService candidateResumeService = new CandidateResumeService();
         Logger.info("UpdateResume(): About to call candidateResumeService.update for id = "+candidateResume.getCandidateResumeId()+" referencing Candidate Id = "+candidateId);
-        if(candidateResumeService.update(candidateResumeRequest).getStatus() == TruResponse.STATUS_SUCCESS) return Boolean.TRUE;
-        else return Boolean.FALSE;
+        if(candidateResumeService.update(candidateResumeRequest).getStatus() == TruResponse.STATUS_SUCCESS) {
+            try {
+                responseJson.put("status","Success");
+                responseJson.put("msg","Success");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            try {
+                responseJson.put("status","Fail");
+                responseJson.put("msg","Could not update parsed resume due to internal error");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return responseJson;
 
     }
 
