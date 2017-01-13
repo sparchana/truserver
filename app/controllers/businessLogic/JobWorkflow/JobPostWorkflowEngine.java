@@ -87,6 +87,12 @@ public class JobPostWorkflowEngine {
 
         Query<Candidate> query = Candidate.find.query();
 
+        /* only active candidates */
+        query.select("*")
+                .where()
+                .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
+                .query();
+
         // problem: all age is null/0 and dob is also null
         // select candidate falling under the specified age req
         if (maxAge != null && maxAge != 0) {
@@ -218,11 +224,6 @@ public class JobPostWorkflowEngine {
                 .notIn("candidateId", selectedCandidateIdList)
                 .query();
 
-        // should be an active candidate
-        query = query.select("*").fetch("candidateprofilestatus")
-                .where()
-                .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
-                .query();
 
         List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList, radius, true);
 
@@ -267,6 +268,12 @@ public class JobPostWorkflowEngine {
         Map<Long, CandidateWorkflowData> matchedCandidateMap = new LinkedHashMap<>();
 
         Query<Candidate> query = Candidate.find.query();
+
+        /* only active candidates */
+        query.select("*")
+                .where()
+                .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
+                .query();
 
         // select candidate whose totalExperience falls under the req exp
         if (experienceIdList != null && experienceIdList.size() > 0) {

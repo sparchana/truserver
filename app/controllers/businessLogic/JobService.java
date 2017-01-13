@@ -13,7 +13,6 @@ import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import api.http.httpResponse.interview.InterviewResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Model;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerConstants;
 import dao.JobPostDAO;
@@ -34,6 +33,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static api.InteractionConstants.*;
@@ -668,6 +668,27 @@ public class JobService {
                 Logger.info("JobPost with jobId: " + applyJobRequest.getJobId() + " does not exists");
             }
             else{
+
+                Logger.info("req app version code: " +applyJobRequest.getAppVersionCode());
+                /* this takes care of deactivated candidate in app*/
+                if(applyJobRequest.getAppVersionCode() >= ServerConstants.DEACTIVATION_APP_VERSION_CODE && existingCandidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
+                    Logger.info("Couldn't proceed with Job Application (JPID: "+applyJobRequest.getJobId()+") as candidate  is deactivated (candidateId: " + existingCandidate.getCandidateId() + ")");
+
+                    SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_DDMMYYYY);
+                    Date expiryDate = existingCandidate.getCandidateStatusDetail().getStatusExpiryDate();
+
+                    applyJobResponse.setStatus(ApplyJobResponse.STATUS_SUCCESS);
+                    applyJobResponse.setCandidateDeActive(true);
+                    String deActivationMessage =
+                           SmsUtil.getDeactivationMessage(existingCandidate.getCandidateFullName(), expiryDate);
+
+                    applyJobResponse.setDeActiveHeadMessage("Unable to process your application");
+                    applyJobResponse.setDeActiveTitleMessage("Application failed !");
+                    applyJobResponse.setDeActiveBodyMessage(deActivationMessage);
+
+                    return applyJobResponse;
+                }
+
                 JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).eq("jobPostId", applyJobRequest.getJobId()).findUnique();
                 if(existingJobApplication == null){
 

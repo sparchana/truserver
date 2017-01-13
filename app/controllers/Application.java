@@ -1,5 +1,8 @@
 package controllers;
 
+import dao.CandidateDAO;
+import api.http.httpRequest.Recruiter.AddRecruiterRequest;
+import dao.JobPostDAO;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
@@ -1267,7 +1270,7 @@ public class Application extends Controller {
             e.printStackTrace();
         }
 
-        return ok(toJson(DeactivationService.getDeactivatedCandidates(deactivatedCandidateRequest)));
+        return ok(toJson(DeactivationService.getDeActivatedCandidates(deactivatedCandidateRequest)));
     }
 
     public static Result deactiveToActive() {
@@ -1277,15 +1280,15 @@ public class Application extends Controller {
             return badRequest();
         }
 
-        DeactiveToActiveRequest deactiveToActiveRequest= new DeactiveToActiveRequest();
+        DeActiveToActiveRequest deActiveToActiveRequest = new DeActiveToActiveRequest();
         ObjectMapper newMapper = new ObjectMapper();
         Logger.info("deactivatedCandidateJsonNode: "+deactiveToActiveJson);
         try {
-            deactiveToActiveRequest = newMapper.readValue(deactiveToActiveJson.toString(), DeactiveToActiveRequest.class);
+            deActiveToActiveRequest = newMapper.readValue(deactiveToActiveJson.toString(), DeActiveToActiveRequest.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(DeactivationService.deactivateToActive(deactiveToActiveRequest)));
+        return ok(toJson(DeactivationService.deactivateToActive(deActiveToActiveRequest)));
     }
 
     public static Result postJob() {
@@ -2289,6 +2292,25 @@ public class Application extends Controller {
         }
 
         return ok(toJson(JobPostWorkflowEngine.updateFeedback(addFeedbackRequest, Integer.valueOf(session().get("sessionChannel")))));
+    }
+
+    public static Result getDeactivationMessage() {
+        DeActivationStatusResponse response = new DeActivationStatusResponse();
+
+        if (session().get("candidateId") != null) {
+            Candidate candidate = CandidateDAO.getById(Long.parseLong(session().get("candidateId")));
+            SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_DDMMYYYY);
+
+            if (candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
+                String message =
+                       SmsUtil.getDeactivationMessage(candidate.getCandidateFullName(), candidate.getCandidateStatusDetail().getStatusExpiryDate());
+
+                response.setDeActivationMessage(message);
+                Logger.info("de Activation is available");
+                return ok(toJson(response));
+            }
+        }
+        return ok(toJson(response));
     }
 
     @Security.Authenticated(SecuredUser.class)
