@@ -328,12 +328,12 @@ public class RecruiterProfile extends Model {
     }
 
     private Integer creditCount(Integer categoryId) {
-        List<RecruiterCreditHistory> creditHistoryList = this.getRecruiterCreditHistoryList();
+        List<RecruiterCreditHistory> creditHistoryList = RecruiterCreditHistory.find.where().eq("RecruiterProfileId", this.getRecruiterProfileId()).findList();
         Integer count = 0;
         for(RecruiterCreditHistory history : creditHistoryList){
             if(Objects.equals(history.getRecruiterCreditCategory().getRecruiterCreditCategoryId(), categoryId)){
-                if(!history.getCreditIsExpired()){
-                    if(history.getLatest()){
+                if(history.getCreditIsExpired() != null && !history.getCreditIsExpired()){
+                    if(history.getLatest() != null && history.getLatest()){
                         if(history.getRecruiterCreditsAvailable() != null){
                             count = count + history.getRecruiterCreditsAvailable();
                         }

@@ -52,6 +52,9 @@ function interviewType(val) {
 }
 
 function computeCreditValue() {
+    var hasContactCredit = false;
+    var hasInterviewCredit = false;
+
     if($('input:radio[name="candidateCreditType"]:checked').val() == 1){
         candidateCreditTypeStatus = 1;
 
@@ -60,8 +63,7 @@ function computeCreditValue() {
             notifyError("Contact credits should be greater than existing credits")
         } else{
             contactCredits = parseInt($("#candidateContactCredits").val());
-            $("#addCreditInfoDiv").show();
-            $("#contactUnlockCreditInfo").html("Adding a new contact unlock credit pack with " + contactCredits + " new credits");
+            hasContactCredit = true;
         }
     }
     if($('input:radio[name="interviewCreditType"]:checked').val() == 1){
@@ -72,12 +74,40 @@ function computeCreditValue() {
             notifyError("Interview credits should be greater than existing credits");
         } else{
             interviewCredits = parseInt($("#interviewCredits").val());
-            $("#addCreditInfoDiv").show();
-            $("#interviewUnlockCreditInfo").html("Adding a new interview unlock credit pack with " + interviewCredits + " new credits");
+            hasInterviewCredit = true;
+        }
+    }
+    var expiryStatus = 1;
+    var selectedDate = null;
+
+    if(hasContactCredit || hasInterviewCredit){
+        if($("#expiry_date").val() != ""){
+            selectedDate = new Date($("#expiry_date").val());
+            var todaysDate = new Date();
+
+            if(selectedDate < todaysDate){
+                alert("Please select expiry date greater than today");
+                expiryStatus = 0;
+            } else{
+                $("#expiringInfo").html(selectedDate.getDate() + "-" + (selectedDate.getMonth() + 1) + "-" + selectedDate.getFullYear());
+                expiryStatus = 1;
+            }
+        } else{
+            alert("Please select expiry date ");
+            expiryStatus = 0;
         }
     }
 
-    if(interviewCreditTypeStatus == 1 && candidateCreditTypeStatus == 1){
+    if(interviewCreditTypeStatus == 1 && candidateCreditTypeStatus == 1 && expiryStatus == 1){
+        if(hasContactCredit){
+            $("#addCreditInfoDiv").show();
+            $("#contactUnlockCreditInfo").html("Adding a new contact unlock credit pack with " + contactCredits + " new credits");
+        }
+
+        if(hasInterviewCredit){
+            $("#addCreditInfoDiv").show();
+            $("#interviewUnlockCreditInfo").html("Adding a new interview unlock credit pack with " + interviewCredits + " new credits");
+        }
         $("#creditModal").modal("hide");
     }
 }
@@ -93,11 +123,31 @@ function computeNewCreditValue() {
         checkStatus = 0;
         notifyError("Credits should be greater than available credits")
     }
+
+    var selectedDate = null;
+    var expirydate = null;
+
+    if($("#expiry_date_edit_pack").val() != ""){
+        selectedDate = new Date($("#expiry_date_edit_pack").val());
+        var todaysDate = new Date();
+
+        if(selectedDate < todaysDate){
+            alert("Please select expiry date greater than today");
+            checkStatus = 0;
+        } else{
+            expirydate = selectedDate.getFullYear() + "-" + (selectedDate.getMonth() + 1) + "-" + selectedDate.getDate();
+            checkStatus = 1;
+        }
+    } else{
+        checkStatus = 1;
+    }
+
     if(checkStatus == 1){
         var d = {
             recruiterMobile: $("#recruiterMobile").val(),
             creditCount: parseInt($("#recruiterAddCredit").val()),
-            packId: pack.recruiterCreditPackNo
+            packId: pack.recruiterCreditPackNo,
+            expiryDate: expirydate
         };
 
         try {
@@ -179,26 +229,51 @@ $(function(){
 });
 
 function saveRecruiter() {
-    var d = {
-        recruiterName: $("#recruiterName").val(),
-        recruiterMobile: $("#recruiterMobile").val(),
-        recruiterLandline: $("#recruiterLandline").val(),
-        recruiterEmail: $("#recruiterEmail").val(),
-        recruiterCompany: $("#recruiterCompany").val(),
-        contactCredits: contactCredits,
-        interviewCredits: interviewCredits
-    };
-         
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/addRecruiter",
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(d),
-            success: processDataAddRecruiter
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
+    var selectedDate = null;
+    var creditExpiryDate = null;
+    var status = 1;
+
+    if(contactCredits > 0 || interviewCredits > 0){
+
+        if($("#expiry_date").val() != ""){
+            selectedDate = new Date($("#expiry_date").val());
+            var todaysDate = new Date();
+
+            if(selectedDate < todaysDate){
+                alert("Please select expiry date greater than today");
+                status = 0;
+            } else{
+                creditExpiryDate = selectedDate.getFullYear() + "-" + (selectedDate.getMonth() + 1) + "-" + selectedDate.getDate();
+            }
+
+        }
+
+    }
+
+
+    if(status == 1){
+        var d = {
+            recruiterName: $("#recruiterName").val(),
+            recruiterMobile: $("#recruiterMobile").val(),
+            recruiterLandline: $("#recruiterLandline").val(),
+            recruiterEmail: $("#recruiterEmail").val(),
+            recruiterCompany: $("#recruiterCompany").val(),
+            contactCredits: contactCredits,
+            interviewCredits: interviewCredits,
+            expiryDate: creditExpiryDate
+        };
+
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/addRecruiter",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processDataAddRecruiter
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
     }
 }
 
@@ -271,17 +346,18 @@ function processDataForRecruiterInfo(returnedData) {
                 }
             },
             function() {
-                return getDateTime(pack.expiryDate);
+                if(pack.expiryDate != null)
+                    return getDateTime(pack.expiryDate);
+                else
+                    return "Not available";
             },
             function() {
                 if(pack.creditIsExpired == false){
-                    return '<div class="btn btn-default" onclick="editExistingPack(' + packIndex + ')" style="background: green; color: white">Add/Remove Credits</div>';
+                    return '<div class="btn btn-default" onclick="editExistingPack(' + packIndex + ')" style="background: green; color: white">Add/Remove/Edit Pack</div>';
                 } else{
                     return "Pack is expired";
                 }
-
             }
-
         ] ).order([[0, "asc"]]).draw( false );
 
     });

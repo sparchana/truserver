@@ -94,7 +94,7 @@ public class RecruiterAuthService {
                 }
 
                 //assigning some free contact unlock credits for the recruiter
-                addCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, ServerConstants.RECRUITER_FREE_CONTACT_CREDITS, createdBy);
+                addCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, ServerConstants.RECRUITER_FREE_CONTACT_CREDITS, createdBy, null);
 
                 existingRecruiter.update();
                 Logger.info("recruiter status confirmed");

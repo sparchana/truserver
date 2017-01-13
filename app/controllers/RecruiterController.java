@@ -256,10 +256,14 @@ public class RecruiterController {
 
             String jpIdList = "";
 
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
             for(Map.Entry<?, JobPost> entity: recruiterJobPostMap.entrySet()) {
                 JobPost jobPost = entity.getValue();
-                jpIdList += "'" + jobPost.getJobPostId() + "', ";
 
+                //checking recruiter and job post company
+                if(Objects.equals(jobPost.getCompany().getCompanyId(), recruiterProfile.getCompany().getCompanyId())){
+                    jpIdList += "'" + jobPost.getJobPostId() + "', ";
+                }
             }
 
             List<JobPostWorkflow> jobPostWorkflowList = new ArrayList<>();
