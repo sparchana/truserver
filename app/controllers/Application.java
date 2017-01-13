@@ -2386,6 +2386,7 @@ public class Application extends Controller {
                 // send for processing
                 Logger.info("Updating resume for HireWand PersonID = "+hireWandResponse.getPersonid());
                 JSONObject resp = CandidateService.updateResume(hireWandResponse.getPersonid(), hireWandResponse.getProfile(),hireWandResponse.getDuplicate());
+                Logger.info("resp="+resp.toString());
                 return ok(resp+"");
             }
             else {
