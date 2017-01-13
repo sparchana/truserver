@@ -238,7 +238,7 @@ public class RecruiterService {
                 }
 
                 //assigning free contact unlock credits for the recruiter
-                addCredits(newRecruiter, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, ServerConstants.RECRUITER_FREE_CONTACT_CREDITS, createdBy);
+                addCredits(newRecruiter, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, ServerConstants.RECRUITER_FREE_CONTACT_CREDITS, createdBy, recruiterSignUpRequest.getExpiryDate());
 
                 //setting all the credit values
                 setCreditHistoryValues(newRecruiter, recruiterSignUpRequest);
@@ -320,7 +320,7 @@ public class RecruiterService {
         if(addRecruiterRequest.getContactCredits() != null && addRecruiterRequest.getContactCredits() != 0){
             if(addRecruiterRequest.getContactCredits() > 0){
 
-                addCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, addRecruiterRequest.getContactCredits(), createdBy);
+                addCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, addRecruiterRequest.getContactCredits(), createdBy, addRecruiterRequest.getExpiryDate());
             } else{
 
                 //debit
@@ -334,7 +334,7 @@ public class RecruiterService {
             if(addRecruiterRequest.getInterviewCredits() > 0){
 
                 //credit
-                addCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK, addRecruiterRequest.getInterviewCredits(), createdBy);
+                addCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK, addRecruiterRequest.getInterviewCredits(), createdBy, addRecruiterRequest.getExpiryDate());
 
             } else{
                 //debit
@@ -652,7 +652,7 @@ public class RecruiterService {
         }
     }
 
-    public static void addCredits(RecruiterProfile existingRecruiter, Integer creditType, Integer totalCredits, String createdBy) {
+    public static void addCredits(RecruiterProfile existingRecruiter, Integer creditType, Integer totalCredits, String createdBy, Date customExpiryDate) {
 
         Integer availableCredits = 0;
         Integer usedCredits = 0;
@@ -660,6 +660,10 @@ public class RecruiterService {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.MONTH, 1);
         Date expiryDate = cal.getTime();
+
+        if(customExpiryDate != null){
+            expiryDate = customExpiryDate;
+        }
 
         RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where()
                 .eq("recruiter_credit_category_id", creditType)
@@ -702,7 +706,9 @@ public class RecruiterService {
     public static AddRecruiterResponse updateExistingRecruiterPack(RecruiterProfile recruiterProfile,
                                                                    Integer packId,
                                                                    Integer credits,
-                                                                   String createdBy) {
+                                                                   String createdBy,
+                                                                   Date customExpiryDate)
+    {
 
         AddRecruiterResponse addRecruiterResponse = new AddRecruiterResponse();
 
@@ -733,7 +739,11 @@ public class RecruiterService {
             newHistory.setUnits(credits);
             newHistory.setRecruiterCreditCategory(history.getRecruiterCreditCategory());
             newHistory.setLatest(true);
-            newHistory.setExpiryDate(history.getExpiryDate());
+            if(customExpiryDate != null){
+                newHistory.setExpiryDate(customExpiryDate);
+            } else{
+                newHistory.setExpiryDate(history.getExpiryDate());
+            }
 
             Logger.info("Creating a new row for the updated pack by debiting/crediting by " + credits + " for recruiter: " +
                 recruiterProfile.getRecruiterProfileName() + ", ID: " + recruiterProfile.getRecruiterProfileId());

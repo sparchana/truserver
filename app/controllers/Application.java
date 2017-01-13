@@ -1559,8 +1559,12 @@ public class Application extends Controller {
     public static Result getRelevantJobsPostsForCandidate(long id) {
         Candidate existingCandidate = Candidate.find.where().eq("candidateId", id).findUnique();
         if (existingCandidate != null) {
-            return ok(toJson(JobSearchService.getRelevantJobsPostsForCandidate(
-                    FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()))));
+            List<JobPost> matchingJobList = JobSearchService.getRelevantJobsPostsForCandidate(
+                    FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()));
+
+            SearchJobService.computeCTA(matchingJobList, id);
+
+            return ok(toJson(matchingJobList));
         }
         return ok("ok");
     }
@@ -2332,7 +2336,7 @@ public class Application extends Controller {
             }
 
             return ok(toJson(RecruiterService.updateExistingRecruiterPack(recruiterProfile, addRecruiterRequest.getPackId(),
-                    addRecruiterRequest.getCreditCount(), createdBy)));
+                    addRecruiterRequest.getCreditCount(), createdBy, addRecruiterRequest.getExpiryDate())));
         }
 
         return ok("0");
