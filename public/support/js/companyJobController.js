@@ -83,7 +83,12 @@ function renderDashboard() {
                             },
                             'jobRecruiter': function () {
                                 if(jobPost.recruiterProfile != null){
-                                    return '<a href="'+"/recruiterDetails/"+jobPost.recruiterProfile.recruiterProfileId+'" id="'+jobPost.recruiterProfile.recruiterProfileId+'" style="cursor:pointer;" target="_blank">'+jobPost.recruiterProfile.recruiterProfileName+'</a>';
+                                    var extraMsg = "";
+                                    if(jobPost.company.companyId != jobPost.recruiterProfile.company.companyId){
+                                        extraMsg = "(Recruiter changed company to : " + jobPost.recruiterProfile.company.companyName + ") ";
+                                    }
+                                    return '<a href="'+"/recruiterDetails/"+jobPost.recruiterProfile.recruiterProfileId+'" id="'+jobPost.recruiterProfile.recruiterProfileId+'" style="cursor:pointer;" target="_blank">'
+                                        + jobPost.recruiterProfile.recruiterProfileName + " " + extraMsg + '</a>';
                                 } else{
                                     return " - ";
                                 }
