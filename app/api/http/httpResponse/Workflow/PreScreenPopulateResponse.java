@@ -180,6 +180,7 @@ public class PreScreenPopulateResponse {
     public Status status;
     public String jobPostMinReq;
     public boolean visible;
+    public boolean isInterviewRequired;
 
     public PreScreenPopulateResponse() {
         this.elementList = new ArrayList<>();
@@ -223,5 +224,13 @@ public class PreScreenPopulateResponse {
 
     public void setVisible(boolean visible) {
         this.visible = visible;
+    }
+
+    public boolean isInterviewRequired() {
+        return isInterviewRequired;
+    }
+
+    public void setInterviewRequired(boolean interviewRequired) {
+        isInterviewRequired = interviewRequired;
     }
 }

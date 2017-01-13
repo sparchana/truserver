@@ -9,6 +9,7 @@ import api.http.httpRequest.Recruiter.*;
 import api.http.httpRequest.ResetPasswordResquest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.CandidateWorkflowData;
+import com.amazonaws.util.json.JSONArray;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,14 +21,20 @@ import controllers.security.RecruiterSecured;
 import controllers.security.FlashSessionController;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
+import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.OM.IDProofReference;
 import models.entity.OM.JobPostWorkflow;
+import models.entity.OM.LanguageKnown;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
+import models.entity.Static.Language;
+import org.apache.commons.logging.Log;
 import play.Logger;
+import play.api.i18n.Lang;
 import play.mvc.Result;
 import play.mvc.Security;
 
@@ -236,6 +243,7 @@ public class RecruiterController {
 
                             List<CandidateWorkflowData> jobApplicantList = new LinkedList<>();
                             for (Map.Entry<Long, CandidateWorkflowData> entry : selectedCandidateMap.entrySet()) {
+                                sanitizeCandidateDate(entry.getValue().getCandidate());
                                 jobApplicantList.add(entry.getValue());
                             }
 
@@ -248,6 +256,14 @@ public class RecruiterController {
         return ok("0");
     }
 
+    private static void sanitizeCandidateDate(Candidate candidate) {
+        candidate.setJobApplicationList(null);
+        candidate.setLead(null);
+        candidate.setCandidateUUId(null);
+        candidate.setLocalityPreferenceList(null);
+        candidate.setCandidateprofilestatus(null);
+    }
+
     @Security.Authenticated(RecruiterSecured.class)
     public static Result getAllRecruiterJobPosts() {
         if(session().get("recruiterId") != null){
@@ -256,10 +272,14 @@ public class RecruiterController {
 
             String jpIdList = "";
 
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
             for(Map.Entry<?, JobPost> entity: recruiterJobPostMap.entrySet()) {
                 JobPost jobPost = entity.getValue();
-                jpIdList += "'" + jobPost.getJobPostId() + "', ";
 
+                //checking recruiter and job post company
+                if(Objects.equals(jobPost.getCompany().getCompanyId(), recruiterProfile.getCompany().getCompanyId())){
+                    jpIdList += "'" + jobPost.getJobPostId() + "', ";
+                }
             }
 
             List<JobPostWorkflow> jobPostWorkflowList = new ArrayList<>();
@@ -344,6 +364,7 @@ public class RecruiterController {
 
             for(Map.Entry<?, RecruiterJobPostObject> map : recruiterJobPostResponseMap.entrySet()) {
                 RecruiterJobPostObject object = new RecruiterJobPostObject();
+                sanitizeJobPostData(map.getValue().getJobPost());
                 object.setJobPost(map.getValue().getJobPost());
                 object.setTotalCount(map.getValue().getTotalCount());
                 object.setPendingCount(map.getValue().getPendingCount());
@@ -355,6 +376,17 @@ public class RecruiterController {
             return ok(toJson(listToBeReturned));
         }
         return ok("0");
+    }
+
+    public static void sanitizeJobPostData(JobPost jobPost){
+        jobPost.setJobPostDescription(null);
+        jobPost.setJobPostAddress(null);
+        jobPost.setPricingPlanType(null);
+        jobPost.setJobRole(null);
+        jobPost.setCompany(null);
+        jobPost.setRecruiterProfile(null);
+        jobPost.setJobPostLanguageRequirements(null);
+        jobPost.setJobPostDocumentRequirements(null);
     }
 
     public static class RecruiterJobPostObject{

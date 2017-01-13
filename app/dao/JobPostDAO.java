@@ -1,8 +1,11 @@
 package dao;
 
 import api.ServerConstants;
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.RawSql;
+import com.avaje.ebean.RawSqlBuilder;
 import models.entity.JobPost;
-import models.entity.ongrid.OnGridVerificationStatus;
+import models.entity.OM.JobApplication;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +34,25 @@ public class JobPostDAO {
                 .findList();
 
         for(JobPost j: jobPostList){
-            if(j.getRecruiterProfile().totalInterviewCredits() > 0){
+            if(j.getRecruiterProfile().getInterviewCreditCount() > 0){
                 jobPostListToReturn.add(j);
             }
         }
         return jobPostListToReturn;
     }
 
+    public static List<JobApplication> getThisWeeksApplication(JobPost jobPost, int daysToDeduct) {
+
+        String jobPostQueryBuilder = " SELECT jobapplicationid FROM jobapplication" +
+                " where jobapplicationcreatetimestamp > curdate() - " + daysToDeduct + " and jobpostid = " +jobPost.getJobPostId();
+
+        RawSql rawSql = RawSqlBuilder.parse(jobPostQueryBuilder)
+                .columnMapping("jobapplicationid", "jobApplicationId")
+                .create();
+
+        return Ebean.find(JobApplication.class)
+                .setRawSql(rawSql)
+                .findList();
+
+    }
 }

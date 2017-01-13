@@ -3,9 +3,14 @@
  */
 
 var f;
+var d = null;
+var initialCompanyId;
+var initialCompanyName;
 var companyId;
+var companyArray = [];
 
 var logoTitle = "";
+var returnedCompanyName;
 
 $(document).scroll(function(){
     if ($(this).scrollTop() > 20) {
@@ -25,9 +30,24 @@ $(document).ready(function(){
 
     try {
         $.ajax({
+            type: "GET",
+            url: "/getAllCompany",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataCompany
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+    try {
+        $.ajax({
             type: "POST",
             url: "/getAllLocality",
             data: false,
+            async: false,
             contentType: false,
             processData: false,
             success: processDataCheckLocality
@@ -41,6 +61,7 @@ $(document).ready(function(){
             type: "POST",
             url: "/getAllCompanyType",
             data: false,
+            async: false,
             contentType: false,
             processData: false,
             success: processDataCompanyType
@@ -72,8 +93,7 @@ function uploadLogo(companyId){
     var file = $('#companyLogo')[0].files[0];
     var formData = new FormData();
 
-    var companyName = $("#rec_company_name").val();
-    var combinedName = companyName.split(' ').join('_');
+    var combinedName = returnedCompanyName.split(' ').join('_');
     var ext = "." + f.type.substring(6, f.type.length);
     logoTitle = "TJ_" + companyId + "_" + combinedName + ext;
 
@@ -180,40 +200,51 @@ function processDataRecruiterProfile(returnedData) {
             $("#rec_alternate_mobile").val(returnedData.recruiterAlternateMobile);
         }
         if(returnedData.company != null){
+            initialCompanyId = returnedData.company.companyId;
+            initialCompanyName = returnedData.company.companyName;
+
             companyId = returnedData.company.companyId;
+            returnedCompanyName = returnedData.company.companyName;
 
-            if(returnedData.company.companyLocality != null){
-                $('#rec_company_locality').tokenize().tokenAdd(returnedData.company.companyLocality.localityId, returnedData.company.companyLocality.localityName);
-            }
-            if(returnedData.company.compType != null){
-                $('#rec_company_type').tokenize().tokenAdd(returnedData.company.compType.companyTypeId, returnedData.company.compType.companyTypeName);
-            }
-
-            if(returnedData.company.companyName != null){
-                $("#rec_company_name").val(returnedData.company.companyName);
-            }
-            if(returnedData.company.companyPinCode != null){
-                $("#rec_company_pincode").val(returnedData.company.companyPinCode);
-            }
-            if(returnedData.company.companyWebsite != null){
-                $("#rec_company_website").val(returnedData.company.companyWebsite);
-            }
-            if(returnedData.company.companyDescription != null){
-                $("#rec_company_desc").val(returnedData.company.companyDescription);
-            }
-            if(returnedData.company.companyAddress != null){
-                $("#rec_company_address").val(returnedData.company.companyAddress);
-            }
-            if(returnedData.company.companyEmployeeCount != null){
-                $("#rec_company_employees").val(returnedData.company.companyEmployeeCount);
-            }
-            if(returnedData.company.companyLogo != null){
-                $('#rec_company_logo_old')
-                    .attr('src', returnedData.company.companyLogo);
-                $("#rec_company_old_logo").val(returnedData.company.companyLogo);
-            }
+            populateCompanyValues(returnedData.company);
         }
     }
+}
+
+function populateCompanyValues(company) {
+    companyId = company.companyId;
+    returnedCompanyName = company.companyName;
+
+    $('#rec_company_name').tokenize().tokenAdd(company.companyId, company.companyName);
+
+    if(company.companyLocality != null){
+        $('#rec_company_locality').tokenize().tokenAdd(company.companyLocality.localityId, company.companyLocality.localityName);
+    }
+    if(company.compType != null){
+        $('#rec_company_type').tokenize().tokenAdd(company.compType.companyTypeId, company.compType.companyTypeName);
+    }
+
+    if(company.companyPinCode != null){
+        $("#rec_company_pincode").val(company.companyPinCode);
+    }
+    if(company.companyWebsite != null){
+        $("#rec_company_website").val(company.companyWebsite);
+    }
+    if(company.companyDescription != null){
+        $("#rec_company_desc").val(company.companyDescription);
+    }
+    if(company.companyAddress != null){
+        $("#rec_company_address").val(company.companyAddress);
+    }
+    if(company.companyEmployeeCount != null){
+        $("#rec_company_employees").val(company.companyEmployeeCount);
+    }
+    if(company.companyLogo != null){
+        $('#rec_company_logo_old')
+            .attr('src', company.companyLogo);
+        $("#rec_company_old_logo").val(company.companyLogo);
+    }
+
 
 }
 
@@ -247,7 +278,10 @@ function saveForm() {
         case 4: alert("Please enter recruiter's name"); recruiterStatus=0; break;
     }
 
-    if(recruiterLandline != ""){
+    if(companyId == null){
+        notifyError("Please select a company");
+        recruiterStatus = 0;
+    } else if(recruiterLandline != ""){
         if(!validateInteger(recruiterLandline)){
             notifyError("Please enter a valid landline number");
             recruiterStatus = 0;
@@ -310,37 +344,67 @@ function saveForm() {
                 typeSelectedVal = companyTypeSelected[0];
             }
 
-
-            var d = {
+            d = {
                 companyId: companyId,
-                companyName: $("#rec_company_name").val(),
+                companyName: returnedCompanyName,
                 companyEmployeeCount: $("#rec_company_employees").val(),
                 companyWebsite: $("#rec_company_website").val(),
                 companyDescription: $("#rec_company_desc").val(),
                 companyPinCode: $("#rec_company_pincode").val(),
+                companyAddress: $("#rec_company_address").val(),
                 companyLocality: localitySelectedVal,
                 companyLogo: logo,
                 companyType: typeSelectedVal,
                 source: 0 // SOURCE_INTERNAL
             };
 
-            try {
-                $.ajax({
-                    type: "POST",
-                    url: "/addCompany",
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(d),
-                    success: processDataUpdateCompany
-                });
-            } catch (exception) {
-                console.log("exception occured!!" + exception);
+            if(initialCompanyId != companyId){
+                $("#confirmationMsg").html("Changing your company will close any existing job applications that you have posted for company: " + initialCompanyName + ". Please confirm.");
+                $("#confirmationModal").openModal();
+            } else{
+                performEditProfileTask();
             }
         } catch (err){}
     }
 }
 
+function closeConfirmModal() {
+    $("#confirmationModal").closeModal();
+}
+
+
+function performEditProfileTask() {
+    if(d != null){
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/addCompany",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processDataUpdateCompany
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
+function processDataCompany(returnedData) {
+    returnedData.forEach(function(company) {
+        var id = company.companyId;
+        var name = company.companyName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        companyArray.push(item);
+        var option = $('<option value=' + id + '></option>').text(name);
+        $('#rec_company_name').append(option);
+    });
+}
+
+
 function processDataUpdateCompany(returnedData) {
-    if(returnedData.status == 2){
+    companyId = returnedData.companyId;
+    if(returnedData.status == 1 || returnedData.status == 2){
         try{
             var rec = {
                 recruiterMobile: ($("#rec_mobile").val()).substring(3, 13),
@@ -390,6 +454,10 @@ function readURL(input) {
 function processDataAddRecruiter(returnedData) {
     if(returnedData.status == 4){
         notifySuccess("Profile updated successfully!");
+        setTimeout(function(){
+            window.location = "/recruiter/profile";
+        }, 2500);
+
     } else{
         notifyError("Something went wrong. Please try again later!");
     }
@@ -401,4 +469,56 @@ function notifyError(msg){
 
 function notifySuccess(msg){
     Materialize.toastSuccess(msg, 3000, 'rounded');
+}
+
+function validateCompanyVal(val, text) {
+    returnedCompanyName = text;
+    if(isNaN(parseInt(val))){
+        val = 0;
+        companyId = 0;
+        returnedCompanyName = text;
+        clearCompanyDetails();
+    } else{
+        val = parseInt(val);
+    }
+
+    if(val != companyId && val != 0){
+        clearCompanyDetails();
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/getCompanyInfo/" + parseInt(val),
+                data: false,
+                contentType: false,
+                processData: false,
+                success: populateCompanyValues
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
+
+function resetCompanyIdval(val, text) {
+    companyId = null;
+    returnedCompanyName = "";
+    clearCompanyDetails();
+}
+
+function clearCompanyDetails() {
+//    $('#rec_company_name').tokenize().clear();
+    $('#rec_company_type').tokenize().clear();
+    $('#rec_company_locality').tokenize().clear();
+
+    $("#rec_company_website").val('');
+    $("#rec_company_employees").val('');
+    $("#rec_company_pincode").val('');
+    $("#rec_company_address").val('');
+    $("#rec_company_desc").val('');
+    $('#rec_company_logo_old')
+        .attr('src', "");
+
+    $("#rec_company_old_logo").val('');
+
+
 }

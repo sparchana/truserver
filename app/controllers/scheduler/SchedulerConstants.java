@@ -7,6 +7,7 @@ public class SchedulerConstants {
     public static int SCHEDULER_TYPE_SMS = 1;
     public static int SCHEDULER_TYPE_EMAIL = 2;
     public static int SCHEDULER_TYPE_FCM = 3;
+    public static int SCHEDULER_TYPE_SYSTEM_TASK = 4;
 
     public static int SCHEDULER_SUB_TYPE_SAME_DAY_INTERVIEW = 1;
     public static int SCHEDULER_SUB_TYPE_NEXT_DAY_INTERVIEW = 2;
@@ -19,6 +20,8 @@ public class SchedulerConstants {
     public static int SCHEDULER_SUB_TYPE_CANDIDATE_PROFILE_COMPLETE = 9;
     public static int SCHEDULER_SUB_TYPE_CANDIDATE_NOTIFY_NEARBY_JOBS = 10;
     public static int SCHEDULER_SUB_TYPE_CANDIDATE_EOD_JOB_ALERT = 11;
+    public static int SCHEDULER_SUB_TYPE_EOD_CREDIT_DEBIT_TASK = 12;
+    public static int SCHEDULER_SUB_TYPE_CANDIDATE_ACTIVATION = 13;
 
 
     public static int INTERVIEW_TIME_SLOT_10_AM = 1;
@@ -26,7 +29,7 @@ public class SchedulerConstants {
     public static int INTERVIEW_TIME_SLOT_4_PM = 3;
 
     public static final int WEEKLY_TASK_DEFAULT_PROFILE_SCORE = 80;
-    public static final int NEW_JOB_ALERT_LIMIT = 500;
+    public static final int NEW_JOB_ALERT_LIMIT = 100;
     public static final int JOB_ALERT_DEFAULT_LIMIT = 100;
     public static final int CANDIDATE_ALERT_TASK_WEEKLY_LIMIT = 200;
     public static final int CANDIDATE_JOB_POST_ALERT_MAX_LIMIT = 3;

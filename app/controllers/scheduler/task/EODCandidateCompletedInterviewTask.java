@@ -57,7 +57,7 @@ public class EODCandidateCompletedInterviewTask extends TimerTask {
                 SmsUtil.sendEODCandidateFeedbackSms(jpwf.getJobPost(), jpwf.getCandidate());
 
                 //sending notification
-                NotificationUtil.EODCandidatefeedbackNotification(jpwf.getJobPost(), jpwf.getCandidate());
+                NotificationUtil.EODCandidateFeedbackNotification(jpwf.getJobPost(), jpwf.getCandidate());
 
             }
 

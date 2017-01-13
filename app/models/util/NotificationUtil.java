@@ -25,6 +25,14 @@ public class NotificationUtil {
         Global.getmNotificationHandler().addToQueue(notificationEvent);
     }
 
+    //for send job post id
+    public static void addFcmToNotificationQueue(String messageText, String title, String token, int intentType, Long jpId){
+
+        //adding to notificationHandler Queue
+        NotificationEvent notificationEvent = new FCMEvent(token, messageText, title, intentType, jpId);
+        Global.getmNotificationHandler().addToQueue(notificationEvent);
+    }
+
     public static void sendInterviewSelectionNotification(Candidate candidate, JobPostWorkflow jobPostWorkflow){
         String msg = "Hi " + candidate.getCandidateFirstName() + "! You have been selected for the job: " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() +
                 ". Congratulations!";
@@ -138,16 +146,16 @@ public class NotificationUtil {
         }
 
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, notificationTitle, candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+            addFcmToNotificationQueue(msg, notificationTitle, candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_JOB_DETAIL, jobPost.getJobPostId());
         }
     }
 
-    public static void EODCandidatefeedbackNotification(JobPost jobPost, Candidate candidate) {
+    public static void EODCandidateFeedbackNotification(JobPost jobPost, Candidate candidate) {
         String msg = "Hi " + candidate.getCandidateFirstName() + ", you had an interview today for " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". " +
                 "How would you rate your experience with TruJobs? Please rate us on bit.ly/trujobsapp";
 
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "We value your feedback!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+            addFcmToNotificationQueue(msg, "We value your feedback!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_FEEDBACK);
         }
 
     }
@@ -158,7 +166,7 @@ public class NotificationUtil {
                 " download app at bit.ly/trujobsapp";
 
         if(candidate.getCandidateAndroidToken() != null){
-            addFcmToNotificationQueue(msg, "Your TruJobs profile is incomplete", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+            addFcmToNotificationQueue(msg, "Your TruJobs profile is incomplete", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_PROFILE);
         }
     }
 
@@ -170,6 +178,4 @@ public class NotificationUtil {
             addFcmToNotificationQueue(msg, jobCount + " new jobs near you!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
         }
     }
-
-
 }
