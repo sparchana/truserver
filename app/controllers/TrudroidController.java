@@ -405,6 +405,7 @@ public class TrudroidController {
             applyJobRequest.setScheduledInterviewDate(null);
             applyJobRequest.setTimeSlot(null);
             applyJobRequest.setCandidateMobile(FormValidator.convertToIndianMobileFormat(pApplyJobRequest.getCandidateMobile()));
+            applyJobRequest.setAppVersionCode(pApplyJobRequest.getAppVersionCode());
 
             //applying job
             api.http.httpResponse.ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
@@ -417,10 +418,18 @@ public class TrudroidController {
             }
             applyJobResponseBuilder.setIsPreScreenAvailable(applyJobResponse.isPreScreenAvailable());
             applyJobResponseBuilder.setIsInterviewAvailable(applyJobResponse.isInterviewAvailable());
-            applyJobResponseBuilder.setCompanyName(applyJobResponse.getCompanyName());
-            applyJobResponseBuilder.setJobRoleTitle(applyJobResponse.getJobRoleTitle());
-            applyJobResponseBuilder.setJobTitle(applyJobResponse.getJobTitle());
-            applyJobResponseBuilder.setJobPostId(applyJobResponse.getJobPostId());
+            if(applyJobResponse.getCompanyName() != null) applyJobResponseBuilder.setCompanyName(applyJobResponse.getCompanyName());
+            if(applyJobResponse.getJobRoleTitle() != null) applyJobResponseBuilder.setJobRoleTitle(applyJobResponse.getJobRoleTitle());
+            if(applyJobResponse.getJobTitle() != null) applyJobResponseBuilder.setJobTitle(applyJobResponse.getJobTitle());
+            if(applyJobResponse.getJobPostId() != null) applyJobResponseBuilder.setJobPostId(applyJobResponse.getJobPostId());
+
+            if(applyJobResponse.isCandidateDeActive()) {
+                applyJobResponseBuilder.setIsCandidateDeActive(applyJobResponse.isCandidateDeActive());
+                applyJobResponseBuilder.setDeActiveHeadMessage(applyJobResponse.getDeActiveHeadMessage());
+                applyJobResponseBuilder.setDeActiveTitleMessage(applyJobResponse.getDeActiveTitleMessage());
+                applyJobResponseBuilder.setDeActiveBodyMessage(applyJobResponse.getDeActiveBodyMessage());
+            }
+
         } catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");
         }

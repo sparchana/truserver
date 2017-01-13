@@ -16,6 +16,9 @@ public class ApplyJobRequest {
     public Integer timeSlot;
     public Date scheduledInterviewDate;
 
+    /* used in app to determine its version*/
+    public int appVersionCode;
+
     public String getCandidateMobile() {
         return candidateMobile;
     }
@@ -62,5 +65,13 @@ public class ApplyJobRequest {
 
     public void setScheduledInterviewDate(Date scheduledInterviewDate) {
         this.scheduledInterviewDate = scheduledInterviewDate;
+    }
+
+    public int getAppVersionCode() {
+        return appVersionCode;
+    }
+
+    public void setAppVersionCode(int appVersionCode) {
+        this.appVersionCode = appVersionCode;
     }
 }
