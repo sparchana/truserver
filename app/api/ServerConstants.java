@@ -67,6 +67,9 @@ public class ServerConstants {
 
     public static final int JOB_STATUS_NEW= 1;
     public static final int JOB_STATUS_ACTIVE= 2;
+    public static final int JOB_STATUS_DEACTIVATED= 3;
+    public static final int JOB_STATUS_CLOSED= 4;
+    public static final int JOB_STATUS_PAUSED= 5;
 
     public static final int OBJECT_TYPE_PRESCREEN_ATTEMPT= 10;
     public static final int OBJECT_TYPE_JOB_POST_WORKFLOW= 11;

@@ -317,7 +317,7 @@ function renderIndividualCandidateCard(value, parent, view) {
     candidateExperience.textContent = ", " + expVal;
     candidateCardRowColOne.appendChild(candidateExperience);
 
-    if(view == view_tracking_candidate || view == view == view_applied_candidate){
+    if(view == view_tracking_candidate || view == view_applied_candidate){
         //match score col
         var candidateScoreCol = document.createElement("div");
         candidateScoreCol.className = "col s12 l2";
