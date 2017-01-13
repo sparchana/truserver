@@ -660,6 +660,13 @@ hr{
     padding-top: 12px;
     padding-right: 0;
 }
+#uploadResumeBtnPostLogin{
+    padding:5px 10px;
+    background:rgb(2, 123, 179);
+    border:1px solid rgba(0, 159, 219, 0.99);
+    color: #fff;
+    font-weight: bold;
+}
 @media screen and (max-width: 768px){
     .resumeUploadBox{
         width:35px;

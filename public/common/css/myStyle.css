@@ -231,7 +231,6 @@ a:hover, a:focus{
 #uploadResumeBtn{
     padding:3% 8%;
     width: 100%;
-    border: none;
     background:#fff;
     border:1px solid rgba(0, 159, 219, 0.99);
     color: rgb(2, 123, 179);

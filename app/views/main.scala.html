@@ -133,6 +133,21 @@
             <div class="leadBox">
                 <form id="form_signup_candidate"  style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
                     <h4 style="font-weight: bold">Job Seeker Registration</h4>
+                    <div id="uploadResumeContainer" style="margin:0 2%">
+                        <center>
+                            <label class="btn btn-default btn-file" id="uploadResumeBtn">Sign Up With Resume - One Click
+                                <input type="file" accept="application/pdf,application/msword" onchange="uploadResume()" id="uploadResumeContent" style="display: none">
+                            </label>
+                        </center>
+                    </div>
+                    <center>
+                        <div style="margin-top:20px">
+                            <hr>
+                            <div style="color:#000;background: #fff;width: 120px;height: 30px;margin-top:-16px">
+                                <p><font style="font-size: 12px">Or fill below details</font></p>
+                            </div>
+                        </div>
+                    </center>
                     <div class="row" id="firstNameLastName">
                         <div class="col-sm-6" style="padding: 0 4px 0 16px">
                             <input id="candidateFirstName" placeholder="First name" type="text" maxLength="49" class="form-control input-md">
@@ -174,9 +189,11 @@
                     </div>
 
                     <button type="submit" id="registerBtnSubmit" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
-                    <p style="padding-top:5px;margin:0;font-size: 12px"> By signing up I agree to <a href='/privacy'>Terms & Conditions</a></p>
-                    <hr>
-                    <p style="padding-top:5px;margin:0"><font size = 2px> Already Registered ? <a href='#' data-toggle="modal" data-target="#myLoginModal" onClick="openLogin()">Sign In Here </a></font></p>
+                    <p style="padding-top:5px;margin:0;font-size: 12px"><span style="float: left;text-align: left">I agree to <a href='/privacy'>T & C</a></span>
+                       <span style="float:right;text-align: right">Already Registered<br>
+                               <a href='#' data-toggle="modal" data-target="#myLoginModal" onClick="openLogin()">Sign In Here</a>
+                        </span>
+                    </p>
                 </form>
 
                 <div style="text-align: center">
