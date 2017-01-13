@@ -1,5 +1,6 @@
 package models.util;
 
+import api.ServerConstants;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
 import controllers.Global;
 import models.entity.Candidate;
@@ -9,6 +10,7 @@ import models.entity.OM.JobPostWorkflow;
 import models.entity.Partner;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.InterviewTimeSlot;
+import models.entity.Static.Reason;
 import notificationService.NotificationEvent;
 import notificationService.SMSEvent;
 import play.Logger;
@@ -19,6 +21,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
@@ -589,26 +592,26 @@ public class SmsUtil {
         String msgPrefix;
         String msgPost = "";
         if(hasCredits){
-            msgPrefix = "Book job interviews on TruJobs! ";
+            msgPrefix = "Book interview! ";
             msgPost += " Book interview at www.trujobs.in or download app at bit.ly/trujobsapp";
 
         } else{
-            msgPrefix = "New Job Alert! ";
-            msgPost += " Apply now at www.trujobs.in or download app at bit.ly/trujobsapp";
+            msgPrefix = "Job Alert! ";
+            msgPost += " Apply at www.trujobs.in or download app at bit.ly/trujobsapp";
         }
-        String msg = msgPrefix + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
-                jobLocalities.substring(0, jobLocalities.length() - 2) + ". " + msgPost;
+        String msg = msgPrefix + jobPost.getJobPostTitle() +  " @ " + jobPost.getCompany().getCompanyName()
+                + ". Salary: " + salary + " monthly. " + msgPost;
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
     }
 
     public static void sendEODCandidateFeedbackSms(JobPost jobPost, Candidate candidate) {
         String msg = "Hi " + candidate.getCandidateFirstName() + ", you had an interview today for " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". " +
-                "How would you rate your experience with TruJobs? Please rate us on bit.ly/trujobsapp";
+                "Rate your experience with TruJobs on bit.ly/trujobsapp";
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
     }
 
     public static void sendAppDownloadSms(Candidate candidate) {
-        String msg = "Hi " + candidate.getCandidateFirstName() + ", Download TruJobs app now at bit.ly/trujobsapp to get " +
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", Download TruJobs app at bit.ly/trujobsapp to get " +
                 "instant job alerts near your location!";
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
     }
@@ -623,9 +626,83 @@ public class SmsUtil {
 
     public static void sendWeeklySmsToNotifyNoOfMatchingJobs(Candidate candidate, Integer jobCount, String jobRole) {
         String msg = "Hi " + candidate.getCandidateFirstName() + ", You are missing out on new jobs! There are over " + jobCount +
-                " new " + jobRole + " jobs on TruJobs platform near your locality! Apply now at www.trujobs.in or download app at bit.ly/trujobsapp.";
+                " new " + jobRole + " jobs on TruJobs near your locality! Apply now at www.trujobs.in or download app at bit.ly/trujobsapp.";
 
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
+    }
+
+    public static void sendDeactivationSmsFromSupport(Candidate candidate, Reason reason, Date expiryDate)
+    {
+
+        StringBuilder message = new StringBuilder();
+        if(reason == null || reason.getReasonId() == 7){
+            return;
+        }
+
+        if(reason.getReasonId() < 7){
+            message.append("Hi " + candidate.getCandidateFullName() +", ");
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_DDMMYYYY);
+
+        switch (reason.getReasonId()){
+            case 1:
+                // 'Got a job recently (through TruJobs)'
+                message.append("Congratulations on getting hired through TruJobs! Please rate us here http://bit.ly/trujobsapp . " +
+                        "We are temporarily deactivating your profile for job-applications. " +
+                        "If you are interested in applying to new jobs, please check back after "+ sdf.format(expiryDate)+
+                        " or call us at 8880007799 to request re-activation. All the best for your new job! www.trujobs.in");
+                break;
+
+            case 2: // 'Got a job recently' :
+                message.append("We understand that you recently got a job and hence are not interested in new jobs. " +
+                        "So we are temporarily deactivating your profile for job-applications. " +
+                        "If you are interested in applying to jobs, please check back after " + sdf.format(expiryDate)+
+                        " or call us at 8880007799 to request re-activation. All the best for your new job! www.trujobs.in");
+                break;
+
+            case 3: // 'Not interested in job offers':
+                message.append("We understand that you are not interested in applying to new jobs at this time. " +
+                        "So we are temporarily deactivating your profile for job-applications. If you are interested in applying to jobs," +
+                        " please check back after 'deactivation duration' or call us at 8880007799 to request re-activation. www.trujobs.in");
+                break;
+
+            case 4:
+                // 'Negative feedback from recruiter'
+                // do nothing, i.e don't send any sms
+                return;
+
+            case 5: // 'No show for interview'
+                message.append("Due to repeated cases of not turning up for the interview," +
+                        " we are temporarily deactivating your profile for job-applications. If you are interested in applying to jobs, " +
+                        " please check back after " + sdf.format(expiryDate)+ " or call us at 8880007799 to request re-activation. www.trujobs.in");
+                break;
+
+            case 6: // 'No show for joining':
+                message.append("Due to repeated cases of not joining the job after being selected in the interview, " +
+                        "we are temporarily deactivating your profile for job-applications. If you are interested in applying to jobs, " +
+                        "please check back after " + sdf.format(expiryDate)+ "or call us at 8880007799 to request re-activation. www.trujobs.in");
+                break;
+
+            case 7:
+                // 'Invalid mobile number':
+                // do nothing, i.e don't send any sms
+                return;
+
+            default:
+                // for non handled case do nothing
+                return;
+        }
+
+        addSmsToNotificationQueue(candidate.getCandidateMobile(), message.toString());
+    }
+
+    public static String getDeactivationMessage(String fullName, Date expiryDate){
+        SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_DDMMYYYY);
+
+        return "Dear "+fullName+", Looks like your profile is temporarily suspended for new job applications. " +
+                "Please check back after "+sdf.format(expiryDate)+" or call us at 8880007799 to request re-activation.";
+
     }
 
 }

@@ -81,6 +81,7 @@ function processDataGenerateJobPostView(returnedData) {
         if(Object.keys(jobPostList).length){
             jobPostList.reverse();
             jobPostList.forEach(function (jobPost) {
+
                 var mainDiv =  document.createElement("div");
                 parent.append(mainDiv);
 

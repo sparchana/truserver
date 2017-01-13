@@ -38,30 +38,8 @@ function renderDashboard() {
                         var remainingContactCredits = 0;
                         var remainingInterviewCredits = 0;
                         if(jobPost.recruiterProfile != null){
-                            var creditHistoryList = jobPost.recruiterProfile.recruiterCreditHistoryList;
-                            creditHistoryList.reverse();
-                            var toCheckContactCreditCount = true;
-                            var toCheckInterviewCreditCount = true;
-                            creditHistoryList.forEach(function (creditHistory){
-                                try{
-                                    if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
-                                        if(toCheckContactCreditCount){
-                                            remainingContactCredits = parseInt(creditHistory.recruiterCreditsAvailable);
-                                            toCheckContactCreditCount = false;
-                                        }
-                                    } else{
-                                        if(toCheckInterviewCreditCount){
-                                            if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
-                                                remainingInterviewCredits = parseInt(creditHistory.recruiterCreditsAvailable);
-                                                toCheckInterviewCreditCount = false;
-                                            }
-                                        }
-                                    }
-                                    if((toCheckContactCreditCount == false) && (toCheckInterviewCreditCount ==false)){
-                                        return false;
-                                    }
-                                } catch(err){}
-                            });
+                            remainingContactCredits = jobPost.recruiterProfile.contactCreditCount;
+                            remainingInterviewCredits = jobPost.recruiterProfile.interviewCreditCount;
                         }
 
                         //addFooter();

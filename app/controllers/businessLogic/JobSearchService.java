@@ -289,12 +289,12 @@ public class JobSearchService {
             }
 
             List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, null, SORT_BY_DATE_POSTED,
-                    false, ServerConstants.SOURCE_INTERNAL);
+                    true, ServerConstants.SOURCE_INTERNAL);
 
             List<Long> relevantJobRoleIds = JobRelevancyEngine.getRelatedJobRoleIds(jobRoleIds);
 
             List<JobPost> relevantJobRoleJobs = queryAndReturnJobPosts(relevantJobRoleIds, null, SORT_BY_DATE_POSTED,
-                    false, ServerConstants.SOURCE_INTERNAL);
+                    true, ServerConstants.SOURCE_INTERNAL);
 
             List<Long> finalJobRoleIdList = new ArrayList<>();
             finalJobRoleIdList.addAll(jobRoleIds);

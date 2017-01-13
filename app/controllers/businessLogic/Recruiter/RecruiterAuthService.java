@@ -17,6 +17,7 @@ import play.Logger;
 import java.util.UUID;
 
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterAddPasswordViaWebsite;
+import static controllers.businessLogic.RecruiterService.addCredits;
 import static play.mvc.Controller.session;
 
 /**
@@ -85,6 +86,15 @@ public class RecruiterAuthService {
                     Logger.info("Oops recruiterStatusId"+ " doesnot exists");
                     recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.STATUS_FAILURE);
                 }
+
+                String createdBy = "Not specified";
+
+                if(session().get("sessionUsername") != null){
+                    createdBy = "Support: " + session().get("sessionUsername");
+                }
+
+                //assigning some free contact unlock credits for the recruiter
+                addCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, ServerConstants.RECRUITER_FREE_CONTACT_CREDITS, createdBy, null);
 
                 existingRecruiter.update();
                 Logger.info("recruiter status confirmed");

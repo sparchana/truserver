@@ -171,6 +171,11 @@ public class ServerConstants {
     public static Integer REC_SORT_SALARY_H_TO_L = 2;
     public static Integer REC_SORT_SALARY_L_TO_H = 3;
 
+
+    /* Various App version */
+    public static int CURRENT_APP_VERSION_CODE = 5;
+    public static int DEACTIVATION_APP_VERSION_CODE = 5;
+
     static {
         devTeamMobile = new HashMap<String, String>();
         devTeamMobile.put("Archana", "+918197222248");
@@ -334,6 +339,8 @@ public class ServerConstants {
     public static final int INTERVIEW_REQUIRED = 2;     // "INTERVIEW"
     public static final int ALREADY_APPLIED = 3;     // "JOB POST ALREADY APPLIED"
     public static final int APPLY = 4;     // "JOB POST ALREADY APPLIED"
+    public static final int INTERVIEW_CLOSED = 5;     // "INTERVIEW CLOSED FOR THE WEEK"
+    public static final int DEACTIVE = 6;     // "CANDIDATE DEACTIVATED"
 
     // rescheduled Interview status
     public static final int RESCHEULED_INTERVIEW_STATUS_ACCEPTED = 1;
@@ -366,6 +373,10 @@ public class ServerConstants {
     public static final int ANDROID_INTENT_ACTIVITY_REFER = 6;
     public static final int ANDROID_INTENT_ACTIVITY_FEEDBACK = 7;
     public static final int ANDROID_INTENT_ACTIVITY_INTERVIEW_TIPS = 8;
+    public static final int ANDROID_INTENT_ACTIVITY_JOB_DETAIL = 9;
 
     public static final String CREATED_BY = "Candidate";
+
+    //reason type
+    public static final int FREE_JOB_APPLICATION_DEFAULT_LIMIT_IN_A_WEEK = 7;
 }
