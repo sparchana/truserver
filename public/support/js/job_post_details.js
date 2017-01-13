@@ -583,6 +583,17 @@ function processDataForJobPost(returnedData) {
     if(returnedData.recruiterProfile != null){
         $('#jobPostRecruiter').val(returnedData.recruiterProfile.recruiterProfileId);
     }
+
+    if(returnedData.company.companyId != returnedData.recruiterProfile.company.companyId){
+        $("#changedRecruiter").show();
+        $("#changedRecruiter").html("Recruiter: " + returnedData.recruiterProfile.recruiterProfileName + " changed the company to : " + returnedData.recruiterProfile.company.companyName);
+    }
+
+    //changedRecruiter
+    if($('#jobPostRecruiter').val() == null){
+        $('#jobPostRecruiter').val(-1);
+    }
+
     $("#jobPostTitle").val(returnedData.jobPostTitle);
 
     $("#jobPostDescription").val(returnedData.jobPostDescription);

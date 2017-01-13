@@ -242,6 +242,7 @@ function processDataGenerateJobPostView(returnedData) {
                         colJobStatus.appendChild(stopIconImg);
 
                         var optionName = document.createElement("span");
+                        optionName.style = "font-size: 11px";
                         optionName.textContent = "Close Job";
                         colJobStatus.appendChild(optionName);
 
@@ -252,6 +253,7 @@ function processDataGenerateJobPostView(returnedData) {
                         colJobStatus.appendChild(pauseIconImg);
 
                         optionName = document.createElement("span");
+                        optionName.style = "font-size: 11px";
                         optionName.textContent = "Pause Job";
                         colJobStatus.appendChild(optionName);
 
@@ -259,6 +261,7 @@ function processDataGenerateJobPostView(returnedData) {
 
                         colJobStatus.appendChild(stopIconImg);
                         optionName = document.createElement("span");
+                        optionName.style = "font-size: 11px";
                         optionName.textContent = "Close Job";
                         colJobStatus.appendChild(optionName);
 
@@ -266,6 +269,7 @@ function processDataGenerateJobPostView(returnedData) {
                         statusName.textContent = jobPost.jobPost.jobPostStatus.jobStatusName;
                         colJobStatus.appendChild(resumeIconImg);
                         optionName = document.createElement("span");
+                        optionName.style = "font-size: 11px";
                         optionName.textContent = "Resume Job";
                         colJobStatus.appendChild(optionName);
 
@@ -273,6 +277,7 @@ function processDataGenerateJobPostView(returnedData) {
 
                         colJobStatus.appendChild(stopIconImg);
                         optionName = document.createElement("span");
+                        optionName.style = "font-size: 11px";
                         optionName.textContent = "Close Job";
                         colJobStatus.appendChild(optionName);
 

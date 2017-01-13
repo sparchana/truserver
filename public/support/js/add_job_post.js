@@ -120,7 +120,8 @@ function closeCreditModal() {
 $(function() {
     $("#job_post_form").submit(function(eventObj) {
         eventObj.preventDefault();
-        if(($("#jobPostRecruiter").val() == "" || $("#jobPostRecruiter").val() == "-1" || $("#jobPostRecruiter").val() == null) && $("#recruiterSection").is(':visible') == true){
+        status = 1;
+        if(($("#jobPostRecruiter").val() == "" || $("#jobPostRecruiter").val() == -1 || $("#jobPostRecruiter").val() == null) && $("#recruiterSection").is(':visible') == true){
             var status = 1;
             var recruiterName = validateName($("#recruiterName").val());
             var recruiterMobile = validateMobile($("#recruiterMobile").val());
@@ -171,7 +172,12 @@ $(function() {
                     success: processDataAddRecruiterAndUpdateRecId
                 });
             }
+        } else if($("#recruiterSection").is(':visible') == false && ($("#jobPostRecruiter").val() == "" || $("#jobPostRecruiter").val() == -1 || $("#jobPostRecruiter").val() == null) == true){
+            notifyError("Please select a recruiter", 'danger');
+            $("#jobPostRecruiter").addClass('selectDropdownInvalid').removeClass('selectDropdown');
+            status = 0;
         }
+
         var timeSlotCount = 0;
         var interviewDayCount = 0;
         $('#interviewTimeSlot input:checkbox').each(function () {
@@ -203,13 +209,13 @@ $(function() {
         var partnerJoiningIncentiveVal = parseInt($("#partnerJoiningIncentive").val());
 
         var jobPostLocalities = [];
-        status = 1;
         var locality = $('#jobPostLocalities').val().split(",");
+
         if($("#jobPostCompany").val() == ""){
             notifyError("Please enter Job Post Company", 'danger');
             $("#jobPostCompany").addClass('selectDropdownInvalid').removeClass('selectDropdown');
             status = 0;
-        } else if($("#jobPostRecruiter").val() == "" && $("#jobPostRecruiter").val() == "-1" && recId <= 0){
+        } else if($("#jobPostRecruiter").val() == "" || $("#jobPostRecruiter").val() == -1 || recId < 0){
             notifyError("Please select a recruiter", 'danger');
             $("#jobPostCompany").addClass('selectDropdown').removeClass('selectDropdownInvalid');
             $("#jobPostRecruiter").addClass('selectDropdownInvalid').removeClass('selectDropdown');
@@ -267,6 +273,7 @@ $(function() {
             notifyError("Please enter Job Post Experience required", 'danger');
             status = 0;
         }
+
         if(interviewDayCount > 0 && timeSlotCount == 0){
             $("#jobPostExperience").removeClass('invalid');
             notifyError("Please select interview time slot", 'danger');
@@ -316,7 +323,7 @@ $(function() {
                 scrollTo("#jdRequirementPanel");
             }
         }
-        
+
         //checking partner incentives
         if (partnerInterviewIncentiveVal < 0) {
             notifyError("Partner interview incentive cannot be negative", 'danger');
@@ -386,6 +393,7 @@ $(function() {
         }
 
         if(status == 1){
+            console.log(recId);
             if($("#jobPostRecruiter").val() != "" && $("#jobPostRecruiter").val() != null && $("#jobPostRecruiter").val() != undefined){
                 recId = $("#jobPostRecruiter").val();
             }

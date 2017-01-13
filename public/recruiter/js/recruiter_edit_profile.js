@@ -359,7 +359,7 @@ function saveForm() {
             };
 
             if(initialCompanyId != companyId){
-                $("#confirmationMsg").html("Changing to a new will close any existing job applications that you have posted for company: " + initialCompanyName + ". Please confirm.");
+                $("#confirmationMsg").html("Changing your company will close any existing job applications that you have posted for company: " + initialCompanyName + ". Please confirm.");
                 $("#confirmationModal").openModal();
             } else{
                 performEditProfileTask();
@@ -454,6 +454,10 @@ function readURL(input) {
 function processDataAddRecruiter(returnedData) {
     if(returnedData.status == 4){
         notifySuccess("Profile updated successfully!");
+        setTimeout(function(){
+            window.location = "/recruiter/profile";
+        }, 2500);
+
     } else{
         notifyError("Something went wrong. Please try again later!");
     }
