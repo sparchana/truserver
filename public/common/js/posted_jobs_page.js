@@ -595,14 +595,23 @@ function processDataForHotJobPost(returnedData) {
         }
 
         if(returnedData.applyBtnStatus != null && returnedData.applyBtnStatus != CTA_BTN_APPLY){
+            var applyBtn = $(".jobApplyBtnV2");
             if(returnedData.applyBtnStatus == CTA_BTN_INTERVIEW_REQUIRED) {
-                $(".jobApplyBtnV2").html("Book Interview");
+                applyBtn.html("Book Interview");
+            } else if(returnedData.applyBtnStatus == CTA_BTN_DEACTIVE){
+                applyBtn.html("Apply");
+                applyBtn.css("background", "#ffa726");
+                applyBtn.attr('onclick','').unbind('click');
+                applyBtn.on("click", function () {
+                    jobCardUtil.method.notifyMsg(jobCardUtil.deActivationMessage, 'danger');
+                });
+
             } else if(returnedData.applyBtnStatus == CTA_BTN_INTERVIEW_CLOSED) {
-                $(".jobApplyBtnV2").removeClass("btn-primary").addClass("appliedBtn").prop('disabled',true).html("Application Closed");
-                $('.jobApplyBtnV2').attr('onclick','').unbind('click');
-                $('.jobApplyBtnV2').css("background", "#f4cb6c");
-                $('.jobApplyBtnV2').css("box-shadow", "none");
-                $('.jobApplyBtnV2').css("cursor", "default");
+                applyBtn.removeClass("btn-primary").addClass("appliedBtn").prop('disabled',true).html("Application Closed");
+                applyBtn.attr('onclick','').unbind('click');
+                applyBtn.css("background", "#f4cb6c");
+                applyBtn.css("box-shadow", "none");
+                applyBtn.css("cursor", "default");
 
                 var nextMonday = new Date();
                 nextMonday.setDate(nextMonday.getDate() + (1 + 7 - nextMonday.getDay()) % 7);

@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static api.InteractionConstants.*;
@@ -670,11 +669,15 @@ public class JobService {
             else{
 
                 Logger.info("req app version code: " +applyJobRequest.getAppVersionCode());
-                /* this takes care of deactivated candidate in app*/
-                if(applyJobRequest.getAppVersionCode() >= ServerConstants.DEACTIVATION_APP_VERSION_CODE && existingCandidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
-                    Logger.info("Couldn't proceed with Job Application (JPID: "+applyJobRequest.getJobId()+") as candidate  is deactivated (candidateId: " + existingCandidate.getCandidateId() + ")");
 
-                    SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_DDMMYYYY);
+                /* this takes care of deactivated candidate in app and website */
+
+                if((channelType == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE ||
+                    applyJobRequest.getAppVersionCode() >= ServerConstants.DEACTIVATION_APP_VERSION_CODE) &&
+                        existingCandidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
+
+                    Logger.info("Couldn't proceed with Job Application (JpId: "+applyJobRequest.getJobId()+") as candidate  is deactivated (candidateId: " + existingCandidate.getCandidateId() + ")");
+
                     Date expiryDate = existingCandidate.getCandidateStatusDetail().getStatusExpiryDate();
 
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_SUCCESS);

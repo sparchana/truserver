@@ -6,7 +6,7 @@
  *
  * Created by Hawk on 04/01/17.
  *
- * Dependency: jQuery, validation.js, bootstrap.min.js
+ * Dependency: jQuery, bootstrap.min.js
  *
  * Pass a parent div to which needs JobCard appended
  *
@@ -163,9 +163,9 @@ var cardModule = (function ($) {
                     var salaryDiv = document.createElement("div");
                     salaryDiv.style = "display: inline-block";
                     if (jobPost.jobPostMaxSalary == "0" || jobPost.jobPostMaxSalary == null) {
-                        salaryDiv.textContent = rupeeFormatSalary(jobPost.jobPostMinSalary) + " monthly";
+                        salaryDiv.textContent = rupeeFormatForSalary(jobPost.jobPostMinSalary) + " monthly";
                     } else {
-                        salaryDiv.textContent = rupeeFormatSalary(jobPost.jobPostMinSalary) + " - " + rupeeFormatSalary(jobPost.jobPostMaxSalary) + " monthly";
+                        salaryDiv.textContent = rupeeFormatForSalary(jobPost.jobPostMinSalary) + " - " + rupeeFormatForSalary(jobPost.jobPostMaxSalary) + " monthly";
                     }
                     salaryDataDiv.appendChild(salaryDiv);
 
@@ -604,3 +604,15 @@ function notifyMsg(msg, type) {
         alert(msg);
     }
 };
+
+function rupeeFormatForSalary(sal){
+    if(sal != null){
+        sal = sal.toString();
+        var lastThree = sal.substring(sal.length-3);
+        var otherNumbers = sal.substring(0, sal.length-3);
+        if(otherNumbers != '')
+            lastThree = ',' + lastThree;
+        return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+    }
+    return "";
+}
