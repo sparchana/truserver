@@ -1,5 +1,6 @@
 package api.http.httpRequest;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -43,6 +44,7 @@ public class AddJobPostRequest {
     public Integer reviewApplications;
     public String jobPostAddressBuildingNo;
     public String jobPostAddressLandmark;
+    public Date resumeApplicationDate;
 
     public List<Integer> interviewTimeSlot;
 
@@ -358,5 +360,13 @@ public class AddJobPostRequest {
 
     public void setJobPostAddressLandmark(String jobPostAddressLandmark) {
         this.jobPostAddressLandmark = jobPostAddressLandmark;
+    }
+
+    public Date getResumeApplicationDate() {
+        return resumeApplicationDate;
+    }
+
+    public void setResumeApplicationDate(Date resumeApplicationDate) {
+        this.resumeApplicationDate = resumeApplicationDate;
     }
 }

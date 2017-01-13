@@ -116,10 +116,10 @@ function computeNewCreditValue() {
     var checkStatus = 1;
 
     if($("#recruiterAddCredit").val() == ""){
-        checkStatus = 0;
-        notifyError("Please enter a value")
+        $("#recruiterAddCredit").val(0);
+    }
 
-    } else if(parseInt($("#recruiterAddCredit").val()) < -(availableCredits)){
+    if(parseInt($("#recruiterAddCredit").val()) < -(availableCredits)){
         checkStatus = 0;
         notifyError("Credits should be greater than available credits")
     }
@@ -143,23 +143,28 @@ function computeNewCreditValue() {
     }
 
     if(checkStatus == 1){
-        var d = {
-            recruiterMobile: $("#recruiterMobile").val(),
-            creditCount: parseInt($("#recruiterAddCredit").val()),
-            packId: pack.recruiterCreditPackNo,
-            expiryDate: expirydate
-        };
+        if((expirydate == null) && ($("#recruiterAddCredit").val() == 0)){
+            $("#editCreditModal").modal("hide");
+        } else{
+            var d = {
+                recruiterMobile: $("#recruiterMobile").val(),
+                creditCount: parseInt($("#recruiterAddCredit").val()),
+                packId: pack.recruiterCreditPackNo,
+                expiryDate: expirydate
+            };
 
-        try {
-            $.ajax({
-                type: "POST",
-                url: "/updateRecruiterCreditPack",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(d),
-                success: processDataUpdatePack
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
+            try {
+                $.ajax({
+                    type: "POST",
+                    url: "/updateRecruiterCreditPack",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
+                    success: processDataUpdatePack
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+
         }
     }
 }
@@ -337,7 +342,6 @@ function processDataForRecruiterInfo(returnedData) {
                 }
             },
             pack.recruiterCreditsAvailable,
-            pack.recruiterCreditsUsed,
             function() {
                 if(pack.creditIsExpired == false){
                     return "Not Expired" + '<span onclick="expireCreditPack(' + packIndex + ')" style="padding: 4px; cursor: pointer; background: #d9534f; margin-left: 6px; color: white">Expire now</span>';

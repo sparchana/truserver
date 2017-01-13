@@ -455,6 +455,23 @@ var cardModule = (function ($) {
                     applyBtn.className = "jobApplyBtn2";
                     var applyJobText ;
 
+                    if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != 4){
+                        if(jobPost.applyBtnStatus == 2) {
+                            applyJobText = "Book Interview";
+                        } else if(jobPost.applyBtnStatus == 3) {
+                            applyJobText = "Already Applied";
+                            applyBtn.disabled =  true;
+                            applyBtn.style = "background:#ffa726";
+                        }else if(jobPost.applyBtnStatus == 5) {
+                            applyJobText = "Application Closed";
+                            applyBtn.disabled =  true;
+                            applyBtn.style = "background:#ffa726";
+                        }
+
+                    } else {
+                        applyJobText = "Apply";
+                    }
+                    applyBtn.textContent = applyJobText;
                     applyBtnRow.appendChild(applyBtn);
                     applyBtnDiv.appendChild(applyBtnRow);
                     if(jobPost.applyBtnStatus == 5){
