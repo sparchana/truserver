@@ -40,6 +40,7 @@ function renderIndividualCandidateCard(value, parent, view) {
     //candidate card
     var candidateCard = document.createElement("div");
     candidateCard.className = "card";
+    candidateCard.id = "candidate_card_" + value.candidate.candidateId;
 
     showStatusFlag = view == view_tracking_candidate;
 
@@ -316,7 +317,7 @@ function renderIndividualCandidateCard(value, parent, view) {
     candidateExperience.textContent = ", " + expVal;
     candidateCardRowColOne.appendChild(candidateExperience);
 
-    if(view == view_tracking_candidate || view == view == view_applied_candidate){
+    if(view == view_tracking_candidate || view == view_applied_candidate){
         //match score col
         var candidateScoreCol = document.createElement("div");
         candidateScoreCol.className = "col s12 l2";
@@ -1182,6 +1183,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                         var feedbackBtn = document.createElement("a");
                         feedbackBtn.className = "customFeedbackBtn feedbackVal";
                         feedbackBtn.onclick = function () {
+                            candidateCardData = value;
                             openFeedbackModal(value.candidate.candidateId);
                         };
                         feedbackBtn.textContent = "Add Feedback";
