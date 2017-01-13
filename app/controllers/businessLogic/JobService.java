@@ -673,6 +673,7 @@ public class JobService {
                 /* this takes care of deactivated candidate in app and website */
 
                 if((channelType == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE ||
+                        channelType == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE||
                     applyJobRequest.getAppVersionCode() >= ServerConstants.DEACTIVATION_APP_VERSION_CODE) &&
                         existingCandidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
 

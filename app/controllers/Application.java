@@ -2293,12 +2293,14 @@ public class Application extends Controller {
         return ok(toJson(JobPostWorkflowEngine.updateFeedback(addFeedbackRequest, Integer.valueOf(session().get("sessionChannel")))));
     }
 
-    public static Result getDeactivationMessage() {
+    public static Result getDeactivationMessage(Long candidateId) {
         DeActivationStatusResponse response = new DeActivationStatusResponse();
 
-        if (session().get("candidateId") != null) {
-            Candidate candidate = CandidateDAO.getById(Long.parseLong(session().get("candidateId")));
-            SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_DDMMYYYY);
+        if(candidateId == null && session().get("candidateId")!= null) {
+            candidateId = Long.valueOf(session().get("candidateId"));
+        }
+        if (candidateId != null) {
+            Candidate candidate = CandidateDAO.getById(candidateId);
 
             if (candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
                 String message =
