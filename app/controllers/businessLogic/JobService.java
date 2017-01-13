@@ -13,7 +13,6 @@ import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import api.http.httpResponse.interview.InterviewResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Model;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerConstants;
 import dao.JobPostDAO;
@@ -670,9 +669,9 @@ public class JobService {
             }
             else{
 
-                Logger.info("req app version: " +applyJobRequest.getAppVersion());
+                Logger.info("req app version code: " +applyJobRequest.getAppVersionCode());
                 /* this takes care of deactivated candidate in app*/
-                if(applyJobRequest.getAppVersion() >= ServerConstants.DEACTIVATION_APP_VERSION && existingCandidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
+                if(applyJobRequest.getAppVersionCode() >= ServerConstants.DEACTIVATION_APP_VERSION_CODE && existingCandidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
                     Logger.info("Couldn't proceed with Job Application (JPID: "+applyJobRequest.getJobId()+") as candidate  is deactivated (candidateId: " + existingCandidate.getCandidateId() + ")");
 
                     SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_DDMMYYYY);
@@ -680,7 +679,9 @@ public class JobService {
 
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_SUCCESS);
                     applyJobResponse.setCandidateDeActive(true);
-                    String deActivationMessage = "Dear "+existingCandidate.getCandidateFullName()+", Looks like your profile is temporarily suspended for new job applications. Please check back after "+sdf.format(expiryDate)+" or call us at 8880007799 to request re-activation.";
+                    String deActivationMessage =
+                           SmsUtil.getDeactivationMessage(existingCandidate.getCandidateFullName(), expiryDate);
+
                     applyJobResponse.setDeActiveHeadMessage("Unable to process your application");
                     applyJobResponse.setDeActiveTitleMessage("Application failed !");
                     applyJobResponse.setDeActiveBodyMessage(deActivationMessage);

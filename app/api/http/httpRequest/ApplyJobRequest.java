@@ -17,7 +17,7 @@ public class ApplyJobRequest {
     public Date scheduledInterviewDate;
 
     /* used in app to determine its version*/
-    public double appVersion;
+    public int appVersionCode;
 
     public String getCandidateMobile() {
         return candidateMobile;
@@ -67,11 +67,11 @@ public class ApplyJobRequest {
         this.scheduledInterviewDate = scheduledInterviewDate;
     }
 
-    public double getAppVersion() {
-        return appVersion;
+    public int getAppVersionCode() {
+        return appVersionCode;
     }
 
-    public void setAppVersion(double appVersion) {
-        this.appVersion = appVersion;
+    public void setAppVersionCode(int appVersionCode) {
+        this.appVersionCode = appVersionCode;
     }
 }

@@ -454,7 +454,6 @@ var cardModule = (function ($) {
                     var applyBtn = document.createElement("button");
                     applyBtn.className = "jobApplyBtn2";
                     var applyJobText ;
-                    console.log("btnStatus: " + jobPost.applyBtnStatus);
 
                     applyBtnRow.appendChild(applyBtn);
                     applyBtnDiv.appendChild(applyBtnRow);
@@ -488,7 +487,6 @@ var cardModule = (function ($) {
                             applyJobText = "Apply";
                             applyBtn.style = "background:#ffa726";
                             applyBtn.onclick = function () {
-                                console.log(cardModule.deActivationMessage);
                                 notifyMsg(cardModule.deActivationMessage, 'danger');
                             };
                         }

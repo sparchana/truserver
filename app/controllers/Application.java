@@ -2297,10 +2297,8 @@ public class Application extends Controller {
             SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_DDMMYYYY);
 
             if (candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
-                String message = "Dear " + candidate.getCandidateFullName() + ", " +
-                        "Looks like your profile is temporarily suspended for new job applications. " +
-                        "Please check back after " + sdf.format(candidate.getCandidateStatusDetail().getStatusExpiryDate()) + " " +
-                        "or call us at 8880007799 to request re-activation.'";
+                String message =
+                       SmsUtil.getDeactivationMessage(candidate.getCandidateFullName(), candidate.getCandidateStatusDetail().getStatusExpiryDate());
 
                 response.setDeActivationMessage(message);
                 Logger.info("de Activation is available");

@@ -173,8 +173,8 @@ public class ServerConstants {
 
 
     /* Various App version */
-    public static double CURRENT_APP_VERSION = 2.2;
-    public static double DEACTIVATION_APP_VERSION = 2.1;
+    public static int CURRENT_APP_VERSION_CODE = 5;
+    public static int DEACTIVATION_APP_VERSION_CODE = 5;
 
     static {
         devTeamMobile = new HashMap<String, String>();

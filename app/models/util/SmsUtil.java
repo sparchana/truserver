@@ -697,4 +697,12 @@ public class SmsUtil {
         addSmsToNotificationQueue(candidate.getCandidateMobile(), message.toString());
     }
 
+    public static String getDeactivationMessage(String fullName, Date expiryDate){
+        SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_DDMMYYYY);
+
+        return "Dear "+fullName+", Looks like your profile is temporarily suspended for new job applications. " +
+                "Please check back after "+sdf.format(expiryDate)+" or call us at 8880007799 to request re-activation.";
+
+    }
+
 }

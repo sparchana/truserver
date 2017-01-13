@@ -405,7 +405,7 @@ public class TrudroidController {
             applyJobRequest.setScheduledInterviewDate(null);
             applyJobRequest.setTimeSlot(null);
             applyJobRequest.setCandidateMobile(FormValidator.convertToIndianMobileFormat(pApplyJobRequest.getCandidateMobile()));
-            applyJobRequest.setAppVersion(pApplyJobRequest.getAppVersion());
+            applyJobRequest.setAppVersionCode(pApplyJobRequest.getAppVersionCode());
 
             //applying job
             api.http.httpResponse.ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
