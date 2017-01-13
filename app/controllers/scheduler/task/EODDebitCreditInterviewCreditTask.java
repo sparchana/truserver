@@ -42,64 +42,60 @@ public class EODDebitCreditInterviewCreditTask extends TimerTask {
 
     private void startCreditDebitTask(Map<RecruiterProfile, Integer> recruiterToInterviewCountMap, Boolean isDebit){
 
-        new Thread(() -> {
+        SchedulerSubType subType = SchedulerSubType.find.where()
+                .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_EOD_CREDIT_DEBIT_TASK)
+                .findUnique();
 
-            SchedulerSubType subType = SchedulerSubType.find.where()
-                    .eq("schedulerSubTypeId", SCHEDULER_SUB_TYPE_EOD_CREDIT_DEBIT_TASK)
-                    .findUnique();
+        SchedulerType type = SchedulerType.find.where()
+                .eq("schedulerTypeId", SCHEDULER_TYPE_SMS).findUnique();
 
-            SchedulerType type = SchedulerType.find.where()
-                    .eq("schedulerTypeId", SCHEDULER_TYPE_SMS).findUnique();
+        Timestamp startTime = new Timestamp(System.currentTimeMillis());
 
-            Timestamp startTime = new Timestamp(System.currentTimeMillis());
+        //in this map, we have recruiterProfile as key and values as no of credits to be debited
+        for (Map.Entry<RecruiterProfile, Integer> entry : recruiterToInterviewCountMap.entrySet()) {
 
-            //in this map, we have recruiterProfile as key and values as no of credits to be debited
-            for (Map.Entry<RecruiterProfile, Integer> entry : recruiterToInterviewCountMap.entrySet()) {
+            //getting key and value
+            RecruiterProfile recruiterProfile = entry.getKey();
+            Integer creditCount = entry.getValue();
 
-                //getting key and value
-                RecruiterProfile recruiterProfile = entry.getKey();
-                Integer creditCount = entry.getValue();
+            RecruiterCreditHistory history = RecruiterCreditHistoryDAO.getOldestActivePackByCategory(recruiterProfile,
+                    ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK);
 
-                RecruiterCreditHistory history = RecruiterCreditHistoryDAO.getOldestActivePackByCategory(recruiterProfile,
-                        ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK);
-                
-                if(history != null){
-                    if (isDebit) {
-                        Logger.info("Debiting " + creditCount + " no. of interview credits for Recruiter: " + recruiterProfile.getRecruiterProfileName()
-                                + " | " + recruiterProfile.getRecruiterProfileId());
+            if(history != null){
+                if (isDebit) {
+                    Logger.info("Debiting " + creditCount + " no. of interview credits for Recruiter: " + recruiterProfile.getRecruiterProfileName()
+                            + " | " + recruiterProfile.getRecruiterProfileId());
 
-                        creditCount = creditCount * (-1);
+                    creditCount = creditCount * (-1);
 
-                    } else {
+                } else {
 
-                        Logger.info("Adding " + creditCount + " no. of interview credits for Recruiter: " + recruiterProfile.getRecruiterProfileName()
-                                + " | " + recruiterProfile.getRecruiterProfileId());
+                    Logger.info("Adding " + creditCount + " no. of interview credits for Recruiter: " + recruiterProfile.getRecruiterProfileName()
+                            + " | " + recruiterProfile.getRecruiterProfileId());
 
-                    }
-
-                    AddRecruiterResponse recruiterResponse = RecruiterService.updateExistingRecruiterPack(recruiterProfile,
-                            history.getRecruiterCreditPackNo(), creditCount, createdBy);
-
-                    if(recruiterResponse.getStatus() == AddRecruiterResponse.STATUS_SUCCESS){
-                        Logger.info("Credit/debit for " + creditCount + " credit units was successful for recruiter: " + recruiterProfile.getRecruiterProfileName()
-                        + " - ID: " + recruiterProfile.getRecruiterProfileId());
-                    }
-                } else{
-
-                    Logger.info("Creating a new interview pack for recruiter: " + recruiterProfile.getRecruiterProfileName() + " as no pack is active");
-                    //creating a new interview pack and setting the credit value in negative
-                    addCredits(recruiterProfile, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK, creditCount, createdBy);
                 }
+
+                AddRecruiterResponse recruiterResponse = RecruiterService.updateExistingRecruiterPack(recruiterProfile,
+                        history.getRecruiterCreditPackNo(), creditCount, createdBy, null);
+
+                if(recruiterResponse.getStatus() == AddRecruiterResponse.STATUS_SUCCESS){
+                    Logger.info("Credit/debit for " + creditCount + " credit units was successful for recruiter: " + recruiterProfile.getRecruiterProfileName()
+                            + " - ID: " + recruiterProfile.getRecruiterProfileId());
+                }
+            } else{
+
+                Logger.info("Creating a new interview pack for recruiter: " + recruiterProfile.getRecruiterProfileName() + " as no pack is active");
+                //creating a new interview pack and setting the credit value in negative
+                addCredits(recruiterProfile, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK, creditCount, createdBy, null);
             }
+        }
 
-            //saving stats for sms event
-            String note = "Credit/debit of interview credits";
-            Logger.info("Credit/debit of interview credits for recruiter completed.");
+        //saving stats for sms event
+        String note = "Credit/debit of interview credits";
+        Logger.info("Credit/debit of interview credits for recruiter completed.");
 
-            Timestamp endTime = new Timestamp(System.currentTimeMillis());
-            SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
-
-        }).start();
+        Timestamp endTime = new Timestamp(System.currentTimeMillis());
+        SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
     }
 
     private static void expireRecruiterInterviewCredits(){

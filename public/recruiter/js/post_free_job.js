@@ -5,6 +5,7 @@
 var jpId = 0;
 var jpCompanyId;
 var jpRecruiterId;
+var recruiterObj;
 
 var fullAddress;
 var addressLandmark;
@@ -311,6 +312,7 @@ function processDataRecruiterSession(returnedData) {
     if(returnedData == "0"){
         logoutRecruiter();
     } else{
+        recruiterObj = returnedData;
         jpRecruiterId = returnedData.recruiterProfileId;
         jpCompanyId = returnedData.company.companyId;
     }
@@ -970,6 +972,12 @@ function processDataForJobPost(returnedData) {
         } else{
             $("#check_applications" ).prop( "checked", false);
             $("#reviewApplicationLabel").html('Confirm interviews for all applications');
+        }
+
+        //checking previous posted job in previous company
+        if(recruiterObj.company.companyId != returnedData.company.companyId){
+            $("#submissionBtn").html('');
+            $("#notAllowed").show();
         }
 
         if(Object.keys(returnedData.interviewDetailsList).length > 0){

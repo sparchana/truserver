@@ -106,6 +106,13 @@
               </div>
             </div>
 
+            <div class="row">
+              <div class="col-sm-3"><h5>Credit pack(s) expiring on:</h5></div>
+              <div class="col-sm-9" style="margin-top: 12px">
+                <div id="expiringInfo" style="color: #00c853">N/A</div>
+              </div>
+            </div>
+
           </div>
 
           <hr>
@@ -200,6 +207,15 @@
                   </div>
                 </div>
               </div>
+
+              <hr>
+              <h5 style="color: #0D47A1; font-weight: bold">Pack Expiry date:</h5>
+              <div class="row" style="margin-top: 8px">
+                <div class="col-sm-12" style="margin-top: 4px">
+                  <input type="date" id="expiry_date" class="datepicker">
+                </div>
+              </div>
+
               <div class="btn btn-default" style="background: #37a12f; color: #fff; margin: 24px 0 24px 0; width: 100%" onclick="computeCreditValue()">Done</div>
             </form>
           </div>
@@ -229,6 +245,14 @@
                   <input style="width: 90%; display: inline-block"  id="recruiterAddCredit" placeholder="Enter no. of credits" type="tel" class="form-control input-md">
                 </div>
               </div>
+
+              <div class="row">
+                <div class="col-sm-5"><h5>Expire this pack on (optional):</h5></div>
+                <div class="col-sm-7">
+                  <input type="date" id="expiry_date_edit_pack" class="datepicker">
+                </div>
+              </div>
+
               <div class="btn btn-default" style="background: #37a12f; color: #fff; margin: 24px 0 24px 0; width: 100%" onclick="computeNewCreditValue()">Update Pack</div>
             </form>
           </div>
