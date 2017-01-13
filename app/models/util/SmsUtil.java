@@ -592,26 +592,26 @@ public class SmsUtil {
         String msgPrefix;
         String msgPost = "";
         if(hasCredits){
-            msgPrefix = "Book job interviews on TruJobs! ";
+            msgPrefix = "Book interview! ";
             msgPost += " Book interview at www.trujobs.in or download app at bit.ly/trujobsapp";
 
         } else{
-            msgPrefix = "New Job Alert! ";
-            msgPost += " Apply now at www.trujobs.in or download app at bit.ly/trujobsapp";
+            msgPrefix = "Job Alert! ";
+            msgPost += " Apply at www.trujobs.in or download app at bit.ly/trujobsapp";
         }
-        String msg = msgPrefix + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". Salary: " + salary + " per month, Location: " +
-                jobLocalities.substring(0, jobLocalities.length() - 2) + ". " + msgPost;
+        String msg = msgPrefix + jobPost.getJobPostTitle() +  " @ " + jobPost.getCompany().getCompanyName()
+                + ". Salary: " + salary + " monthly. " + msgPost;
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
     }
 
     public static void sendEODCandidateFeedbackSms(JobPost jobPost, Candidate candidate) {
         String msg = "Hi " + candidate.getCandidateFirstName() + ", you had an interview today for " + jobPost.getJobPostTitle() +  " | " + jobPost.getCompany().getCompanyName() + ". " +
-                "How would you rate your experience with TruJobs? Please rate us on bit.ly/trujobsapp";
+                "Rate your experience with TruJobs on bit.ly/trujobsapp";
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
     }
 
     public static void sendAppDownloadSms(Candidate candidate) {
-        String msg = "Hi " + candidate.getCandidateFirstName() + ", Download TruJobs app now at bit.ly/trujobsapp to get " +
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", Download TruJobs app at bit.ly/trujobsapp to get " +
                 "instant job alerts near your location!";
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
     }
@@ -626,7 +626,7 @@ public class SmsUtil {
 
     public static void sendWeeklySmsToNotifyNoOfMatchingJobs(Candidate candidate, Integer jobCount, String jobRole) {
         String msg = "Hi " + candidate.getCandidateFirstName() + ", You are missing out on new jobs! There are over " + jobCount +
-                " new " + jobRole + " jobs on TruJobs platform near your locality! Apply now at www.trujobs.in or download app at bit.ly/trujobsapp.";
+                " new " + jobRole + " jobs on TruJobs near your locality! Apply now at www.trujobs.in or download app at bit.ly/trujobsapp.";
 
         addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
     }
