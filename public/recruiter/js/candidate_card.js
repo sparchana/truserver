@@ -40,6 +40,7 @@ function renderIndividualCandidateCard(value, parent, view) {
     //candidate card
     var candidateCard = document.createElement("div");
     candidateCard.className = "card";
+    candidateCard.id = "candidate_card_" + value.candidate.candidateId;
 
     showStatusFlag = view == view_tracking_candidate;
 
@@ -1182,6 +1183,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                         var feedbackBtn = document.createElement("a");
                         feedbackBtn.className = "customFeedbackBtn feedbackVal";
                         feedbackBtn.onclick = function () {
+                            candidateCardData = value;
                             openFeedbackModal(value.candidate.candidateId);
                         };
                         feedbackBtn.textContent = "Add Feedback";
