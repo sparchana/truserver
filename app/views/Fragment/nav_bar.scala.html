@@ -60,8 +60,23 @@
             <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-body" id="model_size">
+                <h4 style="font-weight: bold"><center><font color="#0B4063">Sign Up to Apply Jobs</font></center></h4>
+                <div id="uploadResumeContainer" style="margin:0 2%">
+                    <center>
+                        <label class="btn btn-default btn-file" id="uploadResumeBtn">Upload Resume
+                            <input type="file" accept="application/pdf,application/msword" onchange="uploadResume()" id="uploadResumeContent" style="display: none">
+                        </label>
+                    </center>
+                </div>
+                <center>
+                <div style="margin-top:20px">
+                        <hr>
+                    <div style="color:#000;background: #fff;width: 40px;height: 30px;margin-top:-18px">
+                        <p>Or</p>
+                    </div>
+                </div>
+                </center>
                 <form id="form_signup_candidate_modal"  style="margin-top: 0; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
-                    <h4 style="font-weight: bold"><center><font color="#0B4063">Sign Up to Apply Jobs</font></center></h4>
                     <div class="row" id="firstNameLastName">
                         <div class="col-sm-6" style="padding: 0 4px 0 16px">
                             <input id="candidateFirstNameModal" placeholder="First name" type="text" maxLength="49" class="form-control input-md">

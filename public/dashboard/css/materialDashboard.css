@@ -634,7 +634,42 @@ hr{
     padding: 1%;
     border-left: 1px #fff solid;
 }
+.resumeUploadBox{
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.3);
+    border-radius:5px;
+    border:2px solid #fff;
+    width:150px;
+    height:50px;
+    text-align:center;
+    font-weight: bold;
+    position:fixed;
+    bottom:40px;
+    right:40px;
+    z-index: 99;
+    background-color: #0288d1;
+    -webkit-transition-property: width;
+    -webkit-transition-duration: 0.5s;
+    transition-property: width;
+    transition-duration: 0.5s;
+}
+.resumeUploadBox:hover{
+    cursor: pointer;
+}
+#resumeUploadBoxInner{
+    color:#fff;
+    padding-top: 12px;
+    padding-right: 0;
+}
 @media screen and (max-width: 768px){
+    .resumeUploadBox{
+        width:35px;
+        height:35px;
+        bottom:32px;
+        right:64px;
+    }
+    #resumeUploadBoxInner{
+        padding-top: 4px;
+    }
     #profileProgressDiv{
         padding: 1%;
         border:none;
@@ -760,5 +795,20 @@ hr{
     #navLogo {
         margin-top: 10px;
         content: url("/assets/common/img/logo-main.gif");
+    }
+}
+@media screen and (max-width: 400px){
+    .resumeUploadBox{
+        background-color: #0288d1;
+        border-radius:0px;
+        border: 0px;
+        width:100%;
+        height:55px;
+        bottom:0;
+        right:0;
+    }
+    #resumeUploadBoxInner{
+        padding-top: 4%;
+        padding-right: 0;
     }
 }

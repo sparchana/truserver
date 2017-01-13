@@ -228,6 +228,15 @@ a:hover, a:focus{
     background: linear-gradient(to left, rgba(0, 159, 219, 0.99), rgb(2, 123, 179));
     color: white;
 }
+#uploadResumeBtn{
+    padding:3% 8%;
+    width: 100%;
+    border: none;
+    background:#fff;
+    border:1px solid rgba(0, 159, 219, 0.99);
+    color: rgb(2, 123, 179);
+    font-weight: bold;
+}
 
 .modal .modal-dialog {
     width: 25%;
@@ -879,6 +888,11 @@ hr{
 #searchBtnCol{
     padding: 0;
 }
+#jobRoleName{
+    font-size: 14px;
+    color: #003557;
+    margin-top:6px;
+}
 @media screen and (max-width: 768px) {
     #postedDate{
         text-align:center;
@@ -978,7 +992,7 @@ hr{
         text-align: center;
     }
     #jobRoleName{
-        font-size: 11px;
+        font-size: 10px;
         color: #000000;
     }
     #jobRoleNameFooter{
@@ -1199,7 +1213,7 @@ hr{
         height:50px;
     }
     .registerBox{
-        background-color: #0288d1;;
+        background-color: #0288d1;
         border-radius:0px;
         border: 0px;
         width:100%;
