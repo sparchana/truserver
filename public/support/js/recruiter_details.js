@@ -127,19 +127,21 @@ function computeNewCreditValue() {
     var selectedDate = null;
     var expirydate = null;
 
-    if($("#expiry_date_edit_pack").val() != ""){
-        selectedDate = new Date($("#expiry_date_edit_pack").val());
-        var todaysDate = new Date();
+    if(checkStatus == 1){
+        if($("#expiry_date_edit_pack").val() != ""){
+            selectedDate = new Date($("#expiry_date_edit_pack").val());
+            var todaysDate = new Date();
 
-        if(selectedDate < todaysDate){
-            alert("Please select expiry date greater than today");
-            checkStatus = 0;
+            if(selectedDate < todaysDate){
+                alert("Please select expiry date greater than today");
+                checkStatus = 0;
+            } else{
+                expirydate = selectedDate.getFullYear() + "-" + (selectedDate.getMonth() + 1) + "-" + selectedDate.getDate();
+                checkStatus = 1;
+            }
         } else{
-            expirydate = selectedDate.getFullYear() + "-" + (selectedDate.getMonth() + 1) + "-" + selectedDate.getDate();
             checkStatus = 1;
         }
-    } else{
-        checkStatus = 1;
     }
 
     if(checkStatus == 1){

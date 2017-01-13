@@ -761,6 +761,9 @@ public class RecruiterService {
     public static AddRecruiterResponse expireCreditPack(AddRecruiterRequest addRecruiterRequest) {
         AddRecruiterResponse addRecruiterResponse = new AddRecruiterResponse();
 
+        Calendar cal = Calendar.getInstance();
+        Date expiryDate = cal.getTime();
+
         RecruiterProfile recruiterProfile = RecruiterProfile.find.where()
                 .eq("RecruiterProfileMobile", FormValidator.convertToIndianMobileFormat(addRecruiterRequest.getRecruiterMobile()))
                 .findUnique();
@@ -776,6 +779,7 @@ public class RecruiterService {
                 newHistory.setCreditIsExpired(true);
                 newHistory.setLatest(true);
                 newHistory.setUnits(0);
+                newHistory.setExpiryDate(expiryDate);
 
                 //updating the old pack's isLatest value
                 history.setLatest(false);
