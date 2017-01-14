@@ -2418,17 +2418,6 @@ public class Application extends Controller {
     }
 
     public static Result uploadCandidateExcel() {
-        /* Testing Code */
-        CandidateResumeService candidateResumeService = new CandidateResumeService();
-        List<Map<String,String>> params = new ArrayList<>();
-        Map<String,String> param = new HashMap<>();
-        param.put("candidateid","128423");
-        params.add(param);
-        List<TruResponse> resp = candidateResumeService.readByAttribute(params);
-        Logger.info("resp.size() = "+resp.size());
-        Logger.info(resp.get(0).getEntity().getClass().getSimpleName());
-        Logger.info("candidate_resume_id ="+((CandidateResume)resp.get(0).getEntity()).getCandidateResumeId());
-        /* Testing Code */
         return ok(views.html.upload_candidate_excel.render());
     }
 
