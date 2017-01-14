@@ -1438,8 +1438,16 @@ function processDataAllJobPosts(returnedData) {
                 var applyJobText ;
 
                 if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != CTA_BTN_APPLY){
+                    console.log("jobPost.applyBtnStatus : "+ jobPost.applyBtnStatus);
                     if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_REQUIRED) {
                         applyJobText = "Book Interview";
+                    } else if(jobPost.applyBtnStatus == CTA_BTN_DEACTIVE){
+                        console.log("cta deactivated");
+                        applyJobText = "Apply";
+                        applyBtn.style = "background:#ffa726";
+                        applyBtn.onclick = function () {
+                            jobCardUtil.method.notifyMsg(jobCardUtil.deActivationMessage, 'error');
+                        };
                     } else if(jobPost.applyBtnStatus == CTA_BTN_ALREADY_APPLIED) {
                         applyJobText = "Applied";
                         applyBtn.disabled =  true;
@@ -1456,6 +1464,7 @@ function processDataAllJobPosts(returnedData) {
                 applyBtn.textContent = applyJobText;
                 applyBtnDiv.appendChild(applyBtn);
                 if(jobPost.applyBtnStatus != CTA_BTN_ALREADY_APPLIED
+                    && jobPost.applyBtnStatus != CTA_BTN_DEACTIVE
                     && jobPost.applyBtnStatus != CTA_BTN_INTERVIEW_CLOSED){
 
                     applyBtn.onclick = function () {

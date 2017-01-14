@@ -26,6 +26,23 @@ function processDataApplyJob(returnedData, jobPostId, candidateId, isPartner) {
     } catch (e){}
 
     if(returnedData.status == 1) {
+        if(returnedData.isCandidateDeActive == true && returnedData.deActiveBodyMessage != null) {
+            $("#messagePromptModal").modal("show");
+            $('body').addClass('open-modal');
+
+            $('#customMsgIcon').attr('src', "/assets/partner/img/wrong.png");
+            $("#customMsg").html(returnedData.deActiveBodyMessage);
+
+            try{
+                var applyBtn = $('.jobApplyBtnV2');
+                applyBtn.css("background", "#ffa726");
+                applyBtn.attr('onclick','').unbind('click');
+
+            } catch(err){
+                console.log(err);
+            }
+            return;
+        }
         //$('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
         //$("#customMsg").html("Your Job Application is Successful");
         // $.notify("Job Application successfully applied.", 'success');
