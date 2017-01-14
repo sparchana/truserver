@@ -1,5 +1,6 @@
 package models.entity.OM;
 
+import com.avaje.ebean.ExpressionList;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.annotation.WhoCreated;
@@ -10,7 +11,9 @@ import models.entity.Recruiter.RecruiterLead;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Map;
 
+import static com.avaje.ebean.Expr.eq;
 import static play.mvc.Controller.session;
 
 /**
@@ -97,6 +100,16 @@ public class CandidateResume extends Model {
 
     public List<CandidateResume> readById(List<Long> ids) {
         return CandidateResume.find.where().idIn(ids).setUseCache(Boolean.TRUE).findList();
+    }
+
+    public List<CandidateResume> readByAttribute(List<Map<String,String>> attrNameValueList) {
+        ExpressionList<CandidateResume> query = find.where();
+        for(Map<String,String> each:attrNameValueList){
+            if(each.keySet().size() > 0 && each.values().size() > 0){
+                query.add(eq(each.keySet().toArray()[0].toString(),each.values().toArray()[0].toString()));
+            }
+        }
+        return query.findList();
     }
 
 }

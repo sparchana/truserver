@@ -31,6 +31,7 @@ import controllers.security.*;
 import dao.CompanyDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
+import models.entity.OM.CandidateResume;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.Intelligence.RelatedJobRole;
