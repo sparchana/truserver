@@ -737,4 +737,11 @@ public class SmsUtil {
         addSmsToNotificationQueue(jobPostWorkflow.getCandidate().getCandidateMobile(), msg);
     }
 
+    public static void sendCompanyChangeSmsToRecruiter(RecruiterProfile recruiterProfile, String newCompany, String oldCompany) {
+        String msg = "You have successfully changed your company to " + newCompany + " on TruJobs. You will no longer be" +
+                " able to access your older job posts associated with " + oldCompany + ". For any assistance call 888007799";
+
+        addSmsToNotificationQueue(recruiterProfile.getRecruiterProfileMobile(), msg);
+    }
+
 }

@@ -364,13 +364,15 @@ public class RecruiterController {
 
             for(Map.Entry<?, RecruiterJobPostObject> map : recruiterJobPostResponseMap.entrySet()) {
                 RecruiterJobPostObject object = new RecruiterJobPostObject();
-                sanitizeJobPostData(map.getValue().getJobPost());
-                object.setJobPost(map.getValue().getJobPost());
-                object.setTotalCount(map.getValue().getTotalCount());
-                object.setPendingCount(map.getValue().getPendingCount());
-                object.setUpcomingCount(map.getValue().getUpcomingCount());
+                if(Objects.equals(map.getValue().getJobPost().getCompany().getCompanyId(), map.getValue().getJobPost().getRecruiterProfile().getCompany().getCompanyId())){
+                    sanitizeJobPostData(map.getValue().getJobPost());
+                    object.setJobPost(map.getValue().getJobPost());
+                    object.setTotalCount(map.getValue().getTotalCount());
+                    object.setPendingCount(map.getValue().getPendingCount());
+                    object.setUpcomingCount(map.getValue().getUpcomingCount());
 
-                listToBeReturned.add(object);
+                    listToBeReturned.add(object);
+                }
             }
 
             return ok(toJson(listToBeReturned));
