@@ -90,7 +90,7 @@ public class TrudroidController {
                     loginRequest.getCandidateLoginPassword(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
 
             //app version check
-            if(pLogInRequest.getAppVersionCode() >= ServerConstants.DEACTIVATION_APP_NEW_LOGIN_STATUS){
+            if(pLogInRequest.getAppVersionCode() >= ServerConstants.APP_NEW_LOGIN_STATUS_VERSION_CODE){
                 loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(loginResponse.getStatus()));
             } else{
                 if(loginResponse.getStatus() == LoginResponse.STATUS_NO_PASSWORD){
@@ -258,7 +258,7 @@ public class TrudroidController {
             );
 
             //app version check
-            if(pResetPasswordRequest.getAppVersionCode() >= ServerConstants.DEACTIVATION_APP_NEW_LOGIN_STATUS){
+            if(pResetPasswordRequest.getAppVersionCode() >= ServerConstants.APP_NEW_LOGIN_STATUS_VERSION_CODE){
                 resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(resetPasswordResponse.getStatus()));
             } else{
                 if(resetPasswordResponse.getStatus() == LoginResponse.STATUS_NO_PASSWORD){
