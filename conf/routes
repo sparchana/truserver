@@ -194,7 +194,7 @@ GET         /navBarLoggedIn                                               contro
 GET         /footer                                                       controllers.Application.renderPageFooter()
 GET         /jobPostCardView                                              controllers.Application.renderJobPostCards()
 GET         /pageNotFound                                                 controllers.Application.pageNotFound()
-GET         /jobs/:urlString                                              controllers.Application.renderJobRelatedPages( urlString: String)
+GET         /jobs/:urlString                                              controllers.Application.renderJobRelatedPages( urlString: String, cid:java.lang.Long ?=null, key:String ?=null)
 GET         /job/:getJobsPageContentString                                controllers.Application.getJobsPageContent( getJobsPageContentString: String,i:java.lang.Long ?=null)
 
 # Both support and user

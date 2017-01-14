@@ -1300,8 +1300,32 @@ public class Application extends Controller {
 
     public static Result renderJobPostCards() { return ok(views.html.Fragment.hot_jobs_card_view.render());}
     public static Result pageNotFound() { return ok(views.html.page_not_found.render());}
-    public static Result renderJobRelatedPages(String urlString){
-        
+    public static Result renderJobRelatedPages(String urlString, Long candidateId, String key){
+        if(candidateId != null && key != null) {
+            Candidate existingCandidate = CandidateDAO.getById(candidateId);
+            if(existingCandidate != null) {
+
+                // adding session details
+                Auth existingAuth = Auth.find.where().eq("candidateId", candidateId).findUnique();
+                if(existingAuth != null) {
+
+                    // boolean isKeyValid = key.equals(Util.md5(existingAuth.getOtp() + ""));
+                    boolean isKeyValid = key.equals((existingAuth.getOtp() + ""));
+                    if (isKeyValid ) {
+                        Logger.info("Added session for Sms link based loggin ");
+                        AuthService.addSession(existingAuth, existingCandidate);
+                        // update auth otp after login
+                        // TODO in front end clear location.search , after loading
+                        existingAuth.setOtp(Util.generateOtp());
+                        existingAuth.update();
+                    }
+                } else {
+                    // TODO: redirect to 404
+                }
+            } else {
+                // TODO: redirect to 404
+            }
+        }
         UrlValidatorUtil urlValidatorUtil = new UrlValidatorUtil();
         UrlParameters urlParameters = urlValidatorUtil.parseURL(urlString);
 
