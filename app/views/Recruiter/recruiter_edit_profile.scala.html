@@ -88,8 +88,24 @@
                         <div class="row">
                             <div class="input-field col s12 m6 l6">
                                 <i class="material-icons prefix">business</i>
-                                <input placeholder="Enter your company name" id="rec_company_name" maxlength="35" type="text" class="validate">
-                                <label for="rec_name">Name<font color="red">*</font></label>
+
+                                <select id="rec_company_name" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                                <script type="text/javascript">
+                                        $('#rec_company_name').tokenize({
+                                            displayDropdownOnFocus: true,
+                                            nbDropdownElements: 1000,
+                                            newElements: true,
+                                            placeholder: "Enter your Company name or Select a Company",
+                                            maxElements: 1,
+                                            onRemoveToken: function (value, text) {
+                                                resetCompanyIdval(value, text);
+                                            },
+                                            onAddToken: function (value, text) {
+                                                validateCompanyVal(value, text);
+                                            }
+                                        });
+                                    </script>
+
                             </div>
                             <div class="input-field col s12 m6 l6">
                                 <i class="material-icons prefix">web</i>
@@ -196,7 +212,31 @@
             </div>
         </div>
 
-            <!--Footer start-->
+        <!-- change company confirmation modal -->
+        <div id="confirmationModal" class="modal" style="background: transparent; box-shadow: none">
+            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeConfirmModal()"></div>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+                <center><font style="color: #fff"><h5>You are changing your Company!</h5></font></center>
+            </div>
+            <div style="background: #fff; padding: 12px">
+                <center>
+                    <h6 id="confirmationMsg"></h6>
+
+                    <div class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="performEditProfileTask()">
+                        <font style="color: #fff;
+                            font-weight: 400"><b>I agree</b></font>
+                    </div>
+
+                    <div class="waves-effect waves-light grey lighten-1 btn" data-toggle="collapse" onclick="closeConfirmModal()" style="margin-left: 8px">
+                        <font style="color: #fff;
+                            font-weight: 400"><b>Back</b></font>
+                    </div>
+                </center>
+            </div>
+        </div>
+
+
+        <!--Footer start-->
         <footer class="page-footer" style="background-color: #424242;">
             <div class="container">
                 <div class="row" style="margin: 0">

@@ -3,6 +3,7 @@ package controllers.businessLogic;
 import api.ServerConstants;
 import api.http.httpRequest.search.SearchJobRequest;
 import api.http.httpResponse.JobPostResponse;
+import api.http.httpResponse.interview.InterviewResponse;
 import api.http.httpResponse.search.SearchJobResponse;
 import api.http.httpResponse.search.helper.FilterParamsResponse;
 import api.http.httpResponse.search.helper.SearchParamsResponse;
@@ -18,6 +19,7 @@ import models.entity.Static.Language;
 import models.entity.Static.Locality;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import play.Logger;
 
 import java.util.*;
 
@@ -317,29 +319,46 @@ public class SearchJobService {
      * @param jobPostList
      * @return
      */
-    public void computeCTA(List<JobPost> jobPostList, Long candidateId){
+    public static void computeCTA(List<JobPost> jobPostList, Long candidateId){
 
         Map<Long, JobPostWorkflow> jobApplicationMap = new HashMap<>();
+        Candidate candidate = null;
+        boolean deActiveApply = false;
 
         if(candidateId != null) {
             List<JobPostWorkflow> candidateAppliedJobs = JobPostWorkFlowDAO.candidateAppliedJobs(candidateId);
             for(JobPostWorkflow jobPostWorkflow: candidateAppliedJobs){
                 jobApplicationMap.putIfAbsent(jobPostWorkflow.getJobPost().getJobPostId(), jobPostWorkflow);
+                if(candidate == null) {
+                    candidate = jobPostWorkflow.getCandidate();
+                }
             }
         }
 
+        // de-active message for deactivated candidate, msg is handled at Front end
+        if(candidate != null && candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE){
+            deActiveApply = true;
+        }
         for(JobPost jobPost: jobPostList){
 
-            // Add a check for already applied candidate
-            if(candidateId != null) {
-                if(jobApplicationMap.get(jobPost.getJobPostId()) != null){
-                    jobPost.setApplyBtnStatus(ServerConstants.ALREADY_APPLIED);
+            if(deActiveApply) {
+                jobPost.setApplyBtnStatus(ServerConstants.DEACTIVE);
+            } else {
+                // Add a check for already applied candidate
+                if(candidateId != null) {
+                    if(jobApplicationMap.get(jobPost.getJobPostId()) != null) {
+                        jobPost.setApplyBtnStatus(ServerConstants.ALREADY_APPLIED);
+                    }
                 }
+
             }
             // change only if its not set prev, i.e its set to default value
             if(jobPost.getApplyBtnStatus() == 0){
-                if(RecruiterService.isInterviewRequired(jobPost).getStatus() == ServerConstants.INTERVIEW_REQUIRED){
+                InterviewResponse response = RecruiterService.isInterviewRequired(jobPost);
+                if(response.getStatus() == ServerConstants.INTERVIEW_REQUIRED){
                     jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_REQUIRED);
+                } else if(response.getStatus() == ServerConstants.INTERVIEW_CLOSED){
+                    jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_CLOSED);
                 } else {
                     jobPost.setApplyBtnStatus(ServerConstants.APPLY);
                 }

@@ -541,6 +541,16 @@ $(document).ready(function () {
         }
         $('#jobPostEndTime').append(option);
     }
+
+    $('#jobPostStatus').change(function() {
+        if($('#jobPostStatus').val() == JOB_STATUS_PAUSED){
+            $(".resumeDate").show(200);
+        } else{
+            $("#resume_date").val('');
+            $(".resumeDate").hide(200);
+        }
+    });
+
 });
 
 function processDataGetCreditCategory(returnedData) {
@@ -573,6 +583,20 @@ function processDataForJobPost(returnedData) {
     if(returnedData.recruiterProfile != null){
         $('#jobPostRecruiter').val(returnedData.recruiterProfile.recruiterProfileId);
     }
+
+    if(returnedData.company.companyId != returnedData.recruiterProfile.company.companyId){
+        $("#changedRecruiter").show();
+        $("#changedRecruiter").html("Recruiter: " + returnedData.recruiterProfile.recruiterProfileName
+            + " who posted this job has changed the company to : "
+            + returnedData.recruiterProfile.company.companyName
+            + ". Please select a new recruiter to proceed");
+    }
+
+    //changedRecruiter
+    if($('#jobPostRecruiter').val() == null){
+        $('#jobPostRecruiter').val(-1);
+    }
+
     $("#jobPostTitle").val(returnedData.jobPostTitle);
 
     $("#jobPostDescription").val(returnedData.jobPostDescription);
@@ -738,6 +762,20 @@ function processDataForJobPost(returnedData) {
 
     if(returnedData.jobPostStatus != null ){
         $("#jobPostStatus").val(returnedData.jobPostStatus.jobStatusId);
+        if(returnedData.jobPostStatus.jobStatusId == JOB_STATUS_PAUSED){
+            //paused. Show resume date
+            $(".resumeDate").show();
+
+            var resumeDate = new Date(returnedData.resumeApplicationDate);
+
+            var day = ("0" + resumeDate.getDate()).slice(-2);
+            var month = ("0" + (resumeDate.getMonth() + 1)).slice(-2);
+
+            var parsedDate = resumeDate.getFullYear()+"-"+(month)+"-"+(day) ;
+
+            $("#resume_date").val(parsedDate);
+
+        }
     }
 
     if(returnedData.reviewApplication == null || returnedData.reviewApplication == 1){

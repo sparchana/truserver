@@ -109,6 +109,9 @@ POST        /confirmInterview/:jpId/:value                                contro
 POST        /partnerConfirmInterview/:cId/:jpId/:value                    controllers.PartnerController.confirmInterview(cId : Long, jpId : Long, value : Long)
 POST        /updateCandidateDetailsViaPreScreen/                          controllers.Application.updateCandidateDetailsViaPreScreen(propertyIdList: String?= null, candidateMobile: String?= null,  jobPostId: java.lang.Long ?= null)
 POST        /updateFeedback                                               controllers.Application.updateFeedback()
+POST        /getDeActivationMessage                                       controllers.Application.getDeactivationMessage(candidateId: java.lang.Long?= null)
+POST        /updateRecruiterCreditPack                                    controllers.Application.updateRecruiterCreditPack()
+POST        /expireCreditPack                                             controllers.Application.expireCreditPack()
 
 # partner routes
 #~~~~~~~~~~~~~~~~~~~~
@@ -291,6 +294,7 @@ GET         /api/test/testValidator/                                      contro
 GET         /api/test/testScheduler/                                      controllers.TestController.testScheduler()
 
 GET         /testNotification                                             controllers.TestController.testnotification()
+GET         /convertOldData                                               controllers.TestController.convertOldData()
 GET         /testQueue                                                    controllers.TestController.testQueue()
 
 # Scrap API

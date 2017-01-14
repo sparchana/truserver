@@ -6,6 +6,7 @@ var globalCandidateId;
 var globalInterviewStatus;
 var rescheduledDate;
 var rescheduledSlot;
+var candidateCardData;
 
 var globalInterviewDay = null;
 var globalInterviewSlot = null;
@@ -127,10 +128,7 @@ $(window).load(function(){
 });
 
 function processDataGetJobPostDetails(returnedData){
-    var jobPostList = [];
-    $.each(returnedData, function (key, value) {
-        jobPostList.push(value);
-    });
+    var jobPostList = returnedData;
     var newCount = 0;
 
     if(jobPostList.length == 0){
@@ -615,6 +613,11 @@ function openFeedbackModal(candidateId) {
         $('#reasonVal').append(option);
     });
 
+    $("#otherReason").hide();
+    $("#feedbackOption").val(0);
+    $("#reasonVal").val(0);
+    $("#feedbackNote").val('');
+
     $("#addFeedback").openModal();
 
     $("#feedbackOption").change(function (){
@@ -658,10 +661,27 @@ function confirmAddFeedback() {
 
 function processDataUpdateFeedBack(returnedData) {
     if(returnedData == 1){
-        notifySuccess("Feedback updated successfully. Refreshing the page..");
-        setTimeout(function () {
+        notifySuccess("Feedback updated successfully");
+        $("#candidate_card_" + globalCandidateId).remove();
+
+        $("#addFeedback").closeModal();
+/*        setTimeout(function () {
             location.reload();
-        }, 2000);
+        }, 2000);*/
+
+        if($("#feedbackOption").val() == FEEDBACK_OPTION_SELECTED){
+            candidateCardData.extraData.workflowStatus.statusId = JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED;
+        } else if($("#feedbackOption").val() == FEEDBACK_OPTION_REJECTED){
+            candidateCardData.extraData.workflowStatus.statusId = JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_REJECTED;
+        } else if($("#feedbackOption").val() == FEEDBACK_OPTION_NO_SHOW){
+            candidateCardData.extraData.workflowStatus.statusId = JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW;
+        } else{
+            candidateCardData.extraData.workflowStatus.statusId = JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED;
+        }
+
+        candidateCardData.extraData.workflowStatus.statusTitle = $("#feedbackOption option:selected").text();
+        renderIndividualCandidateCard(candidateCardData, null, view_applied_candidate);
+
     } else if(returnedData == -1){
         notifyError("You are out of interview credits. Please purchase interview credits!");
         openCreditModal();
@@ -812,30 +832,10 @@ function getRecruiterInfo() {
 }
 
 function processDataRecruiterProfile(returnedData) {
-    var creditHistoryList = returnedData.recruiterCreditHistoryList;
-    creditHistoryList.reverse();
-    var contactCreditCount = 0;
-    var interviewCreditCount = 0;
-    creditHistoryList.forEach(function (creditHistory){
-        if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
-            if(contactCreditCount == 0){
-                $("#remainingContactCredits").html(creditHistory.recruiterCreditsAvailable);
-                $("#remainingContactCreditsMobile").html(creditHistory.recruiterCreditsAvailable);
-                contactCreditCount = 1;
-            }
-        } else{
-            if(interviewCreditCount == 0){
-                if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
-                    $("#remainingInterviewCredits").html(creditHistory.recruiterCreditsAvailable);
-                    $("#remainingInterviewCreditsMobile").html(creditHistory.recruiterCreditsAvailable);
-                    interviewCreditCount = 1;
-                }
-            }
-        }
-        if(contactCreditCount > 0 && interviewCreditCount > 0){
-            return false;
-        }
-    });
+    $("#remainingContactCredits").html(returnedData.contactCreditCount);
+    $("#remainingContactCreditsMobile").html(returnedData.contactCreditCount);
+    $("#remainingInterviewCredits").html(returnedData.interviewCreditCount);
+    $("#remainingInterviewCreditsMobile").html(returnedData.interviewCreditCount);
 }
 
 

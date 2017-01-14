@@ -4,6 +4,9 @@
 var returnedOtp;
 var recruiterMobileVal;
 
+var recruiterCompany = null;
+var recruiterCompanyName = null;
+
 function processDataLeadSubmit(returnedData) {
     if(returnedData.status = 1){
         notifySuccess("Thanks! Our business team will get in touch with you within 24 hours!");
@@ -135,7 +138,7 @@ $(function() {
         var recruiterName = $("#rec_name").val();
         var recruiterMobile = $("#rec_mobile").val();
         var recruiterEmail = $("#rec_email").val();
-        var recruiterCompany = $("#rec_company").val();
+        recruiterCompany = $("#rec_company").val();
 
         var nameCheck = validateName(recruiterName);
         var statusCheck = 1;
@@ -158,9 +161,15 @@ $(function() {
         } else if(!validateEmail(recruiterEmail)){
             notifyError("Enter a valid email");
             statusCheck = 0;
-        } else if(recruiterCompany == "") {
+        } else if(recruiterCompany == "" || recruiterCompany == null) {
             notifyError("Please enter your company");
             statusCheck = 0;
+        }
+
+        //checking if the company selected is from the list or its is a new company
+        //if parseInt() of the the selected value is NaN, it is a new company
+        if(isNaN(parseInt(recruiterCompany))){
+            recruiterCompany = 0;
         }
 
         if(statusCheck){
@@ -169,7 +178,8 @@ $(function() {
                 recruiterName : recruiterName,
                 recruiterMobile : recruiterMobile,
                 recruiterEmail : recruiterEmail,
-                recruiterCompanyName : recruiterCompany
+                recruiterCompany : parseInt(recruiterCompany),
+                recruiterCompanyName : recruiterCompanyName
             };
 
             recruiterMobileVal =  "+91" + d.recruiterMobile;
@@ -183,6 +193,7 @@ $(function() {
         }
     });
 });
+
 // signup_recruiter_form ajax script
 $(function() {
     $("#requestEnquiry").submit(function(eventObj) {
@@ -288,4 +299,8 @@ function notifyError(msg){
 
 function notifySuccess(msg){
     Materialize.toastSuccess(msg, 3000, 'rounded');
+}
+
+function validateCompanyVal(val, text) {
+    recruiterCompanyName = text;
 }

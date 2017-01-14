@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by zero on 19/7/16.
  */
-public class DeactiveToActiveResponse {
+public class DeActiveToActiveResponse {
     public static final int STATUS_SUCCESS = 1;
     public static final int STATUS_FAILURE = 2;
 
