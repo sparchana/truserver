@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
 
+import static com.avaje.ebean.Expr.eq;
 import static models.util.Util.ACTION_CREATE;
 import static models.util.Util.ACTION_UPDATE;
 
@@ -1440,8 +1441,20 @@ public abstract class TruService {
         }
 
         java.lang.reflect.Method method = null;
-        List<Model> entityList = new ArrayList<>();
 
+        ExpressionList<?> query = getQuery();
+        Logger.info("ExpressionList<?> query = "+query.getClass().getSimpleName());
+
+        if(query != null){
+            for(Map<String,String> each:attrNameValueList){
+                if(each.keySet().size() > 0 && each.values().size() > 0){
+                    query.add(eq(each.keySet().toArray()[0].toString(),each.values().toArray()[0].toString()));
+                }
+            }
+        }
+        return createReadResponse((List<Model>) query.findList());
+
+/*
         // Check read method exists
         try {
             method = entity.getClass().getMethod("readByAttribute", List.class);
@@ -1463,6 +1476,33 @@ public abstract class TruService {
             return createReadResponse(entityList);
         }
 
+        return null;
+*/
+    }
+
+    private ExpressionList<Model> getQuery() {
+
+        java.lang.reflect.Method method = null;
+
+        // Check method exists
+        try {
+            method = entity.getClass().getMethod("getQuery");
+            //Logger.info("Read "+methodname+" found in "+entity.getClass().getSimpleName());
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            Logger.info("Method getQuery not found in "+entity.getClass().getSimpleName());
+            method = null;
+        }
+
+        if (method != null) {
+            try {
+                Logger.info(entity.getClass().getSimpleName()+".getQuery executed");
+                return (ExpressionList<Model>) method.invoke(entity);
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                e.printStackTrace();
+                //Logger.info("Read "+methodname+" could not be executed in "+entity.getClass().getSimpleName()+" Throws "+e.toString());
+            }
+        }
         return null;
     }
 
