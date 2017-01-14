@@ -3,10 +3,8 @@ package controllers;
 import api.ServerConstants;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerManager;
-import controllers.scheduler.task.EODDebitCreditInterviewCreditTask;
 import models.entity.Candidate;
 import models.entity.Recruiter.RecruiterProfile;
-import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
 import models.util.NotificationUtil;
 import models.util.Validator;
@@ -19,6 +17,7 @@ import play.mvc.Result;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
 import static play.libs.Json.toJson;
 
 /**
@@ -75,6 +74,10 @@ public class TestController extends Controller{
             Global.getmNotificationHandler().addToQueue(n2);
         }
         return ok("-");
+    }
+
+    public static Result testNewPS(Long jobPostId, Long candidateId) {
+        return ok(toJson(JobPostWorkflowEngine.getJobPostVsCandidate(jobPostId, candidateId)));
     }
 
     public static Result convertOldData() {
