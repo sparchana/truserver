@@ -19,6 +19,11 @@ public class Util {
     private Util() {
     }
 
+    public static final String ACTION_CREATE = "C";
+    public static final String ACTION_UPDATE = "U";
+    public static final String ACTION_DELETE = "D";
+    public static final String ACTION_READ = "R";
+
     public static long randomLong() {
         long random = new Random().nextLong();
         if (random < 0) {

@@ -1,5 +1,7 @@
 package controllers;
 
+import api.http.httpResponse.hirewand.HireWandResponse;
+import com.avaje.ebean.text.json.JsonWriter;
 import dao.JobPostDAO;
 import api.InteractionConstants;
 import api.ServerConstants;
@@ -21,8 +23,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
-import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
+import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.*;
 import dao.CompanyDAO;
@@ -31,9 +33,17 @@ import dao.staticdao.RejectReasonDAO;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.Intelligence.RelatedJobRole;
-import models.entity.OM.*;
+import models.entity.OM.JobApplication;
+import models.entity.OM.JobPreference;
+import models.entity.OM.JobToSkill;
 import models.entity.Static.*;
+import models.util.ParseCSV;
+import models.util.SmsUtil;
+import models.util.Util;
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import models.util.*;
+import org.json.simple.JSONArray;
 import play.Logger;
 import play.api.Play;
 import play.data.Form;
@@ -44,6 +54,7 @@ import play.mvc.Security;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -61,8 +72,8 @@ public class Application extends Controller {
     public static Result index() {
         String sessionId = session().get("sessionId");
         /**
-        * TODO need to change this, modify old partnerSecured to take new partnertFlow into consideration and properly annonate rest of the api end-points
-        * */
+         * TODO need to change this, modify old partnerSecured to take new partnertFlow into consideration and properly annonate rest of the api end-points
+         * */
         if(sessionId != null){
             String partnerId = session().get("partnerId");
             String recruiterId = session().get("recruiterId");
@@ -546,13 +557,13 @@ public class Application extends Controller {
     /* this method is used by support */
     @Security.Authenticated(PartnerInternalSecured.class)
     public static Result getCandidateInfo(long leadId) {
-            Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
-            if(lead != null) {
-                Candidate candidate = CandidateService.isCandidateExists(lead.getLeadMobile());
-                if(candidate!=null){
-                    return ok(toJson(candidate));
-                }
+        Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
+        if(lead != null) {
+            Candidate candidate = CandidateService.isCandidateExists(lead.getLeadMobile());
+            if(candidate!=null){
+                return ok(toJson(candidate));
             }
+        }
         return ok("0");
     }
 
@@ -635,11 +646,11 @@ public class Application extends Controller {
                 for (JobToSkill dbItem: jobToSkillList){
                     flag = 0;
                     for(JobToSkill item: response){
-                            if(item.getSkill().getSkillId() == dbItem.getSkill().getSkillId()){
-                                flag = 1;
-                                break;
-                            }
+                        if(item.getSkill().getSkillId() == dbItem.getSkill().getSkillId()){
+                            flag = 1;
+                            break;
                         }
+                    }
                     if(flag == 0){
                         response.add(dbItem);
                     }
@@ -870,9 +881,9 @@ public class Application extends Controller {
     @Security.Authenticated(Secured.class)
     public static Result getAllJobPosts() {
         List<JobPost> jobPosts = JobPost.find.where()
-                                             .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
-                                             .orderBy().desc("jobPostUpdateTimestamp")
-                                             .findList();
+                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
+                .orderBy().desc("jobPostUpdateTimestamp")
+                .findList();
 
         // get all jobpost uuids
         List<String> jobpostUUIDs = new ArrayList<>();
@@ -1301,7 +1312,7 @@ public class Application extends Controller {
     public static Result renderJobPostCards() { return ok(views.html.Fragment.hot_jobs_card_view.render());}
     public static Result pageNotFound() { return ok(views.html.page_not_found.render());}
     public static Result renderJobRelatedPages(String urlString){
-        
+
         UrlValidatorUtil urlValidatorUtil = new UrlValidatorUtil();
         UrlParameters urlParameters = urlValidatorUtil.parseURL(urlString);
 
@@ -1311,38 +1322,38 @@ public class Application extends Controller {
             String jobPostTile = urlParameters.getJobPostTitle();
             Long jobPostId = urlParameters.getJobPostId();
             return ok(views.html.Fragment.posted_job_details.render(jobLocation,jobCompany,jobPostTile,jobPostId));
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION_COMPANY) {
-                //return ok("All Post");
-                return ok(views.html.page_not_found.render());
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_COMPANY) {
-                //return ok("Job Post at Company");
-                return ok(views.html.page_not_found.render());
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION) {
-               return ok(views.html.Fragment.job_role_page.render(urlParameters.getJobRoleName(),
-                       urlParameters.getJobRoleId()));
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_LOCATION_COMPANY) {
-                //return ok("All Jobs in Location at Company");
-                return ok(views.html.page_not_found.render());
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_COMPANY) {
-                return ok(views.html.page_not_found.render());
-                //return ok("All Jobs at Company");
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_LOCATION) {
-                return ok(views.html.Fragment.show_all_jobs_page.render());
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_WITH_JOB_ROLE_ID) {
-                String jobRoleName = urlParameters.getJobRoleName();
-                Long jobRoleId = urlParameters.getJobRoleId();
-                return ok(views.html.Fragment.job_role_page.render(jobRoleName,jobRoleId));
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.INVALID_REQUEST){
-                return ok(views.html.page_not_found.render());
-            }
+        }
+        else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION_COMPANY) {
+            //return ok("All Post");
+            return ok(views.html.page_not_found.render());
+        }
+        else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_COMPANY) {
+            //return ok("Job Post at Company");
+            return ok(views.html.page_not_found.render());
+        }
+        else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION) {
+            return ok(views.html.Fragment.job_role_page.render(urlParameters.getJobRoleName(),
+                    urlParameters.getJobRoleId()));
+        }
+        else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_LOCATION_COMPANY) {
+            //return ok("All Jobs in Location at Company");
+            return ok(views.html.page_not_found.render());
+        }
+        else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_COMPANY) {
+            return ok(views.html.page_not_found.render());
+            //return ok("All Jobs at Company");
+        }
+        else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_LOCATION) {
+            return ok(views.html.Fragment.show_all_jobs_page.render());
+        }
+        else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_WITH_JOB_ROLE_ID) {
+            String jobRoleName = urlParameters.getJobRoleName();
+            Long jobRoleId = urlParameters.getJobRoleId();
+            return ok(views.html.Fragment.job_role_page.render(jobRoleName,jobRoleId));
+        }
+        else if(urlParameters.getUrlType() == UrlParameters.TYPE.INVALID_REQUEST){
+            return ok(views.html.page_not_found.render());
+        }
 
         return ok(views.html.page_not_found.render());
     }
@@ -1802,8 +1813,8 @@ public class Application extends Controller {
             idProofList.add(jobRoleToDocument.getIdProof());
 
             // remove duplicates from the common list
-           if (commonIdProofList.contains(jobRoleToDocument.getIdProof())) {
-               commonIdProofList.remove(jobRoleToDocument.getIdProof());
+            if (commonIdProofList.contains(jobRoleToDocument.getIdProof())) {
+                commonIdProofList.remove(jobRoleToDocument.getIdProof());
             }
         }
 
@@ -1950,7 +1961,7 @@ public class Application extends Controller {
         // unable to use switch-case, issue with ordinal value
         // return candidate Detail + container element
         if (ServerConstants.PROPERTY_TYPE_DOCUMENT == propertyId) {
-          return  ok(toJson(candidate.getIdProofReferenceList() != null ? candidate.getIdProofReferenceList(): new ArrayList<>()));
+            return  ok(toJson(candidate.getIdProofReferenceList() != null ? candidate.getIdProofReferenceList(): new ArrayList<>()));
         } else if (ServerConstants.PROPERTY_TYPE_LANGUAGE == propertyId) {
             return  ok(toJson(candidate.getLanguageKnownList() != null ? candidate.getLanguageKnownList(): new ArrayList<>()));
         } else if (ServerConstants.PROPERTY_TYPE_ASSET_OWNED == propertyId) {
@@ -2287,4 +2298,143 @@ public class Application extends Controller {
 
         return ok(toJson(JobPostWorkflowEngine.updateFeedback(addFeedbackRequest, Integer.valueOf(session().get("sessionChannel")))));
     }
+
+    public static Result showResumeUpload() {
+        return ok(views.html.resumeUpload.render());
+    }
+
+    public static Result doResumeUpload(String candidateId){
+
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+
+        int i = 0;
+        JSONArray list = new JSONArray();
+
+        while(Boolean.TRUE){
+            i++;
+            Http.MultipartFormData.FilePart resume = body.getFile("resume"+i);
+            Logger.info("Fetching file against key --> resume"+i);
+
+            if(resume == null) {
+                Logger.info("Could not fetch file against key --> resume"+i);
+                break;
+            }
+
+            Long cId = 0L;
+            if(candidateId != null) {
+                Logger.info("candidateId = "+ candidateId);
+                try{
+                    cId = Long.parseLong(candidateId, 10);
+                } catch (NumberFormatException e){
+                    Logger.info("Could not convert "+candidateId+" to Long. Throws "+ e.getMessage());
+                }
+                Logger.info("cId = "+ cId);
+            }
+            else Logger.info("candidateId is null");
+
+            if (resume != null) {
+                String fileName = resume.getFilename();
+                Logger.info("fileName="+fileName);
+                File file = (File) resume.getFile();
+                Logger.info("Uploading! " + file);
+                JSONObject obj = CandidateService.uploadResume(file, fileName, cId);
+                try {
+                    obj.put("key","resume"+i);
+                } catch (org.json.JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Logger.info("obj.toString() ="+obj.toString());
+                list.add(obj);
+            }
+        }
+
+        Logger.info("list.toString() = "+list.toString());
+
+        return ok(list+"");
+
+    }
+
+    public static Result receiveParsedResume() {
+
+        //Logger.info("request.asFormUrlEncoded().keySet().size()="+request().body().asFormUrlEncoded().keySet().size());
+
+        // build json string
+        String json = "{";
+        for(String key:request().body().asFormUrlEncoded().keySet()){
+            json += "\""+key+"\":";
+            switch(key){
+                case "profilemergedto":
+                case "personid":
+                case "status":
+                case "message":
+                case "type":
+                    json += "\""+StringUtils.join(request().body().asFormUrlEncoded().get(key),"")+"\"";
+                    break;
+                default:
+                    json += StringUtils.join(request().body().asFormUrlEncoded().get(key),"");
+            }
+            json += ",";
+        }
+        json = StringUtils.removeEnd(json,",");
+        json += "}";
+
+        Logger.info("json = "+json);
+
+        HireWandResponse hireWandResponse = null;
+        // try to map it to HireWandResponse
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            hireWandResponse = newMapper.readValue(json, HireWandResponse.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Logger.info("Error while mapping from request to HireWandResponse"+e.getMessage());
+            return internalServerError();
+        }
+        if(hireWandResponse != null){
+            // mapped successfully
+            Logger.info("Successfully mapped json to hireWandResponse");
+            // keep a copy of the raw profile string
+            hireWandResponse.getProfile().setProfileJSON(StringUtils.join(request().body().asFormUrlEncoded().get("profile"),null));
+            Logger.info("hireWandResponse.Profile.ProfileJSON="+hireWandResponse.getProfile().getProfileJSON());
+            // ensure external key (PersonId) is filled before calling business logic
+            if(!hireWandResponse.getPersonid().isEmpty()){
+                // send for processing
+                Logger.info("Updating resume for HireWand PersonID = "+hireWandResponse.getPersonid());
+                JSONObject resp = CandidateService.updateResume(hireWandResponse.getPersonid(), hireWandResponse.getProfile(),hireWandResponse.getDuplicate());
+                Logger.info("resp="+resp.toString());
+                return ok(resp+"");
+            }
+            else {
+                Logger.info("Hirewand callback invoked with empty PersonID");
+                return badRequest();
+            }
+        }
+        else{
+            Logger.info("Failed to map json to hireWandResponse");
+            return internalServerError();
+        }
+    }
+
+    public static Result uploadCandidateExcel() {
+        return ok(views.html.upload_candidate_excel.render());
+    }
+
+    public static Result processCandidateExcel() {
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart excel = body.getFile("file");
+        if (excel != null) {
+            String fileName = excel.getFilename();
+            Logger.info("fileName=" + fileName);
+            File file = (File) excel.getFile();
+            Logger.info("Uploading " + file);
+            Integer count = CandidateService.bulkUploadCandidates(file,fileName);
+            return ok("Bulk upload done. "+count+" candidates created");
+        }
+        else{
+            return internalServerError("Bulk upload failed due to an internal error");
+        }
+    }
+
 }
+
