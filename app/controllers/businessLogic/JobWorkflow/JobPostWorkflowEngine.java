@@ -1165,6 +1165,7 @@ public class JobPostWorkflowEngine {
         }
 
         JobPost jobPost = JobPostDAO.findById(jobPostId);
+
         if (jobPost == null) {
             response.setStatus(ShortPSPopulateResponse.Status.FAILURE);
             return response;
@@ -1253,19 +1254,21 @@ public class JobPostWorkflowEngine {
                     for (PreScreenRequirement preScreenRequirement : entry.getValue()) {
 
                         if (preScreenRequirement.getProfileRequirement() != null) {
-                            doesCandidateSatisfiesRequirement(candidate, preScreenRequirement, response);
+                            setProfileData(candidate, preScreenRequirement, response);
                         }
                     }
                     break;
             }
+
             response.setStatus(ShortPSPopulateResponse.Status.SUCCESS);
+            response.setInterviewResponse(RecruiterService.isInterviewRequired(jobPost));
         }
 
         return response;
     }
 
-    public static void doesCandidateSatisfiesRequirement(Candidate candidate, PreScreenRequirement preScreenRequirement,
-                                                            ShortPSPopulateResponse response){
+    public static void setProfileData(Candidate candidate, PreScreenRequirement preScreenRequirement,
+                                      ShortPSPopulateResponse response){
         String key = preScreenRequirement.getProfileRequirement().getProfileRequirementTitle().toLowerCase();
         switch (key) {
             case "age":

@@ -1,5 +1,6 @@
 package api.http.httpResponse.Workflow.smsJobApplyFlow;
 
+import api.http.httpResponse.interview.InterviewResponse;
 import models.entity.Static.*;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ public class ShortPSPopulateResponse {
     private EducationResponse educationResponse;
 
     private Status status;
+    private InterviewResponse interviewResponse;
 
     private Long jobPostId;
     private Long candidateId;
@@ -216,5 +218,13 @@ public class ShortPSPopulateResponse {
 
     public void setCandidateId(Long candidateId) {
         this.candidateId = candidateId;
+    }
+
+    public InterviewResponse getInterviewResponse() {
+        return interviewResponse;
+    }
+
+    public void setInterviewResponse(InterviewResponse interviewResponse) {
+        this.interviewResponse = interviewResponse;
     }
 }
