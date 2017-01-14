@@ -440,23 +440,17 @@ function saveCandidateBasicProfile(){
     }
     //document value verification
     documentValues.forEach(function(id){
-       if(id.idProofId == ""){
-           notifyError("Please Select Document");
-           statusCheck=0;
-       }
-       else{
+       if(id.idProofId != ""){
            if(id.idProofValue == "" || id.idProofValue == undefined || id.idProofValue.trim().length == 0){
-               notifyError("Please provide document details");
-               statusCheck=0;
-           }
-           else{
+               // allow blank input to submit
+           } else{
                var isChecked = id.idProofId;
                var isValid = validateInput(isChecked, id.idProofValue.trim());
 
                if (isChecked && !isValid) {
-                statusCheck = 0;
-                $.notify("Please provide valid document details.", 'error');
-                }
+                   statusCheck = 0;
+                   $.notify("Please provide valid document details.", 'error');
+               }
 
            }
        }

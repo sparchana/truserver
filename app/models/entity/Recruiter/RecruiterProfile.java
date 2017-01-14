@@ -311,6 +311,7 @@ public class RecruiterProfile extends Model {
         this.recruiterAuth = recruiterAuth;
     }
 
+
     public Integer getContactCreditCount() {
         return creditCount(ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK);
     }
