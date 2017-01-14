@@ -506,6 +506,7 @@ public class CandidateService
 
         // check if we have auth record for this candidate. if we dont have, create one with a temporary password
         Auth auth = AuthService.isAuthExists(candidate.getCandidateId());
+
         if (auth == null) {
             if(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE || channelType == INTERACTION_CHANNEL_PARTNER_WEBSITE){
                 // TODO: differentiate between in/out call
@@ -1642,7 +1643,7 @@ public class CandidateService
         } catch (HWHTTPException e) {
             e.printStackTrace();
             try {
-                responseJson.put("status","Fail");
+                responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
                 responseJson.put("msg",e.getMessage());
             } catch (JSONException ee) {
                 ee.printStackTrace();
@@ -1662,7 +1663,7 @@ public class CandidateService
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             try {
-                responseJson.put("status","Fail");
+                responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
                 responseJson.put("msg",e.getMessage());
             } catch (JSONException ee) {
                 ee.printStackTrace();
@@ -1678,7 +1679,7 @@ public class CandidateService
         } catch (InvalidRequestException | HWHTTPException e) {
             e.printStackTrace();
             try {
-                responseJson.put("status","Fail");
+                responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
                 responseJson.put("msg",e.getMessage());
             } catch (JSONException ee) {
                 ee.printStackTrace();
@@ -1694,7 +1695,7 @@ public class CandidateService
             } catch (JSONException e) {
                 e.printStackTrace();
                 try {
-                    responseJson.put("status","Fail");
+                    responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
                     responseJson.put("msg",e.getMessage());
                 } catch (JSONException ee) {
                     ee.printStackTrace();
@@ -1731,7 +1732,7 @@ public class CandidateService
                     if(path == "") {
                         // Resume could not be uploaded to S3
                         try {
-                            responseJson.put("status","Fail");
+                            responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
                             responseJson.put("msg","Resume could not be uploaded into AWS");
                         } catch (JSONException ee) {
                             ee.printStackTrace();
@@ -1780,7 +1781,7 @@ public class CandidateService
             catch (JSONException e){
                 e.printStackTrace();
                 try {
-                    responseJson.put("status","Fail");
+                    responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
                     responseJson.put("msg",e.getMessage());
                 } catch (JSONException ee) {
                     ee.printStackTrace();
@@ -1790,7 +1791,7 @@ public class CandidateService
             }
 
         try {
-            responseJson.put("status","Success");
+            responseJson.put("status",ServerConstants.UPLOAD_RESUME_SUCCESS_STATUS);
             responseJson.put("msg","Success");
         } catch (JSONException ee) {
             ee.printStackTrace();

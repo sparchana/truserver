@@ -1,6 +1,7 @@
 package controllers;
 
 import api.http.httpResponse.hirewand.HireWandResponse;
+import api.http.httpResponse.hirewand.UploadResumeResponse;
 import com.avaje.ebean.text.json.JsonWriter;
 import dao.JobPostDAO;
 import api.InteractionConstants;
@@ -2303,10 +2304,11 @@ public class Application extends Controller {
         return ok(views.html.resumeUpload.render());
     }
 
-    public static Result doResumeUpload(String candidateId){
+    public static Result doResumeUpload(String candidateId) throws org.json.JSONException {
 
         Http.MultipartFormData body = request().body().asMultipartFormData();
 
+        UploadResumeResponse resumeResponse = new UploadResumeResponse();
         int i = 0;
         JSONArray list = new JSONArray();
 
@@ -2338,8 +2340,14 @@ public class Application extends Controller {
                 File file = (File) resume.getFile();
                 Logger.info("Uploading! " + file);
                 JSONObject obj = CandidateService.uploadResume(file, fileName, cId);
+
+                resumeResponse.setResume((String) obj.get("resume"));
+                resumeResponse.setMsg((String) obj.get("msg"));
+                resumeResponse.setStatus((Integer) obj.get("status"));
+
                 try {
-                    obj.put("key","resume"+i);
+                    resumeResponse.setKey("resume"+i);
+                    obj.put("key","Resume_"+i);
                 } catch (org.json.JSONException e) {
                     e.printStackTrace();
                 }
@@ -2351,12 +2359,11 @@ public class Application extends Controller {
 
         Logger.info("list.toString() = "+list.toString());
 
-        return ok(list+"");
+        return ok(toJson(resumeResponse));
 
     }
 
     public static Result receiveParsedResume() {
-
         //Logger.info("request.asFormUrlEncoded().keySet().size()="+request().body().asFormUrlEncoded().keySet().size());
 
         // build json string

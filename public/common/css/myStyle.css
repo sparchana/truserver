@@ -562,7 +562,13 @@ hr{
     height: 65%;
     margin-top:4%;
 }
-
+#uploadResumeModalContent{
+    text-align: center;
+    border-radius: 2px;
+}
+#uploadResumeModalDialog{
+    width: 50%;
+}
 @media screen and (max-width: 280px) {
     .panel{
         padding: 0px;
@@ -754,9 +760,6 @@ hr{
     border-radius: 2px;
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16),0 0 0 1px rgba(0,0,0,0.08);
     transition: box-shadow 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
-}
-#searchBarMainCol{
-
 }
 #inputMainField{
     border-bottom-left-radius:2px;

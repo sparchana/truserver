@@ -16,14 +16,14 @@
 
   function handleFileSelect(evt) {
 
-    console.log("entered handleFileSelect");
+    console.log("entered handleFileSelect" + JSON.stringify(evt));
     // FileList object
     var files = evt.target.files;
-
+    console.log("Files :" + JSON.stringify(files));
     var url = "/addResume/";
-    console.log("candidateId.val()= "+$('#candidateId').val());
-    if($('#candidateId').val() > 0) url += "?candidateId="+Number($('#candidateId').val()).toString();
-    console.log("url= "+url);
+   // console.log("candidateId.val()= "+$('#candidateId').val());
+   // if($('#candidateId').val() > 0) url += "?candidateId="+Number($('#candidateId').val()).toString();
+   // console.log("url= "+url);
 
     var output = [];
     var data = new FormData();
@@ -36,7 +36,8 @@
                   '</li>');
 
 	  data.append('resume'+(i+1),f);
-	  console.log("resume(i+1)= "+'resume'+(i+1));
+	  //console.log("resume(i+1)= "+'resume'+(i+1));
+        console.log("Data : "+ JSON.stringify(data));
     }
 
 	        try {
@@ -53,7 +54,7 @@
 	        } catch(exception) {
 	            console.log("Exception Occurred!!" + exception);
 	            console.log(new Error().stack);
-	        }
+	        }*/
 
     document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
   }

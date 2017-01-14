@@ -136,7 +136,7 @@
                     <div id="uploadResumeContainer" style="margin:0 2%">
                         <center>
                             <label class="btn btn-default btn-file" id="uploadResumeBtn">Sign Up With Resume - One Click
-                                <input type="file" accept="application/pdf,application/msword" onchange="uploadResume()" id="uploadResumeContent" style="display: none">
+                                <input type="file" accept="application/pdf,application/msword" id="uploadResumeContent" style="display: none">
                             </label>
                         </center>
                     </div>
@@ -455,7 +455,21 @@
             <div class="row" id="registerBoxInner"><font size="3" style="color: #fff">Apply Now</font></div>
         </a>
         <a href="#" class="scrollToTop"><img src="/assets/common/img/up.svg"></a>
-        <!-- Start Footer-->
+        <div class="container">
+        <div class ="modal fade bs-example-modal-lg" id="uploadResumeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog modal-lg" id="uploadResumeModalDialog" role="document">
+                <div class="modal-content" id="uploadResumeModalContent">
+                    <center id="resumeUpload">
+                        <svg viewBox="0 0 32 32" width="42" height="42">
+                            <circle id="loadingSpinner" cx="16" cy="16" r="14" fill="none"></circle>
+                        </svg>
+                    </center>
+                    <h4>Processing Your Resume...</h4>
+                </div>
+            </div>
+        </div>
+        </div>
+            <!-- Start Footer-->
         <div id="footer_inc"></div>
         <script>
             $(document).ready(function(){

@@ -369,4 +369,8 @@ public class ServerConstants {
     public static final int ANDROID_INTENT_ACTIVITY_INTERVIEW_TIPS = 8;
 
     public static final String CREATED_BY = "Candidate";
+
+    /* upload resume */
+    public  static final int UPLOAD_RESUME_SUCCESS_STATUS = 1;
+    public  static final int UPLOAD_RESUME_FAIL_STATUS = 0;
 }
