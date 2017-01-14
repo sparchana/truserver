@@ -2427,6 +2427,17 @@ public class Application extends Controller {
     public static Result uploadCandidateExcel() {
         return ok(views.html.upload_candidate_excel.render());
     }
+    public static Result fetchResume(String candidateId) {
+
+        CandidateResumeService resumeService = new CandidateResumeService();
+        List<Map<String,String>> params = new ArrayList<>();
+        Map<String,String> param = new HashMap<>();
+        param.put("candidateid",candidateId);
+        params.add(param);
+        List<TruResponse> truResponses = resumeService.readByAttribute(params);
+        CandidateResume candidateResume = (CandidateResume) truResponses.get(0).getEntity();
+        return ok(toJson(candidateResume));
+    }
 
     public static Result processCandidateExcel() {
         Http.MultipartFormData body = request().body().asMultipartFormData();

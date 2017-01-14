@@ -2,11 +2,56 @@
  * Created by hawk on 12/1/17.
  */
 
-document.getElementById('uploadResumeContent').addEventListener('change', uploadResume, false);
+function viewDownloadResume(candidateId) {
+    console.log(candidateId);
+    var url = "/fetchResume/?candidateId="+candidateId;
+    console.log("url : "+url);
+    try {
+        $.ajax({
+            type: "GET",
+            url: url,
+            data: false,
+            async: true,
+            contentType: false,
+            processData: false,
+            success: processDataForViewResume
+        });
+    } catch(exception) {
+        console.log("Exception Occurred!!" + exception);
+        console.log(new Error().stack);
+    }
+
+}
+function processDataForViewResume(returnedData){
+    if(returnedData!= null){
+        if(returnedData.filePath != null){
+            $(".resumeUploadBox").hide();
+            var parentView = $("#userViewResume");
+            var viewLink = document.createElement("a");
+            viewLink.href = "http://docs.google.com/gview?url="+returnedData.filePath+"&embedded=true";
+            viewLink.target = "_blank";
+            viewLink.id = "viewResume";
+            viewLink.textContent = "View |";
+            parentView.append(viewLink);
+
+            var parentDownload = $("#userViewDownload");
+            var downloadLink = document.createElement("a");
+            downloadLink.href = returnedData.filePath;
+            downloadLink.id = "downloadResume";
+            downloadLink.textContent = "Download";
+            parentDownload.append(downloadLink);
+        }
+        else{
+            $("#userViewResume").innerHTML = "No Resume Uploaded";
+            document.getElementById('uploadResumeContent').addEventListener('change', uploadResume, false);
+        }
+    }
+
+}
 
 function uploadResume(evt){
     var files = evt.target.files;
-    var url = "/addResume/";
+    var url = "/addResume/?candidateId="+candidateId;
     var ext;
     var data = new FormData();
     for (var i = 0, f; f = files[i]; i++) {

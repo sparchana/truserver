@@ -302,6 +302,7 @@ $(function() {
 function processDataAndFillMinProfile(returnedData) {
 
     candidateId = returnedData.candidateId;
+    viewDownloadResume(candidateId);
     if(returnedData.candidateLastName == "" || returnedData.candidateLastName == null){
         document.getElementById("userName").innerHTML = returnedData.candidateFirstName;
     } else{
