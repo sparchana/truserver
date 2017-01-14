@@ -490,6 +490,10 @@ public class RecruiterService {
                         jobPost.setJobPostStatus(statusClosed);
                         jobPost.update();
                     }
+
+                    //send sms to recruiter to notify company change
+                    SmsUtil.sendCompanyChangeSmsToRecruiter(newRecruiter, newRecruiter.getCompany().getCompanyName(),
+                            existingCompany.getCompanyName());
                 }
             }
 

@@ -586,7 +586,10 @@ function processDataForJobPost(returnedData) {
 
     if(returnedData.company.companyId != returnedData.recruiterProfile.company.companyId){
         $("#changedRecruiter").show();
-        $("#changedRecruiter").html("Recruiter: " + returnedData.recruiterProfile.recruiterProfileName + " changed the company to : " + returnedData.recruiterProfile.company.companyName);
+        $("#changedRecruiter").html("Recruiter: " + returnedData.recruiterProfile.recruiterProfileName
+            + " who posted this job has changed the company to : "
+            + returnedData.recruiterProfile.company.companyName
+            + ". Please select a new recruiter to proceed");
     }
 
     //changedRecruiter
