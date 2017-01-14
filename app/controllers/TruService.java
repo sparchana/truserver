@@ -1427,4 +1427,43 @@ public abstract class TruService {
         return m;
     }
 
+    public List<TruResponse> readByAttribute(List<Map<String,String>> attrNameValueList){
+
+        if (entity == null) {
+            try {
+                entity = (Model) Class.forName(this.getEntityClassName()).newInstance();
+            } catch (NullPointerException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                e.printStackTrace();
+                Logger.info("Exception " + e.toString() + " triggered while instantiating " + this.getEntityClassName());
+                return null;
+            }
+        }
+
+        java.lang.reflect.Method method = null;
+        List<Model> entityList = new ArrayList<>();
+
+        // Check read method exists
+        try {
+            method = entity.getClass().getMethod("readByAttribute", List.class);
+            //Logger.info("Read "+methodname+" found in "+entity.getClass().getSimpleName());
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+            Logger.info("Method readByAttribute not found in "+entity.getClass().getSimpleName());
+            method = null;
+        }
+
+        if (method != null) {
+            try {
+                entityList = (List<Model>) method.invoke(entity, attrNameValueList);
+                Logger.info(entity.getClass().getSimpleName()+".readByAttribute executed");
+            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                e.printStackTrace();
+                //Logger.info("Read "+methodname+" could not be executed in "+entity.getClass().getSimpleName()+" Throws "+e.toString());
+            }
+            return createReadResponse(entityList);
+        }
+
+        return null;
+    }
+
 }
