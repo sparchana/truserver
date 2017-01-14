@@ -89,8 +89,16 @@ public class TrudroidController {
             LoginResponse loginResponse = CandidateService.login(loginRequest.getCandidateLoginMobile(),
                     loginRequest.getCandidateLoginPassword(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
 
-
-            loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(loginResponse.getStatus()));
+            //app version check
+            if(pLogInRequest.getAppVersionCode() >= ServerConstants.APP_NEW_LOGIN_STATUS_VERSION_CODE){
+                loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(loginResponse.getStatus()));
+            } else{
+                if(loginResponse.getStatus() == LoginResponse.STATUS_NO_PASSWORD){
+                    loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(LoginResponse.STATUS_NO_USER));
+                } else{
+                    loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(loginResponse.getStatus()));
+                }
+            }
 
             if (loginResponse.getStatus() == LoginResponse.STATUS_SUCCESS) {
                 loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(LoginResponse.STATUS_SUCCESS));
@@ -249,7 +257,22 @@ public class TrudroidController {
                     InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID
             );
 
-            resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(resetPasswordResponse.getStatus()));
+            //app version check
+            if(pResetPasswordRequest.getAppVersionCode() >= ServerConstants.APP_NEW_LOGIN_STATUS_VERSION_CODE){
+                resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(resetPasswordResponse.getStatus()));
+            } else{
+                if(resetPasswordResponse.getStatus() == LoginResponse.STATUS_NO_PASSWORD){
+                    resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(LoginResponse.STATUS_NO_USER));
+                } else{
+                    if(resetPasswordResponse.getStatus() == LoginResponse.STATUS_NO_PASSWORD){
+                        resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(LoginResponse.STATUS_NO_USER));
+                    } else{
+                        resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(resetPasswordResponse.getStatus()));
+                    }
+
+                }
+            }
+
             resetPasswordResponseBuilder.setOtp(resetPasswordResponse.getOtp());
 
             Logger.info("Status returned = " + resetPasswordResponseBuilder.getStatus());
