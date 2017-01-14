@@ -3,9 +3,7 @@
  */
 
 function viewDownloadResume(candidateId) {
-    console.log(candidateId);
     var url = "/fetchResume/?candidateId="+candidateId;
-    console.log("url : "+url);
     try {
         $.ajax({
             type: "GET",
@@ -23,12 +21,12 @@ function viewDownloadResume(candidateId) {
 
 }
 function processDataForViewResume(returnedData){
-    if(returnedData!= null){
-        if(returnedData.filePath != null){
+    console.log(JSON.stringify(returnedData));
+    if (returnedData.length > 0) {
             $(".resumeUploadBox").hide();
             var parentView = $("#userViewResume");
             var viewLink = document.createElement("a");
-            viewLink.href = "http://docs.google.com/gview?url="+returnedData.filePath+"&embedded=true";
+            viewLink.href = "http://docs.google.com/gview?url=" + returnedData.filePath + "&embedded=true";
             viewLink.target = "_blank";
             viewLink.id = "viewResume";
             viewLink.textContent = "View |";
@@ -40,13 +38,12 @@ function processDataForViewResume(returnedData){
             downloadLink.id = "downloadResume";
             downloadLink.textContent = "Download";
             parentDownload.append(downloadLink);
-        }
-        else{
+    }
+    else{
+        console.log("Entered");
             $("#userViewResume").innerHTML = "No Resume Uploaded";
             document.getElementById('uploadResumeContent').addEventListener('change', uploadResume, false);
-        }
     }
-
 }
 
 function uploadResume(evt){
@@ -95,7 +92,6 @@ function processDataForAddResume(returnedData) {
             var h4 = document.createElement("h4");
             h4.textContent = "Thanks !! Your Resume has been successfully Uploaded";
             parent.append(h4);
-
 
             var h4 = document.createElement("h4");
             h4.textContent = "You will shortly receive details for login";

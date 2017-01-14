@@ -471,6 +471,7 @@ function checkInstitute() {
 
 function processDataAndFillAllFields(returnedData) {
     candidateInformation = returnedData;
+    viewDownloadResume(returnedData.candidateId);
     $("#jobCount").html(Object.keys(candidateInformation.jobApplicationList).length);
 
     try{

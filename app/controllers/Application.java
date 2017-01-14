@@ -2435,8 +2435,13 @@ public class Application extends Controller {
         param.put("candidateid",candidateId);
         params.add(param);
         List<TruResponse> truResponses = resumeService.readByAttribute(params);
-        CandidateResume candidateResume = (CandidateResume) truResponses.get(0).getEntity();
-        return ok(toJson(candidateResume));
+        if(truResponses !=null && truResponses.size() > 0){
+           // Found candidate
+            CandidateResume candidateResume = (CandidateResume) truResponses.get(0).getEntity();
+            return ok(toJson(candidateResume));
+        }else{
+            return ok();
+        }
     }
 
     public static Result processCandidateExcel() {
