@@ -1302,13 +1302,16 @@ public class Application extends Controller {
     public static Result pageNotFound() { return ok(views.html.page_not_found.render());}
     public static Result renderJobRelatedPages(String urlString, Long candidateId, String key){
         if(candidateId != null && key != null) {
+            boolean invalidParams = false;
             Candidate existingCandidate = CandidateDAO.getById(candidateId);
             if(existingCandidate != null) {
+
+                Logger.info("candidate exists");
 
                 // adding session details
                 Auth existingAuth = Auth.find.where().eq("candidateId", candidateId).findUnique();
                 if(existingAuth != null) {
-
+                    Logger.info("auth exists");
                     // boolean isKeyValid = key.equals(Util.md5(existingAuth.getOtp() + ""));
                     boolean isKeyValid = key.equals((existingAuth.getOtp() + ""));
                     if (isKeyValid ) {
@@ -1318,12 +1321,19 @@ public class Application extends Controller {
                         // TODO in front end clear location.search , after loading
                         existingAuth.setOtp(Util.generateOtp());
                         existingAuth.update();
+                    } else {
+                        invalidParams = true;
                     }
                 } else {
-                    // TODO: redirect to 404
+                    invalidParams = true;
                 }
             } else {
-                // TODO: redirect to 404
+                invalidParams = true;
+            }
+
+            if(invalidParams) {
+                session().clear();
+                return redirect("/pageNotFound");
             }
         }
         UrlValidatorUtil urlValidatorUtil = new UrlValidatorUtil();
