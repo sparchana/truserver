@@ -1639,7 +1639,7 @@ public class CandidateService
         HireWandService hw = HireWandService.get();
         try {
             hw.login("avishek@trujobs.in","hirewandswatkats");
-            hw.setCallback("http://trujobs.in/receive-parsed-resume");
+            hw.setCallback("http://52.89.66.63:9000/receive-parsed-resume");
         } catch (HWHTTPException e) {
             e.printStackTrace();
             try {
