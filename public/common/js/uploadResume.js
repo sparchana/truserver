@@ -87,17 +87,30 @@ function processDataForAddResume(returnedData) {
 
             $("#uploadResumeModalContent").html("");
 
-            var h1 = document.createElement("h2");
-            h1.textContent = "SuccessFully Uploaded";
-            parent.append(h1);
+            var resumeRow = document.createElement("div");
+            resumeRow.className = "row";
+            parent.append(resumeRow);
 
+            var resumeColLeft = document.createElement("div");
+            resumeColLeft.className = "col-sm-6";
+            resumeRow.appendChild(resumeColLeft);
+
+            var resumeColRight = document.createElement("div");
+            resumeColRight.className = "col-sm-6";
+            resumeRow.appendChild(resumeColRight);
+
+            var image = document.createElement("img");
+            image.src = "/assets/common/img/resumeUpload.svg";
+            image.style = "height:100px";
+            resumeColLeft.appendChild(image);
+            
             var h4 = document.createElement("h4");
             h4.textContent = "Thanks !! Your Resume has been successfully Uploaded";
-            parent.append(h4);
+            resumeColRight.appendChild(h4);
 
             var h4 = document.createElement("h4");
             h4.textContent = "You will shortly receive details for login";
-            parent.append(h4);
+            resumeColRight.appendChild(h4);
             console.log("Uploaded Successfully");
 
             //condition if upload is done without login

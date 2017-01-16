@@ -24,7 +24,7 @@ function uploadResume(evt){
                 success: processDataForAddResume
             });
             $('#uploadResumeModal').modal('show');
-            $('#mySignUpModal').modal('hide');
+            $('#candidateCreateOptionModal').modal('hide');
         } catch(exception) {
             console.log("Exception Occurred!!" + exception);
             console.log(new Error().stack);

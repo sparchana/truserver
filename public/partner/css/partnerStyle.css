@@ -542,16 +542,36 @@ a:hover{
     margin-right: 4px;
     margin-top: -4px;
 }
-#candidateCreateOptionModalContent{
-    padding:1%;
-    border-radius: 2px;
-    text-align: center;
-}
 #jobRoleName{
     font-size: 14px;
     color: #003557;
     margin-top:6px;
 }
+#addCandidateColLeft{
+    padding: 2%;
+    border-right: 1px solid #26A69A;
+}
+#addCandidateColRight{
+    padding: 2%;
+}
+#candidateCreateOptionModalContent{
+    padding:4%;
+    border-radius: 2px;
+    text-align: center;
+}
+#addCandidateCant{
+    padding: 2% 8%;
+}
+#uploadResumeBtn,#addCandidateBtn{
+    width: 100%;
+    border: 1px solid #00897b;
+    color: #fff;
+    background: #00897b;
+}
+#candidateCreateOptionModalDialog,#uploadResumeModalDialog{
+    margin-top: 10%;
+}
+
 @media screen and (max-width: 768px) {
     .navbar-nav>li>a {
         background-color: #00897b;

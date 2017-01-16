@@ -69,29 +69,44 @@
     </div>
 </div>
     <!-- Add candidate Option Modal -->
-<div class="container">
     <div class ="modal fade bs-example-modal-md" id="candidateCreateOptionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog modal-md" id="candidateCreateOptionModalDialog" role="document">
             <div class="modal-content" id="candidateCreateOptionModalContent">
                 <div class="row">
-                    <div class="col-sm-6">
-                        <center>
-                            <label class="btn btn-default btn-file" id="uploadBulkResumeBtn">Bulk Resume Upload
-                                <input type="file" accept="application/pdf,application/msword" id="uploadBulkResumeContent" style="display: none" multiple>
-                            </label>
-                        </center>
+                    <div class="col-sm-6" id="addCandidateColLeft">
+                        <div class="row">
+                            <img src="/assets/partner/img/bulk.svg" height="100px">
+                        </div>
+                        <div class="row" style="padding:6% 2%;margin:0">
+                            <font>Add more the one candidate by uploading bulk resume</font>
+                        </div>
+                        <div class="row" id="addCandidateCant">
+                            <center>
+                                <label class="btn btn-default btn-file" id="uploadResumeBtn">Upload Resume
+                                    <input type="file" accept="application/pdf,application/msword" id="uploadBulkResumeContent" style="display: none" multiple>
+                                </label>
+                            </center>
+                        </div>
                     </div>
-                    <div class="col-sm-6">
-                        <a href="/partner/candidate/0" id="addCandidate">Add details for candidate</a>
+                    <div class="col-sm-6" id="addCandidateColRight">
+                        <div class="row">
+                            <img src="/assets/partner/img/single.svg" height="100px">
+                        </div>
+                        <div class="row" style="padding:6% 2%;margin:0">
+                            <font>Add candidate details by filling form manually</font>
+                        </div>
+                        <div class="row" id="addCandidateCant">
+                            <a href="/partner/candidate/0" id="addCandidate">
+                            <label class="btn btn-default btn-file" id="addCandidateBtn">Add Candidate</label>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
     <!-- Upload Resume Progress Modal -->
-<div class="container">
     <div class ="modal fade bs-example-modal-lg" id="uploadResumeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog modal-lg" id="uploadResumeModalDialog" role="document">
             <div class="modal-content" id="uploadResumeModalContent">
@@ -104,6 +119,5 @@
             </div>
         </div>
     </div>
-</div>
 
 

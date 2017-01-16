@@ -563,11 +563,22 @@ hr{
     margin-top:4%;
 }
 #uploadResumeModalContent{
+    background: rgb(84, 192, 235);
+    color: #fff;
     text-align: center;
     border-radius: 2px;
 }
 #uploadResumeModalDialog{
-    width: 50%;
+    width: 40%;
+}
+#loadingSpinnerResume{
+    box-sizing: border-box;
+    stroke: #fff;
+    stroke-width: 3px;
+    -webkit-transform-origin: 50%;
+    transform-origin: 50%;
+    -webkit-animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+    animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
 }
 @media screen and (max-width: 280px) {
     .panel{
