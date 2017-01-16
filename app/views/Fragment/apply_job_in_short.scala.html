@@ -49,12 +49,6 @@
             <!-- Nav start -->
         <div id="nav_bar_inc"></div>
 
-        <div class="container">
-            <div id="fixed-menu-shadow" style="padding-bottom: 0px;
-                padding-top: 8px;
-                display: none" ></div>
-        </div>
-
             <!-- custom message modal -->
         <div class="modal fade" id="messagePromptModal" tabindex="-1" role="dialog" aria-labelledby="messagePromptModalLabel">
             <div class="modal-dialog" role="document">
@@ -77,9 +71,24 @@
         <div class="container">
                 <!--Details for hot jobs-->
             <div class="posted_job_details_container">
-                <div id="aboutCompanyTitle">Job Description</div>
+                <div>Job Application Form</div>
                 <br>
-
+                <div id="jobLocalityDiv">
+                    <img src="/assets/common/img/jobApply.png" width="48px">
+                    <h5>You are applying for <b><div style="display: inline-block" id="locality_jobNameConfirmation"></div></b>
+                        job at <b><div style="display: inline-block" id="locality_companyNameConfirmation"></div></b>
+                        .</h5>
+                    <h5>Please select the location where you can work:</h5>
+                    <select id="jobLocality" class="selectDropdown"></select>
+                </div>
+                <div id="jobInterviewSlotDiv">
+                    <img src="/assets/common/img/jobApply.png" width="48px">
+                    <h6> For <b><div style="display: inline-block" id="interviewJobTitle"></div></b>
+                        job at <b><div style="display: inline-block" id="interviewCompanyName"></div></b>
+                        .</h6>
+                    <h6 style="margin-top: 16px">Please select the interview date and time</h6>
+                    <select id="interViewSlot" class="selectDropdown"></select>
+                </div>
             </div>
             <div id="aboutCompanyTitle">About Company</div>
         </div>

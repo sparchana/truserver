@@ -1300,7 +1300,11 @@ public class JobPostWorkflowEngine {
             localityMap.put(jobPostToLocality.getLocality().getLocalityId(), jobPostToLocality.getLocality().getLocalityName());
         }
 
-        return new LocalityPopulateResponse(localityMap);
+        return new LocalityPopulateResponse(
+                            localityMap,
+                            jobPost.getJobPostTitle(),
+                            jobPost.getJobRole().getJobName(),
+                            jobPost.getCompany().getCompanyName());
     }
 
     public static void setProfileData(Candidate candidate, PreScreenRequirement preScreenRequirement,
