@@ -2117,9 +2117,20 @@ public class CandidateService
 
             // create/update candidate
             Logger.info("About to call CandidateService.createCandidateProfile");
-            CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                    InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE,
-                    ServerConstants.UPDATE_ALL_BY_SUPPORT);
+
+            CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
+            if(session().get("sessionChannel") != null || !session().get("sessionChannel").isEmpty()){
+                Logger.info("Session : "+ session().get("sessionChannel"));
+                if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
+                    candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
+                            InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE,
+                            ServerConstants.UPDATE_ALL_BY_SUPPORT);
+                }else{
+                    candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
+                            InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE,
+                            ServerConstants.UPDATE_ALL_BY_SUPPORT);
+                }
+            }
 
             // get candidate Id, Name
             candidateId = candidateSignUpResponse.getCandidateId();
