@@ -68,35 +68,35 @@ function uploadResume(evt){
                 processData: false,
                 success: processDataForAddResume
             });
-            $('#uploadResumeModal').modal('show');
+            $('#uploadResumeModalProcess').modal('show');
             $('#mySignUpModal').modal('hide');
         } catch(exception) {
             console.log("Exception Occurred!!" + exception);
             console.log(new Error().stack);
         }
     }else{
-        notifyError("Invalid Format. Please Resume in PDF Doc Docx file Format");
+        notifyError("Invalid Format. Please select a PDF, Doc or Docx format file");
     }
 }
 function processDataForAddResume(returnedData) {
-    console.log(JSON.stringify(returnedData));
+    $('#uploadResumeModalProcess').modal('hide');
     if(returnedData != null){
         if(returnedData.status == 1)
         {
             var parent = $("#uploadResumeModalContent");
-
-            $("#uploadResumeModalContent").html("");
+            $('#uploadResumeModalContent').html("");
 
             var resumeRow = document.createElement("div");
             resumeRow.className = "row";
             parent.append(resumeRow);
 
             var resumeColLeft = document.createElement("div");
-            resumeColLeft.className = "col-sm-6";
+            resumeColLeft.className = "col-sm-3";
             resumeRow.appendChild(resumeColLeft);
 
             var resumeColRight = document.createElement("div");
-            resumeColRight.className = "col-sm-6";
+            resumeColRight.className = "col-sm-9";
+            resumeColRight.id = "resumeColMsgSuccess";
             resumeRow.appendChild(resumeColRight);
 
             var image = document.createElement("img");
@@ -104,26 +104,58 @@ function processDataForAddResume(returnedData) {
             image.style = "height:100px";
             resumeColLeft.appendChild(image);
             
-            var h4 = document.createElement("h4");
-            h4.textContent = "Thanks !! Your Resume has been successfully Uploaded";
-            resumeColRight.appendChild(h4);
+            var h5 = document.createElement("h5");
+            h5.textContent = "Thanks !! Your Resume has been successfully Uploaded";
+            resumeColRight.appendChild(h5);
 
             var h4 = document.createElement("h4");
-            h4.textContent = "You will shortly receive details for login";
+            h4.textContent = "You will shortly receive a SMS with your login details";
+            h4.style = "font-weight:600";
             resumeColRight.appendChild(h4);
-            console.log("Uploaded Successfully");
 
+            $('#uploadResumeModal').modal('show');
             //condition if upload is done without login
             if(candidateId != null){
                 viewDownloadResume(candidateId);
             }
         }
         else{
-            console.log("Upload Fail");
+            var parent = $("#uploadResumeModalContent");
+            $("#uploadResumeModalContent").css("background","rgb(253, 132, 105)");
+            $('#uploadResumeModalContent').html("");
+
+            var resumeRow = document.createElement("div");
+            resumeRow.className = "row";
+            parent.append(resumeRow);
+
+            var resumeColLeft = document.createElement("div");
+            resumeColLeft.className = "col-sm-4";
+            resumeRow.appendChild(resumeColLeft);
+
+            var resumeColRight = document.createElement("div");
+            resumeColRight.className = "col-sm-8";
+            resumeColRight.id = "resumeColMsgFail";
+            resumeRow.appendChild(resumeColRight);
+
+            var image = document.createElement("img");
+            image.src = "/assets/common/img/warning.svg";
+            image.style = "height:100px";
+            resumeColLeft.appendChild(image);
+
+            var h5 = document.createElement("h5");
+            h5.textContent = "Opps!! Something went wrong";
+            resumeColRight.appendChild(h5);
+
+            var h4 = document.createElement("h4");
+            h4.textContent = "Please try after sometime";
+            h4.style = "font-weight:600";
+            resumeColRight.appendChild(h4);
+
+            $('#uploadResumeModal').modal('show');
         }
     }
     else{
-        notifyWarning("Invalid Format");
+        notifyWarning("Something went wrong try after sometime");
     }
 
 }
