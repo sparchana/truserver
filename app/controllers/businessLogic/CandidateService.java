@@ -2121,7 +2121,7 @@ public class CandidateService
             CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
             int channel = 0;
             // determine channel
-            if(session() != null && (session().get("sessionChannel") != null || !session().get("sessionChannel").isEmpty())){
+            if(session() != null && (session().get("sessionChannel") != null && !session().get("sessionChannel").isEmpty())){
                 Logger.info("Session : "+ session().get("sessionChannel"));
                 if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
                     channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
@@ -2140,7 +2140,7 @@ public class CandidateService
             candidateId = candidateSignUpResponse.getCandidateId();
             candidateName = candidateSignUpResponse.getCandidateFirstName();
         }
-        else {
+            else {
             Logger.info("Attempting to update existing candidate ...");
             isNew = Boolean.FALSE;
 
