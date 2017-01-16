@@ -1,6 +1,5 @@
 package api.http.httpResponse.Workflow.smsJobApplyFlow;
 
-import api.http.httpResponse.interview.InterviewResponse;
 import models.entity.Static.*;
 
 import java.util.ArrayList;
@@ -18,14 +17,13 @@ public class ShortPSPopulateResponse {
     private List<Asset> assetList;
 
     private boolean isDobAvailable;
-    private boolean isGenerAvailable;
+    private boolean isGenderAvailable;
     private boolean isSalaryAvailable;;
 
     private ExperienceResponse experienceResponse;
     private EducationResponse educationResponse;
 
     private Status status;
-    private InterviewResponse interviewResponse;
 
     private Long jobPostId;
     private Long candidateId;
@@ -39,7 +37,7 @@ public class ShortPSPopulateResponse {
 
         // should not be render in front end unless its set false
         this.isDobAvailable = true;
-        this.isGenerAvailable = true;
+        this.isGenderAvailable = true;
         this.isSalaryAvailable = true;
 
         this.experienceResponse = new ExperienceResponse(true);
@@ -164,12 +162,12 @@ public class ShortPSPopulateResponse {
         isDobAvailable = dobAvailable;
     }
 
-    public boolean isGenerAvailable() {
-        return isGenerAvailable;
+    public boolean isGenderAvailable() {
+        return isGenderAvailable;
     }
 
-    public void setGenerAvailable(boolean generAvailable) {
-        isGenerAvailable = generAvailable;
+    public void setGenderAvailable(boolean genderAvailable) {
+        isGenderAvailable = genderAvailable;
     }
 
     public boolean isSalaryAvailable() {
@@ -220,11 +218,4 @@ public class ShortPSPopulateResponse {
         this.candidateId = candidateId;
     }
 
-    public InterviewResponse getInterviewResponse() {
-        return interviewResponse;
-    }
-
-    public void setInterviewResponse(InterviewResponse interviewResponse) {
-        this.interviewResponse = interviewResponse;
-    }
 }

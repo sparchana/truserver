@@ -15,20 +15,22 @@ import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
 import api.http.httpResponse.ResetPasswordResponse;
 import api.http.httpResponse.interview.InterviewResponse;
-import com.avaje.ebeaninternal.server.lib.util.Str;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import dao.JobPostDAO;
 import dao.RecruiterCreditHistoryDAO;
+import models.entity.Candidate;
+import models.entity.Company;
+import models.entity.JobPost;
 import models.entity.OM.InterviewDetails;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterLead;
 import models.entity.Recruiter.RecruiterProfile;
-import models.entity.*;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.Recruiter.Static.RecruiterStatus;
+import models.entity.RecruiterCreditHistory;
 import models.entity.Static.JobStatus;
 import models.util.EmailUtil;
 import models.util.SmsUtil;
@@ -37,9 +39,6 @@ import play.Logger;
 import play.mvc.Result;
 
 import java.util.*;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
@@ -543,17 +542,25 @@ public class RecruiterService {
         recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.getStatusSuccess());
         recruiterSignUpResponse.setOtp(randomPIN);
     }
+    public static InterviewResponse isInterviewRequired(Long jobPostId) {
+        if(jobPostId == null) {
+            return null;
+        }
+        return isInterviewRequired(JobPostDAO.findById(jobPostId));
+    }
 
     public static InterviewResponse isInterviewRequired(JobPost jobPost) {
         InterviewResponse interviewResponse = new InterviewResponse();
         if (jobPost == null) {
             interviewResponse.setStatus(ServerConstants.ERROR);
+            interviewResponse.setStatusTitle("ERROR");
             return interviewResponse;
         }
         int validCount = 0;
         if (jobPost.getRecruiterProfile() == null) {
             // don't show interview modal if no recruiter is set for a jobpost
             interviewResponse.setStatus(ServerConstants.INTERVIEW_NOT_REQUIRED);
+            interviewResponse.setStatusTitle("INTERVIEW_NOT_REQUIRED");
             return interviewResponse;
         }
 
@@ -579,6 +586,7 @@ public class RecruiterService {
                 Logger.info("Interview closed for this week");
                 // interview closed
                 interviewResponse.setStatus(ServerConstants.INTERVIEW_CLOSED);
+                interviewResponse.setStatusTitle("INTERVIEW_CLOSED");
                 return interviewResponse;
             }
 
@@ -598,10 +606,12 @@ public class RecruiterService {
 
         if (validCount == 2) {
             interviewResponse.setStatus(ServerConstants.INTERVIEW_REQUIRED);
+            interviewResponse.setStatusTitle("INTERVIEW_REQUIRED");
             return interviewResponse;
         }
 
         interviewResponse.setStatus(ServerConstants.INTERVIEW_NOT_REQUIRED);
+        interviewResponse.setStatusTitle("INTERVIEW_NOT_REQUIRED");
         return interviewResponse;
     }
 

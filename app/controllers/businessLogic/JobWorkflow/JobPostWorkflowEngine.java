@@ -14,16 +14,16 @@ import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Recruiter.InterviewTodayResponse;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import api.http.httpResponse.Workflow.WorkflowResponse;
+import api.http.httpResponse.Workflow.smsJobApplyFlow.InterviewSlotPopulateResponse;
+import api.http.httpResponse.Workflow.smsJobApplyFlow.LocalityPopulateResponse;
+import api.http.httpResponse.Workflow.smsJobApplyFlow.ShortJobApplyResponse;
 import api.http.httpResponse.Workflow.smsJobApplyFlow.ShortPSPopulateResponse;
 import api.http.httpResponse.interview.InterviewResponse;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.RawSql;
 import com.avaje.ebean.RawSqlBuilder;
-import controllers.businessLogic.CandidateService;
-import controllers.businessLogic.InteractionService;
-import controllers.businessLogic.MatchingEngineService;
-import controllers.businessLogic.RecruiterService;
+import controllers.businessLogic.*;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
@@ -1155,6 +1155,20 @@ public class JobPostWorkflowEngine {
         return populateResponse;
     }
 
+    /* new short pre screen apply flow methods - start */
+
+    public static ShortJobApplyResponse getShortJobApplyResponse(Long jobPostId, Long candidateId) {
+        ShortJobApplyResponse applyResponse = new ShortJobApplyResponse();
+
+        applyResponse.setShortPSPopulateResponse(JobPostWorkflowEngine.getJobPostVsCandidate(jobPostId, candidateId));
+        applyResponse.setInterviewSlotPopulateResponse(
+                new InterviewSlotPopulateResponse(JobService.getInterviewSlot(jobPostId),
+                RecruiterService.isInterviewRequired(jobPostId)));
+        applyResponse.setLocalityPopulateResponse(JobPostWorkflowEngine.getJobLocality(jobPostId));
+
+        return applyResponse;
+    }
+
     public static ShortPSPopulateResponse getJobPostVsCandidate(Long jobPostId, Long candidateId) {
         ShortPSPopulateResponse response = new ShortPSPopulateResponse();
 
@@ -1261,10 +1275,29 @@ public class JobPostWorkflowEngine {
             }
 
             response.setStatus(ShortPSPopulateResponse.Status.SUCCESS);
-            response.setInterviewResponse(RecruiterService.isInterviewRequired(jobPost));
         }
 
         return response;
+    }
+
+    public static LocalityPopulateResponse getJobLocality(Long jobPostId) {
+        if(jobPostId == null){
+            return null;
+        }
+
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
+
+        if(jobPost == null) {
+            return null;
+        }
+
+        Map<Long, String>  localityMap = new LinkedHashMap<>();
+
+        for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()) {
+            localityMap.put(jobPostToLocality.getLocality().getLocalityId(), jobPostToLocality.getLocality().getLocalityName());
+        }
+
+        return new LocalityPopulateResponse(localityMap);
     }
 
     public static void setProfileData(Candidate candidate, PreScreenRequirement preScreenRequirement,
@@ -1292,7 +1325,7 @@ public class JobPostWorkflowEngine {
                 break;
             case "gender":
                 if( candidate.getCandidateGender() == null) {
-                    response.setGenerAvailable(false);
+                    response.setGenderAvailable(false);
                 } break;
             case "salary":
                 if( candidate.getCandidateLastWithdrawnSalary() == null) {
@@ -1319,6 +1352,9 @@ public class JobPostWorkflowEngine {
 
         return list;
     }
+
+        /* new short pre screen apply flow methods - end */
+
 
     public static boolean updatePreScreenAttempt(Long jobPostId, Long candidateId, String callStatus, int channel) {
 

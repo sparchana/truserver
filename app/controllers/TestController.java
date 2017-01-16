@@ -77,7 +77,8 @@ public class TestController extends Controller{
     }
 
     public static Result testNewPS(Long jobPostId, Long candidateId) {
-        return ok(toJson(JobPostWorkflowEngine.getJobPostVsCandidate(jobPostId, candidateId)));
+
+        return ok(toJson(JobPostWorkflowEngine.getShortJobApplyResponse(jobPostId, candidateId)));
     }
 
     public static Result convertOldData() {
