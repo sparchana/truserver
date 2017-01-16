@@ -2454,7 +2454,11 @@ public class JobPostWorkflowEngine {
                     //sms to candidate
                     sendInterviewConfirmationSms(jobPostWorkflowNew, candidate);
 
-                    JobApplication jobApplication = JobApplication.find.where()
+                    //sending notification
+                    NotificationUtil.sendInterviewConfirmationNotification(candidate, jobPostWorkflowNew);
+
+
+                JobApplication jobApplication = JobApplication.find.where()
                             .eq("candidateId", candidate.getCandidateId())
                             .eq("jobPostId", jobPostWorkflowNew.getJobPost().getJobPostId())
                             .findUnique();
