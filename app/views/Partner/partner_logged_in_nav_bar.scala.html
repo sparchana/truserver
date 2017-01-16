@@ -17,6 +17,7 @@
     function processDataLogoutPartner() {
         window.location = "/partner";
     }
+    document.getElementById('uploadBulkResumeContent').addEventListener('change', uploadResume, false);
 </script>
 
 <nav class="navbar navbar-fixed-top" style="background: #26A69A" role="navigation">
@@ -38,7 +39,7 @@
     <div class="collapse navbar-collapse" id="navigationbar">
       <ul class="nav navbar-nav navbar-right">
         <li><a href="/partner/home"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">PARTNER DASHBOARD</font></a></li>
-        <li><a href="/partner/candidate/0"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">ADD CANDIDATES</font></a></li>
+        <li><a data-target="#candidateCreateOptionModal" data-toggle="modal"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">ADD CANDIDATES</font></a></li>
         <li><a href="/partner/myCandidates"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">MY CANDIDATES</font></a></li>
         <li><a href="/partner/editProfile"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">PROFILE</font></a></li>
         <li><a href="#" onclick="logoutPartner()"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">LOGOUT</font></a></li>
@@ -67,4 +68,42 @@
         </div>
     </div>
 </div>
+    <!-- Add candidate Option Modal -->
+<div class="container">
+    <div class ="modal fade bs-example-modal-md" id="candidateCreateOptionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-md" id="candidateCreateOptionModalDialog" role="document">
+            <div class="modal-content" id="candidateCreateOptionModalContent">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <center>
+                            <label class="btn btn-default btn-file" id="uploadBulkResumeBtn">Bulk Resume Upload
+                                <input type="file" accept="application/pdf,application/msword" id="uploadBulkResumeContent" style="display: none" multiple>
+                            </label>
+                        </center>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="/partner/candidate/0" id="addCandidate">Add details for candidate</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Upload Resume Progress Modal -->
+<div class="container">
+    <div class ="modal fade bs-example-modal-lg" id="uploadResumeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" id="uploadResumeModalDialog" role="document">
+            <div class="modal-content" id="uploadResumeModalContent">
+                <center id="resumeUpload">
+                    <svg viewBox="0 0 32 32" width="42" height="42">
+                        <circle id="loadingSpinner" cx="16" cy="16" r="14" fill="none"></circle>
+                    </svg>
+                </center>
+                <h4>Processing Your Request...</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
 

@@ -542,7 +542,16 @@ a:hover{
     margin-right: 4px;
     margin-top: -4px;
 }
-
+#candidateCreateOptionModalContent{
+    padding:1%;
+    border-radius: 2px;
+    text-align: center;
+}
+#jobRoleName{
+    font-size: 14px;
+    color: #003557;
+    margin-top:6px;
+}
 @media screen and (max-width: 768px) {
     .navbar-nav>li>a {
         background-color: #00897b;
@@ -683,7 +692,7 @@ a:hover{
         width: 40%;
     }
     #jobRoleName{
-        font-size: 11px;
+        font-size: 10px;
         color: #000000;
     }
     .educationBtn {
