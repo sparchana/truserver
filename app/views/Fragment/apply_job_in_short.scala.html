@@ -69,11 +69,12 @@
         </div>
 
         <div class="container">
-                <!--Details for hot jobs-->
-            <div class="posted_job_details_container">
+            <div class="card_container">
                 <div>Job Application Form</div>
                 <br>
-                <div id="jobLocalityDiv">
+
+                    @* Job Locality Card start *@
+                <div id="jobLocalityCardDiv">
                     <img src="/assets/common/img/jobApply.png" width="48px">
                     <h5>You are applying for <b><div style="display: inline-block" id="locality_jobNameConfirmation"></div></b>
                         job at <b><div style="display: inline-block" id="locality_companyNameConfirmation"></div></b>
@@ -81,7 +82,17 @@
                     <h5>Please select the location where you can work:</h5>
                     <select id="jobLocality" class="selectDropdown"></select>
                 </div>
-                <div id="jobInterviewSlotDiv">
+                    @* Job Locality Card end *@
+
+                    @* Job Pre Screen Card start *@
+                <div id="preScreenCardDiv">
+
+                </div>
+                    @* Job Pre Screen Card enb *@
+
+
+                    @* Job Pre Interview Slot Card start *@
+                <div id="jobInterviewSlotCardDiv">
                     <img src="/assets/common/img/jobApply.png" width="48px">
                     <h6> For <b><div style="display: inline-block" id="interviewJobTitle"></div></b>
                         job at <b><div style="display: inline-block" id="interviewCompanyName"></div></b>
@@ -89,8 +100,9 @@
                     <h6 style="margin-top: 16px">Please select the interview date and time</h6>
                     <select id="interViewSlot" class="selectDropdown"></select>
                 </div>
+                    @* Job Pre Interview Slot Card end *@
+
             </div>
-            <div id="aboutCompanyTitle">About Company</div>
         </div>
         <br>
             <!-- Start Footer-->

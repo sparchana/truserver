@@ -96,7 +96,7 @@ var applyInShort = (function ($) {
 
                         applyInShort.render.interviewSlotCard(applyInShort.missingData.interviewSlotPopulateResponse.interviewSlotMap);
                     } else {
-                        $('#jobInterviewSlotDiv').hide();
+                        $('#jobInterviewSlotCardDiv').hide();
                     }
 
                     console.log(applyInShort.missingData);
