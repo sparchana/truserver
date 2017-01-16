@@ -239,6 +239,22 @@ function renderIndividualCandidateCard(value, parent, view) {
     candidateCardRowColOne.style = "padding: 8px; margin-top: 8px";
     candidateCardRow.appendChild(candidateCardRowColOne);
 
+    if(view == view_search_candidate || view == view_unlocked_candidate){
+        var candidateCheckbox = document.createElement("input");
+        candidateCheckbox.type = "checkbox";
+        candidateCheckbox.name = "candidate_cb";
+        candidateCheckbox.value = value.candidate.candidateId + "_" + value.candidate.candidateFirstName;
+        candidateCheckbox.class = "filled-in";
+        candidateCheckbox.id = "candidate_cb_" + value.candidate.candidateId;
+
+        var cbLabel = document.createElement("label");
+        cbLabel.textContent = ".";
+        cbLabel.style = "color: transparent";
+        cbLabel.setAttribute("for", "candidate_cb_" + value.candidate.candidateId);
+        candidateCardRowColOne.appendChild(candidateCheckbox);
+        candidateCardRowColOne.appendChild(cbLabel);
+    }
+
     var userAvatar = document.createElement("img");
     userAvatar.className = "tooltipped";
     userAvatar.style = "margin: -6px 8px 0 -6px; cursor: pointer; text-decoration: none";
@@ -1233,4 +1249,146 @@ function renderIndividualCandidateCard(value, parent, view) {
     }
     candidateUnlockFont.style = "font-weight: bold; font-size: 12px";
     unlockCandidateBtn.appendChild(candidateUnlockFont);
+}
+
+//candidate actions common methods
+
+var checkedCandidateIdList = [];
+var checkedCandidateNameList = [];
+
+function selectCheckedCandidates() {
+    checkedCandidateIdList = [];
+    checkedCandidateNameList = [];
+    $('#candidateResultContainer input:checked').each(function() {
+        var val = this.value;
+        var valArray = val.split("_");
+        checkedCandidateIdList.push(parseInt(valArray[0]));
+        checkedCandidateNameList.push(valArray[1]);
+    });
+
+    if(checkedCandidateIdList.length > 0){
+        $("#smsText").val('');
+        $("#candidateNameList").html(checkedCandidateNameList.join(", "));
+        $("#totalCount").html("Total " + checkedCandidateNameList.length + " Candidates");
+        $("#sendSmsModal").openModal();
+    } else{
+        notifyError("Please select at least 1 candidate to send SMS");
+    }
+}
+
+function uncheckAll() {
+    $('#candidateResultContainer').find('input[type=checkbox]:checked').removeAttr('checked');
+}
+
+function checkAll() {
+    uncheckAll();
+    $("#candidateResultContainer").find('input[type=checkbox]').each(function () {
+        this.checked = true;
+    });
+}
+
+function selectCheckedCandidatesToUnlock() {
+    checkedCandidateIdList = [];
+    checkedCandidateNameList = [];
+    $('#candidateResultContainer input:checked').each(function() {
+        var val = this.value;
+        var valArray = val.split("_");
+        checkedCandidateIdList.push(parseInt(valArray[0]));
+        checkedCandidateNameList.push(valArray[1]);
+    });
+
+    if(checkedCandidateIdList.length > 0){
+        if(checkedCandidateIdList.length > contactCredits){
+            notifyError("You can unlock " + contactCredits + " candidates only.");
+        } else{
+            $("#totalUnlockCount").html("You are unlocking " + checkedCandidateNameList.length + " candidate's contact. A total of " +
+                checkedCandidateNameList.length + " contact unlock credits will be debited from your account. Please confirm");
+            $("#unlockCandidateModal").openModal();
+        }
+    } else{
+        notifyError("Please select at least 1 candidate to unlock contact");
+    }
+}
+
+function confirmUnlock() {
+    if(checkedCandidateIdList.length > contactCredits){
+        notifyError("You can unlock " + contactCredits + " candidates only.");
+    } else{
+        var s = {
+            candidateIdList: checkedCandidateIdList
+        };
+        $.ajax({
+            type: "POST",
+            url: "/bulkUnlockCandidate",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(s),
+            success: processDataBulkUnlock
+        });
+    }
+}
+
+function processDataBulkUnlock(returnedData){
+    if(returnedData != "-1"){
+        var count = 0;
+        var unlockedCandidateList = returnedData.unlockContactResponseList;
+        unlockedCandidateList.forEach(function (unlockedCandidate) {
+            if(unlockedCandidate.status == 1){
+                try {
+                    count++;
+                    $("#candidate_" + unlockedCandidate.candidateId).html(unlockedCandidate.candidateMobile);
+                    $("#unlock_candidate_" + unlockedCandidate.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 customUnlockBtn").addClass("contactUnlocked right").removeAttr('onclick');
+                } catch (err){}
+            }
+        });
+
+        contactCredits = returnedData.contactCreditCount;
+        $("#remainingContactCredits").html(returnedData.recruiterContactCreditsLeft);
+        $("#remainingContactCreditsMobile").html(returnedData.recruiterContactCreditsLeft);
+        $("#remainingInterviewCredits").html(returnedData.recruiterInterviewCreditsLeft);
+        $("#remainingInterviewCreditsMobile").html(returnedData.recruiterInterviewCreditsLeft);
+
+        notifySuccess("Successfully unlocked " + count + " candidate's contact information!");
+
+        $("#unlockCandidateModal").closeModal();
+    } else{
+        //session not available
+        logoutRecruiter();
+    }
+}
+
+function checkSmsText(){
+    if($("#smsText").val() == ""){
+        $("#sendSms").removeClass("disabled").addClass("disabled");
+    } else{
+        $("#sendSms").removeClass("disabled");
+    }
+}
+
+function sendSms(){
+    if(checkedCandidateIdList.length > 0){
+        var s = {
+            candidateIdList: checkedCandidateIdList,
+            smsMessage :$("#smsText").val()
+        };
+        $.ajax({
+            type: "POST",
+            url: "/bulkSendSms",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(s),
+            success: processDataBulkSms
+        });
+    } else{
+        notifyError("Please select atleast 1 candidate to send SMS");
+    }
+}
+
+function processDataBulkSms(returnedData) {
+    if(returnedData == '1'){
+        notifySuccess("SMS sent successfully to " + checkedCandidateNameList.length + " candidates!");
+        $("#sendSmsModal").closeModal();
+    } else if(returnedData == '-1'){
+        logoutRecruiter();
+    } else{
+        notifyError("Something went wrong. Please try again later");
+    }
 }
