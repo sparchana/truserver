@@ -76,16 +76,27 @@ var applyInShort = (function ($) {
                 var promise = applyInShort.fetch.missingData();
 
                 promise.then(function () {
+
+                    /* render locality card */
                     if(applyInShort.missingData.localityPopulateResponse != null) {
 
                         applyInShort.render.jobLocalityCard(applyInShort.missingData.localityPopulateResponse);
                     }
 
+                    /* TODO render prescreen card */
+                    if(applyInShort.missingData.shortPSPopulateResponse != null) {
+
+                    }
+
+
+                    /* render interview slot card */
                     if(applyInShort.missingData.interviewSlotPopulateResponse != null
                         && applyInShort.missingData.interviewSlotPopulateResponse.interviewResponse.status == 2
                         && applyInShort.missingData.interviewSlotPopulateResponse.interviewSlotMap != null) {
 
                         applyInShort.render.interviewSlotCard(applyInShort.missingData.interviewSlotPopulateResponse.interviewSlotMap);
+                    } else {
+                        $('#jobInterviewSlotDiv').hide();
                     }
 
                     console.log(applyInShort.missingData);
@@ -141,6 +152,9 @@ var applyInShort = (function ($) {
                         $('#interViewSlot').append(option);
                     }
                 }
+            },
+            preScreenCard: function () {
+
             }
 
         },
