@@ -2119,18 +2119,22 @@ public class CandidateService
             Logger.info("About to call CandidateService.createCandidateProfile");
 
             CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
-            if(session().get("sessionChannel") != null || !session().get("sessionChannel").isEmpty()){
+            int channel = 0;
+            // determine channel
+            if(session() != null && (session().get("sessionChannel") != null || !session().get("sessionChannel").isEmpty())){
                 Logger.info("Session : "+ session().get("sessionChannel"));
                 if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
-                    candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                            InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE,
-                            ServerConstants.UPDATE_ALL_BY_SUPPORT);
+                    channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
                 }else{
-                    candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                            InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE,
-                            ServerConstants.UPDATE_ALL_BY_SUPPORT);
+                    channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
                 }
             }
+            else {channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;}
+
+            // candidate self creation (i.e. 1 click resume upload) is treated as "support" since the create API does not allow full candidate creation with channel = self
+            candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
+                    channel,
+                    ServerConstants.UPDATE_ALL_BY_SUPPORT);
 
             // get candidate Id, Name
             candidateId = candidateSignUpResponse.getCandidateId();
