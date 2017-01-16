@@ -23,6 +23,7 @@ import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.RawSql;
 import com.avaje.ebean.RawSqlBuilder;
+import controllers.RecruiterController;
 import controllers.businessLogic.*;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
@@ -1160,16 +1161,25 @@ public class JobPostWorkflowEngine {
     public static ShortJobApplyResponse getShortJobApplyResponse(Long jobPostId, Long candidateId) {
         ShortJobApplyResponse applyResponse = new ShortJobApplyResponse();
 
-        applyResponse.setShortPSPopulateResponse(JobPostWorkflowEngine.getJobPostVsCandidate(jobPostId, candidateId));
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
+
+        applyResponse.setShortPSPopulateResponse(JobPostWorkflowEngine.getJobPostVsCandidate(jobPost, candidateId));
         applyResponse.setInterviewSlotPopulateResponse(
-                new InterviewSlotPopulateResponse(JobService.getInterviewSlot(jobPostId),
-                RecruiterService.isInterviewRequired(jobPostId)));
-        applyResponse.setLocalityPopulateResponse(JobPostWorkflowEngine.getJobLocality(jobPostId));
+                new InterviewSlotPopulateResponse(JobService.getInterviewSlot(jobPost),
+                RecruiterService.isInterviewRequired(jobPost)));
+        applyResponse.setLocalityPopulateResponse(JobPostWorkflowEngine.getJobLocality(jobPost));
+
+        RecruiterController.sanitizeJobPostData(jobPost);
+        jobPost.setJobPostToLocalityList(new ArrayList<>());
+        jobPost.setInterviewDetailsList(new ArrayList<>());
+        jobPost.setJobPostAssetRequirements(new ArrayList<>());
+
+        applyResponse.setJobPost(jobPost);
 
         return applyResponse;
     }
 
-    public static ShortPSPopulateResponse getJobPostVsCandidate(Long jobPostId, Long candidateId) {
+    public static ShortPSPopulateResponse getJobPostVsCandidate(JobPost jobPost, Long candidateId) {
         ShortPSPopulateResponse response = new ShortPSPopulateResponse();
 
         Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
@@ -1178,19 +1188,17 @@ public class JobPostWorkflowEngine {
             return response;
         }
 
-        JobPost jobPost = JobPostDAO.findById(jobPostId);
-
         if (jobPost == null) {
             response.setStatus(ShortPSPopulateResponse.Status.FAILURE);
             return response;
         }
 
-        response.setJobPostId(jobPostId);
+        response.setJobPostId(jobPost.getJobPostId());
         response.setCandidateId(candidateId);
 
 
         List<PreScreenRequirement> preScreenRequirementList = PreScreenRequirement.find.where()
-                .eq("jobPost.jobPostId", jobPostId).orderBy().asc("category").findList();
+                .eq("jobPost.jobPostId", jobPost.getJobPostId()).orderBy().asc("category").findList();
 
 
         Map<Integer, List<PreScreenRequirement>> preScreenMap = new HashMap<>();
@@ -1280,12 +1288,7 @@ public class JobPostWorkflowEngine {
         return response;
     }
 
-    public static LocalityPopulateResponse getJobLocality(Long jobPostId) {
-        if(jobPostId == null){
-            return null;
-        }
-
-        JobPost jobPost = JobPostDAO.findById(jobPostId);
+    public static LocalityPopulateResponse getJobLocality(JobPost jobPost) {
 
         if(jobPost == null) {
             return null;
@@ -1305,13 +1308,13 @@ public class JobPostWorkflowEngine {
         String key = preScreenRequirement.getProfileRequirement().getProfileRequirementTitle().toLowerCase();
         switch (key) {
             case "age":
-                if( candidate.getCandidateDOB() == null) response.setDobAvailable(false); break;
+                if( candidate.getCandidateDOB() == null) response.setDobMissing(true); break;
             case "experience":
                 if( candidate.getCandidateTotalExperience() == null) {
 
                     List<JobRole> jobRoleList = JobRole.find.all();
                     response.setExperienceResponse(
-                            new ShortPSPopulateResponse.ExperienceResponse(false, jobRoleList));
+                            new ShortPSPopulateResponse.ExperienceResponse(true, jobRoleList));
                 }
                 break;
             case "education":
@@ -1320,16 +1323,16 @@ public class JobPostWorkflowEngine {
                     List<Education> educationsList = Education.find.all();
 
                     response.setEducationResponse(
-                            new ShortPSPopulateResponse.EducationResponse(false, educationsList, degreeList));
+                            new ShortPSPopulateResponse.EducationResponse(true, educationsList, degreeList));
                 }
                 break;
             case "gender":
                 if( candidate.getCandidateGender() == null) {
-                    response.setGenderAvailable(false);
+                    response.setGenderMissing(true);
                 } break;
             case "salary":
                 if( candidate.getCandidateLastWithdrawnSalary() == null) {
-                    response.setSalaryAvailable(false);
+                    response.setSalaryMissing(true);
                     break;
                 }
             default: break;

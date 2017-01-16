@@ -1301,6 +1301,7 @@ public class Application extends Controller {
     public static Result renderJobPostCards() { return ok(views.html.Fragment.hot_jobs_card_view.render());}
     public static Result pageNotFound() { return ok(views.html.page_not_found.render());}
     public static Result renderJobRelatedPages(String urlString, Long candidateId, String key){
+        boolean redirectToApplyInShort = false;
         if(candidateId != null && key != null) {
             boolean invalidParams = false;
             Candidate existingCandidate = CandidateDAO.getById(candidateId);
@@ -1319,8 +1320,10 @@ public class Application extends Controller {
                         AuthService.addSession(existingAuth, existingCandidate);
                         // update auth otp after login
                         // TODO in front end clear location.search , after loading
-                        existingAuth.setOtp(Util.generateOtp());
-                        existingAuth.update();
+//                        existingAuth.setOtp(Util.generateOtp());
+//                        existingAuth.update();
+
+                        redirectToApplyInShort = true;
                     } else {
                         invalidParams = true;
                     }
@@ -1339,44 +1342,40 @@ public class Application extends Controller {
         UrlValidatorUtil urlValidatorUtil = new UrlValidatorUtil();
         UrlParameters urlParameters = urlValidatorUtil.parseURL(urlString);
 
-        if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION_COMPANY_WITH_JOB_POST_ID) {
+        if (urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION_COMPANY_WITH_JOB_POST_ID) {
             String jobLocation = urlParameters.getJobLocation();
             String jobCompany = urlParameters.getJobCompany();
             String jobPostTile = urlParameters.getJobPostTitle();
             Long jobPostId = urlParameters.getJobPostId();
-            return ok(views.html.Fragment.posted_job_details.render(jobLocation,jobCompany,jobPostTile,jobPostId));
+            if(redirectToApplyInShort) {
+                return ok(views.html.Fragment.apply_job_in_short.render(jobLocation, jobCompany, jobPostTile, jobPostId));
+            } else {
+                return ok(views.html.Fragment.posted_job_details.render(jobLocation, jobCompany, jobPostTile, jobPostId));
             }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION_COMPANY) {
-                //return ok("All Post");
-                return ok(views.html.page_not_found.render());
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_COMPANY) {
-                //return ok("Job Post at Company");
-                return ok(views.html.page_not_found.render());
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION) {
-               return ok(views.html.Fragment.job_role_page.render(urlParameters.getJobRoleName(),
-                       urlParameters.getJobRoleId()));
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_LOCATION_COMPANY) {
-                //return ok("All Jobs in Location at Company");
-                return ok(views.html.page_not_found.render());
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_COMPANY) {
-                return ok(views.html.page_not_found.render());
-                //return ok("All Jobs at Company");
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_LOCATION) {
-                return ok(views.html.Fragment.show_all_jobs_page.render());
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_WITH_JOB_ROLE_ID) {
-                String jobRoleName = urlParameters.getJobRoleName();
-                Long jobRoleId = urlParameters.getJobRoleId();
-                return ok(views.html.Fragment.job_role_page.render(jobRoleName,jobRoleId));
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.INVALID_REQUEST){
-                return ok(views.html.page_not_found.render());
-            }
+        } else if (urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION_COMPANY) {
+            //return ok("All Post");
+            return ok(views.html.page_not_found.render());
+        } else if (urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_COMPANY) {
+            //return ok("Job Post at Company");
+            return ok(views.html.page_not_found.render());
+        } else if (urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION) {
+            return ok(views.html.Fragment.job_role_page.render(urlParameters.getJobRoleName(),
+                    urlParameters.getJobRoleId()));
+        } else if (urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_LOCATION_COMPANY) {
+            //return ok("All Jobs in Location at Company");
+            return ok(views.html.page_not_found.render());
+        } else if (urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_COMPANY) {
+            return ok(views.html.page_not_found.render());
+            //return ok("All Jobs at Company");
+        } else if (urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_LOCATION) {
+            return ok(views.html.Fragment.show_all_jobs_page.render());
+        } else if (urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_WITH_JOB_ROLE_ID) {
+            String jobRoleName = urlParameters.getJobRoleName();
+            Long jobRoleId = urlParameters.getJobRoleId();
+            return ok(views.html.Fragment.job_role_page.render(jobRoleName, jobRoleId));
+        } else if (urlParameters.getUrlType() == UrlParameters.TYPE.INVALID_REQUEST) {
+            return ok(views.html.page_not_found.render());
+        }
 
         return ok(views.html.page_not_found.render());
     }
@@ -2392,5 +2391,9 @@ public class Application extends Controller {
 
         return ok(toJson(RecruiterService.expireCreditPack(addRecruiterRequest)));
 
+    }
+
+    public static Result getMissingData(Long jobPostId, Long candidateId) {
+        return ok(toJson(JobPostWorkflowEngine.getShortJobApplyResponse(jobPostId, candidateId)));
     }
 }

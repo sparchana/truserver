@@ -542,12 +542,6 @@ public class RecruiterService {
         recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.getStatusSuccess());
         recruiterSignUpResponse.setOtp(randomPIN);
     }
-    public static InterviewResponse isInterviewRequired(Long jobPostId) {
-        if(jobPostId == null) {
-            return null;
-        }
-        return isInterviewRequired(JobPostDAO.findById(jobPostId));
-    }
 
     public static InterviewResponse isInterviewRequired(JobPost jobPost) {
         InterviewResponse interviewResponse = new InterviewResponse();

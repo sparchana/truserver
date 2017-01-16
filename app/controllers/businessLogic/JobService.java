@@ -1331,13 +1331,7 @@ public class JobService {
         }
     }
 
-    public static Map<String, InterviewDateTime> getInterviewSlot(Long jobPostId) {
-
-        if(jobPostId == null || jobPostId <= 0) {
-            return null;
-        }
-
-        JobPost jobPost = JobPostDAO.findById(jobPostId);
+    public static Map<String, InterviewDateTime> getInterviewSlot(JobPost jobPost) {
 
         if(jobPost == null){
             return null;

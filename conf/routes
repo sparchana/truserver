@@ -187,6 +187,11 @@ GET         /ss/                                                          contro
 POST        /api/search/                                                  controllers.SearchController.search(page: Integer?=null)
 
 
+# Job Apply InShort routes
+#~~~~~~~~~~~~~~~~~~~~
+GET         /apply/inshort/:urlString                                     controllers.Application.renderJobRelatedPages( urlString: String, cid:java.lang.Long ?=null, key:String ?=null)
+GET         /apply/inshort/api/getMissingDate                             controllers.Application.getMissingData(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
+
 #new routes
 #~~~~~~~~~~~~~~~~~~~~
 GET         /navBar                                                       controllers.Application.renderPageNavBar()
