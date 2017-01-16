@@ -2,6 +2,8 @@
  * Created by hawk on 12/1/17.
  */
 
+document.getElementById('uploadResumeContent').addEventListener('change', uploadResume, false);
+
 function viewDownloadResume(candidateId) {
     var url = "/fetchResume/?candidateId="+candidateId;
     try {
@@ -22,8 +24,9 @@ function viewDownloadResume(candidateId) {
 }
 function processDataForViewResume(returnedData){
     console.log(JSON.stringify(returnedData));
-    if (returnedData.length > 0) {
+    if (returnedData.filePath != null) {
             $(".resumeUploadBox").hide();
+            $("#userViewResume").html("");
             var parentView = $("#userViewResume");
             var viewLink = document.createElement("a");
             viewLink.href = "http://docs.google.com/gview?url=" + returnedData.filePath + "&embedded=true";
@@ -40,9 +43,7 @@ function processDataForViewResume(returnedData){
             parentDownload.append(downloadLink);
     }
     else{
-        console.log("Entered");
-            $("#userViewResume").innerHTML = "No Resume Uploaded";
-            document.getElementById('uploadResumeContent').addEventListener('change', uploadResume, false);
+        console.log("No resume Uploaded");
     }
 }
 
@@ -68,6 +69,7 @@ function uploadResume(evt){
                 success: processDataForAddResume
             });
             $('#uploadResumeModal').modal('show');
+            $('#mySignUpModal').modal('hide');
         } catch(exception) {
             console.log("Exception Occurred!!" + exception);
             console.log(new Error().stack);
@@ -97,6 +99,11 @@ function processDataForAddResume(returnedData) {
             h4.textContent = "You will shortly receive details for login";
             parent.append(h4);
             console.log("Uploaded Successfully");
+
+            //condition if upload is done without login
+            if(candidateId != null){
+                viewDownloadResume(candidateId);
+            }
         }
         else{
             console.log("Upload Fail");
