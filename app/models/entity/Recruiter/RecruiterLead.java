@@ -1,6 +1,7 @@
 package models.entity.Recruiter;
 
 import com.avaje.ebean.*;
+import models.entity.OM.CandidateResume;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import api.ServerConstants;
@@ -356,14 +357,6 @@ public class RecruiterLead extends Model {
 
     }
 
-    public List<RecruiterLead> readByAttribute(List<Map<String,String>> attrNameValueList) {
-        ExpressionList<RecruiterLead> query = find.where();
-        for(Map<String,String> each:attrNameValueList){
-            if(each.keySet().size() > 0 && each.values().size() > 0){
-                query.add(eq(each.keySet().toArray()[0].toString(),each.values().toArray()[0].toString()));
-            }
-        }
-        return query.findList();
-    }
+    public ExpressionList<RecruiterLead> getQuery(){return find.where();}
 
 }
