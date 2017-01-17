@@ -1228,12 +1228,14 @@ var applyInShort = (function ($) {
                     $('#companyDetailsCapture').hide();
                 }
             },
+
             showExperienceCaptureDiv: function () {
                 if ($("#candidateExp").is(":checked")) {
                     $("#experienceDuration").css("display", "block");
                     $("#experienceQuestion").css("display", "block");
                 }
             },
+
             showExperienceBox: function () {
                 var yearValue = $("#candidateTotalExperienceYear").val();
                 var monthValue = $("#candidateTotalExperienceMonth").val();
@@ -1246,6 +1248,7 @@ var applyInShort = (function ($) {
                     $("#experienceCurrently").css("display", "none");
                 }
             },
+
             disableCurrentCompanyOption: function () {
                 if (!$("#currentlyWorking").is(":checked")) {
                     var radios = document.getElementsByName('addCurrently_Working');
@@ -1266,6 +1269,7 @@ var applyInShort = (function ($) {
                     }
                 }
             },
+
             addmoreCompany: function () {
                 console.log(appz.companyCount);
                 if (appz.companyCount != 0 && appz.companyCount <= 3) {
@@ -1348,6 +1352,396 @@ var applyInShort = (function ($) {
                 }
 
             }
+        },
+        do: {
+            submit: function (d) {
+                console.log("data to submit:"+d);
+
+                try {
+                    $.ajax({
+                        type: "POST",
+                        url: "/updateCandidateDetailViaShortJobApply/?propertyIdList=" + appz.missingData.propertyIdList + "&cId=" + appz.candidateId + "&jobPostId="+appz.jobPostId,
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(d),
+                        success: function (returnedData) {
+                            if(returnedData.status == INTERVIEW_REQUIRED){
+
+                            } else if(returnedData.status == INTERVIEW_NOT_REQUIRED) {
+
+                                $("#confirmationModal").modal("show");
+
+                                $.notify("Successfully Submitted Application form. Thanks !", 'success');
+                            } else {
+                                $.notify("Something went wrong. Please try again !", 'success');
+                            }
+                        }
+                    });
+                } catch (exception) {
+                    console.log("exception occured!!" + exception);
+                }
+            },
+            validateSubmit: function () {
+                appz.missingData.propertyIdList;
+
+                var okToSubmitList = [];
+                var okToSubmit = true;
+
+                var dobCheck;
+                var prevCompanyList = [];
+                var d = {};
+                var msg;
+
+                d["candidateId"] = parseInt(appz.candidateId);
+                d["jobPostId"] = parseInt(appz.jobPostId);
+                d["propertyIdList"] = appz.propertyIdList;
+
+                var localityId = $('#jobLocality').val();
+
+                if(localityId == null || localityId == 0){
+                    okToSubmit = false;
+                    msg = "Please select a valid locality.";
+                    var submit = {
+                        propId : 11,
+                        message: msg,
+                        submissionStatus: okToSubmit
+                    };
+                    okToSubmitList.push(submit);
+                } else {
+                    d["localityId"] = parseInt(localityId);
+                }
+
+                var selectedInterview = $('#interViewSlot').val();
+
+                if(selectedInterview == null || selectedInterview == "0"){
+                    okToSubmit = false;
+                    msg = "Please select a valid Interview Slot.";
+                    var submit = {
+                        propId : 12,
+                        message: msg,
+                        submissionStatus: okToSubmit
+                    };
+                    okToSubmitList.push(submit);
+                } else {
+                    d["dateInMillis"] =parseInt(selectedInterview.split("_")[0]);
+                    d["timeSlotId"] = parseInt(selectedInterview.split("_")[1]);
+                }
+
+                $.each(appz.missingData.propertyIdList, function (index, propId) {
+
+                    okToSubmit = true;
+                    if (propId == 0) {
+                        var documentList = [];
+                        $('#document_details').each(function () {
+                            $(this).find('input[type=checkbox]').each(function () {
+                                var item = {};
+                                var id;
+                                id = $(this).attr('id').split("_").slice(-1).pop();
+
+                                var isChecked = $('input#idProofCheckbox_' + id).is(':checked');
+                                var isValid = validateInput(id, $('input#idProofValue_' + id).val().trim());
+                                if ( isValid && isChecked) {
+                                    item["idProofId"] = parseInt(id);
+                                    item["idNumber"] = $('input#idProofValue_' + id).val().trim();
+                                } else if (isChecked && !isValid) {
+                                    okToSubmit = false;
+                                    $.notify("Please provide valid document details.", 'error');
+                                }
+
+                                if (!jQuery.isEmptyObject(item)) {
+                                    documentList.push(item);
+                                };
+
+                                if(!okToSubmit){
+                                    var submit = {
+                                        propId : propId,
+                                        message: msg,
+                                        submissionStatus: okToSubmit
+                                    };
+                                    okToSubmitList.push(submit);
+                                }
+                            });
+                        });
+
+                        // documents
+                        d ["idProofWithIdNumberList"] = documentList;
+                        //
+                        // if(documentList.length == 0) {
+                        //     // won't allow candidate to make submission without provide alteast one doc
+                        //     $.notify("Please provide your document details", 'error');
+                        //     okToSubmit = false;
+                        // }
+
+                    } else if (propId == 1) {
+                        var check;
+                        var languageMap = [];
+                        var languageKnown = $('#language_details input:checked').map(function () {
+                            check = 0;
+                            var id = this.id;
+                            var name = this.name;
+                            var item = {};
+                            var pos;
+
+                            for (var i in languageMap) {
+                                if (languageMap[i].id == id) {
+                                    pos = i;
+                                    check = 1;
+                                    break;
+                                }
+                            }
+                            if (check == 0) {
+                                item["id"] = id;
+                                item["u"] = 0;
+                                item["rw"] = 0;
+                                item["s"] = 0;
+                                if (name == "u")
+                                    item["u"] = 1;
+                                else if (name == "rw")
+                                    item["rw"] = 1;
+                                else
+                                    item["s"] = 1;
+                                languageMap.push(item);
+                            }
+                            else {
+                                if (name == "u")
+                                    languageMap[pos].u = 1;
+                                else if (name == "rw")
+                                    languageMap[pos].rw = 1;
+                                else
+                                    languageMap[pos].s = 1;
+                            }
+                        }).get();
+
+                        d ["candidateKnownLanguageList"] = languageMap;
+
+                        /*if(languageMap.length == 0) {
+                         okToSubmit = false;
+                         $.notify("Please provide all known languages", 'error');
+                         }*/
+                        if(!okToSubmit) {
+                            var submit = {
+                                propId : propId,
+                                message: msg,
+                                submissionStatus: okToSubmit
+                            };
+                            okToSubmitList.push(submit);
+                        }
+                    } else if (propId == 2) {
+                        // asset
+                        var assetArrayList = [];
+                        $('#assets_details input:checked').each(function () {
+                            var id = parseInt($(this).attr('id').split("_").slice(-1).pop());
+                            assetArrayList.push(id);
+                        });
+
+                        d ["assetIdList"] = assetArrayList;
+                        if(!okToSubmit){
+                            var submit = {
+                                propId : propId,
+                                message: msg,
+                                submissionStatus: okToSubmit
+                            };
+                            okToSubmitList.push(submit);
+                        }
+                    } else if (propId == 3) {
+                        // age submission
+                        if($('#dob_day').val() == "Day" || $('#dob_month').val() == "Month" || $('#dob_year').val() == "Year") {
+                            okToSubmit = false;
+                        }else{
+                            var selectedDob = $('#dob_year').val() + "-" + $('#dob_month').val() + "-" + $('#dob_day').val();
+                        }
+                        if(selectedDob == "") {
+                            okToSubmit = false;
+                        }
+                        var c_dob = String(selectedDob);
+                        var selectedDate = new Date(c_dob);
+                        var toDate = new Date();
+                        var pastDate= new Date(toDate.setFullYear(toDate.getFullYear() - 18)); // ex: if current year: 2016 || pastDate: 1998
+                        toDate =  new Date(); //reset toDate to current Date
+                        var zombieYear = new Date(toDate.setFullYear(toDate.getFullYear() - 70)); // ex: if current year: 2016  || zombieYear: 1928
+                        toDate =  new Date(); //reset toDate to current Date
+                        if (selectedDate >= pastDate) {
+                            dobCheck = 0;
+                            okToSubmit = false;
+                        }
+                        if(selectedDate <= zombieYear ) {
+                            dobCheck = 0;
+                            okToSubmit = false;
+                        }
+                        d ["candidateDob"] = c_dob;
+                        if(!okToSubmit){
+                            $.notify("Please provide valid Date of birth", 'error');
+                            var submit = {
+                                propId : propId,
+                                message: msg,
+                                submissionStatus: okToSubmit
+                            };
+                            okToSubmitList.push(submit);
+                        }
+                    } else if (propId == 4) {
+                        /* calculate total experience in months */
+                        if(($('input:radio[name="candidateExperience"]:checked').length == 0)){
+                            okToSubmit = false;
+                            $.notify("Please select Fresher/Experienced.", 'error');
+                        }
+                        var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
+                        var expYear = parseInt($('#candidateTotalExperienceYear').val());
+                        var totalExp = expMonth + (12 * expYear);
+                        var isExpEmpty = ($('#candidateTotalExperienceMonth').val() == 0) && ($('#candidateTotalExperienceYear').val() == 0);
+                        if ($('input[id=candidateExp]').is(":checked") && isExpEmpty) {
+                            $.notify("Please provide your total years of experience", 'error');
+                            okToSubmit = false;
+                        }
+
+                        // are you currently working
+                        if ($('input[id=candidateExp]').is(":checked") && $('#currentlyWorking').is(":checked")
+                            && !$('input[name=addCurrently_Working]').is(":checked")) {
+                            $.notify("Please provide your current company details and mark appropriately.", 'error');
+                            okToSubmit = false;
+                        }
+
+                        var i = 1;
+                        prevCompanyList = [];
+                        for (i; i<=3; i++) {
+                            var item = {};
+                            if($('#companyName_'+i).val() == "" && $('#workedJobRole_'+i).val() > 0) {
+                                msg = "please provide company name";
+                                $.notify("please provide company name", 'error');
+                                okToSubmit = false;
+                            }
+                            if($('#companyName_'+i).val() != "" && $('#workedJobRole_'+i).val() < 0) {
+                                msg += " | please provide Job Role";
+
+                                $.notify("please provide Job Role", 'error');
+                                okToSubmit = false;
+                            }
+                            if($('#companyName_'+i).val() != "" && $('#workedJobRole_'+i).val() > 0) {
+                                item["companyName"] = $('#companyName_'+i).val();
+                                item["jobRoleId"] = $('#workedJobRole_'+i).val();
+                                item["current"] = $('#addCurrentlyWorking_'+i).is(":checked");
+                            }
+                            if (!jQuery.isEmptyObject(item)) {
+                                prevCompanyList.push(item);
+                            }
+                        }
+
+                        d ["candidateTotalExperience"] = totalExp;
+                        d ["pastCompanyList"] = prevCompanyList;
+                        d ["candidateIsEmployed"] = $('#currentlyWorking').is(":checked");
+                        d ["extraDetailAvailable"] = true;
+
+                        if(!okToSubmit){
+                            var submit = {
+                                propId : propId,
+                                message: msg,
+                                submissionStatus: okToSubmit
+                            };
+                            okToSubmitList.push(submit);
+                        }
+
+                    } else if (propId == 5) {
+                        d ["candidateEducationLevel"] = $('#candidateHighestEducation').val();
+                        d ["candidateDegree"] = ($('#candidateHighestDegree').val());
+                        d ["candidateEducationInstitute"] = $('#candidateEducationInstitute').val();
+                        d ["candidateEducationCompletionStatus"] = parseInt($('input:radio[name="candidateEducationCompletionStatus"]:checked').val());
+
+                        if($('#candidateHighestEducation').val() == "-1" || $('#candidateHighestEducation').val() > 3 ||
+                            $('input:radio[name="candidateEducationCompletionStatus"]:checked').val() == null){
+                            if(($('#candidateHighestDegree').val()) == "-1" ||
+                                $('#candidateEducationInstitute').val() == "") {
+                                okToSubmit = false;
+                                $.notify("Please provide full education details", 'error');
+
+                            }
+                        }
+
+                        if(!okToSubmit){
+                            var submit = {
+                                propId : propId,
+                                message: msg,
+                                submissionStatus: okToSubmit
+                            };
+                            okToSubmitList.push(submit);
+                        }
+                    } else if (propId == 6) {
+                        d ["candidateGender"] = ($('input:radio[name="gender"]:checked').val());
+                        if(($('input:radio[name="gender"]:checked').length == 0)) {
+                            okToSubmit = false;
+                            $.notify("Please provide your gender details", 'error');
+                        }
+                        if(!okToSubmit){
+                            var submit = {
+                                propId : propId,
+                                message: msg,
+                                submissionStatus: okToSubmit
+                            };
+                            okToSubmitList.push(submit);
+                        }
+                    } else if (propId == 7) {
+                        var salary = $('#candidateLastWithdrawnSalary').val();
+                        if (!isNaN(salary) && parseInt(salary) >= 1000 && parseInt(salary) <= 100000) {
+                            d ["candidateLastWithdrawnSalary"] = parseInt($('#candidateLastWithdrawnSalary').val());
+                        } else {
+                            okToSubmit = false;
+                            $.notify("Please enter a valid 'Last Withdrawn Salary' per month. (Min: 1000, Max: 1,00,000)", 'error');
+                            if(!okToSubmit){
+                                var submit = {
+                                    propId : propId,
+                                    message: "Please enter a valid 'Last Withdrawn Salary' per month. (Min: 1000, Max: 1,00,000)",
+                                    submissionStatus: okToSubmit
+                                };
+                                okToSubmitList.push(submit);
+                            }
+                        }
+                    } else if (propId == 8) {
+                        var lId = $('#candidateHomeLocality').val();
+                        if(lId == null) {
+                            okToSubmit = false;
+                            $.notify("Please enter a valid Locality", 'error');
+                        } else{
+                            d ["candidateHomeLocality"] = parseInt(lId);
+                        }
+                        if(!okToSubmit){
+                            var submit = {
+                                propId : propId,
+                                message: "Please enter a valid Home locality",
+                                submissionStatus: okToSubmit
+                            };
+                            okToSubmitList.push(submit);
+                        }
+                    } else if (propId == 9) {
+                        var timeShiftPrefId = $('#candidateTimeShiftPref').val();
+                        if(timeShiftPrefId == "-1") {
+                            okToSubmit = false;
+                            $.notify("Please enter a valid time/shift preference (ex: Part time, Full time)", 'error');
+                        } else {
+                            d ["candidateTimeShiftPref"] = $('#candidateTimeShiftPref').val();
+                        }
+                        if(!okToSubmit){
+                            var submit = {
+                                propId : propId,
+                                message: "Please enter a valid time preference",
+                                submissionStatus: okToSubmit
+                            };
+                            okToSubmitList.push(submit);
+                        }
+                    }
+                });
+
+                if (okToSubmitList.length == 0) {
+
+                    this.submit(d);
+
+                    $("#finalSubmitBtn").prop("disabled", true);
+
+                    // disable apply btn when its okay to submit (i.e submission is validated)..
+                    setTimeout(function(){
+                        $("#finalSubmitBtn").prop("disabled", false);
+                    },7000);
+
+                    return true;
+                }
+
+            }
         }
 
     };
@@ -1355,6 +1749,11 @@ var applyInShort = (function ($) {
     appz.method.init();
 
     appz.method.ending();
+
+    // search click listener
+    document.getElementById("finalSubmitBtn").addEventListener("click", function () {
+        appz.do.validateSubmit();
+    });
 
     return appz;
 

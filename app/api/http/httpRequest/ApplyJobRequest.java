@@ -9,7 +9,7 @@ import java.util.Date;
  */
 public class ApplyJobRequest {
     public String candidateMobile ;
-    public Integer jobId;
+    public Long jobId;
     public Integer localityId;
     public Boolean isPartner;
 
@@ -35,11 +35,11 @@ public class ApplyJobRequest {
         this.localityId = localityId;
     }
 
-    public Integer getJobId() {
+    public Long getJobId() {
         return jobId;
     }
 
-    public void setJobId(Integer jobId) {
+    public void setJobId(Long jobId) {
         this.jobId = jobId;
     }
 

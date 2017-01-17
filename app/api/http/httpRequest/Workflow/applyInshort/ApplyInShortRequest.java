@@ -2,20 +2,23 @@ package api.http.httpRequest.Workflow.applyInshort;
 
 import api.http.httpRequest.UpdateCandidateDetail;
 
+import java.util.List;
+
 /**
  * Created by zero on 17/1/17.
  */
 public class ApplyInShortRequest {
     /* locality req*/
     public Long candidateId;
-    public Integer jobId;
+    public Long jobPostId;
     public Integer localityId;
+    public List<Integer> propertyIdList;
 
     // pre screen request
     public UpdateCandidateDetail updateCandidateDetail;
 
     // selected interview slot req
-    public Integer timeSlot;
+    public Integer timeSlotId;
     public Long dateInMillis;
 
 
@@ -27,12 +30,12 @@ public class ApplyInShortRequest {
         this.candidateId = candidateId;
     }
 
-    public Integer getJobId() {
-        return jobId;
+    public Long getJobPostId() {
+        return jobPostId;
     }
 
-    public void setJobId(Integer jobId) {
-        this.jobId = jobId;
+    public void setJobPostId(Long jobPostId) {
+        this.jobPostId = jobPostId;
     }
 
     public Integer getLocalityId() {
@@ -51,12 +54,12 @@ public class ApplyInShortRequest {
         this.updateCandidateDetail = updateCandidateDetail;
     }
 
-    public Integer getTimeSlot() {
-        return timeSlot;
+    public Integer getTimeSlotId() {
+        return timeSlotId;
     }
 
-    public void setTimeSlot(Integer timeSlot) {
-        this.timeSlot = timeSlot;
+    public void setTimeSlotId(Integer timeSlotId) {
+        this.timeSlotId = timeSlotId;
     }
 
     public Long getDateInMillis() {
@@ -65,5 +68,13 @@ public class ApplyInShortRequest {
 
     public void setDateInMillis(Long dateInMillis) {
         this.dateInMillis = dateInMillis;
+    }
+
+    public List<Integer> getPropertyIdList() {
+        return propertyIdList;
+    }
+
+    public void setPropertyIdList(List<Integer> propertyIdList) {
+        this.propertyIdList = propertyIdList;
     }
 }

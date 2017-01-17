@@ -108,6 +108,7 @@ POST        /submitPreScreen                                              contro
 POST        /confirmInterview/:jpId/:value                                controllers.Application.confirmInterview(jpId : Long, value : Long)
 POST        /partnerConfirmInterview/:cId/:jpId/:value                    controllers.PartnerController.confirmInterview(cId : Long, jpId : Long, value : Long)
 POST        /updateCandidateDetailsViaPreScreen/                          controllers.Application.updateCandidateDetailsViaPreScreen(propertyIdList: String?= null, candidateMobile: String?= null,  jobPostId: java.lang.Long ?= null)
+POST        /updateCandidateDetailViaShortJobApply/                       controllers.Application.updateCandidateDetailsViaShortJobApply()
 POST        /updateFeedback                                               controllers.Application.updateFeedback()
 POST        /getDeActivationMessage                                       controllers.Application.getDeactivationMessage(candidateId: java.lang.Long?= null)
 POST        /updateRecruiterCreditPack                                    controllers.Application.updateRecruiterCreditPack()

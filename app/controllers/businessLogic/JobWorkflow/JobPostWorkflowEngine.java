@@ -1211,6 +1211,7 @@ public class JobPostWorkflowEngine {
             preScreenRequirements.add(preScreenRequirement);
             preScreenMap.put(preScreenRequirement.getCategory(), preScreenRequirements);
         }
+        response.setPropertyIdList(new ArrayList<>());
 
         for (Map.Entry<Integer, List<PreScreenRequirement>> entry : preScreenMap.entrySet()) {
             switch (entry.getKey()) {
@@ -1231,6 +1232,10 @@ public class JobPostWorkflowEngine {
                     }
 
                     response.setDocumentList(getDiffList(jobPostReqDocumentList, candidateIdProofList));
+
+                    if(response.getDocumentList().size() > 0) {
+                        response.getPropertyIdList().add(ServerConstants.PROPERTY_TYPE_DOCUMENT);
+                    }
                     break;
                 case ServerConstants.CATEGORY_LANGUAGE:
                     List<Language> candidateLanguageList = new ArrayList<>();
@@ -1251,6 +1256,9 @@ public class JobPostWorkflowEngine {
 
                     response.setLanguageList(getDiffList(jobPostReqLanguageList, candidateLanguageList));
 
+                    if(response.getLanguageList().size() > 0) {
+                        response.getPropertyIdList().add(ServerConstants.PROPERTY_TYPE_LANGUAGE);
+                    }
                     break;
                 case ServerConstants.CATEGORY_ASSET:
                     List<Asset> candidateAssetList = new ArrayList<>();
@@ -1269,6 +1277,9 @@ public class JobPostWorkflowEngine {
 
                     response.setAssetList(getDiffList(jobPostReqAssetList, candidateAssetList));
 
+                    if(response.getAssetList().size() > 0) {
+                        response.getPropertyIdList().add(ServerConstants.PROPERTY_TYPE_ASSET_OWNED);
+                    }
                     break;
 
                 case ServerConstants.CATEGORY_PROFILE:
@@ -1312,9 +1323,14 @@ public class JobPostWorkflowEngine {
         String key = preScreenRequirement.getProfileRequirement().getProfileRequirementTitle().toLowerCase();
         switch (key) {
             case "age":
-                if( candidate.getCandidateDOB() == null) response.setDobMissing(true); break;
+                if( candidate.getCandidateDOB() == null){
+                    response.getPropertyIdList().add(PROPERTY_TYPE_MAX_AGE);
+                    response.setDobMissing(true);
+                }
+                break;
             case "experience":
                 if( candidate.getCandidateTotalExperience() == null) {
+                    response.getPropertyIdList().add(PROPERTY_TYPE_EXPERIENCE);
 
                     List<JobRole> jobRoleList = JobRole.find.all();
                     response.setExperienceResponse(
@@ -1323,6 +1339,8 @@ public class JobPostWorkflowEngine {
                 break;
             case "education":
                 if( candidate.getCandidateEducation() == null) {
+                    response.getPropertyIdList().add(PROPERTY_TYPE_EDUCATION);
+
                     List<Degree> degreeList = Degree.find.all();
                     List<Education> educationsList = Education.find.all();
 
@@ -1332,10 +1350,13 @@ public class JobPostWorkflowEngine {
                 break;
             case "gender":
                 if( candidate.getCandidateGender() == null) {
+                    response.getPropertyIdList().add(PROPERTY_TYPE_GENDER);
+
                     response.setGenderMissing(true);
                 } break;
             case "salary":
                 if( candidate.getCandidateLastWithdrawnSalary() == null) {
+                    response.getPropertyIdList().add(PROPERTY_TYPE_SALARY);
                     response.setSalaryMissing(true);
                     break;
                 }
