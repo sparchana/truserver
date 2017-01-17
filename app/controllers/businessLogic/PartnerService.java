@@ -153,6 +153,13 @@ public class PartnerService {
         } else{
             Logger.info("LocalityId : " + partnerSignUpRequest.getPartnerLocality() + " does not exists");
         }
+
+        Company company = Company.find.where().eq("CompanyCode", partnerSignUpRequest.getPartnerCompanyId()).findUnique();
+        if(company != null){
+            existingPartner.setCompany(company);
+        } else{
+            Logger.info("LocalityId : " + partnerSignUpRequest.getPartnerLocality() + " does not exists");
+        }
     }
 
 

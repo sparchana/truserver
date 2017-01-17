@@ -13,6 +13,7 @@ import models.entity.Company;
 import models.entity.Static.CompanyStatus;
 import models.entity.Static.CompanyType;
 import models.entity.Static.Locality;
+import models.util.Util;
 import play.Logger;
 
 import java.io.File;
@@ -51,6 +52,7 @@ public class CompanyService {
                 Logger.info("Company does not exists. Creating a new Company");
                 Company newCompany = new Company();
                 newCompany  = getAndAddCompanyValues(addCompanyRequest,newCompany);
+                newCompany.setCompanyCode((long) Util.generateCompanyCode());
                 newCompany.save();
 
                 addCompanyResponse.setCompanyId(newCompany.getCompanyId());

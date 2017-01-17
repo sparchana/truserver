@@ -354,6 +354,15 @@ public class PartnerController {
         return ok("0");
     }
 
+public static Result checkExistingCompany(long id) {
+    Company company = Company.find.where().eq("CompanyCode", id).findUnique();
+    if(company!= null){
+        return ok("1");
+    } else{
+        return ok("0");
+    }
+}
+
     @Security.Authenticated(PartnerSecured.class)
     public static Result getAppliedJobsByPartnerForCandidate(long id) {
         Logger.info(id + " candidateId");

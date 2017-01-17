@@ -3,6 +3,8 @@ package models.util;
 import api.InteractionConstants;
 import api.ServerConstants;
 import controllers.businessLogic.InteractionService;
+import dao.CompanyDAO;
+import models.entity.Company;
 import play.Logger;
 
 import java.math.BigInteger;
@@ -31,6 +33,20 @@ public class Util {
     public static int generateOtp() {
         int otpCode = (int) ((Math.random()*9000)+1000);
         return otpCode;
+    }
+
+    public static int generateCompanyCode() {
+        Boolean shouldRun = true;
+        int companyCode = 0;
+        while(shouldRun){
+            companyCode = (int) ((Math.random()*9000)+100000);
+
+            Company existingCompany = CompanyDAO.getCompaniesByCompanyCode(companyCode);
+            if(existingCompany == null){
+                shouldRun = false;
+            }
+        }
+        return companyCode;
     }
 
     public static int randomInt() {

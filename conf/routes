@@ -112,6 +112,7 @@ POST        /updateFeedback                                               contro
 POST        /getDeActivationMessage                                       controllers.Application.getDeactivationMessage(candidateId: java.lang.Long?= null)
 POST        /updateRecruiterCreditPack                                    controllers.Application.updateRecruiterCreditPack()
 POST        /expireCreditPack                                             controllers.Application.expireCreditPack()
+GET         /generateCompanyCode                                          controllers.Application.generateCompanyCode()
 
 # partner routes
 #~~~~~~~~~~~~~~~~~~~~
@@ -143,6 +144,7 @@ POST        /addPartnerPassword                                           contro
 POST        /partnerSignUp                                                controllers.PartnerController.partnerSignUp()
 POST        /partnerUpdateBasicProfile                                    controllers.PartnerController.partnerUpdateBasicProfile()
 POST        /checkPartnerCandidate/:id                                    controllers.PartnerController.checkPartnerCandidate(id : Long)
+POST        /checkExistingCompany/:id                                     controllers.PartnerController.checkExistingCompany(id : Long)
 
 # recruiter routes
 #~~~~~~~~~~~~~~~~~~~~

@@ -46,4 +46,17 @@ public class CompanyDAO {
 
         return hiringCompanyLogo;
     }
+
+    public static List<Company> getCompaniesWithoutCompanyCode() {
+        return Company.find.where()
+                .isNull("CompanyCode")
+                .findList();
+    }
+
+    public static Company getCompaniesByCompanyCode(int code) {
+        return Company.find.where()
+                .eq("CompanyCode", code)
+                .findUnique();
+    }
+
 }

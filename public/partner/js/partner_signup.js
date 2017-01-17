@@ -4,6 +4,14 @@
 var returnedOtp;
 var candidateMobile;
 
+function checkPartnerType() {
+    if($("#partnerType").val() == 7){
+        $("#companyIdDiv").show();
+    } else{
+        $("#companyIdDiv").hide();
+    }
+}
+
 function processDataSignUpSubmit(returnedData) {
     if(returnedData.status == 1) {
         returnedOtp = returnedData.otp;
@@ -101,6 +109,7 @@ $(function() {
         var res = validateMobile(phone);
         var selectedPartnerType = $('#partnerType').val();
         var localitySelected = $('#partnerLocality').val();
+        var companyId = null;
 
         //checking first name
         switch(checkPartnerName){
@@ -122,6 +131,9 @@ $(function() {
         } else if(selectedPartnerType == -1) {
             alert("Please select organization type");
             statusCheck=0;
+        } else if(selectedPartnerType == 7 && $("#privatePartnerCompanyId").val() == ""){
+            alert("Please provide company ID");
+            statusCheck=0;
         }
 
         if(partnerLastName != ""){
@@ -138,25 +150,52 @@ $(function() {
         }
 
         if(statusCheck == 1){
+
             candidateMobile = phone;
             $("#registerPartnerBtnSubmit").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Please Wait");
+
             document.getElementById("registerBtnSubmit").disabled = true;
 
-            var d = {
-                partnerName : partnerName,
-                partnerLastName : partnerLastName,
-                partnerMobile : phone,
-                partnerType : selectedPartnerType,
-                partnerLocality : localitySelected
-            };
+            if(selectedPartnerType == 7){
+                companyId = parseInt($("#privatePartnerCompanyId").val());
 
-            $.ajax({
-                type: "POST",
-                url: "/partnerSignUp",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(d),
-                success: processDataSignUpSubmit
-            });
+                try {
+                    $.ajax({
+                        type: "POST",
+                        url: "/checkExistingCompany/" + companyId,
+                        async: true,
+                        contentType: false,
+                        data: false,
+                        success: function (returnedData) {
+                            if(returnedData == 1){
+                                var d = {
+                                    partnerName : partnerName,
+                                    partnerLastName : partnerLastName,
+                                    partnerMobile : phone,
+                                    partnerType : selectedPartnerType,
+                                    partnerLocality : localitySelected,
+                                    partnerCompanyId : companyId
+                                };
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: "/partnerSignUp",
+                                    contentType: "application/json; charset=utf-8",
+                                    data: JSON.stringify(d),
+                                    success: processDataSignUpSubmit
+                                });
+                            } else{
+                                alert("Company ID is wrong");
+
+                                $("#registerPartnerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled',false).html("Register for FREE");
+                                document.getElementById("registerBtnSubmit").disabled = false;
+                            }
+                        }
+                    });
+                } catch (exception) {
+                    console.log("exception occured!!" + exception.stack);
+                }
+            }
         }
     }); // end of submit
 }); // end of function

@@ -2359,4 +2359,13 @@ public class Application extends Controller {
         return ok(toJson(RecruiterService.expireCreditPack(addRecruiterRequest)));
 
     }
+
+    public static Result generateCompanyCode() {
+        List<Company> companyList = CompanyDAO.getCompaniesWithoutCompanyCode();
+        for(Company company : companyList){
+            company.setCompanyCode((long) Util.generateCompanyCode());
+            company.update();
+        }
+        return ok("Done");
+    }
 }

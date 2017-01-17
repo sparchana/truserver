@@ -84,6 +84,11 @@ public class Partner extends Model {
     @OneToMany(mappedBy = "partner", cascade = CascadeType.ALL)
     private List<JobApplication> jobApplicationList;
 
+    @JsonManagedReference
+    @ManyToOne
+    @JoinColumn(name = "CompanyId", referencedColumnName = "CompanyId")
+    private Company company;
+
     public static Finder<String, Partner> find = new Finder(Partner.class);
 
     public Partner() {
@@ -195,5 +200,13 @@ public class Partner extends Model {
 
     public void setJobApplicationList(List<JobApplication> jobApplicationList) {
         this.jobApplicationList = jobApplicationList;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
     }
 }
