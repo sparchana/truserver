@@ -2180,7 +2180,7 @@ public class CandidateService
         if(candidateResume.getCandidate() == null){
             // not known - need to set candidate reference
             if(isNew) candidateResumeRequest.setCandidate(candidateId);
-            else candidateResumeRequest.setCandidate(candidateResume.getCandidate().getCandidateId());
+            else candidateResumeRequest.setCandidate(candidate.getCandidateId());
             changedFields = new ArrayList<String>(Arrays.asList("parsedResume","candidate"));
         }
         else{
