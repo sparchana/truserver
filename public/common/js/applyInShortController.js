@@ -11,6 +11,8 @@ var applyInShort = (function ($) {
         missingData: null,
         jobTitle: null,
         companyName: null,
+        allJobRole: null,
+        companyCount: 1,
         factory: {
             parent: null,
             mainDiv: null,
@@ -451,12 +453,12 @@ var applyInShort = (function ($) {
                 addMore.name = "Add";
                 addMore.style = "background:#09ac58;color:#fff;font-size:12px";
                 addMore.textContent = "Add Company";
-                // addMore.onclick = addmoreCompany;
+                addMore.onclick = applyInShort.aux.addmoreCompany;
 
                 allWorkedAddMoreCol.appendChild(addMore);
                 addCurrentlyWorking.type = ("radio");
                 addCurrentlyWorking.style = "margin:0 4%";
-                // addCurrentlyWorking.id = ("addCurrentlyWorking_" + companyCount);
+                // addCurrentlyWorking.id = ("addCurrentlyWorking_" + appz.companyCount);
                 addCurrentlyWorking.name = ("addCurrently_Working");
                 allWorkedCurrentltyCol.appendChild(addCurrentlyWorking);
 
@@ -574,6 +576,8 @@ var applyInShort = (function ($) {
                 fourthproperty.appendChild(rowBoxDetails);
 
                 appz.factory.orderList.appendChild(fourthproperty);
+
+                appz.process.experience(jobRoleList, appz.companyCount);
             },
 
             _education: function (educationList, degreeList) {
@@ -1002,9 +1006,22 @@ var applyInShort = (function ($) {
                 }
             },
 
-            experience: function () {
+            experience: function (jobRoleArray, id) {
                 if (jobRoleArray != null && jobRoleArray.length > 0) {
-                    $("#workedJobRole_"+id).tokenInput(jobRoleArray, {
+
+                    if(appz.allJobRole == null ){
+                        appz.allJobRole = [];
+                        jobRoleArray.forEach(function (jobRole) {
+                            var label = jobRole.jobName;
+                            var value = parseInt(jobRole.jobRoleId);
+                            var item = {};
+                            item ["id"] = value;
+                            item ["name"] = label;
+                            appz.allJobRole.push(item);
+                        });
+                    }
+                    console.log("id: " + id + " allJobRole size: " + applyInShort.allJobRole.length);
+                    $("#workedJobRole_"+id).tokenInput(applyInShort.allJobRole, {
                         theme: "facebook",
                         placeholder: "Job Role?",
                         hintText: "Select job role",
@@ -1013,7 +1030,7 @@ var applyInShort = (function ($) {
                         zindex: 9999,
                         preventDuplicates: true
                     });
-                    disableCurrentCompanyOption;
+                    applyInShort.aux.disableCurrentCompanyOption;
                 }
             },
 
@@ -1089,6 +1106,7 @@ var applyInShort = (function ($) {
                     checkMatchLabel.appendChild(checkMatch);
                 });
             },
+
             // locality: function (localityList) {
             //
             // // }
@@ -1247,6 +1265,88 @@ var applyInShort = (function ($) {
                         // $("#addCurrentlyWorking").prop("disabled",false);
                     }
                 }
+            },
+            addmoreCompany: function () {
+                console.log(appz.companyCount);
+                if (appz.companyCount != 0 && appz.companyCount <= 3) {
+                    appz.companyCount++;
+                    var allworkedCompanyDetailsDiv = document.createElement("div");
+                    allworkedCompanyDetailsDiv.className = "row";
+                    allworkedCompanyDetailsDiv.id = "row_" + appz.companyCount;
+                    allworkedCompanyDetailsDiv.style = "margin:4px 0";
+
+                    var allCompanyNameCol = document.createElement("div");
+                    allCompanyNameCol.className = "col-sm-3";
+                    allCompanyNameCol.id = "companyName";
+                    allworkedCompanyDetailsDiv.appendChild(allCompanyNameCol);
+
+                    var allworkedJobRoleCol = document.createElement("div");
+                    allworkedJobRoleCol.className = "col-sm-3";
+                    allworkedJobRoleCol.id = "workedJobRole";
+                    allworkedCompanyDetailsDiv.appendChild(allworkedJobRoleCol);
+
+                    var allWorkedCurrentltyCol = document.createElement("div");
+                    allWorkedCurrentltyCol.className = "col-sm-4";
+                    allWorkedCurrentltyCol.id = "workedCurrently";
+                    allWorkedCurrentltyCol.style = "padding-top:1%;text-align:center";
+                    allworkedCompanyDetailsDiv.appendChild(allWorkedCurrentltyCol);
+
+                    var allWorkedAddMoreCol = document.createElement("div");
+                    allWorkedAddMoreCol.className = "col-sm-2";
+                    allworkedCompanyDetailsDiv.appendChild(allWorkedAddMoreCol);
+
+                    var addCompanyName = document.createElement("input");
+                    addCompanyName.className = "form-control";
+                    addCompanyName.type = ("text");
+                    addCompanyName.placeholder = ("Company Name");
+                    addCompanyName.id = ("companyName_" + appz.companyCount);
+                    allCompanyNameCol.appendChild(addCompanyName);
+
+                    var addJobRole = document.createElement("input");
+                    addJobRole.id = "workedJobRole_" + appz.companyCount;
+                    addJobRole.onchange = applyInShort.aux.enableAddBtn;
+                    allworkedJobRoleCol.appendChild(addJobRole);
+
+                    var addCurrentlyWorking = document.createElement("input");
+                    if (!$("#currentlyWorking").is(":checked")) {
+                        addCurrentlyWorking.disabled = true;
+                    } else {
+                        addCurrentlyWorking.disabled = false;
+                    }
+
+                    var addMore = document.createElement("button");
+                    addMore.className = "form-control";
+                    addMore.type = "button";
+                    addMore.setAttribute("disabled", true);
+                    addMore.id = "addCurrentlyWorkingBtn_"+appz.companyCount;
+                    addMore.value = "Add";
+                    addMore.style = "background:#09ac58;color:#fff;font-size:12px";
+                    addMore.name = "Add";
+                    addMore.textContent = "Add Company";
+                    addMore.onclick = applyInShort.aux.addmoreCompany;
+
+                    allWorkedAddMoreCol.appendChild(addMore);
+                    addCurrentlyWorking.type = ("radio");
+                    addCurrentlyWorking.style = "margin:0 4%";
+                    addCurrentlyWorking.id = ("addCurrentlyWorking_" + appz.companyCount);
+                    addCurrentlyWorking.name = ("addCurrently_Working");
+                    allWorkedCurrentltyCol.appendChild(addCurrentlyWorking);
+
+                    var addCurrentlyWorkingLabel = document.createElement("label");
+                    addCurrentlyWorkingLabel.textContent = ("Is this your current company");
+                    addCurrentlyWorkingLabel.for = ("addCurrentlyWorking_" + appz.companyCount);
+                    allWorkedCurrentltyCol.appendChild(addCurrentlyWorkingLabel);
+
+                    var previousButton = appz.companyCount - 1;
+                    $('#companyDetailsCapture').append(allworkedCompanyDetailsDiv);
+                    $("#addCurrentlyWorkingBtn_"+previousButton).prop("disabled", true);
+
+                    appz.process.experience(appz.allJobRole, appz.companyCount);
+                }
+                else {
+                    $.notify("Max 3 Addition Allowed", 'error');
+                }
+
             }
         }
 
