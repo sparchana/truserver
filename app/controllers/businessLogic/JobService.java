@@ -782,7 +782,7 @@ public class JobService {
                 JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).eq("jobPostId", applyJobRequest.getJobId()).findUnique();
                 if(existingJobApplication == null){
 
-                    if(existingJobPost.getRecruiterProfile() != null){
+                    if(existingJobPost.getRecruiterProfile() != null) {
                         if((existingJobPost.getRecruiterProfile().getContactCreditCount() == 0) &&
                                 (existingJobPost.getRecruiterProfile().getInterviewCreditCount() == 0)){
 
