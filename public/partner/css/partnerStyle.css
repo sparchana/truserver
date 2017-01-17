@@ -568,10 +568,38 @@ a:hover{
     color: #fff;
     background: #00897b;
 }
-#candidateCreateOptionModalDialog,#uploadResumeModalDialog{
-    margin-top: 10%;
+#candidateCreateOptionModalDialog,#uploadResumeModalContent{
+    margin-top:10%;
+    background: rgba(0, 137, 123,);
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
 }
-
+#uploadResumeModalDialog{
+    margin-top:10%;
+}
+#uploadResumeModalProcess{
+    text-align: center;
+}
+#loadingSpinnerResume{
+     box-sizing: border-box;
+     stroke: rgba(0, 137, 123, 0.63);
+     stroke-width: 3px;
+     -webkit-transform-origin: 50%;
+     transform-origin: 50%;
+     -webkit-animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+     animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+ }
+#resumeColMsgFail{
+    color:#000;
+    text-align:left;
+    padding-top:12px
+}
+#resumeColMsgSuccess{
+    color:#000;
+    text-align:left;
+    padding-top:10px
+}
 @media screen and (max-width: 768px) {
     .navbar-nav>li>a {
         background-color: #00897b;

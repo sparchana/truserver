@@ -23,7 +23,7 @@ function uploadResume(evt){
                 processData: false,
                 success: processDataForAddResume
             });
-            $('#uploadResumeModal').modal('show');
+            $('#uploadResumeModalProcess').modal('show');
             $('#candidateCreateOptionModal').modal('hide');
         } catch(exception) {
             console.log("Exception Occurred!!" + exception);
@@ -35,29 +35,77 @@ function uploadResume(evt){
 }
 
 function processDataForAddResume(returnedData) {
+    $('#uploadResumeModalProcess').modal('hide');
     console.log(JSON.stringify(returnedData));
     if(returnedData != null){
         if(returnedData.status == 1)
         {
             var parent = $("#uploadResumeModalContent");
+            $('#uploadResumeModalContent').html("");
 
-            $("#uploadResumeModalContent").html("");
+            var resumeRow = document.createElement("div");
+            resumeRow.className = "row";
+            parent.append(resumeRow);
 
-            var h1 = document.createElement("h2");
-            h1.textContent = "SuccessFully Uploaded";
-            parent.append(h1);
+            var resumeColLeft = document.createElement("div");
+            resumeColLeft.className = "col-sm-3";
+            resumeRow.appendChild(resumeColLeft);
+
+            var resumeColRight = document.createElement("div");
+            resumeColRight.className = "col-sm-9";
+            resumeColRight.id = "resumeColMsgSuccess";
+            resumeRow.appendChild(resumeColRight);
+
+            var image = document.createElement("img");
+            image.src = "/assets/common/img/resumeUpload.svg";
+            image.style = "height:100px";
+            resumeColLeft.appendChild(image);
+
+            var h5 = document.createElement("h5");
+            h5.textContent = "Text Msg 1";
+            resumeColRight.appendChild(h5);
 
             var h4 = document.createElement("h4");
-            h4.textContent = "Thanks !! Resume has been successfully Uploaded";
-            parent.append(h4);
+            h4.textContent = "Text Msg 2";
+            h4.style = "font-weight:600";
+            resumeColRight.appendChild(h4);
 
-            var h4 = document.createElement("h4");
-            h4.textContent = "Please check back in My Candidate Tab to see deatils of added candidate";
-            parent.append(h4);
-            console.log("Uploaded Successfully");
+            $('#uploadResumeModal').modal('show');
+            //condition if upload is done without login
         }
         else{
-            console.log("Upload Fail");
+            var parent = $("#uploadResumeModalContent");
+            $("#uploadResumeModalContent").css("background","rgb(253, 132, 105)");
+            $('#uploadResumeModalContent').html("");
+
+            var resumeRow = document.createElement("div");
+            resumeRow.className = "row";
+            parent.append(resumeRow);
+
+            var resumeColLeft = document.createElement("div");
+            resumeColLeft.className = "col-sm-4";
+            resumeRow.appendChild(resumeColLeft);
+
+            var resumeColRight = document.createElement("div");
+            resumeColRight.className = "col-sm-8";
+            resumeColRight.id = "resumeColMsgFail";
+            resumeRow.appendChild(resumeColRight);
+
+            var image = document.createElement("img");
+            image.src = "/assets/common/img/warning.svg";
+            image.style = "height:100px";
+            resumeColLeft.appendChild(image);
+
+            var h5 = document.createElement("h5");
+            h5.textContent = "Opps!! Something went wrong";
+            resumeColRight.appendChild(h5);
+
+            var h4 = document.createElement("h4");
+            h4.textContent = "Please try after sometime";
+            h4.style = "font-weight:600";
+            resumeColRight.appendChild(h4);
+
+            $('#uploadResumeModal').modal('show');
         }
     }
     else{

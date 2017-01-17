@@ -83,7 +83,7 @@
                         <div class="row" id="addCandidateCant">
                             <center>
                                 <label class="btn btn-default btn-file" id="uploadResumeBtn">Upload Resume
-                                    <input type="file" accept="application/pdf,application/msword" id="uploadBulkResumeContent" style="display: none" multiple>
+                                    <input type="file" id="uploadBulkResumeContent" style="display: none" multiple>
                                 </label>
                             </center>
                         </div>
@@ -107,15 +107,21 @@
     </div>
 
     <!-- Upload Resume Progress Modal -->
-    <div class ="modal fade bs-example-modal-lg" id="uploadResumeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog modal-lg" id="uploadResumeModalDialog" role="document">
-            <div class="modal-content" id="uploadResumeModalContent">
+    <div class ="modal fade bs-example-modal-md" id="uploadResumeModalProcess" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-md" id="uploadResumeModalDialog" role="document">
+            <div class="modal-content" id="uploadResumeModalProcess">
                 <center id="resumeUpload">
                     <svg viewBox="0 0 32 32" width="42" height="42">
-                        <circle id="loadingSpinner" cx="16" cy="16" r="14" fill="none"></circle>
+                        <circle id="loadingSpinnerResume" cx="16" cy="16" r="14" fill="none"></circle>
                     </svg>
                 </center>
                 <h4>Processing Your Request...</h4>
+            </div>
+        </div>
+    </div>
+    <div class ="modal fade bs-example-modal-md" id="uploadResumeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-md" id="uploadResumeModalDialog" role="document">
+            <div class="modal-content" id="uploadResumeModalContent">
             </div>
         </div>
     </div>
