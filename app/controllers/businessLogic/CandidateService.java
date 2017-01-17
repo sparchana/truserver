@@ -1872,6 +1872,7 @@ public class CandidateService
                                     }
                                 }
                             }
+                            else pastCompany.setCurrent(Boolean.FALSE);
                             pastCompanyList.add(pastCompany);
                         }
                     }
