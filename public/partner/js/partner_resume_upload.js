@@ -57,16 +57,16 @@ function processDataForAddResume(returnedData) {
             resumeRow.appendChild(resumeColRight);
 
             var image = document.createElement("img");
-            image.src = "/assets/common/img/resumeUpload.svg";
+            image.src = "/assets/partner/img/tick.svg";
             image.style = "height:100px";
             resumeColLeft.appendChild(image);
 
             var h5 = document.createElement("h5");
-            h5.textContent = "Text Msg 1";
+            h5.textContent = "Thanks !! Resume has been successfully uploaded";
             resumeColRight.appendChild(h5);
 
             var h4 = document.createElement("h4");
-            h4.textContent = "Text Msg 2";
+            h4.textContent = "You will short receive a SMS with more details";
             h4.style = "font-weight:600";
             resumeColRight.appendChild(h4);
 

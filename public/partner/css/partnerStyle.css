@@ -570,7 +570,7 @@ a:hover{
 }
 #candidateCreateOptionModalDialog,#uploadResumeModalContent{
     margin-top:10%;
-    background: rgba(0, 137, 123,);
+    background: rgba(0, 137, 123,1);
     color: #fff;
     text-align: center;
     border-radius: 2px;
