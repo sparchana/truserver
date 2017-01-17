@@ -2042,7 +2042,7 @@ public class CandidateService
         Map<String, String> param = new HashMap<>();
         param.put("external_key",personId);
         params.add(param);
-        CandidateResume candidateResume = (CandidateResume) candidateResumeService.readByAttribute(params);
+        CandidateResume candidateResume = (CandidateResume) candidateResumeService.readByAttribute(params).get(0).getEntity();
 
         // Check if this is a duplicate entry -- if so, we need to get the root person id
         CandidateResume root = null;
@@ -2052,7 +2052,9 @@ public class CandidateService
             param.put("external_key",profile.getProfilemergedto());
             params.clear();
             params.add(param);
-            root = (CandidateResume) candidateResumeService.readByAttribute(params);
+            try{
+                root = (CandidateResume) candidateResumeService.readByAttribute(params).get(0).getEntity();
+            } catch (Exception e){e.printStackTrace();}
             if(root != null){
                 // original entry found! Remove the current pointer
                 Logger.info("Original candidate resume entry found. ID = "+root.getCandidateResumeId());
