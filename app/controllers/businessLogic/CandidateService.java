@@ -2040,7 +2040,7 @@ public class CandidateService
         CandidateResumeService candidateResumeService = new CandidateResumeService();
         List<Map<String, String>> params = new ArrayList<>();
         Map<String, String> param = new HashMap<>();
-        param.put("external_key",personId);
+        param.put("externalKey",personId);
         params.add(param);
         CandidateResume candidateResume = (CandidateResume) candidateResumeService.readByAttribute(params).get(0).getEntity();
 
@@ -2049,7 +2049,7 @@ public class CandidateService
         if(profile.getProfilemergedto() != null){
             Logger.info("Candidate Resume ID"+candidateResume.getCandidateResumeId()+" is duplicate. Searching for original entry with external_key = "+profile.getProfilemergedto());
             param.clear();
-            param.put("external_key",profile.getProfilemergedto());
+            param.put("externalKey",profile.getProfilemergedto());
             params.clear();
             params.add(param);
             try{
