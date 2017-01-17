@@ -78,19 +78,19 @@ var applyInShort = (function ($) {
                 promise.then(function () {
 
                     /* render locality card */
-                    if(applyInShort.missingData.localityPopulateResponse != null) {
+                    if (applyInShort.missingData.localityPopulateResponse != null) {
 
                         applyInShort.render.jobLocalityCard(applyInShort.missingData.localityPopulateResponse);
                     }
 
                     /* TODO render prescreen card */
-                    if(applyInShort.missingData.shortPSPopulateResponse != null) {
+                    if (applyInShort.missingData.shortPSPopulateResponse != null) {
 
+                        applyInShort.render.jobOtherDetailsCard(applyInShort.missingData.shortPSPopulateResponse);
                     }
 
-
                     /* render interview slot card */
-                    if(applyInShort.missingData.interviewSlotPopulateResponse != null
+                    if (applyInShort.missingData.interviewSlotPopulateResponse != null
                         && applyInShort.missingData.interviewSlotPopulateResponse.interviewResponse.status == 2
                         && applyInShort.missingData.interviewSlotPopulateResponse.interviewSlotMap != null) {
 
@@ -117,7 +117,7 @@ var applyInShort = (function ($) {
                 $('#locality_jobNameConfirmation').html(applyInShort.jobTitle);
                 $('#locality_companyNameConfirmation').html(applyInShort.companyName);
 
-                if(localityMap != null) {
+                if (localityMap != null) {
                     var option = $('<option value=0></option>').text("Select Location");
                     $('#jobLocality').append(option);
                     for (var value in localityMap) {
@@ -129,6 +129,11 @@ var applyInShort = (function ($) {
                 }
                 /* clear mem */
                 localityMap = null;
+            },
+            jobOtherDetailsCard: function (otherDetailsResponse) {
+                console.log("rendering jobother deatils card");
+                var parent = $("#preScreenCardDiv");
+
             },
             interviewSlotCard: function (slotMap) {
                 console.log("rendering interview slot card");
