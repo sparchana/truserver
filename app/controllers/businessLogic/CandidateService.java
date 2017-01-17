@@ -12,6 +12,7 @@ import api.http.httpResponse.LoginResponse;
 import api.http.httpResponse.ResetPasswordResponse;
 import api.http.httpResponse.TruResponse;
 import api.http.httpResponse.hirewand.HireWandResponse;
+import api.http.httpResponse.ongrid.OngridAadhaarVerificationResponse;
 import au.com.bytecode.opencsv.CSVReader;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
@@ -22,16 +23,15 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.avaje.ebean.Query;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.hirewand.HWHTTPException;
 import controllers.businessLogic.hirewand.HireWandService;
 import controllers.businessLogic.hirewand.InvalidRequestException;
-import api.http.httpResponse.ongrid.OngridAadhaarVerificationResponse;
 import controllers.businessLogic.ongrid.AadhaarService;
 import controllers.businessLogic.ongrid.OnGridConstants;
 import dao.staticdao.IdProofDAO;
-import in.trujobs.proto.*;
 import in.trujobs.proto.AddFeedbackRequest;
+import in.trujobs.proto.FeedbackReasonObject;
+import in.trujobs.proto.LogoutCandidateRequest;
 import models.entity.Auth;
 import models.entity.Candidate;
 import models.entity.Lead;
@@ -44,11 +44,9 @@ import models.entity.Static.*;
 import models.util.SmsUtil;
 import models.util.Util;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONArray;
 import org.json.JSONException;
-import play.Logger;
 import org.json.JSONObject;
-import scala.annotation.meta.param;
+import play.Logger;
 
 import javax.persistence.NonUniqueResultException;
 import java.io.*;
@@ -58,7 +56,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static api.InteractionConstants.*;
-import static controllers.businessLogic.InteractionService.*;
+import static controllers.businessLogic.InteractionService.createInteractionForSignUpCandidateViaAndroid;
+import static controllers.businessLogic.InteractionService.createInteractionForSignUpCandidateViaWebsite;
 import static controllers.businessLogic.LeadService.createOrUpdateConvertedLead;
 import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;
@@ -2180,7 +2179,7 @@ public class CandidateService
             candidateId = candidateSignUpResponse.getCandidateId();
             candidateName = candidateSignUpResponse.getCandidateFirstName();
         }
-            else {
+        else {
             Logger.info("Attempting to update existing candidate ...");
             isNew = Boolean.FALSE;
 
@@ -2198,16 +2197,19 @@ public class CandidateService
 
         Logger.info("New/Updated candidateId ="+candidateId);
 
+        String awsName = "";
         if(candidateResume.getCandidate() == null){
             // recreate existing AWS object key
             String existingKey = candidateResume.getFilePath();
             existingKey = existingKey.replace("https://s3.amazonaws.com/trujobs.in/candidateResumes/","");
             // create new key
-            String awsName = createCandidateResumeFilename(Long.toString(candidateId),candidateName,existingKey);//"candidateResumes/"+candidateId+"_"+candidateName;
+            awsName = createCandidateResumeFilename(Long.toString(candidateId),candidateName,existingKey);//"candidateResumes/"+candidateId+"_"+candidateName;
             // rename (copy and delete) resume in AWS
             Logger.info("AWS replacing old key="+existingKey+ " with new key="+awsName);
             copyResumeinAws(existingKey,awsName);
             removeResumeFromAws(existingKey);
+            // recreate new file path
+            awsName = "https://s3.amazonaws.com/trujobs.in/candidateResumes/"+awsName;
         }
 
         // Update CandidateResume Object
@@ -2226,6 +2228,12 @@ public class CandidateService
         else{
             // already known - only updating parsed resume string
             changedFields = new ArrayList<String>(Arrays.asList("parsedResume"));
+        }
+
+        // if file path was updated
+        if(awsName.length() > 0){
+            candidateResumeRequest.setFilePath(awsName);
+            changedFields.add("filePath");
         }
 
         candidateResumeRequest.setChangedFields(changedFields);
