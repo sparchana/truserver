@@ -568,22 +568,24 @@ a:hover{
     color: #fff;
     background: #00897b;
 }
-#candidateCreateOptionModalDialog,#uploadResumeModalContent{
+#candidateCreateOptionModalDialog{
     margin-top:10%;
-    background: rgba(0, 137, 123,1);
+}
+#uploadResumeModalContent,#uploadResumeModalProcessContent{
+    padding:2%;
+    margin-top:10%;
+    background: rgb(61, 179, 158);
     color: #fff;
     text-align: center;
     border-radius: 2px;
 }
 #uploadResumeModalDialog{
-    margin-top:10%;
-}
-#uploadResumeModalProcess{
-    text-align: center;
+    margin-top:12%;
+    width: 40%;
 }
 #loadingSpinnerResume{
      box-sizing: border-box;
-     stroke: rgba(0, 137, 123, 0.63);
+     stroke: rgba(250, 255, 251,1);
      stroke-width: 3px;
      -webkit-transform-origin: 50%;
      transform-origin: 50%;
