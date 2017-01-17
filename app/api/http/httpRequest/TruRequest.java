@@ -12,8 +12,8 @@ public class TruRequest {
 
     private List<String> changedFields;
 
-    // String = Name of the entity
-    // Long = Entity Id to be deleted
+    // String = Name of model class in lower case (e.g. candidateresume) --> lower casing is done automatically by the setter
+    // Long = Id of the model record which is to be deleted
     private List<Map<String,Long>> deleteFields = new ArrayList<>();
 
     public List<String> getChangedFields() {

@@ -50,4 +50,8 @@ public class CandidateResumeService extends TruService {
         return candidateResumeResponse;
     }
 
+    @Override
+    public TruResponse delete(TruRequest request) {
+        return super.delete(request);
+    }
 }
