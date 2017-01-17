@@ -2365,6 +2365,7 @@ public class Application extends Controller {
     }
 
     public static Result receiveParsedResume() {
+        Logger.info("Entered receiveParsedResume");
         //Logger.info("request.asFormUrlEncoded().keySet().size()="+request().body().asFormUrlEncoded().keySet().size());
 
         // build json string
