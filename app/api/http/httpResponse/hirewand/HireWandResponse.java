@@ -372,6 +372,15 @@ public class HireWandResponse {
         public List<ProjectExperience> ProjectExperience;
         public PersonalDetails PersonalDetails;
         public String ProfileJSON;
+        public String profilemergedto;
+
+        public String getProfilemergedto() {
+            return profilemergedto;
+        }
+
+        public void setProfilemergedto(String profilemergedto) {
+            this.profilemergedto = profilemergedto;
+        }
 
         public String getName() {
             return Name;
@@ -531,7 +540,16 @@ public class HireWandResponse {
     public Boolean duplicate;
     public String personid;
     public Integer accountid;
+    public String profilemergedto;
     public Profile profile;
+
+    public String getProfilemergedto() {
+        return profilemergedto;
+    }
+
+    public void setProfilemergedto(String profilemergedto) {
+        this.profilemergedto = profilemergedto;
+    }
 
     public String getStatus() {
         return status;

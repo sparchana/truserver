@@ -2365,7 +2365,7 @@ public class Application extends Controller {
     }
 
     public static Result receiveParsedResume() {
-        Logger.info("Entered receiveParsedResume");
+        //Logger.info("Entered receiveParsedResume");
         //Logger.info("request.asFormUrlEncoded().keySet().size()="+request().body().asFormUrlEncoded().keySet().size());
 
         // build json string
@@ -2406,6 +2406,13 @@ public class Application extends Controller {
             // keep a copy of the raw profile string
             hireWandResponse.getProfile().setProfileJSON(StringUtils.join(request().body().asFormUrlEncoded().get("profile"),null));
             Logger.info("hireWandResponse.Profile.ProfileJSON="+hireWandResponse.getProfile().getProfileJSON());
+            // is this a duplicate?
+            if(hireWandResponse.getProfilemergedto() != null) {
+                // if yes, set unique profile id
+                hireWandResponse.getProfile().setProfilemergedto(hireWandResponse.getProfilemergedto());
+                Logger.info("hireWandResponse.getProfile().getProfilemergedto="+hireWandResponse.getProfile().getProfilemergedto());
+            }
+
             // ensure external key (PersonId) is filled before calling business logic
             if(!hireWandResponse.getPersonid().isEmpty()){
                 // send for processing

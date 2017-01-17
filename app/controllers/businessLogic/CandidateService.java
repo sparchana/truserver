@@ -48,6 +48,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import play.Logger;
 import org.json.JSONObject;
+import scala.annotation.meta.param;
 
 import javax.persistence.NonUniqueResultException;
 import java.io.*;
@@ -2036,7 +2037,43 @@ public class CandidateService
         }
 
         // get the existing entry from CandidateResume
-        CandidateResume candidateResume = CandidateResume.find.where().eq("external_key",personId).findUnique();
+        CandidateResumeService candidateResumeService = new CandidateResumeService();
+        List<Map<String, String>> params = new ArrayList<>();
+        Map<String, String> param = new HashMap<>();
+        param.put("external_key",personId);
+        params.add(param);
+        CandidateResume candidateResume = (CandidateResume) candidateResumeService.readByAttribute(params);
+
+        // Check if this is a duplicate entry -- if so, we need to get the root person id
+        CandidateResume root = null;
+        if(profile.getProfilemergedto() != null){
+            Logger.info("Candidate Resume ID"+candidateResume.getCandidateResumeId()+" is duplicate. Searching for original entry with external_key = "+profile.getProfilemergedto());
+            param.clear();
+            param.put("external_key",profile.getProfilemergedto());
+            params.clear();
+            params.add(param);
+            root = (CandidateResume) candidateResumeService.readByAttribute(params);
+            if(root != null){
+                // original entry found! Remove the current pointer
+                Logger.info("Original candidate resume entry found. ID = "+root.getCandidateResumeId());
+                TruRequest deleteRequest = new TruRequest();
+                List<Map<String,Long>> deleteKeyList = new ArrayList<>();
+                Map<String,Long> deleteKey = new HashMap<>();
+                Logger.info("Attempting to delete duplicate CandidateResume entry with ID = "+candidateResume.getCandidateResumeId());
+                deleteKey.put("CandidateResume",candidateResume.getCandidateResumeId());
+                deleteKeyList.add(deleteKey);
+                deleteRequest.setDeleteFields(deleteKeyList);
+                if(candidateResumeService.delete(deleteRequest).getStatus() == TruResponse.STATUS_SUCCESS){
+                    Logger.info("Duplicate entry with ID "+candidateResume.getCandidateResumeId()+" deleted successfully");
+                }
+                else Logger.info("Duplicate entry with ID "+candidateResume.getCandidateResumeId()+" NOT deleted!");
+                // reset pointer to root
+                candidateResume = root;
+                Logger.info("Resetting pointer to root. candidateResume.getCandidateResumeId() = "+candidateResume.getCandidateResumeId());
+            }
+            else Logger.info("Original entry could NOT be found!!! Proceeding with duplicate...");
+        }
+
         Candidate candidate = null;
         Boolean isNew = Boolean.FALSE;
 
@@ -2145,7 +2182,7 @@ public class CandidateService
             isNew = Boolean.FALSE;
 
             try {
-                responseJson.put("candidateExists",Boolean.FALSE);
+                responseJson.put("candidateExists",Boolean.TRUE);
                 responseJson.put("alreadyParsed",Boolean.FALSE);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -2189,7 +2226,7 @@ public class CandidateService
         }
 
         candidateResumeRequest.setChangedFields(changedFields);
-        CandidateResumeService candidateResumeService = new CandidateResumeService();
+        //CandidateResumeService candidateResumeService = new CandidateResumeService();
         Logger.info("UpdateResume(): About to call candidateResumeService.update for id = "+candidateResume.getCandidateResumeId()+" referencing Candidate Id = "+candidateId);
         if(candidateResumeService.update(candidateResumeRequest).getStatus() == TruResponse.STATUS_SUCCESS) {
             try {
