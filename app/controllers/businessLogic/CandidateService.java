@@ -1820,8 +1820,10 @@ public class CandidateService
 
             // candidate firstName and secondName
             String candidateName = profile.Name;
-            if(candidateName != null && StringUtils.isAlphaSpace(candidateName)){
+            if(candidateName != null){
                 candidateName = candidateName.trim();
+                // get rid of ALL special characters (if any)
+                candidateName = candidateName.replaceAll("[\\-\\+\\.\\^:,\\(\\)\\{\\}]","");
                 String[] nameArray = candidateName.split("\\s+");
                 addSupportCandidateRequest.setCandidateFirstName(nameArray[0]);
                 candidateName = "";
