@@ -2306,9 +2306,8 @@ public class CandidateService
         }
 
         // created-by check
-        if(candidateResumeRequest.getCreatedBy() == null ||
-           (candidateResumeRequest.getCreatedBy() != null &&
-            candidateResumeRequest.getCreatedBy().equalsIgnoreCase("unknown"))){
+        if(candidateResume.getCreatedBy() == null ||
+          (candidateResume.getCreatedBy() != null && candidateResume.getCreatedBy().equalsIgnoreCase("unknown"))){
                 candidateResumeRequest.setCreatedBy(candidateId+"(Candidate)");
                 changedFields.add("createdBy");
         }
