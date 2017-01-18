@@ -1776,17 +1776,28 @@ public class CandidateService
                         CandidateResumeService candidateResumeService = new CandidateResumeService();
                         CandidateResumeRequest candidateResumeRequest = new CandidateResumeRequest();
 
+                        if(session() != null) {
+                            try {
+                                Logger.info("session channel: " + session().get("sessionChannel"));
+                                Logger.info("session id: " + session().get("sessionId"));
+                            } catch (NullPointerException np) {
+                                np.printStackTrace();
+                            }
+                        } else {
+                            Logger.info("no session ");
+                        }
+                        
                         // determine channel, user
                         String user = "";
                         if(session() != null){
                             //Logger.info("Session : "+ session().get("sessionChannel"));
-                            if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
+                            if(Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
                                 user = session().get("partnerId")+"(Partner)";
                             }
-                            else if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
+                            else if(Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
                                 user = session().get("candidateId")+"(Candidate-Web)";
                             }
-                            else if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID){
+                            else if(Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID){
                                 user = session().get("candidateId")+"(Candidate-App)";
                             }
                         }
