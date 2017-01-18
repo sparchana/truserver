@@ -2103,13 +2103,15 @@ public class CandidateService
             // get all phone number(s) for this candidate
             List<String> mobileNos = new ArrayList<>();
 
-            for (int j = 0; j < profile.PhoneNos.size(); j++) {
-                mobileNos.add(StringUtils.right(profile.PhoneNos.get(j).toString(),10));
-                Logger.info("mobileNos(j)="+mobileNos.get(j));
+            if(profile.PhoneNos != null){
+                for (int j = 0; j < profile.PhoneNos.size(); j++) {
+                    mobileNos.add(StringUtils.right(profile.PhoneNos.get(j).toString(),10));
+                    Logger.info("mobileNos(j)="+mobileNos.get(j));
+                }
             }
 
             // primary key missing!!! Cannot create candidate
-            if(mobileNos.size() == 0) {
+            if(mobileNos.size() == 0 || profile.PhoneNos == null) {
                 try {
                     responseJson.put("candidateExists",Boolean.FALSE);
                     responseJson.put("alreadyParsed",Boolean.FALSE);
