@@ -62,6 +62,10 @@ public class CandidateResume extends Model {
         else{ this.createdBy = "Unknown"; }
     }
 
+    public Timestamp getCreateTimestamp() {
+        return createTimestamp;
+    }
+
     public long getCandidateResumeId() {
         return candidateResumeId;
     }

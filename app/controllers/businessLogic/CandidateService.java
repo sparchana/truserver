@@ -21,6 +21,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
+import com.avaje.ebean.Expr;
 import com.avaje.ebean.Query;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
 import controllers.businessLogic.hirewand.HWHTTPException;
@@ -2329,6 +2330,31 @@ public class CandidateService
                 responseJson.put("msg","Could not update parsed resume due to internal error");
             } catch (JSONException e) {
                 e.printStackTrace();
+            }
+        }
+
+        // was this resume uploaded by a partner?
+        if(candidateResume.getCreatedBy().toLowerCase().contains("(partner)")){
+            try {
+                // is there any resume that was uploaded AFTER this resume by this partner?
+                Integer c = CandidateResume.find.where()
+                        .and(Expr.eq("createdBy", candidateResume.getCreatedBy()), Expr.gt("createTimestamp", candidateResume.getCreateTimestamp()))
+                        .findRowCount();
+                if (c == 0) {
+
+                    // send info SMS informing that uploaded resumes have been processed
+                    String partnerId = candidateResume.getCreatedBy().split("\\(")[0];
+                    Logger.info("partnerId = " +partnerId);
+                    Partner partner = Partner.find.where().eq("partnerId", partnerId).findUnique();
+                    // send SMS
+                    SmsUtil.resumeUploadStatusToPartner(partner.getPartnerFirstName(),partner.getPartnerMobile());
+                }
+                else{
+                    Logger.info("row count = " + c );
+                }
+            }
+            catch (NullPointerException e){
+                    e.printStackTrace();
             }
         }
         return responseJson;

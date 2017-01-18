@@ -210,6 +210,11 @@ public class SmsUtil {
         addSmsToNotificationQueue(partnerMobile, msg);
     }
 
+    public static void resumeUploadStatusToPartner(String name ,String mobile) {
+        String msg = "Hi "+ name +", resumes that you uploaded have been converted to candidate(s). Go to 'My Candidate' section and schedule interviews for them.";
+        addSmsToNotificationQueue(mobile, msg);
+    }
+
     public static void sendRecruiterOTPSms(int otp, String mobile) {
         String msg = "Use OTP " + otp + " to register as a recruiter. Welcome to www.Trujobs.in!";
         addSmsToNotificationQueue(mobile, msg);
