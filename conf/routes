@@ -344,5 +344,5 @@ GET         /favicon.ico                                                    cont
 
 # Candidate Excel Upload
 # ~~~~~~~~~
-GET         /support/administrator/uploadCandidateExcel                     controllers.Application.uploadCandidateExcel()
-POST        /support/administrator/processCandidateExcel                    controllers.Application.processCandidateExcel()
+GET         /support/administrator/uploadCandidates                     controllers.Application.uploadCandidates()
+POST        /support/administrator/processCandidates                    controllers.Application.processCandidates()

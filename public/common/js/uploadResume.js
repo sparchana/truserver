@@ -23,7 +23,6 @@ function viewDownloadResume(candidateId) {
 
 }
 function processDataForViewResume(returnedData){
-    console.log(JSON.stringify(returnedData));
     if (returnedData.filePath != null) {
             $(".resumeUploadBox").hide();
             $("#userViewResume").html("");
@@ -43,7 +42,7 @@ function processDataForViewResume(returnedData){
             parentDownload.append(downloadLink);
     }
     else{
-        console.log("No resume Uploaded");
+        $("#userViewResume").innerHTML = "No Resume Uploaded Back";
     }
 }
 

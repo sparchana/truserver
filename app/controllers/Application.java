@@ -2432,7 +2432,7 @@ public class Application extends Controller {
         }
     }
 
-    public static Result uploadCandidateExcel() {
+    public static Result uploadCandidates() {
         return ok(views.html.upload_candidate_excel.render());
     }
     public static Result fetchResume(String candidateId) {
@@ -2452,7 +2452,7 @@ public class Application extends Controller {
         }
     }
 
-    public static Result processCandidateExcel() {
+    public static Result processCandidates() {
         Http.MultipartFormData body = request().body().asMultipartFormData();
         Http.MultipartFormData.FilePart excel = body.getFile("file");
         if (excel != null) {

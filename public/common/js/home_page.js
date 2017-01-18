@@ -333,6 +333,7 @@ function openLogin() {
     $('#noUserLogin').hide();
     $('#incorrectMsgLogin').hide();
     $('#form_forgot_password').hide();
+    $('#mySignUpModal').modal('hide');
     $('#errorMsgReset').hide();
     $('#form_password_reset_otp').hide();
     $('#form_password_reset_new').hide();
