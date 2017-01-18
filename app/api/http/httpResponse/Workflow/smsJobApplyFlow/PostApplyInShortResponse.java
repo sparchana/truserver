@@ -13,7 +13,7 @@ public class PostApplyInShortResponse {
         FAILURE,
         BAD_REQUEST,
         SUCCESS,
-        BAD_PARAMS, ALREADY_APPLIED;
+        BAD_PARAMS, ALREADY_APPLIED, CANDIDATE_DEACTIVE;
 
         @JsonValue
         public String toJson() {
@@ -23,6 +23,8 @@ public class PostApplyInShortResponse {
 
     private Status status;
 
+    private String message;
+
     public Status getStatus() {
         return status;
     }
@@ -30,7 +32,16 @@ public class PostApplyInShortResponse {
     public void setStatus(Status status) {
         this.status = status;
     }
+
     public int getStatusCode() {
         return this.status.ordinal();
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

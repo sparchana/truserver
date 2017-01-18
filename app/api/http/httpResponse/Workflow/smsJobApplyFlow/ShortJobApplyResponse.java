@@ -14,7 +14,7 @@ public class ShortJobApplyResponse {
         BAD_PARAMS,
         SUCCESS,
         ALREADY_APPLIED,
-        NO_JOB;
+        NO_JOB, CANDIDATE_DEACTIVE;
 
         @JsonValue
         public String toJson() {
@@ -24,6 +24,7 @@ public class ShortJobApplyResponse {
     }
 
     private Status status;
+    private String message;
     private InterviewSlotPopulateResponse interviewSlotPopulateResponse;
     private LocalityPopulateResponse localityPopulateResponse;
     private ShortPSPopulateResponse shortPSPopulateResponse;
@@ -84,5 +85,13 @@ public class ShortJobApplyResponse {
 
     public int getStatusCode() {
         return this.status.ordinal();
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

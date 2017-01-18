@@ -1165,10 +1165,20 @@ public class JobPostWorkflowEngine {
             applyResponse.setStatus(ShortJobApplyResponse.Status.BAD_REQUEST);
             return applyResponse;
         }
+
         JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", candidateId).eq("jobPostId", jobPostId).findUnique();
+
         if(existingJobApplication != null) {
             Logger.info("Already applied ");
             applyResponse.setStatus(ShortJobApplyResponse.Status.ALREADY_APPLIED);
+            return applyResponse;
+        }
+
+        String deActivationMessage = CandidateService.getDeActivationMessage(candidateId);
+        if(deActivationMessage != null) {
+
+            applyResponse.setStatus(ShortJobApplyResponse.Status.CANDIDATE_DEACTIVE);
+            applyResponse.setMessage(deActivationMessage);
             return applyResponse;
         }
 

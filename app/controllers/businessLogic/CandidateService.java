@@ -15,6 +15,7 @@ import com.avaje.ebean.Query;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
 import controllers.businessLogic.ongrid.AadhaarService;
 import controllers.businessLogic.ongrid.OnGridConstants;
+import dao.CandidateDAO;
 import dao.staticdao.IdProofDAO;
 import in.trujobs.proto.*;
 import in.trujobs.proto.AddFeedbackRequest;
@@ -1654,5 +1655,26 @@ public class CandidateService
             }
         }
         return isVerifyAadhaar;
+    }
+
+    public static String getDeActivationMessage(Long candidateId) {
+        if (candidateId != null) {
+            Candidate candidate = CandidateDAO.getById(candidateId);
+
+            return getDeActivationMessage(candidate);
+        }
+        return null;
+    }
+    public static String getDeActivationMessage(Candidate candidate) {
+        if (candidate != null) {
+            if (candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
+                String message =
+                        SmsUtil.getDeactivationMessage(candidate.getCandidateFullName(), candidate.getCandidateStatusDetail().getStatusExpiryDate());
+
+                Logger.info("de Activation is available");
+                return message;
+            }
+        }
+        return null;
     }
 }

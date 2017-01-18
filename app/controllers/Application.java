@@ -2281,18 +2281,8 @@ public class Application extends Controller {
         if(candidateId == null && session().get("candidateId")!= null) {
             candidateId = Long.valueOf(session().get("candidateId"));
         }
-        if (candidateId != null) {
-            Candidate candidate = CandidateDAO.getById(candidateId);
+        response.setDeActivationMessage(CandidateService.getDeActivationMessage(candidateId));
 
-            if (candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
-                String message =
-                       SmsUtil.getDeactivationMessage(candidate.getCandidateFullName(), candidate.getCandidateStatusDetail().getStatusExpiryDate());
-
-                response.setDeActivationMessage(message);
-                Logger.info("de Activation is available");
-                return ok(toJson(response));
-            }
-        }
         return ok(toJson(response));
     }
 
@@ -2364,7 +2354,7 @@ public class Application extends Controller {
 
         ApplyInShortRequest request = newMapper.readValue(updateCandidateDetailJSON.toString(), ApplyInShortRequest.class);
 
-        boolean isVerifyAadhaar = false;
+        boolean isVerifyAadhaar;
 
         if(request == null) {
             response.setStatus(PostApplyInShortResponse.Status.BAD_REQUEST);
@@ -2379,6 +2369,14 @@ public class Application extends Controller {
         }
 
         Candidate candidate = CandidateDAO.getById(request.getCandidateId());
+
+        String deActivationMessage = CandidateService.getDeActivationMessage(candidate);
+        if(deActivationMessage != null) {
+
+            response.setStatus(PostApplyInShortResponse.Status.CANDIDATE_DEACTIVE);
+            response.setMessage(deActivationMessage);
+            return badRequest(toJson(response));
+        }
 
         // #1. update locality
         ApplyJobRequest applyJobRequest = new ApplyJobRequest();

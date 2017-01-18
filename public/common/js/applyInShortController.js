@@ -51,13 +51,14 @@ var applyInShort = (function ($) {
 
         method: {
             init: function () {
+                appz.render.hideContainer();
                 appz.factory.factory();
                 appz.validation.checkIsUserLoggedIn();
                 appz.method.prepareRequestParam();
                 appz.render.applyJobForm();
-
             },
             ending: function () {
+                appz.render.showContainer();
                 $('#footer_inc').load('/footer');
             },
             getUserLogInStatus: function () {
@@ -112,6 +113,26 @@ var applyInShort = (function ($) {
         },
 
         render: {
+            messageModal: function (message, sec) {
+                var title = "Notice";
+                $("#messagePromptModal").modal();
+                $("#myModalLabel").html(title);
+                $("#customMsg").html(message);
+
+                if(sec != null) {
+                    $('#card_container').hide();
+                    setTimeout(function(){
+                        window.location = "/dashboard";
+                    }, sec);
+                }
+            },
+            hideContainer: function () {
+                $('#card_container').hide();
+            },
+
+            showContainer: function () {
+                $('#card_container').show();
+            },
             hideUI: function(message, sec){
                 $.notify(message, 'error');
 
@@ -129,22 +150,26 @@ var applyInShort = (function ($) {
 
                     // already applied
                     if(appz.missingData.statusCode == 5) {
-                        appz.render.hideUI("You have already applied to this Job. Redirecting to dashboard ..", 4000);
+                        appz.render.messageModal("You have already applied to this Job. Redirecting to dashboard ....", 4000);
                     }
                     // no job with this id
                     else if(appz.missingData.statusCode == 6) {
-                        appz.render.hideUI("Invalid Link. No Job Found. Redirecting to dashboard ..", 4000);
+                        appz.render.messageModal("Invalid Link. No Job Found. Redirecting to dashboard ....", 4000);
                     }
-
+                    // candidate deactivate
+                    else if(appz.missingData.statusCode == 7) {
+                        appz.render.messageModal(appz.missingData.message + ". Redirecting to Dashboard ....", 7000);
+                    }
                     // success | display ui
                     else if(appz.missingData.statusCode == 4){
+
                         /* render locality card */
                         if(appz.missingData.localityPopulateResponse != null) {
 
                             appz.render.jobLocalityCard(appz.missingData.localityPopulateResponse);
                         }
 
-                        /* TODO render prescreen card */
+                        /* TODO render preScreen card */
                         if(appz.missingData.shortPSPopulateResponse != null) {
                             appz.render.preScreenCard(appz.missingData.shortPSPopulateResponse);
                         }
@@ -1819,3 +1844,13 @@ var applyInShort = (function ($) {
     return appz;
 
 }(jQuery));
+
+// $(window).load(function() {
+//     $('html, body').css({
+//         'overflow': 'auto',
+//         'height': 'auto'
+//     });
+//     $("#status").fadeOut();
+//     $("#loaderLogo").fadeOut();
+//     $("#preloader").delay(300).fadeOut("slow");
+// });
