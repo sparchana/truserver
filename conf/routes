@@ -303,6 +303,7 @@ GET         /testNotification                                             contro
 GET         /convertOldData                                               controllers.TestController.convertOldData()
 GET         /testQueue                                                    controllers.TestController.testQueue()
 GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
+GET         /testResponse                                                 controllers.TestController.testApplyInShortResponse()
 
 # Scrap API
 # ~~~~~~~~~~~~~

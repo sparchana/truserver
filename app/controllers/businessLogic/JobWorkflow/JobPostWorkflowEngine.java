@@ -1159,15 +1159,26 @@ public class JobPostWorkflowEngine {
     /* new short pre screen apply flow methods - start */
 
     public static ShortJobApplyResponse getShortJobApplyResponse(Long jobPostId, Long candidateId) {
-        ShortJobApplyResponse applyResponse = new ShortJobApplyResponse();
+        ShortJobApplyResponse applyResponse = new ShortJobApplyResponse(false);
+
+        if(jobPostId == null || candidateId == null) {
+            applyResponse.setStatus(ShortJobApplyResponse.Status.BAD_REQUEST);
+            return applyResponse;
+        }
+        JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", candidateId).eq("jobPostId", jobPostId).findUnique();
+        if(existingJobApplication != null) {
+            Logger.info("Already applied ");
+            applyResponse.setStatus(ShortJobApplyResponse.Status.ALREADY_APPLIED);
+            return applyResponse;
+        }
 
         JobPost jobPost = JobPostDAO.findById(jobPostId);
 
+        applyResponse.setLocalityPopulateResponse(JobPostWorkflowEngine.getJobLocality(jobPost));
         applyResponse.setShortPSPopulateResponse(JobPostWorkflowEngine.getJobPostVsCandidate(jobPost, candidateId));
         applyResponse.setInterviewSlotPopulateResponse(
                 new InterviewSlotPopulateResponse(JobService.getInterviewSlot(jobPost),
                 RecruiterService.isInterviewRequired(jobPost)));
-        applyResponse.setLocalityPopulateResponse(JobPostWorkflowEngine.getJobLocality(jobPost));
 
         RecruiterController.sanitizeJobPostData(jobPost);
         jobPost.setJobPostToLocalityList(new ArrayList<>());
@@ -1175,6 +1186,7 @@ public class JobPostWorkflowEngine {
         jobPost.setJobPostAssetRequirements(new ArrayList<>());
 
         applyResponse.setJobPost(jobPost);
+        applyResponse.setStatus(ShortJobApplyResponse.Status.SUCCESS);
 
         return applyResponse;
     }

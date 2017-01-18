@@ -13,6 +13,7 @@ import api.http.httpRequest.Workflow.SelectedCandidateRequest;
 import api.http.httpRequest.Workflow.applyInshort.ApplyInShortRequest;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
+import api.http.httpResponse.Workflow.smsJobApplyFlow.PostApplyInShortResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
@@ -2342,11 +2343,14 @@ public class Application extends Controller {
     }
 
     public static Result getMissingData(Long jobPostId, Long candidateId) {
+
         return ok(toJson(JobPostWorkflowEngine.getShortJobApplyResponse(jobPostId, candidateId)));
     }
 
     public static Result updateCandidateDetailsViaShortJobApply() throws IOException, JSONException {
         JsonNode updateCandidateDetailJSON = request().body().asJson();
+
+        PostApplyInShortResponse response = new PostApplyInShortResponse();
 
         Logger.info("Apply In Short | Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + updateCandidateDetailJSON);
 
@@ -2363,42 +2367,51 @@ public class Application extends Controller {
         boolean isVerifyAadhaar = false;
 
         if(request == null) {
-            return badRequest();
+            response.setStatus(PostApplyInShortResponse.Status.BAD_REQUEST);
+            return badRequest(toJson(response));
         }
 
         if(request.getCandidateId() == null || request.getCandidateId() < 1 || request.getJobPostId() == null
                 || request.getJobPostId() < 1) {
-            return badRequest();
+
+            response.setStatus(PostApplyInShortResponse.Status.BAD_PARAMS);
+            return badRequest(toJson(response));
         }
 
         Candidate candidate = CandidateDAO.getById(request.getCandidateId());
 
-        // update locality
+        // #1. update locality
         ApplyJobRequest applyJobRequest = new ApplyJobRequest();
         applyJobRequest.setJobId(request.getJobPostId());
+        applyJobRequest.setLocalityId(request.getLocalityId());
         applyJobRequest.setCandidateMobile(candidate.getCandidateMobile());
         applyJobRequest.setPartner(false);
+        applyJobRequest.setAppVersionCode(0);
 
         Integer channelId = Integer.parseInt(session().get("sessionChannel"));
         int channelType = channelId == null ? InteractionConstants.INTERACTION_CHANNEL_UNKNOWN : channelId;
-        JobService.applyJob(applyJobRequest, channelType);
+        ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, channelType);
 
-        // update candidate interview detail
+        if(applyJobResponse.getStatus() == ApplyJobResponse.STATUS_EXISTS){
+            response.setStatus(PostApplyInShortResponse.Status.ALREADY_APPLIED);
+        }
+
+        // #2. update candidate interview detail
         AddCandidateInterviewSlotDetail interviewSlotDetail = new AddCandidateInterviewSlotDetail();
         interviewSlotDetail.setScheduledInterviewDate(new Date(request.getDateInMillis()));
         interviewSlotDetail.setTimeSlot(request.getTimeSlotId());
 
         JobPostWorkflowEngine.updateCandidateInterviewDetail(candidate.getCandidateId(), request.getJobPostId(), interviewSlotDetail,  channelType);
 
-        // update candidate info
+        // #3. update candidate info
         isVerifyAadhaar = CandidateService.updateCandidateDetail(request.getPropertyIdList(), candidate, request.getUpdateCandidateDetail());
-
 
         if (isVerifyAadhaar) {
             CandidateService.verifyAadhaar(candidate.getCandidateMobile());
         }
 
 
-        return  ok(toJson("0"));
+        response.setStatus(PostApplyInShortResponse.Status.SUCCESS);
+        return  ok(toJson(response));
     }
 }

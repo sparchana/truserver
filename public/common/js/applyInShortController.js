@@ -112,35 +112,61 @@ var applyInShort = (function ($) {
         },
 
         render: {
+            hideUI: function(message, sec){
+                $.notify(message, 'error');
+
+                $('#card_container').hide();
+
+                appz.do.redirectToDashboard(sec);
+            },
             applyJobForm: function () {
 
                 var promise = appz.fetch.missingData();
 
                 promise.then(function () {
+                    console.log(appz.missingData.statusCode);
+                    console.log(appz.missingData.status);
 
-                    /* render locality card */
-                    if(appz.missingData.localityPopulateResponse != null) {
-
-                        appz.render.jobLocalityCard(appz.missingData.localityPopulateResponse);
+                    // already applied
+                    if(appz.missingData.statusCode == 5) {
+                        appz.render.hideUI("You have already applied to this Job. Redirecting to dashboard ..", 4000);
+                    }
+                    // no job with this id
+                    else if(appz.missingData.statusCode == 6) {
+                        appz.render.hideUI("Invalid Link. No Job Found. Redirecting to dashboard ..", 4000);
                     }
 
-                    /* TODO render prescreen card */
-                    if(appz.missingData.shortPSPopulateResponse != null) {
-                        appz.render.preScreenCard(appz.missingData.shortPSPopulateResponse);
-                    }
+                    // success | display ui
+                    else if(appz.missingData.statusCode == 4){
+                        /* render locality card */
+                        if(appz.missingData.localityPopulateResponse != null) {
+
+                            appz.render.jobLocalityCard(appz.missingData.localityPopulateResponse);
+                        }
+
+                        /* TODO render prescreen card */
+                        if(appz.missingData.shortPSPopulateResponse != null) {
+                            appz.render.preScreenCard(appz.missingData.shortPSPopulateResponse);
+                        }
 
 
-                    /* render interview slot card */
-                    if(appz.missingData.interviewSlotPopulateResponse != null
-                        && appz.missingData.interviewSlotPopulateResponse.interviewResponse.status == 2
-                        && appz.missingData.interviewSlotPopulateResponse.interviewSlotMap != null) {
+                        /* render interview slot card */
+                        if(appz.missingData.interviewSlotPopulateResponse != null
+                            && appz.missingData.interviewSlotPopulateResponse.interviewResponse.status == 2
+                            && appz.missingData.interviewSlotPopulateResponse.interviewSlotMap != null) {
 
-                        appz.render.interviewSlotCard(appz.missingData.interviewSlotPopulateResponse.interviewSlotMap);
+                            appz.render.interviewSlotCard(appz.missingData.interviewSlotPopulateResponse.interviewSlotMap);
+                        } else {
+                            $('#jobInterviewSlotCardDiv').hide();
+                        }
+
+                        console.log(appz.missingData);
                     } else {
-                        $('#jobInterviewSlotCardDiv').hide();
+                        // something went wrong
+                        // hide container
+
                     }
 
-                    console.log(appz.missingData);
 
                 }).catch(function (fromReject) {
                     console.log(fromReject);
@@ -177,7 +203,6 @@ var applyInShort = (function ($) {
                 if(slotMap == null) {
                     return;
                 }
-
 
                 $('#interviewJobTitle').html(appz.jobTitle);
                 $('#interviewCompanyName').html(appz.companyName);
@@ -1360,20 +1385,32 @@ var applyInShort = (function ($) {
                 try {
                     $.ajax({
                         type: "POST",
-                        url: "/updateCandidateDetailViaShortJobApply/?propertyIdList=" + appz.missingData.propertyIdList + "&cId=" + appz.candidateId + "&jobPostId="+appz.jobPostId,
+                        url: "/updateCandidateDetailViaShortJobApply/",
                         contentType: "application/json; charset=utf-8",
                         data: JSON.stringify(d),
                         success: function (returnedData) {
-                            if(returnedData.status == INTERVIEW_REQUIRED){
 
-                            } else if(returnedData.status == INTERVIEW_NOT_REQUIRED) {
+                        console.log(returnedData);
+                            $("#finalSubmitBtn").prop("disabled", true);
 
-                                $("#confirmationModal").modal("show");
+                            if(returnedData.statusCode == 3) {
 
-                                $.notify("Successfully Submitted Application form. Thanks !", 'success');
+                                $.notify("Application Submitted successfully. Opening Dashboard", 'success');
+                                appz.do.redirectToDashboard(3000);
+                            } else if(returnedData.statusCode == 4) {
+                                $.notify("Looks like you have already applied to this job. Opening Dashboard", 'error');
+
+                                appz.do.redirectToDashboard(3000);
+
                             } else {
-                                $.notify("Something went wrong. Please try again !", 'success');
+                                $.notify("Something went wrong. Please re-check submission!", 'error');
+
+                                setTimeout(function(){
+                                    $("#finalSubmitBtn").prop("disabled", false);
+                                },3000);
+
                             }
+
                         }
                     });
                 } catch (exception) {
@@ -1381,25 +1418,34 @@ var applyInShort = (function ($) {
                 }
             },
             validateSubmit: function () {
-                appz.missingData.propertyIdList;
 
+                appz.missingData.shortPSPopulateResponse.propertyIdList;
+
+                // c.f https://github.com/jpillora/notifyjs/issues/64
+                $('.notifyjs-container').trigger('notify-hide');
+
+                console.log("validating submit");
                 var okToSubmitList = [];
                 var okToSubmit = true;
 
                 var dobCheck;
                 var prevCompanyList = [];
+                var main = {};
                 var d = {};
                 var msg;
 
-                d["candidateId"] = parseInt(appz.candidateId);
-                d["jobPostId"] = parseInt(appz.jobPostId);
-                d["propertyIdList"] = appz.propertyIdList;
+                main["candidateId"] = parseInt(appz.candidateId);
+                main["jobPostId"] = parseInt(appz.jobPostId);
+                main["propertyIdList"] = appz.missingData.shortPSPopulateResponse.propertyIdList;
 
                 var localityId = $('#jobLocality').val();
 
                 if(localityId == null || localityId == 0){
                     okToSubmit = false;
                     msg = "Please select a valid locality.";
+
+                    $.notify(msg, 'error');
+
                     var submit = {
                         propId : 11,
                         message: msg,
@@ -1407,7 +1453,7 @@ var applyInShort = (function ($) {
                     };
                     okToSubmitList.push(submit);
                 } else {
-                    d["localityId"] = parseInt(localityId);
+                    main["localityId"] = parseInt(localityId);
                 }
 
                 var selectedInterview = $('#interViewSlot').val();
@@ -1415,6 +1461,8 @@ var applyInShort = (function ($) {
                 if(selectedInterview == null || selectedInterview == "0"){
                     okToSubmit = false;
                     msg = "Please select a valid Interview Slot.";
+                    $.notify(msg, 'error');
+
                     var submit = {
                         propId : 12,
                         message: msg,
@@ -1422,11 +1470,12 @@ var applyInShort = (function ($) {
                     };
                     okToSubmitList.push(submit);
                 } else {
-                    d["dateInMillis"] =parseInt(selectedInterview.split("_")[0]);
-                    d["timeSlotId"] = parseInt(selectedInterview.split("_")[1]);
+                    main["dateInMillis"] =parseInt(selectedInterview.split("_")[0]);
+                    main["timeSlotId"] = parseInt(selectedInterview.split("_")[1]);
                 }
 
-                $.each(appz.missingData.propertyIdList, function (index, propId) {
+                console.log(appz.missingData.shortPSPopulateResponse.propertyIdList);
+                $.each(appz.missingData.shortPSPopulateResponse.propertyIdList, function (index, propId) {
 
                     okToSubmit = true;
                     if (propId == 0) {
@@ -1438,7 +1487,7 @@ var applyInShort = (function ($) {
                                 id = $(this).attr('id').split("_").slice(-1).pop();
 
                                 var isChecked = $('input#idProofCheckbox_' + id).is(':checked');
-                                var isValid = validateInput(id, $('input#idProofValue_' + id).val().trim());
+                                var isValid = appz.validation.input(id, $('input#idProofValue_' + id).val().trim());
                                 if ( isValid && isChecked) {
                                     item["idProofId"] = parseInt(id);
                                     item["idNumber"] = $('input#idProofValue_' + id).val().trim();
@@ -1532,16 +1581,8 @@ var applyInShort = (function ($) {
                             var id = parseInt($(this).attr('id').split("_").slice(-1).pop());
                             assetArrayList.push(id);
                         });
-
                         d ["assetIdList"] = assetArrayList;
-                        if(!okToSubmit){
-                            var submit = {
-                                propId : propId,
-                                message: msg,
-                                submissionStatus: okToSubmit
-                            };
-                            okToSubmitList.push(submit);
-                        }
+
                     } else if (propId == 3) {
                         // age submission
                         if($('#dob_day').val() == "Day" || $('#dob_month').val() == "Month" || $('#dob_year').val() == "Year") {
@@ -1567,9 +1608,13 @@ var applyInShort = (function ($) {
                             dobCheck = 0;
                             okToSubmit = false;
                         }
+
                         d ["candidateDob"] = c_dob;
+
+                        msg = "Please provide valid Date of birth";
+
                         if(!okToSubmit){
-                            $.notify("Please provide valid Date of birth", 'error');
+                            $.notify(msg, 'error');
                             var submit = {
                                 propId : propId,
                                 message: msg,
@@ -1728,8 +1773,8 @@ var applyInShort = (function ($) {
                 });
 
                 if (okToSubmitList.length == 0) {
-
-                    this.submit(d);
+                    main["updateCandidateDetail"] = d;
+                    this.submit(main);
 
                     $("#finalSubmitBtn").prop("disabled", true);
 
@@ -1739,8 +1784,24 @@ var applyInShort = (function ($) {
                     },7000);
 
                     return true;
+                } else {
+                    // okToSubmitList.forEach(function (object) {
+                    //     $.notify(object.message, 'error');
+                    //     console.log(object);
+                    // })
                 }
 
+            },
+            redirectToDashboard: function (sec) {
+                if(sec ==null) {
+                    // dont redirect
+                   return;
+                } else {
+
+                    setTimeout(function(){
+                        window.location = "/dashboard";
+                    },sec);
+                }
             }
         }
 
