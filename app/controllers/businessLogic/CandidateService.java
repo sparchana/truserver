@@ -1750,9 +1750,25 @@ public class CandidateService
                         CandidateResumeService candidateResumeService = new CandidateResumeService();
                         CandidateResumeRequest candidateResumeRequest = new CandidateResumeRequest();
 
+                        // determine channel, user
+                        String user = "";
+                        if(session() != null){
+                            //Logger.info("Session : "+ session().get("sessionChannel"));
+                            if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
+                                user = session().get("partnerId")+"(Partner)";
+                            }
+                            else if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
+                                user = session().get("candidateId")+"(Candidate-Web)";
+                            }
+                            else if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID){
+                                user = session().get("candidateId")+"(Candidate-App)";
+                            }
+                        }
+                        else user = "Unknown";
+
                         // Prepare the Request
                         if(candidateId > 0) candidateResumeRequest.setCandidate(candidateId);
-                        candidateResumeRequest.setCreatedBy("Self");
+                        candidateResumeRequest.setCreatedBy(user);
                         candidateResumeRequest.setExternalKey(personId);
                         candidateResumeRequest.setFilePath(path);
                         //candidateResumeRequest.setParsedResume(profileJson.toString());
@@ -1820,8 +1836,10 @@ public class CandidateService
 
             // candidate firstName and secondName
             String candidateName = profile.Name;
-            if(candidateName != null && StringUtils.isAlphaSpace(candidateName)){
+            if(candidateName != null){
                 candidateName = candidateName.trim();
+                // get rid of ALL special characters (if any)
+                candidateName = candidateName.replaceAll("[\\-\\+\\.\\^:,\\(\\)\\{\\}]","");
                 String[] nameArray = candidateName.split("\\s+");
                 addSupportCandidateRequest.setCandidateFirstName(nameArray[0]);
                 candidateName = "";
@@ -1862,7 +1880,10 @@ public class CandidateService
                             pastCompany.setCompanyName(eachCompany);
                             // default is "Others" (34L) --> This is needed since company will not be registered without job role
                             pastCompany.setJobRoleId(34);
+                            // need to set current company flag --> if you dont set this, you're looking at an NPE
                             if(profile.getLatestCompanies() != null && !isCurrentSet){
+                                // default is false
+                                pastCompany.setCurrent(Boolean.FALSE);
                                 for(String latest:profile.getLatestCompanies()){
                                     if(latest.equalsIgnoreCase(eachCompany)) {
                                         pastCompany.setCurrent(Boolean.TRUE);
@@ -2103,9 +2124,11 @@ public class CandidateService
             // get all phone number(s) for this candidate
             List<String> mobileNos = new ArrayList<>();
 
-            for (int j = 0; j < profile.PhoneNos.size(); j++) {
-                mobileNos.add(StringUtils.right(profile.PhoneNos.get(j).toString(),10));
-                Logger.info("mobileNos(j)="+mobileNos.get(j));
+            if(profile.PhoneNos != null){
+                for (int j = 0; j < profile.PhoneNos.size(); j++) {
+                    mobileNos.add(StringUtils.right(profile.PhoneNos.get(j).toString(),10));
+                    Logger.info("mobileNos(j)="+mobileNos.get(j));
+                }
             }
 
             // primary key missing!!! Cannot create candidate
@@ -2236,6 +2259,13 @@ public class CandidateService
             changedFields.add("filePath");
         }
 
+        // created-by check
+        if(candidateResumeRequest.getCreatedBy().equalsIgnoreCase("unknown")){
+            candidateResumeRequest.setCreatedBy(candidateId+"(Candidate)");
+            changedFields.add("createdBy");
+        }
+
+        // update the candidate resume entry
         candidateResumeRequest.setChangedFields(changedFields);
         //CandidateResumeService candidateResumeService = new CandidateResumeService();
         Logger.info("UpdateResume(): About to call candidateResumeService.update for id = "+candidateResume.getCandidateResumeId()+" referencing Candidate Id = "+candidateId);
