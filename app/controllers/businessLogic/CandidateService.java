@@ -47,7 +47,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import play.Logger;
-import play.mvc.Http;
 
 import javax.persistence.NonUniqueResultException;
 import java.io.*;
@@ -1636,19 +1635,6 @@ public class CandidateService
             }
         }
 
-        // adding log to check session exists before  making call to hirewand
-
-        if(session() != null) {
-            try {
-                Logger.info("session channel: " + session().get("sessionChannel"));
-                Logger.info("session id: " + session().get("sessionId"));
-            } catch (NullPointerException np) {
-                np.printStackTrace();
-            }
-        } else {
-            Logger.info("no session ");
-        }
-
         // get handle to HireWand
         HireWandService hw = HireWandService.get();
         try {
@@ -1717,19 +1703,6 @@ public class CandidateService
                 }
                 return responseJson;
             }
-
-        // adding log to check session exists after hirewand responds
-
-        if(session() != null) {
-            try {
-                Logger.info("session channel: " + session().get("sessionChannel"));
-                Logger.info("session id: " + session().get("sessionId"));
-            } catch (NullPointerException np) {
-                np.printStackTrace();
-            }
-        } else {
-            Logger.info("no session ");
-        }
 
         try {
 
@@ -1809,13 +1782,13 @@ public class CandidateService
                         String user = "";
                         if(session() != null){
                             //Logger.info("Session : "+ session().get("sessionChannel"));
-                            if(Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
+                            if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
                                 user = session().get("partnerId")+"(Partner)";
                             }
-                            else if(Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
+                            else if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
                                 user = session().get("candidateId")+"(Candidate-Web)";
                             }
-                            else if(Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID){
+                            else if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID){
                                 user = session().get("candidateId")+"(Candidate-App)";
                             }
                         }
