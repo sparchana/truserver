@@ -1750,9 +1750,25 @@ public class CandidateService
                         CandidateResumeService candidateResumeService = new CandidateResumeService();
                         CandidateResumeRequest candidateResumeRequest = new CandidateResumeRequest();
 
+                        // determine channel, user
+                        String user = "";
+                        if(session() != null){
+                            //Logger.info("Session : "+ session().get("sessionChannel"));
+                            if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
+                                user = session().get("partnerId")+"(Partner)";
+                            }
+                            else if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
+                                user = session().get("candidateId")+"(Candidate-Web)";
+                            }
+                            else if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID){
+                                user = session().get("candidateId")+"(Candidate-App)";
+                            }
+                        }
+                        else user = "Unknown";
+
                         // Prepare the Request
                         if(candidateId > 0) candidateResumeRequest.setCandidate(candidateId);
-                        candidateResumeRequest.setCreatedBy("Self");
+                        candidateResumeRequest.setCreatedBy(user);
                         candidateResumeRequest.setExternalKey(personId);
                         candidateResumeRequest.setFilePath(path);
                         //candidateResumeRequest.setParsedResume(profileJson.toString());
@@ -2116,7 +2132,7 @@ public class CandidateService
             }
 
             // primary key missing!!! Cannot create candidate
-            if(mobileNos.size() == 0 || profile.PhoneNos == null) {
+            if(mobileNos.size() == 0) {
                 try {
                     responseJson.put("candidateExists",Boolean.FALSE);
                     responseJson.put("alreadyParsed",Boolean.FALSE);
@@ -2243,6 +2259,13 @@ public class CandidateService
             changedFields.add("filePath");
         }
 
+        // created-by check
+        if(candidateResumeRequest.getCreatedBy().equalsIgnoreCase("unknown")){
+            candidateResumeRequest.setCreatedBy(candidateId+"(Candidate)");
+            changedFields.add("createdBy");
+        }
+
+        // update the candidate resume entry
         candidateResumeRequest.setChangedFields(changedFields);
         //CandidateResumeService candidateResumeService = new CandidateResumeService();
         Logger.info("UpdateResume(): About to call candidateResumeService.update for id = "+candidateResume.getCandidateResumeId()+" referencing Candidate Id = "+candidateId);
