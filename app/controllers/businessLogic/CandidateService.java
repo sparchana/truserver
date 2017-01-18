@@ -47,6 +47,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import play.Logger;
+import play.mvc.Http;
 
 import javax.persistence.NonUniqueResultException;
 import java.io.*;
@@ -1754,8 +1755,36 @@ public class CandidateService
                     }
                     Logger.info("AWS upload fileName ="+awsName);
 
-                    String path = uploadResumeToAWS(resume,awsName);
-                    if(path == "") {
+//                    Http.Session backupSession = session();
+
+                if(session() != null) {
+                    try {
+                        Logger.info("pre aws session channel: " + session().get("sessionChannel"));
+                        Logger.info("session id: " + session().get("sessionId"));
+                    } catch (NullPointerException np) {
+                        np.printStackTrace();
+                    }
+                } else {
+                    Logger.info("no session ");
+                }
+
+
+                String path = uploadResumeToAWS(resume,awsName);
+
+
+                if(session() != null) {
+                    try {
+                        Logger.info("post aws session channel: " + session().get("sessionChannel"));
+                        Logger.info("session id: " + session().get("sessionId"));
+                    } catch (NullPointerException np) {
+                        np.printStackTrace();
+                    }
+                } else {
+                    Logger.info("no session ");
+                }
+
+
+                if(path == "") {
                         // Resume could not be uploaded to S3
                         try {
                             responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
@@ -1776,17 +1805,6 @@ public class CandidateService
                         CandidateResumeService candidateResumeService = new CandidateResumeService();
                         CandidateResumeRequest candidateResumeRequest = new CandidateResumeRequest();
 
-                        if(session() != null) {
-                            try {
-                                Logger.info("session channel: " + session().get("sessionChannel"));
-                                Logger.info("session id: " + session().get("sessionId"));
-                            } catch (NullPointerException np) {
-                                np.printStackTrace();
-                            }
-                        } else {
-                            Logger.info("no session ");
-                        }
-                        
                         // determine channel, user
                         String user = "";
                         if(session() != null){
