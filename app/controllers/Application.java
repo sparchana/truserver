@@ -2305,6 +2305,7 @@ public class Application extends Controller {
         return ok(views.html.resumeUpload.render());
     }
 
+
     public static Result doResumeUpload(String candidateId) throws org.json.JSONException {
 
         Http.MultipartFormData body = request().body().asMultipartFormData();
@@ -2312,6 +2313,17 @@ public class Application extends Controller {
         UploadResumeResponse resumeResponse = new UploadResumeResponse();
         int i = 0;
         JSONArray list = new JSONArray();
+
+        if(session() != null) {
+            try {
+            Logger.info("session channel: " + session().get("sessionChannel"));
+            Logger.info("session id: " + session().get("sessionId"));
+            } catch (NullPointerException np) {
+                np.printStackTrace();
+            }
+        } else {
+            Logger.info("no session ");
+        }
 
         while(Boolean.TRUE){
             i++;
