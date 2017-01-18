@@ -1635,6 +1635,19 @@ public class CandidateService
             }
         }
 
+        // adding log to check session exists before  making call to hirewand
+
+        if(session() != null) {
+            try {
+                Logger.info("session channel: " + session().get("sessionChannel"));
+                Logger.info("session id: " + session().get("sessionId"));
+            } catch (NullPointerException np) {
+                np.printStackTrace();
+            }
+        } else {
+            Logger.info("no session ");
+        }
+
         // get handle to HireWand
         HireWandService hw = HireWandService.get();
         try {
@@ -1703,6 +1716,19 @@ public class CandidateService
                 }
                 return responseJson;
             }
+
+        // adding log to check session exists after hirewand responds
+
+        if(session() != null) {
+            try {
+                Logger.info("session channel: " + session().get("sessionChannel"));
+                Logger.info("session id: " + session().get("sessionId"));
+            } catch (NullPointerException np) {
+                np.printStackTrace();
+            }
+        } else {
+            Logger.info("no session ");
+        }
 
         try {
 
