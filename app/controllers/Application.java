@@ -1,9 +1,5 @@
 package controllers;
 
-import api.http.httpResponse.hirewand.HireWandResponse;
-import api.http.httpResponse.hirewand.UploadResumeResponse;
-import com.avaje.ebean.text.json.JsonWriter;
-import dao.JobPostDAO;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
@@ -15,6 +11,8 @@ import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.SelectedCandidateRequest;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
+import api.http.httpResponse.hirewand.HireWandResponse;
+import api.http.httpResponse.hirewand.UploadResumeResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
@@ -29,22 +27,23 @@ import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.*;
 import dao.CompanyDAO;
+import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
-import models.entity.OM.CandidateResume;
-import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.Intelligence.RelatedJobRole;
+import models.entity.OM.CandidateResume;
 import models.entity.OM.JobApplication;
 import models.entity.OM.JobPreference;
 import models.entity.OM.JobToSkill;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
 import models.util.ParseCSV;
 import models.util.SmsUtil;
+import models.util.UrlValidatorUtil;
 import models.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
-import models.util.*;
 import org.json.simple.JSONArray;
 import play.Logger;
 import play.api.Play;
@@ -56,7 +55,6 @@ import play.mvc.Security;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -2304,6 +2302,7 @@ public class Application extends Controller {
     public static Result showResumeUpload() {
         return ok(views.html.resumeUpload.render());
     }
+
 
     public static Result doResumeUpload(String candidateId) throws org.json.JSONException {
 

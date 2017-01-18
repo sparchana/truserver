@@ -1728,8 +1728,35 @@ public class CandidateService
                     }
                     Logger.info("AWS upload fileName ="+awsName);
 
-                    String path = uploadResumeToAWS(resume,awsName);
-                    if(path == "") {
+                //Http.Session backupSession = session();
+
+                if(session() != null) {
+                    try {
+                        //Logger.info("pre aws session channel: " + session().get("sessionChannel"));
+                        //Logger.info("session id: " + session().get("sessionId"));
+                    } catch (NullPointerException np) {
+                        np.printStackTrace();
+                    }
+                } else {
+                    Logger.info("no session ");
+                }
+
+                String path = uploadResumeToAWS(resume,awsName);
+
+
+                if(session() != null) {
+                    try {
+                        //Logger.info("post aws session channel: " + session().get("sessionChannel"));
+                        //Logger.info("session id: " + session().get("sessionId"));
+                    } catch (NullPointerException np) {
+                        np.printStackTrace();
+                    }
+                } else {
+                    Logger.info("no session ");
+                }
+
+
+                if(path == "") {
                         // Resume could not be uploaded to S3
                         try {
                             responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
@@ -1754,17 +1781,18 @@ public class CandidateService
                         String user = "";
                         if(session() != null){
                             //Logger.info("Session : "+ session().get("sessionChannel"));
-                            if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
+                            if(session().get("sessionChannel")!=null && Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
                                 user = session().get("partnerId")+"(Partner)";
                             }
-                            else if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
+                            else if(session().get("sessionChannel")!=null && Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
                                 user = session().get("candidateId")+"(Candidate-Web)";
                             }
-                            else if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID){
+                            else if(session().get("sessionChannel")!=null && Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID){
                                 user = session().get("candidateId")+"(Candidate-App)";
                             }
                         }
                         else user = "Unknown";
+                        Logger.info("user ="+user);
 
                         // Prepare the Request
                         if(candidateId > 0) candidateResumeRequest.setCandidate(candidateId);
@@ -2055,6 +2083,7 @@ public class CandidateService
             responseJson.put("key",personId);
         } catch (JSONException e) {
             e.printStackTrace();
+            return null;
         }
 
         // get the existing entry from CandidateResume
@@ -2063,12 +2092,28 @@ public class CandidateService
         Map<String, String> param = new HashMap<>();
         param.put("externalKey",personId);
         params.add(param);
-        CandidateResume candidateResume = (CandidateResume) candidateResumeService.readByAttribute(params).get(0).getEntity();
+        CandidateResume candidateResume = null;
+        try{
+            candidateResume = (CandidateResume) candidateResumeService.readByAttribute(params).get(0).getEntity();
+        } catch (java.lang.IndexOutOfBoundsException e){
+            Logger.info("Could not read candidate resume with externalKey = "+personId);
+            e.printStackTrace();
+            try {
+                responseJson.put("candidateExists",Boolean.FALSE);
+                responseJson.put("alreadyParsed",Boolean.FALSE);
+                responseJson.put("status","Fail");
+                responseJson.put("msg","Could not read candidate resume with externalKey = "+personId);
+                return responseJson;
+            } catch (JSONException ee) {
+                ee.printStackTrace();
+                return null;
+            }
+        }
 
         // Check if this is a duplicate entry -- if so, we need to get the root person id
         CandidateResume root = null;
         if(profile.getProfilemergedto() != null){
-            Logger.info("Candidate Resume ID"+candidateResume.getCandidateResumeId()+" is duplicate. Searching for original entry with external_key = "+profile.getProfilemergedto());
+            Logger.info("Candidate Resume ID "+candidateResume.getCandidateResumeId()+" is duplicate. Searching for original entry with external_key = "+profile.getProfilemergedto());
             param.clear();
             param.put("externalKey",profile.getProfilemergedto());
             params.clear();
@@ -2260,9 +2305,10 @@ public class CandidateService
         }
 
         // created-by check
-        if(candidateResumeRequest.getCreatedBy().equalsIgnoreCase("unknown")){
-            candidateResumeRequest.setCreatedBy(candidateId+"(Candidate)");
-            changedFields.add("createdBy");
+        if(candidateResume.getCreatedBy() == null ||
+          (candidateResume.getCreatedBy() != null && candidateResume.getCreatedBy().equalsIgnoreCase("unknown"))){
+                candidateResumeRequest.setCreatedBy(candidateId+"(Candidate)");
+                changedFields.add("createdBy");
         }
 
         // update the candidate resume entry

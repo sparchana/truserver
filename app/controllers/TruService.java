@@ -1443,7 +1443,7 @@ public abstract class TruService {
         java.lang.reflect.Method method = null;
 
         ExpressionList<?> query = getQuery();
-        Logger.info("ExpressionList<?> query = "+query.getClass().getSimpleName());
+        //Logger.info("ExpressionList<?> query = "+query.getClass().getSimpleName());
 
         if(query != null){
             for(Map<String,String> each:attrNameValueList){
