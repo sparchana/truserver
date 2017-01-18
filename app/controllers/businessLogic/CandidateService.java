@@ -2344,9 +2344,10 @@ public class CandidateService
 
                     // send info SMS informing that uploaded resumes have been processed
                     String partnerId = candidateResume.getCreatedBy().split("\\(")[0];
-                    Logger.info("partnerId = " +partnerId);
+                    //Logger.info("partnerId = " +partnerId);
                     Partner partner = Partner.find.where().eq("partnerId", partnerId).findUnique();
                     // send SMS
+                    Logger.info("Sending SMS to partner : name = " + partner.getPartnerFirstName() + " mobile = "+partner.getPartnerMobile() );
                     SmsUtil.resumeUploadStatusToPartner(partner.getPartnerFirstName(),partner.getPartnerMobile());
                 }
                 else{
