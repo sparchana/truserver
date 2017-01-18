@@ -1793,6 +1793,7 @@ public class CandidateService
                             }
                         }
                         else user = "Unknown";
+                        Logger.info("user ="+user);
 
                         // Prepare the Request
                         if(candidateId > 0) candidateResumeRequest.setCandidate(candidateId);
@@ -2083,6 +2084,7 @@ public class CandidateService
             responseJson.put("key",personId);
         } catch (JSONException e) {
             e.printStackTrace();
+            return null;
         }
 
         // get the existing entry from CandidateResume
@@ -2102,16 +2104,17 @@ public class CandidateService
                 responseJson.put("alreadyParsed",Boolean.FALSE);
                 responseJson.put("status","Fail");
                 responseJson.put("msg","Could not read candidate resume with externalKey = "+personId);
+                return responseJson;
             } catch (JSONException ee) {
                 ee.printStackTrace();
+                return null;
             }
-            return responseJson;
         }
 
         // Check if this is a duplicate entry -- if so, we need to get the root person id
         CandidateResume root = null;
         if(profile.getProfilemergedto() != null){
-            Logger.info("Candidate Resume ID"+candidateResume.getCandidateResumeId()+" is duplicate. Searching for original entry with external_key = "+profile.getProfilemergedto());
+            Logger.info("Candidate Resume ID "+candidateResume.getCandidateResumeId()+" is duplicate. Searching for original entry with external_key = "+profile.getProfilemergedto());
             param.clear();
             param.put("externalKey",profile.getProfilemergedto());
             params.clear();

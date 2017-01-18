@@ -1452,7 +1452,6 @@ public abstract class TruService {
                 }
             }
         }
-        Logger.info(this.getClass().getSimpleName()+".readByAttribute : query = "+query.toString());
         return createReadResponse((List<Model>) query.findList());
 
 /*
