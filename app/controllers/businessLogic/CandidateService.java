@@ -1782,13 +1782,13 @@ public class CandidateService
                         String user = "";
                         if(session() != null){
                             //Logger.info("Session : "+ session().get("sessionChannel"));
-                            if(Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
+                            if(session().get("sessionChannel")!=null && Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
                                 user = session().get("partnerId")+"(Partner)";
                             }
-                            else if(Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
+                            else if(session().get("sessionChannel")!=null && Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
                                 user = session().get("candidateId")+"(Candidate-Web)";
                             }
-                            else if(Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID){
+                            else if(session().get("sessionChannel")!=null && Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID){
                                 user = session().get("candidateId")+"(Candidate-App)";
                             }
                         }
