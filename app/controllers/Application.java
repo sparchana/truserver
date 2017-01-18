@@ -1321,17 +1321,17 @@ public class Application extends Controller {
                 if(existingAuth != null) {
                     Logger.info("auth exists - ");
                     // boolean isKeyValid = key.equals(Util.md5(existingAuth.getOtp() + ""));
-//                    boolean isKeyValid = key.equals((existingAuth.getOtp() + ""));
-                    Logger.info("key: " + Util.md5(existingAuth.getAuthSessionId()));
-                    boolean isKeyValid = key.equals(Util.md5(existingAuth.getAuthSessionId() + ""));
+                    boolean isKeyValid = key.equals((existingAuth.getOtp() + ""));
+//                    Logger.info("key: " + Util.md5(existingAuth.getAuthSessionId()));
+//                    boolean isKeyValid = key.equals(Util.md5(existingAuth.getAuthSessionId() + ""));
                     if (isKeyValid ) {
                         Logger.info("Added session for Sms link based login ");
                         AuthService.addSession(existingAuth, existingCandidate);
                         // update auth otp after login
                         // TODO in front end clear location.search , after loading
-//                        existingAuth.setOtp(Util.generateOtp());
+                        existingAuth.setOtp(Util.generateOtp());
 //                        existingAuth.setAuthSessionId(UUID.randomUUID().toString());
-//                        existingAuth.update();
+                        existingAuth.update();
 
                         redirectToApplyInShort = true;
                     } else {

@@ -1665,6 +1665,7 @@ public class CandidateService
         }
         return null;
     }
+
     public static String getDeActivationMessage(Candidate candidate) {
         if (candidate != null) {
             if (candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
