@@ -1728,12 +1728,12 @@ public class CandidateService
                     }
                     Logger.info("AWS upload fileName ="+awsName);
 
-//                    Http.Session backupSession = session();
+                //Http.Session backupSession = session();
 
                 if(session() != null) {
                     try {
-                        Logger.info("pre aws session channel: " + session().get("sessionChannel"));
-                        Logger.info("session id: " + session().get("sessionId"));
+                        //Logger.info("pre aws session channel: " + session().get("sessionChannel"));
+                        //Logger.info("session id: " + session().get("sessionId"));
                     } catch (NullPointerException np) {
                         np.printStackTrace();
                     }
@@ -1741,14 +1741,13 @@ public class CandidateService
                     Logger.info("no session ");
                 }
 
-
                 String path = uploadResumeToAWS(resume,awsName);
 
 
                 if(session() != null) {
                     try {
-                        Logger.info("post aws session channel: " + session().get("sessionChannel"));
-                        Logger.info("session id: " + session().get("sessionId"));
+                        //Logger.info("post aws session channel: " + session().get("sessionChannel"));
+                        //Logger.info("session id: " + session().get("sessionId"));
                     } catch (NullPointerException np) {
                         np.printStackTrace();
                     }
