@@ -1443,7 +1443,7 @@ public abstract class TruService {
         java.lang.reflect.Method method = null;
 
         ExpressionList<?> query = getQuery();
-        Logger.info("ExpressionList<?> query = "+query.getClass().getSimpleName());
+        //Logger.info("ExpressionList<?> query = "+query.getClass().getSimpleName());
 
         if(query != null){
             for(Map<String,String> each:attrNameValueList){
@@ -1452,6 +1452,7 @@ public abstract class TruService {
                 }
             }
         }
+        Logger.info(this.getClass().getSimpleName()+".readByAttribute : query = "+query.toString());
         return createReadResponse((List<Model>) query.findList());
 
 /*
