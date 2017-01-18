@@ -1862,7 +1862,10 @@ public class CandidateService
                             pastCompany.setCompanyName(eachCompany);
                             // default is "Others" (34L) --> This is needed since company will not be registered without job role
                             pastCompany.setJobRoleId(34);
+                            // need to set current company flag --> if you dont set this, you're looking at an NPE
                             if(profile.getLatestCompanies() != null && !isCurrentSet){
+                                // default is false
+                                pastCompany.setCurrent(Boolean.FALSE);
                                 for(String latest:profile.getLatestCompanies()){
                                     if(latest.equalsIgnoreCase(eachCompany)) {
                                         pastCompany.setCurrent(Boolean.TRUE);
