@@ -127,6 +127,7 @@ GET         /partner/myCandidates                                         contro
 GET         /partnerNavBar                                                controllers.PartnerController.renderPagePartnerNavBar()
 GET         /getPartnerProfileInfo                                        controllers.PartnerController.getPartnerProfileInfo()
 GET         /partnerNavBarLoggedIn                                        controllers.PartnerController.renderPagePartnerLoggedInNavbar()
+GET         /partner/jobs                                                 controllers.PartnerController.renderPartnerJobs()
 GET         /partner/ifExists/:mobile                                     controllers.Application.ifCandidateExists(mobile: String)
 GET         /partner/:candidateId/jobs                                    controllers.PartnerController.renderCandidateJobPage(candidateId: Long)
 GET         /getAppliedJobsByPartnerForCandidate/:id                      controllers.PartnerController.getAppliedJobsByPartnerForCandidate(id : Long)
@@ -144,7 +145,7 @@ POST        /addPartnerPassword                                           contro
 POST        /partnerSignUp                                                controllers.PartnerController.partnerSignUp()
 POST        /partnerUpdateBasicProfile                                    controllers.PartnerController.partnerUpdateBasicProfile()
 POST        /checkPartnerCandidate/:id                                    controllers.PartnerController.checkPartnerCandidate(id : Long)
-POST        /checkExistingCompany/:id                                     controllers.PartnerController.checkExistingCompany(id : Long)
+POST        /checkExistingCompany/:id                                     controllers.PartnerController.checkExistingCompany(id : String)
 
 # recruiter routes
 #~~~~~~~~~~~~~~~~~~~~
@@ -213,6 +214,7 @@ POST        /getAllDegree                                                 contro
 POST        /getAllEducation                                              controllers.Application.getAllEducation()
 POST        /getAllJobsRolesWithJobs                                      controllers.Application.getAllJobsRolesWithJobs()
 POST        /getAllNormalJobPosts/                                        controllers.Application.getAllNormalJobPosts(i: java.lang.Long ?= null)
+POST        /getPartnerViewJobs/                                          controllers.Application.getPartnerViewJobs(i: java.lang.Long ?= null)
 POST        /getAllHotJobPosts/                                           controllers.Application.getAllHotJobPosts(i: java.lang.Long ?= null)
 POST        /getAllIdProof                                                controllers.Application.getAllIdProof()
 POST        /getAllJobs                                                   controllers.Application.getAllJobs()

@@ -91,6 +91,7 @@ public class JobPostWorkflowEngine {
         query.select("*")
                 .where()
                 .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
+                .eq("CandidateIsPrivate", ServerConstants.CANDIDATE_IS_NOT_PRIVATE)
                 .query();
 
         // problem: all age is null/0 and dob is also null
@@ -386,6 +387,7 @@ public class JobPostWorkflowEngine {
         // should be an active candidate
         query = query.select("*").fetch("candidateprofilestatus")
                 .where()
+                .eq("CandidateIsPrivate", ServerConstants.CANDIDATE_IS_NOT_PRIVATE)
                 .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
                 .query();
 

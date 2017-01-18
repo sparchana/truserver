@@ -540,7 +540,7 @@ function renderIndividualCandidateCard(value, parent, view) {
         pastCompanyList.forEach(function (jobHistory){
             companyList += jobHistory.candidatePastCompany + ", ";
         });
-        currentCompanyVal.textContent = companyList.substring(0, (companyList.length - 2));
+        currentCompanyVal.textContent = toTitleCase(companyList.substring(0, (companyList.length - 2)));
     } else{
         currentCompanyVal.textContent = "Not specified";
     }

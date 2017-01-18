@@ -15,6 +15,7 @@ import controllers.security.FlashSessionController;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import models.entity.*;
+import models.entity.OM.CandidateToCompany;
 import models.entity.OM.JobApplication;
 import models.entity.OM.PartnerToCandidate;
 import models.entity.Static.LeadSource;
@@ -113,6 +114,10 @@ public class PartnerController {
 
     public static Result renderPagePartnerLoggedInNavbar() {
         return ok(views.html.Partner.partner_logged_in_nav_bar.render());
+    }
+
+    public static Result renderPartnerJobs() {
+        return ok(views.html.Partner.partner_view_jobs.render());
     }
 
     public static Result findPartnerAndSendOtp() {
@@ -214,6 +219,18 @@ public class PartnerController {
                             PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
                     Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
                     candidateSignUpResponse.setOtp(PartnerService.sendCandidateVerificationSms(existingCandidate));
+
+                    //if the partner is a private partner
+                    if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+                        existingCandidate.setCandidateIsPrivate(true);
+                        existingCandidate.update();
+
+                        //creating entry in CandidateToCompany table
+                        CandidateToCompany candidateToCompany = new CandidateToCompany();
+                        candidateToCompany.setCompany(partner.getCompany());
+                        candidateToCompany.setCandidate(existingCandidate);
+                        candidateToCompany.save();
+                    }
                 } else{
                     candidateSignUpResponse.setOtp(0);
                 }
@@ -354,8 +371,8 @@ public class PartnerController {
         return ok("0");
     }
 
-public static Result checkExistingCompany(long id) {
-    Company company = Company.find.where().eq("CompanyCode", id).findUnique();
+public static Result checkExistingCompany(String CompanyCode) {
+    Company company = Company.find.where().eq("CompanyCode", CompanyCode).findUnique();
     if(company!= null){
         return ok("1");
     } else{
@@ -380,13 +397,27 @@ public static Result checkExistingCompany(long id) {
     public static Result getCandidateMatchingJobs(long id) {
         Candidate existingCandidate = Candidate.find.where().eq("candidateId", id).findUnique();
         if(existingCandidate != null){
+            Boolean isPrivate = false;
+
+            if (session().get("partnerId") != null) {
+                Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+                if(partner != null){
+                    if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+                        isPrivate = true;
+                    } else{
+                        isPrivate = false;
+                    }
+                }
+            }
+
             List<JobPost> matchingJobList = JobSearchService
-                    .getAllJobsForCandidate(FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()));
+                    .getAllJobsForCandidate(FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()), isPrivate);
 
             SearchJobService.computeCTA(matchingJobList, id);
             return ok(toJson(matchingJobList));
+
         }
-        return ok("ok");
+        return ok("0");
     }
 
     public static Result getJobPostInfoViaPartner(long jobPostId, long candidateId) {

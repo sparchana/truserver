@@ -53,7 +53,7 @@ public class CompanyDAO {
                 .findList();
     }
 
-    public static Company getCompaniesByCompanyCode(int code) {
+    public static Company getCompaniesByCompanyCode(String code) {
         return Company.find.where()
                 .eq("CompanyCode", code)
                 .findUnique();

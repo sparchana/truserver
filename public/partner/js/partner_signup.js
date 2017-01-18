@@ -157,7 +157,7 @@ $(function() {
             document.getElementById("registerBtnSubmit").disabled = true;
 
             if(selectedPartnerType == 7){
-                companyId = parseInt($("#privatePartnerCompanyId").val());
+                companyId = $("#privatePartnerCompanyId").val();
 
                 try {
                     $.ajax({

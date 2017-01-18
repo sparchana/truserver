@@ -864,6 +864,20 @@ public class Application extends Controller {
         return ok(toJson(JobSearchService.getAllActiveJobsPaginated(index)));
     }
 
+    public static Result getPartnerViewJobs(Long index) {
+        String sessionPartnerId = session().get("partnerId");
+        if(sessionPartnerId != null){
+            Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+            if(partner != null) {
+                if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+                    return ok(toJson(JobSearchService.getAllPrivateJobsOfCompany(index, partner.getCompany())));
+                }
+            }
+        }
+
+        return ok(toJson(JobSearchService.getAllActiveJobsPaginated(index)));
+    }
+
     public static Result getAllHotJobPosts(Long index) {
         return ok(toJson(JobSearchService.getAllHotJobsPaginated(index)));
     }
@@ -2363,7 +2377,7 @@ public class Application extends Controller {
     public static Result generateCompanyCode() {
         List<Company> companyList = CompanyDAO.getCompaniesWithoutCompanyCode();
         for(Company company : companyList){
-            company.setCompanyCode((long) Util.generateCompanyCode());
+            company.setCompanyCode(Util.generateCompanyCode(company));
             company.update();
         }
         return ok("Done");

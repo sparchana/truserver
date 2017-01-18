@@ -169,7 +169,8 @@ public class SearchJobService {
                             true,
                             null,
                             request.getPage(),
-                            request.getFilterParamRequest());
+                            request.getFilterParamRequest(),
+                            false);
         } else {
             jobPostResponse = JobSearchService
                     .queryAndReturnJobPosts(searchParamsResponse.getSearchKeywords(),
@@ -180,7 +181,8 @@ public class SearchJobService {
                             true,
                             null,
                             request.getPage(),
-                            request.getFilterParamRequest());
+                            request.getFilterParamRequest(),
+                            false);
         }
 
         if (languageList.isEmpty()

@@ -52,7 +52,9 @@ public class CompanyService {
                 Logger.info("Company does not exists. Creating a new Company");
                 Company newCompany = new Company();
                 newCompany  = getAndAddCompanyValues(addCompanyRequest,newCompany);
-                newCompany.setCompanyCode((long) Util.generateCompanyCode());
+                newCompany.save();
+
+                newCompany.setCompanyCode(Util.generateCompanyCode(newCompany));
                 newCompany.save();
 
                 addCompanyResponse.setCompanyId(newCompany.getCompanyId());

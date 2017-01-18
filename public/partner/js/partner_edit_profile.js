@@ -49,6 +49,11 @@ function processDataPartnerProfile(returnedData) {
         //partner company type
         if(returnedData.partnerType != null){
             $("#partnerType").val(returnedData.partnerType.partnerTypeId);
+            if(returnedData.partnerType.partnerTypeId == 7){
+                $("#partnerType").prop('disabled', true);
+                $("#privatePartnerCompanyName").html(returnedData.company.companyName);
+                $("#privatePartnerCompany").show();
+            }
         }
 
         //partner company location

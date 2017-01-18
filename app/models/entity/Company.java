@@ -63,8 +63,8 @@ public class Company extends Model {
     @Column(name = "CompanyUpdateTimestamp", columnDefinition = "timestamp null")
     private Timestamp companyUpdateTimestamp;
 
-    @Column(name = "CompanyCode", columnDefinition = "bigint signed null")
-    private Long companyCode;
+    @Column(name = "CompanyCode", columnDefinition = "varchar(20) null")
+    private String companyCode;
 
     @ManyToOne
     @JsonManagedReference
@@ -245,11 +245,11 @@ public class Company extends Model {
         this.source = source;
     }
 
-    public Long getCompanyCode() {
+    public String getCompanyCode() {
         return companyCode;
     }
 
-    public void setCompanyCode(Long companyCode) {
+    public void setCompanyCode(String companyCode) {
         this.companyCode = companyCode;
     }
 }

@@ -543,7 +543,15 @@ a:hover{
     margin-top: -4px;
 }
 
+#textContentProp{
+    padding:0;
+    margin-left:-14px
+}
+
 @media screen and (max-width: 768px) {
+    #textContentProp{
+        margin-left:0;
+    }
     .navbar-nav>li>a {
         background-color: #00897b;
         color: #fff;

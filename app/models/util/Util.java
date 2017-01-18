@@ -35,11 +35,37 @@ public class Util {
         return otpCode;
     }
 
-    public static int generateCompanyCode() {
+    public static String generateCompanyCode(Company company) {
         Boolean shouldRun = true;
-        int companyCode = 0;
+        String companyCode = "";
+        String companyName = company.getCompanyName().replaceAll("\\s+","");
+
+        String companyId;
+        if(company.getCompanyId() < 1000){
+            if(company.getCompanyId() < 100){
+                if(company.getCompanyId() < 10){
+                    companyId = "000" + company.getCompanyId();
+                } else{
+                    companyId = "00" + company.getCompanyId();
+                }
+            } else {
+                companyId = "0" + company.getCompanyId();
+            }
+        } else{
+            companyId = company.getCompanyId() + "";
+        }
+
         while(shouldRun){
-            companyCode = (int) ((Math.random()*9000)+100000);
+            int randomCode = (int) (Math.random()*90);
+            if(randomCode < 10){
+                randomCode += 10;
+            }
+
+            if(companyName.length() > 4){
+                companyCode = (companyName.substring(0, 4)).toUpperCase() + companyId + randomCode;
+            } else{
+                companyCode = (companyName).toUpperCase() + companyId + randomCode;
+            }
 
             Company existingCompany = CompanyDAO.getCompaniesByCompanyCode(companyCode);
             if(existingCompany == null){

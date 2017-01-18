@@ -40,6 +40,11 @@ public class ServerConstants {
     public static final int CANDIDATE_STATUS_NOT_VERIFIED = 0;
     public static final int CANDIDATE_STATUS_VERIFIED= 1;
 
+    public static final int PARTNER_TYPE_PRIVATE = 7;
+
+    public static final int JOB_POST_TYPE_PRIVATE = 1;
+    public static final int JOB_POST_TYPE_NOT_PRIVATE = 0;
+
     public static final int PARTNER_STATUS_NOT_VERIFIED = 0;
     public static final int PARTNER_STATUS_VERIFIED= 1;
 
@@ -93,6 +98,9 @@ public class ServerConstants {
 
     public static final int CANDIDATE_STATE_ACTIVE = 1;
     public static final int CANDIDATE_STATE_DEACTIVE = 2;
+
+    public static final int CANDIDATE_IS_PRIVATE = 1;
+    public static final int CANDIDATE_IS_NOT_PRIVATE = 0;
 
     public static final int PARTNER_STATE_ACTIVE = 1;
     public static final int PARTNER_STATE_DEACTIVE = 2;
