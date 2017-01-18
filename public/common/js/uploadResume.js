@@ -105,7 +105,7 @@ function processDataForAddResume(returnedData) {
             resumeColLeft.appendChild(image);
             
             var h5 = document.createElement("h5");
-            h5.textContent = "Thanks !! Your Resume has been successfully Uploaded";
+            h5.textContent = "Thanks !! Your resume has been successfully uploaded";
             resumeColRight.appendChild(h5);
 
             var h4 = document.createElement("h4");
@@ -114,6 +114,9 @@ function processDataForAddResume(returnedData) {
             resumeColRight.appendChild(h4);
 
             $('#uploadResumeModal').modal('show');
+            setTimeout(function(){
+                $('#uploadResumeModal').delay(9000).modal('hide');
+            }, 3000);
             //condition if upload is done without login
             if(candidateId != null){
                 viewDownloadResume(candidateId);
@@ -152,6 +155,10 @@ function processDataForAddResume(returnedData) {
             resumeColRight.appendChild(h4);
 
             $('#uploadResumeModal').modal('show');
+            setTimeout(function(){
+                $('#uploadResumeModal').delay(9000).modal('hide');
+            }, 3000);
+
         }
     }
     else{

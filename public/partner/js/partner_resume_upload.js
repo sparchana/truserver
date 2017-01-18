@@ -30,7 +30,7 @@ function uploadResume(evt){
             console.log(new Error().stack);
         }
     }else{
-        notifyError("Invalid Format. Please Resume in PDF Doc Docx file Format");
+        notifyError("Invalid Format. Please upload file with PDF, Doc or Docx format");
     }
 }
 
@@ -38,6 +38,7 @@ function processDataForAddResume(returnedData) {
     $('#uploadResumeModalProcess').modal('hide');
     console.log(JSON.stringify(returnedData));
     if(returnedData != null){
+        returnedData.status = 0;
         if(returnedData.status == 1)
         {
             var parent = $("#uploadResumeModalContent");
@@ -71,7 +72,10 @@ function processDataForAddResume(returnedData) {
             resumeColRight.appendChild(h4);
 
             $('#uploadResumeModal').modal('show');
-            //condition if upload is done without login
+            setTimeout(function(){
+                $('#uploadResumeModal').modal('hide');
+            }, 3000);
+
         }
         else{
             var parent = $("#uploadResumeModalContent");
@@ -106,6 +110,9 @@ function processDataForAddResume(returnedData) {
             resumeColRight.appendChild(h4);
 
             $('#uploadResumeModal').modal('show');
+            setTimeout(function(){
+                $('#uploadResumeModal').modal('hide');
+            }, 3000);
         }
     }
     else{

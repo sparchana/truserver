@@ -603,6 +603,16 @@ a:hover{
     padding-top:10px
 }
 @media screen and (max-width: 768px) {
+    #uploadResumeModalDialog{
+        margin-top:30%;
+        width: 90%;
+    }
+    #resumeColMsgSuccess,#resumeColMsgFail{
+        text-align: center;
+    }
+    #candidateCreateOptionModalDialog{
+        margin-top:30%;
+    }
     .navbar-nav>li>a {
         background-color: #00897b;
         color: #fff;
