@@ -247,15 +247,15 @@ var applyInShort = (function ($) {
             preScreenCard: function (ps) {
 
                 // list
-                if(ps.documentList != null && ps.documentList.length >= 0){
+                if(ps.documentList != null && ps.documentList.length > 0){
                     appz.construct._document(ps.documentList);
                 }
 
-                if(ps.languageList != null && ps.languageList.length >= 0){
+                if(ps.languageList != null && ps.languageList.length > 0){
                     appz.construct._language(ps.languageList);
                 }
 
-                if(ps.assetList != null && ps.assetList.length >= 0) {
+                if(ps.assetList != null && ps.assetList.length > 0) {
                     appz.construct._asset(ps.assetList);
                 }
 
