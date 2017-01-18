@@ -2312,17 +2312,6 @@ public class Application extends Controller {
         int i = 0;
         JSONArray list = new JSONArray();
 
-        if(session() != null) {
-            try {
-            Logger.info("session channel: " + session().get("sessionChannel"));
-            Logger.info("session id: " + session().get("sessionId"));
-            } catch (NullPointerException np) {
-                np.printStackTrace();
-            }
-        } else {
-            Logger.info("no session ");
-        }
-
         while(Boolean.TRUE){
             i++;
             Http.MultipartFormData.FilePart resume = body.getFile("resume"+i);
