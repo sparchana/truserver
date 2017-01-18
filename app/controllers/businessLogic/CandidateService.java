@@ -2091,7 +2091,22 @@ public class CandidateService
         Map<String, String> param = new HashMap<>();
         param.put("externalKey",personId);
         params.add(param);
-        CandidateResume candidateResume = (CandidateResume) candidateResumeService.readByAttribute(params).get(0).getEntity();
+        CandidateResume candidateResume = null;
+        try{
+            candidateResume = (CandidateResume) candidateResumeService.readByAttribute(params).get(0).getEntity();
+        } catch (java.lang.IndexOutOfBoundsException e){
+            Logger.info("Could not read candidate resume with externalKey = "+personId);
+            e.printStackTrace();
+            try {
+                responseJson.put("candidateExists",Boolean.FALSE);
+                responseJson.put("alreadyParsed",Boolean.FALSE);
+                responseJson.put("status","Fail");
+                responseJson.put("msg","Could not read candidate resume with externalKey = "+personId);
+            } catch (JSONException ee) {
+                ee.printStackTrace();
+            }
+            return responseJson;
+        }
 
         // Check if this is a duplicate entry -- if so, we need to get the root person id
         CandidateResume root = null;
@@ -2288,9 +2303,11 @@ public class CandidateService
         }
 
         // created-by check
-        if(candidateResumeRequest.getCreatedBy().equalsIgnoreCase("unknown")){
-            candidateResumeRequest.setCreatedBy(candidateId+"(Candidate)");
-            changedFields.add("createdBy");
+        if(candidateResumeRequest.getCreatedBy() == null ||
+           (candidateResumeRequest.getCreatedBy() != null &&
+            candidateResumeRequest.getCreatedBy().equalsIgnoreCase("unknown"))){
+                candidateResumeRequest.setCreatedBy(candidateId+"(Candidate)");
+                changedFields.add("createdBy");
         }
 
         // update the candidate resume entry
