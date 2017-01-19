@@ -182,6 +182,8 @@ POST        /recruiter/api/addJobPost                                     contro
 POST        /getRecruiterJobPostInfo/:id                                  controllers.RecruiterController.getRecruiterJobPostInfo(id : Long)
 POST        /getTodayInterviewDetails                                     controllers.RecruiterController.getTodayInterviewDetails()
 POST        /getPendingCandidateApproval                                  controllers.RecruiterController.getPendingCandidateApproval()
+POST        /bulkUnlockCandidate                                          controllers.RecruiterController.bulkUnlockCandidates()
+POST        /bulkSendSms                                                  controllers.RecruiterController.bulkSendSms()
 
 # Search API
 # ~~~~~~~~~~~~~

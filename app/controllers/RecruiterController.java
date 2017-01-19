@@ -9,7 +9,8 @@ import api.http.httpRequest.Recruiter.*;
 import api.http.httpRequest.ResetPasswordResquest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.CandidateWorkflowData;
-import com.amazonaws.util.json.JSONArray;
+import api.http.httpResponse.Recruiter.MultipleCandidateContactUnlockResponse;
+import api.http.httpResponse.Recruiter.UnlockContactResponse;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,18 +24,14 @@ import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import models.entity.Candidate;
 import models.entity.JobPost;
-import models.entity.OM.IDProofReference;
 import models.entity.OM.JobPostWorkflow;
-import models.entity.OM.LanguageKnown;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
-import models.entity.Static.Language;
-import org.apache.commons.logging.Log;
+import models.util.SmsUtil;
 import play.Logger;
-import play.api.i18n.Lang;
 import play.mvc.Result;
 import play.mvc.Security;
 
@@ -217,7 +214,78 @@ public class RecruiterController {
         if(session().get("recruiterId") != null){
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
             if(recruiterProfile != null){
-                return RecruiterService.unlockCandidate(recruiterProfile, candidateId);
+                return ok(toJson(RecruiterService.unlockCandidate(recruiterProfile, candidateId)));
+            }
+        }
+        // no recruiter session found
+        return ok("-1");
+    }
+
+    public static Result bulkUnlockCandidates() {
+        if(session().get("recruiterId") != null){
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null){
+                JsonNode req = request().body().asJson();
+                Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+                MultipleCandidateActionRequest multipleCandidateActionRequest = new MultipleCandidateActionRequest();
+                ObjectMapper newMapper = new ObjectMapper();
+                try {
+                    multipleCandidateActionRequest = newMapper.readValue(req.toString(), MultipleCandidateActionRequest.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Integer count = 0;
+                Logger.info("Recruiter: " + recruiterProfile.getRecruiterProfileName() + " trying to unlock "
+                        + multipleCandidateActionRequest.getCandidateIdList().size() + " candidate contacts");
+
+                MultipleCandidateContactUnlockResponse response = new MultipleCandidateContactUnlockResponse();
+                List<UnlockContactResponse> unlockContactResponses = new ArrayList<>();
+
+                for(Long candidateId : multipleCandidateActionRequest.getCandidateIdList()){
+                    UnlockContactResponse unlockContactResponse = RecruiterService.unlockCandidate(recruiterProfile, candidateId);
+                    if(unlockContactResponse.getStatus() == UnlockContactResponse.STATUS_SUCCESS){
+                        count++;
+                    }
+                    unlockContactResponses.add(unlockContactResponse);
+                }
+
+                Logger.info("Recruiter: " + recruiterProfile.getRecruiterProfileName() + " unlocked total " + count + " candidates contact");
+                response.setUnlockContactResponseList(unlockContactResponses);
+                response.setRecruiterContactCreditsLeft(recruiterProfile.getContactCreditCount());
+                response.setRecruiterInterviewCreditsLeft(recruiterProfile.getInterviewCreditCount());
+
+                return ok(toJson(response));
+            }
+        }
+        // no recruiter session found
+        return ok("-1");
+    }
+
+    public static Result bulkSendSms() {
+        if(session().get("recruiterId") != null){
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null){
+                JsonNode req = request().body().asJson();
+                Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+                MultipleCandidateActionRequest multipleCandidateActionRequest = new MultipleCandidateActionRequest();
+                ObjectMapper newMapper = new ObjectMapper();
+                try {
+                    multipleCandidateActionRequest = newMapper.readValue(req.toString(), MultipleCandidateActionRequest.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Logger.info("Sending recruiter sms to " + multipleCandidateActionRequest.getCandidateIdList().size() + " candidates");
+                for(Long candidateId : multipleCandidateActionRequest.getCandidateIdList()){
+                    Candidate candidate = Candidate.find.where().eq("CandidateId", candidateId).findUnique();
+                    if(candidate != null){
+                        //sending sms
+                        SmsUtil.addSmsToNotificationQueue(candidate.getCandidateMobile(), multipleCandidateActionRequest.getSmsMessage());
+                    }
+                }
+
+                return ok(toJson('1'));
             }
         }
         // no recruiter session found

@@ -348,7 +348,7 @@ public class RecruiterService {
         }
     }
 
-    public static Result unlockCandidate(RecruiterProfile recruiterProfile, Long candidateId) {
+    public static UnlockContactResponse unlockCandidate(RecruiterProfile recruiterProfile, Long candidateId) {
         UnlockContactResponse unlockContactResponse = new UnlockContactResponse();
         Candidate candidate = Candidate.find.where().eq("CandidateId", candidateId).findUnique();
         if(candidate != null){
@@ -394,7 +394,7 @@ public class RecruiterService {
                     SmsUtil.sendCandidateUnlockSms(recruiterProfile.getCompany().getCompanyName(),
                             recruiterProfile.getRecruiterProfileName(), candidate.getCandidateMobile(), candidate.getCandidateFirstName());
 
-                    return ok(toJson(unlockContactResponse));
+                    return unlockContactResponse;
 
                 } else{
 
@@ -402,7 +402,7 @@ public class RecruiterService {
                     unlockContactResponse.setStatus(UnlockContactResponse.STATUS_NO_CREDITS);
                     unlockContactResponse.setCandidateMobile(null);
                     unlockContactResponse.setCandidateId(null);
-                    return ok(toJson(unlockContactResponse));
+                    return unlockContactResponse;
 
                 }
 
@@ -410,14 +410,14 @@ public class RecruiterService {
                 unlockContactResponse.setStatus(UnlockContactResponse.STATUS_ALREADY_UNLOCKED);
                 unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
                 unlockContactResponse.setCandidateId(candidate.getCandidateId());
-                return ok(toJson(unlockContactResponse));
+                return unlockContactResponse;
             }
         }
         Logger.info("Recruiter with mobile no: " + recruiterProfile.getRecruiterProfileMobile() + " does not have credits to unlock candidate");
         unlockContactResponse.setStatus(UnlockContactResponse.STATUS_FAILURE);
         unlockContactResponse.setCandidateMobile(null);
         unlockContactResponse.setCandidateId(null);
-        return ok(toJson(unlockContactResponse));
+        return unlockContactResponse;
     }
 
     public static AddCreditResponse requestCreditForRecruiter(AddCreditRequest addCreditRequest){
