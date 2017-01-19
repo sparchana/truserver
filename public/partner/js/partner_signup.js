@@ -177,13 +177,7 @@ $(function() {
                                     partnerCompanyId : companyId
                                 };
 
-                                $.ajax({
-                                    type: "POST",
-                                    url: "/partnerSignUp",
-                                    contentType: "application/json; charset=utf-8",
-                                    data: JSON.stringify(d),
-                                    success: processDataSignUpSubmit
-                                });
+                                partnerSignUpSubmit(d);
                             } else{
                                 alert("Company ID is wrong");
 
@@ -195,7 +189,27 @@ $(function() {
                 } catch (exception) {
                     console.log("exception occured!!" + exception.stack);
                 }
+            } else{
+                var d = {
+                    partnerName : partnerName,
+                    partnerLastName : partnerLastName,
+                    partnerMobile : phone,
+                    partnerType : selectedPartnerType,
+                    partnerLocality : localitySelected,
+                    partnerCompanyId : companyId
+                };
+                partnerSignUpSubmit(d);
             }
         }
     }); // end of submit
 }); // end of function
+
+function partnerSignUpSubmit(d) {
+    $.ajax({
+        type: "POST",
+        url: "/partnerSignUp",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(d),
+        success: processDataSignUpSubmit
+    });
+}
