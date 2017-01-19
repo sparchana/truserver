@@ -9,32 +9,28 @@ import api.http.httpRequest.Recruiter.*;
 import api.http.httpRequest.ResetPasswordResquest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.CandidateWorkflowData;
-import com.amazonaws.util.json.JSONArray;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import controllers.businessLogic.*;
+import controllers.businessLogic.JobService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
-import controllers.security.RecruiterSecured;
+import controllers.businessLogic.RecruiterService;
 import controllers.security.FlashSessionController;
+import controllers.security.RecruiterSecured;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
+import dao.RecruiterDAO;
 import models.entity.Candidate;
 import models.entity.JobPost;
-import models.entity.OM.IDProofReference;
 import models.entity.OM.JobPostWorkflow;
-import models.entity.OM.LanguageKnown;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
-import models.entity.Static.Language;
-import org.apache.commons.logging.Log;
 import play.Logger;
-import play.api.i18n.Lang;
 import play.mvc.Result;
 import play.mvc.Security;
 
@@ -46,9 +42,7 @@ import static controllers.businessLogic.Recruiter.RecruiterInteractionService.cr
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.request;
 import static play.mvc.Controller.session;
-import static play.mvc.Results.badRequest;
-import static play.mvc.Results.ok;
-import static play.mvc.Results.redirect;
+import static play.mvc.Results.*;
 /**
  * Created by dodo on 4/10/16.
  */
@@ -165,7 +159,17 @@ public class RecruiterController {
     }
 
     @Security.Authenticated(RecruiterSecured.class)
-    public static Result recruiterCandidateSearch(){
+    public static Result recruiterCandidateSearch(Long jobPostId){
+        /* job post id is being used from url in js */
+        Long recruiterId = Long.valueOf(session().get("recruiterId"));
+        RecruiterProfile recruiterProfile = RecruiterDAO.findById(recruiterId);
+        if(recruiterProfile == null) {
+            return badRequest();
+        }
+
+        if(recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+            return ok(views.html.Recruiter.rmp.recruiter_candidate_search.render());
+        }
         return ok(views.html.Recruiter.recruiter_candidate_search.render());
     }
 
@@ -617,6 +621,16 @@ public class RecruiterController {
 
     @Security.Authenticated(RecruiterSecured.class)
     public static Result renderAllRecruiterJobPosts() {
+        Long recruiterId = Long.valueOf(session().get("recruiterId"));
+        RecruiterProfile recruiterProfile = RecruiterDAO.findById(recruiterId);
+        if(recruiterProfile == null) {
+            return badRequest();
+        }
+
+        if(recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+            return ok(views.html.Recruiter.rmp.recruiter_my_jobs.render());
+        }
+
         return ok(views.html.Recruiter.recruiter_my_jobs.render());
     }
     public static Result recruiterNavbar() {

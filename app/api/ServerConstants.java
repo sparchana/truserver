@@ -383,4 +383,8 @@ public class ServerConstants {
 
     //reason type
     public static final int FREE_JOB_APPLICATION_DEFAULT_LIMIT_IN_A_WEEK = 7;
+
+    // recruiter Access Level
+    public static final Integer RECRUITER_ACCESS_LEVEL_OPEN = 0;
+    public static final Integer RECRUITER_ACCESS_LEVEL_PRIVATE = 1;
 }

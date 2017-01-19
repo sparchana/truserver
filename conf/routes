@@ -153,7 +153,7 @@ GET         /logoutRecruiter                                              contro
 GET         /checkRecruiterSession                                        controllers.RecruiterController.checkRecruiterSession()
 GET         /getRecruiterProfileInfo                                      controllers.RecruiterController.getRecruiterProfileInfo()
 GET         /recruiter/profile                                            controllers.RecruiterController.recruiterEditProfile()
-GET         /recruiter/candidateSearch                                    controllers.RecruiterController.recruiterCandidateSearch()
+GET         /recruiter/candidateSearch                                    controllers.RecruiterController.recruiterCandidateSearch(jpId: java.lang.Long ?= null)
 GET         /recruiter/allRecruiterJobPosts                               controllers.RecruiterController.renderAllRecruiterJobPosts
 GET         /recruiter/unlockedCandidates                                 controllers.RecruiterController.renderAllUnlockedCandidates
 GET         /recruiter/jobApplicants/:id                                  controllers.RecruiterController.renderAllApplications(id : Long)
