@@ -16,10 +16,7 @@ import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import api.http.httpResponse.Workflow.WorkflowResponse;
 import api.http.httpResponse.Workflow.smsJobApplyFlow.ShortPSPopulateResponse;
 import api.http.httpResponse.interview.InterviewResponse;
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.Query;
-import com.avaje.ebean.RawSql;
-import com.avaje.ebean.RawSqlBuilder;
+import com.avaje.ebean.*;
 import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.InteractionService;
 import controllers.businessLogic.MatchingEngineService;
@@ -253,6 +250,9 @@ public class JobPostWorkflowEngine {
      * @param jobPostLocalityIdList candidates to be matched within x Km of any of the provided locality
      * @param languageIdList        candidate to be matched for any of this language. Output contains the
      *                              indication to show matching & non-matching language
+     * @param jobPostDocumentIdList candidate ot be matched for having all the document from this list(Interaction Operation)
+     * @param jobPostAssetIdList    candidate ot be matched for having all the asset from this list (Interaction Operation)
+     *
      */
     public static Map<Long, CandidateWorkflowData> getCandidateForRecruiterSearch(Integer maxAge,
                                                                                   Long minSalary,
@@ -263,6 +263,8 @@ public class JobPostWorkflowEngine {
                                                                                   List<Integer> educationIdList,
                                                                                   List<Long> jobPostLocalityIdList,
                                                                                   List<Integer> languageIdList,
+                                                                                  List<Integer> jobPostDocumentIdList,
+                                                                                  List<Integer> jobPostAssetIdList,
                                                                                   Double radius) {
         List<Integer> minExperienceList = new ArrayList<>();
         List<Integer> maxExperienceList = new ArrayList<>();
@@ -392,6 +394,52 @@ public class JobPostWorkflowEngine {
                 .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
                 .query();
 
+
+        // TODO verify the result of this conjunction operation
+        // used by private recruiter
+        // candidate with all the required documents only (Intersection operation / and operation)
+        if (jobPostDocumentIdList != null && jobPostDocumentIdList.size() > 0) {
+            Logger.info("idproof reference matching");
+
+            Junction<Candidate> junction = query.select("*").fetch("idProofReferenceList")
+                                           .where()
+                                           .conjunction();
+
+            junction.add( Expr.isNotNull("idProofReferenceList"));
+            for(Integer idProofId : jobPostDocumentIdList){
+                Logger.info("idproof id : "+ idProofId);
+                junction.add(
+                        Expr.eq("idProofReferenceList.idProof.idProofId", idProofId)
+                );
+            }
+
+            junction.endJunction();
+
+            query = junction.query();
+        }
+
+        // TODO verify the result of this conjunction operation
+        // used by private recruiter
+        // candidate with all the required documents only (Intersection operation / and operation)
+        if (jobPostAssetIdList != null && jobPostAssetIdList.size() > 0) {
+            Logger.info("asset reference matching");
+
+            Junction<Candidate> junction = query.select("*").fetch("candidateAssetList")
+                    .where()
+                    .isNotNull("candidateAssetList")
+                    .conjunction();
+
+
+            for(Integer assetId : jobPostAssetIdList){
+                junction.add(
+                        Expr.eq("candidateAssetList.asset.assetId", assetId)
+                );
+            }
+
+            junction.endJunction();
+
+            query = junction.query();
+        }
 
 /*        //query candidate query with the filter params
         query = getFilteredQuery(maxAge, minSalary, maxSalary,gender, jobRoleId, educationId, languageIdList, experience);*/

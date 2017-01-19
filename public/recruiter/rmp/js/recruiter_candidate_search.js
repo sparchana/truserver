@@ -20,6 +20,8 @@ var jobPostJobRoleId = 1;
 var jobPostEducationIdList = [];
 var jobPostLocalityIdList = null;
 var jobPostLanguageIdList = [];
+var jobPostDocumentIdList = [];
+var jobPostAssetIdList = [];
 var distanceRadius = 10;
 
 var resultCount = 10;
@@ -67,6 +69,8 @@ function requestServerSearchCall(sortBy) {
         jobPostEducationIdList: jobPostEducationIdList,
         jobPostLocalityIdList: jobPostLocalityIdList,
         jobPostLanguageIdList: jobPostLanguageIdList,
+        jobPostDocumentIdList: jobPostDocumentIdList,
+        jobPostAssetIdList: jobPostAssetIdList,
         distanceRadius: distanceRadius,
         initialValue: counter,
         sortBy: sortBy
@@ -229,6 +233,10 @@ $(document).ready(function(){
     $("#endOfResultsDiv").hide();
     $("#loadingIcon").show();
 
+    // TODO add url detection => identify jpid => get setters only on first load
+    // then trigger search with those params
+    // below code needs to be modified for this
+
     counter = 0;
     NProgress.start();
     var d = {
@@ -241,6 +249,8 @@ $(document).ready(function(){
         jobPostEducationIdList: [],
         jobPostLocalityIdList: null,
         jobPostLanguageIdList: [],
+        jobPostDocumentIdList: [],
+        jobPostAssetIdList: [],
         distanceRadius: 10,
         initialValue: 0,
         sortBy: 1
@@ -370,14 +380,14 @@ function processDataDocument(returnedData) {
 
         var documentInput = document.createElement("input");
         documentInput.type = "checkbox";
-        documentInput.id = "lang_" + idProof.idProofId;
+        documentInput.id = "idproof_" + idProof.idProofId;
         documentInput.setAttribute("value", idProof.idProofId);
         documentInput.setAttribute("onchange", "checkOnFilterChange()");
         mainDiv.appendChild(documentInput);
 
         var documentLabel = document.createElement("label");
         documentLabel.style = "font-size: 14px";
-        documentLabel.setAttribute("for", "lang_" + idProof.idProofId);
+        documentLabel.setAttribute("for", "idproof_" + idProof.idProofId);
         documentLabel.textContent = idProof.idProofName;
         mainDiv.appendChild(documentLabel);
 
@@ -392,14 +402,14 @@ function processDataAsset(returnedData) {
 
         var assetInput = document.createElement("input");
         assetInput.type = "checkbox";
-        assetInput.id = "lang_" + asset.assetId;
+        assetInput.id = "asset_" + asset.assetId;
         assetInput.setAttribute("value", asset.assetId);
         assetInput.setAttribute("onchange", "checkOnFilterChange()");
         mainDiv.appendChild(assetInput);
 
         var assetLabel = document.createElement("label");
         assetLabel.style = "font-size: 14px";
-        assetLabel.setAttribute("for", "lang_" + asset.assetId);
+        assetLabel.setAttribute("for", "asset_" + asset.assetId);
         assetLabel.textContent = asset.assetTitle;
         mainDiv.appendChild(assetLabel);
 
@@ -548,6 +558,18 @@ function performSearch() {
         selectedLanguage.push(parseInt($(this).attr('value')));
     });
 
+    // document filter
+    var selectedDocument = [];
+    $('#documentFilterDiv input:checked').each(function() {
+        selectedDocument.push(parseInt($(this).attr('value')));
+    });
+
+    // asset filter
+    var selectedAsset = [];
+    $('#assetFilterDiv input:checked').each(function() {
+        selectedAsset.push(parseInt($(this).attr('value')));
+    });
+
     if(searchJobRole == [] || searchJobRole == [null] || searchJobRole == null){
         notifyError("Please select a job role for search");
     } else if(searchLocality != null && Object.keys(searchLocality).length == 0) {
@@ -576,6 +598,8 @@ function performSearch() {
             jobPostEducationIdList: selectedEducation,
             jobPostLocalityIdList: searchLocality,
             jobPostLanguageIdList: selectedLanguage,
+            jobPostDocumentIdList: selectedDocument,
+            jobPostAssetIdList: selectedAsset,
             distanceRadius: parseFloat($("#filterDistance").val()),
             initialValue: counter,
             sortBy: sortByVal
@@ -591,6 +615,8 @@ function performSearch() {
         jobPostEducationIdList = selectedEducation;
         jobPostLocalityIdList = searchLocality;
         jobPostLanguageIdList = selectedLanguage;
+        jobPostDocumentIdList = selectedDocument;
+        jobPostAssetIdList = selectedAsset;
         distanceRadius = parseFloat($("#filterDistance").val());
 
         try {
@@ -639,6 +665,7 @@ function processDataUnlockedCandidates(returnedData) {
 }
 
 function processDataMatchCandidate(returnedData) {
+
     NProgress.done();
     blockApiTrigger = false;
     $("#searchBtn").removeClass("disabled");
@@ -675,7 +702,7 @@ function processDataMatchCandidate(returnedData) {
             } catch (exception) {
                 console.log("exception occured!!" + exception.stack);
             }
-
+            $("#somethingWentWrong").hide();
         } else{
             $("#noCandidateDiv").show();
 /*            notifySuccess("No Candidates found!");*/
@@ -911,7 +938,7 @@ function updateGenderFilter() {
 function checkOnFilterChange(){
 
     //scroll to top
-    scrollToTop();
+    // scrollToTop();
 
     //education filter
     var selectedEducation = [];
@@ -945,6 +972,28 @@ function checkOnFilterChange(){
         $("#language_filter").show();
     } else{
         $("#language_filter").hide();
+    }
+
+    // document filter
+    var selectedDocument = [];
+    $('#documentFilterDiv input:checked').each(function() {
+        selectedDocument.push(parseInt($(this).attr('value')));
+    });
+    if(selectedDocument.length > 0){
+        $("#document_filter").show();
+    } else{
+        $("#document_filter").hide();
+    }
+
+    // asset filter
+    var selectedAsset = [];
+    $('#assetFilterDiv input:checked').each(function() {
+        selectedAsset.push(parseInt($(this).attr('value')));
+    });
+    if(selectedAsset.length > 0){
+        $("#asset_filter").show();
+    } else{
+        $("#asset_filter").hide();
     }
 
     //start search

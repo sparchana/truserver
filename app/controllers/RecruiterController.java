@@ -489,6 +489,8 @@ public class RecruiterController {
                             matchingCandidateRequest.getJobPostEducationIdList(),
                             matchingCandidateRequest.getJobPostLocalityIdList(),
                             matchingCandidateRequest.getJobPostLanguageIdList(),
+                            matchingCandidateRequest.getJobPostDocumentIdList(),
+                            matchingCandidateRequest.getJobPostAssetIdList(),
                             matchingCandidateRequest.getDistanceRadius());
 
                     //computing interactionResult values

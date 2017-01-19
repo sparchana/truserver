@@ -1704,8 +1704,8 @@ public class Application extends Controller {
                     matchingCandidateRequest.getJobPostEducationIdList(),
                     matchingCandidateRequest.getJobPostLocalityIdList(),
                     matchingCandidateRequest.getJobPostLanguageIdList(),
-                    matchingCandidateRequest.getJobPostDocumentList(),
-                    matchingCandidateRequest.getJobPostAssetList(),
+                    matchingCandidateRequest.getJobPostDocumentIdList(),
+                    matchingCandidateRequest.getJobPostAssetIdList(),
                     matchingCandidateRequest.getDistanceRadius())));
         }
         return badRequest();
