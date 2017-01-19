@@ -34,6 +34,7 @@ function processDataForViewResume(returnedData){
             viewLink.textContent = "View |";
             parentView.append(viewLink);
 
+            $("#userViewDownload").html("");
             var parentDownload = $("#userViewDownload");
             var downloadLink = document.createElement("a");
             downloadLink.href = returnedData.filePath;

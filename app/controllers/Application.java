@@ -2460,7 +2460,7 @@ public class Application extends Controller {
             File file = (File) excel.getFile();
             Logger.info("Uploading " + file);
             Integer count = CandidateService.bulkUploadCandidates(file,fileName);
-            return ok("Bulk upload done. "+count+" candidates created");
+            return ok(toJson(count));
         }
         else{
             return internalServerError("Bulk upload failed due to an internal error");

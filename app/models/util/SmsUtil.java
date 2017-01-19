@@ -211,7 +211,6 @@ public class SmsUtil {
     }
 
     public static void resumeUploadStatusToPartner(String name ,String mobile) {
-        Logger.info("SMS sent to partner "+name+" with mobile number "+mobile);
         String msg = "Hi "+ name +", resumes that you uploaded have been converted to candidate(s). Go to 'My Candidate' section and schedule interviews for them.";
         addSmsToNotificationQueue(mobile, msg);
     }

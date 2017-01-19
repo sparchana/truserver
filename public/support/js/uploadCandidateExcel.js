@@ -1,13 +1,3 @@
-// function to post the reg data to the server
-function processData(returnedData) {
-   console.log(returnedData);
-   if(returnedData != '-1') {
-       alert(returnedData);
-   } else {
-       alert('Error Uploading!! check csv');
-   }
-
-}
 
 $(function() {
     $("#upload_excel").submit(function(eventObj) {
@@ -20,14 +10,27 @@ $(function() {
 
             $.ajax({
                 type: "POST",
-                url: "/support/administrator/processCandidateExcel",
+                url: "/support/administrator/processCandidates",
                 data: formData,
                 contentType: false,
                 processData: false,
                 success: processData
             });
+            $("#loadSpinner").show();
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
     }); // end of submit
 }); // end of function
+
+// function to post the reg data to the server
+function processData(returnedData) {
+    $("#loadSpinner").hide();
+    console.log(returnedData);
+    if(returnedData != '-1') {
+        alert("Bulk upload done. "+returnedData+" candidates created");
+    } else {
+        alert('Error Uploading!! check csv');
+    }
+
+}

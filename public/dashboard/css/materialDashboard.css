@@ -655,6 +655,9 @@ hr{
 .resumeUploadBox:hover{
     cursor: pointer;
 }
+#resumeUploadBoxInner:hover{
+    cursor: pointer;
+}
 #resumeUploadBoxInner{
     color:#fff;
     padding-top: 12px;

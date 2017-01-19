@@ -5,8 +5,19 @@
     <title>Support | Upload File</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.min.css">
+    <style>
+    .demo-card-wide.mdl-card {
+        width: 512px;
+    }
+    #uploadResumeBtn{
+
+    }
+    #loadSpinner{
+    display: none;
+    }
+    </style>
 </head>
-<body style="background-color:#d5d">
+<body style="background-color: #efefef">
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
         <header class="mdl-layout__header">
             <div class="mdl-layout__header-row">
@@ -17,7 +28,7 @@
                     <!-- Navigation. We hide it in small screens. -->
                 <nav class="mdl-navigation mdl-layout--large-screen-only">
                     <a class="mdl-navigation__link" href="">Dashboard</a>
-                    <a class="mdl-navigation__link" href="">Logout</a>
+                    <a class="mdl-navigation__link" href="/logout">Logout</a>
                 </nav>
             </div>
         </header>
@@ -28,26 +39,37 @@
                 <a class="mdl-navigation__link" href="">Logout</a>
             </nav>
         </div>
-        <main class="mdl-layout__content">
-            <div class="page-content">
-                <div class="">
-
+        <main class="mdl-layout__content mdl-grid">
+            <div class="page-content mdl-cell mdl-cell--6-col" style="margin-top: 2%">
+                <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                    <div class="mdl-card__actions mdl-card--border">
+                        <form id="upload_excel" class="form-horizontal" name="upload_excel" enctype="multipart/form-data">
+                            <center>
+                                <label class="mdl-button mdl-js-button mdl-button--raised" id="uploadResumeBtn">Select File to Upload
+                                    <input type="file" name="excelfile" id="excelfile" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" style="display: none">
+                                </label>
+                            <input type="submit" value="Upload" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"/>
+                            </center>
+                        </form>
+                    </div>
                 </div>
-                <div class="">
-
-                </div>
-                <h2 class="form-signin-heading">Upload Excel File <a href="/logout"><button class="btn btn-danger">Logout</button></a></h2>
-                <form id="upload_excel" class="form-horizontal" name="upload_excel" enctype="multipart/form-data">
-                    <label class="mdl-textfield__label">Select File to Upload</label>
-                    <input type="file" name="excelfile" id="excelfile" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
-                    <p>
-                        <input type="submit" value="Upload" id="submit">
-                    </p>
-                </form>
             </div>
+            <div class="page-content mdl-cell mdl-cell--6-col" style="margin-top: 2%">
+                <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+                    <div class="mdl-card__actions mdl-card--border" id="loadSpinner">
+                        <center>
+                            <div class="mdl-spinner mdl-js-spinner is-active">
+                            </div>
+                            <div class="">
+                                <font>Uploading file</font>
+                            </div>
+                        </center>
+                    </div>
+                </div>
+            </div>
+                <!-- MDL Spinner Component -->
         </main>
     </div>
-<
     <script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>
     <script type="text/javascript" src="/assets/support/js/uploadCandidateExcel.js"></script>
     <script src="https://code.getmdl.io/1.1.3/material.min.js"></script>

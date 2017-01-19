@@ -36,9 +36,7 @@ function uploadResume(evt){
 
 function processDataForAddResume(returnedData) {
     $('#uploadResumeModalProcess').modal('hide');
-    console.log(JSON.stringify(returnedData));
     if(returnedData != null){
-        returnedData.status = 0;
         if(returnedData.status == 1)
         {
             var parent = $("#uploadResumeModalContent");
