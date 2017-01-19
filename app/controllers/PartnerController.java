@@ -10,13 +10,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.PartnerSecured;
-import controllers.security.SecuredUser;
 import controllers.security.FlashSessionController;
 import dao.JobPostDAO;
-import dao.JobPostWorkFlowDAO;
 import models.entity.*;
 import models.entity.OM.CandidateToCompany;
-import models.entity.OM.JobApplication;
 import models.entity.OM.PartnerToCandidate;
 import models.entity.Static.LeadSource;
 import models.entity.Static.PartnerType;
@@ -398,20 +395,26 @@ public static Result checkExistingCompany(String CompanyCode) {
         Candidate existingCandidate = Candidate.find.where().eq("candidateId", id).findUnique();
         if(existingCandidate != null){
             Boolean isPrivate = false;
-
+            List<JobPost> matchingJobList = new ArrayList<>();
             if (session().get("partnerId") != null) {
                 Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
                 if(partner != null){
                     if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
                         isPrivate = true;
+                        matchingJobList = JobSearchService
+                                .getAllJobsForCandidate(FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()), true);
+                        //TODO: discuss and clarify if we want to show all the matching 'private' jobs or all the 'private' jobs
+                        // if show all the private jobs of that company, uncomment the below line
+
+/*                        Company company = Company.find.where().eq("CompanyId", partner.getCompany().getCompanyId()).findUnique();
+                        matchingJobList = JobPostDAO.getAllActiveHotNonPrivateJobsPostOfCompany(company);*/
                     } else{
                         isPrivate = false;
+                        matchingJobList = JobSearchService
+                                .getAllJobsForCandidate(FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()), false);
                     }
                 }
             }
-
-            List<JobPost> matchingJobList = JobSearchService
-                    .getAllJobsForCandidate(FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()), isPrivate);
 
             SearchJobService.computeCTA(matchingJobList, id);
             return ok(toJson(matchingJobList));

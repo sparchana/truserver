@@ -50,7 +50,7 @@ function processDataAllJobPosts(returnedData) {
         $("#jobLoaderDiv").hide();
         var parent = $("#job_cards_inc");
         var hotJobItem = document.createElement("div");
-        hotJobItem.id = "hotJobItem";
+        hotJobItem.style = "margin: 56px";
         parent.append(hotJobItem);
 
         var centreTag = document.createElement("center");
