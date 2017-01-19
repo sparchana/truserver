@@ -2468,14 +2468,20 @@ public class CandidateService
                                     }
                                     break;
                                 case "Company":
-                                    List<AddSupportCandidateRequest.PastCompany> pastCompanyList = new ArrayList<>();
-                                    AddSupportCandidateRequest.PastCompany pastCompany = new AddSupportCandidateRequest.PastCompany();
-                                    pastCompany.setCompanyName(nextLine[i]);
-                                    // Default is "Others" --> Id 34 (This is needed since company will not be created if job role is missing)
-                                    pastCompany.setJobRoleId(34);
-                                    pastCompanyList.add(pastCompany);
-                                    addSupportCandidateRequest.setPastCompanyList(pastCompanyList);
-                                    Logger.info("pastCompany.setCompanyName ="+pastCompany.getCompanyName());
+                                    if(nextLine[i].toLowerCase() != "nil" ||
+                                       nextLine[i].toLowerCase() != "no" ||
+                                       nextLine[i].toLowerCase() != "any"){
+                                        List<AddSupportCandidateRequest.PastCompany> pastCompanyList = new ArrayList<>();
+                                        AddSupportCandidateRequest.PastCompany pastCompany = new AddSupportCandidateRequest.PastCompany();
+                                        pastCompany.setCompanyName(nextLine[i]);
+                                        // Default is "Others" --> Id 34 (This is needed since company will not be created if job role is missing)
+                                        pastCompany.setJobRoleId(34);
+                                        // assumed to be current always
+                                        pastCompany.setCurrent(Boolean.TRUE);
+                                        pastCompanyList.add(pastCompany);
+                                        addSupportCandidateRequest.setPastCompanyList(pastCompanyList);
+                                        Logger.info("pastCompany.setCompanyName ="+pastCompany.getCompanyName());
+                                    }
                                     break;
                                 default:
                                     String misc = addSupportCandidateRequest.getSupportNote();
