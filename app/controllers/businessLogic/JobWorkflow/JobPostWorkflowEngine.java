@@ -268,7 +268,8 @@ public class JobPostWorkflowEngine {
                                                                                   List<Integer> languageIdList,
                                                                                   List<Integer> jobPostDocumentIdList,
                                                                                   List<Integer> jobPostAssetIdList,
-                                                                                  Double radius) {
+                                                                                  Double radius,
+                                                                                  boolean isPrivate) {
         List<Integer> minExperienceList = new ArrayList<>();
         List<Integer> maxExperienceList = new ArrayList<>();
 
@@ -277,6 +278,11 @@ public class JobPostWorkflowEngine {
 
         Query<Candidate> query = Candidate.find.query();
 
+        if(isPrivate) {
+            query.select("*")
+                    .where()
+                    .eq("candidateAccessLevel", ServerConstants.CANDIDATE_ACCESS_LEVEL_PRIVATE);
+        }
         /* only active candidates */
         query.select("*")
                 .where()
@@ -410,6 +416,7 @@ public class JobPostWorkflowEngine {
                     .in("idProofReferenceList.idProof.idProofId", jobPostDocumentIdList)
                     .query();
         }
+
         if (jobPostAssetIdList != null && jobPostAssetIdList.size() > 0) {
             query = query.select("*").fetch("candidateAssetList")
                     .where()

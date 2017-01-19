@@ -1212,7 +1212,7 @@ function renderIndividualCandidateCard(value, parent, view) {
         unlockCandidateBtn.style = "margin-top: -1px";
 
         unlockCandidateBtn.className = "waves-effect waves-light customUnlockBtn";
-    } else if(view == view_unlocked_candidate){
+    } else if(view == view_unlocked_candidate) {
         unlockCandidateBtn.className = "contactUnlocked right";
         unlockCandidateBtn.style = "margin-right: 8px";
     }

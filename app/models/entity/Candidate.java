@@ -217,6 +217,9 @@ public class Candidate extends Model {
     @Column(name = "candidate_android_token", columnDefinition = "text null")
     private String candidateAndroidToken;
 
+    @Column(name = "candidate_access_level", columnDefinition = "int(2) signed not null default 0")
+    private int candidateAccessLevel;
+
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
     public Candidate() {
@@ -659,6 +662,14 @@ public class Candidate extends Model {
 
     public void setCandidateScore(Integer candidateScore) {
         this.candidateScore = candidateScore;
+    }
+
+    public int getCandidateAccessLevel() {
+        return candidateAccessLevel;
+    }
+
+    public void setCandidateAccessLevel(int candidateAccessLevel) {
+        this.candidateAccessLevel = candidateAccessLevel;
     }
 }
 

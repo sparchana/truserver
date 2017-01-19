@@ -478,6 +478,7 @@ public class RecruiterController {
         if(session().get("recruiterId") != null) {
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
             if(recruiterProfile != null){
+                boolean isPrivate = recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE;
                 if (matchingCandidateRequest != null) {
                     Map<Long, CandidateWorkflowData> candidateSearchMap = JobPostWorkflowEngine.getCandidateForRecruiterSearch(
                             matchingCandidateRequest.getMaxAge(),
@@ -491,7 +492,8 @@ public class RecruiterController {
                             matchingCandidateRequest.getJobPostLanguageIdList(),
                             matchingCandidateRequest.getJobPostDocumentIdList(),
                             matchingCandidateRequest.getJobPostAssetIdList(),
-                            matchingCandidateRequest.getDistanceRadius());
+                            matchingCandidateRequest.getDistanceRadius(),
+                            isPrivate);
 
                     //computing interactionResult values
                     String result = "Search Candidate. Total Candidates found: " + candidateSearchMap.size() +
