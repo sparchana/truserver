@@ -1200,7 +1200,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                         feedbackBtn.className = "customFeedbackBtn feedbackVal";
                         feedbackBtn.onclick = function () {
                             candidateCardData = value;
-                            openFeedbackModal(value.candidate.candidateId);
+                            openFeedbackModal();
                         };
                         feedbackBtn.textContent = "Add Feedback";
                         feedbackBtn.style = "font-size: 12px; background: rgb(46, 200, 102)";
@@ -1209,6 +1209,17 @@ function renderIndividualCandidateCard(value, parent, view) {
                 }
             }
         }
+    } else if(view == view_search_candidate || view == view_unlocked_candidate){
+        var smsBtn = document.createElement("a");
+        smsBtn.className = "waves-effect waves-light customSmsBtn btnGreen";
+        smsBtn.id = value.candidate.candidateId + "_sms_btn";
+        smsBtn.onclick = function () {
+            candidateCardData = value;
+            sendSelectedSms(value.candidate.candidateId, value.candidate.candidateFirstName);
+        };
+        smsBtn.style = "margin-top: -1px";
+        smsBtn.textContent = "Send SMS";
+        unlockContactCol.appendChild(smsBtn);
     }
 
     if(view == view_unlocked_candidate){
@@ -1265,6 +1276,23 @@ function selectCheckedCandidates() {
         checkedCandidateIdList.push(parseInt(valArray[0]));
         checkedCandidateNameList.push(valArray[1]);
     });
+
+    if(checkedCandidateIdList.length > 0){
+        $("#smsText").val('');
+        $("#candidateNameList").html(checkedCandidateNameList.join(", "));
+        $("#totalCount").html("Total " + checkedCandidateNameList.length + " Candidates");
+        $("#sendSmsModal").openModal();
+    } else{
+        notifyError("Please select at least 1 candidate to send SMS");
+    }
+}
+
+function sendSelectedSms(candidateId, candidateName) {
+    checkedCandidateIdList = [];
+    checkedCandidateNameList = [];
+
+    checkedCandidateIdList.push(candidateId);
+    checkedCandidateNameList.push(candidateName);
 
     if(checkedCandidateIdList.length > 0){
         $("#smsText").val('');
@@ -1384,6 +1412,9 @@ function sendSms(){
 
 function processDataBulkSms(returnedData) {
     if(returnedData == '1'){
+        checkedCandidateIdList.forEach(function (candidateId) {
+            $("#" + candidateId + "_sms_btn").removeClass("btnGreen").addClass("btnBlue").html("Resend SMS");
+        });
         notifySuccess("SMS sent successfully to " + checkedCandidateNameList.length + " candidates!");
         $("#sendSmsModal").closeModal();
     } else if(returnedData == '-1'){

@@ -6,9 +6,9 @@ var candidateMobile;
 
 function checkPartnerType() {
     if($("#partnerType").val() == 7){
-        $("#companyIdDiv").show();
+        $("#companyIdDiv").show(200);
     } else{
-        $("#companyIdDiv").hide();
+        $("#companyIdDiv").hide(200);
     }
 }
 
