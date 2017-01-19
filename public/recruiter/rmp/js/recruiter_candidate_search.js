@@ -46,7 +46,7 @@ $(document).scroll(function(){
         $("#fixedButton").hide();
     }
 
-    if($(window).scrollTop() + $(window).height() == $(document).height()) {
+    if($(window).scrollTop() + $(window).height() + 300 >= $(document).height()) {
         if(!endOfResult && !blockApiTrigger){ //trigger if the search results are still there in server
             blockApiTrigger = true;
             $("#endOfResultsDiv").hide();
@@ -938,7 +938,7 @@ function updateGenderFilter() {
 function checkOnFilterChange(){
 
     //scroll to top
-    // scrollToTop();
+    scrollToTop();
 
     //education filter
     var selectedEducation = [];

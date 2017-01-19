@@ -61,6 +61,9 @@ public class JobPostWorkflowEngine {
      * @param jobPostLocalityIdList candidates to be matched within x Km of any of the provided locality
      * @param languageIdList        candidate to be matched for any of this language. Output contains the
      *                              indication to show matching & non-matching language
+     * @param jobPostDocumentIdList candidate ot be matched for having any of the document from this list(Interaction Operation)
+     * @param jobPostAssetIdList    candidate ot be matched for having any of asset from this list (Interaction Operation)
+     *
      */
     public static Map<Long, CandidateWorkflowData> getMatchingCandidate(Long jobPostId,
                                                                         Integer maxAge,
@@ -250,8 +253,8 @@ public class JobPostWorkflowEngine {
      * @param jobPostLocalityIdList candidates to be matched within x Km of any of the provided locality
      * @param languageIdList        candidate to be matched for any of this language. Output contains the
      *                              indication to show matching & non-matching language
-     * @param jobPostDocumentIdList candidate ot be matched for having all the document from this list(Interaction Operation)
-     * @param jobPostAssetIdList    candidate ot be matched for having all the asset from this list (Interaction Operation)
+     * @param jobPostDocumentIdList candidate ot be matched for having any of the document from this list(Interaction Operation)
+     * @param jobPostAssetIdList    candidate ot be matched for having any of asset from this list (Interaction Operation)
      *
      */
     public static Map<Long, CandidateWorkflowData> getCandidateForRecruiterSearch(Integer maxAge,
@@ -395,50 +398,24 @@ public class JobPostWorkflowEngine {
                 .query();
 
 
-        // TODO verify the result of this conjunction operation
-        // used by private recruiter
-        // candidate with all the required documents only (Intersection operation / and operation)
+        /**
+         *
+         * Conjunction with Expression list doesn't work? | hash: 94ec478
+         *
+         * */
         if (jobPostDocumentIdList != null && jobPostDocumentIdList.size() > 0) {
-            Logger.info("idproof reference matching");
-
-            Junction<Candidate> junction = query.select("*").fetch("idProofReferenceList")
-                                           .where()
-                                           .conjunction();
-
-            junction.add( Expr.isNotNull("idProofReferenceList"));
-            for(Integer idProofId : jobPostDocumentIdList){
-                Logger.info("idproof id : "+ idProofId);
-                junction.add(
-                        Expr.eq("idProofReferenceList.idProof.idProofId", idProofId)
-                );
-            }
-
-            junction.endJunction();
-
-            query = junction.query();
+            query = query.select("*").fetch("idProofReferenceList")
+                    .where()
+                    .isNotNull("idProofReferenceList")
+                    .in("idProofReferenceList.idProof.idProofId", jobPostDocumentIdList)
+                    .query();
         }
-
-        // TODO verify the result of this conjunction operation
-        // used by private recruiter
-        // candidate with all the required documents only (Intersection operation / and operation)
         if (jobPostAssetIdList != null && jobPostAssetIdList.size() > 0) {
-            Logger.info("asset reference matching");
-
-            Junction<Candidate> junction = query.select("*").fetch("candidateAssetList")
+            query = query.select("*").fetch("candidateAssetList")
                     .where()
                     .isNotNull("candidateAssetList")
-                    .conjunction();
-
-
-            for(Integer assetId : jobPostAssetIdList){
-                junction.add(
-                        Expr.eq("candidateAssetList.asset.assetId", assetId)
-                );
-            }
-
-            junction.endJunction();
-
-            query = junction.query();
+                    .in("candidateAssetList.asset.assetId", jobPostAssetIdList)
+                    .query();
         }
 
 /*        //query candidate query with the filter params
