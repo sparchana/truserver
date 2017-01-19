@@ -9,11 +9,14 @@
     .demo-card-wide.mdl-card {
         width: 512px;
     }
-    #uploadResumeBtn{
-
+    #upload_excel{
+        padding: 5%;
     }
     #loadSpinner{
-    display: none;
+        display: none;
+    }
+    .progressReport{
+        margin-top:10%;
     }
     </style>
 </head>
@@ -27,7 +30,7 @@
                 <div class="mdl-layout-spacer"></div>
                     <!-- Navigation. We hide it in small screens. -->
                 <nav class="mdl-navigation mdl-layout--large-screen-only">
-                    <a class="mdl-navigation__link" href="">Dashboard</a>
+                    <a class="mdl-navigation__link" href="/support">Dashboard</a>
                     <a class="mdl-navigation__link" href="/logout">Logout</a>
                 </nav>
             </div>
@@ -35,39 +38,44 @@
         <div class="mdl-layout__drawer">
             <span class="mdl-layout-title">Title</span>
             <nav class="mdl-navigation">
-                <a class="mdl-navigation__link" href="">Dashboard</a>
-                <a class="mdl-navigation__link" href="">Logout</a>
+                <a class="mdl-navigation__link" href="/support">Dashboard</a>
+                <a class="mdl-navigation__link" href="/logout">Logout</a>
             </nav>
         </div>
         <main class="mdl-layout__content mdl-grid">
-            <div class="page-content mdl-cell mdl-cell--6-col" style="margin-top: 2%">
+            <div class="page-content mdl-cell mdl-cell--12-col" style="margin-top: 20%">
                 <div class="demo-card-wide mdl-card mdl-shadow--2dp">
                     <div class="mdl-card__actions mdl-card--border">
+                        <div class="progressReport">
+                            <center><div class="textResponse">
+                            <h4>No File Selected</h4>
+                            </div>
+                            </center>
+                            <div id="loadSpinner">
+                                <center>
+                                    <div class="mdl-spinner mdl-js-spinner is-active">
+                                    </div>
+                                    <div class="">
+                                        <font>Uploading file</font>
+                                    </div>
+                                </center>
+                            </div>
+                        </div>
                         <form id="upload_excel" class="form-horizontal" name="upload_excel" enctype="multipart/form-data">
                             <center>
                                 <label class="mdl-button mdl-js-button mdl-button--raised" id="uploadResumeBtn">Select File to Upload
                                     <input type="file" name="excelfile" id="excelfile" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" style="display: none">
                                 </label>
-                            <input type="submit" value="Upload" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"/>
+                            <input type="submit" id="uploadBtn" value="Upload" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"/>
                             </center>
                         </form>
                     </div>
                 </div>
             </div>
-            <div class="page-content mdl-cell mdl-cell--6-col" style="margin-top: 2%">
-                <div class="demo-card-wide mdl-card mdl-shadow--2dp">
-                    <div class="mdl-card__actions mdl-card--border" id="loadSpinner">
-                        <center>
-                            <div class="mdl-spinner mdl-js-spinner is-active">
-                            </div>
-                            <div class="">
-                                <font>Uploading file</font>
-                            </div>
-                        </center>
-                    </div>
-                </div>
+            <div id="demo-toast-example" class="mdl-js-snackbar mdl-snackbar">
+                <div class="mdl-snackbar__text"></div>
+                <button class="mdl-snackbar__action" type="button"></button>
             </div>
-                <!-- MDL Spinner Component -->
         </main>
     </div>
     <script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>

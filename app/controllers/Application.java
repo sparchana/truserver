@@ -2430,10 +2430,11 @@ public class Application extends Controller {
             return internalServerError();
         }
     }
-
+    @Security.Authenticated(PartnerInternalSecured.class)
     public static Result uploadCandidates() {
         return ok(views.html.upload_candidate_excel.render());
     }
+
     public static Result fetchResume(String candidateId) {
 
         CandidateResumeService resumeService = new CandidateResumeService();
@@ -2459,8 +2460,8 @@ public class Application extends Controller {
             Logger.info("fileName=" + fileName);
             File file = (File) excel.getFile();
             Logger.info("Uploading " + file);
-            Integer count = CandidateService.bulkUploadCandidates(file,fileName);
-            return ok(toJson(count));
+            BulkUploadResponse bulkUploadResponse = CandidateService.bulkUploadCandidates(file,fileName);
+            return ok(toJson(bulkUploadResponse));
         }
         else{
             return internalServerError("Bulk upload failed due to an internal error");

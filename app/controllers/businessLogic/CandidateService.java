@@ -7,10 +7,7 @@ import api.http.CandidateSkills;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
-import api.http.httpResponse.CandidateSignUpResponse;
-import api.http.httpResponse.LoginResponse;
-import api.http.httpResponse.ResetPasswordResponse;
-import api.http.httpResponse.TruResponse;
+import api.http.httpResponse.*;
 import api.http.httpResponse.hirewand.HireWandResponse;
 import api.http.httpResponse.ongrid.OngridAadhaarVerificationResponse;
 import au.com.bytecode.opencsv.CSVReader;
@@ -2368,8 +2365,9 @@ public class CandidateService
         return name;
     }
 
-    public static Integer bulkUploadCandidates(File file, String fileName){
-
+    public static BulkUploadResponse bulkUploadCandidates(File file, String fileName){
+        BulkUploadResponse bulkUploadResponse = new BulkUploadResponse();
+        Integer totalCount = 0;
         Integer count = 0;
         try {
             CSVReader reader = new CSVReader(new FileReader(file));
@@ -2379,7 +2377,7 @@ public class CandidateService
             header = reader.readNext();
             if(header != null){
                 while((nextLine = reader.readNext()) != null){
-
+                    Logger.info("Next line value : "+ toJson(nextLine));
                     AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
                     List<CandidateSkills> candidateSkills = new ArrayList<>();
                     addSupportCandidateRequest.setCandidateSkills(candidateSkills);
@@ -2389,6 +2387,12 @@ public class CandidateService
 
                     Boolean isNew = Boolean.TRUE;
                     String tempMobile = "";
+
+                    //to calculate the to number of candidate in file
+                    if(!nextLine[0].isEmpty()){
+                        totalCount++;
+                    }
+
                     for(int i = 0; i < nextLine.length ; i++){
                         if(!nextLine[i].isEmpty()){
                             Logger.info("nextLine["+i+"]="+nextLine[i]);
@@ -2434,8 +2438,11 @@ public class CandidateService
                                     Logger.info("addSupportCandidateRequest.setCandidateCurrentJobRoleId ="+addSupportCandidateRequest.getCandidateCurrentJobRoleId());
                                     break;
                                 case "Role Experience (in Years)":
-                                    addSupportCandidateRequest.setCandidateTotalExperience(Integer.valueOf(nextLine[i])*12);
-                                    Logger.info("addSupportCandidateRequest.setCandidateTotalExperience ="+addSupportCandidateRequest.getCandidateTotalExperience());
+                                    //check if experience is define as a aplpha-numerical string
+                                    if(StringUtils.isNumeric(nextLine[i])){
+                                        addSupportCandidateRequest.setCandidateTotalExperience(Integer.valueOf(nextLine[i])*12);
+                                        Logger.info("addSupportCandidateRequest.setCandidateTotalExperience ="+addSupportCandidateRequest.getCandidateTotalExperience());
+                                    }
                                     break;
                                 case "Languages known":
                                     String[] languages = nextLine[i].split(" ");
@@ -2492,7 +2499,9 @@ public class CandidateService
                     }
 
                     // create candidate
-                    if(isNew){
+
+                    if(isNew && addSupportCandidateRequest.getCandidateMobile() != null && !addSupportCandidateRequest.getCandidateMobile().isEmpty()){
+                        Logger.info("Add support candidate request : "+ toJson(addSupportCandidateRequest));
                         CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
                                 InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE,
                                 ServerConstants.UPDATE_ALL_BY_SUPPORT);
@@ -2502,15 +2511,20 @@ public class CandidateService
                             Logger.info("Candidate Created with Id = "+candidateSignUpResponse.getCandidateId());
                         }
                     }
-                    else { Logger.info("Candidate exists for Mobile Number "+tempMobile); }
+                    else if(addSupportCandidateRequest.getCandidateMobile() != null && !addSupportCandidateRequest.getCandidateMobile().isEmpty())
+                    {
+                        Logger.info("Candidate exists for Mobile Number "+tempMobile);
+                    }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        bulkUploadResponse.setTotalNumberOfCandidateCreated(count);
+        bulkUploadResponse.setTotalNumberOfCandidateUploaded(totalCount);
+        Logger.info("Total number of resume uploaded(). Count = "+totalCount);
         Logger.info("Exiting bulkUploadCandidates(). Count = "+count);
-        return count;
+        return bulkUploadResponse;
     }
 
 }
