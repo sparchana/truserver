@@ -274,8 +274,9 @@ public class PartnerController {
                         response.setCandidateActiveDeactive(partnerToCandidate.getCandidate().getCandidateprofilestatus().getProfileStatusId());
                     }
                 }
-                response.setCandidateAppliedJobs(JobPostWorkflowEngine.getPartnerAppliedJobsForCandidate(
-                        partnerToCandidate.getCandidate(), partner).size());
+                response.setAppliedJobList(JobPostWorkflowEngine.getPartnerAppliedJobsForCandidate(
+                        partnerToCandidate.getCandidate(), partner));
+                response.setCandidateAppliedJobs(response.getAppliedJobList().size());
                 response.setCandidateMobile(partnerToCandidate.getCandidate().getCandidateMobile());
                 responses.add(response);
             }

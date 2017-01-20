@@ -8,6 +8,7 @@ import java.util.List;
 public class MultipleCandidateActionRequest {
     List<Long> candidateIdList;
     String smsMessage;
+    Long jobPostId;
 
     public List<Long> getCandidateIdList() {
         return candidateIdList;
@@ -23,5 +24,13 @@ public class MultipleCandidateActionRequest {
 
     public void setSmsMessage(String smsMessage) {
         this.smsMessage = smsMessage;
+    }
+
+    public Long getJobPostId() {
+        return jobPostId;
+    }
+
+    public void setJobPostId(Long jobPostId) {
+        this.jobPostId = jobPostId;
     }
 }

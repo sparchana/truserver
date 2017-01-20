@@ -4,7 +4,9 @@ import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
+import models.entity.Company;
 import models.entity.JobPost;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.SmsDeliveryStatus;
 
 import javax.persistence.*;
@@ -27,6 +29,19 @@ public class SmsReport extends Model {
 
     @Column(name = "sms_text", columnDefinition = "text null")
     private String smsText;
+
+    @Column(name = "sms_scheduler_id", columnDefinition = "text null")
+    private String smsSchedulerId;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "CompanyId", referencedColumnName = "CompanyId")
+    private Company company;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "recruiterProfileId", referencedColumnName = "recruiterProfileId")
+    private RecruiterProfile recruiterProfile;
 
     @ManyToOne
     @JsonBackReference
@@ -95,5 +110,29 @@ public class SmsReport extends Model {
 
     public void setSmsDeliveryStatus(SmsDeliveryStatus smsDeliveryStatus) {
         this.smsDeliveryStatus = smsDeliveryStatus;
+    }
+
+    public String getSmsSchedulerId() {
+        return smsSchedulerId;
+    }
+
+    public void setSmsSchedulerId(String smsSchedulerId) {
+        this.smsSchedulerId = smsSchedulerId;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
+    public RecruiterProfile getRecruiterProfile() {
+        return recruiterProfile;
+    }
+
+    public void setRecruiterProfile(RecruiterProfile recruiterProfile) {
+        this.recruiterProfile = recruiterProfile;
     }
 }

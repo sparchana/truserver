@@ -391,4 +391,11 @@ public class ServerConstants {
 
     //reason type
     public static final int FREE_JOB_APPLICATION_DEFAULT_LIMIT_IN_A_WEEK = 7;
+
+    //sms delivery status
+    public static final int SMS_STATUS_PENDING = 1;
+    public static final int SMS_STATUS_DELIVERED = 2;
+    public static final int SMS_STATUS_UNDELIVERED = 3;
+    public static final int SMS_STATUS_EXPIRED = 4;
+
 }

@@ -11,6 +11,7 @@ import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Recruiter.MultipleCandidateContactUnlockResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
+import com.amazonaws.services.importexport.model.Job;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,6 +32,8 @@ import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
 import models.util.SmsUtil;
+import notificationService.NotificationEvent;
+import notificationService.SMSEvent;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -281,7 +284,27 @@ public class RecruiterController {
                     Candidate candidate = Candidate.find.where().eq("CandidateId", candidateId).findUnique();
                     if(candidate != null){
                         //sending sms
-                        SmsUtil.addSmsToNotificationQueue(candidate.getCandidateMobile(), multipleCandidateActionRequest.getSmsMessage());
+                        //RMP product sms blast
+                        if(multipleCandidateActionRequest.getJobPostId() != null){
+                            JobPost jobPost = JobPost.find.where().eq("JobPostId", 686).findUnique();
+                            if(jobPost != null){
+                                NotificationEvent notificationEvent =
+                                        new SMSEvent(candidate.getCandidateMobile(),
+                                                multipleCandidateActionRequest.getSmsMessage(),
+                                                recruiterProfile.getCompany(),
+                                                recruiterProfile,
+                                                jobPost,
+                                                candidate);
+
+                                Global.getmNotificationHandler().addToQueue(notificationEvent);
+
+                            } else{
+                                return ok(toJson('1'));
+                            }
+                        } else{
+                            // ordinary msg
+                            SmsUtil.addSmsToNotificationQueue(candidate.getCandidateMobile(), multipleCandidateActionRequest.getSmsMessage());
+                        }
                     }
                 }
 

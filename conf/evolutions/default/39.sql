@@ -6,16 +6,24 @@ create table sms_delivery_status (
   constraint pk_sms_delivery_status primary key (status_id)
 );
 
-
 create table sms_report (
   sms_report_id                 int signed auto_increment not null,
   creation_timestamp            timestamp not null default current_timestamp,
   sms_text                      text null,
+  sms_scheduler_id              text null,
+  companyid                     bigint signed,
+  recruiterprofileid            bigint signed,
   candidateid                   bigint signed,
   jobpostid                     bigint signed,
   smsdeliverystatus             int signed,
   constraint pk_sms_report primary key (sms_report_id)
 );
+
+alter table sms_report add constraint fk_sms_report_companyid foreign key (companyid) references company (companyid) on delete restrict on update restrict;
+create index ix_sms_report_companyid on sms_report (companyid);
+
+alter table sms_report add constraint fk_sms_report_recruiterprofileid foreign key (recruiterprofileid) references recruiterprofile (recruiterprofileid) on delete restrict on update restrict;
+create index ix_sms_report_recruiterprofileid on sms_report (recruiterprofileid);
 
 alter table sms_report add constraint fk_sms_report_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
 create index ix_sms_report_candidateid on sms_report (candidateid);
@@ -51,14 +59,11 @@ create index ix_partner_companyid on partner (companyid);
 
 # --- !Downs
 
-alter table candidate_to_company drop foreign key fk_candidate_to_company_candidateid;
-drop index ix_candidate_to_company_candidateid on candidate_to_company;
+alter table sms_report drop foreign key fk_sms_report_companyid;
+drop index ix_sms_report_companyid on sms_report;
 
-alter table candidate_to_company drop foreign key fk_candidate_to_company_companyid;
-drop index ix_candidate_to_company_companyid on candidate_to_company;
-
-alter table partner drop foreign key fk_partner_companyid;
-drop index ix_partner_companyid on partner;
+alter table sms_report drop foreign key fk_sms_report_recruiterprofileid;
+drop index ix_sms_report_recruiterprofileid on sms_report;
 
 alter table sms_report drop foreign key fk_sms_report_candidateid;
 drop index ix_sms_report_candidateid on sms_report;
@@ -69,10 +74,20 @@ drop index ix_sms_report_jobpostid on sms_report;
 alter table sms_report drop foreign key fk_sms_report_smsdeliverystatus;
 drop index ix_sms_report_smsdeliverystatus on sms_report;
 
-drop table if exists sms_report;
-drop table if exists sms_delivery_status;
+alter table candidate_to_company drop foreign key fk_candidate_to_company_candidateid;
+drop index ix_candidate_to_company_candidateid on candidate_to_company;
+
+alter table candidate_to_company drop foreign key fk_candidate_to_company_companyid;
+drop index ix_candidate_to_company_companyid on candidate_to_company;
+
+alter table partner drop foreign key fk_partner_companyid;
+drop index ix_partner_companyid on partner;
+
 alter table partner drop column companyid;
 alter table company drop column companycode;
 alter table candidate drop column candidateisprivate;
 alter table jobpost drop column jobpostisprivate;
+
+drop table if exists sms_report;
+drop table if exists sms_delivery_status;
 drop table if exists candidate_to_company;
