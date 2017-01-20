@@ -443,7 +443,6 @@ public class JobPostWorkflowEngine {
             }
         }
 
-
         return matchedCandidateMap;
     }
 

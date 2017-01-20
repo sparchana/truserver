@@ -17,6 +17,7 @@ var maxSalary = 0;
 var experienceIdList = [];
 var gender = -1;
 var jobPostJobRoleId = 1;
+var jobPostJobRoleTitle = "accountant";
 var jobPostEducationIdList = [];
 var jobPostLocalityIdList = null;
 var jobPostLanguageIdList = [];
@@ -107,6 +108,7 @@ $(document).ready(function(){
 
     $(".searchNav").addClass("active");
     $(".searchNavMobile").addClass("active");
+
     try {
         $.ajax({
             type: "POST",
@@ -239,41 +241,157 @@ $(document).ready(function(){
 
     counter = 0;
     NProgress.start();
-    var d = {
-        maxAge: "",
-        minSalary: 0,
-        maxSalary: 0,
-        experienceIdList: [],
-        gender: "-1",
-        jobPostJobRoleId: 1,
-        jobPostEducationIdList: [],
-        jobPostLocalityIdList: null,
-        jobPostLanguageIdList: [],
-        jobPostDocumentIdList: [],
-        jobPostAssetIdList: [],
-        distanceRadius: 10,
-        initialValue: 0,
-        sortBy: 1
-    };
+    preFillFilter().then(function () {
+        console.log("fetching prefillFilter data and setting globals done");
 
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/recruiter/api/getMatchingCandidate/",
-            async: true,
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(d),
-            success: processDataMatchCandidate,
-            error: function (jqXHR, exception) {
-                $("#somethingWentWrong").show();
-                $("#loadingIcon").hide();
-                NProgress.done();
-            }
+        renderPreFillFilter().then(function () {
+            console.log("promise return from renderPreFillFilter and now performsearch");
+            performSearch();
+        }).catch(function (fromReject) {
+            console.log(fromReject);
         });
-    } catch (exception) {
-        console.log("exception occured!!" + exception.stack);
-    }
+
+    });
+
 });
+
+function renderPreFillFilter(){
+    return new Promise(function (resolve, reject) {
+        if(jobPostLanguageIdList!= null && jobPostLanguageIdList.length > 0) {
+            jobPostLanguageIdList.forEach(function (id) {
+                $('#lang_'+id).prop('checked', true);
+            });
+        }
+
+        if(jobPostDocumentIdList!= null && jobPostDocumentIdList.length > 0) {
+            jobPostDocumentIdList.forEach(function (id) {
+                $('#idproof_'+id).prop('checked', true);
+            });
+        }
+
+        if(jobPostEducationIdList != null && jobPostEducationIdList.length > 0) {
+            jobPostEducationIdList.forEach(function (id) {
+                $('#edu_'+id).prop('checked', true);
+            });
+        }
+
+        if(experienceIdList!= null && experienceIdList.length > 0) {
+            experienceIdList.forEach(function (id) {
+                $('#exp_'+id).prop('checked', true);
+            });
+        }
+
+        if(jobPostAssetIdList!= null && jobPostAssetIdList.length > 0) {
+            jobPostAssetIdList.forEach(function (id) {
+                $('#asset_'+id).prop('checked', true);
+            });
+        }
+
+        if(gender!= null ) {
+            $('#gender_'+gender).prop("checked", true)
+        }
+
+        if(maxSalary != null ) {
+            $("#maxSalaryVal").html("Max Salary: ₹" + rupeeFormatSalary(parseFloat(maxSalary)));
+            $('#filterSalary').val(maxSalary)
+        }
+
+
+        if(jobPostJobRoleId != null && jobPostJobRoleTitle) {
+            $('#searchJobRole').tokenize().tokenRemove($('#searchJobRole').val()[0]);
+            $('#searchJobRole').tokenize().tokenAdd(jobPostJobRoleId, jobPostJobRoleTitle);
+        }
+        resolve();
+    });
+
+}
+
+function postSearchError() {
+    $("#somethingWentWrong").show();
+    $("#loadingIcon").hide();
+    NProgress.done();
+}
+
+function preFillFilter() {
+    if(window.location.search != "") {
+        var urlParams = window.location.search.split('=');
+
+        if(urlParams[0] == "?jpId"){
+            var jpId = parseInt(urlParams[1]);
+
+            var promise = $.ajax({type: 'POST', url: '/getJobPostFilterData/'+jpId});
+
+            promise.then(
+                function (returnedData) {
+                    if (returnedData != null) {
+                        console.log("returnedData: " + JSON.stringify(returnedData));
+
+                        if(returnedData.jobPostId != jpId){
+                            return;
+                        }
+
+                        // assign jobPost info to global values
+
+                        // appending locality id
+                        if(returnedData.jobPostLocalityIdList != null ){
+                            jobPostLocalityIdList = returnedData.jobPostLocalityIdList;
+                        }
+                        // appending jobrole id
+                        if(returnedData.jobPostJobRoleId != null ){
+                            jobPostJobRoleId = returnedData.jobPostJobRoleId;
+                            jobPostJobRoleTitle = returnedData.jobPostJobRoleTitle;
+                        }
+
+                        // appending language id
+                        if(returnedData.jobPostLanguageIdList != null ){
+                            jobPostLanguageIdList = returnedData.jobPostLanguageIdList;
+                        }
+
+                        // appending gender
+                        if(returnedData.maxSalary != null ){
+                            maxSalary = returnedData.maxSalary;
+                        }
+                        // appending salary
+                        if(returnedData.gender != null ){
+                            gender = returnedData.gender;
+                        }
+
+                        // appending idproof id
+                        if(returnedData.jobPostDocumentIdList != null ){
+                            jobPostDocumentIdList = returnedData.jobPostDocumentIdList;
+                        }
+
+                        // appending asset id
+                        if(returnedData.jobPostAssetIdList != null ){
+                            jobPostAssetIdList = returnedData.jobPostAssetIdList;
+                        }
+
+                        // appending education id
+                        if(returnedData.jobPostEducationId != null){
+                            jobPostEducationIdList = [];
+                            jobPostEducationIdList.push(returnedData.jobPostEducationId);
+                        }
+
+                        // appending experience id
+                        if(returnedData.jobPostExperienceId != null){
+                            experienceIdList = [];
+                            experienceIdList.push(returnedData.jobPostExperienceId);
+                        }
+
+                    }
+                },
+                function (xhr, state, error) {
+                    // better would be to redirect to page not found, else on scroll candidate loading gets triggered
+                    window.location = '/pageNotFound';
+                }
+            );
+
+            console.log("ajax done");
+            return promise;
+        }
+    }
+    return null;
+}
 
 function getRecruiterInfo() {
     try {
@@ -342,7 +460,7 @@ function processDataExperience(returnedData) {
 
         var experienceLabel = document.createElement("label");
         experienceLabel.style = "font-size: 12px";
-        experienceLabel.setAttribute("for", "exp_" + experience.experienceId);
+        experienceLabel.setAttribute("for", "edu_" + experience.experienceId);
         experienceLabel.textContent = experience.experienceType;
         mainDiv.appendChild(experienceLabel);
     });
@@ -628,9 +746,7 @@ function performSearch() {
                 data: JSON.stringify(d),
                 success: processDataMatchCandidate,
                 error: function (jqXHR, exception) {
-                    $("#somethingWentWrong").show();
-                    $("#loadingIcon").hide();
-                    NProgress.done();
+                    postSearchError();
                 }
             });
         } catch (exception) {

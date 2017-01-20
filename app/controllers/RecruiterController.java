@@ -536,6 +536,8 @@ public class RecruiterController {
                         Collections.sort(listToBeReturned,  new SalaryComparatorLtoH());
                     }
 
+                    Logger.info("total list size: " + listToBeReturned.size());
+
                     //getting limited results
                     for (CandidateWorkflowData val : listToBeReturned) {
                         if(count >= matchingCandidateRequest.getInitialValue()){

@@ -1,12 +1,10 @@
 package controllers;
 
-import dao.CandidateDAO;
-import api.http.httpRequest.Recruiter.AddRecruiterRequest;
-import dao.JobPostDAO;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
+import api.http.httpRequest.Recruiter.AddRecruiterRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlotDetail;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
@@ -14,6 +12,7 @@ import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.SelectedCandidateRequest;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
+import api.http.httpResponse.Recruiter.JobPostFilterResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
@@ -23,19 +22,24 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
-import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
+import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.*;
+import dao.CandidateDAO;
 import dao.CompanyDAO;
+import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
-import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.Intelligence.RelatedJobRole;
 import models.entity.OM.*;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
-import models.util.*;
+import models.util.ParseCSV;
+import models.util.SmsUtil;
+import models.util.UrlValidatorUtil;
+import models.util.Util;
 import play.Logger;
 import play.api.Play;
 import play.data.Form;
@@ -2392,5 +2396,81 @@ public class Application extends Controller {
 
         return ok(toJson(RecruiterService.expireCreditPack(addRecruiterRequest)));
 
+    }
+
+    /**
+     *
+     * @param jobPostId
+     * @return
+     *
+     *  This class provides minimal jobp post data required to fill filters of
+     * private recruiter 'search candidate page'
+     *
+     */
+    public static Result getJobPostFilterData(Long jobPostId) {
+        if(jobPostId == null)
+            return badRequest();
+
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
+
+        if(jobPost == null)
+            return badRequest();
+
+        JobPostFilterResponse response = new JobPostFilterResponse();
+
+        response.setJobPostId(jobPost.getJobPostId());
+        response.setGender(jobPost.getGender());
+        response.setMaxSalary(jobPost.getJobPostMaxSalary());
+        response.setJobPostJobRoleId(jobPost.getJobRole().getJobRoleId());
+        response.setJobPostJobRoleTitle(jobPost.getJobRole().getJobName());
+        // add document
+        if(jobPost.getJobPostDocumentRequirements() != null
+                && jobPost.getJobPostDocumentRequirements().size() > 0) {
+            response.setJobPostDocumentIdList(new ArrayList<>());
+            for(JobPostDocumentRequirement documentRequirement : jobPost.getJobPostDocumentRequirements()){
+                response.getJobPostDocumentIdList().add( documentRequirement.getIdProof().getIdProofId());
+            }
+        }
+
+        // add asset
+        if(jobPost.getJobPostAssetRequirements() != null
+                && jobPost.getJobPostAssetRequirements().size() > 0) {
+            response.setJobPostAssetIdList(new ArrayList<>());
+            for(JobPostAssetRequirement assetRequirement : jobPost.getJobPostAssetRequirements()){
+                response.getJobPostAssetIdList().add(assetRequirement.getAsset().getAssetId());
+            }
+        }
+
+
+        // add language
+        if(jobPost.getJobPostLanguageRequirements() != null
+                && jobPost.getJobPostLanguageRequirements().size() > 0) {
+            response.setJobPostLanguageIdList(new ArrayList<>());
+            for(JobPostLanguageRequirement languageRequirement : jobPost.getJobPostLanguageRequirements()){
+                response.getJobPostLanguageIdList().add( languageRequirement.getLanguage().getLanguageId());
+            }
+        }
+
+         // add locality
+        if(jobPost.getJobPostToLocalityList() != null
+                && jobPost.getJobPostToLocalityList().size() > 0) {
+            response.setJobPostLocalityIdList(new ArrayList<>());
+            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
+                response.getJobPostLocalityIdList().add( jobPostToLocality.getLocality().getLocalityId());
+            }
+        }
+
+        // add experience
+        if(jobPost.getJobPostExperience() != null) {
+            response.setJobPostExperienceId(jobPost.getJobPostExperience().getExperienceId());
+        }
+
+        // add education
+        if(jobPost.getJobPostEducation() != null) {
+            response.setJobPostEducationId(jobPost.getJobPostEducation().getEducationId());
+        }
+
+
+        return ok(toJson(response));
     }
 }
