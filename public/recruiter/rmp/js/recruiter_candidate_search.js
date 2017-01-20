@@ -298,13 +298,17 @@ function renderPreFillFilter(){
         }
 
 
-        if(jobPostJobRoleId != null && jobPostJobRoleTitle) {
-            $('#searchJobRole').tokenize().tokenRemove($('#searchJobRole').val()[0]);
+        if(jobPostJobRoleId != null && jobPostJobRoleTitle ) {
+            if($('#searchJobRole').val() != null) {
+                $('#searchJobRole').tokenize().tokenRemove($('#searchJobRole').val()[0]);
+            }
             $('#searchJobRole').tokenize().tokenAdd(jobPostJobRoleId, jobPostJobRoleTitle);
         }
 
         if(jobPostLocalityList != null && jobPostLocalityList.length > 0) {
-            $('#searchLocality').tokenize().tokenRemove($('#searchLocality').val()[0]);
+            if($('#searchLocality').val() != null) {
+                $('#searchLocality').tokenize().tokenRemove($('#searchLocality').val()[0]);
+            }
             jobPostLocalityList.forEach(function (locality) {
                 $('#searchLocality').tokenize().tokenAdd(locality.localityId, locality.localityName);
             });
