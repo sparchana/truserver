@@ -29,7 +29,7 @@ function initDecorator(colorPalette) {
             className: "mdl-grid"
         },
         container : {
-            className: "row mdl-cell mdl-cell--12-col"
+            className: "mdl-cell mdl-cell--12-col"
         },
         bootBoxMain: {
             className: "pre-screen-modal"
@@ -48,6 +48,9 @@ function initDecorator(colorPalette) {
                     titleText_4:"Match?",
                     titleText_5:"Is candidate Ready",
                     titleText_6:"Edit"
+                },
+                minReqTable: {
+                  className: ""
                 },
                 tBody: {
                     style: ""
@@ -102,11 +105,12 @@ function initDecorator(colorPalette) {
             },
             visibility: true
         },
+        radioBtn:{
+            className:"mdl-radio__button"
+        },
         finalSubmissionButton :{
-            className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent modal-submit",
-            init: {
-                disabled: true
-            }
+            className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent modal-submit lg-submit-btn",
+            enable: false
         },
         textContainers: {
             visibility: true,
@@ -1130,11 +1134,11 @@ function constructPreScreenBodyContainer(returnedData, customD, isSupport) {
     var jobPostId = returnedData.jobPostId;
     var container = $('<div class="'+customD.container.className+'" id="pre_screen_container_row"></div>');
 
-    var minReqTableContainer = $('<div id="minReqTable"></div>');
+    var minReqTableContainer = $('<div id="minReqTable" class="'+customD.table.mainTable.minReqTable.className+'"></div>');
     container.append('<h4 class="mdl-shadow--2dp" style="'+customD.table.mainTable.titleStyle+'">'+customD.table.mainTable.title+'</h4>');
     container.append(minReqTableContainer);
 
-    var otherReqTableContainer = $('<div id="otherReqTable"></div>');
+    var otherReqTableContainer = $('<div id="otherReqTable" class="'+customD.table.mainTable.minReqTable.className+'">></div>');
     container.append('<h4 class="mdl-shadow--2dp" style="'+customD.table.otherTable.titleStyle+'">'+customD.table.otherTable.title+'</h4>');
     container.append(otherReqTableContainer);
 
@@ -1622,22 +1626,25 @@ function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, cus
     bootbox_dialog.init(function () {
         var forceSetContainer = $('.modal-footer');
         var forceSetDiv = $('' +
-            '<div class="col-xs-11" style="text-align: right">' +
+            '<div class="col-xs-6" style="text-align: left;padding-top:10px">' +
             '<h5 style="margin:2px; font-size: 12px;">' +
             '<div style="display:inline-block; margin: 0 1px;text-align: left; color: #b9151b" id="footerMessage">*</div>' +
             ''+customD.modalFooter.footerMessage+'&nbsp;:&nbsp;' +
             '<div style="display: inline-block; vertical-align: middle; margin: 0px;">' +
-            '<input type="radio" name="verdict" id="pass" value="1" style="margin: 0 2px" onclick="activateSubmit('+customD.callYesNoRequired+')">Yes' +
-            '<input type="radio" name="verdict" id="fail" value="0" style="margin: 0 2px" onclick="activateSubmit('+customD.callYesNoRequired+')">No' +
+            '<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="pass">'+
+            '<input class="'+customD.radioBtn.className+'" type="radio" name="verdict" id="pass" value="1" style="margin: 0 2px" onclick="activateSubmit('+customD.callYesNoRequired+')" checked>' +
+            '<span class="mdl-radio__label">Yes</span></label>'+
+            '<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="fail">'+
+            '<input class="'+customD.radioBtn.className+'" type="radio" name="verdict" id="fail" value="0" style="margin: 0 2px" onclick="activateSubmit('+customD.callYesNoRequired+')">' +
+            '<span class="mdl-radio__label">No</span></label>'+
             '</div>' +
             '</h5>' +
             '</div>'
         );
         forceSetContainer.prepend(forceSetDiv);
 
-        if(customD.finalSubmissionButton.init.disabled){
-            $('.btn.modal-submit').prop('disabled', true);
-        }
+        $('.btn.modal-submit').prop('disabled', !customD.finalSubmissionButton.enable);
+
         if(!customD.callYesNoRequired){
             $('#pre_screen_body').show();
         } else {

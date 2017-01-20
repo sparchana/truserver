@@ -177,11 +177,9 @@
                 <hr>
                 <div class="profileSectionOne" id="dashboardProfileBody">
                     <div id="profileTitle"><font size="3"><b style="margin-left: 8px">PREFERENCES</b></font></div>
-                    <div class="row" style="padding: 3%">
+                    <div class="row" style="margin:2% 0">
                         <div class="col-sm-12">
-                            <div style="display: inline-block;
-                                margin: 4px;
-                                top: 0">
+                            <div style="display: inline-block;margin: 4px;top: 0">
                                 <img src="/assets/common/img/icons_partner/latest/job.svg" height="32px;" style="margin-top: -4px">
                             </div>
                             <div style="display: inline-block;">
@@ -193,8 +191,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row" style="padding: 3%;
-                        padding-top: 0%">
+                    <div class="row" style="margin:2% 0">
                         <div class="col-sm-12">
                             <div style="display: inline-block;
                                 margin: 4px;">
@@ -210,8 +207,7 @@
                         </div>
                     </div>
 
-                    <div class="row" style="padding: 3%;
-                        padding-top: 0%">
+                    <div class="row" style="margin:2% 0;">
                         <div class="col-sm-12">
                             <div style="display: inline-block;
                                 margin: 4px;">
@@ -230,7 +226,7 @@
 
                 <div class="profileSectionOne" id="dashboardProfileBody">
                     <div id="profileTitle"><font size="3"><b style="margin-left: 8px">EXPERIENCE & EDUCATION</b></font></div>
-                    <div class="row" style="padding: 3%;">
+                    <div class="row" style="margin:2% 0;">
                         <div class="col-sm-6">
                             <div style="display: inline-block;
                                 margin: 4px;">
@@ -260,8 +256,7 @@
                         </div>
                     </div>
 
-                    <div class="row" style="padding: 3%;
-                        padding-top: 0%">
+                    <div class="row" style="margin:2% 0;">
                         <div class="col-sm-6">
                             <div style="display: inline-block;
                                 margin: 4px;">
@@ -289,8 +284,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row" style="padding: 3%;
-                        padding-top: 0%">
+                    <div class="row" style="margin:2% 0;">
                         <div class="col-sm-12">
                             <div style="display: inline-block;
                                 margin: 4px;">
@@ -336,12 +330,18 @@
                 </div>
             </div>
         </div>
-        <a href ="#" class="resumeUploadBox">
-                <label id="resumeUploadBoxInner">
-                    <span class="glyphicon glyphicon-open" aria-hidden="true" style="margin-right:10px"></span>Upload Resume
-                    <input type="file" accept="application/pdf,application/msword" id="uploadResumeContent" style="display: none">
-                </label>
-        </a>
+        <div class ="modal fade bs-example-modal-md" id="uploadResumeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog modal-md" id="uploadResumeModalDialog" role="document">
+                <div class="modal-content" id="uploadResumeModalContent"></div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <label id="resumeUploadBoxInner">
+                <span class="glyphicon glyphicon-open" aria-hidden="true" style="margin-right:10px"></span>Upload Resume
+                <input type="file" accept="application/pdf,application/msword" id="uploadResumeContent" style="display: none">
+            </label>
+        </div>
+
         <div id="footer_inc"></div>
         <script type="text/javascript" src="/assets/partner/js/notify.min.js"></script>
         <script type="text/javascript" src="/assets/common/js/apply_job.js"></script>

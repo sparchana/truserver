@@ -2,8 +2,6 @@
  * Created by hawk on 12/1/17.
  */
 
-document.getElementById('uploadResumeContent').addEventListener('change', uploadResume, false);
-
 function viewDownloadResume(candidateId) {
     var url = "/fetchResume/?candidateId="+candidateId;
     try {
@@ -24,7 +22,7 @@ function viewDownloadResume(candidateId) {
 }
 function processDataForViewResume(returnedData){
     if (returnedData.filePath != null) {
-            $(".resumeUploadBox").hide();
+            $("#resumeUploadBoxInner").hide();
             $("#userViewResume").html("");
             var parentView = $("#userViewResume");
             var viewLink = document.createElement("a");
@@ -46,6 +44,7 @@ function processDataForViewResume(returnedData){
         $("#userViewResume").innerHTML = "No Resume Uploaded Back";
     }
 }
+document.getElementById('uploadResumeContent').addEventListener('change', uploadResume, false);
 
 function uploadResume(evt){
     var files = evt.target.files;

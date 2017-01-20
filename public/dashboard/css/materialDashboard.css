@@ -634,7 +634,7 @@ hr{
     padding: 1%;
     border-left: 1px #fff solid;
 }
-.resumeUploadBox{
+#resumeUploadBoxInner{
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.3);
     border-radius:5px;
     border:2px solid #fff;
@@ -643,17 +643,14 @@ hr{
     text-align:center;
     font-weight: bold;
     position:fixed;
-    bottom:40px;
-    right:40px;
+    bottom:20px;
+    right: 40px;
     z-index: 99;
     background-color: #0288d1;
     -webkit-transition-property: width;
     -webkit-transition-duration: 0.5s;
     transition-property: width;
     transition-duration: 0.5s;
-}
-.resumeUploadBox:hover{
-    cursor: pointer;
 }
 #resumeUploadBoxInner:hover{
     cursor: pointer;
@@ -671,14 +668,9 @@ hr{
     font-weight: bold;
 }
 @media screen and (max-width: 768px){
-    .resumeUploadBox{
-        width:35px;
-        height:35px;
-        bottom:32px;
-        right:64px;
-    }
     #resumeUploadBoxInner{
-        padding-top: 4px;
+        width:150px;
+        height:50px;
     }
     #profileProgressDiv{
         padding: 1%;
@@ -808,7 +800,7 @@ hr{
     }
 }
 @media screen and (max-width: 400px){
-    .resumeUploadBox{
+    #resumeUploadBoxInner{
         background-color: #0288d1;
         border-radius:0px;
         border: 0px;
@@ -816,9 +808,6 @@ hr{
         height:55px;
         bottom:0;
         right:0;
-    }
-    #resumeUploadBoxInner{
-        padding-top: 4%;
-        padding-right: 0;
+        margin: 0;
     }
 }

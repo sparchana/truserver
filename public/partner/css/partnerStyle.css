@@ -602,7 +602,14 @@ a:hover{
     text-align:left;
     padding-top:10px
 }
+
+.modal-title{
+ font-size: 18px;
+}
 @media screen and (max-width: 768px) {
+    .modal-title{
+        font-size: 14px;
+    }
     #uploadResumeModalDialog{
         margin-top:30%;
         width: 90%;
@@ -829,5 +836,6 @@ a:hover{
         transform: rotate(90deg);
     }
 }
+
 
 
