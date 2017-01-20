@@ -100,8 +100,8 @@ public class JobPost extends Model {
     @Column(name = "ReviewApplication", columnDefinition = "int(1) null")
     private Integer reviewApplication;
 
-    @Column(name = "JobPostIsPrivate", columnDefinition = "int signed not null default 0")
-    private Boolean jobPostIsPrivate = false;
+    @Column(name = "job_post_access_level", columnDefinition = "int(2) signed not null default 0")
+    private int jobPostAccessLevel;
 
     @ManyToOne
     @JsonManagedReference
@@ -774,11 +774,11 @@ public class JobPost extends Model {
         this.resumeApplicationDate = resumeApplicationDate;
     }
 
-    public Boolean getJobPostIsPrivate() {
-        return jobPostIsPrivate;
+    public int getJobPostAccessLevel() {
+        return jobPostAccessLevel;
     }
 
-    public void setJobPostIsPrivate(Boolean jobPostIsPrivate) {
-        this.jobPostIsPrivate = jobPostIsPrivate;
+    public void setJobPostAccessLevel(int jobPostAccessLevel) {
+        this.jobPostAccessLevel = jobPostAccessLevel;
     }
 }

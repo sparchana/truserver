@@ -1239,7 +1239,7 @@ function renderIndividualCandidateCard(value, parent, view) {
         unlockCandidateBtn.style = "margin-top: -1px";
 
         unlockCandidateBtn.className = "waves-effect waves-light customUnlockBtn";
-    } else if(view == view_unlocked_candidate){
+    } else if(view == view_unlocked_candidate) {
         unlockCandidateBtn.className = "contactUnlocked right";
         unlockCandidateBtn.style = "margin-right: 8px";
     }
@@ -1394,6 +1394,7 @@ function checkSmsText(){
 
 function sendSms(){
     if(checkedCandidateIdList.length > 0){
+        $("#sendSms").addClass("disabled");
         var s = {
             candidateIdList: checkedCandidateIdList,
             smsMessage :$("#smsText").val()
@@ -1420,6 +1421,7 @@ function processDataBulkSms(returnedData) {
     } else if(returnedData == '-1'){
         logoutRecruiter();
     } else{
+        $("#sendSms").removeClass("disabled");
         notifyError("Something went wrong. Please try again later");
     }
 }

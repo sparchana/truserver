@@ -89,11 +89,11 @@ public class JobSearchService {
             // Eg. For a telecaller job search, we want to first show all telecaller jobs sorted in the given order
             // followed by by all BPO jobs
 
-            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, filterParams, sortBy, isHot, source, false);
+            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, filterParams, sortBy, isHot, source, ServerConstants.JOB_POST_TYPE_NOT_PRIVATE);
 
             List<Long> relatedJobRoleIds = JobRelevancyEngine.getRelatedJobRoleIds(jobRoleIds);
 
-            List<JobPost> relatedJobRoleJobs = queryAndReturnJobPosts(relatedJobRoleIds, filterParams, sortBy, isHot, source, false);
+            List<JobPost> relatedJobRoleJobs = queryAndReturnJobPosts(relatedJobRoleIds, filterParams, sortBy, isHot, source, ServerConstants.JOB_POST_TYPE_NOT_PRIVATE);
 
             // if we have lat-long info, then lets go ahead and filter the job post lists based on distance criteria
             if (latitude != null && longitude != null && latitude != 0.0 && longitude != 0.0) {
@@ -198,7 +198,7 @@ public class JobSearchService {
 
         for (Integer source : jobPostSources) {
 
-            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, filterParams, sortBy, isHot, source, false);
+            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, filterParams, sortBy, isHot, source, ServerConstants.JOB_POST_TYPE_NOT_PRIVATE);
 
             if (latitude != null && longitude != null && latitude != 0.0 && longitude != 0.0) {
 
@@ -271,7 +271,7 @@ public class JobSearchService {
      * @param mobile candidates mobile
      * @return
      */
-    public static List<JobPost> getAllJobsForCandidate(String mobile, Boolean isPrivate) {
+    public static List<JobPost> getAllJobsForCandidate(String mobile, Integer accessLevel) {
 
         String candidateMobile = FormValidator.convertToIndianMobileFormat(mobile);
 
@@ -290,12 +290,12 @@ public class JobSearchService {
             }
 
             List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, null, SORT_BY_DATE_POSTED,
-                    true, ServerConstants.SOURCE_INTERNAL, isPrivate);
+                    true, ServerConstants.SOURCE_INTERNAL, accessLevel);
 
             List<Long> relevantJobRoleIds = JobRelevancyEngine.getRelatedJobRoleIds(jobRoleIds);
 
             List<JobPost> relevantJobRoleJobs = queryAndReturnJobPosts(relevantJobRoleIds, null, SORT_BY_DATE_POSTED,
-                    true, ServerConstants.SOURCE_INTERNAL, isPrivate);
+                    true, ServerConstants.SOURCE_INTERNAL, accessLevel);
 
             List<Long> finalJobRoleIdList = new ArrayList<>();
             finalJobRoleIdList.addAll(jobRoleIds);
@@ -310,7 +310,7 @@ public class JobSearchService {
 
             //getting all the internal jobs apart form candidate's job role pref & relevant job roles
             List<JobPost> otherJobRoleJobs = queryAndReturnJobPosts(otherJobRoleIdList, null, SORT_BY_DATE_POSTED,
-                    true, ServerConstants.SOURCE_INTERNAL, isPrivate);
+                    true, ServerConstants.SOURCE_INTERNAL, accessLevel);
 
             for(JobPost jobPost : relevantJobRoleJobs) {
                 if(!exactJobRoleJobs.contains(jobPost)) {
@@ -335,7 +335,7 @@ public class JobSearchService {
                                                         Integer sortBy,
                                                         boolean isHot,
                                                         Integer source,
-                                                        boolean isPrivate)
+                                                        Integer accessLevel)
     {
 
         if (source == null) {
@@ -358,7 +358,7 @@ public class JobSearchService {
         query = query.where().eq("source", source).query();
 
         //checking if job post is private or not
-        query = query.where().eq("JobPostIsPrivate", isPrivate).query();
+        query = query.where().eq("job_post_access_level", accessLevel).query();
 
         query = query.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).query();
 
@@ -649,7 +649,7 @@ public class JobSearchService {
         if (index != null) {
             PagedList<JobPost> pagedList = JobPost.find
                     .where()
-                    .eq("JobPostIsPrivate", ServerConstants.JOB_POST_TYPE_NOT_PRIVATE)
+                    .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_NOT_PRIVATE)
                     .eq("jobPostIsHot", "1")
                     .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
                     .eq("Source", ServerConstants.SOURCE_INTERNAL)
@@ -683,7 +683,7 @@ public class JobSearchService {
         if(index != null){
             PagedList<JobPost> pagedList = JobPost.find
                     .where()
-                    .eq("JobPostIsPrivate", ServerConstants.JOB_POST_TYPE_NOT_PRIVATE)
+                    .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_NOT_PRIVATE)
                     .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
                     .eq("Source", ServerConstants.SOURCE_INTERNAL)
                     .setFirstRow(Math.toIntExact(index))
@@ -711,7 +711,7 @@ public class JobSearchService {
             PagedList<JobPost> pagedList = JobPost.find
                     .where()
                     .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
-                    .eq("JobPostIsPrivate", ServerConstants.JOB_POST_TYPE_PRIVATE)
+                    .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_PRIVATE)
                     .eq("CompanyId", company.getCompanyId())
                     .eq("Source", ServerConstants.SOURCE_INTERNAL)
                     .setFirstRow(Math.toIntExact(index))
@@ -734,7 +734,7 @@ public class JobSearchService {
         if(index!=null){
             List<JobPost> jobPostList = JobPost.find.where()
                     .eq("jobRole.jobRoleId",jobRoleId)
-                    .eq("JobPostIsPrivate", ServerConstants.JOB_POST_TYPE_NOT_PRIVATE)
+                    .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_NOT_PRIVATE)
                     .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
                     .eq("Source", ServerConstants.SOURCE_INTERNAL)
                     .setFirstRow(Math.toIntExact(index))

@@ -397,5 +397,24 @@ public class ServerConstants {
     public static final int SMS_STATUS_DELIVERED = 2;
     public static final int SMS_STATUS_UNDELIVERED = 3;
     public static final int SMS_STATUS_EXPIRED = 4;
+    public static final int SMS_STATUS_DND = 5;
+    public static final int SMS_STATUS_FAILED = 6;
 
+    public static final Map<Integer, String> SMS_DELIVERY_RESPONSE = new HashMap<>();
+    static {
+        SMS_DELIVERY_RESPONSE.put(SMS_STATUS_PENDING, "PENDING");
+        SMS_DELIVERY_RESPONSE.put(SMS_STATUS_DELIVERED, "DELIVRD");
+        SMS_DELIVERY_RESPONSE.put(SMS_STATUS_UNDELIVERED, "UNDELIV");
+        SMS_DELIVERY_RESPONSE.put(SMS_STATUS_EXPIRED, "EXPIRED");
+        SMS_DELIVERY_RESPONSE.put(SMS_STATUS_DND, "NCPR");
+    }
+
+
+    // recruiter Access Level
+    public static final Integer RECRUITER_ACCESS_LEVEL_OPEN = 0;
+    public static final Integer RECRUITER_ACCESS_LEVEL_PRIVATE = 1;
+
+    // candidate Access Level
+    public static final int CANDIDATE_ACCESS_LEVEL_OPEN = 0;
+    public static final int CANDIDATE_ACCESS_LEVEL_PRIVATE = 0; // TODO change it to 1 after testing
 }

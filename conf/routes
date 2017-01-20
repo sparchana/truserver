@@ -156,7 +156,7 @@ GET         /logoutRecruiter                                              contro
 GET         /checkRecruiterSession                                        controllers.RecruiterController.checkRecruiterSession()
 GET         /getRecruiterProfileInfo                                      controllers.RecruiterController.getRecruiterProfileInfo()
 GET         /recruiter/profile                                            controllers.RecruiterController.recruiterEditProfile()
-GET         /recruiter/candidateSearch                                    controllers.RecruiterController.recruiterCandidateSearch()
+GET         /recruiter/candidateSearch                                    controllers.RecruiterController.recruiterCandidateSearch(jpId: java.lang.Long ?= null)
 GET         /recruiter/allRecruiterJobPosts                               controllers.RecruiterController.renderAllRecruiterJobPosts
 GET         /recruiter/unlockedCandidates                                 controllers.RecruiterController.renderAllUnlockedCandidates
 GET         /recruiter/jobApplicants/:id                                  controllers.RecruiterController.renderAllApplications(id : Long)
@@ -199,7 +199,7 @@ GET         /navBarLoggedIn                                               contro
 GET         /footer                                                       controllers.Application.renderPageFooter()
 GET         /jobPostCardView                                              controllers.Application.renderJobPostCards()
 GET         /pageNotFound                                                 controllers.Application.pageNotFound()
-GET         /jobs/:urlString                                              controllers.Application.renderJobRelatedPages( urlString: String)
+GET         /jobs/:urlString                                              controllers.Application.renderJobRelatedPages( urlString: String, cid:java.lang.Long ?=null, key:String ?=null)
 GET         /job/:getJobsPageContentString                                controllers.Application.getJobsPageContent( getJobsPageContentString: String,i:java.lang.Long ?=null)
 
 # Both support and user
@@ -231,6 +231,7 @@ POST        /getAllInterviewNotGoingReasons                               contro
 POST        /getAllCandidateETA                                           controllers.Application.getAllCandidateETA()
 POST        /getAllNotSelectedReasons                                     controllers.Application.getAllNotSelectedReasons()
 POST        /getJobPostInfo/:id/:isSupport                                controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
+POST        /getJobPostFilterData/:id                                     controllers.Application.getJobPostFilterData(id : Long)
 
 # 3rd Party API
 # ~~~~~~~~~~~~~
@@ -302,6 +303,7 @@ GET         /api/test/testScheduler/                                      contro
 GET         /testNotification                                             controllers.TestController.testnotification()
 GET         /convertOldData                                               controllers.TestController.convertOldData()
 GET         /testQueue                                                    controllers.TestController.testQueue()
+GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
 
 # Scrap API
 # ~~~~~~~~~~~~~

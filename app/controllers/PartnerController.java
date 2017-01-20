@@ -219,7 +219,7 @@ public class PartnerController {
 
                     //if the partner is a private partner
                     if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
-                        existingCandidate.setCandidateIsPrivate(true);
+                        existingCandidate.setCandidateAccessLevel(ServerConstants.CANDIDATE_ACCESS_LEVEL_PRIVATE);
                         existingCandidate.update();
 
                         //creating entry in CandidateToCompany table
@@ -395,24 +395,19 @@ public static Result checkExistingCompany(String CompanyCode) {
     public static Result getCandidateMatchingJobs(long id) {
         Candidate existingCandidate = Candidate.find.where().eq("candidateId", id).findUnique();
         if(existingCandidate != null){
-            Boolean isPrivate = false;
             List<JobPost> matchingJobList = new ArrayList<>();
             if (session().get("partnerId") != null) {
                 Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
                 if(partner != null){
                     if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
-                        isPrivate = true;
-                        matchingJobList = JobSearchService
-                                .getAllJobsForCandidate(FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()), true);
-                        //TODO: discuss and clarify if we want to show all the matching 'private' jobs or all the 'private' jobs
-                        // if show all the private jobs of that company, uncomment the below line
 
-/*                        Company company = Company.find.where().eq("CompanyId", partner.getCompany().getCompanyId()).findUnique();
-                        matchingJobList = JobPostDAO.getAllActiveHotNonPrivateJobsPostOfCompany(company);*/
+                        //fetching all the private jobs posted by the recruiter of the given company
+                        Company company = Company.find.where().eq("CompanyId", partner.getCompany().getCompanyId()).findUnique();
+                        matchingJobList = JobPostDAO.getAllActiveHotNonPrivateJobsPostOfCompany(company);
                     } else{
-                        isPrivate = false;
                         matchingJobList = JobSearchService
-                                .getAllJobsForCandidate(FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()), false);
+                                .getAllJobsForCandidate(FormValidator.convertToIndianMobileFormat(
+                                        existingCandidate.getCandidateMobile()), ServerConstants.JOB_POST_TYPE_NOT_PRIVATE);
                     }
                 }
             }

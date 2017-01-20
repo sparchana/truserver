@@ -1,12 +1,10 @@
 package controllers;
 
-import dao.CandidateDAO;
-import api.http.httpRequest.Recruiter.AddRecruiterRequest;
-import dao.JobPostDAO;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
+import api.http.httpRequest.Recruiter.AddRecruiterRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlotDetail;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
@@ -14,6 +12,7 @@ import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.SelectedCandidateRequest;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
+import api.http.httpResponse.Recruiter.JobPostFilterResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
@@ -23,19 +22,24 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
-import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
+import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.*;
+import dao.CandidateDAO;
 import dao.CompanyDAO;
+import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
-import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.Intelligence.RelatedJobRole;
 import models.entity.OM.*;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
-import models.util.*;
+import models.util.ParseCSV;
+import models.util.SmsUtil;
+import models.util.UrlValidatorUtil;
+import models.util.Util;
 import play.Logger;
 import play.api.Play;
 import play.data.Form;
@@ -1314,8 +1318,42 @@ public class Application extends Controller {
 
     public static Result renderJobPostCards() { return ok(views.html.Fragment.hot_jobs_card_view.render());}
     public static Result pageNotFound() { return ok(views.html.page_not_found.render());}
-    public static Result renderJobRelatedPages(String urlString){
-        
+    public static Result renderJobRelatedPages(String urlString, Long candidateId, String key){
+        if(candidateId != null && key != null) {
+            boolean invalidParams = false;
+            Candidate existingCandidate = CandidateDAO.getById(candidateId);
+            if(existingCandidate != null) {
+
+                Logger.info("candidate exists");
+
+                // adding session details
+                Auth existingAuth = Auth.find.where().eq("candidateId", candidateId).findUnique();
+                if(existingAuth != null) {
+                    Logger.info("auth exists");
+                    // boolean isKeyValid = key.equals(Util.md5(existingAuth.getOtp() + ""));
+                    boolean isKeyValid = key.equals((existingAuth.getOtp() + ""));
+                    if (isKeyValid ) {
+                        Logger.info("Added session for Sms link based loggin ");
+                        AuthService.addSession(existingAuth, existingCandidate);
+                        // update auth otp after login
+                        // TODO in front end clear location.search , after loading
+                        existingAuth.setOtp(Util.generateOtp());
+                        existingAuth.update();
+                    } else {
+                        invalidParams = true;
+                    }
+                } else {
+                    invalidParams = true;
+                }
+            } else {
+                invalidParams = true;
+            }
+
+            if(invalidParams) {
+                session().clear();
+                return redirect("/pageNotFound");
+            }
+        }
         UrlValidatorUtil urlValidatorUtil = new UrlValidatorUtil();
         UrlParameters urlParameters = urlValidatorUtil.parseURL(urlString);
 
@@ -1684,8 +1722,8 @@ public class Application extends Controller {
                     matchingCandidateRequest.getJobPostEducationIdList(),
                     matchingCandidateRequest.getJobPostLocalityIdList(),
                     matchingCandidateRequest.getJobPostLanguageIdList(),
-                    matchingCandidateRequest.getJobPostDocumentList(),
-                    matchingCandidateRequest.getJobPostAssetList(),
+                    matchingCandidateRequest.getJobPostDocumentIdList(),
+                    matchingCandidateRequest.getJobPostAssetIdList(),
                     matchingCandidateRequest.getDistanceRadius())));
         }
         return badRequest();
@@ -2374,12 +2412,88 @@ public class Application extends Controller {
 
     }
 
+    /**
+     *
+     * @param jobPostId
+     * @return
+     *
+     *  This class provides minimal jobp post data required to fill filters of
+     * private recruiter 'search candidate page'
+     *
+     */
+    public static Result getJobPostFilterData(Long jobPostId) {
+        if(jobPostId == null)
+            return badRequest();
+
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
+
+        if(jobPost == null)
+            return badRequest();
+
+        JobPostFilterResponse response = new JobPostFilterResponse();
+
+        response.setJobPostId(jobPost.getJobPostId());
+        response.setGender(jobPost.getGender());
+        response.setMaxSalary(jobPost.getJobPostMaxSalary());
+        response.setJobPostJobRoleId(jobPost.getJobRole().getJobRoleId());
+        response.setJobPostJobRoleTitle(jobPost.getJobRole().getJobName());
+        // add document
+        if(jobPost.getJobPostDocumentRequirements() != null
+                && jobPost.getJobPostDocumentRequirements().size() > 0) {
+            response.setJobPostDocumentIdList(new ArrayList<>());
+            for(JobPostDocumentRequirement documentRequirement : jobPost.getJobPostDocumentRequirements()){
+                response.getJobPostDocumentIdList().add( documentRequirement.getIdProof().getIdProofId());
+            }
+        }
+
+        // add asset
+        if(jobPost.getJobPostAssetRequirements() != null
+                && jobPost.getJobPostAssetRequirements().size() > 0) {
+            response.setJobPostAssetIdList(new ArrayList<>());
+            for(JobPostAssetRequirement assetRequirement : jobPost.getJobPostAssetRequirements()){
+                response.getJobPostAssetIdList().add(assetRequirement.getAsset().getAssetId());
+            }
+        }
+
+
+        // add language
+        if(jobPost.getJobPostLanguageRequirements() != null
+                && jobPost.getJobPostLanguageRequirements().size() > 0) {
+            response.setJobPostLanguageIdList(new ArrayList<>());
+            for(JobPostLanguageRequirement languageRequirement : jobPost.getJobPostLanguageRequirements()){
+                response.getJobPostLanguageIdList().add( languageRequirement.getLanguage().getLanguageId());
+            }
+        }
+
+         // add locality
+        if(jobPost.getJobPostToLocalityList() != null
+                && jobPost.getJobPostToLocalityList().size() > 0) {
+            response.setJobPostLocalityIdList(new ArrayList<>());
+            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
+                response.getJobPostLocalityIdList().add( jobPostToLocality.getLocality().getLocalityId());
+            }
+        }
+
+        // add experience
+        if(jobPost.getJobPostExperience() != null) {
+            response.setJobPostExperienceId(jobPost.getJobPostExperience().getExperienceId());
+        }
+
+        // add education
+        if(jobPost.getJobPostEducation() != null) {
+            response.setJobPostEducationId(jobPost.getJobPostEducation().getEducationId());
+        }
+
+
+        return ok(toJson(response));
+    }
+
     public static Result generateCompanyCode() {
         List<Company> companyList = CompanyDAO.getCompaniesWithoutCompanyCode();
-        for(Company company : companyList){
+        for (Company company : companyList) {
             company.setCompanyCode(Util.generateCompanyCode(company));
             company.update();
         }
         return ok("Done");
     }
-}
+    }

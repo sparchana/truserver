@@ -27,7 +27,7 @@ public class JobPostDAO {
 
     public static List<JobPost> getAllActiveHotNonPrivateJobsPostOfCompany(Company company) {
         return JobPost.find.where()
-                .eq("JobPostIsPrivate", ServerConstants.JOB_POST_TYPE_NOT_PRIVATE)
+                .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_NOT_PRIVATE)
                 .eq("jobPostIsHot", "1")
                 .eq("CompanyId", company.getCompanyId())
                 .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)

@@ -48,14 +48,15 @@ create index ix_candidate_to_company_candidateid on candidate_to_company (candid
 alter table candidate_to_company add constraint fk_candidate_to_company_companyid foreign key (companyid) references company (companyid) on delete restrict on update restrict;
 create index ix_candidate_to_company_companyid on candidate_to_company (companyid);
 
-
-alter table candidate add column candidateisprivate int signed not null default 0;
-alter table jobpost add column jobpostisprivate int signed not null default 0;
 alter table company add column companycode varchar(20) null;
 alter table partner add column companyid bigint signed;
 
 alter table partner add constraint fk_partner_companyid foreign key (companyid) references company (companyid) on delete restrict on update restrict;
 create index ix_partner_companyid on partner (companyid);
+
+alter table jobpost add column job_post_access_level int(2) signed not null DEFAULT 0;
+alter table recruiterprofile add column recruiter_access_level int(2) signed not null DEFAULT 0;
+alter table candidate add column candidate_access_level int(2) signed not null DEFAULT 0;
 
 # --- !Downs
 
@@ -85,8 +86,10 @@ drop index ix_partner_companyid on partner;
 
 alter table partner drop column companyid;
 alter table company drop column companycode;
-alter table candidate drop column candidateisprivate;
-alter table jobpost drop column jobpostisprivate;
+
+alter table jobpost drop column job_post_access_level ;
+alter table recruiterprofile drop column recruiter_access_level;
+alter table candidate drop column candidate_access_level;
 
 drop table if exists sms_report;
 drop table if exists sms_delivery_status;

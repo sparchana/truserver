@@ -169,9 +169,6 @@ public class Candidate extends Model {
     @Column(name = "CandidateExperienceLetter", columnDefinition = "bit null")
     private Boolean candidateExperienceLetter;
 
-    @Column(name = "CandidateIsPrivate", columnDefinition = "int signed not null default 0")
-    private Boolean candidateIsPrivate = false;
-
     @JsonManagedReference
     @JoinColumn(name = "candidateStatusDetailId", referencedColumnName = "candidateStatusDetailId")
     @OneToOne(cascade = CascadeType.ALL)
@@ -219,6 +216,9 @@ public class Candidate extends Model {
 
     @Column(name = "candidate_android_token", columnDefinition = "text null")
     private String candidateAndroidToken;
+
+    @Column(name = "candidate_access_level", columnDefinition = "int(2) signed not null default 0")
+    private int candidateAccessLevel;
 
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
@@ -666,11 +666,11 @@ public class Candidate extends Model {
         this.candidateScore = candidateScore;
     }
 
-    public Boolean getCandidateIsPrivate() {
-        return candidateIsPrivate;
+    public int getCandidateAccessLevel() {
+        return candidateAccessLevel;
     }
 
-    public void setCandidateIsPrivate(Boolean candidateIsPrivate) {
-        this.candidateIsPrivate = candidateIsPrivate;
+    public void setCandidateAccessLevel(int candidateAccessLevel) {
+        this.candidateAccessLevel = candidateAccessLevel;
     }
 }

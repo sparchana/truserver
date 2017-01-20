@@ -15,22 +15,27 @@ import com.amazonaws.services.importexport.model.Job;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import controllers.businessLogic.*;
+import controllers.businessLogic.JobService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
-import controllers.security.RecruiterSecured;
+import controllers.businessLogic.RecruiterService;
 import controllers.security.FlashSessionController;
+import controllers.security.RecruiterSecured;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
+import dao.RecruiterDAO;
+import dao.SmsReportDAO;
 import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.OM.JobPostWorkflow;
+import models.entity.OM.SmsReport;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
+import models.entity.Static.SmsDeliveryStatus;
 import models.util.SmsUtil;
 import notificationService.NotificationEvent;
 import notificationService.SMSEvent;
@@ -42,13 +47,14 @@ import java.io.IOException;
 import java.util.*;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
+import static api.ServerConstants.*;
+import static api.ServerConstants.SMS_STATUS_DND;
+import static api.ServerConstants.SMS_STATUS_PENDING;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterSearchCandidate;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.request;
 import static play.mvc.Controller.session;
-import static play.mvc.Results.badRequest;
-import static play.mvc.Results.ok;
-import static play.mvc.Results.redirect;
+import static play.mvc.Results.*;
 /**
  * Created by dodo on 4/10/16.
  */
@@ -165,7 +171,17 @@ public class RecruiterController {
     }
 
     @Security.Authenticated(RecruiterSecured.class)
-    public static Result recruiterCandidateSearch(){
+    public static Result recruiterCandidateSearch(Long jobPostId){
+        /* job post id is being used from url in js */
+        Long recruiterId = Long.valueOf(session().get("recruiterId"));
+        RecruiterProfile recruiterProfile = RecruiterDAO.findById(recruiterId);
+        if(recruiterProfile == null) {
+            return badRequest();
+        }
+
+        if(recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+            return ok(views.html.Recruiter.rmp.recruiter_candidate_search.render());
+        }
         return ok(views.html.Recruiter.recruiter_candidate_search.render());
     }
 
@@ -298,8 +314,10 @@ public class RecruiterController {
 
                                 Global.getmNotificationHandler().addToQueue(notificationEvent);
 
+                                //start checking sent sms delivery status
+                                checkDeliveryStatus();
                             } else{
-                                return ok(toJson('1'));
+                                return ok(toJson('0'));
                             }
                         } else{
                             // ordinary msg
@@ -308,11 +326,64 @@ public class RecruiterController {
                     }
                 }
 
+                if(multipleCandidateActionRequest.getJobPostId() != null){
+                    //start checking sent sms delivery status
+                    checkDeliveryStatus();
+                }
+
                 return ok(toJson('1'));
             }
         }
         // no recruiter session found
         return ok("-1");
+    }
+
+    public static void checkDeliveryStatus(){
+        new Thread(() -> {
+            try{
+                Thread.sleep(300000); //check after 5 minutes
+            } catch(InterruptedException e){
+                Logger.info("exception: " + e);
+            }
+
+            SmsDeliveryStatus status = SmsDeliveryStatus.find.where().eq("status_id", SMS_STATUS_PENDING).findUnique();
+            Boolean reRun = false;
+            if(status != null){
+                for(SmsReport report : SmsReportDAO.getAllSMSByStatus(status)){
+                    String response = SmsUtil.checkDeliveryReport(report.getSmsSchedulerId());
+                    response = response.substring(13, response.length() -4);
+                    Logger.info("Pinnacle Response :" + response);
+
+                    Integer statusId;
+                    if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_DELIVERED))){
+                        statusId = SMS_STATUS_DELIVERED;
+                    } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_UNDELIVERED))){
+                        statusId = SMS_STATUS_UNDELIVERED;
+                    } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_EXPIRED))){
+                        statusId = SMS_STATUS_EXPIRED;
+                    } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_DND))){
+                        statusId = SMS_STATUS_DND;
+                    } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_PENDING))){
+                        statusId = SMS_STATUS_PENDING;
+                        reRun = true;
+                    } else{
+                        statusId = SMS_STATUS_FAILED;
+                    }
+
+                    report.setSmsDeliveryStatus(SmsDeliveryStatus.find.where().eq("status_id", statusId).findUnique());
+                    report.update();
+                }
+
+                if(reRun){
+                    Logger.info("Re running the method since some");
+                    checkDeliveryStatus();
+                }
+
+            } else{
+                Logger.info("Sms delivery status static table empty");
+            }
+
+        }).start();
     }
 
     @Security.Authenticated(RecruiterSecured.class)
@@ -565,6 +636,7 @@ public class RecruiterController {
         if(session().get("recruiterId") != null) {
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
             if(recruiterProfile != null){
+                boolean isPrivate = recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE;
                 if (matchingCandidateRequest != null) {
                     Map<Long, CandidateWorkflowData> candidateSearchMap = JobPostWorkflowEngine.getCandidateForRecruiterSearch(
                             matchingCandidateRequest.getMaxAge(),
@@ -576,7 +648,10 @@ public class RecruiterController {
                             matchingCandidateRequest.getJobPostEducationIdList(),
                             matchingCandidateRequest.getJobPostLocalityIdList(),
                             matchingCandidateRequest.getJobPostLanguageIdList(),
-                            matchingCandidateRequest.getDistanceRadius());
+                            matchingCandidateRequest.getJobPostDocumentIdList(),
+                            matchingCandidateRequest.getJobPostAssetIdList(),
+                            matchingCandidateRequest.getDistanceRadius(),
+                            isPrivate);
 
                     //computing interactionResult values
                     String result = "Search Candidate. Total Candidates found: " + candidateSearchMap.size() +
@@ -618,6 +693,8 @@ public class RecruiterController {
                         // candidate lw salary L->H
                         Collections.sort(listToBeReturned,  new SalaryComparatorLtoH());
                     }
+
+                    Logger.info("total list size: " + listToBeReturned.size());
 
                     //getting limited results
                     for (CandidateWorkflowData val : listToBeReturned) {
@@ -708,6 +785,16 @@ public class RecruiterController {
 
     @Security.Authenticated(RecruiterSecured.class)
     public static Result renderAllRecruiterJobPosts() {
+        Long recruiterId = Long.valueOf(session().get("recruiterId"));
+        RecruiterProfile recruiterProfile = RecruiterDAO.findById(recruiterId);
+        if(recruiterProfile == null) {
+            return badRequest();
+        }
+
+        if(recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+            return ok(views.html.Recruiter.rmp.recruiter_my_jobs.render());
+        }
+
         return ok(views.html.Recruiter.recruiter_my_jobs.render());
     }
     public static Result recruiterNavbar() {

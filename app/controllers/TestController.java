@@ -3,22 +3,28 @@ package controllers;
 import api.ServerConstants;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerManager;
-import controllers.scheduler.task.EODDebitCreditInterviewCreditTask;
+import dao.SmsReportDAO;
 import models.entity.Candidate;
+import models.entity.OM.SmsReport;
 import models.entity.Recruiter.RecruiterProfile;
-import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
+import models.entity.Static.SmsDeliveryStatus;
 import models.util.NotificationUtil;
+import models.util.SmsUtil;
 import models.util.Validator;
 import notificationService.EmailEvent;
 import notificationService.NotificationEvent;
 import notificationService.SMSEvent;
+import play.Logger;
 import play.mvc.Controller;
 import play.mvc.Result;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+
+import static api.ServerConstants.*;
 import static play.libs.Json.toJson;
 
 /**
@@ -58,11 +64,13 @@ public class TestController extends Controller{
     }
 
     public static Result testnotification(){
-        Candidate candidate = Candidate.find.where().eq("CandidateMobile", "+918971739586").findUnique();
+/*        Candidate candidate = Candidate.find.where().eq("CandidateMobile", "+918971739586").findUnique();
         if(candidate.getCandidateAndroidToken() != null){
             NotificationUtil.addFcmToNotificationQueue("Hi", "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_JOB_DETAIL, 967L);
             return ok("1");
-        }
+        }*/
+        RecruiterController.checkDeliveryStatus();
+
         return ok("Null token!");
 
     }
@@ -75,6 +83,10 @@ public class TestController extends Controller{
             Global.getmNotificationHandler().addToQueue(n2);
         }
         return ok("-");
+    }
+
+    public static Result testNewPS(Long jobPostId, Long candidateId) {
+        return ok(toJson(JobPostWorkflowEngine.getJobPostVsCandidate(jobPostId, candidateId)));
     }
 
     public static Result convertOldData() {
