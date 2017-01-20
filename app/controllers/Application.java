@@ -2455,8 +2455,14 @@ public class Application extends Controller {
         if(jobPost.getJobPostToLocalityList() != null
                 && jobPost.getJobPostToLocalityList().size() > 0) {
             response.setJobPostLocalityIdList(new ArrayList<>());
+            response.setJobPostLocalityList(new ArrayList<>());
             for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
                 response.getJobPostLocalityIdList().add( jobPostToLocality.getLocality().getLocalityId());
+                response.getJobPostLocalityList().add(
+                        new JobPostFilterResponse.LocalityIdName(
+                            jobPostToLocality.getLocality().getLocalityId(),
+                            jobPostToLocality.getLocality().getLocalityName())
+                        );
             }
         }
 
