@@ -10,6 +10,7 @@ import api.http.httpResponse.AddJobPostResponse;
 import api.http.httpResponse.ApplyJobResponse;
 import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
+import api.http.httpResponse.interview.InterviewDateTime;
 import api.http.httpResponse.interview.InterviewResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Model;
@@ -25,6 +26,7 @@ import models.entity.Partner;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
 import models.util.EmailUtil;
+import models.util.InterviewUtil;
 import models.util.NotificationUtil;
 import models.util.SmsUtil;
 import play.Logger;
@@ -39,6 +41,8 @@ import java.util.*;
 import static api.InteractionConstants.*;
 import static controllers.businessLogic.InteractionService.createInteractionForNewJobPost;
 import static models.util.EmailUtil.sendRecruiterJobPostLiveEmail;
+import static models.util.InterviewUtil.getDayVal;
+import static models.util.InterviewUtil.getMonthVal;
 import static models.util.SmsUtil.sendRecruiterFreeJobPostingSms;
 import static models.util.SmsUtil.sendRecruiterJobPostActivationSms;
 import static play.mvc.Controller.session;
@@ -1325,5 +1329,64 @@ public class JobService {
                     NotificationUtil.sendJobAlertNotificationToCandidate(jobPost, candidateList.get(i), hasCredit);
             }
         }
+    }
+
+    public static Map<String, InterviewDateTime> getInterviewSlot(JobPost jobPost) {
+
+        if(jobPost == null){
+            return null;
+        }
+
+        Logger.info("inside getInterviewSlot");
+        Map<String, InterviewDateTime> interviewSlotMap = new LinkedHashMap<>();
+        // get today's date
+        Calendar newCalendar = Calendar.getInstance();
+        newCalendar.get(Calendar.YEAR);
+        newCalendar.get(Calendar.MONTH);
+        newCalendar.get(Calendar.DAY_OF_MONTH);
+        Date today = newCalendar.getTime();
+
+        int k;
+        // for those jobpost in which the auto confirm is marked as checked, we start line up from the next day
+        if(jobPost.getReviewApplication() == null || jobPost.getReviewApplication() == ServerConstants.REVIEW_APPLICATION_AUTO){
+            k = 1;
+        } else {
+            k = 2;
+        }
+        // generate interview slots for next 3 days
+        for (; k < 8; ++k) {
+            Logger.info("inside for loop");
+
+            Calendar c = Calendar.getInstance();
+            c.setTime(today);
+            c.add(Calendar.DATE, k);
+            Date future = c.getTime();
+
+            for (InterviewDetails details : jobPost.getInterviewDetailsList()) {
+                /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
+                String interviewDays = InterviewUtil.fixPrecedingZero(Integer.toBinaryString(details.getInterviewDays()));
+
+                Logger.info("inside for loop : interviewDays - " + interviewDays);
+
+                if (InterviewUtil.checkSlotAvailability(future, interviewDays)) {
+
+                    api.http.httpResponse.interview.InterviewTimeSlot timeSlot = new api.http.httpResponse.interview.InterviewTimeSlot();
+                    timeSlot.setSlotId(details.getInterviewTimeSlot().getInterviewTimeSlotId());
+                    timeSlot.setSlotTitle(details.getInterviewTimeSlot().getInterviewTimeSlotName());
+
+                    api.http.httpResponse.interview.InterviewDateTime interviewDateTime = new api.http.httpResponse.interview.InterviewDateTime();
+                    interviewDateTime.setInterviewTimeSlot(timeSlot);
+                    interviewDateTime.setInterviewDateMillis(future.getTime());
+
+                    String slotString = getDayVal(future.getDay())+ ", "
+                            + future.getDate() + " " + getMonthVal((future.getMonth() + 1))
+                            + " (" + details.getInterviewTimeSlot().getInterviewTimeSlotName() + ")" ;
+
+                    Logger.info("slotString: " + slotString);
+                    interviewSlotMap.put(slotString, interviewDateTime);
+                }
+            }
+        }
+        return interviewSlotMap;
     }
 }
