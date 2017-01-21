@@ -72,7 +72,7 @@ public class Application extends Controller {
     public static Result index() {
         String sessionId = session().get("sessionId");
         /**
-        * TODO need to change this, modify old partnerSecured to take new partnertFlow into consideration and properly annonate rest of the api end-points
+        * TODO need to change this, modify old partnerSecured to take new partnerFlow into consideration and properly annotate rest of the api end-points
         * */
         if(sessionId != null){
             String partnerId = session().get("partnerId");
@@ -1322,8 +1322,8 @@ public class Application extends Controller {
                 Auth existingAuth = Auth.find.where().eq("candidateId", candidateId).findUnique();
                 if(existingAuth != null) {
                     Logger.info("auth exists - ");
-                    // boolean isKeyValid = key.equals(Util.md5(existingAuth.getOtp() + ""));
-                    boolean isKeyValid = key.equals((existingAuth.getOtp() + ""));
+                     boolean isKeyValid = key.equals(Util.md5(existingAuth.getOtp() + ""));
+//                    boolean isKeyValid = key.equals((existingAuth.getOtp() + ""));
 //                    Logger.info("key: " + Util.md5(existingAuth.getAuthSessionId()));
 //                    boolean isKeyValid = key.equals(Util.md5(existingAuth.getAuthSessionId() + ""));
                     if (isKeyValid ) {

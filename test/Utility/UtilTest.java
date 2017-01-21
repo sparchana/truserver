@@ -40,7 +40,7 @@ public class UtilTest {
     public void setUp() throws Exception {
     }
 
-    public UtilTest(Long candidateId, Long jobPostId) {
+    public UtilTest(long candidateId, long jobPostId) {
         this.candidateId = candidateId;
         this.jobPostId = jobPostId;
         this.type = type;
@@ -49,7 +49,7 @@ public class UtilTest {
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                { 100019809, 958},
+                {87188371, 958},
         });
     }
 
