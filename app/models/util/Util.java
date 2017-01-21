@@ -1,8 +1,9 @@
 package models.util;
 
-import api.InteractionConstants;
-import api.ServerConstants;
-import controllers.businessLogic.InteractionService;
+import dao.CandidateDAO;
+import dao.JobPostDAO;
+import models.entity.Candidate;
+import models.entity.JobPost;
 import play.Logger;
 
 import java.math.BigInteger;
@@ -13,9 +14,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
-import static play.mvc.Controller.session;
-
 public class Util {
+    public static String BASE_URL = "https://trujobs.in/";
+
     private Util() {
     }
 
@@ -78,5 +79,28 @@ public class Util {
     public static Double RoundTo2Decimals(Double val) {
         DecimalFormat df2 = new DecimalFormat("##.##");
         return Double.valueOf(df2.format(val));
+    }
+
+    public static String generateApplyInShortUrl(Candidate candidate, JobPost jobPost){
+        StringBuilder stringBuilder = new StringBuilder();
+        if(candidate != null && jobPost != null) {
+            stringBuilder.append(BASE_URL);
+            stringBuilder.append("apply/inshort/");
+            stringBuilder.append(jobPost.getJobPostTitle().replaceAll("[^\\w\\s]","-").toLowerCase());
+            stringBuilder.append("-jobs-in-bangalore-at-");
+            stringBuilder.append(jobPost.getCompany().getCompanyName().replaceAll("[^\\w\\s]","-").toLowerCase());
+        }
+        return stringBuilder.toString();
+    }
+
+
+    public static String generateApplyInShortUrl(Long candidateId, Long jobPostId){
+        if(candidateId != null && jobPostId != null) {
+            Candidate candidate = CandidateDAO.getById(candidateId);
+            JobPost jobPost = JobPostDAO.findById(jobPostId);
+
+            return generateApplyInShortUrl(candidate, jobPost);
+        }
+        return null;
     }
 }
