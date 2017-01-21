@@ -12,11 +12,11 @@ import api.http.httpResponse.CandidateExtraData;
 import api.http.httpResponse.CandidateScoreData;
 import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Recruiter.InterviewTodayResponse;
+import api.http.httpResponse.Workflow.InterviewSlotPopulateResponse;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
+import api.http.httpResponse.Workflow.ShortJobApplyResponse;
 import api.http.httpResponse.Workflow.WorkflowResponse;
-import api.http.httpResponse.Workflow.smsJobApplyFlow.InterviewSlotPopulateResponse;
 import api.http.httpResponse.Workflow.smsJobApplyFlow.LocalityPopulateResponse;
-import api.http.httpResponse.Workflow.smsJobApplyFlow.ShortJobApplyResponse;
 import api.http.httpResponse.Workflow.smsJobApplyFlow.ShortPSPopulateResponse;
 import api.http.httpResponse.interview.InterviewResponse;
 import com.avaje.ebean.Ebean;
@@ -1188,7 +1188,7 @@ public class JobPostWorkflowEngine {
         applyResponse.setShortPSPopulateResponse(JobPostWorkflowEngine.getJobPostVsCandidate(jobPost, candidateId));
         applyResponse.setInterviewSlotPopulateResponse(
                 new InterviewSlotPopulateResponse(JobService.getInterviewSlot(jobPost),
-                RecruiterService.isInterviewRequired(jobPost)));
+                RecruiterService.isInterviewRequired(jobPost), null));
 
         RecruiterController.sanitizeJobPostData(jobPost);
         jobPost.setJobPostToLocalityList(new ArrayList<>());

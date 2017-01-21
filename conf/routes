@@ -231,6 +231,7 @@ POST        /getAllInterviewNotGoingReasons                               contro
 POST        /getAllCandidateETA                                           controllers.Application.getAllCandidateETA()
 POST        /getAllNotSelectedReasons                                     controllers.Application.getAllNotSelectedReasons()
 POST        /getJobPostInfo/:id/:isSupport                                controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
+POST        /getInterviewSlots/:id                                        controllers.Application.getInterviewSlots(id : Long)
 
 # 3rd Party API
 # ~~~~~~~~~~~~~

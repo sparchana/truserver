@@ -190,6 +190,9 @@ function processDataGenerateJobPostView(returnedData) {
                 spanStatus.style = "font-weight: 600;font-size:12px";
                 colJobStatus.appendChild(spanStatus);
 
+                var pauseDiv = document.createElement("div");
+                pauseDiv.style = "display: inline-block; margin: 0 2px 0 2px";
+
                 var pauseIconImg = document.createElement("img");
                 pauseIconImg.id = jobPost.jobPost.jobPostId + "_pause";
                 pauseIconImg.src = "/assets/recruiter/img/icons/pause.svg";
@@ -203,6 +206,18 @@ function processDataGenerateJobPostView(returnedData) {
                     jobPostObj = jobPost.jobPost;
                     openPauseInterviewModal();
                 };
+
+                pauseDiv.appendChild(pauseIconImg);
+                br = document.createElement("br");
+                pauseDiv.appendChild(br);
+
+                var optionName = document.createElement("span");
+                optionName.style = "font-size: 11px";
+                optionName.textContent = "Pause Job";
+                pauseDiv.appendChild(optionName);
+
+                var resumeDiv = document.createElement("div");
+                resumeDiv.style = "display: inline-block; margin: 0 2px 0 2px";
 
                 var resumeIconImg = document.createElement("img");
                 resumeIconImg.src = "/assets/recruiter/img/icons/resume.svg";
@@ -218,6 +233,19 @@ function processDataGenerateJobPostView(returnedData) {
                     resumeJobApplication();
                 };
 
+                resumeDiv.appendChild(resumeIconImg);
+                br = document.createElement("br");
+                resumeDiv.appendChild(br);
+
+                optionName = document.createElement("span");
+                optionName.style = "font-size: 11px";
+                optionName.textContent = "Resume Job";
+                resumeDiv.appendChild(optionName);
+
+
+                var stopDiv = document.createElement("div");
+                stopDiv.style = "display: inline-block; margin: 0 2px 0 2px";
+
                 var stopIconImg = document.createElement("img");
                 stopIconImg.src = "/assets/recruiter/img/icons/stop.svg";
                 stopIconImg.id = jobPost.jobPost.jobPostId + "_stop";
@@ -232,6 +260,16 @@ function processDataGenerateJobPostView(returnedData) {
                     stopJobApplication();
                 };
 
+
+                stopDiv.appendChild(stopIconImg);
+                br = document.createElement("br");
+                stopDiv.appendChild(br);
+
+                optionName = document.createElement("span");
+                optionName.style = "font-size: 11px";
+                optionName.textContent = "Close Job";
+                stopDiv.appendChild(optionName);
+
                 var statusName = document.createElement("div");
                 colJobStatus.appendChild(statusName);
 
@@ -239,47 +277,21 @@ function processDataGenerateJobPostView(returnedData) {
                     if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_NEW){
                         statusName.textContent = "Under review";
                         statusName.style = "color: #F4A407; margin-bottom: 2px; text-align: center";
-                        colJobStatus.appendChild(stopIconImg);
 
-                        var optionName = document.createElement("span");
-                        optionName.style = "font-size: 11px";
-                        optionName.textContent = "Close Job";
-                        colJobStatus.appendChild(optionName);
-
+                        colJobStatus.appendChild(stopDiv);
 
                     } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_ACTIVE){
                         statusName.textContent = "Active";
                         statusName.style = "color: #69CF37; margin-bottom: 2px; text-align: center";
-                        colJobStatus.appendChild(pauseIconImg);
 
-                        optionName = document.createElement("span");
-                        optionName.style = "font-size: 11px";
-                        optionName.textContent = "Pause Job";
-                        colJobStatus.appendChild(optionName);
-
-                        colJobStatus.appendChild(br);
-
-                        colJobStatus.appendChild(stopIconImg);
-                        optionName = document.createElement("span");
-                        optionName.style = "font-size: 11px";
-                        optionName.textContent = "Close Job";
-                        colJobStatus.appendChild(optionName);
+                        colJobStatus.appendChild(pauseDiv);
+                        colJobStatus.appendChild(stopDiv);
 
                     } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_PAUSED){
                         statusName.textContent = jobPost.jobPost.jobPostStatus.jobStatusName;
-                        colJobStatus.appendChild(resumeIconImg);
-                        optionName = document.createElement("span");
-                        optionName.style = "font-size: 11px";
-                        optionName.textContent = "Resume Job";
-                        colJobStatus.appendChild(optionName);
 
-                        colJobStatus.appendChild(br);
-
-                        colJobStatus.appendChild(stopIconImg);
-                        optionName = document.createElement("span");
-                        optionName.style = "font-size: 11px";
-                        optionName.textContent = "Close Job";
-                        colJobStatus.appendChild(optionName);
+                        colJobStatus.appendChild(resumeDiv);
+                        colJobStatus.appendChild(stopDiv);
 
                     } else{
                         statusName.textContent = jobPost.jobPost.jobPostStatus.jobStatusName;

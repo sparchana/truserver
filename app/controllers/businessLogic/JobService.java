@@ -10,7 +10,8 @@ import api.http.httpResponse.AddJobPostResponse;
 import api.http.httpResponse.ApplyJobResponse;
 import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
-import api.http.httpResponse.interview.*;
+import api.http.httpResponse.interview.InterviewDateTime;
+import api.http.httpResponse.interview.InterviewResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Model;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
@@ -1353,7 +1354,7 @@ public class JobService {
             k = 2;
         }
         // generate interview slots for next 3 days
-        for (; k < 5; ++k) {
+        for (; k < 8; ++k) {
 
             Calendar c = Calendar.getInstance();
             c.setTime(today);

@@ -14,6 +14,8 @@ import api.http.httpRequest.Workflow.applyInshort.ApplyInShortRequest;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
 import api.http.httpResponse.Workflow.smsJobApplyFlow.PostApplyInShortResponse;
+import api.http.httpResponse.Workflow.InterviewSlotPopulateResponse;
+import api.http.httpResponse.interview.InterviewResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
@@ -2414,5 +2416,24 @@ public class Application extends Controller {
 
         response.setStatus(PostApplyInShortResponse.Status.SUCCESS);
         return  ok(toJson(response));
+    }
+    public static Result getInterviewSlots(Long jobPostId) {
+        if (jobPostId == null) {
+            return badRequest();
+        }
+
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
+
+        if (jobPost == null) {
+            return badRequest();
+        }
+
+        InterviewResponse interviewResponse = RecruiterService.isInterviewRequired(jobPost);
+
+        InterviewSlotPopulateResponse response =
+                new InterviewSlotPopulateResponse(
+                        JobService.getInterviewSlot(jobPost), interviewResponse, jobPost);
+
+        return ok(toJson(response));
     }
 }
