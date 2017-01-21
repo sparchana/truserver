@@ -8,6 +8,7 @@ import java.util.Date;
 public class AddCandidateInterviewSlotDetail {
     public Integer timeSlot;
     public Date scheduledInterviewDate;
+    public Long scheduledInterviewDateInMillis;
 
     public Integer getTimeSlot() {
         return timeSlot;
@@ -18,10 +19,22 @@ public class AddCandidateInterviewSlotDetail {
     }
 
     public Date getScheduledInterviewDate() {
+        if(this.scheduledInterviewDateInMillis!= null && this.scheduledInterviewDate == null){
+            this.scheduledInterviewDate = new Date(this.scheduledInterviewDateInMillis);
+        }
         return scheduledInterviewDate;
     }
 
     public void setScheduledInterviewDate(Date scheduledInterviewDate) {
+
         this.scheduledInterviewDate = scheduledInterviewDate;
+    }
+
+    public Long getScheduledInterviewDateInMillis() {
+        return scheduledInterviewDateInMillis;
+    }
+
+    public void setScheduledInterviewDateInMillis(Long scheduledInterviewDateInMillis) {
+        this.scheduledInterviewDateInMillis = scheduledInterviewDateInMillis;
     }
 }

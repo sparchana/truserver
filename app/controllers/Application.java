@@ -1,12 +1,10 @@
 package controllers;
 
-import dao.CandidateDAO;
-import api.http.httpRequest.Recruiter.AddRecruiterRequest;
-import dao.JobPostDAO;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
+import api.http.httpRequest.Recruiter.AddRecruiterRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlotDetail;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
@@ -14,6 +12,8 @@ import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.SelectedCandidateRequest;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
+import api.http.httpResponse.Workflow.InterviewSlotPopulateResponse;
+import api.http.httpResponse.interview.InterviewResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
@@ -23,19 +23,26 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
-import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
+import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.*;
+import dao.CandidateDAO;
 import dao.CompanyDAO;
+import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
-import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.Intelligence.RelatedJobRole;
-import models.entity.OM.*;
+import models.entity.OM.JobApplication;
+import models.entity.OM.JobPreference;
+import models.entity.OM.JobToSkill;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
-import models.util.*;
+import models.util.ParseCSV;
+import models.util.SmsUtil;
+import models.util.UrlValidatorUtil;
+import models.util.Util;
 import play.Logger;
 import play.api.Play;
 import play.data.Form;
@@ -2392,5 +2399,25 @@ public class Application extends Controller {
 
         return ok(toJson(RecruiterService.expireCreditPack(addRecruiterRequest)));
 
+    }
+
+    public static Result getInterviewSlots(Long jobPostId) {
+        if(jobPostId == null) {
+            return badRequest();
+        }
+
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
+
+        if(jobPost == null ){
+            return badRequest();
+        }
+
+        InterviewResponse interviewResponse = RecruiterService.isInterviewRequired(jobPost);
+
+        InterviewSlotPopulateResponse response =
+                        new InterviewSlotPopulateResponse(
+                                JobService.getInterviewSlot(jobPost), interviewResponse, jobPost);
+
+        return ok(toJson(response));
     }
 }
