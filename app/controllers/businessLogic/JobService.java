@@ -1337,7 +1337,6 @@ public class JobService {
             return null;
         }
 
-        Logger.info("inside getInterviewSlot");
         Map<String, InterviewDateTime> interviewSlotMap = new LinkedHashMap<>();
         // get today's date
         Calendar newCalendar = Calendar.getInstance();
@@ -1355,7 +1354,6 @@ public class JobService {
         }
         // generate interview slots for next 3 days
         for (; k < 8; ++k) {
-            Logger.info("inside for loop");
 
             Calendar c = Calendar.getInstance();
             c.setTime(today);
@@ -1366,7 +1364,6 @@ public class JobService {
                 /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
                 String interviewDays = InterviewUtil.fixPrecedingZero(Integer.toBinaryString(details.getInterviewDays()));
 
-                Logger.info("inside for loop : interviewDays - " + interviewDays);
 
                 if (InterviewUtil.checkSlotAvailability(future, interviewDays)) {
 
@@ -1382,7 +1379,6 @@ public class JobService {
                             + future.getDate() + " " + getMonthVal((future.getMonth() + 1))
                             + " (" + details.getInterviewTimeSlot().getInterviewTimeSlotName() + ")" ;
 
-                    Logger.info("slotString: " + slotString);
                     interviewSlotMap.put(slotString, interviewDateTime);
                 }
             }
