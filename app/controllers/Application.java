@@ -62,6 +62,7 @@ import java.util.stream.Collectors;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static api.InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
+import static api.InteractionConstants.INTERACTION_TYPE_MAP;
 import static com.avaje.ebean.Expr.eq;
 import static play.libs.Json.toJson;
 
@@ -1310,6 +1311,11 @@ public class Application extends Controller {
     public static Result renderJobPostCards() { return ok(views.html.Fragment.hot_jobs_card_view.render());}
     public static Result pageNotFound() { return ok(views.html.page_not_found.render());}
     public static Result renderJobRelatedPages(String urlString, Long candidateId, String key){
+
+        UrlValidatorUtil urlValidatorUtil = new UrlValidatorUtil();
+        UrlParameters urlParameters = urlValidatorUtil.parseURL(urlString);
+
+
         boolean redirectToApplyInShort = false;
         if(candidateId != null && key != null) {
             boolean invalidParams = false;
@@ -1321,19 +1327,28 @@ public class Application extends Controller {
                 // adding session details
                 Auth existingAuth = Auth.find.where().eq("candidateId", candidateId).findUnique();
                 if(existingAuth != null) {
-                    Logger.info("auth exists - ");
-                     boolean isKeyValid = key.equals(Util.md5(existingAuth.getOtp() + ""));
-//                    boolean isKeyValid = key.equals((existingAuth.getOtp() + ""));
-//                    Logger.info("key: " + Util.md5(existingAuth.getAuthSessionId()));
-//                    boolean isKeyValid = key.equals(Util.md5(existingAuth.getAuthSessionId() + ""));
+
+                    boolean isKeyValid = key.equals(Util.md5(existingAuth.getOtp() + ""));
                     if (isKeyValid ) {
                         Logger.info("Added session for Sms link based login ");
                         AuthService.addSession(existingAuth, existingCandidate);
+
                         // update auth otp after login
-                        // TODO in front end clear location.search , after loading
                         existingAuth.setOtp(Util.generateOtp());
-//                        existingAuth.setAuthSessionId(UUID.randomUUID().toString());
                         existingAuth.update();
+
+                        String jobPostUUId = null;
+                        if(urlParameters!= null && urlParameters.getJobPostId() != null) {
+                            JobPost jobPost = JobPostDAO.findById(urlParameters.getJobPostId());
+                            if(jobPost != null){
+                                jobPostUUId = jobPost.getJobPostUUId();
+                            }
+                        }
+
+                        // create interaction for this event of candidate applying through this channel
+                        InteractionService.createInteractionForApplyInShort(
+                                existingCandidate.getCandidateUUId(),
+                                jobPostUUId);
 
                         redirectToApplyInShort = true;
                     } else {
@@ -1351,8 +1366,6 @@ public class Application extends Controller {
                 return redirect("/pageNotFound");
             }
         }
-        UrlValidatorUtil urlValidatorUtil = new UrlValidatorUtil();
-        UrlParameters urlParameters = urlValidatorUtil.parseURL(urlString);
 
         if (urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION_COMPANY_WITH_JOB_POST_ID) {
             String jobLocation = urlParameters.getJobLocation();

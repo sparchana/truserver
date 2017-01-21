@@ -431,4 +431,19 @@ public class InteractionService {
         );
         InteractionService.createInteraction(interaction);
     }
+
+    public static void createInteractionForApplyInShort(String objectAUUId, String objectBUUId) {
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                objectBUUId,
+                ServerConstants.OBJECT_TYPE_JOB_POST,
+                InteractionConstants.INTERACTION_TYPE_TRIED_JOB_APPLY_IN_SHORT,
+                InteractionConstants.INTERACTION_NOTE_BLANK,
+                INTERACTION_TYPE_MAP.get(InteractionConstants.INTERACTION_TYPE_TRIED_JOB_APPLY_IN_SHORT),
+                INTERACTION_CREATED_SELF,
+                INTERACTION_CHANNEL_CANDIDATE_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
+    }
 }
