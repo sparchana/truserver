@@ -42,6 +42,8 @@ import models.entity.Static.*;
 import models.util.SmsUtil;
 import models.util.Util;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tika.Tika;
+import org.apache.tika.mime.MimeTypes;
 import org.json.JSONException;
 import org.json.JSONObject;
 import play.Logger;
@@ -1618,6 +1620,28 @@ public class CandidateService
             return responseJson;
         }
 
+        Tika tika = new Tika();
+        try {
+            String fileContentType = tika.detect(resume);
+            Logger.info(fileName+" file type detected as "+fileContentType);
+            if(!fileContentType.toLowerCase().contains("application/msword") ||
+                    !fileContentType.toLowerCase().contains("application/vnd.openxmlformats-officedocument.wordprocessingml.document") ||
+                    !fileContentType.toLowerCase().contains("application/pdf") ||
+                    !fileContentType.toLowerCase().contains("text/plain")){
+                // invalid file type --> Only word, pdf, txt formats are supported
+                try {
+                    responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
+                    responseJson.put("msg","Invalid file format '"+fileContentType+"' detected (Only doc, docx, pdf, txt allowed");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return responseJson;
+                }
+                return responseJson;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         Candidate existingCandidate = null;
         if(candidateId > 0) {
             // we already have an existing candidate for this resume
@@ -2005,6 +2029,19 @@ public class CandidateService
                 }
                 if(candidateKnownLanguages.size() > 0) addSupportCandidateRequest.setCandidateLanguageKnown(candidateKnownLanguages);
             }
+
+            // Default locality to "Others" --> Locality ID 345
+            // this is required since every candidate is expected to have some locality
+            List<Integer> localityList = new ArrayList<>();
+            localityList.add(345);
+            addSupportCandidateRequest.setCandidateLocality(localityList);
+
+            // Default Job Role Preference to "Others" --> Job Role ID 34
+            // this is required since every candidate is expected to have some job role pref
+            List<Integer> jobRoleList = new ArrayList<>();
+            jobRoleList.add(34);
+            addSupportCandidateRequest.setCandidateJobPref(jobRoleList);
+
         }
         else if (existingCandidate != null) {
             addSupportCandidateRequest.setCandidateMobile(existingCandidate.getCandidateMobile());
@@ -2142,6 +2179,7 @@ public class CandidateService
 
         Candidate candidate = null;
         Boolean isNew = Boolean.FALSE;
+        Boolean isAlreadyParsed = Boolean.FALSE;
 
         // check if candidate is already known
         if(candidateResume.getCandidate() != null){
@@ -2150,6 +2188,8 @@ public class CandidateService
             if(candidateResume.getParsedResume()!= null && !candidateResume.getParsedResume().isEmpty()){
                 // this candidate's parsed resume is already available
                 Logger.info("Parsed resume for existing candidate with ID "+candidate.getCandidateId()+" already available!");
+                isAlreadyParsed = Boolean.TRUE;
+                /*
                 try {
                     responseJson.put("candidateExists",Boolean.TRUE);
                     responseJson.put("alreadyParsed",Boolean.TRUE);
@@ -2159,6 +2199,7 @@ public class CandidateService
                     e.printStackTrace();
                 }
                 return responseJson;
+*/
             }
             Logger.info("Updating resume for existing candidate with ID = "+candidate.getCandidateId());
         }
@@ -2251,7 +2292,8 @@ public class CandidateService
 
             try {
                 responseJson.put("candidateExists",Boolean.TRUE);
-                responseJson.put("alreadyParsed",Boolean.FALSE);
+                if(isAlreadyParsed) responseJson.put("alreadyParsed",Boolean.TRUE);
+                else responseJson.put("alreadyParsed",Boolean.FALSE);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -2477,7 +2519,8 @@ public class CandidateService
                                 case "Company":
                                     if(nextLine[i].toLowerCase() != "nil" ||
                                        nextLine[i].toLowerCase() != "no" ||
-                                       nextLine[i].toLowerCase() != "any"){
+                                       nextLine[i].toLowerCase() != "any" ||
+                                       nextLine[i].toLowerCase() != "any company"){
                                         List<AddSupportCandidateRequest.PastCompany> pastCompanyList = new ArrayList<>();
                                         AddSupportCandidateRequest.PastCompany pastCompany = new AddSupportCandidateRequest.PastCompany();
                                         pastCompany.setCompanyName(nextLine[i]);
@@ -2499,8 +2542,19 @@ public class CandidateService
                     }
 
                     // create candidate
-
                     if(isNew && addSupportCandidateRequest.getCandidateMobile() != null && !addSupportCandidateRequest.getCandidateMobile().isEmpty()){
+
+                        List<Integer> list = new ArrayList<>();
+                        if(addSupportCandidateRequest.getCandidateJobPref() == null || addSupportCandidateRequest.getCandidateJobPref().size() == 0){
+                            // set job pref to Others --> Every candidate is expected to have some job pref
+                            list.add(34);
+                            addSupportCandidateRequest.setCandidateJobPref(list);
+                        }
+                        // set location to Others --> Every candidate is expected to have some location
+                        list.clear();
+                        list.add(345);
+                        addSupportCandidateRequest.setCandidateLocality(list);
+
                         Logger.info("Add support candidate request : "+ toJson(addSupportCandidateRequest));
                         CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
                                 InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE,

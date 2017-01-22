@@ -2399,7 +2399,9 @@ public class Application extends Controller {
             Logger.info("Error while mapping from request to HireWandResponse"+e.getMessage());
             return internalServerError();
         }
-        if(hireWandResponse != null){
+        if(hireWandResponse != null &&
+                hireWandResponse.getStatus()!=null &&
+                hireWandResponse.getStatus().toLowerCase().contains("success")){
             // mapped successfully
             Logger.info("Successfully mapped json to hireWandResponse");
             // keep a copy of the raw profile string
@@ -2426,10 +2428,19 @@ public class Application extends Controller {
             }
         }
         else{
-            Logger.info("Failed to map json to hireWandResponse");
-            return internalServerError();
+            if(hireWandResponse == null){
+                Logger.info("Failed to map json to hireWandResponse");
+                return internalServerError();
+            }
+            else if (hireWandResponse.getStatus()!=null &&
+                    !hireWandResponse.getStatus().toLowerCase().contains("success")){
+                Logger.info("hireWandResponse returned status = "+hireWandResponse.getStatus());
+                return ok();
+            }
         }
+        return ok();
     }
+
     @Security.Authenticated(PartnerInternalSecured.class)
     public static Result uploadCandidates() {
         return ok(views.html.upload_candidate_excel.render());
