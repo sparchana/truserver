@@ -2253,6 +2253,7 @@ public class CandidateService
 
         Long candidateId = 0L;
         String candidateName = "";
+        String candidateMobile = "";
 
         // no candidate found... Create
         if(candidate == null) {
@@ -2270,6 +2271,7 @@ public class CandidateService
             // check mobile number is as per required format before proceeding
             if(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()) != null){
                 // create/update candidate
+                candidateMobile = addSupportCandidateRequest.getCandidateMobile();
                 Logger.info("About to call CandidateService.createCandidateProfile");
 
                 CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
@@ -2322,6 +2324,7 @@ public class CandidateService
             // get candidate Id, Name
             candidateId = candidate.getCandidateId();
             candidateName = candidate.getCandidateFirstName();
+            candidateMobile = candidate.getCandidateMobile();
         }
 
         Logger.info("New/Updated candidateId ="+candidateId);
@@ -2395,17 +2398,21 @@ public class CandidateService
 
         // was this resume uploaded by a partner?
         if(candidateResume.getCreatedBy().toLowerCase().contains("(partner)")){
+            String partnerId = candidateResume.getCreatedBy().split("\\(")[0];
+            Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
+
+            // to associate partner and candidate - if partner create a candidate by uploading resume
+            PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(candidateMobile));
+
             try {
                 // is there any resume that was uploaded AFTER this resume by this partner?
                 Integer c = CandidateResume.find.where()
                         .and(Expr.eq("createdBy", candidateResume.getCreatedBy()), Expr.gt("createTimestamp", candidateResume.getCreateTimestamp()))
                         .findRowCount();
+
                 if (c == 0) {
 
                     // send info SMS informing that uploaded resumes have been processed
-                    String partnerId = candidateResume.getCreatedBy().split("\\(")[0];
-                    Partner partner = Partner.find.where().eq("partnerId", partnerId).findUnique();
-                    // send SMS
                     Logger.info("Sending SMS to partner : name = " + partner.getPartnerFirstName() + " mobile = "+partner.getPartnerMobile() );
                     SmsUtil.resumeUploadStatusToPartner(partner.getPartnerFirstName(),partner.getPartnerMobile());
                 }

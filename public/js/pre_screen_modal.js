@@ -1135,11 +1135,11 @@ function constructPreScreenBodyContainer(returnedData, customD, isSupport) {
     var container = $('<div class="'+customD.container.className+'" id="pre_screen_container_row"></div>');
 
     var minReqTableContainer = $('<div id="minReqTable" class="'+customD.table.mainTable.minReqTable.className+'"></div>');
-    container.append('<h4 class="mdl-shadow--2dp" style="'+customD.table.mainTable.titleStyle+'">'+customD.table.mainTable.title+'</h4>');
+    container.append('<h4 class="mdl-shadow--2dp" data-toggle="collapse" href="#minReqTable"  style="'+customD.table.mainTable.titleStyle+'">'+customD.table.mainTable.title+'<i class="material-icons pull-right">keyboard_arrow_down</i></h4>');
     container.append(minReqTableContainer);
 
-    var otherReqTableContainer = $('<div id="otherReqTable" class="'+customD.table.mainTable.minReqTable.className+'">></div>');
-    container.append('<h4 class="mdl-shadow--2dp" style="'+customD.table.otherTable.titleStyle+'">'+customD.table.otherTable.title+'</h4>');
+    var otherReqTableContainer = $('<div id="otherReqTable" class="'+customD.table.mainTable.minReqTable.className+'"></div>');
+    container.append('<h4 class="mdl-shadow--2dp" data-toggle="collapse" href="#otherReqTable" style="'+customD.table.otherTable.titleStyle+'">'+customD.table.otherTable.title+'<i class="material-icons pull-right">keyboard_arrow_down</i></h4>');
     container.append(otherReqTableContainer);
 
     // minReqTable
@@ -1254,7 +1254,7 @@ function constructPreScreenBodyContainer(returnedData, customD, isSupport) {
     otherReqTableContainer.append(otherTable);
 
 
-    var splitDiv = $('<div class="row" style="margin-top: 20px"></div>');
+    var splitDiv = $('<div class="mdl-grid--no-spacing " style="margin-top: 20px"></div>');
 
     if(customD.textContainers.visibility){
         if(customD.textContainers.minReqContainer.visibility){
@@ -1262,6 +1262,8 @@ function constructPreScreenBodyContainer(returnedData, customD, isSupport) {
             var minReqContainer = document.createElement("div");
             minReqContainer.className = customD.textContainers.minReqContainer.className;
             minReqContainer.id = "minReqContainer";
+            minReqContainer.style = "margin:0";
+
             var minReqTextArea = document.createElement("textarea");
             minReqTextArea.className = "form-control mdl-shadow--2dp";
             minReqTextArea.rows = "5";
