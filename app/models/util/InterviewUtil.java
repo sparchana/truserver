@@ -1,5 +1,8 @@
 package models.util;
 
+import api.ServerConstants;
+
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -45,6 +48,7 @@ public class InterviewUtil {
     }
 
     public static boolean checkSlotAvailability(Date x, String interviewDays) {
+
         if(x.getDay() == 1 && interviewDays.charAt(0) == '1') { //monday
             return true;
         } else if(x.getDay() == 2 && interviewDays.charAt(1) == '1') { //tue
@@ -60,6 +64,7 @@ public class InterviewUtil {
         } else if(x.getDay() == 0 && interviewDays.charAt(6) == '1') { //sun
             return true;
         } else {
+
             return  false;
         }
     }

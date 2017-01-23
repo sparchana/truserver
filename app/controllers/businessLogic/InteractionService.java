@@ -87,7 +87,6 @@ public class InteractionService {
 
     public static void createInteraction(Interaction interaction){
         Interaction.addInteraction(interaction);
-        Logger.info("Interaction saved");
     }
 
     public static void createInteractionForLoginCandidateViaWebsite(String objectAUUId) {
@@ -145,7 +144,7 @@ public class InteractionService {
         }
     }
 
-    public static void createInteractionForActivateCandidate(String objectAUUId, boolean isSupport) {
+    public static void createInteractionForActivateCandidate(String objectAUUId, boolean isSupport, String supportUserName) {
         if(isSupport){
             Interaction interaction = new Interaction(
                     objectAUUId,
@@ -153,7 +152,7 @@ public class InteractionService {
                     InteractionConstants.INTERACTION_TYPE_CANDIDATE_ACTIVATED,
                     InteractionConstants.INTERACTION_NOTE_BLANK,
                     InteractionConstants.INTERACTION_RESULT_CANDIDATE_ACTIVATED,
-                    session().get("sessionUsername"),
+                    supportUserName,
                     INTERACTION_CHANNEL_SUPPORT_WEBSITE
             );
             InteractionService.createInteraction(interaction);

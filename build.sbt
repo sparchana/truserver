@@ -58,4 +58,6 @@ libraryDependencies += "com.google.gcm" % "gcm-server" % "1.0.0"
 
 libraryDependencies += "org.apache.poi" % "poi-ooxml-schemas" % "3.11"
 
+libraryDependencies += "org.apache.tika" % "tika-parsers" % "1.4"
+
 libraryDependencies += evolutions

@@ -67,6 +67,9 @@ public class ServerConstants {
 
     public static final int JOB_STATUS_NEW= 1;
     public static final int JOB_STATUS_ACTIVE= 2;
+    public static final int JOB_STATUS_DEACTIVATED= 3;
+    public static final int JOB_STATUS_CLOSED= 4;
+    public static final int JOB_STATUS_PAUSED= 5;
 
     public static final int OBJECT_TYPE_PRESCREEN_ATTEMPT= 10;
     public static final int OBJECT_TYPE_JOB_POST_WORKFLOW= 11;
@@ -171,6 +174,12 @@ public class ServerConstants {
     public static Integer REC_SORT_LASTEST_ACTIVE = 1;
     public static Integer REC_SORT_SALARY_H_TO_L = 2;
     public static Integer REC_SORT_SALARY_L_TO_H = 3;
+
+
+    /* Various App version */
+    public static int CURRENT_APP_VERSION_CODE = 8;
+    public static int DEACTIVATION_APP_VERSION_CODE = 8;
+    public static int APP_NEW_LOGIN_STATUS_VERSION_CODE = 8;
 
     static {
         devTeamMobile = new HashMap<String, String>();
@@ -335,6 +344,8 @@ public class ServerConstants {
     public static final int INTERVIEW_REQUIRED = 2;     // "INTERVIEW"
     public static final int ALREADY_APPLIED = 3;     // "JOB POST ALREADY APPLIED"
     public static final int APPLY = 4;     // "JOB POST ALREADY APPLIED"
+    public static final int INTERVIEW_CLOSED = 5;     // "INTERVIEW CLOSED FOR THE WEEK"
+    public static final int DEACTIVE = 6;     // "CANDIDATE DEACTIVATED"
 
     // rescheduled Interview status
     public static final int RESCHEULED_INTERVIEW_STATUS_ACCEPTED = 1;
@@ -367,10 +378,13 @@ public class ServerConstants {
     public static final int ANDROID_INTENT_ACTIVITY_REFER = 6;
     public static final int ANDROID_INTENT_ACTIVITY_FEEDBACK = 7;
     public static final int ANDROID_INTENT_ACTIVITY_INTERVIEW_TIPS = 8;
+    public static final int ANDROID_INTENT_ACTIVITY_JOB_DETAIL = 9;
 
     public static final String CREATED_BY = "Candidate";
 
     /* upload resume */
     public  static final int UPLOAD_RESUME_SUCCESS_STATUS = 1;
     public  static final int UPLOAD_RESUME_FAIL_STATUS = 0;
+    //reason type
+    public static final int FREE_JOB_APPLICATION_DEFAULT_LIMIT_IN_A_WEEK = 7;
 }

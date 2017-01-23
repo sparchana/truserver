@@ -8,8 +8,7 @@ import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlotDetail;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
-import api.http.httpResponse.CandidateSignUpResponse;
-import api.http.httpResponse.LoginResponse;
+import api.http.httpResponse.*;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import com.amazonaws.util.json.JSONException;
 import com.google.api.client.util.Base64;
@@ -22,6 +21,9 @@ import dao.staticdao.RejectReasonDAO;
 import dao.staticdao.TrudroidFeedbackReasonDAO;
 import in.trujobs.proto.*;
 import in.trujobs.proto.ApplyJobRequest;
+import in.trujobs.proto.ApplyJobResponse;
+import in.trujobs.proto.JobPostResponse;
+import in.trujobs.proto.ResetPasswordResponse;
 import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
@@ -87,13 +89,15 @@ public class TrudroidController {
             LoginResponse loginResponse = CandidateService.login(loginRequest.getCandidateLoginMobile(),
                     loginRequest.getCandidateLoginPassword(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
 
-
-            loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(loginResponse.getStatus()));
-            //TODO: to handle the new status in the new APK
-            //since we have a new status in the web version stating no auth record but candidate exists, android doesn't have
-            // hence we are setting status as 'no user' where the status is 'no auth'
-            if(loginResponse.getStatus() == LoginResponse.STATUS_NO_PASSWORD){
-                loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(LoginResponse.STATUS_NO_USER));
+            //app version check
+            if(pLogInRequest.getAppVersionCode() >= ServerConstants.APP_NEW_LOGIN_STATUS_VERSION_CODE){
+                loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(loginResponse.getStatus()));
+            } else{
+                if(loginResponse.getStatus() == LoginResponse.STATUS_NO_PASSWORD){
+                    loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(LoginResponse.STATUS_NO_USER));
+                } else{
+                    loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(loginResponse.getStatus()));
+                }
             }
 
             if (loginResponse.getStatus() == LoginResponse.STATUS_SUCCESS) {
@@ -253,13 +257,20 @@ public class TrudroidController {
                     InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID
             );
 
-            //TODO: to handle the new status in the new APK
-            //since we have a new status in the web version stating no auth record but candidate exists, android doesn't have
-            // hence we are setting status as 'no user' where the status is 'no auth'
-            if(resetPasswordResponse.getStatus() == LoginResponse.STATUS_NO_PASSWORD){
-                resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(LoginResponse.STATUS_NO_USER));
-            } else{
+            //app version check
+            if(pResetPasswordRequest.getAppVersionCode() >= ServerConstants.APP_NEW_LOGIN_STATUS_VERSION_CODE){
                 resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(resetPasswordResponse.getStatus()));
+            } else{
+                if(resetPasswordResponse.getStatus() == LoginResponse.STATUS_NO_PASSWORD){
+                    resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(LoginResponse.STATUS_NO_USER));
+                } else{
+                    if(resetPasswordResponse.getStatus() == LoginResponse.STATUS_NO_PASSWORD){
+                        resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(LoginResponse.STATUS_NO_USER));
+                    } else{
+                        resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(resetPasswordResponse.getStatus()));
+                    }
+
+                }
             }
 
             resetPasswordResponseBuilder.setOtp(resetPasswordResponse.getOtp());
@@ -403,18 +414,31 @@ public class TrudroidController {
             applyJobRequest.setScheduledInterviewDate(null);
             applyJobRequest.setTimeSlot(null);
             applyJobRequest.setCandidateMobile(FormValidator.convertToIndianMobileFormat(pApplyJobRequest.getCandidateMobile()));
+            applyJobRequest.setAppVersionCode(pApplyJobRequest.getAppVersionCode());
 
             //applying job
             api.http.httpResponse.ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
 
             //setting status response
-            applyJobResponseBuilder.setStatus(ApplyJobResponse.Status.valueOf(applyJobResponse.getStatus()));
+            if(applyJobResponse.getStatus() == api.http.httpResponse.ApplyJobResponse.STATUS_APPLICATION_LIMIT_REACHED){ //TODO: change these status values in APK
+                applyJobResponseBuilder.setStatus(ApplyJobResponse.Status.valueOf(4));
+            } else{
+                applyJobResponseBuilder.setStatus(ApplyJobResponse.Status.valueOf(applyJobResponse.getStatus()));
+            }
             applyJobResponseBuilder.setIsPreScreenAvailable(applyJobResponse.isPreScreenAvailable());
             applyJobResponseBuilder.setIsInterviewAvailable(applyJobResponse.isInterviewAvailable());
-            applyJobResponseBuilder.setCompanyName(applyJobResponse.getCompanyName());
-            applyJobResponseBuilder.setJobRoleTitle(applyJobResponse.getJobRoleTitle());
-            applyJobResponseBuilder.setJobTitle(applyJobResponse.getJobTitle());
-            applyJobResponseBuilder.setJobPostId(applyJobResponse.getJobPostId());
+            if(applyJobResponse.getCompanyName() != null) applyJobResponseBuilder.setCompanyName(applyJobResponse.getCompanyName());
+            if(applyJobResponse.getJobRoleTitle() != null) applyJobResponseBuilder.setJobRoleTitle(applyJobResponse.getJobRoleTitle());
+            if(applyJobResponse.getJobTitle() != null) applyJobResponseBuilder.setJobTitle(applyJobResponse.getJobTitle());
+            if(applyJobResponse.getJobPostId() != null) applyJobResponseBuilder.setJobPostId(applyJobResponse.getJobPostId());
+
+            if(applyJobResponse.isCandidateDeActive()) {
+                applyJobResponseBuilder.setIsCandidateDeActive(applyJobResponse.isCandidateDeActive());
+                applyJobResponseBuilder.setDeActiveHeadMessage(applyJobResponse.getDeActiveHeadMessage());
+                applyJobResponseBuilder.setDeActiveTitleMessage(applyJobResponse.getDeActiveTitleMessage());
+                applyJobResponseBuilder.setDeActiveBodyMessage(applyJobResponse.getDeActiveBodyMessage());
+            }
+
         } catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");
         }
@@ -423,6 +447,7 @@ public class TrudroidController {
             Logger.info("Invalid message");
             return badRequest();
         }
+
         return ok(Base64.encodeBase64String(applyJobResponseBuilder.build().toByteArray()));
     }
 
@@ -1036,7 +1061,7 @@ public class TrudroidController {
                 List<JobPostWorkFlowObject> jobApplicationListToReturn = new ArrayList<JobPostWorkFlowObject>();
 
                 //Getting list of all the job applications applied by a user from model
-                List<JobPostWorkflow> appliedJobsList = new JobPostWorkFlowDAO().candidateAppliedJobs(existingCandidate.getCandidateId());
+                List<JobPostWorkflow> appliedJobsList = JobPostWorkFlowDAO.candidateAppliedJobs(existingCandidate.getCandidateId());
 
                 //Job Application Object (Proto) to get all the job application applied by the candidate (list object)
                 JobPostWorkFlowObject.Builder jobPostWorkFlowObjBuilder = JobPostWorkFlowObject.newBuilder();
@@ -1101,6 +1126,7 @@ public class TrudroidController {
                         jobPostObjectBuilder.setRecruiterName("Not Available");
                         if(jwpf.getJobPost().getRecruiterProfile() != null){
                             jobPostObjectBuilder.setRecruiterName(jwpf.getJobPost().getRecruiterProfile().getRecruiterProfileName());
+                            jobPostObjectBuilder.setRecruiterMobile(jwpf.getJobPost().getRecruiterProfile().getRecruiterProfileMobile());
                         }
 
                         //salary

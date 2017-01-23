@@ -87,6 +87,12 @@ public class JobPostWorkflowEngine {
 
         Query<Candidate> query = Candidate.find.query();
 
+        /* only active candidates */
+        query.select("*")
+                .where()
+                .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
+                .query();
+
         // problem: all age is null/0 and dob is also null
         // select candidate falling under the specified age req
         if (maxAge != null && maxAge != 0) {
@@ -218,11 +224,6 @@ public class JobPostWorkflowEngine {
                 .notIn("candidateId", selectedCandidateIdList)
                 .query();
 
-        // should be an active candidate
-        query = query.select("*").fetch("candidateprofilestatus")
-                .where()
-                .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
-                .query();
 
         List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList, radius, true);
 
@@ -267,6 +268,12 @@ public class JobPostWorkflowEngine {
         Map<Long, CandidateWorkflowData> matchedCandidateMap = new LinkedHashMap<>();
 
         Query<Candidate> query = Candidate.find.query();
+
+        /* only active candidates */
+        query.select("*")
+                .where()
+                .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
+                .query();
 
         // select candidate whose totalExperience falls under the req exp
         if (experienceIdList != null && experienceIdList.size() > 0) {
@@ -1135,6 +1142,13 @@ public class JobPostWorkflowEngine {
         }
         populateResponse.setStatus(PreScreenPopulateResponse.Status.SUCCESS);
         populateResponse.setVisible(isCandidateDataMissing);
+        populateResponse.setInterviewRequired(false);
+        if(jobPost.getRecruiterProfile() != null){
+            if(jobPost.getRecruiterProfile().getInterviewCreditCount() > 0){
+                populateResponse.setInterviewRequired(true);
+            }
+        }
+
         return populateResponse;
     }
 
@@ -2500,20 +2514,7 @@ public class JobPostWorkflowEngine {
         if (jobPostWorkflowCurrent == null) {
             return 0;
         }
-        RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
-                .eq("RecruiterProfileId", jobPostWorkflowCurrent.getJobPost().getRecruiterProfile().getRecruiterProfileId())
-                .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
-                .orderBy().desc("create_timestamp").setMaxRows(1).findUnique();
 
-        if (recruiterCreditHistoryLatest == null) {
-            return -1;
-        }
-
-        if (recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() == null || recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() < 1) {
-            return -1;
-        }
-
-        Boolean toDeductCredit = false;
         Integer jwStatus;
         Integer interactionType;
         String interactionResult;
@@ -2523,13 +2524,11 @@ public class JobPostWorkflowEngine {
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_FEEDBACK_SELECTED;
             interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_SELECTED;
 
-            toDeductCredit = true;
         } else if (addFeedbackRequest.getFeedbackStatus() == ServerConstants.CANDIDATE_FEEDBACK_COMPLETE_REJECTED) {
             jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_REJECTED;
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_FEEDBACK_REJECTED;
             interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_REJECTED;
 
-            toDeductCredit = true;
         } else if (addFeedbackRequest.getFeedbackStatus() == ServerConstants.CANDIDATE_FEEDBACK_NO_SHOW) {
             jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW;
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_FEEDBACK_NO_SHOW;
@@ -2540,19 +2539,6 @@ public class JobPostWorkflowEngine {
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_FEEDBACK_NOT_QUALIFIED;
             interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_NOT_QUALIFIED;
 
-        }
-
-        if (toDeductCredit) {
-            RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
-            recruiterCreditHistory.setRecruiterProfile(jobPostWorkflowCurrent.getJobPost().getRecruiterProfile());
-            recruiterCreditHistory.setRecruiterCreditsAvailable(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() - 1);
-            recruiterCreditHistory.setRecruiterCreditsUsed(recruiterCreditHistoryLatest.getRecruiterCreditsUsed() + 1);
-            recruiterCreditHistory.setRecruiterCreditsAddedBy(ServerConstants.SELF_UNLOCKED_INTEVIEW);
-            recruiterCreditHistory.setUnits(-1);
-            recruiterCreditHistory.setRecruiterCreditCategory(RecruiterCreditCategory.find.where().eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK).findUnique());
-
-            //saving/updating all the rows
-            recruiterCreditHistory.save();
         }
 
         // Setting the existing jobpostworkflow status to confirmed
