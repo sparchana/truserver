@@ -182,7 +182,7 @@ var applyInShort = (function ($) {
 
                             appz.render.interviewSlotCard(appz.missingData.interviewSlotPopulateResponse.interviewSlotMap);
                         } else {
-                            $('#jobInterviewSlotCardDiv').show();
+                            $('#jobInterviewSlotCardDiv').hide();
                         }
 
                         console.log(appz.missingData);
@@ -956,7 +956,7 @@ var applyInShort = (function ($) {
                                 console.log("Show");
                                 $("#document_response_input_" + idProof.idProofId).css("display", "block");
                             }
-                            else {cadidate
+                            else {
                                 console.log("Hide");
                                 $("#document_response_input_" + idProof.idProofId).css("display", "none");
                                 $("#Invalid_" + idProof.idProofId).css("display", "none");
