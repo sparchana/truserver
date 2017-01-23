@@ -28,6 +28,8 @@ public class ShortPSPopulateResponse {
     private Long jobPostId;
     private Long candidateId;
 
+    private List<Integer> propertyIdList;
+
     public ShortPSPopulateResponse() {
 
         /* should not render in front end if its empty */
@@ -218,4 +220,11 @@ public class ShortPSPopulateResponse {
         this.candidateId = candidateId;
     }
 
+    public List<Integer> getPropertyIdList() {
+        return propertyIdList;
+    }
+
+    public void setPropertyIdList(List<Integer> propertyIdList) {
+        this.propertyIdList = propertyIdList;
+    }
 }

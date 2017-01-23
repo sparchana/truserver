@@ -1,19 +1,19 @@
 package controllers;
 
-import dao.CandidateDAO;
-import api.http.httpRequest.Recruiter.AddRecruiterRequest;
-import dao.JobPostDAO;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
+import api.http.httpRequest.Recruiter.AddRecruiterRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlotDetail;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.SelectedCandidateRequest;
+import api.http.httpRequest.Workflow.applyInshort.ApplyInShortRequest;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
+import api.http.httpResponse.Workflow.smsJobApplyFlow.PostApplyInShortResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
@@ -23,19 +23,26 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
-import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
+import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.*;
+import dao.CandidateDAO;
 import dao.CompanyDAO;
+import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
-import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.Intelligence.RelatedJobRole;
-import models.entity.OM.*;
+import models.entity.OM.JobApplication;
+import models.entity.OM.JobPreference;
+import models.entity.OM.JobToSkill;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
-import models.util.*;
+import models.util.ParseCSV;
+import models.util.SmsUtil;
+import models.util.UrlValidatorUtil;
+import models.util.Util;
 import play.Logger;
 import play.api.Play;
 import play.data.Form;
@@ -1307,21 +1314,24 @@ public class Application extends Controller {
             Candidate existingCandidate = CandidateDAO.getById(candidateId);
             if(existingCandidate != null) {
 
-                Logger.info("candidate exists");
+                Logger.info("candidate exists - ");
 
                 // adding session details
                 Auth existingAuth = Auth.find.where().eq("candidateId", candidateId).findUnique();
                 if(existingAuth != null) {
-                    Logger.info("auth exists");
+                    Logger.info("auth exists - ");
                     // boolean isKeyValid = key.equals(Util.md5(existingAuth.getOtp() + ""));
                     boolean isKeyValid = key.equals((existingAuth.getOtp() + ""));
+//                    Logger.info("key: " + Util.md5(existingAuth.getAuthSessionId()));
+//                    boolean isKeyValid = key.equals(Util.md5(existingAuth.getAuthSessionId() + ""));
                     if (isKeyValid ) {
-                        Logger.info("Added session for Sms link based loggin ");
+                        Logger.info("Added session for Sms link based login ");
                         AuthService.addSession(existingAuth, existingCandidate);
                         // update auth otp after login
                         // TODO in front end clear location.search , after loading
-//                        existingAuth.setOtp(Util.generateOtp());
-//                        existingAuth.update();
+                        existingAuth.setOtp(Util.generateOtp());
+//                        existingAuth.setAuthSessionId(UUID.randomUUID().toString());
+                        existingAuth.update();
 
                         redirectToApplyInShort = true;
                     } else {
@@ -2211,8 +2221,12 @@ public class Application extends Controller {
     @Security.Authenticated(SecuredUser.class)
     public static Result updateCandidateDetailsViaPreScreen(String propertyIdList, String candidateMobile, Long jobPostId) throws IOException {
         List<String> propertyIds = Arrays.asList(propertyIdList.split("\\s*,\\s*"));
+        List<Integer> propIdList = new ArrayList<>();
         if(propertyIdList == null || candidateMobile == null) {
             badRequest("Empty Values!");
+        }
+        for(String propId: propertyIds) {
+            propIdList.add(Integer.parseInt(propId));
         }
         if(candidateMobile !=null){
             Candidate candidate = CandidateService.isCandidateExists(candidateMobile);
@@ -2232,72 +2246,10 @@ public class Application extends Controller {
             newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
             UpdateCandidateDetail updateCandidateDetail = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateDetail.class);
-
             boolean isVerifyAadhaar = false;
 
-            for(String propId: propertyIds){
-                if (propId == null || propId.isEmpty()) continue;
-                Integer propertyId = Integer.parseInt(propId);
-                if (ServerConstants.PROPERTY_TYPE_DOCUMENT == propertyId) {
-                    UpdateCandidateDocument updateCandidateDocument = new UpdateCandidateDocument();
-                    updateCandidateDocument.setIdProofWithIdNumberList(updateCandidateDetail.getIdProofWithIdNumberList());
-                    isVerifyAadhaar = CandidateService.updateCandidateDocument(candidate, updateCandidateDocument);
-                } else if (ServerConstants.PROPERTY_TYPE_LANGUAGE == propertyId) {
+            isVerifyAadhaar = CandidateService.updateCandidateDetail(propIdList, candidate, updateCandidateDetail);
 
-                    UpdateCandidateLanguageKnown updateCandidateLanguageKnown = new UpdateCandidateLanguageKnown();
-
-                    updateCandidateLanguageKnown.setCandidateKnownLanguageList(updateCandidateDetail.getCandidateKnownLanguageList());
-                    CandidateService.updateCandidateLanguageKnown(candidate, updateCandidateLanguageKnown);
-                } else if (ServerConstants.PROPERTY_TYPE_ASSET_OWNED == propertyId) {
-                    UpdateCandidateAsset updateCandidateAsset = new UpdateCandidateAsset();
-                    updateCandidateAsset.setAssetIdList(updateCandidateDetail.getAssetIdList());
-
-                    CandidateService.updateCandidateAssetOwned(candidate, updateCandidateAsset);
-                } else if (ServerConstants.PROPERTY_TYPE_MAX_AGE == propertyId) {
-                    UpdateCandidateDob updateCandidateDob = new UpdateCandidateDob();
-
-                    updateCandidateDob.setCandidateDob(updateCandidateDetail.getCandidateDob());
-                    CandidateService.updateCandidateDOB(candidate, updateCandidateDob);
-                } else if (ServerConstants.PROPERTY_TYPE_EXPERIENCE == propertyId) {
-                    UpdateCandidateWorkExperience updateCandidateWorkExperience = new UpdateCandidateWorkExperience();
-
-                    updateCandidateWorkExperience.setCandidateTotalExperience(updateCandidateDetail.getCandidateTotalExperience());
-                    updateCandidateWorkExperience.setCandidateIsEmployed(updateCandidateDetail.getCandidateIsEmployed());
-                    updateCandidateWorkExperience.setExtraDetailAvailable(updateCandidateDetail.getExtraDetailAvailable());
-                    updateCandidateWorkExperience.setPastCompanyList(updateCandidateDetail.getPastCompanyList());
-
-                    CandidateService.updateCandidateWorkExperience(candidate, updateCandidateWorkExperience);
-                } else if (ServerConstants.PROPERTY_TYPE_EDUCATION == propertyId) {
-                    UpdateCandidateEducation updateCandidateEducation= new UpdateCandidateEducation();
-
-                    updateCandidateEducation.setCandidateDegree(updateCandidateDetail.getCandidateDegree());
-                    updateCandidateEducation.setCandidateEducationCompletionStatus(updateCandidateDetail.getCandidateEducationCompletionStatus());
-                    updateCandidateEducation.setCandidateEducationInstitute(updateCandidateDetail.getCandidateEducationInstitute());
-                    updateCandidateEducation.setCandidateEducationLevel(updateCandidateDetail.getCandidateEducationLevel());
-
-                    CandidateService.updateCandidateEducation(candidate, updateCandidateEducation);
-                } else if (ServerConstants.PROPERTY_TYPE_GENDER == propertyId) {
-                    UpdateCandidateGender updateCandidateGender = new UpdateCandidateGender();
-
-                    updateCandidateGender.setCandidateGender(updateCandidateDetail.getCandidateGender());
-                    CandidateService.updateCandidateGender(candidate, updateCandidateGender);
-                } else if (ServerConstants.PROPERTY_TYPE_SALARY == propertyId) {
-                    UpdateCandidateLastWithdrawnSalary lastWithdrawnSalary = new UpdateCandidateLastWithdrawnSalary();
-
-                    lastWithdrawnSalary.setCandidateLastWithdrawnSalary(updateCandidateDetail.getCandidateLastWithdrawnSalary());
-                    CandidateService.updateCandidateLastWithdrawnSalary(candidate, lastWithdrawnSalary);
-                } else if (ServerConstants.PROPERTY_TYPE_LOCALITY == propertyId) {
-                    UpdateCandidateHomeLocality updateCandidateHomeLocality = new UpdateCandidateHomeLocality();
-
-                    updateCandidateHomeLocality.setCandidateHomeLocality(updateCandidateDetail.getCandidateHomeLocality());
-                    CandidateService.updateCandidateHomeLocality(candidate, updateCandidateHomeLocality);
-                } else if (ServerConstants.PROPERTY_TYPE_WORK_SHIFT == propertyId) {
-                    UpdateCandidateTimeShiftPreference timeShiftPreference= new UpdateCandidateTimeShiftPreference();
-
-                    timeShiftPreference.setCandidateTimeShiftPref(updateCandidateDetail.getCandidateTimeShiftPref());
-                    CandidateService.updateCandidateWorkshift(candidate, timeShiftPreference);
-                }
-            }
 
             if (isVerifyAadhaar) {
                 CandidateService.verifyAadhaar(candidateMobile);
@@ -2332,18 +2284,8 @@ public class Application extends Controller {
         if(candidateId == null && session().get("candidateId")!= null) {
             candidateId = Long.valueOf(session().get("candidateId"));
         }
-        if (candidateId != null) {
-            Candidate candidate = CandidateDAO.getById(candidateId);
+        response.setDeActivationMessage(CandidateService.getDeActivationMessage(candidateId));
 
-            if (candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
-                String message =
-                       SmsUtil.getDeactivationMessage(candidate.getCandidateFullName(), candidate.getCandidateStatusDetail().getStatusExpiryDate());
-
-                response.setDeActivationMessage(message);
-                Logger.info("de Activation is available");
-                return ok(toJson(response));
-            }
-        }
         return ok(toJson(response));
     }
 
@@ -2394,6 +2336,83 @@ public class Application extends Controller {
     }
 
     public static Result getMissingData(Long jobPostId, Long candidateId) {
+
         return ok(toJson(JobPostWorkflowEngine.getShortJobApplyResponse(jobPostId, candidateId)));
+    }
+
+    public static Result updateCandidateDetailsViaShortJobApply() throws IOException, JSONException {
+        JsonNode updateCandidateDetailJSON = request().body().asJson();
+
+        PostApplyInShortResponse response = new PostApplyInShortResponse();
+
+        Logger.info("Apply In Short | Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + updateCandidateDetailJSON);
+
+        if(updateCandidateDetailJSON == null){
+            return badRequest();
+        }
+
+        ObjectMapper newMapper = new ObjectMapper();
+        // since jsonReq has single/multiple values in array
+        newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+        ApplyInShortRequest request = newMapper.readValue(updateCandidateDetailJSON.toString(), ApplyInShortRequest.class);
+
+        boolean isVerifyAadhaar;
+
+        if(request == null) {
+            response.setStatus(PostApplyInShortResponse.Status.BAD_REQUEST);
+            return badRequest(toJson(response));
+        }
+
+        if(request.getCandidateId() == null || request.getCandidateId() < 1 || request.getJobPostId() == null
+                || request.getJobPostId() < 1) {
+
+            response.setStatus(PostApplyInShortResponse.Status.BAD_PARAMS);
+            return badRequest(toJson(response));
+        }
+
+        Candidate candidate = CandidateDAO.getById(request.getCandidateId());
+
+        String deActivationMessage = CandidateService.getDeActivationMessage(candidate);
+        if(deActivationMessage != null) {
+
+            response.setStatus(PostApplyInShortResponse.Status.CANDIDATE_DEACTIVE);
+            response.setMessage(deActivationMessage);
+            return badRequest(toJson(response));
+        }
+
+        // #1. update locality
+        ApplyJobRequest applyJobRequest = new ApplyJobRequest();
+        applyJobRequest.setJobId(request.getJobPostId());
+        applyJobRequest.setLocalityId(request.getLocalityId());
+        applyJobRequest.setCandidateMobile(candidate.getCandidateMobile());
+        applyJobRequest.setPartner(false);
+        applyJobRequest.setAppVersionCode(0);
+
+        Integer channelId = Integer.parseInt(session().get("sessionChannel"));
+        int channelType = channelId == null ? InteractionConstants.INTERACTION_CHANNEL_UNKNOWN : channelId;
+        ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, channelType);
+
+        if(applyJobResponse.getStatus() == ApplyJobResponse.STATUS_EXISTS){
+            response.setStatus(PostApplyInShortResponse.Status.ALREADY_APPLIED);
+        }
+
+        // #2. update candidate interview detail
+        AddCandidateInterviewSlotDetail interviewSlotDetail = new AddCandidateInterviewSlotDetail();
+        interviewSlotDetail.setScheduledInterviewDate(new Date(request.getDateInMillis()));
+        interviewSlotDetail.setTimeSlot(request.getTimeSlotId());
+
+        JobPostWorkflowEngine.updateCandidateInterviewDetail(candidate.getCandidateId(), request.getJobPostId(), interviewSlotDetail,  channelType);
+
+        // #3. update candidate info
+        isVerifyAadhaar = CandidateService.updateCandidateDetail(request.getPropertyIdList(), candidate, request.getUpdateCandidateDetail());
+
+        if (isVerifyAadhaar) {
+            CandidateService.verifyAadhaar(candidate.getCandidateMobile());
+        }
+
+
+        response.setStatus(PostApplyInShortResponse.Status.SUCCESS);
+        return  ok(toJson(response));
     }
 }

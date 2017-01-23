@@ -408,7 +408,7 @@ public class TrudroidController {
 
             //conversion from proto to http request object
             api.http.httpRequest.ApplyJobRequest applyJobRequest = new api.http.httpRequest.ApplyJobRequest();
-            applyJobRequest.setJobId(Math.toIntExact(pApplyJobRequest.getJobPostId()));
+            applyJobRequest.setJobId(pApplyJobRequest.getJobPostId());
             applyJobRequest.setLocalityId(Math.toIntExact(pApplyJobRequest.getLocalityId()));
             applyJobRequest.setPartner(false);
             applyJobRequest.setScheduledInterviewDate(null);

@@ -1,6 +1,7 @@
 package controllers;
 
 import api.ServerConstants;
+import api.http.httpResponse.Workflow.smsJobApplyFlow.PostApplyInShortResponse;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerManager;
 import models.entity.Candidate;
@@ -79,6 +80,12 @@ public class TestController extends Controller{
     public static Result testNewPS(Long jobPostId, Long candidateId) {
 
         return ok(toJson(JobPostWorkflowEngine.getShortJobApplyResponse(jobPostId, candidateId)));
+    }
+
+    public static Result testApplyInShortResponse() {
+        PostApplyInShortResponse response = new PostApplyInShortResponse();
+        response.setStatus(PostApplyInShortResponse.Status.BAD_PARAMS);
+        return ok(toJson(response));
     }
 
     public static Result convertOldData() {

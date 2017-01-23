@@ -15,6 +15,7 @@ import com.avaje.ebean.Query;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
 import controllers.businessLogic.ongrid.AadhaarService;
 import controllers.businessLogic.ongrid.OnGridConstants;
+import dao.CandidateDAO;
 import dao.staticdao.IdProofDAO;
 import in.trujobs.proto.*;
 import in.trujobs.proto.AddFeedbackRequest;
@@ -1585,5 +1586,96 @@ public class CandidateService
             return 1;
         }
         return 0;
+    }
+
+    public static boolean updateCandidateDetail(List<Integer> propertyIds, Candidate candidate, UpdateCandidateDetail updateCandidateDetail){
+        boolean isVerifyAadhaar = false;
+
+        for(Integer propId: propertyIds) {
+            if (propId == null) continue;
+            Integer propertyId = propId;
+            if (ServerConstants.PROPERTY_TYPE_DOCUMENT == propertyId) {
+                UpdateCandidateDocument updateCandidateDocument = new UpdateCandidateDocument();
+                updateCandidateDocument.setIdProofWithIdNumberList(updateCandidateDetail.getIdProofWithIdNumberList());
+                isVerifyAadhaar = CandidateService.updateCandidateDocument(candidate, updateCandidateDocument);
+            } else if (ServerConstants.PROPERTY_TYPE_LANGUAGE == propertyId) {
+
+                UpdateCandidateLanguageKnown updateCandidateLanguageKnown = new UpdateCandidateLanguageKnown();
+
+                updateCandidateLanguageKnown.setCandidateKnownLanguageList(updateCandidateDetail.getCandidateKnownLanguageList());
+                CandidateService.updateCandidateLanguageKnown(candidate, updateCandidateLanguageKnown);
+            } else if (ServerConstants.PROPERTY_TYPE_ASSET_OWNED == propertyId) {
+                UpdateCandidateAsset updateCandidateAsset = new UpdateCandidateAsset();
+                updateCandidateAsset.setAssetIdList(updateCandidateDetail.getAssetIdList());
+
+                CandidateService.updateCandidateAssetOwned(candidate, updateCandidateAsset);
+            } else if (ServerConstants.PROPERTY_TYPE_MAX_AGE == propertyId) {
+                UpdateCandidateDob updateCandidateDob = new UpdateCandidateDob();
+
+                updateCandidateDob.setCandidateDob(updateCandidateDetail.getCandidateDob());
+                CandidateService.updateCandidateDOB(candidate, updateCandidateDob);
+            } else if (ServerConstants.PROPERTY_TYPE_EXPERIENCE == propertyId) {
+                UpdateCandidateWorkExperience updateCandidateWorkExperience = new UpdateCandidateWorkExperience();
+
+                updateCandidateWorkExperience.setCandidateTotalExperience(updateCandidateDetail.getCandidateTotalExperience());
+                updateCandidateWorkExperience.setCandidateIsEmployed(updateCandidateDetail.getCandidateIsEmployed());
+                updateCandidateWorkExperience.setExtraDetailAvailable(updateCandidateDetail.getExtraDetailAvailable());
+                updateCandidateWorkExperience.setPastCompanyList(updateCandidateDetail.getPastCompanyList());
+
+                CandidateService.updateCandidateWorkExperience(candidate, updateCandidateWorkExperience);
+            } else if (ServerConstants.PROPERTY_TYPE_EDUCATION == propertyId) {
+                UpdateCandidateEducation updateCandidateEducation= new UpdateCandidateEducation();
+
+                updateCandidateEducation.setCandidateDegree(updateCandidateDetail.getCandidateDegree());
+                updateCandidateEducation.setCandidateEducationCompletionStatus(updateCandidateDetail.getCandidateEducationCompletionStatus());
+                updateCandidateEducation.setCandidateEducationInstitute(updateCandidateDetail.getCandidateEducationInstitute());
+                updateCandidateEducation.setCandidateEducationLevel(updateCandidateDetail.getCandidateEducationLevel());
+
+                CandidateService.updateCandidateEducation(candidate, updateCandidateEducation);
+            } else if (ServerConstants.PROPERTY_TYPE_GENDER == propertyId) {
+                UpdateCandidateGender updateCandidateGender = new UpdateCandidateGender();
+
+                updateCandidateGender.setCandidateGender(updateCandidateDetail.getCandidateGender());
+                CandidateService.updateCandidateGender(candidate, updateCandidateGender);
+            } else if (ServerConstants.PROPERTY_TYPE_SALARY == propertyId) {
+                UpdateCandidateLastWithdrawnSalary lastWithdrawnSalary = new UpdateCandidateLastWithdrawnSalary();
+
+                lastWithdrawnSalary.setCandidateLastWithdrawnSalary(updateCandidateDetail.getCandidateLastWithdrawnSalary());
+                CandidateService.updateCandidateLastWithdrawnSalary(candidate, lastWithdrawnSalary);
+            } else if (ServerConstants.PROPERTY_TYPE_LOCALITY == propertyId) {
+                UpdateCandidateHomeLocality updateCandidateHomeLocality = new UpdateCandidateHomeLocality();
+
+                updateCandidateHomeLocality.setCandidateHomeLocality(updateCandidateDetail.getCandidateHomeLocality());
+                CandidateService.updateCandidateHomeLocality(candidate, updateCandidateHomeLocality);
+            } else if (ServerConstants.PROPERTY_TYPE_WORK_SHIFT == propertyId) {
+                UpdateCandidateTimeShiftPreference timeShiftPreference= new UpdateCandidateTimeShiftPreference();
+
+                timeShiftPreference.setCandidateTimeShiftPref(updateCandidateDetail.getCandidateTimeShiftPref());
+                CandidateService.updateCandidateWorkshift(candidate, timeShiftPreference);
+            }
+        }
+        return isVerifyAadhaar;
+    }
+
+    public static String getDeActivationMessage(Long candidateId) {
+        if (candidateId != null) {
+            Candidate candidate = CandidateDAO.getById(candidateId);
+
+            return getDeActivationMessage(candidate);
+        }
+        return null;
+    }
+
+    public static String getDeActivationMessage(Candidate candidate) {
+        if (candidate != null) {
+            if (candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
+                String message =
+                        SmsUtil.getDeactivationMessage(candidate.getCandidateFullName(), candidate.getCandidateStatusDetail().getStatusExpiryDate());
+
+                Logger.info("de Activation is available");
+                return message;
+            }
+        }
+        return null;
     }
 }
