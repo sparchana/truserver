@@ -2332,6 +2332,12 @@ public class CandidateService
 
         // was this resume uploaded by a partner?
         if(candidateResume.getCreatedBy().toLowerCase().contains("(partner)")){
+            String partnerId = candidateResume.getCreatedBy().split("\\(")[0];
+            Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
+
+            // to associate partner and candidate - if partner create a candidate by uploading resume
+            PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(candidateResume.getCandidate().getCandidateMobile()));
+
             try {
                 // is there any resume that was uploaded AFTER this resume by this partner?
                 Integer c = CandidateResume.find.where()
@@ -2341,12 +2347,6 @@ public class CandidateService
                 if (c == 0) {
 
                     // send info SMS informing that uploaded resumes have been processed
-                    String partnerId = candidateResume.getCreatedBy().split("\\(")[0];
-                    Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
-
-                    CandidateSignUpResponse candidateSignUpResponse = PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(candidateResume.getCandidate().getCandidateMobile()));
-
-                    // send SMS
                     Logger.info("Sending SMS to partner : name = " + partner.getPartnerFirstName() + " mobile = "+partner.getPartnerMobile() );
                     SmsUtil.resumeUploadStatusToPartner(partner.getPartnerFirstName(),partner.getPartnerMobile());
                 }
