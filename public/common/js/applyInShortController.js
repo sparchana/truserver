@@ -911,7 +911,7 @@ var applyInShort = (function ($) {
 
                 // render asset here
                 appz.process.asset(assetList);
-            },
+            }
         },
 
         process: {
@@ -1135,10 +1135,6 @@ var applyInShort = (function ($) {
 
                 });
             },
-
-            // locality: function (localityList) {
-            //
-            // // }
 
         },
 
