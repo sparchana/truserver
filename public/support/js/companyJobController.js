@@ -296,6 +296,7 @@ function getAllCompany() {
                                 return creationDate;
                             },
                             'companyName': company.companyName,
+                            'companyCode': company.companyCode,
                             'companyWebsite' : ((company.companyWebsite != null) ? '<a href="'+"http://"+company.companyWebsite+'" style="cursor:pointer;" target="_blank">'+company.companyWebsite+'</a>' : ""),
                             'companyAddress' : ((company.companyAddress != null) ? company.companyAddress : ""),
                             'companyType' : ((company.compType != null) ? company.compType.companyTypeName : ""),
@@ -310,6 +311,7 @@ function getAllCompany() {
                 { "data": "companyId" },
                 { "data": "companyCreationTimestamp" },
                 { "data": "companyName" },
+                { "data": "companyCode" },
                 { "data": "companyWebsite" },
                 { "data": "companyAddress" },
                 { "data": "companyType" },

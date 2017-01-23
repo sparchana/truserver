@@ -112,6 +112,7 @@ POST        /updateFeedback                                               contro
 POST        /getDeActivationMessage                                       controllers.Application.getDeactivationMessage(candidateId: java.lang.Long?= null)
 POST        /updateRecruiterCreditPack                                    controllers.Application.updateRecruiterCreditPack()
 POST        /expireCreditPack                                             controllers.Application.expireCreditPack()
+GET         /generateCompanyCode                                          controllers.Application.generateCompanyCode()
 
 # partner routes
 #~~~~~~~~~~~~~~~~~~~~
@@ -143,6 +144,7 @@ POST        /addPartnerPassword                                           contro
 POST        /partnerSignUp                                                controllers.PartnerController.partnerSignUp()
 POST        /partnerUpdateBasicProfile                                    controllers.PartnerController.partnerUpdateBasicProfile()
 POST        /checkPartnerCandidate/:id                                    controllers.PartnerController.checkPartnerCandidate(id : Long)
+POST        /checkExistingCompany/:id                                     controllers.PartnerController.checkExistingCompany(id : String)
 
 # recruiter routes
 #~~~~~~~~~~~~~~~~~~~~
@@ -153,7 +155,7 @@ GET         /logoutRecruiter                                              contro
 GET         /checkRecruiterSession                                        controllers.RecruiterController.checkRecruiterSession()
 GET         /getRecruiterProfileInfo                                      controllers.RecruiterController.getRecruiterProfileInfo()
 GET         /recruiter/profile                                            controllers.RecruiterController.recruiterEditProfile()
-GET         /recruiter/candidateSearch                                    controllers.RecruiterController.recruiterCandidateSearch()
+GET         /recruiter/candidateSearch                                    controllers.RecruiterController.recruiterCandidateSearch(jpId: java.lang.Long ?= null)
 GET         /recruiter/allRecruiterJobPosts                               controllers.RecruiterController.renderAllRecruiterJobPosts
 GET         /recruiter/unlockedCandidates                                 controllers.RecruiterController.renderAllUnlockedCandidates
 GET         /recruiter/jobApplicants/:id                                  controllers.RecruiterController.renderAllApplications(id : Long)
@@ -184,6 +186,8 @@ POST        /recruiter/api/addJobPost                                     contro
 POST        /getRecruiterJobPostInfo/:id                                  controllers.RecruiterController.getRecruiterJobPostInfo(id : Long)
 POST        /getTodayInterviewDetails                                     controllers.RecruiterController.getTodayInterviewDetails()
 POST        /getPendingCandidateApproval                                  controllers.RecruiterController.getPendingCandidateApproval()
+POST        /bulkUnlockCandidate                                          controllers.RecruiterController.bulkUnlockCandidates()
+POST        /bulkSendSms                                                  controllers.RecruiterController.bulkSendSms()
 
 # Search API
 # ~~~~~~~~~~~~~
@@ -216,6 +220,7 @@ POST        /getAllDegree                                                 contro
 POST        /getAllEducation                                              controllers.Application.getAllEducation()
 POST        /getAllJobsRolesWithJobs                                      controllers.Application.getAllJobsRolesWithJobs()
 POST        /getAllNormalJobPosts/                                        controllers.Application.getAllNormalJobPosts(i: java.lang.Long ?= null)
+POST        /getPartnerViewJobs/                                          controllers.Application.getPartnerViewJobs(i: java.lang.Long ?= null)
 POST        /getAllHotJobPosts/                                           controllers.Application.getAllHotJobPosts(i: java.lang.Long ?= null)
 POST        /getAllIdProof                                                controllers.Application.getAllIdProof()
 POST        /getAllJobs                                                   controllers.Application.getAllJobs()
@@ -231,6 +236,7 @@ POST        /getAllCandidateETA                                           contro
 POST        /getAllNotSelectedReasons                                     controllers.Application.getAllNotSelectedReasons()
 POST        /getJobPostInfo/:id/:isSupport                                controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
 POST        /getInterviewSlots/:id                                        controllers.Application.getInterviewSlots(id : Long)
+POST        /getJobPostFilterData/:id                                     controllers.Application.getJobPostFilterData(id : Long)
 
 # 3rd Party API
 # ~~~~~~~~~~~~~
@@ -302,6 +308,7 @@ GET         /api/test/testScheduler/                                      contro
 GET         /testNotification                                             controllers.TestController.testnotification()
 GET         /convertOldData                                               controllers.TestController.convertOldData()
 GET         /testQueue                                                    controllers.TestController.testQueue()
+GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
 
 # Scrap API
 # ~~~~~~~~~~~~~

@@ -14,11 +14,9 @@ import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Recruiter.InterviewTodayResponse;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import api.http.httpResponse.Workflow.WorkflowResponse;
+import api.http.httpResponse.Workflow.smsJobApplyFlow.ShortPSPopulateResponse;
 import api.http.httpResponse.interview.InterviewResponse;
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.Query;
-import com.avaje.ebean.RawSql;
-import com.avaje.ebean.RawSqlBuilder;
+import com.avaje.ebean.*;
 import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.InteractionService;
 import controllers.businessLogic.MatchingEngineService;
@@ -26,9 +24,11 @@ import controllers.businessLogic.RecruiterService;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
-import models.entity.*;
+import models.entity.Candidate;
+import models.entity.Interaction;
+import models.entity.JobPost;
 import models.entity.OM.*;
-import models.entity.Recruiter.Static.RecruiterCreditCategory;
+import models.entity.Partner;
 import models.entity.Static.*;
 import models.util.NotificationUtil;
 import models.util.SmsUtil;
@@ -61,6 +61,9 @@ public class JobPostWorkflowEngine {
      * @param jobPostLocalityIdList candidates to be matched within x Km of any of the provided locality
      * @param languageIdList        candidate to be matched for any of this language. Output contains the
      *                              indication to show matching & non-matching language
+     * @param jobPostDocumentIdList candidate ot be matched for having any of the document from this list(Interaction Operation)
+     * @param jobPostAssetIdList    candidate ot be matched for having any of asset from this list (Interaction Operation)
+     *
      */
     public static Map<Long, CandidateWorkflowData> getMatchingCandidate(Long jobPostId,
                                                                         Integer maxAge,
@@ -250,6 +253,9 @@ public class JobPostWorkflowEngine {
      * @param jobPostLocalityIdList candidates to be matched within x Km of any of the provided locality
      * @param languageIdList        candidate to be matched for any of this language. Output contains the
      *                              indication to show matching & non-matching language
+     * @param jobPostDocumentIdList candidate ot be matched for having any of the document from this list(Interaction Operation)
+     * @param jobPostAssetIdList    candidate ot be matched for having any of asset from this list (Interaction Operation)
+     *
      */
     public static Map<Long, CandidateWorkflowData> getCandidateForRecruiterSearch(Integer maxAge,
                                                                                   Long minSalary,
@@ -260,7 +266,10 @@ public class JobPostWorkflowEngine {
                                                                                   List<Integer> educationIdList,
                                                                                   List<Long> jobPostLocalityIdList,
                                                                                   List<Integer> languageIdList,
-                                                                                  Double radius) {
+                                                                                  List<Integer> jobPostDocumentIdList,
+                                                                                  List<Integer> jobPostAssetIdList,
+                                                                                  Double radius,
+                                                                                  boolean isPrivate) {
         List<Integer> minExperienceList = new ArrayList<>();
         List<Integer> maxExperienceList = new ArrayList<>();
 
@@ -269,6 +278,11 @@ public class JobPostWorkflowEngine {
 
         Query<Candidate> query = Candidate.find.query();
 
+        if(isPrivate) {
+            query.select("*")
+                    .where()
+                    .eq("candidateAccessLevel", ServerConstants.CANDIDATE_ACCESS_LEVEL_PRIVATE);
+        }
         /* only active candidates */
         query.select("*")
                 .where()
@@ -390,6 +404,27 @@ public class JobPostWorkflowEngine {
                 .query();
 
 
+        /**
+         *
+         * Conjunction with Expression list doesn't work? | hash: 94ec478
+         *
+         * */
+        if (jobPostDocumentIdList != null && jobPostDocumentIdList.size() > 0) {
+            query = query.select("*").fetch("idProofReferenceList")
+                    .where()
+                    .isNotNull("idProofReferenceList")
+                    .in("idProofReferenceList.idProof.idProofId", jobPostDocumentIdList)
+                    .query();
+        }
+
+        if (jobPostAssetIdList != null && jobPostAssetIdList.size() > 0) {
+            query = query.select("*").fetch("candidateAssetList")
+                    .where()
+                    .isNotNull("candidateAssetList")
+                    .in("candidateAssetList.asset.assetId", jobPostAssetIdList)
+                    .query();
+        }
+
 /*        //query candidate query with the filter params
         query = getFilteredQuery(maxAge, minSalary, maxSalary,gender, jobRoleId, educationId, languageIdList, experience);*/
 
@@ -407,7 +442,6 @@ public class JobPostWorkflowEngine {
                 }
             }
         }
-
 
         return matchedCandidateMap;
     }
@@ -1150,6 +1184,171 @@ public class JobPostWorkflowEngine {
         }
 
         return populateResponse;
+    }
+
+    public static ShortPSPopulateResponse getJobPostVsCandidate(Long jobPostId, Long candidateId) {
+        ShortPSPopulateResponse response = new ShortPSPopulateResponse();
+
+        Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
+        if (candidate == null) {
+            response.setStatus(ShortPSPopulateResponse.Status.FAILURE);
+            return response;
+        }
+
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
+
+        if (jobPost == null) {
+            response.setStatus(ShortPSPopulateResponse.Status.FAILURE);
+            return response;
+        }
+
+        response.setJobPostId(jobPostId);
+        response.setCandidateId(candidateId);
+
+
+        List<PreScreenRequirement> preScreenRequirementList = PreScreenRequirement.find.where()
+                .eq("jobPost.jobPostId", jobPostId).orderBy().asc("category").findList();
+
+
+        Map<Integer, List<PreScreenRequirement>> preScreenMap = new HashMap<>();
+
+        for (PreScreenRequirement preScreenRequirement : preScreenRequirementList) {
+            List<PreScreenRequirement> preScreenRequirements = preScreenMap.get(preScreenRequirement.getCategory());
+            if (preScreenRequirements == null) {
+                preScreenRequirements = new ArrayList<>();
+            }
+            preScreenRequirements.add(preScreenRequirement);
+            preScreenMap.put(preScreenRequirement.getCategory(), preScreenRequirements);
+        }
+
+        for (Map.Entry<Integer, List<PreScreenRequirement>> entry : preScreenMap.entrySet()) {
+            switch (entry.getKey()) {
+                case ServerConstants.CATEGORY_DOCUMENT:
+
+                    List<IdProof> candidateIdProofList = new ArrayList<>();
+                    List<IdProof> jobPostReqDocumentList = new ArrayList<>();
+
+                    if(candidate.getIdProofReferenceList() != null){
+
+                        for (IDProofReference idProofReference : candidate.getIdProofReferenceList()) {
+                            candidateIdProofList.add(idProofReference.getIdProof());
+                        }
+                    }
+
+                    for (PreScreenRequirement preScreenRequirement : entry.getValue()) {
+                        jobPostReqDocumentList.add(preScreenRequirement.getIdProof());
+                    }
+
+                    response.setDocumentList(getDiffList(jobPostReqDocumentList, candidateIdProofList));
+                    break;
+                case ServerConstants.CATEGORY_LANGUAGE:
+                    List<Language> candidateLanguageList = new ArrayList<>();
+                    List<Language> jobPostReqLanguageList = new ArrayList<>();
+
+                    if (candidate.getLanguageKnownList() != null) {
+                        for (LanguageKnown lk : candidate.getLanguageKnownList()) {
+                            candidateLanguageList.add(lk.getLanguage());
+                        }
+                    }
+
+                    for (PreScreenRequirement preScreenRequirement : entry.getValue()) {
+                        if(preScreenRequirement != null){
+
+                            jobPostReqLanguageList.add(preScreenRequirement.getLanguage());
+                        }
+                    }
+
+                    response.setLanguageList(getDiffList(jobPostReqLanguageList, candidateLanguageList));
+
+                    break;
+                case ServerConstants.CATEGORY_ASSET:
+                    List<Asset> candidateAssetList = new ArrayList<>();
+                    List<Asset> jobPostReqAssetList = new ArrayList<>();
+
+                    if (candidate.getCandidateAssetList() != null) {
+                        for (CandidateAsset candidateAsset : candidate.getCandidateAssetList()) {
+                            candidateAssetList.add(candidateAsset.getAsset());
+                        }
+                    }
+
+                    for (PreScreenRequirement preScreenRequirement : entry.getValue()) {
+                        if(preScreenRequirement != null)
+                            jobPostReqAssetList.add(preScreenRequirement.getAsset());
+                    }
+
+                    response.setAssetList(getDiffList(jobPostReqAssetList, candidateAssetList));
+
+                    break;
+
+                case ServerConstants.CATEGORY_PROFILE:
+
+                    for (PreScreenRequirement preScreenRequirement : entry.getValue()) {
+
+                        if (preScreenRequirement.getProfileRequirement() != null) {
+                            setProfileData(candidate, preScreenRequirement, response);
+                        }
+                    }
+                    break;
+            }
+
+            response.setStatus(ShortPSPopulateResponse.Status.SUCCESS);
+            response.setInterviewResponse(RecruiterService.isInterviewRequired(jobPost));
+        }
+
+        return response;
+    }
+
+    public static void setProfileData(Candidate candidate, PreScreenRequirement preScreenRequirement,
+                                      ShortPSPopulateResponse response){
+        String key = preScreenRequirement.getProfileRequirement().getProfileRequirementTitle().toLowerCase();
+        switch (key) {
+            case "age":
+                if( candidate.getCandidateDOB() == null) response.setDobAvailable(false); break;
+            case "experience":
+                if( candidate.getCandidateTotalExperience() == null) {
+
+                    List<JobRole> jobRoleList = JobRole.find.all();
+                    response.setExperienceResponse(
+                            new ShortPSPopulateResponse.ExperienceResponse(false, jobRoleList));
+                }
+                break;
+            case "education":
+                if( candidate.getCandidateEducation() == null) {
+                    List<Degree> degreeList = Degree.find.all();
+                    List<Education> educationsList = Education.find.all();
+
+                    response.setEducationResponse(
+                            new ShortPSPopulateResponse.EducationResponse(false, educationsList, degreeList));
+                }
+                break;
+            case "gender":
+                if( candidate.getCandidateGender() == null) {
+                    response.setGenerAvailable(false);
+                } break;
+            case "salary":
+                if( candidate.getCandidateLastWithdrawnSalary() == null) {
+                    response.setSalaryAvailable(false);
+                    break;
+                }
+            default: break;
+        }
+
+    }
+
+    public static <T> List<T> getDiffList(List<T> requirementList, List<T> objectList) {
+        List<T> list = new ArrayList<>();
+
+        if(objectList.isEmpty() || requirementList.isEmpty()) {
+            return requirementList;
+        }
+
+        for (T t : requirementList) {
+            if(!objectList.contains(t)) {
+                list.add(t);
+            }
+        }
+
+        return list;
     }
 
     public static boolean updatePreScreenAttempt(Long jobPostId, Long candidateId, String callStatus, int channel) {

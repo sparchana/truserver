@@ -67,6 +67,8 @@ public class JobService {
         Integer interactionType;
         boolean isSendJobActivationAlert = false;
 
+        /* TODO add validation for critical incoming data like localityList etc */
+
         JobPost existingJobPost = JobPostDAO.findById(addJobPostRequest.getJobPostId());
         if(existingJobPost == null){
             Logger.info("Job post does not exists. Creating a new job Post");
@@ -705,13 +707,13 @@ public class JobService {
         return languageRequirementList;
     }
 
-    private static List<JobPostDocumentRequirement> getJobPostDocumentRequirement(List<Long> jobPostDocumentList, JobPost newJobPost) {
+    private static List<JobPostDocumentRequirement> getJobPostDocumentRequirement(List<Long> jobPostDocumentIdList, JobPost newJobPost) {
 
         List<JobPostDocumentRequirement> jobPostDocumentRequirementList = new ArrayList<>();
-        if(jobPostDocumentList == null || jobPostDocumentList.size() == 0) {
+        if(jobPostDocumentIdList == null || jobPostDocumentIdList.size() == 0) {
             return jobPostDocumentRequirementList;
         }
-        List<IdProof> idProofList = IdProof.find.where().in("IdProofId", jobPostDocumentList).findList();
+        List<IdProof> idProofList = IdProof.find.where().in("IdProofId", jobPostDocumentIdList).findList();
         for(IdProof idProof: idProofList){
             JobPostDocumentRequirement jobPostDocumentRequirement = new JobPostDocumentRequirement();
             jobPostDocumentRequirement.setIdProof(idProof);
