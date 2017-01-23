@@ -7,17 +7,29 @@ import api.http.CandidateSkills;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
-import api.http.httpResponse.CandidateSignUpResponse;
-import api.http.httpResponse.LoginResponse;
-import api.http.httpResponse.ResetPasswordResponse;
+import api.http.httpResponse.*;
+import api.http.httpResponse.hirewand.HireWandResponse;
 import api.http.httpResponse.ongrid.OngridAadhaarVerificationResponse;
+import au.com.bytecode.opencsv.CSVReader;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.PutObjectResult;
+import com.avaje.ebean.Expr;
 import com.avaje.ebean.Query;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
+import controllers.businessLogic.hirewand.HWHTTPException;
+import controllers.businessLogic.hirewand.HireWandService;
+import controllers.businessLogic.hirewand.InvalidRequestException;
 import controllers.businessLogic.ongrid.AadhaarService;
 import controllers.businessLogic.ongrid.OnGridConstants;
 import dao.staticdao.IdProofDAO;
-import in.trujobs.proto.*;
 import in.trujobs.proto.AddFeedbackRequest;
+import in.trujobs.proto.FeedbackReasonObject;
+import in.trujobs.proto.LogoutCandidateRequest;
 import models.entity.Auth;
 import models.entity.Candidate;
 import models.entity.Lead;
@@ -29,13 +41,23 @@ import models.entity.Partner;
 import models.entity.Static.*;
 import models.util.SmsUtil;
 import models.util.Util;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.tika.Tika;
+import org.apache.tika.mime.MimeTypes;
+import org.json.JSONException;
+import org.json.JSONObject;
 import play.Logger;
 
 import javax.persistence.NonUniqueResultException;
+import java.io.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static api.InteractionConstants.*;
-import static controllers.businessLogic.InteractionService.*;
+import static controllers.businessLogic.InteractionService.createInteractionForSignUpCandidateViaAndroid;
+import static controllers.businessLogic.InteractionService.createInteractionForSignUpCandidateViaWebsite;
 import static controllers.businessLogic.LeadService.createOrUpdateConvertedLead;
 import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;
@@ -195,9 +217,10 @@ public class CandidateService
     }
 
     public static Candidate isCandidateExists(String mobile) {
-        try {
-            Candidate existingCandidate = Candidate.find.where().eq("candidateMobile",
-                    FormValidator.convertToIndianMobileFormat(mobile)).findUnique();
+        try{
+            Candidate existingCandidate = Candidate.find.where().or(com.avaje.ebean.Expr.eq("candidateMobile",
+                    FormValidator.convertToIndianMobileFormat(mobile)),com.avaje.ebean.Expr.eq("candidateSecondMobile",
+                    FormValidator.convertToIndianMobileFormat(mobile))).findUnique();
             if(existingCandidate != null) {
                 return existingCandidate;
             }
@@ -483,6 +506,7 @@ public class CandidateService
 
         // check if we have auth record for this candidate. if we dont have, create one with a temporary password
         Auth auth = AuthService.isAuthExists(candidate.getCandidateId());
+
         if (auth == null) {
             if(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE || channelType == INTERACTION_CHANNEL_PARTNER_WEBSITE){
                 // TODO: differentiate between in/out call
@@ -571,6 +595,8 @@ public class CandidateService
 
         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
         candidateSignUpResponse.setMinProfile(candidate.getIsMinProfileComplete());
+        candidateSignUpResponse.setCandidateFirstName(candidate.getCandidateFirstName());
+        candidateSignUpResponse.setCandidateId(candidate.getCandidateId());
 
         return candidateSignUpResponse;
     }
@@ -1586,4 +1612,1001 @@ public class CandidateService
         }
         return 0;
     }
+
+    public static JSONObject uploadResume(File resume, String fileName, Long candidateId) {
+
+        // resume = filename, status = Success/Fail, msg = "Success"/"<Error Message>"
+        JSONObject responseJson = new JSONObject();
+        String personId;
+
+        try {
+            responseJson.put("resume",fileName);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return responseJson;
+        }
+
+        Tika tika = new Tika();
+        try {
+            String fileContentType = tika.detect(resume);
+            Logger.info(fileName+" file type detected as "+fileContentType);
+            if(!fileContentType.toLowerCase().contains("application/msword") &&
+                    !fileContentType.toLowerCase().contains("application/vnd.openxmlformats-officedocument.wordprocessingml.document") &&
+                    !fileContentType.toLowerCase().contains("application/pdf") &&
+                    !fileContentType.toLowerCase().contains("text/plain")){
+                // invalid file type --> Only word, pdf, txt formats are supported
+                try {
+                    responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
+                    responseJson.put("msg","Invalid file format '"+fileContentType+"' detected (Only doc, docx, pdf, txt allowed");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return responseJson;
+                }
+                return responseJson;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Candidate existingCandidate = null;
+        if(candidateId > 0) {
+            // we already have an existing candidate for this resume
+            existingCandidate = Candidate.find.where().eq("candidateId",candidateId).findUnique();
+            if(existingCandidate == null) {
+                Logger.info("Could not find candidate with Id = "+candidateId);
+                candidateId = 0L;
+            }
+            else {
+                // update filename
+                fileName = createCandidateResumeFilename(Long.toString(candidateId),existingCandidate.getCandidateFirstName(),fileName);
+                Logger.info("Found candidate with id = "+candidateId+". Updating resume filename to "+fileName);
+            }
+        }
+
+        // get handle to HireWand
+        HireWandService hw = HireWandService.get();
+        try {
+            hw.login("avishek@trujobs.in","hirewandswatkats");
+            hw.setCallback("http://52.89.66.63:9000/receive-parsed-resume");
+        } catch (HWHTTPException e) {
+            e.printStackTrace();
+            try {
+                responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
+                responseJson.put("msg",e.getMessage());
+            } catch (JSONException ee) {
+                ee.printStackTrace();
+                return responseJson;
+            }
+            return responseJson;
+        }
+
+        HashMap paramMap = new HashMap();
+        try {
+            // stream of resume
+            InputStream stream = new FileInputStream(resume);
+            // Create a HashMap with Resume's filename, Resume's Stream
+            paramMap.put("filename",fileName);
+            paramMap.put("resume",stream);
+            Logger.info("Sending to HireWand with filename = "+fileName);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            try {
+                responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
+                responseJson.put("msg",e.getMessage());
+            } catch (JSONException ee) {
+                ee.printStackTrace();
+                return responseJson;
+            }
+            return responseJson;
+        }
+
+        // Upload resume to HireWand
+        String response = null;
+        try {
+            response = hw.call("upload",paramMap);
+        } catch (InvalidRequestException | HWHTTPException e) {
+            e.printStackTrace();
+            try {
+                responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
+                responseJson.put("msg",e.getMessage());
+            } catch (JSONException ee) {
+                ee.printStackTrace();
+                return responseJson;
+            }
+            return responseJson;
+        }
+
+        Logger.info("response= "+response);
+            JSONObject result = null;
+            try {
+                result = new JSONObject(String.valueOf(response));
+            } catch (JSONException e) {
+                e.printStackTrace();
+                try {
+                    responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
+                    responseJson.put("msg",e.getMessage());
+                } catch (JSONException ee) {
+                    ee.printStackTrace();
+                    return responseJson;
+                }
+                return responseJson;
+            }
+
+        try {
+
+            Logger.info("result.get(\"status\")="+result.getString("status"));
+
+            if(result.getString("status").equalsIgnoreCase("success")){
+
+                Logger.info("Success in uploading to HireWand");
+
+                // Get Unique HireWand Id
+                personId = String.valueOf(result.getString("personid"));
+                Logger.info("personId="+personId);
+
+                    String awsName;
+                    if(candidateId > 0){
+                        // store resume in AWS with standard naming (candidateId_firstName_TimeStamp)
+                        awsName = fileName;
+                    }
+                    else {
+                        // store resume in AWS with person Id
+                        awsName = personId;
+                        awsName += fileName.substring(fileName.lastIndexOf("."));
+                    }
+                    Logger.info("AWS upload fileName ="+awsName);
+
+                //Http.Session backupSession = session();
+
+                if(session() != null) {
+                    try {
+                        //Logger.info("pre aws session channel: " + session().get("sessionChannel"));
+                        //Logger.info("session id: " + session().get("sessionId"));
+                    } catch (NullPointerException np) {
+                        np.printStackTrace();
+                    }
+                } else {
+                    Logger.info("no session ");
+                }
+
+                String path = uploadResumeToAWS(resume,awsName);
+
+
+                if(session() != null) {
+                    try {
+                        //Logger.info("post aws session channel: " + session().get("sessionChannel"));
+                        //Logger.info("session id: " + session().get("sessionId"));
+                    } catch (NullPointerException np) {
+                        np.printStackTrace();
+                    }
+                } else {
+                    Logger.info("no session ");
+                }
+
+
+                if(path == "") {
+                        // Resume could not be uploaded to S3
+                        try {
+                            responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
+                            responseJson.put("msg","Resume could not be uploaded into AWS");
+                        } catch (JSONException ee) {
+                            ee.printStackTrace();
+                            return responseJson;
+                        }
+                        return responseJson;
+                    }
+                    else {
+
+                        // Resume uploaded into S3
+                        Logger.info("AWS file Path = "+path);
+                        path = "https://s3.amazonaws.com/"+path;
+
+                        // Need to make an entry in the CandidateResume table
+                        CandidateResumeService candidateResumeService = new CandidateResumeService();
+                        CandidateResumeRequest candidateResumeRequest = new CandidateResumeRequest();
+
+                        // determine channel, user
+                        String user = "";
+                        if(session() != null){
+                            //Logger.info("Session : "+ session().get("sessionChannel"));
+                            if(session().get("sessionChannel")!=null && Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
+                                user = session().get("partnerId")+"(Partner)";
+                            }
+                            else if(session().get("sessionChannel")!=null && Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
+                                user = session().get("candidateId")+"(Candidate-Web)";
+                            }
+                            else if(session().get("sessionChannel")!=null && Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID){
+                                user = session().get("candidateId")+"(Candidate-App)";
+                            }
+                        }
+                        else user = "Unknown";
+                        Logger.info("user ="+user);
+
+                        // Prepare the Request
+                        if(candidateId > 0) candidateResumeRequest.setCandidate(candidateId);
+                        candidateResumeRequest.setCreatedBy(user);
+                        candidateResumeRequest.setExternalKey(personId);
+                        candidateResumeRequest.setFilePath(path);
+                        //candidateResumeRequest.setParsedResume(profileJson.toString());
+
+                        // Create the entry
+                        TruResponse candidateResumeResponse = (TruResponse) candidateResumeService.create(candidateResumeRequest);
+
+                        if(candidateResumeResponse.getStatus() == TruResponse.STATUS_FAILURE) {
+                            // error reported, delete the AWS entry
+                            removeResumeFromAws(path.replace("https://s3.amazonaws.com/trujobs.in/",""));
+                            try {
+                                responseJson.put("status","Fail");
+                                responseJson.put("msg","Resume could not be updated in TruJobs Database");
+                            } catch (JSONException ee) {
+                                ee.printStackTrace();
+                                return responseJson;
+                            }
+                            return responseJson;
+                        }
+
+                    }
+
+                }
+
+            }
+            catch (JSONException e){
+                e.printStackTrace();
+                try {
+                    responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
+                    responseJson.put("msg",e.getMessage());
+                } catch (JSONException ee) {
+                    ee.printStackTrace();
+                    return responseJson;
+                }
+                return responseJson;
+            }
+
+        try {
+            responseJson.put("status",ServerConstants.UPLOAD_RESUME_SUCCESS_STATUS);
+            responseJson.put("msg","Success");
+        } catch (JSONException ee) {
+            ee.printStackTrace();
+            return responseJson;
+        }
+
+        return responseJson;
+
+    }
+
+
+    public static AddSupportCandidateRequest mapFromHWToCandidate(HireWandResponse.Profile profile, Candidate existingCandidate){
+        Logger.info("Entering mapFromHWToCandidate");
+        AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
+
+        // initialize required lists (else, we're looking at NPEs during creation)
+        List<Integer> candidateIdProof = new ArrayList<>();
+        List<CandidateSkills> candidateSkills = new ArrayList<>();
+        addSupportCandidateRequest.setCandidateSkills(candidateSkills);
+        List<CandidateKnownLanguage> candidateLanguageKnown = new ArrayList<>();
+        addSupportCandidateRequest.setCandidateLanguageKnown(candidateLanguageKnown);
+        addSupportCandidateRequest.setDeactivationStatus(Boolean.FALSE);
+
+        if(profile == null) return addSupportCandidateRequest;
+        else if (existingCandidate == null){
+
+            // candidate firstName and secondName
+            String candidateName = profile.Name;
+            if(candidateName != null){
+                candidateName = candidateName.trim();
+                // get rid of ALL special characters (if any)
+                candidateName = candidateName.replaceAll("[\\-\\+\\.\\^:,\\(\\)\\{\\}]","");
+                String[] nameArray = candidateName.split("\\s+");
+                addSupportCandidateRequest.setCandidateFirstName(nameArray[0]);
+                candidateName = "";
+                for(Integer i=1; i < nameArray.length;i++) {candidateName += " "+nameArray[i];}
+                candidateName = candidateName.trim();
+                addSupportCandidateRequest.setCandidateSecondName(candidateName);
+            }
+
+            // candidate Mobile
+            // get all phone number(s) for this candidate
+            for (int i = 0; i < profile.PhoneNos.size(); i++) {
+                if(i == 0){
+                    addSupportCandidateRequest.setCandidateMobile(StringUtils.right(profile.PhoneNos.get(i).trim(),10));
+                }
+                else if(i == 1) {
+                    addSupportCandidateRequest.setCandidateSecondMobile(StringUtils.right(profile.PhoneNos.get(i).trim(),10));
+                }
+                else if(i == 2) {
+                    addSupportCandidateRequest.setCandidateThirdMobile(StringUtils.right(profile.PhoneNos.get(i).trim(),10));
+                }
+                else break;
+            }
+
+            // candidate EMail (Only take the 1st entry)
+            if(profile.Emails != null && profile.Emails.size() > 0) addSupportCandidateRequest.setCandidateEmail(profile.Emails.get(0));
+
+            // total work experience
+            if(profile.getTotalExperience() != null && profile.getTotalExperience() > 0) addSupportCandidateRequest.setCandidateTotalExperience(profile.getTotalExperience());
+
+            // Candidate work experience
+            if(profile.WorkExperience != null) {
+                Boolean isCurrentSet = false;
+                List<AddSupportCandidateRequest.PastCompany> pastCompanyList = new ArrayList<>();
+                for (HireWandResponse.Profile.WorkExperience each: profile.WorkExperience) {
+                    if(each!= null && each.getCompany()!= null && each.getCompany().size() > 0) {
+                        for(String eachCompany:each.getCompany()){
+                            AddSupportCandidateRequest.PastCompany pastCompany = new AddSupportCandidateRequest.PastCompany();
+                            pastCompany.setCompanyName(eachCompany);
+                            // default is "Others" (34L) --> This is needed since company will not be registered without job role
+                            pastCompany.setJobRoleId(34);
+                            // need to set current company flag --> if you dont set this, you're looking at an NPE
+                            if(profile.getLatestCompanies() != null && !isCurrentSet){
+                                // default is false
+                                pastCompany.setCurrent(Boolean.FALSE);
+                                for(String latest:profile.getLatestCompanies()){
+                                    if(latest.equalsIgnoreCase(eachCompany)) {
+                                        pastCompany.setCurrent(Boolean.TRUE);
+                                        isCurrentSet = Boolean.TRUE;
+                                        break;
+                                    }
+                                }
+                            }
+                            else pastCompany.setCurrent(Boolean.FALSE);
+                            pastCompanyList.add(pastCompany);
+                        }
+                    }
+                }
+                if(pastCompanyList.size() > 0) addSupportCandidateRequest.setPastCompanyList(pastCompanyList);
+            }
+
+            // Candidate Gender
+            if(profile.getGender() != null){
+                if(profile.getGender().equalsIgnoreCase("male")) addSupportCandidateRequest.setCandidateGender(ServerConstants.GENDER_MALE);
+                else if(profile.getGender().equalsIgnoreCase("female")) addSupportCandidateRequest.setCandidateGender(ServerConstants.GENDER_FEMALE);
+            }
+
+            // Candidate Marital Status
+            if(profile.getPersonalDetails() != null){
+                if(profile.getPersonalDetails().getMarried()!=null && profile.getPersonalDetails().getMarried())
+                    addSupportCandidateRequest.setCandidateMaritalStatus(1);
+                else if (profile.getPersonalDetails().getMarried()!=null  && !profile.getPersonalDetails().getMarried())
+                    addSupportCandidateRequest.setCandidateMaritalStatus(0);
+            }
+
+            // Candidate DOB
+            if(profile.getPersonalDetails()!= null && profile.getPersonalDetails().getDateofbirth()!=null){
+                String dob = profile.getPersonalDetails().getDateofbirth();
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                try {
+                    addSupportCandidateRequest.setCandidateDob(format.parse(dob));
+                } catch (ParseException e) {
+                    Logger.info("Could not convert "+dob+" to date");
+                    e.printStackTrace();
+                }
+            }
+
+            // Candidate education --> Only consider the first entry
+            int c = 0; // this adjusts for cases where there is an "education" entry without corresponding "degree" entry
+            if(profile.getEducation() != null){
+                for(HireWandResponse.Profile.Education each:profile.getEducation()){
+                    if(each != null){
+                        c++; // set a flag for every education entry
+                        if(each.getDegree() != null) {
+                            c--; // reset the flag for every education entry that also has a degree entry
+                            if(each.getDegree().toLowerCase().contains("master"))
+                                addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_PG+c);
+                            else if(each.getDegree().toLowerCase().contains("bachelor"))
+                                addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_UG+c);
+                            else if(each.getDegree().toLowerCase().contains("diploma") || each.getDegree().toLowerCase().contains("12th"))
+                                addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_12TH_PASS_ID+c);
+                            else if(each.getDegree().toLowerCase().contains("10th"))
+                                addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_10TH_PASS_ID+c);
+
+                            try{
+                                addSupportCandidateRequest.setCandidateEducationInstitute(each.getCollege().getName()+((each.getCollege().getCity()!=null)?" "+each.getCollege().getCity():""));
+                            } catch (NullPointerException e){
+                                e.printStackTrace();
+                                Logger.info("Could not set college");
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // candidate Languages
+            if(profile.getSkillRatings()!=null){
+                List<CandidateKnownLanguage> candidateKnownLanguages = new ArrayList<>();
+                for(HireWandResponse.Profile.SkillRating each:profile.getSkillRatings()){
+                    if(each!=null && each.getSkill()!= null){
+                        switch (each.getSkill()){
+                            case "English":
+                            case "Hindi":
+                            case "Kannada":
+                            case "Tamil":
+                            case "Telugu":
+                                Language language = Language.find.where().ieq("languagename",each.getSkill().trim()).findUnique();
+                                if(language != null){
+                                    CandidateKnownLanguage candidateKnownLanguage = new CandidateKnownLanguage();
+                                    candidateKnownLanguage.setId(Integer.toString(language.getLanguageId()));
+                                    candidateKnownLanguages.add(candidateKnownLanguage);
+                                }
+                                break;
+                        }
+                    }
+                }
+                if(candidateKnownLanguages.size() > 0) addSupportCandidateRequest.setCandidateLanguageKnown(candidateKnownLanguages);
+            }
+
+            // Default locality to "Others" --> Locality ID 345
+            // this is required since every candidate is expected to have some locality
+            List<Integer> localityList = new ArrayList<>();
+            localityList.add(345);
+            addSupportCandidateRequest.setCandidateLocality(localityList);
+
+            // Default Job Role Preference to "Others" --> Job Role ID 34
+            // this is required since every candidate is expected to have some job role pref
+            List<Integer> jobRoleList = new ArrayList<>();
+            jobRoleList.add(34);
+            addSupportCandidateRequest.setCandidateJobPref(jobRoleList);
+
+        }
+        else if (existingCandidate != null) {
+            addSupportCandidateRequest.setCandidateMobile(existingCandidate.getCandidateMobile());
+        }
+
+        Logger.info("Exiting mapFromHWToCandidate");
+
+        return addSupportCandidateRequest;
+    }
+
+    public static String uploadResumeToAWS(File resume, String fileName){
+
+        Logger.info("Entering uploadResumeToAWS with fileName = "+fileName);
+
+        try{
+            AWSCredentials credentials = new BasicAWSCredentials(
+                    play.Play.application().configuration().getString("aws.accesskey"),
+                    play.Play.application().configuration().getString("aws.secretAccesskey"));
+
+            AmazonS3 s3client = new AmazonS3Client(credentials);
+            String bucketName = ServerConstants.AWS_S3_BUCKET_NAME;
+            String path = ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+ fileName;
+
+            PutObjectResult putObjectResult = s3client.putObject(new PutObjectRequest(bucketName, path, resume)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            if (putObjectResult.getETag() != null && putObjectResult.getETag().length() > 0) {
+                Logger.info("Resume uploaded successfully into AWS. ETag= "+putObjectResult.getETag());
+                return bucketName+"/"+path;
+            }
+            else {
+                Logger.info("Resume upload into AWS failed. No ETag returned");
+                return "";
+            }
+        } catch (Exception e){
+            Logger.info("Exception while uploading resume into AWS " + e.getMessage());
+            return "";
+        }
+
+    }
+
+    public static void copyResumeinAws(String fromKey, String toKey){
+        try{
+            AWSCredentials credentials = new BasicAWSCredentials(
+                    play.Play.application().configuration().getString("aws.accesskey"),
+                    play.Play.application().configuration().getString("aws.secretAccesskey"));
+
+            AmazonS3 s3client = new AmazonS3Client(credentials);
+            String bucketName = ServerConstants.AWS_S3_BUCKET_NAME;
+            s3client.copyObject(bucketName,(ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+fromKey),bucketName,(ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+toKey));
+        } catch (Exception e){
+            Logger.info("Exception while copying resume from AWS with key ="+(ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+fromKey)+" Exception: " + e);
+        }
+    }
+
+    public static void removeResumeFromAws(String key) {
+        try{
+            AWSCredentials credentials = new BasicAWSCredentials(
+                    play.Play.application().configuration().getString("aws.accesskey"),
+                    play.Play.application().configuration().getString("aws.secretAccesskey"));
+
+            AmazonS3 s3client = new AmazonS3Client(credentials);
+            String bucketName = ServerConstants.AWS_S3_BUCKET_NAME;
+            s3client.deleteObject(bucketName,(ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+key));
+        } catch (Exception e){
+            Logger.info("Exception while deleting resume from AWS with key ="+(ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+key)+" Exception: " + e);
+        }
+    }
+
+    // response: key = personId, candidateExists = true/false, alreadyParsed = true/false, status = success/fail, msg = error message (if any)
+    public static JSONObject updateResume(String personId, HireWandResponse.Profile profile, Boolean duplicate){
+
+        JSONObject responseJson = new JSONObject();
+        try {
+            responseJson.put("key",personId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        // get the existing entry from CandidateResume
+        CandidateResumeService candidateResumeService = new CandidateResumeService();
+        List<Map<String, String>> params = new ArrayList<>();
+        Map<String, String> param = new HashMap<>();
+        param.put("externalKey",personId);
+        params.add(param);
+        CandidateResume candidateResume = null;
+        try{
+            candidateResume = (CandidateResume) candidateResumeService.readByAttribute(params).get(0).getEntity();
+        } catch (java.lang.IndexOutOfBoundsException e){
+            Logger.info("Could not read candidate resume with externalKey = "+personId);
+            e.printStackTrace();
+            try {
+                responseJson.put("candidateExists",Boolean.FALSE);
+                responseJson.put("alreadyParsed",Boolean.FALSE);
+                responseJson.put("status","Fail");
+                responseJson.put("msg","Could not read candidate resume with externalKey = "+personId);
+                return responseJson;
+            } catch (JSONException ee) {
+                ee.printStackTrace();
+                return null;
+            }
+        }
+
+        // Check if this is a duplicate entry -- if so, we need to get the root person id
+        CandidateResume root = null;
+        if(profile.getProfilemergedto() != null){
+            Logger.info("Candidate Resume ID "+candidateResume.getCandidateResumeId()+" is duplicate. Searching for original entry with external_key = "+profile.getProfilemergedto());
+            param.clear();
+            param.put("externalKey",profile.getProfilemergedto());
+            params.clear();
+            params.add(param);
+            try{
+                root = (CandidateResume) candidateResumeService.readByAttribute(params).get(0).getEntity();
+            } catch (Exception e){e.printStackTrace();}
+            if(root != null){
+                // original entry found! Remove the current pointer
+                Logger.info("Original candidate resume entry found. ID = "+root.getCandidateResumeId());
+                TruRequest deleteRequest = new TruRequest();
+                List<Map<String,Long>> deleteKeyList = new ArrayList<>();
+                Map<String,Long> deleteKey = new HashMap<>();
+                Logger.info("Attempting to delete duplicate CandidateResume entry with ID = "+candidateResume.getCandidateResumeId());
+                deleteKey.put("CandidateResume",candidateResume.getCandidateResumeId());
+                deleteKeyList.add(deleteKey);
+                deleteRequest.setDeleteFields(deleteKeyList);
+                if(candidateResumeService.delete(deleteRequest).getStatus() == TruResponse.STATUS_SUCCESS){
+                    Logger.info("Duplicate entry with ID "+candidateResume.getCandidateResumeId()+" deleted successfully");
+                }
+                else Logger.info("Duplicate entry with ID "+candidateResume.getCandidateResumeId()+" NOT deleted!");
+                // reset pointer to root
+                candidateResume = root;
+                Logger.info("Resetting pointer to root. candidateResume.getCandidateResumeId() = "+candidateResume.getCandidateResumeId());
+            }
+            else Logger.info("Original entry could NOT be found!!! Proceeding with duplicate...");
+        }
+
+        Candidate candidate = null;
+        Boolean isNew = Boolean.FALSE;
+        Boolean isAlreadyParsed = Boolean.FALSE;
+
+        // check if candidate is already known
+        if(candidateResume.getCandidate() != null){
+            candidate = candidateResume.getCandidate();
+            // check if parsed resume already available
+            if(candidateResume.getParsedResume()!= null && !candidateResume.getParsedResume().isEmpty()){
+                // this candidate's parsed resume is already available
+                Logger.info("Parsed resume for existing candidate with ID "+candidate.getCandidateId()+" already available!");
+                isAlreadyParsed = Boolean.TRUE;
+                /*
+                try {
+                    responseJson.put("candidateExists",Boolean.TRUE);
+                    responseJson.put("alreadyParsed",Boolean.TRUE);
+                    responseJson.put("status","Success");
+                    responseJson.put("msg","Candidate exists. Parsed Resume exists. No further action required");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return responseJson;
+*/
+            }
+            Logger.info("Updating resume for existing candidate with ID = "+candidate.getCandidateId());
+        }
+        else{
+            //get candidate mobile number
+            // get all phone number(s) for this candidate
+            List<String> mobileNos = new ArrayList<>();
+
+            if(profile.PhoneNos != null){
+                for (int j = 0; j < profile.PhoneNos.size(); j++) {
+                    mobileNos.add(StringUtils.right(profile.PhoneNos.get(j).toString().trim(),10));
+                    Logger.info("mobileNos(j)="+mobileNos.get(j));
+                }
+            }
+
+            // primary key missing!!! Cannot create candidate
+            if(mobileNos.size() == 0) {
+                try {
+                    responseJson.put("candidateExists",Boolean.FALSE);
+                    responseJson.put("alreadyParsed",Boolean.FALSE);
+                    responseJson.put("status","Fail");
+                    responseJson.put("msg","No mobile detected in parsed resume. Cannot proceed");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return responseJson;
+            }
+
+            // get first matching candidate
+            for(String m:mobileNos){
+                candidate = isCandidateExists(m);
+                if(candidate != null) {
+                    try {
+                        responseJson.put("candidateExists",Boolean.TRUE);
+                        responseJson.put("alreadyParsed",Boolean.FALSE);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    Logger.info("Candidate found for mobile no = "+m);
+                    break;
+                }
+                Logger.info("Candidate not found for mobile no = "+m);
+            }
+        }
+
+        Long candidateId = 0L;
+        String candidateName = "";
+        String candidateMobile = "";
+
+        // no candidate found... Create
+        if(candidate == null) {
+            try {
+                responseJson.put("candidateExists",Boolean.FALSE);
+                responseJson.put("alreadyParsed",Boolean.FALSE);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            isNew = Boolean.TRUE;
+            Logger.info("Attempting to create new candidate ...");
+            // map to candidate request
+            AddSupportCandidateRequest addSupportCandidateRequest = mapFromHWToCandidate(profile, candidate);
+
+            // check mobile number is as per required format before proceeding
+            if(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()) != null){
+                // create/update candidate
+                candidateMobile = addSupportCandidateRequest.getCandidateMobile();
+                Logger.info("About to call CandidateService.createCandidateProfile");
+
+                CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
+                int channel = 0;
+                // determine channel
+                if(session() != null && (session().get("sessionChannel") != null && !session().get("sessionChannel").isEmpty())){
+                    Logger.info("Session : "+ session().get("sessionChannel"));
+                    if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
+                        channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
+                    }else{
+                        channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
+                    }
+                }
+                else {channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;}
+
+                // candidate self creation (i.e. 1 click resume upload) is treated as "support" since the create API does not allow full candidate creation with channel = self
+                candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
+                        channel,
+                        ServerConstants.UPDATE_ALL_BY_SUPPORT);
+
+                // get candidate Id, Name
+                candidateId = candidateSignUpResponse.getCandidateId();
+                candidateName = candidateSignUpResponse.getCandidateFirstName();
+            }
+            else{
+                // mobile number is not formatted correctly! Cannot proceed!
+                try {
+                    responseJson.put("candidateExists",Boolean.FALSE);
+                    responseJson.put("alreadyParsed",Boolean.FALSE);
+                    responseJson.put("status","Fail");
+                    responseJson.put("msg","Candidate mobile number is not formatted correctly");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return responseJson;
+            }
+        }
+        else {
+            Logger.info("Attempting to update existing candidate ...");
+            isNew = Boolean.FALSE;
+
+            try {
+                responseJson.put("candidateExists",Boolean.TRUE);
+                if(isAlreadyParsed) responseJson.put("alreadyParsed",Boolean.TRUE);
+                else responseJson.put("alreadyParsed",Boolean.FALSE);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            // get candidate Id, Name
+            candidateId = candidate.getCandidateId();
+            candidateName = candidate.getCandidateFirstName();
+            candidateMobile = candidate.getCandidateMobile();
+        }
+
+        Logger.info("New/Updated candidateId ="+candidateId);
+
+        String awsName = "";
+        if(candidateResume.getCandidate() == null){
+            // recreate existing AWS object key
+            String existingKey = candidateResume.getFilePath();
+            existingKey = existingKey.replace("https://s3.amazonaws.com/trujobs.in/candidateResumes/","");
+            // create new key
+            awsName = createCandidateResumeFilename(Long.toString(candidateId),candidateName,existingKey);//"candidateResumes/"+candidateId+"_"+candidateName;
+            // rename (copy and delete) resume in AWS
+            Logger.info("AWS replacing old key="+existingKey+ " with new key="+awsName);
+            copyResumeinAws(existingKey,awsName);
+            removeResumeFromAws(existingKey);
+            // recreate new file path
+            awsName = "https://s3.amazonaws.com/trujobs.in/candidateResumes/"+awsName;
+        }
+
+        // Update CandidateResume Object
+        CandidateResumeRequest candidateResumeRequest = new CandidateResumeRequest();
+        candidateResumeRequest.setCandidateResumeId(candidateResume.getCandidateResumeId());
+        candidateResumeRequest.setParsedResume(profile.ProfileJSON);
+
+        List<String> changedFields;
+        // check if candidate is already known
+        if(candidateResume.getCandidate() == null){
+            // not known - need to set candidate reference
+            if(isNew) candidateResumeRequest.setCandidate(candidateId);
+            else candidateResumeRequest.setCandidate(candidate.getCandidateId());
+            changedFields = new ArrayList<String>(Arrays.asList("parsedResume","candidate"));
+        }
+        else{
+            // already known - only updating parsed resume string
+            changedFields = new ArrayList<String>(Arrays.asList("parsedResume"));
+        }
+
+        // if file path was updated
+        if(awsName.length() > 0){
+            candidateResumeRequest.setFilePath(awsName);
+            changedFields.add("filePath");
+        }
+
+        // created-by check
+        if(candidateResume.getCreatedBy() == null ||
+          (candidateResume.getCreatedBy() != null && candidateResume.getCreatedBy().equalsIgnoreCase("unknown"))){
+                candidateResumeRequest.setCreatedBy(candidateId+"(Candidate)");
+                changedFields.add("createdBy");
+        }
+
+        // update the candidate resume entry
+        candidateResumeRequest.setChangedFields(changedFields);
+        //CandidateResumeService candidateResumeService = new CandidateResumeService();
+        Logger.info("UpdateResume(): About to call candidateResumeService.update for id = "+candidateResume.getCandidateResumeId()+" referencing Candidate Id = "+candidateId);
+        if(candidateResumeService.update(candidateResumeRequest).getStatus() == TruResponse.STATUS_SUCCESS) {
+            try {
+                responseJson.put("status","Success");
+                responseJson.put("msg","Success");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            try {
+                responseJson.put("status","Fail");
+                responseJson.put("msg","Could not update parsed resume due to internal error");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // was this resume uploaded by a partner?
+        if(candidateResume.getCreatedBy().toLowerCase().contains("(partner)")){
+            String partnerId = candidateResume.getCreatedBy().split("\\(")[0];
+            Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
+
+            // to associate partner and candidate - if partner create a candidate by uploading resume
+            PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(candidateMobile));
+
+            try {
+                // is there any resume that was uploaded AFTER this resume by this partner?
+                Integer c = CandidateResume.find.where()
+                        .and(Expr.eq("createdBy", candidateResume.getCreatedBy()), Expr.gt("createTimestamp", candidateResume.getCreateTimestamp()))
+                        .findRowCount();
+
+                if (c == 0) {
+
+                    // send info SMS informing that uploaded resumes have been processed
+                    Logger.info("Sending SMS to partner : name = " + partner.getPartnerFirstName() + " mobile = "+partner.getPartnerMobile() );
+                    SmsUtil.resumeUploadStatusToPartner(partner.getPartnerFirstName(),partner.getPartnerMobile());
+                }
+                else{
+                    Logger.info("row count = " + c );
+                }
+            }
+            catch (NullPointerException e){
+                    e.printStackTrace();
+            }
+        }
+        return responseJson;
+
+    }
+
+    public static String createCandidateResumeFilename(String candidateId, String candidateName, String fileName){
+        String name = candidateId+"_"+candidateName;
+        name += "_"+new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss").format(new Date());
+        name += fileName.substring(fileName.lastIndexOf("."));
+        return name;
+    }
+
+    public static BulkUploadResponse bulkUploadCandidates(File file, String fileName){
+        BulkUploadResponse bulkUploadResponse = new BulkUploadResponse();
+        Integer totalCount = 0;
+        Integer count = 0;
+        try {
+            CSVReader reader = new CSVReader(new FileReader(file));
+            String[] header;
+            String[] nextLine;
+
+            header = reader.readNext();
+            if(header != null){
+                while((nextLine = reader.readNext()) != null){
+                    Logger.info("Next line value : "+ toJson(nextLine));
+                    AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
+                    List<CandidateSkills> candidateSkills = new ArrayList<>();
+                    addSupportCandidateRequest.setCandidateSkills(candidateSkills);
+                    List<CandidateKnownLanguage> candidateLanguageKnown = new ArrayList<>();
+                    addSupportCandidateRequest.setCandidateLanguageKnown(candidateLanguageKnown);
+                    addSupportCandidateRequest.setDeactivationStatus(Boolean.FALSE);
+
+                    Boolean isNew = Boolean.TRUE;
+                    String tempMobile = "";
+
+                    //to calculate the to number of candidate in file
+                    if(!nextLine[0].isEmpty()){
+                        totalCount++;
+                    }
+
+                    for(int i = 0; i < nextLine.length ; i++){
+                        if(!nextLine[i].isEmpty()){
+                            Logger.info("nextLine["+i+"]="+nextLine[i]);
+                            Logger.info("header["+i+"]="+header[i]);
+                            tempMobile = "";
+                            switch (header[i]){
+                                case "Name":
+                                    String fName = nextLine[i].split(" ")[0];
+                                    String lName = nextLine[i].replace(fName,"").trim();
+                                    addSupportCandidateRequest.setCandidateFirstName(fName);
+                                    Logger.info("addSupportCandidateRequest.setCandidateFirstName ="+fName);
+                                    addSupportCandidateRequest.setCandidateSecondName(lName);
+                                    Logger.info("addSupportCandidateRequest.setCandidateSecondName ="+lName);
+                                    break;
+                                case "Email":
+                                    addSupportCandidateRequest.setCandidateEmail(nextLine[i]);
+                                    Logger.info("addSupportCandidateRequest.setCandidateEmail ="+nextLine[i]);
+                                    break;
+                                case "Mobile":
+                                    //Logger.info("About to check for "+nextLine[i]);
+                                    isNew = ((Candidate.find.where().eq("candidateMobile",FormValidator.convertToIndianMobileFormat(nextLine[i])).findRowCount() > 0)? Boolean.FALSE: Boolean.TRUE);
+                                    //Logger.info("Candidate.find.where().eq(\"candidatemobile\",FormValidator.convertToIndianMobileFormat(nextLine[i])).findRowCount()"+Candidate.find.where().eq("candidatemobile",FormValidator.convertToIndianMobileFormat(nextLine[i])).findRowCount());
+                                    addSupportCandidateRequest.setCandidateMobile(FormValidator.convertToIndianMobileFormat(nextLine[i]));
+                                    tempMobile = addSupportCandidateRequest.getCandidateMobile();
+                                    Logger.info("addSupportCandidateRequest.setCandidateMobile ="+addSupportCandidateRequest.getCandidateMobile());
+                                    break;
+                                case "current salary per month":
+                                    addSupportCandidateRequest.setCandidateLastWithdrawnSalary(Long.valueOf(nextLine[i],10));
+                                    Logger.info("addSupportCandidateRequest.setCandidateLastWithdrawnSalary ="+addSupportCandidateRequest.getCandidateLastWithdrawnSalary());
+                                    break;
+                                case "Role":
+                                    List<JobRole> jobRoleList = JobRole.find.where().ilike("jobname","%"+nextLine[i]+"%").findPagedList(0,3).getList();
+                                    if(jobRoleList != null && jobRoleList.size() > 0){
+                                        addSupportCandidateRequest.setCandidateCurrentJobRoleId(jobRoleList.get(0).getJobRoleId());
+                                        List<Integer> ids = new ArrayList<>();
+                                        for(JobRole jobRole:jobRoleList){
+                                            ids.add(Math.toIntExact(jobRole.getJobRoleId()));
+                                        }
+                                        addSupportCandidateRequest.setCandidateJobPref(ids);
+                                    }
+                                    // Default is "Others" --> Id 34
+                                    else addSupportCandidateRequest.setCandidateCurrentJobRoleId(34L);
+                                    Logger.info("addSupportCandidateRequest.setCandidateCurrentJobRoleId ="+addSupportCandidateRequest.getCandidateCurrentJobRoleId());
+                                    break;
+                                case "Role Experience (in Years)":
+                                    //check if experience is define as a aplpha-numerical string
+                                    if(StringUtils.isNumeric(nextLine[i])){
+                                        addSupportCandidateRequest.setCandidateTotalExperience(Integer.valueOf(nextLine[i])*12);
+                                        Logger.info("addSupportCandidateRequest.setCandidateTotalExperience ="+addSupportCandidateRequest.getCandidateTotalExperience());
+                                    }
+                                    break;
+                                case "Languages known":
+                                    String[] languages = nextLine[i].split(" ");
+                                    List<CandidateKnownLanguage> candidateKnownLanguages = new ArrayList<>();
+                                    for(String lang:languages){
+                                        Language language = Language.find.where().ieq("languagename",lang.trim()).findUnique();
+                                        if(language != null){
+                                            CandidateKnownLanguage candidateKnownLanguage = new CandidateKnownLanguage();
+                                            candidateKnownLanguage.setId(Integer.toString(language.getLanguageId()));
+                                            candidateKnownLanguages.add(candidateKnownLanguage);
+                                        }
+                                    }
+                                    if(candidateKnownLanguages.size() > 0) {
+                                        addSupportCandidateRequest.setCandidateLanguageKnown(candidateKnownLanguages);
+                                        Logger.info("Count of addSupportCandidateRequest.setCandidateLanguageKnown ="+addSupportCandidateRequest.getCandidateLanguageKnown().size());
+                                    }
+                                    break;
+                                case "Education":
+                                    String educationString = nextLine[i].toLowerCase();
+                                    AddCandidateEducationRequest addCandidateEducationRequest = new AddCandidateEducationRequest();
+                                    if(educationString.startsWith("8th")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_LT_10TH_ID);}
+                                    else if(educationString.startsWith("10th")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_10TH_PASS_ID);}
+                                    else if(educationString.startsWith("12th")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_12TH_PASS_ID);}
+                                    else if(educationString.startsWith("diploma")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_UG);}
+                                    else if(educationString.startsWith("graduat")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_UG);}
+                                    else if(educationString.startsWith("postgraduat")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_PG);}
+                                    if(addCandidateEducationRequest.getCandidateEducationLevel() > 0){
+                                        addSupportCandidateRequest.setCandidateEducationLevel(addCandidateEducationRequest.getCandidateEducationLevel());
+                                        Logger.info("addSupportCandidateRequest.setCandidateEducationLevel ="+addSupportCandidateRequest.getCandidateEducationLevel());
+                                    }
+                                    break;
+                                case "Company":
+                                    if(nextLine[i].toLowerCase() != "nil" ||
+                                       nextLine[i].toLowerCase() != "no" ||
+                                       nextLine[i].toLowerCase() != "any" ||
+                                       nextLine[i].toLowerCase() != "any company"){
+                                        List<AddSupportCandidateRequest.PastCompany> pastCompanyList = new ArrayList<>();
+                                        AddSupportCandidateRequest.PastCompany pastCompany = new AddSupportCandidateRequest.PastCompany();
+                                        pastCompany.setCompanyName(nextLine[i]);
+                                        // Default is "Others" --> Id 34 (This is needed since company will not be created if job role is missing)
+                                        pastCompany.setJobRoleId(34);
+                                        // assumed to be current always
+                                        pastCompany.setCurrent(Boolean.TRUE);
+                                        pastCompanyList.add(pastCompany);
+                                        addSupportCandidateRequest.setPastCompanyList(pastCompanyList);
+                                        Logger.info("pastCompany.setCompanyName ="+pastCompany.getCompanyName());
+                                    }
+                                    break;
+                                default:
+                                    String misc = addSupportCandidateRequest.getSupportNote();
+                                    misc = ((misc == null)?header[i]+":"+nextLine[i]: misc+" || "+header[i]+":"+nextLine[i]);
+                                    addSupportCandidateRequest.setSupportNote(misc);
+                            }
+                        }
+                    }
+
+                    // create candidate
+                    if(isNew && addSupportCandidateRequest.getCandidateMobile() != null && !addSupportCandidateRequest.getCandidateMobile().isEmpty()){
+
+                        List<Integer> list = new ArrayList<>();
+                        if(addSupportCandidateRequest.getCandidateJobPref() == null || addSupportCandidateRequest.getCandidateJobPref().size() == 0){
+                            // set job pref to Others --> Every candidate is expected to have some job pref
+                            list.add(34);
+                            addSupportCandidateRequest.setCandidateJobPref(list);
+                        }
+                        // set location to Others --> Every candidate is expected to have some location
+                        list.clear();
+                        list.add(345);
+                        addSupportCandidateRequest.setCandidateLocality(list);
+
+                        Logger.info("Add support candidate request : "+ toJson(addSupportCandidateRequest));
+                        CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
+                                InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE,
+                                ServerConstants.UPDATE_ALL_BY_SUPPORT);
+                        // keep count
+                        if(candidateSignUpResponse.getCandidateId() > 0) {
+                            count++;
+                            Logger.info("Candidate Created with Id = "+candidateSignUpResponse.getCandidateId());
+                        }
+                    }
+                    else if(addSupportCandidateRequest.getCandidateMobile() != null && !addSupportCandidateRequest.getCandidateMobile().isEmpty())
+                    {
+                        Logger.info("Candidate exists for Mobile Number "+tempMobile);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        bulkUploadResponse.setTotalNumberOfCandidateCreated(count);
+        bulkUploadResponse.setTotalNumberOfCandidateUploaded(totalCount);
+        Logger.info("Total number of resume uploaded(). Count = "+totalCount);
+        Logger.info("Exiting bulkUploadCandidates(). Count = "+count);
+        return bulkUploadResponse;
+    }
+
 }

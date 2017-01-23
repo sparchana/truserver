@@ -1,8 +1,5 @@
 package models.util;
 
-import api.InteractionConstants;
-import api.ServerConstants;
-import controllers.businessLogic.InteractionService;
 import play.Logger;
 
 import java.math.BigInteger;
@@ -13,11 +10,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
-import static play.mvc.Controller.session;
-
 public class Util {
     private Util() {
     }
+
+    public static final String ACTION_CREATE = "C";
+    public static final String ACTION_UPDATE = "U";
+    public static final String ACTION_DELETE = "D";
+    public static final String ACTION_READ = "R";
 
     public static long randomLong() {
         long random = new Random().nextLong();

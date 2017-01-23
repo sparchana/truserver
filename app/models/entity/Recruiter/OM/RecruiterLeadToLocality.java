@@ -1,6 +1,7 @@
 package models.entity.Recruiter.OM;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -9,6 +10,8 @@ import models.entity.Static.Locality;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by dodo on 5/10/16.
@@ -16,12 +19,17 @@ import java.sql.Timestamp;
 
 @Entity(name = "recruiterleadtolocality")
 @Table(name = "recruiterleadtolocality")
+
 public class RecruiterLeadToLocality extends Model {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "recruiter_lead_to_locality_id", columnDefinition = "bigint signed", unique = true)
     private Long recruiterLeadToLocalityId;
 
+    @Column(name = "recruiter_lead_to_locality_uuid", columnDefinition = "varchar(255) not null", unique = true)
+    private String recruiterLeadToLocalityUUID;
+
+    @CreatedTimestamp
     @Column(name = "recruiter_lead_to_locality_create_timeStamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp recruiterLeadToLocalityCreateTimeStamp;
 
@@ -36,13 +44,13 @@ public class RecruiterLeadToLocality extends Model {
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "recruiter_lead_id", referencedColumnName = "recruiter_lead_id")
-    private RecruiterLead recruiterLead;
+    @JoinColumn(name = "recruiter_lead_to_job_role_id", referencedColumnName = "recruiter_lead_to_job_role_id")
+    private RecruiterLeadToJobRole recruiterLeadToJobRole;
 
     public static Finder<String, RecruiterLeadToLocality> find = new Finder(RecruiterLeadToLocality.class);
 
     public RecruiterLeadToLocality(){
-        this.recruiterLeadToLocalityCreateTimeStamp = new Timestamp(System.currentTimeMillis());
+        this.recruiterLeadToLocalityUUID = UUID.randomUUID().toString();
     }
 
     public Long getRecruiterLeadToLocalityId() {
@@ -77,12 +85,25 @@ public class RecruiterLeadToLocality extends Model {
         this.locality = locality;
     }
 
-    public RecruiterLead getRecruiterLead() {
-        return recruiterLead;
+    public String getRecruiterLeadToLocalityUUID() {
+        return recruiterLeadToLocalityUUID;
     }
 
-    public void setRecruiterLead(RecruiterLead recruiterLead) {
-        this.recruiterLead = recruiterLead;
+    public RecruiterLeadToJobRole getRecruiterLeadToJobRole() {
+        return recruiterLeadToJobRole;
     }
+
+    public void setRecruiterLeadToJobRole(RecruiterLeadToJobRole recruiterLeadToJobRole) {
+        this.recruiterLeadToJobRole = recruiterLeadToJobRole;
+    }
+
+    public List<RecruiterLeadToLocality> readById(List<Long> ids) {
+        return RecruiterLeadToLocality.find.where().idIn(ids).setUseCache(Boolean.TRUE).findList();
+    }
+
+    public List<RecruiterLeadToLocality> readByUUID(List<Long> uuids) {
+        return RecruiterLeadToLocality.find.where().in("recruiter_lead_to_locality_uuid",uuids).setUseCache(Boolean.TRUE).findList();
+    }
+
 }
 

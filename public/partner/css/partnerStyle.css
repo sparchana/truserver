@@ -542,8 +542,84 @@ a:hover{
     margin-right: 4px;
     margin-top: -4px;
 }
+#jobRoleName{
+    font-size: 14px;
+    color: #003557;
+    margin-top:6px;
+}
+#addCandidateColLeft{
+    padding: 2%;
+    border-right: 1px solid #26A69A;
+}
+#addCandidateColRight{
+    padding: 2%;
+}
+#candidateCreateOptionModalContent{
+    padding:4%;
+    border-radius: 2px;
+    text-align: center;
+}
+#addCandidateCant{
+    padding: 2% 8%;
+}
+#uploadResumeBtn,#addCandidateBtn{
+    width: 100%;
+    border: 1px solid #00897b;
+    color: #fff;
+    background: #00897b;
+}
+#candidateCreateOptionModalDialog{
+    margin-top:10%;
+}
+#uploadResumeModalContent,#uploadResumeModalProcessContent{
+    padding:2%;
+    margin-top:10%;
+    background: rgb(61, 179, 158);
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+}
+#uploadResumeModalDialog{
+    margin-top:12%;
+    width: 40%;
+}
+#loadingSpinnerResume{
+     box-sizing: border-box;
+     stroke: rgba(250, 255, 251,1);
+     stroke-width: 3px;
+     -webkit-transform-origin: 50%;
+     transform-origin: 50%;
+     -webkit-animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+     animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+ }
+#resumeColMsgFail{
+    color:#000;
+    text-align:left;
+    padding-top:12px
+}
+#resumeColMsgSuccess{
+    color:#000;
+    text-align:left;
+    padding-top:10px
+}
 
+.modal-title{
+ font-size: 18px;
+}
 @media screen and (max-width: 768px) {
+    .modal-title{
+        font-size: 14px;
+    }
+    #uploadResumeModalDialog{
+        margin-top:30%;
+        width: 90%;
+    }
+    #resumeColMsgSuccess,#resumeColMsgFail{
+        text-align: center;
+    }
+    #candidateCreateOptionModalDialog{
+        margin-top:30%;
+    }
     .navbar-nav>li>a {
         background-color: #00897b;
         color: #fff;
@@ -683,7 +759,7 @@ a:hover{
         width: 40%;
     }
     #jobRoleName{
-        font-size: 11px;
+        font-size: 10px;
         color: #000000;
     }
     .educationBtn {
@@ -703,5 +779,63 @@ a:hover{
         content:url("/assets/common/img/logo-main.gif");
     }
 }
+@-webkit-keyframes rotate {
+    from {
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+    to {
+        -webkit-transform: rotate(450deg);
+        transform: rotate(450deg);
+    }
+}
+
+@keyframes rotate {
+    from {
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+    to {
+        -webkit-transform: rotate(450deg);
+        transform: rotate(450deg);
+    }
+}
+
+@-webkit-keyframes line {
+    0% {
+        stroke-dasharray: 2, 85.964;
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+    50% {
+        stroke-dasharray: 65.973, 21.9911;
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dasharray: 2, 85.964;
+        stroke-dashoffset: -65.973;
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
+    }
+}
+
+@keyframes line {
+    0% {
+        stroke-dasharray: 2, 85.964;
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+    50% {
+        stroke-dasharray: 65.973, 21.9911;
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dasharray: 2, 85.964;
+        stroke-dashoffset: -65.973;
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
+    }
+}
+
 
 

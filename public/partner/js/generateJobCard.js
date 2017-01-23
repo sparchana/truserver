@@ -1897,7 +1897,7 @@ openPartnerPreScreenModal = function (jobPostId, candidateId) {
 
         // display only Min Requirement
         decorator.textContainers.noteContainer.visibility = false;
-        decorator.textContainers.minReqContainer.className = "col-lg-12 form-group remove-padding-left";
+        decorator.textContainers.minReqContainer.className = "mdl-cell mdl-cell--12-col";
 
         // remove callConnected
         decorator.callYesNoRequired = false;
@@ -1907,12 +1907,16 @@ openPartnerPreScreenModal = function (jobPostId, candidateId) {
             decorator.preScreen.title = "Job Application Form"
         }
         decorator.table.mainTable.title = "Job Requirements : Please verify and update candidate's details ";
+        decorator.table.mainTable.minReqTable.className = "mdl-grid--no-spacing panel-collapse collapse";
+        decorator.finalSubmissionButton.className = "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent modal-submit";
         decorator.table.otherTable.title = "Job Details: ";
         decorator.textContainers.minReqContainer.title = "Other Requirements";
         decorator.edit.title = "Update Info";
+        decorator.finalSubmissionButton.enable = true;
+
 
         // footerMessage
-        decorator.modalFooter.footerMessage = " I confirm that the above details are accurate and accept the terms and conditions.";
+        decorator.modalFooter.footerMessage = "I confirm and accept T&C";
 
         var isSupport = false;
         if( !decorator.callYesNoRequired) {

@@ -1,7 +1,7 @@
 /**
  * Created by batcoder1 on 4/6/16.
  */
-
+var candidateId;
 var skillMap = [];
 var languageMap = [];
 var localityArray = [];
@@ -471,6 +471,8 @@ function checkInstitute() {
 
 function processDataAndFillAllFields(returnedData) {
     candidateInformation = returnedData;
+    candidateId = returnedData.candidateId;
+    viewDownloadResume(candidateId);
     $("#jobCount").html(Object.keys(candidateInformation.jobApplicationList).length);
 
     try{
