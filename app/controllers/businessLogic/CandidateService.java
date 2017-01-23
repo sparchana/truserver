@@ -1908,13 +1908,13 @@ public class CandidateService
             // get all phone number(s) for this candidate
             for (int i = 0; i < profile.PhoneNos.size(); i++) {
                 if(i == 0){
-                    addSupportCandidateRequest.setCandidateMobile(StringUtils.right(profile.PhoneNos.get(i),10));
+                    addSupportCandidateRequest.setCandidateMobile(StringUtils.right(profile.PhoneNos.get(i).trim(),10));
                 }
                 else if(i == 1) {
-                    addSupportCandidateRequest.setCandidateSecondMobile(StringUtils.right(profile.PhoneNos.get(i),10));
+                    addSupportCandidateRequest.setCandidateSecondMobile(StringUtils.right(profile.PhoneNos.get(i).trim(),10));
                 }
                 else if(i == 2) {
-                    addSupportCandidateRequest.setCandidateThirdMobile(StringUtils.right(profile.PhoneNos.get(i),10));
+                    addSupportCandidateRequest.setCandidateThirdMobile(StringUtils.right(profile.PhoneNos.get(i).trim(),10));
                 }
                 else break;
             }
@@ -2216,7 +2216,7 @@ public class CandidateService
 
             if(profile.PhoneNos != null){
                 for (int j = 0; j < profile.PhoneNos.size(); j++) {
-                    mobileNos.add(StringUtils.right(profile.PhoneNos.get(j).toString(),10));
+                    mobileNos.add(StringUtils.right(profile.PhoneNos.get(j).toString().trim(),10));
                     Logger.info("mobileNos(j)="+mobileNos.get(j));
                 }
             }
@@ -2267,30 +2267,45 @@ public class CandidateService
             // map to candidate request
             AddSupportCandidateRequest addSupportCandidateRequest = mapFromHWToCandidate(profile, candidate);
 
-            // create/update candidate
-            Logger.info("About to call CandidateService.createCandidateProfile");
+            // check mobile number is as per required format before proceeding
+            if(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()) != null){
+                // create/update candidate
+                Logger.info("About to call CandidateService.createCandidateProfile");
 
-            CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
-            int channel = 0;
-            // determine channel
-            if(session() != null && (session().get("sessionChannel") != null && !session().get("sessionChannel").isEmpty())){
-                Logger.info("Session : "+ session().get("sessionChannel"));
-                if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
-                    channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
-                }else{
-                    channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
+                CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
+                int channel = 0;
+                // determine channel
+                if(session() != null && (session().get("sessionChannel") != null && !session().get("sessionChannel").isEmpty())){
+                    Logger.info("Session : "+ session().get("sessionChannel"));
+                    if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
+                        channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
+                    }else{
+                        channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
+                    }
                 }
+                else {channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;}
+
+                // candidate self creation (i.e. 1 click resume upload) is treated as "support" since the create API does not allow full candidate creation with channel = self
+                candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
+                        channel,
+                        ServerConstants.UPDATE_ALL_BY_SUPPORT);
+
+                // get candidate Id, Name
+                candidateId = candidateSignUpResponse.getCandidateId();
+                candidateName = candidateSignUpResponse.getCandidateFirstName();
             }
-            else {channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;}
-
-            // candidate self creation (i.e. 1 click resume upload) is treated as "support" since the create API does not allow full candidate creation with channel = self
-            candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                    channel,
-                    ServerConstants.UPDATE_ALL_BY_SUPPORT);
-
-            // get candidate Id, Name
-            candidateId = candidateSignUpResponse.getCandidateId();
-            candidateName = candidateSignUpResponse.getCandidateFirstName();
+            else{
+                // mobile number is not formatted correctly! Cannot proceed!
+                try {
+                    responseJson.put("candidateExists",Boolean.FALSE);
+                    responseJson.put("alreadyParsed",Boolean.FALSE);
+                    responseJson.put("status","Fail");
+                    responseJson.put("msg","Candidate mobile number is not formatted correctly");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return responseJson;
+            }
         }
         else {
             Logger.info("Attempting to update existing candidate ...");
