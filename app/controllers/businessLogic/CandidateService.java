@@ -1630,9 +1630,9 @@ public class CandidateService
         try {
             String fileContentType = tika.detect(resume);
             Logger.info(fileName+" file type detected as "+fileContentType);
-            if(!fileContentType.toLowerCase().contains("application/msword") ||
-                    !fileContentType.toLowerCase().contains("application/vnd.openxmlformats-officedocument.wordprocessingml.document") ||
-                    !fileContentType.toLowerCase().contains("application/pdf") ||
+            if(!fileContentType.toLowerCase().contains("application/msword") &&
+                    !fileContentType.toLowerCase().contains("application/vnd.openxmlformats-officedocument.wordprocessingml.document") &&
+                    !fileContentType.toLowerCase().contains("application/pdf") &&
                     !fileContentType.toLowerCase().contains("text/plain")){
                 // invalid file type --> Only word, pdf, txt formats are supported
                 try {
