@@ -39,6 +39,7 @@ public class SmsUtil {
 
         //adding sms to notificationHandler queue
         NotificationEvent notificationEvent = new SMSEvent(toPhone, msg);
+        Logger.info("[-] smsTo: "+ toPhone + " - msg: " + msg);
         Global.getmNotificationHandler().addToQueue(notificationEvent);
 
         return "";
