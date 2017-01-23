@@ -3,7 +3,7 @@ package models.entity.Recruiter;
 import com.avaje.ebean.*;
 import models.entity.OM.CandidateResume;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.validator.routines.EmailValidator;
+/*import org.apache.commons.validator.routines.EmailValidator;*/
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
@@ -240,7 +240,7 @@ public class RecruiterLead extends Model {
         this.recruiterLeadRequirement = recruiterLeadRequirement;
     }
 
-    public List<Message> validateRecruiterLeadMobile(RecruiterLeadRequest request, String action, RecruiterLead entity) {
+   /* public List<Message> validateRecruiterLeadMobile(RecruiterLeadRequest request, String action, RecruiterLead entity) {
 
         List<Message> messageList = new ArrayList<Message>();
 
@@ -259,7 +259,7 @@ public class RecruiterLead extends Model {
         }
 
         return messageList;
-    }
+    }*/
 
     public List<Message> validateRecruiterLeadAltNumber(RecruiterLeadRequest request, String action, RecruiterLead entity) {
 
@@ -303,14 +303,14 @@ public class RecruiterLead extends Model {
             case ACTION_CREATE:
             case ACTION_UPDATE:
 
-                EmailValidator ev = EmailValidator.getInstance();
+                /*EmailValidator ev = EmailValidator.getInstance();
                 if(StringUtils.isNotBlank(request.getRecruiterLeadEmail()) && (!ev.isValid(request.getRecruiterLeadEmail().trim()))) {
                     try {
                         messageList.add(new Message(Message.MESSAGE_ERROR,request.getRecruiterLeadEmail()+" is not a valid email id"));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }
+                }*/
                 break;
         }
 

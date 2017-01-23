@@ -2337,11 +2337,15 @@ public class CandidateService
                 Integer c = CandidateResume.find.where()
                         .and(Expr.eq("createdBy", candidateResume.getCreatedBy()), Expr.gt("createTimestamp", candidateResume.getCreateTimestamp()))
                         .findRowCount();
+
                 if (c == 0) {
 
                     // send info SMS informing that uploaded resumes have been processed
                     String partnerId = candidateResume.getCreatedBy().split("\\(")[0];
-                    Partner partner = Partner.find.where().eq("partnerId", partnerId).findUnique();
+                    Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
+
+                    CandidateSignUpResponse candidateSignUpResponse = PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(candidateResume.getCandidate().getCandidateMobile()));
+
                     // send SMS
                     Logger.info("Sending SMS to partner : name = " + partner.getPartnerFirstName() + " mobile = "+partner.getPartnerMobile() );
                     SmsUtil.resumeUploadStatusToPartner(partner.getPartnerFirstName(),partner.getPartnerMobile());
