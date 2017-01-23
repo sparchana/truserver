@@ -90,9 +90,9 @@ public class Util {
         if(candidate != null && jobPost != null) {
             stringBuilder.append(BASE_URL);
             stringBuilder.append("/apply/inshort/");
-            stringBuilder.append(jobPost.getJobPostTitle().replaceAll("[^\\w\\s]","-").toLowerCase());
+            stringBuilder.append(jobPost.getJobPostTitle().replaceAll("[\\s]","-").toLowerCase());
             stringBuilder.append("-jobs-in-bangalore-at-");
-            stringBuilder.append(jobPost.getCompany().getCompanyName().replaceAll("[^\\w\\s]","-").toLowerCase());
+            stringBuilder.append(jobPost.getCompany().getCompanyName().replaceAll("[\\s]","-").toLowerCase());
             stringBuilder.append("-"+jobPost.getJobPostId());
             stringBuilder.append("?cid="+candidate.getCandidateId());
             stringBuilder.append("&key="+md5(String.valueOf(auth.getOtp())));

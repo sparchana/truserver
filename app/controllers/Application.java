@@ -2413,11 +2413,14 @@ public class Application extends Controller {
         }
 
         // #2. update candidate interview detail
-        AddCandidateInterviewSlotDetail interviewSlotDetail = new AddCandidateInterviewSlotDetail();
-        interviewSlotDetail.setScheduledInterviewDate(new Date(request.getDateInMillis()));
-        interviewSlotDetail.setTimeSlot(request.getTimeSlotId());
+        if(request.getTimeSlotId() != null && request.getDateInMillis()!= null){
+            AddCandidateInterviewSlotDetail interviewSlotDetail = new AddCandidateInterviewSlotDetail();
 
-        JobPostWorkflowEngine.updateCandidateInterviewDetail(candidate.getCandidateId(), request.getJobPostId(), interviewSlotDetail,  channelType);
+            interviewSlotDetail.setScheduledInterviewDate(new Date(request.getDateInMillis()));
+            interviewSlotDetail.setTimeSlot(request.getTimeSlotId());
+
+            JobPostWorkflowEngine.updateCandidateInterviewDetail(candidate.getCandidateId(), request.getJobPostId(), interviewSlotDetail,  channelType);
+        }
 
         // #3. update candidate info
         isVerifyAadhaar = CandidateService.updateCandidateDetail(request.getPropertyIdList(), candidate, request.getUpdateCandidateDetail());

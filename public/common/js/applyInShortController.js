@@ -4,6 +4,7 @@ var applyInShort = (function ($) {
     'use strict';
     var appz = {
         isNavBarLoaded : false,
+        isInterviewSlotAvailable: false,
         loginStatus: null,
         candidateId: null,
         jobPostId: null,
@@ -179,10 +180,10 @@ var applyInShort = (function ($) {
                         if(appz.missingData.interviewSlotPopulateResponse != null
                             && appz.missingData.interviewSlotPopulateResponse.interviewResponse.status == 2
                             && appz.missingData.interviewSlotPopulateResponse.interviewSlotMap != null) {
-
                             appz.render.interviewSlotCard(appz.missingData.interviewSlotPopulateResponse.interviewSlotMap);
                         } else {
                             $('#jobInterviewSlotCardDiv').hide();
+                            appz.isInterviewSlotAvailable = false;
                         }
 
                         console.log(appz.missingData);
@@ -231,8 +232,11 @@ var applyInShort = (function ($) {
                 console.log("rendering interview slot card");
 
                 if(slotMap == null) {
+                    appz.isInterviewSlotAvailable = false;
                     return;
                 }
+
+                appz.isInterviewSlotAvailable = true;
 
                 $('#interviewJobTitle').html(appz.jobTitle);
                 $('#interviewCompanyName').html(appz.companyName);
@@ -949,10 +953,9 @@ var applyInShort = (function ($) {
                         var documentCheckMatch = document.createElement("input");
                         documentCheckMatch.id = "idProofCheckbox_" + idProof.idProofId;
                         documentCheckMatch.type = "checkbox";
-                        documentCheckMatch.value = "on";
                         documentCheckMatch.name = "document";
-                        documentCheckMatch.onclick = function () {
-                            if ($("idProofCheckbox_" + idProof.idProofId).value == "on") {
+                        documentCheckMatch.onchange = function () {
+                            if ($("#idProofCheckbox_" + idProof.idProofId).prop('checked') == true) {
                                 console.log("Show");
                                 $("#document_response_input_" + idProof.idProofId).css("display", "block");
                             }
@@ -1018,7 +1021,7 @@ var applyInShort = (function ($) {
 
                         colLanguageTitle.innerHTML = "<div class=\"btn-group\" style=\"margin:6px 0px;width:100%\" data-toggle=\"buttons\">" +
                                           "<label class=\"btn btn-custom-check\"style=\"width:100%\" >" +
-                                          "<input id=\"language_"+ lId[i] +"\" type=\"checkbox\" name=\"language\" value=0 >"+ l[i] +
+                                          "<input id=\"lang_"+ lId[i] +"\" type=\"checkbox\" name=\"u\" value=0 >"+ l[i] +
                                           "</label>" +
                                           "</div>";
                     }
@@ -1455,20 +1458,23 @@ var applyInShort = (function ($) {
 
                 var selectedInterview = $('#interViewSlot').val();
 
-                if(selectedInterview == null || selectedInterview == "0"){
-                    okToSubmit = false;
-                    msg = "Please select a valid Interview Slot.";
-                    $.notify(msg, 'error');
+                if(appz.isInterviewSlotAvailable) {
 
-                    var submit = {
-                        propId : 12,
-                        message: msg,
-                        submissionStatus: okToSubmit
-                    };
-                    okToSubmitList.push(submit);
-                } else {
-                    main["dateInMillis"] =parseInt(selectedInterview.split("_")[0]);
-                    main["timeSlotId"] = parseInt(selectedInterview.split("_")[1]);
+                    if(selectedInterview == null || selectedInterview == "0"){
+                        okToSubmit = false;
+                        msg = "Please select a valid Interview Slot.";
+                        $.notify(msg, 'error');
+
+                        var submit = {
+                            propId : 12,
+                            message: msg,
+                            submissionStatus: okToSubmit
+                        };
+                        okToSubmitList.push(submit);
+                    } else {
+                        main["dateInMillis"] =parseInt(selectedInterview.split("_")[0]);
+                        main["timeSlotId"] = parseInt(selectedInterview.split("_")[1]);
+                    }
                 }
 
                 console.log(appz.missingData.shortPSPopulateResponse.propertyIdList);
@@ -1522,7 +1528,7 @@ var applyInShort = (function ($) {
                         var languageMap = [];
                         var languageKnown = $('#language_details input:checked').map(function () {
                             check = 0;
-                            var id = this.id;
+                            var id = this.id.split("_")[1];
                             var name = this.name;
                             var item = {};
                             var pos;
@@ -1541,19 +1547,11 @@ var applyInShort = (function ($) {
                                 item["s"] = 0;
                                 if (name == "u")
                                     item["u"] = 1;
-                                else if (name == "rw")
-                                    item["rw"] = 1;
-                                else
-                                    item["s"] = 1;
                                 languageMap.push(item);
                             }
                             else {
                                 if (name == "u")
                                     languageMap[pos].u = 1;
-                                else if (name == "rw")
-                                    languageMap[pos].rw = 1;
-                                else
-                                    languageMap[pos].s = 1;
                             }
                         }).get();
 
