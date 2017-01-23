@@ -1138,7 +1138,7 @@ function constructPreScreenBodyContainer(returnedData, customD, isSupport) {
     container.append('<h4 class="mdl-shadow--2dp" style="'+customD.table.mainTable.titleStyle+'">'+customD.table.mainTable.title+'</h4>');
     container.append(minReqTableContainer);
 
-    var otherReqTableContainer = $('<div id="otherReqTable" class="'+customD.table.mainTable.minReqTable.className+'">></div>');
+    var otherReqTableContainer = $('<div id="otherReqTable" class="'+customD.table.mainTable.minReqTable.className+'"></div>');
     container.append('<h4 class="mdl-shadow--2dp" style="'+customD.table.otherTable.titleStyle+'">'+customD.table.otherTable.title+'</h4>');
     container.append(otherReqTableContainer);
 
