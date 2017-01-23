@@ -109,6 +109,9 @@ POST        /confirmInterview/:jpId/:value                                contro
 POST        /partnerConfirmInterview/:cId/:jpId/:value                    controllers.PartnerController.confirmInterview(cId : Long, jpId : Long, value : Long)
 POST        /updateCandidateDetailsViaPreScreen/                          controllers.Application.updateCandidateDetailsViaPreScreen(propertyIdList: String?= null, candidateMobile: String?= null,  jobPostId: java.lang.Long ?= null)
 POST        /updateFeedback                                               controllers.Application.updateFeedback()
+POST        /getDeActivationMessage                                       controllers.Application.getDeactivationMessage(candidateId: java.lang.Long?= null)
+POST        /updateRecruiterCreditPack                                    controllers.Application.updateRecruiterCreditPack()
+POST        /expireCreditPack                                             controllers.Application.expireCreditPack()
 
 # partner routes
 #~~~~~~~~~~~~~~~~~~~~
@@ -227,6 +230,7 @@ POST        /getAllInterviewNotGoingReasons                               contro
 POST        /getAllCandidateETA                                           controllers.Application.getAllCandidateETA()
 POST        /getAllNotSelectedReasons                                     controllers.Application.getAllNotSelectedReasons()
 POST        /getJobPostInfo/:id/:isSupport                                controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
+POST        /getInterviewSlots/:id                                        controllers.Application.getInterviewSlots(id : Long)
 
 # 3rd Party API
 # ~~~~~~~~~~~~~
@@ -296,6 +300,7 @@ GET         /api/test/testValidator/                                      contro
 GET         /api/test/testScheduler/                                      controllers.TestController.testScheduler()
 
 GET         /testNotification                                             controllers.TestController.testnotification()
+GET         /convertOldData                                               controllers.TestController.convertOldData()
 GET         /testQueue                                                    controllers.TestController.testQueue()
 
 # Scrap API

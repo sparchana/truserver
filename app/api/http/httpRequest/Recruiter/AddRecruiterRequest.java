@@ -1,5 +1,7 @@
 package api.http.httpRequest.Recruiter;
 
+import java.util.Date;
+
 /**
  * Created by batcoder1 on 18/7/16.
  */
@@ -20,6 +22,10 @@ public class AddRecruiterRequest {
     private Integer recruiterCreditMode;
     private Integer contactCredits;
     private Integer interviewCredits;
+
+    private Integer packId;
+    private Integer creditCount;
+    private Date expiryDate;
 
     public String getRecruiterName() {
         return recruiterName;
@@ -147,5 +153,29 @@ public class AddRecruiterRequest {
 
     public void setInterviewCredits(Integer interviewCredits) {
         this.interviewCredits = interviewCredits;
+    }
+
+    public Integer getPackId() {
+        return packId;
+    }
+
+    public void setPackId(Integer packId) {
+        this.packId = packId;
+    }
+
+    public Integer getCreditCount() {
+        return creditCount;
+    }
+
+    public Date getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(Date expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public void setCreditCount(Integer creditCount) {
+        this.creditCount = creditCount;
     }
 }

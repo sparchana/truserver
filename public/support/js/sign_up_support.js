@@ -1456,20 +1456,7 @@ function saveProfileForm() {
             statusCheck=0;
         }
         else{
-            if(id.idProofValue == null){
-                $.notify({
-                    title: "Invalid Input: ",
-                    message: "Please provide document details",
-                    animate: {
-                        enter: 'animated lightSpeedIn',
-                        exit: 'animated lightSpeedOut'
-                    }
-                },{
-                    type: 'danger'
-                });
-                statusCheck=0;
-            }
-            else{
+            if(id.idProofValue != null){
                 var isChecked = id.idProofId;
                 var isValid = validateInput(isChecked, id.idProofValue.trim());
                 if (isChecked && !isValid) {
@@ -1485,7 +1472,6 @@ function saveProfileForm() {
                         type: 'danger'
                     });
                 }
-
             }
         }
     });

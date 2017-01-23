@@ -13,14 +13,14 @@ public class Reason extends Model {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "ReasonId", columnDefinition = "int unsigned", unique = true)
-    private long reasonId;
+    private int reasonId;
 
     @Column(name = "ReasonName", columnDefinition = "text null")
     private String reasonName;
 
     public static Finder<String, Reason> find = new Finder(Reason.class);
 
-    public long getReasonId() {
+    public int getReasonId() {
         return reasonId;
     }
 

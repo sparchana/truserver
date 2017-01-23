@@ -6,7 +6,7 @@
  *
  * Created by Hawk on 04/01/17.
  *
- * Dependency: jQuery, validation.js
+ * Dependency: jQuery, bootstrap.min.js
  *
  * Pass a parent div to which needs JobCard appended
  *
@@ -25,8 +25,13 @@ var cardModule = (function ($) {
     };
 
     var cardModule = {
+        deActivationMessage: null,
         method: {
             genNewJobCard: function (_jobPostList, _parent) {
+                if(cardModule.deActivationMessage == null) {
+                    cardModule.method.getDeActivateMessage();
+                }
+
                 _jobPostList.forEach(function (jobPost) {
                     //!* get all localities of the jobPost *!/
                     var _jobLocality = jobPost.jobPostToLocalityList;
@@ -158,9 +163,9 @@ var cardModule = (function ($) {
                     var salaryDiv = document.createElement("div");
                     salaryDiv.style = "display: inline-block";
                     if (jobPost.jobPostMaxSalary == "0" || jobPost.jobPostMaxSalary == null) {
-                        salaryDiv.textContent = rupeeFormatSalary(jobPost.jobPostMinSalary) + " monthly";
+                        salaryDiv.textContent = rupeeFormatForSalary(jobPost.jobPostMinSalary) + " monthly";
                     } else {
-                        salaryDiv.textContent = rupeeFormatSalary(jobPost.jobPostMinSalary) + " - " + rupeeFormatSalary(jobPost.jobPostMaxSalary) + " monthly";
+                        salaryDiv.textContent = rupeeFormatForSalary(jobPost.jobPostMinSalary) + " - " + rupeeFormatForSalary(jobPost.jobPostMaxSalary) + " monthly";
                     }
                     salaryDataDiv.appendChild(salaryDiv);
 
@@ -449,6 +454,7 @@ var cardModule = (function ($) {
                     var applyBtn = document.createElement("button");
                     applyBtn.className = "jobApplyBtn2";
                     var applyJobText ;
+
                     if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != 4){
                         if(jobPost.applyBtnStatus == 2) {
                             applyJobText = "Book Interview";
@@ -461,6 +467,7 @@ var cardModule = (function ($) {
                             applyBtn.disabled =  true;
                             applyBtn.style = "background:#ffa726";
                         }
+
                     } else {
                         applyJobText = "Apply";
                     }
@@ -481,7 +488,45 @@ var cardModule = (function ($) {
                             console.log("exception occured!!" + exception);
                         }
                     };
+
+                    if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != 4){
+                        if(jobPost.applyBtnStatus == 2) {
+                            applyJobText = "Book Interview";
+                        } else if(jobPost.applyBtnStatus == 3) {
+                            applyJobText = "Already Applied";
+                            applyBtn.disabled =  true;
+                            applyBtn.style = "background:#ffa726";
+                        } else if(jobPost.applyBtnStatus == 5) {
+                            applyJobText = "Application Closed";
+                            applyBtn.disabled =  true;
+                            applyBtn.style = "background:#ffa726";
+                        } else if(jobPost.applyBtnStatus == 6) {
+                            applyJobText = "Apply";
+                            applyBtn.style = "background:#ffa726";
+                            applyBtn.onclick = function () {
+                                notifyMsg(cardModule.deActivationMessage, 'danger');
+                            };
+                        }
+                    } else {
+                        applyJobText = "Apply";
+                    }
+                    applyBtn.textContent = applyJobText;
                 });
+            },
+            getDeActivateMessage: function () {
+                //ajax call || its a promise
+                $.ajax({type: 'POST', url: '/getDeActivationMessage'}).then(function (returnedData) {
+                        if (returnedData != null
+                            && returnedData.deActivationMessage != null
+                            && cardModule.deActivationMessage == null) {
+
+                            cardModule.deActivationMessage = returnedData.deActivationMessage;
+                        } else {
+                            cardModule.deActivationMessage = "";
+                        }
+                    },
+                    function (xhr, state, error) {
+                    });
             }
         },
         validate: {
@@ -550,9 +595,41 @@ var cardModule = (function ($) {
     return cardModule;
 }(jQuery));
 
-
 // public card module handler
 function genNewJobCard(_jobPostList, parent) {
     console.log("jobcard working on " + _jobPostList.length + " jobpost");
     cardModule.method.genNewJobCard(_jobPostList, parent);
+}
+
+
+function notifyMsg(msg, type) {
+    if(typeof $.notify == 'function'){
+        $.notify({
+            message: msg,
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        }, {
+            type: type,
+            placement: {
+                from: "top",
+                align: "center"
+            }
+        });
+    } else {
+        alert(msg);
+    }
+};
+
+function rupeeFormatForSalary(sal){
+    if(sal != null){
+        sal = sal.toString();
+        var lastThree = sal.substring(sal.length-3);
+        var otherNumbers = sal.substring(0, sal.length-3);
+        if(otherNumbers != '')
+            lastThree = ',' + lastThree;
+        return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+    }
+    return "";
 }

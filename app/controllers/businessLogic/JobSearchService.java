@@ -289,12 +289,12 @@ public class JobSearchService {
             }
 
             List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, null, SORT_BY_DATE_POSTED,
-                    false, ServerConstants.SOURCE_INTERNAL);
+                    true, ServerConstants.SOURCE_INTERNAL);
 
             List<Long> relevantJobRoleIds = JobRelevancyEngine.getRelatedJobRoleIds(jobRoleIds);
 
             List<JobPost> relevantJobRoleJobs = queryAndReturnJobPosts(relevantJobRoleIds, null, SORT_BY_DATE_POSTED,
-                    false, ServerConstants.SOURCE_INTERNAL);
+                    true, ServerConstants.SOURCE_INTERNAL);
 
             List<Long> finalJobRoleIdList = new ArrayList<>();
             finalJobRoleIdList.addAll(jobRoleIds);
@@ -636,7 +636,6 @@ public class JobSearchService {
      */
     public static JobPostResponse getAllHotJobsPaginated(Long index) {
         JobPostResponse jobPostResponse = new JobPostResponse();
-        SearchJobService service = new SearchJobService();
         if (index != null) {
             PagedList<JobPost> pagedList = JobPost.find
                     .where()
@@ -655,7 +654,7 @@ public class JobSearchService {
                 cId = Long.valueOf(session().get("candidateId"));
             }
 
-            service.computeCTA(jobPostList, cId);
+            SearchJobService.computeCTA(jobPostList, cId);
             jobPostResponse.setAllJobPost(jobPostList);
 
             jobPostResponse.setTotalJobs(JobPost.find.where().eq("jobPostIsHot", "1").eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).eq("Source", ServerConstants.SOURCE_INTERNAL).findRowCount());
@@ -691,7 +690,6 @@ public class JobSearchService {
 
     public static JobPostResponse getActiveJobsForJobRolePaginated(Long jobRoleId, Long index){
         JobPostResponse jobPostResponse = new JobPostResponse();
-        SearchJobService service = new SearchJobService();
         if(index!=null){
             List<JobPost> jobPostList = JobPost.find.where()
                     .eq("jobRole.jobRoleId",jobRoleId)
@@ -707,7 +705,7 @@ public class JobSearchService {
             if((session().get("candidateId") != null)){
                 cId = Long.valueOf(session().get("candidateId"));
             }
-            service.computeCTA(jobPostList, cId);
+            SearchJobService.computeCTA(jobPostList, cId);
             jobPostResponse.setAllJobPost(jobPostList);
 
             jobPostResponse.setTotalJobs(JobPost.find.where().eq("jobRole.jobRoleId",jobRoleId).eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).eq("Source", ServerConstants.SOURCE_INTERNAL).findRowCount());

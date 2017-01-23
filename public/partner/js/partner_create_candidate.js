@@ -950,14 +950,9 @@ $(function() {
         });
         //document value verification
         documentValues.forEach(function(id){
-            if(id.idProofId == ""){
-                notifyError("Please Select Document");
-                statusCheck=0;
-            }
-            else{
+            if(id.idProofId != ""){
                 if(id.idProofValue == "" || id.idProofValue == undefined || id.idProofValue.trim().length == 0){
-                    notifyError("Please provide document details");
-                    statusCheck=0;
+                   // allow blank values to pass 
                 }
                 else{
                     var isChecked = id.idProofId;

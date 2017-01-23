@@ -38,30 +38,8 @@ function renderDashboard() {
                         var remainingContactCredits = 0;
                         var remainingInterviewCredits = 0;
                         if(jobPost.recruiterProfile != null){
-                            var creditHistoryList = jobPost.recruiterProfile.recruiterCreditHistoryList;
-                            creditHistoryList.reverse();
-                            var toCheckContactCreditCount = true;
-                            var toCheckInterviewCreditCount = true;
-                            creditHistoryList.forEach(function (creditHistory){
-                                try{
-                                    if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
-                                        if(toCheckContactCreditCount){
-                                            remainingContactCredits = parseInt(creditHistory.recruiterCreditsAvailable);
-                                            toCheckContactCreditCount = false;
-                                        }
-                                    } else{
-                                        if(toCheckInterviewCreditCount){
-                                            if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
-                                                remainingInterviewCredits = parseInt(creditHistory.recruiterCreditsAvailable);
-                                                toCheckInterviewCreditCount = false;
-                                            }
-                                        }
-                                    }
-                                    if((toCheckContactCreditCount == false) && (toCheckInterviewCreditCount ==false)){
-                                        return false;
-                                    }
-                                } catch(err){}
-                            });
+                            remainingContactCredits = jobPost.recruiterProfile.contactCreditCount;
+                            remainingInterviewCredits = jobPost.recruiterProfile.interviewCreditCount;
                         }
 
                         //addFooter();
@@ -83,7 +61,12 @@ function renderDashboard() {
                             },
                             'jobRecruiter': function () {
                                 if(jobPost.recruiterProfile != null){
-                                    return '<a href="'+"/recruiterDetails/"+jobPost.recruiterProfile.recruiterProfileId+'" id="'+jobPost.recruiterProfile.recruiterProfileId+'" style="cursor:pointer;" target="_blank">'+jobPost.recruiterProfile.recruiterProfileName+'</a>';
+                                    var extraMsg = "";
+                                    if(jobPost.company.companyId != jobPost.recruiterProfile.company.companyId){
+                                        extraMsg = "(Recruiter changed company to : " + jobPost.recruiterProfile.company.companyName + ") ";
+                                    }
+                                    return '<a href="'+"/recruiterDetails/"+jobPost.recruiterProfile.recruiterProfileId+'" id="'+jobPost.recruiterProfile.recruiterProfileId+'" style="cursor:pointer;" target="_blank">'
+                                        + jobPost.recruiterProfile.recruiterProfileName + " " + extraMsg + '</a>';
                                 } else{
                                     return " - ";
                                 }

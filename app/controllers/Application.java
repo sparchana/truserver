@@ -4,6 +4,7 @@ import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
+import api.http.httpRequest.Recruiter.AddRecruiterRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlotDetail;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
@@ -13,6 +14,8 @@ import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
 import api.http.httpResponse.hirewand.HireWandResponse;
 import api.http.httpResponse.hirewand.UploadResumeResponse;
+import api.http.httpResponse.Workflow.InterviewSlotPopulateResponse;
+import api.http.httpResponse.interview.InterviewResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
@@ -26,6 +29,7 @@ import controllers.businessLogic.Assessment.AssessmentService;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.*;
+import dao.CandidateDAO;
 import dao.CompanyDAO;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
@@ -567,7 +571,6 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    @Security.Authenticated(RecSecured.class)
     public static Result getCompanyInfo(long companyId) {
         Company company = Company.find.where().eq("companyId", companyId).findUnique();
         if(company!=null){
@@ -991,7 +994,6 @@ public class Application extends Controller {
         return ok(toJson(new RejectReasonDAO().getByType(ServerConstants.INTERVIEW_NOT_SELECED_TYPE_REASON)));
     }
 
-    @Security.Authenticated(RecSecured.class)
     public static Result getAllCompany() {
         List<Company> companyList = Company.find.where().orderBy("companyName").findList();
         return ok(toJson(companyList));
@@ -1276,7 +1278,7 @@ public class Application extends Controller {
             e.printStackTrace();
         }
 
-        return ok(toJson(DeactivationService.getDeactivatedCandidates(deactivatedCandidateRequest)));
+        return ok(toJson(DeactivationService.getDeActivatedCandidates(deactivatedCandidateRequest)));
     }
 
     public static Result deactiveToActive() {
@@ -1286,15 +1288,15 @@ public class Application extends Controller {
             return badRequest();
         }
 
-        DeactiveToActiveRequest deactiveToActiveRequest= new DeactiveToActiveRequest();
+        DeActiveToActiveRequest deActiveToActiveRequest = new DeActiveToActiveRequest();
         ObjectMapper newMapper = new ObjectMapper();
         Logger.info("deactivatedCandidateJsonNode: "+deactiveToActiveJson);
         try {
-            deactiveToActiveRequest = newMapper.readValue(deactiveToActiveJson.toString(), DeactiveToActiveRequest.class);
+            deActiveToActiveRequest = newMapper.readValue(deactiveToActiveJson.toString(), DeActiveToActiveRequest.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(DeactivationService.deactivateToActive(deactiveToActiveRequest)));
+        return ok(toJson(DeactivationService.deactivateToActive(deActiveToActiveRequest)));
     }
 
     public static Result postJob() {
@@ -1570,8 +1572,12 @@ public class Application extends Controller {
     public static Result getRelevantJobsPostsForCandidate(long id) {
         Candidate existingCandidate = Candidate.find.where().eq("candidateId", id).findUnique();
         if (existingCandidate != null) {
-            return ok(toJson(JobSearchService.getRelevantJobsPostsForCandidate(
-                    FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()))));
+            List<JobPost> matchingJobList = JobSearchService.getRelevantJobsPostsForCandidate(
+                    FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()));
+
+            SearchJobService.computeCTA(matchingJobList, id);
+
+            return ok(toJson(matchingJobList));
         }
         return ok("ok");
     }
@@ -2178,6 +2184,7 @@ public class Application extends Controller {
             Logger.info("No JobPost Found for jobPostId: " + jobPostId);
             return badRequest();
         }
+
         return ok(toJson(RecruiterService.isInterviewRequired(jobPost)));
     }
 
@@ -2479,5 +2486,91 @@ public class Application extends Controller {
         }
     }
 
+    public static Result getDeactivationMessage(Long candidateId) {
+        DeActivationStatusResponse response = new DeActivationStatusResponse();
+
+        if(candidateId == null && session().get("candidateId")!= null) {
+            candidateId = Long.valueOf(session().get("candidateId"));
+        }
+        if (candidateId != null) {
+            Candidate candidate = CandidateDAO.getById(candidateId);
+
+            if (candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
+                String message =
+                       SmsUtil.getDeactivationMessage(candidate.getCandidateFullName(), candidate.getCandidateStatusDetail().getStatusExpiryDate());
+
+                response.setDeActivationMessage(message);
+                Logger.info("de Activation is available");
+                return ok(toJson(response));
+            }
+        }
+        return ok(toJson(response));
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result updateRecruiterCreditPack() {
+        JsonNode req = request().body().asJson();
+        AddRecruiterRequest addRecruiterRequest = new AddRecruiterRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addRecruiterRequest = newMapper.readValue(req.toString(), AddRecruiterRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        RecruiterProfile recruiterProfile = RecruiterProfile.find.where()
+                .eq("RecruiterProfileMobile", FormValidator.convertToIndianMobileFormat(addRecruiterRequest.getRecruiterMobile()))
+                .findUnique();
+
+        if(recruiterProfile != null){
+
+            String createdBy = "Not specified";
+
+            if(session().get("sessionUsername") != null){
+                createdBy = "Support: " + session().get("sessionUsername");
+            }
+
+            return ok(toJson(RecruiterService.updateExistingRecruiterPack(recruiterProfile, addRecruiterRequest.getPackId(),
+                    addRecruiterRequest.getCreditCount(), createdBy, addRecruiterRequest.getExpiryDate())));
+        }
+
+        return ok("0");
+
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result expireCreditPack() {
+        JsonNode req = request().body().asJson();
+        AddRecruiterRequest addRecruiterRequest = new AddRecruiterRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addRecruiterRequest = newMapper.readValue(req.toString(), AddRecruiterRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ok(toJson(RecruiterService.expireCreditPack(addRecruiterRequest)));
+
+    }
+
+    public static Result getInterviewSlots(Long jobPostId) {
+        if(jobPostId == null) {
+            return badRequest();
+        }
+
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
+
+        if(jobPost == null ){
+            return badRequest();
+        }
+
+        InterviewResponse interviewResponse = RecruiterService.isInterviewRequired(jobPost);
+
+        InterviewSlotPopulateResponse response =
+                        new InterviewSlotPopulateResponse(
+                                JobService.getInterviewSlot(jobPost), interviewResponse, jobPost);
+
+        return ok(toJson(response));
+    }
 }
 
