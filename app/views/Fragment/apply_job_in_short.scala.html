@@ -23,7 +23,6 @@
             <!-- Bootstrap Core CSS -->
         <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css"/>
         <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css"/>
-        <link rel="stylesheet" type="text/css" href="/assets/common/css/myJobPost.css"/>
         <link rel="stylesheet" type="text/css" href="/assets/common/css/pre_screen_candidate.css"/>
 
         <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
@@ -33,24 +32,21 @@
         <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
 
         <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
-
         <style>
-        .nav > li > a:hover {
-            background-color: #12449a;
+        #finalSubmitBtn{
+            width: 100%;
+            font-weight:bold;
+            font-size: 18px;
+            background-color: rgb(9, 172, 88);
+        }
+        #missingInfo li{
+            color:#286ab6;
         }
         </style>
     </head>
     <body>
-        @*<div id="preloader">*@
-            @*<div id="loaderLogo">*@
-                @*<img id="leaderLogo" src="/assets/common/img/logo-color.gif" alt="TruJobs Logo" height="40px">*@
-            @*</div>*@
-            @*<div id="status">&nbsp;</div>*@
-        @*</div>*@
-
             <!-- Nav start -->
         <div id="nav_bar_inc"></div>
-
             <!-- custom message modal -->
         <div class="modal fade" id="messagePromptModal" tabindex="-1" role="dialog" aria-labelledby="messagePromptModalLabel">
             <div class="modal-dialog" role="document">
@@ -70,46 +66,77 @@
             </div>
         </div>
 
-        <div class="container">
-            <div class="card_container" id="card_container">
-                <div>Job Application Form</div>
-                <br>
-
-                    @* Job Locality Card start *@
-                <div id="jobLocalityCardDiv">
-                    <img src="/assets/common/img/jobApply.png" width="48px">
-                    <h5>You are applying for <b><div style="display: inline-block" id="locality_jobNameConfirmation"></div></b>
-                        job at <b><div style="display: inline-block" id="locality_companyNameConfirmation"></div></b>
-                        .</h5>
-                    <h5>Please select the location where you can work:</h5>
-                    <select id="jobLocality" class="selectDropdown"></select>
+        <div class="container" style="margin-top: 60px;margin-bottom: 40px">
+            <div class="row" style="margin: 10px 0;text-align: center">
+                <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+                    <h3>Job Application Form for <b><span style="display: inline-block" id="locality_jobNameConfirmation"></span>
+                        </b>job at
+                        <b><span style="display: inline-block" id="locality_companyNameConfirmation"></span></b>
+                    </h3>
                 </div>
-                    @* Job Locality Card end *@
-
-                    @* Job Pre Screen Card start *@
-                <div id="preScreenCardDiv">
-                    <div id="missingInfo">
-
+            </div>
+                @* Job Pre Interview Slot Card start *@
+            <div class="row" style="margin:5px 0" id="jobInterviewSlotCardDiv">
+                <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+                    <div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading data-toggle" data-target="#jobInterviewPanel" data-toggle="collapse" style=" background-color: #cfd8dc" href="#sortByOpener">
+                            <h4 class="panel-title" style="font-weight: bold">When can you come for interview ?</h4>
+                        </div>
+                        <div class="panel-collapse collapse in" id="jobInterviewPanel">
+                            <div class="row" style="margin: 10px 0">
+                                <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+                                    <div class="form-group">
+                                        <select id="interViewSlot" class="form-group selectDropdown"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                    @* Job Pre Screen Card enb *@
-
-                    @* Job Pre Interview Slot Card start *@
-                <div id="jobInterviewSlotCardDiv">
-                    <img src="/assets/common/img/jobApply.png" width="48px">
-                    <h6> For <b><div style="display: inline-block" id="interviewJobTitle"></div></b>
-                        job at <b><div style="display: inline-block" id="interviewCompanyName"></div></b>
-                        .</h6>
-                    <h6 style="margin-top: 16px">Please select the interview date and time</h6>
-                    <select id="interViewSlot" class="selectDropdown"></select>
                 </div>
-                    @* Job Pre Interview Slot Card end *@
-                <button type="button" id="finalSubmitBtn" class="btn btn-success">Submit</button>
+            </div>
+                @* Job Pre Interview Slot Card end *@
+                @* Job Locality Card start *@
+            <div class="row" style="margin:5px 0" id="jobLocalityCardDiv">
+                <div class="col-xs-12 col-sm-8 col-sm-offset-2">
+                <div class="panel-group">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" data-toggle="collapse" data-target="#jobLocalityPanel" style="background-color: #cfd8dc" href="#sortByOpener">
+                            <h4 class="panel-title" style="font-weight: bold">Where can you work ?</h4>
+                        </div>
+                        <div class="panel-collapse collapse in" id="jobLocalityPanel">
+                            <div class="row" style="margin: 10px 0">
+                                <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+                                    <div class="form-group">
+                                        <select id="jobLocality" class="form-control selectDropdown"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+                @* Job Locality Card end *@
+                @* Job Pre Screen Card start *@
+            <div class="row" style="margin:5px 0">
+                <div class="col-sm-12">
+                    <div class="panel panel-default" id="preScreenCardDiv">
+                    <div class="panel-heading" data-target="#missingInfo" style=" background-color: #cfd8dc" data-toggle="collapse" href="#sortByOpener">
+                        <h4 class="panel-title" style="font-weight: bold">Provide Details</h4>
+                    </div>
+                    <div class="panel-collapse collapse" id="missingInfo"></div>
+                </div>
+                    @* Job Pre Screen Card enb *@
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-3 col-sm-offset-9">
+                            <button type="button" id="finalSubmitBtn" class="btn btn-success">Apply</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <br>
-            <!-- Start Footer-->
-        <div id="footer_inc"></div>
 
         <script type="text/javascript" src="/assets/common/js/script_constants.js"></script>
         <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
@@ -118,20 +145,8 @@
         <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
         <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
         <script type="text/javascript" src="/assets/partner/js/notify.min.js"></script>
-
-        <script type="text/javascript" src="/assets/common/js/all_job_role_footer.js"></script>
         <script type="text/javascript" src="/assets/common/js/applyInShortController.js"></script>
 
-        <script>
-                $(document).ready(function () {
-                    $(document).click(function (event) {
-                        $(".navbar-collapse").collapse('hide');
-                    });
-                });
-                $(document).ready(function () {
-                    $('[data-toggle="tooltip"]').tooltip();
-                });
-        </script>
             <!-- Facebook Pixel Code -->
         <script>
                 !function (f, b, e, v, n, t, s) {

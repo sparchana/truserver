@@ -25,6 +25,7 @@ var applyInShort = (function ($) {
               this.parent = $('#missingInfo');
               this.mainDiv = document.createElement("div");
               this.mainDiv.className = "row";
+              this.mainDiv.style = "margin:0";
               this.parent.append(this.mainDiv);
 
               this.subDivOne = document.createElement("div");
@@ -34,7 +35,7 @@ var applyInShort = (function ($) {
 
               this.hintMessage = document.createElement("p");
               this.hintMessage.textContent = "Please provide following details to apply for this job";
-              this.hintMessage.style = "margin:0;font-weight:bold;font-size:18px";
+              this.hintMessage.style = "margin:10px 0;font-weight:bold;font-size:18px";
 
               this.subDivOne.appendChild(this.hintMessage);
 
@@ -174,7 +175,6 @@ var applyInShort = (function ($) {
                             appz.render.preScreenCard(appz.missingData.shortPSPopulateResponse);
                         }
 
-
                         /* render interview slot card */
                         if(appz.missingData.interviewSlotPopulateResponse != null
                             && appz.missingData.interviewSlotPopulateResponse.interviewResponse.status == 2
@@ -203,13 +203,13 @@ var applyInShort = (function ($) {
 
                 var localityMap = localityResponse.localityMap;
 
-                appz.jobTitle = localityResponse.jobTitle;
+                appz.jobTitle = localityResponse.jobTitle +" ";
                 appz.companyName = localityResponse.companyName;
 
                 $('#locality_jobNameConfirmation').html(appz.jobTitle);
                 $('#locality_companyNameConfirmation').html(appz.companyName);
 
-                if(localityMap != null) {
+                if (localityMap != null) {
                     var option = $('<option value=0></option>').text("Select Location");
                     $('#jobLocality').append(option);
                     for (var value in localityMap) {
@@ -221,6 +221,11 @@ var applyInShort = (function ($) {
                 }
                 /* clear mem */
                 localityMap = null;
+            },
+            jobOtherDetailsCard: function (otherDetailsResponse) {
+                console.log("rendering jobother deatils card");
+                var parent = $("#preScreenCardDiv");
+
             },
             interviewSlotCard: function (slotMap) {
                 console.log("rendering interview slot card");
@@ -288,7 +293,6 @@ var applyInShort = (function ($) {
             _document: function (documentList) {
                 var firstproperty = document.createElement("li");
                 firstproperty.textContent = "Do you have the following document(s) ?";
-                firstproperty.style = "color:#09ac58";
 
                 var rowBox = document.createElement("div");
                 rowBox.className = "row";
@@ -331,21 +335,21 @@ var applyInShort = (function ($) {
 
             _dob: function () {
                 //    age html
-                var thirdproperty = document.createElement("li");
-                thirdproperty.textContent = "Please mention your date of birth";
-                appz.factory.orderList.appendChild(thirdproperty);
+                var thirdProperty = document.createElement("li");
+                thirdProperty.textContent = "Please mention your date of birth";
+                appz.factory.orderList.appendChild(thirdProperty);
 
                 var rowBox = document.createElement("div");
                 rowBox.className = "row";
 
                 var ageTitle = document.createElement("div");
-                ageTitle.className = "col-xs-12 col-sm-5";
-                ageTitle.style = "padding:2% 3%";
+                ageTitle.className = "col-sm-5 hidden-xs";
+                ageTitle.style = "padding:14px 3%";
                 rowBox.appendChild(ageTitle);
 
                 var ageResponse = document.createElement("div");
-                ageResponse.className = "col-xs-12 col-sm-6";
-                ageResponse.style = "padding:1%";
+                ageResponse.className = "col-xs-12 col-sm-6 ";
+                ageResponse.style = "padding:1% 2%";
                 rowBox.appendChild(ageResponse);
 
                 var ageText = document.createElement("font");
@@ -356,7 +360,7 @@ var applyInShort = (function ($) {
                 var dayCandidate = document.createElement("select");
                 dayCandidate.className = "selectDropDown";
                 dayCandidate.id = "dob_day";
-                dayCandidate.style = "margin:0 1%";
+                dayCandidate.style = "margin:0 2%";
                 ageResponse.appendChild(dayCandidate);
 
                 var dayOption = document.createElement("option");
@@ -374,7 +378,7 @@ var applyInShort = (function ($) {
                 var monthCandidate = document.createElement("select");
                 monthCandidate.className = "selectDropDown";
                 monthCandidate.id = "dob_month";
-                monthCandidate.style = "margin:0 1%";
+                monthCandidate.style = "margin:0 2%";
                 ageResponse.appendChild(monthCandidate);
 
                 var monthOption = document.createElement("option");
@@ -406,7 +410,7 @@ var applyInShort = (function ($) {
                 var yearCandidate = document.createElement("select");
                 yearCandidate.className = "selectDropDown";
                 yearCandidate.id = "dob_year";
-                yearCandidate.style = "margin:0 1%";
+                yearCandidate.style = "margin:0 2%";
                 ageResponse.appendChild(yearCandidate);
 
                 var yearOption = document.createElement("option");
@@ -420,8 +424,8 @@ var applyInShort = (function ($) {
                     yearCandidate.appendChild(option);
                 }
 
-                thirdproperty.appendChild(rowBox);
-                appz.factory.orderList.appendChild(thirdproperty);
+                thirdProperty.appendChild(rowBox);
+                appz.factory.orderList.appendChild(thirdProperty);
 
                 // nothing to process
             },
@@ -474,8 +478,8 @@ var applyInShort = (function ($) {
 
                 var addCompanyName = document.createElement("input");
                 addCompanyName.className = "form-control";
-                addCompanyName.type = ("text");
-                addCompanyName.placeholder = ("Company Name");
+                addCompanyName.type = "text";
+                addCompanyName.placeholder = "Company Name";
                 addCompanyName.id = "companyName_1";
                 addCompanyName.onchange = applyInShort.validation.enableAddBtn;
                 allCompanyNameCol.appendChild(addCompanyName);
@@ -577,28 +581,20 @@ var applyInShort = (function ($) {
                 var textYear = document.createElement("input");
                 textYear.className = "form-control";
                 textYear.type = ("number");
-                textYear.value = 0;
+                textYear.placeholder = "Years";
+                textYear.style = "margin-top:1%";
                 textYear.oninput = applyInShort.aux.showExperienceBox;
                 textYear.id = ("candidateTotalExperienceYear");
                 experienceDuration.appendChild(textYear);
 
-                var titleExpYear = document.createElement("font");
-                titleExpYear.textContent = ("Years");
-                titleExpYear.style = "font-weight:bold";
-                experienceDuration.appendChild(titleExpYear);
-
                 var textMonths = document.createElement("input");
                 textMonths.className = "form-control";
                 textMonths.type = ("number");
-                textMonths.value = 0;
+                textMonths.placeholder = "Months";
                 textMonths.id = ("candidateTotalExperienceMonth");
                 textMonths.oninput = applyInShort.aux.showExperienceBox;
                 experienceDuration.appendChild(textMonths);
 
-                var titleExpMonths = document.createElement("font");
-                titleExpMonths.textContent = ("Months");
-                titleExpMonths.style = "font-weight:bold";
-                experienceDuration.appendChild(titleExpMonths);
 
                 var experienceCurrently = document.createElement("div");
                 experienceCurrently.className = "col-xs-12 col-md-10";
@@ -660,7 +656,6 @@ var applyInShort = (function ($) {
 
                 var educationResponseHEQ = document.createElement("div");
                 educationResponseHEQ.className = "col-xs-12 col-sm-6";
-                educationResponseHEQ.id = "education_details";
                 educationResponseHEQ.style = "padding:1%";
                 rowBoxHEQ.appendChild(educationResponseHEQ);
 
@@ -682,7 +677,6 @@ var applyInShort = (function ($) {
 
                 var educationResponseSuccess = document.createElement("div");
                 educationResponseSuccess.className = "col-xs-12 col-sm-6";
-                educationResponseSuccess.id = "education_details";
                 educationResponseSuccess.style = "padding-top:3%";
                 rowBoxSuccess.appendChild(educationResponseSuccess);
 
@@ -783,11 +777,11 @@ var applyInShort = (function ($) {
                 genderDetails.style = "padding:2% 0;";
 
                 var colGenderDetailsMale = document.createElement("div");
-                colGenderDetailsMale.className = "col-xs-12 col-sm-3";
+                colGenderDetailsMale.className = "col-xs-6 col-sm-3";
                 genderDetails.appendChild(colGenderDetailsMale);
 
                 var colGenderDetailsFemale = document.createElement("div");
-                colGenderDetailsFemale.className = "col-xs-12 col-sm-3";
+                colGenderDetailsFemale.className = "col-xs-6 col-sm-3";
                 genderDetails.appendChild(colGenderDetailsFemale);
 
                 var labelMale = document.createElement("label");
@@ -836,14 +830,14 @@ var applyInShort = (function ($) {
                 salaryResponse.style = "padding:1%";
 
                 var titleSalary = document.createElement("font");
-                titleSalary.textContent = ("Current/last drawn salary");
+                titleSalary.textContent = "Current/last drawn salary";
                 titleSalary.style = "margin-top:8px;font-weight:bold";
                 salaryDetails.appendChild(titleSalary);
 
                 var textSalary = document.createElement("input");
                 textSalary.className = "form-control";
-                textSalary.type = ("number");
-                textSalary.placeholder = ("Salary");
+                textSalary.type = "number";
+                textSalary.placeholder = "Salary InHand/Month";
                 textSalary.id = ("candidateLastWithdrawnSalary");
                 textSalary.oninput = applyInShort.validation.salary;
                 salaryResponse.appendChild(textSalary);
@@ -853,12 +847,6 @@ var applyInShort = (function ($) {
                 salaryInvalid.textContent = "Invalid Salary Input Please enter a valid 'Last Withdrawn Salary' (Ex: 15000) in a month";
                 salaryInvalid.style = "color:#ff1744;display:none;margin:1px 0 1px 2px;font-size:12px";
                 salaryResponse.appendChild(salaryInvalid);
-
-                var inhandText = document.createElement("span");
-                inhandText.className = "label label-success";
-                inhandText.textContent = ("(InHand/Month)");
-                inhandText.style = "margin:8px 16px;font-size:12px";
-                salaryDetails.appendChild(inhandText);
 
                 rowBox.appendChild(salaryDetails);
                 rowBox.appendChild(salaryResponse);
@@ -906,7 +894,7 @@ var applyInShort = (function ($) {
                 var assetsDetails = document.createElement("div");
                 assetsDetails.className = "col-md-12";
                 assetsDetails.id = "assets_details";
-                assetsDetails.style = "padding:2% 0";
+                assetsDetails.style = "padding:1%";
 
                 rowBox.appendChild(assetsDetails);
                 ninthProperty.appendChild(rowBox);
@@ -936,40 +924,46 @@ var applyInShort = (function ($) {
                         var documentResponseRow1 = document.createElement("div");
                         documentResponseRow1.className = "row";
                         documentResponseRow1.id = "document_response_checkbox";
-                        documentResponseRow1.style = "padding:2% 0";
+                        documentResponseRow1.style = "margin:0";
                         documentResponseCol.appendChild(documentResponseRow1);
 
                         var documentResponseRow2 = document.createElement("div");
                         documentResponseRow2.className = "row";
                         documentResponseRow2.id = "document_response_input_" + idProof.idProofId;
-                        documentResponseRow2.style = "padding:2% 2%;display:none;";
+                        documentResponseRow2.style = "padding:2% 2%;display:none;margin:0";
                         documentResponseCol.appendChild(documentResponseRow2);
 
-                        var checkMatchLabel = document.createElement("label");
-                        checkMatchLabel.type = "checkbox";
-                        checkMatchLabel.for = "idProofCheckbox_" + idProof.idProofId;
-                        checkMatchLabel.style = 'margin:4px 10px';
-                        documentResponseRow1.appendChild(checkMatchLabel);
+                        var documentBtnGroup = document.createElement("div");
+                        documentBtnGroup.className = "btn-group";
+                        documentBtnGroup.style = "width:100%";
+                        documentBtnGroup.setAttribute('data-toggle','buttons');
+                        documentResponseRow1.appendChild(documentBtnGroup);
 
-                        var checkMatch = document.createElement("input");
-                        checkMatch.type = "checkbox";
-                        checkMatch.id = "idProofCheckbox_" + idProof.idProofId;
-                        checkMatch.onclick = function () {
-                            if ($("#idProofCheckbox_" + idProof.idProofId).prop('checked') == true) {
+                        var documentLabel = document.createElement("label");
+                        documentLabel.className = "btn btn-custom-check";
+                        documentLabel.style = "margin:6px 0px;width:100%";
+                        documentLabel.id = "label_"+idProof.idProofId;
+                        documentLabel.textContent = idProof.idProofName;
+                        documentBtnGroup.appendChild(documentLabel);
+
+                        var documentCheckMatch = document.createElement("input");
+                        documentCheckMatch.id = "idProofCheckbox_" + idProof.idProofId;
+                        documentCheckMatch.type = "checkbox";
+                        documentCheckMatch.value = "on";
+                        documentCheckMatch.name = "document";
+                        documentCheckMatch.onclick = function () {
+                            if ($("idProofCheckbox_" + idProof.idProofId).value == "on") {
+                                console.log("Show");
                                 $("#document_response_input_" + idProof.idProofId).css("display", "block");
                             }
                             else {
+                                console.log("Hide");
                                 $("#document_response_input_" + idProof.idProofId).css("display", "none");
                                 $("#Invalid_" + idProof.idProofId).css("display", "none");
                             }
 
                         };
-                        checkMatchLabel.appendChild(checkMatch);
-
-                        var idProofTitleTd = document.createElement("font");
-                        idProofTitleTd.textContent = idProof.idProofName;
-                        idProofTitleTd.style = "margin:8% 4%";
-                        documentResponseRow1.appendChild(idProofTitleTd);
+                        documentLabel.appendChild(documentCheckMatch);
 
                         var alertInvalid = document.createElement("p");
                         alertInvalid.id = "Invalid_" + idProof.idProofId;
@@ -981,7 +975,7 @@ var applyInShort = (function ($) {
                         idProofNumberTd.id = "idProofValueTd_" + idProof.idProofId;
                         documentResponseRow2.appendChild(idProofNumberTd);
 
-                        var ip = document.createElement("INPUT");
+                        var ip = document.createElement("input");
                         ip.className = "form-control";
                         ip.setAttribute("type", "text");
                         ip.oninput = applyInShort.validation.input;
@@ -1015,43 +1009,18 @@ var applyInShort = (function ($) {
                 var i;
                 var table = document.getElementById("language_details");
                 for (i = 0; i < l.length; i++) {
-                    if (lId[i] == 1 || lId[i] == 2 || lId[i] == 3 || lId[i] == 4 || lId[i] == 5) {
-
+                    if (lId[i] == 1 || lId[i] == 2 || lId[i] == 3 || lId[i] == 4 || lId[i] == 5)
+                    {
                         var colLanguageTitle = document.createElement("div");
-                        colLanguageTitle.className = "col-xs-12 col-sm-3";
+                        colLanguageTitle.className = "col-xs-12 col-sm-4";
                         colLanguageTitle.style = "padding-top:8px";
                         table.appendChild(colLanguageTitle);
 
-                        var colLanguageUnder = document.createElement("div");
-                        colLanguageUnder.className = "col-xs-12 col-sm-3";
-                        table.appendChild(colLanguageUnder);
-
-                        var colLanguageRead = document.createElement("div");
-                        colLanguageRead.className = "col-xs-12 col-sm-3";
-                        table.appendChild(colLanguageRead);
-
-                        var colLanguageWrite = document.createElement("div");
-                        colLanguageWrite.className = "col-xs-12 col-sm-3";
-                        table.appendChild(colLanguageWrite);
-
-                        var cell1 = document.createElement("font");
-                        cell1.style = "font-size:16px;font-weight:bold";
-                        colLanguageTitle.appendChild(cell1);
-
-                        var cell2 = document.createElement("div");
-                        colLanguageUnder.appendChild(cell2);
-
-                        var cell3 = document.createElement("div");
-                        colLanguageRead.appendChild(cell3);
-
-                        var cell4 = document.createElement("div");
-                        colLanguageWrite.appendChild(cell4);
-
-
-                        cell1.innerHTML = '<span style="margin-top:8px">' + l[i] + '</span>';
-                        cell2.innerHTML = "<div class=\"btn-group\" style=\"margin:6px 0px\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"u\" value=0 >Understand</label></div>";
-                        cell3.innerHTML = "<div class=\"btn-group\" style=\"margin:6px 0px\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
-                        cell4.innerHTML = "<div class=\"btn-group\" style=\"margin:6px 0px\"  data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"rw\" value=0 >Read/Write</label></div>";
+                        colLanguageTitle.innerHTML = "<div class=\"btn-group\" style=\"margin:6px 0px;width:100%\" data-toggle=\"buttons\">" +
+                                          "<label class=\"btn btn-custom-check\"style=\"width:100%\" >" +
+                                          "<input id=\"language_"+ lId[i] +"\" type=\"checkbox\" name=\"language\" value=0 >"+ l[i] +
+                                          "</label>" +
+                                          "</div>";
                     }
                 }
             },
@@ -1136,24 +1105,27 @@ var applyInShort = (function ($) {
 
                     var assetsResponseCol = document.createElement("div");
                     assetsResponseCol.className = "col-xs-12 col-sm-3 col-md-3";
+                    assetsResponseCol.style = "padding-top:8px";
                     selectList.append(assetsResponseCol);
 
-                    var checkMatchLabel = document.createElement("label");
-                    checkMatchLabel.type = "checkbox";
-                    checkMatchLabel.for = "assetsCheckbox_" + asset.assetTitle;
-                    checkMatchLabel.style = 'margin:4px 10px';
-                    assetsResponseCol.appendChild(checkMatchLabel);
 
-                    var checkMatch = document.createElement("input");
-                    checkMatch.type = "checkbox";
-                    checkMatch.id = "assetsCheckboxId_" + asset.assetId;
+                    var assetsBtnGroup = document.createElement("div");
+                    assetsBtnGroup.className = "btn-group";
+                    assetsBtnGroup.style = "margin:6px 0px";
+                    assetsBtnGroup.setAttribute('data-toggle','buttons');
+                    assetsResponseCol.appendChild(assetsBtnGroup);
 
-                    var assetsTitle = document.createElement("font");
-                    assetsTitle.textContent = asset.assetTitle;
-                    assetsTitle.style = "margin:8% 4%";
-                    assetsResponseCol.appendChild(assetsTitle);
+                    var assetsLabel = document.createElement("label");
+                    assetsLabel.className = "btn btn-custom-check";
+                    assetsLabel.textContent = asset.assetTitle;
+                    assetsBtnGroup.appendChild(assetsLabel);
 
-                    checkMatchLabel.appendChild(checkMatch);
+                    var assetsCheckMatch = document.createElement("input");
+                    assetsCheckMatch.id = "assetsCheckboxId_" + asset.assetId;
+                    assetsCheckMatch.type = "checkbox";
+                    assetsCheckMatch.name = "document";
+                    assetsLabel.appendChild(assetsCheckMatch);
+
                 });
             },
 
