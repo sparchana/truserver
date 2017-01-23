@@ -388,6 +388,22 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row" style="margin-top: 8px" id="resumeContainer">
+                                        <div class="col-sm-3"><h5>Resume</h5></div>
+                                        <div class="col-sm-5">
+                                                <div id="userViewResume" style="margin: 8px 4px 4px 4px;display: inline-block">
+                                                    No Resume Uploaded
+                                                </div>
+                                                <div id="userViewDownload" style="margin: 4px;display: inline-block">
+                                                </div>
+                                                <div style="margin: 4px;display: inline-block;float:right">
+                                                    <label class="btn btn-default btn-file" id="uploadResumeBtnPostLogin">
+                                                        <span class="glyphicon glyphicon-open" aria-hidden="true" style="margin-right:10px"></span> Upload Resume
+                                                        <input type="file" accept="application/pdf,application/msword" id="uploadResumeContent" style="display: none">
+                                                    </label>
+                                                </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <br>
                                     <!-- next/save btn -->
@@ -556,10 +572,28 @@
                     </div>
                 </div>
         </div>
-
+        <div class ="modal fade bs-example-modal-md" id="uploadResumeModalProcess" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog modal-md" id="uploadResumeModalDialog" role="document">
+                <div class="modal-content" id="uploadResumeModalProcessContent">
+                    <center id="resumeUpload">
+                        <svg viewBox="0 0 32 32" width="42" height="42">
+                            <circle id="loadingSpinnerResume" cx="16" cy="16" r="14" fill="none"></circle>
+                        </svg>
+                    </center>
+                    <h4>Processing Your Resume...</h4>
+                </div>
+            </div>
+        </div>
+        <div class ="modal fade bs-example-modal-md" id="uploadResumeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog modal-md" id="uploadResumeModalDialog" role="document">
+                <div class="modal-content" id="uploadResumeModalContent">
+        </div>
+            </div>
+        </div>
         <div id="footer_inc"></div>
 
             <!-- Including Bootstrap -->
+        <script type="text/javascript" src="/assets/common/js/uploadResume.js"></script>
         <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="/assets/common/js/validation.js"></script>
         <script type="text/javascript" src="/assets/dashboard/js/dashboard.js"></script>

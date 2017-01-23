@@ -7,6 +7,7 @@ var jobArray = [];
 var prefLocation;
 var prefLocationName;
 var index = 0;
+var candidateId;
 
 function getLocality(){
     return localityArray;
@@ -69,7 +70,6 @@ $(window).load(function(){
 });
 
 $(document).ready(function(){
-
     $(".navbar-nav li a").click(function(event) {
         $(".navbar-collapse").collapse('hide');
     });
@@ -333,6 +333,7 @@ function openLogin() {
     $('#noUserLogin').hide();
     $('#incorrectMsgLogin').hide();
     $('#form_forgot_password').hide();
+    $('#mySignUpModal').modal('hide');
     $('#errorMsgReset').hide();
     $('#form_password_reset_otp').hide();
     $('#form_password_reset_new').hide();

@@ -158,8 +158,11 @@ GET         /recruiter/allRecruiterJobPosts                               contro
 GET         /recruiter/unlockedCandidates                                 controllers.RecruiterController.renderAllUnlockedCandidates
 GET         /recruiter/jobApplicants/:id                                  controllers.RecruiterController.renderAllApplications(id : Long)
 GET         /recruiterNavbar                                              controllers.RecruiterController.recruiterNavbar()
+GET         /showRecruiterLead/:id                                        controllers.RecruiterController.showRecruiterLead(id: Long)
+GET         /showRecruiterLeadStatus                                      controllers.RecruiterController.showRecruiterLeadStatus
 GET         /recruiter/job/track/:id                                      controllers.RecruiterController.trackApplication(id : Long)
 
+POST        /showRecruiterLead/:id                                        controllers.RecruiterController.readRecruiterLead(id: Long)
 POST        /getAllJobApplicants/:id                                      controllers.RecruiterController.getAllJobApplicants(id : Long)
 POST        /getAllRecruiterJobPosts                                      controllers.RecruiterController.getAllRecruiterJobPosts
 POST        /getRecruiterCredits/:id                                      controllers.RecruiterController.getRecruiterCredits(id : Long)
@@ -167,6 +170,8 @@ POST        /getAllCreditCategory                                         contro
 POST        /recruiter/unlockCandidateContact/:id                         controllers.RecruiterController.unlockCandidateContact(id : Long)
 POST        /findRecruiterAndSendOtp                                      controllers.RecruiterController.findRecruiterAndSendOtp()
 POST        /addRecruiterLead                                             controllers.RecruiterController.addWebsiteLead()
+POST        /modifyRecruiterLead                                          controllers.RecruiterController.updateWebsiteLead()
+POST        /removeRecruiterLead                                          controllers.RecruiterController.deleteWebsiteLead()
 POST        /updateRecruiterProfile                                       controllers.RecruiterController.addRecruiter()
 POST        /recruiterSignUp                                              controllers.RecruiterController.recruiterSignUp()
 POST        /addRecruiterPassword                                         controllers.RecruiterController.addPassword()
@@ -225,6 +230,7 @@ POST        /getAllInterviewNotGoingReasons                               contro
 POST        /getAllCandidateETA                                           controllers.Application.getAllCandidateETA()
 POST        /getAllNotSelectedReasons                                     controllers.Application.getAllNotSelectedReasons()
 POST        /getJobPostInfo/:id/:isSupport                                controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
+POST        /getInterviewSlots/:id                                        controllers.Application.getInterviewSlots(id : Long)
 
 # 3rd Party API
 # ~~~~~~~~~~~~~
@@ -328,5 +334,20 @@ POST        /api/compute/verifyAadhar/:candidateMobile                     contr
 GET         /robots.txt                                                   controllers.Assets.at(path="/public", file="robots.txt")
 GET         /assets/*file                                                 controllers.Assets.at(path="/public", file)
 GET         /sitemap.xml                                                  controllers.Assets.at(path="/public", file="sitemap.xml")
-GET         /favicon.ico                                                  controllers.Assets.at(path="/public/common/img/", file="icon.png")
-#GET   /webjars/*file                           controllers.WebJarAssets.at(file)
+GET         /favicon.ico                                                  controllers.Assets.at(path="/public/img/", file="icon.png")
+#GET        /webjars/*file                                                controllers.WebJarAssets.at(file)
+
+# Resume Upload
+# ~~~~~~~~~
+
+GET         /showResumeUpload                                               controllers.Application.showResumeUpload()
+POST        /addResume/                                                     controllers.Application.doResumeUpload(candidateId: String ?=null)
+POST        /receive-parsed-resume                                          controllers.Application.receiveParsedResume()
+GET        /fetchResume/                                                   controllers.Application.fetchResume(candidateId: String ?=null)
+GET         /favicon.ico                                                    controllers.Assets.at(path="/public/common/img/", file="icon.png")
+#GET        /webjars/*file                                                  controllers.WebJarAssets.at(file)
+
+# Candidate Excel Upload
+# ~~~~~~~~~
+GET         /support/administrator/uploadCandidates                     controllers.Application.uploadCandidates()
+POST        /support/administrator/processCandidates                    controllers.Application.processCandidates()
