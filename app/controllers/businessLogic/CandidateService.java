@@ -2253,6 +2253,7 @@ public class CandidateService
 
         Long candidateId = 0L;
         String candidateName = "";
+        String candidateMobile = "";
 
         // no candidate found... Create
         if(candidate == null) {
@@ -2270,6 +2271,7 @@ public class CandidateService
             // create/update candidate
             Logger.info("About to call CandidateService.createCandidateProfile");
 
+            candidateMobile = addSupportCandidateRequest.getCandidateMobile();
             CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
             int channel = 0;
             // determine channel
@@ -2291,6 +2293,7 @@ public class CandidateService
             // get candidate Id, Name
             candidateId = candidateSignUpResponse.getCandidateId();
             candidateName = candidateSignUpResponse.getCandidateFirstName();
+
         }
         else {
             Logger.info("Attempting to update existing candidate ...");
@@ -2307,6 +2310,7 @@ public class CandidateService
             // get candidate Id, Name
             candidateId = candidate.getCandidateId();
             candidateName = candidate.getCandidateFirstName();
+            candidateMobile = candidate.getCandidateMobile();
         }
 
         Logger.info("New/Updated candidateId ="+candidateId);
@@ -2384,7 +2388,7 @@ public class CandidateService
             Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
 
             // to associate partner and candidate - if partner create a candidate by uploading resume
-            PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(candidateResume.getCandidate().getCandidateMobile()));
+            PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(candidateMobile));
 
             try {
                 // is there any resume that was uploaded AFTER this resume by this partner?
