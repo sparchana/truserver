@@ -12,6 +12,7 @@ public class ShortPSPopulateResponse {
 
     /* if any list is empty, that data is not required to be collected in front end
     *  if not null then data needs to be collected in front end */
+    private boolean visible;
     private List<IdProof> documentList;
     private List<Language> languageList;
     private List<Asset> assetList;
@@ -46,6 +47,7 @@ public class ShortPSPopulateResponse {
         this.educationResponse = new EducationResponse(false);
 
         this.status = Status.UNKNOWN;
+        this.visible = false;
     }
 
     /* if not available then use these data to create ui elements */
@@ -226,5 +228,13 @@ public class ShortPSPopulateResponse {
 
     public void setPropertyIdList(List<Integer> propertyIdList) {
         this.propertyIdList = propertyIdList;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }

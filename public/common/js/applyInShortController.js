@@ -149,6 +149,7 @@ var applyInShort = (function ($) {
                 promise.then(function () {
                     console.log(appz.missingData.statusCode);
                     console.log(appz.missingData.status);
+                    $("#finalSubmitBtn").prop("disabled", true);
 
                     // already applied
                     if(appz.missingData.statusCode == 5) {
@@ -165,15 +166,18 @@ var applyInShort = (function ($) {
                     // success | display ui
                     else if(appz.missingData.statusCode == 4){
 
+                        $("#finalSubmitBtn").prop("disabled", false);
                         /* render locality card */
                         if(appz.missingData.localityPopulateResponse != null) {
 
                             appz.render.jobLocalityCard(appz.missingData.localityPopulateResponse);
                         }
 
-                        /* TODO render preScreen card */
-                        if(appz.missingData.shortPSPopulateResponse != null) {
+                        if(appz.missingData.shortPSPopulateResponse != null && appz.missingData.shortPSPopulateResponse.visible) {
                             appz.render.preScreenCard(appz.missingData.shortPSPopulateResponse);
+                        } else {
+                            // hide panel
+                            $('#preScreenCardDiv').hide();
                         }
 
                         /* render interview slot card */
@@ -1623,13 +1627,21 @@ var applyInShort = (function ($) {
                             okToSubmit = false;
                             $.notify("Please select Fresher/Experienced.", 'error');
                         }
-                        var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
-                        var expYear = parseInt($('#candidateTotalExperienceYear').val());
-                        var totalExp = expMonth + (12 * expYear);
-                        var isExpEmpty = ($('#candidateTotalExperienceMonth').val() == 0) && ($('#candidateTotalExperienceYear').val() == 0);
-                        if ($('input[id=candidateExp]').is(":checked") && isExpEmpty) {
-                            $.notify("Please provide your total years of experience", 'error');
-                            okToSubmit = false;
+                        var expMonth;
+                        var expYear;
+                        var totalExp;
+
+                        if($('input:radio[name="candidateExperience"]:checked').val() == "0") {
+                            totalExp = 0;
+                        } else {
+                            expMonth = parseInt($('#candidateTotalExperienceMonth').val());
+                            expYear = parseInt($('#candidateTotalExperienceYear').val());
+                            totalExp = expMonth + (12 * expYear);
+                            var isExpEmpty = ($('#candidateTotalExperienceMonth').val() == 0) && ($('#candidateTotalExperienceYear').val() == 0);
+                            if ($('input[id=candidateExp]').is(":checked") && isExpEmpty) {
+                                $.notify("Please provide your total years of experience", 'error');
+                                okToSubmit = false;
+                            }
                         }
 
                         // are you currently working
@@ -1794,7 +1806,7 @@ var applyInShort = (function ($) {
                 } else {
 
                     setTimeout(function(){
-                        window.location = "/dashboard";
+                        window.location = "/dashboard/appliedJobs/";
                     },sec);
                 }
             }

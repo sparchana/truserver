@@ -1222,6 +1222,12 @@ public class JobPostWorkflowEngine {
         List<PreScreenRequirement> preScreenRequirementList = PreScreenRequirement.find.where()
                 .eq("jobPost.jobPostId", jobPost.getJobPostId()).orderBy().asc("category").findList();
 
+        if(preScreenRequirementList.size() == 0) {
+
+            response.setStatus(ShortPSPopulateResponse.Status.SUCCESS);
+            response.setVisible(false);
+            return response;
+        }
 
         Map<Integer, List<PreScreenRequirement>> preScreenMap = new HashMap<>();
 
@@ -1257,6 +1263,7 @@ public class JobPostWorkflowEngine {
 
                     if(response.getDocumentList().size() > 0) {
                         response.getPropertyIdList().add(ServerConstants.PROPERTY_TYPE_DOCUMENT);
+                        response.setVisible(true);
                     }
                     break;
                 case ServerConstants.CATEGORY_LANGUAGE:
@@ -1280,6 +1287,7 @@ public class JobPostWorkflowEngine {
 
                     if(response.getLanguageList().size() > 0) {
                         response.getPropertyIdList().add(ServerConstants.PROPERTY_TYPE_LANGUAGE);
+                        response.setVisible(true);
                     }
                     break;
                 case ServerConstants.CATEGORY_ASSET:
@@ -1301,6 +1309,7 @@ public class JobPostWorkflowEngine {
 
                     if(response.getAssetList().size() > 0) {
                         response.getPropertyIdList().add(ServerConstants.PROPERTY_TYPE_ASSET_OWNED);
+                        response.setVisible(true);
                     }
                     break;
 
@@ -1348,6 +1357,7 @@ public class JobPostWorkflowEngine {
                 if( candidate.getCandidateDOB() == null){
                     response.getPropertyIdList().add(PROPERTY_TYPE_MAX_AGE);
                     response.setDobMissing(true);
+                    response.setVisible(true);
                 }
                 break;
             case "experience":
@@ -1357,6 +1367,7 @@ public class JobPostWorkflowEngine {
                     List<JobRole> jobRoleList = JobRole.find.all();
                     response.setExperienceResponse(
                             new ShortPSPopulateResponse.ExperienceResponse(true, jobRoleList));
+                    response.setVisible(true);
                 }
                 break;
             case "education":
@@ -1368,6 +1379,7 @@ public class JobPostWorkflowEngine {
 
                     response.setEducationResponse(
                             new ShortPSPopulateResponse.EducationResponse(true, educationsList, degreeList));
+                    response.setVisible(true);
                 }
                 break;
             case "gender":
@@ -1375,11 +1387,13 @@ public class JobPostWorkflowEngine {
                     response.getPropertyIdList().add(PROPERTY_TYPE_GENDER);
 
                     response.setGenderMissing(true);
+                    response.setVisible(true);
                 } break;
             case "salary":
                 if( candidate.getCandidateLastWithdrawnSalary() == null) {
                     response.getPropertyIdList().add(PROPERTY_TYPE_SALARY);
                     response.setSalaryMissing(true);
+                    response.setVisible(true);
                     break;
                 }
             default: break;
