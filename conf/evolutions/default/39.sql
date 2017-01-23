@@ -61,6 +61,24 @@ alter table jobpost add column job_post_access_level int(2) signed not null DEFA
 alter table recruiterprofile add column recruiter_access_level int(2) signed not null DEFAULT 0;
 alter table candidate add column candidate_access_level int(2) signed not null DEFAULT 0;
 
+create table partner_to_candidate_to_company (
+  partner_to_candidate_to_company_id bigint signed auto_increment not null,
+  creation_timestamp            timestamp not null default current_timestamp,
+  partner_id                    bigint signed,
+  partner_to_candidate_id       bigint signed,
+  partner_to_company_id         bigint signed,
+  constraint pk_partner_to_candidate_to_company primary key (partner_to_candidate_to_company_id)
+);
+
+alter table partner_to_candidate_to_company add constraint fk_partner_to_candidate_to_company_partner_id foreign key (partner_id) references partner (partner_id) on delete restrict on update restrict;
+create index ix_partner_to_candidate_to_company_partner_id on partner_to_candidate_to_company (partner_id);
+
+alter table partner_to_candidate_to_company add constraint fk_partner_to_candidate_to_company_partner_to_candidate_id foreign key (partner_to_candidate_id) references partner_to_candidate (partner_to_candidate_id) on delete restrict on update restrict;
+create index ix_partner_to_candidate_to_company_partner_to_candidate_id on partner_to_candidate_to_company (partner_to_candidate_id);
+
+alter table partner_to_candidate_to_company add constraint fk_partner_to_candidate_to_company_partner_to_company_id foreign key (partner_to_company_id) references partner_to_company (partner_to_company_id) on delete restrict on update restrict;
+create index ix_partner_to_candidate_to_company_partner_to_company_id on partner_to_candidate_to_company (partner_to_company_id);
+
 # --- !Downs
 
 alter table partner_to_candidate drop foreign key fk_partner_to_candidate_candidate_candidateid;
@@ -91,6 +109,15 @@ drop index ix_sms_report_jobpostid on sms_report;
 alter table sms_report drop foreign key fk_sms_report_smsdeliverystatus;
 drop index ix_sms_report_smsdeliverystatus on sms_report;
 
+alter table partner_to_candidate_to_company drop foreign key fk_partner_to_candidate_to_company_partner_id;
+drop index ix_partner_to_candidate_to_company_partner_id on partner_to_candidate_to_company;
+
+alter table partner_to_candidate_to_company drop foreign key fk_partner_to_candidate_to_company_partner_to_candidate_id;
+drop index ix_partner_to_candidate_to_company_partner_to_candidate_id on partner_to_candidate_to_company;
+
+alter table partner_to_candidate_to_company drop foreign key fk_partner_to_candidate_to_company_partner_to_company_id;
+drop index ix_partner_to_candidate_to_company_partner_to_company_id on partner_to_candidate_to_company;
+
 alter table company drop column companycode;
 
 alter table jobpost drop column job_post_access_level ;
@@ -100,3 +127,4 @@ alter table candidate drop column candidate_access_level;
 drop table if exists sms_report;
 drop table if exists sms_delivery_status;
 drop table if exists partner_to_company;
+drop table if exists partner_to_candidate_to_company;

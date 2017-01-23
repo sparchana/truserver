@@ -127,7 +127,6 @@ GET         /partner/myCandidates                                         contro
 GET         /partnerNavBar                                                controllers.PartnerController.renderPagePartnerNavBar()
 GET         /getPartnerProfileInfo                                        controllers.PartnerController.getPartnerProfileInfo()
 GET         /partnerNavBarLoggedIn                                        controllers.PartnerController.renderPagePartnerLoggedInNavbar()
-GET         /partner/jobs                                                 controllers.PartnerController.renderPartnerJobs()
 GET         /partner/ifExists/:mobile                                     controllers.Application.ifCandidateExists(mobile: String)
 GET         /partner/:candidateId/jobs                                    controllers.PartnerController.renderCandidateJobPage(candidateId: Long)
 GET         /getAppliedJobsByPartnerForCandidate/:id                      controllers.PartnerController.getAppliedJobsByPartnerForCandidate(id : Long)

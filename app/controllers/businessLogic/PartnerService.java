@@ -186,11 +186,11 @@ public class PartnerService {
                 return ServerConstants.PARTNER_NEED_COMPANY_ASSOCIATION;
             } else{
                 Partner partner = Partner.find.where().eq("partner_mobile", FormValidator.convertToIndianMobileFormat(partnerMobile)).findUnique();
-                if(partner != null && partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+                if(partner != null){
                     PartnerToCompany partnerToCompany = PartnerToCompany.find.where()
-                        .eq("CompanyId", company.getCompanyId())
-                        .eq("partner_id", partner.getPartnerId())
-                        .findUnique();
+                            .eq("CompanyId", company.getCompanyId())
+                            .eq("partner_id", partner.getPartnerId())
+                            .findUnique();
 
                     if(partnerToCompany == null){
                         return ServerConstants.PARTNER_NEED_COMPANY_ASSOCIATION;
@@ -214,6 +214,9 @@ public class PartnerService {
             partnerToCompany.setCompany(company);
             partnerToCompany.save();
 
+            //setting partner type as a private partner
+            partner.setPartnerType(PartnerType.find.where().eq("partner_type_id", ServerConstants.PARTNER_TYPE_PRIVATE).findUnique());
+            partner.update();
             session().put("partnerToCompanyId", String.valueOf(partnerToCompany.getPartnerToCompanyId()));
         }
     }
@@ -440,10 +443,19 @@ public class PartnerService {
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(candidateMobile));
         if(existingCandidate != null){
-            PartnerToCandidate partnerToCandidate = new PartnerToCandidate();
-            partnerToCandidate.setCandidate(existingCandidate);
-            partnerToCandidate.setPartner(partner);
-            partnerToCandidate.savePartnerToCandidate(partnerToCandidate);
+
+            //check existing data
+            PartnerToCandidate existingPartnerToCandidate = PartnerToCandidate.find.where()
+                    .eq("partner_id", partner.getPartnerId())
+                    .eq("candidate_candidateid", existingCandidate.getCandidateId())
+                    .findUnique();
+
+            if(existingPartnerToCandidate == null){
+                PartnerToCandidate partnerToCandidate = new PartnerToCandidate();
+                partnerToCandidate.setCandidate(existingCandidate);
+                partnerToCandidate.setPartner(partner);
+                partnerToCandidate.savePartnerToCandidate(partnerToCandidate);
+            }
 
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
         } else {

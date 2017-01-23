@@ -2,6 +2,7 @@ package models.entity.OM;
 
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Company;
 import models.entity.Partner;
 
@@ -29,7 +30,7 @@ public class PartnerToCompany extends Model {
     private Partner partner;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonManagedReference
     @JoinColumn(name = "CompanyId", referencedColumnName= "CompanyId")
     private Company company;
 

@@ -25,7 +25,7 @@ function processDataSignUpSubmit(returnedData) {
 
     } else if(returnedData.status == 3){
         alert("Partner already exists! Please login to continue");
-        window.location = "/";
+        window.location = "/partner";
     } else {
         $("#registerPartnerBtnSubmit").addClass("btn-primary registerPartnerBtnSubmit").removeClass("appliedBtn").prop('disabled', false).html("Register for FREE");
         document.getElementById("registerPartnerBtnSubmit").disabled = false;
@@ -132,7 +132,7 @@ $(function() {
             alert("Please select organization type");
             statusCheck=0;
         } else if(selectedPartnerType == 7 && $("#privatePartnerCompanyId").val() == ""){
-            alert("Please provide company ID");
+            alert("Please provide company unique code");
             statusCheck=0;
         }
 
@@ -179,7 +179,7 @@ $(function() {
 
                                 partnerSignUpSubmit(d);
                             } else{
-                                alert("Company ID is wrong");
+                                alert("Company code is incorrect");
 
                                 $("#registerPartnerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled',false).html("Register for FREE");
                                 document.getElementById("registerBtnSubmit").disabled = false;

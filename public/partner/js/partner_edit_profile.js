@@ -23,6 +23,7 @@ $(document).ready(function(){
 
 
 function processDataPartnerProfile(returnedData) {
+    $("select#partnerType option[value='7']").remove();
     if(returnedData != null){
         //name
         if(returnedData.partnerFirstName != null){
@@ -35,7 +36,6 @@ function processDataPartnerProfile(returnedData) {
         if(returnedData.partnerMobile != null){
             $("#partnerMobile").val(returnedData.partnerMobile);
         }
-
         //email
         if(returnedData.partnerEmail != null){
             $("#partnerEmail").val(returnedData.partnerEmail);
@@ -51,8 +51,16 @@ function processDataPartnerProfile(returnedData) {
             $("#partnerType").val(returnedData.partnerType.partnerTypeId);
             if(returnedData.partnerType.partnerTypeId == 7){
                 $("#partnerType").prop('disabled', true);
-                $("#privatePartnerCompanyName").html(returnedData.company.companyName);
-                $("#privatePartnerCompany").show();
+                var associatedCompanies = "";
+                var companyList = returnedData.partnerToCompanyList;
+                companyList.forEach(function (company) {
+                    associatedCompanies += company.company.companyName + ", ";
+                });
+
+                if(associatedCompanies != ""){
+                    $("#privatePartnerCompanyName").html(associatedCompanies);
+                    $("#privatePartnerCompany").show();
+                }
             }
         }
 

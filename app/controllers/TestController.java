@@ -69,7 +69,6 @@ public class TestController extends Controller{
             NotificationUtil.addFcmToNotificationQueue("Hi", "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_JOB_DETAIL, 967L);
             return ok("1");
         }*/
-        RecruiterController.checkDeliveryStatus();
 
         return ok("Null token!");
 

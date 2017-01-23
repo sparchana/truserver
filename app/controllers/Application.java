@@ -58,6 +58,7 @@ import java.util.stream.Collectors;
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static api.InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
 import static com.avaje.ebean.Expr.eq;
+import static controllers.PartnerController.checkCandidateExistence;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
@@ -1254,7 +1255,13 @@ public class Application extends Controller {
             Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
             if(partner != null && partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
                 //its a private partner
-                //TODO: check in main table
+                Integer associationStatus = checkCandidateExistence(partner, FormValidator.convertToIndianMobileFormat(mobile));
+                if(associationStatus == ServerConstants.STATUS_NO_CANDIDATE ||
+                        associationStatus == ServerConstants.STATUS_CANDIDATE_EXISTS_DIFFERENT_COMPANY){
+                    return ok("0");
+                } else{
+                    return ok("1");
+                }
             }
         }
         if(mobile != null){

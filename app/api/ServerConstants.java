@@ -424,4 +424,10 @@ public class ServerConstants {
     public static final int PARTNER_NO_COMPANY_ASSOCIATION = 0;
     public static final int PARTNER_NEED_COMPANY_ASSOCIATION = 1;
     public static final int PARTNER_COMPANY_ASSOCIATION_ALREADY_EXISTS = 2;
+
+    // private partner candidate status check
+    public static final int STATUS_NO_CANDIDATE = 0;
+    public static final int STATUS_CANDIDATE_EXISTS = 1;
+    public static final int STATUS_CANDIDATE_EXISTS_DIFFERENT_COMPANY = 2;
+    public static final int STATUS_CANDIDATE_EXISTS_SAME_COMPANY = 3;
 }

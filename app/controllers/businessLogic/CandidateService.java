@@ -801,7 +801,6 @@ public class CandidateService
         float p2Weight = 0.05f;
 
         if (candidate != null) {
-
             p0CompletionPercent = getP0FieldsCompletionPercent(candidate);
             p1CompletionPercent = getP1FieldsCompletionPercent(candidate);
             p2CompletionPercent = getP2FieldsCompletionPercent(candidate);

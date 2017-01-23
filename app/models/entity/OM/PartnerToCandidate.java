@@ -37,7 +37,7 @@ public class PartnerToCandidate extends Model {
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "CandidateId", referencedColumnName= "CandidateId")
+    @JoinColumn(name = "candidate_candidateid", referencedColumnName= "CandidateId")
     private Candidate candidate;
 
     public PartnerToCandidate(){
