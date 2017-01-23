@@ -65,7 +65,7 @@ function processDataPartnerProfile(returnedData) {
         if(returnedData.partnerType != null){
             $("#organizationType").html(returnedData.partnerType.partnerTypeName);
             if(returnedData.partnerType.partnerTypeId == 7){
-                $("#organizationType").html("Private Partner (" + returnedData.company.companyName + ")");
+                $("#organizationType").html("Private Partner (  " + ")");
             }
         }
 

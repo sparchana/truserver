@@ -874,7 +874,7 @@ public class Application extends Controller {
             Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
             if(partner != null) {
                 if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
-                    return ok(toJson(JobSearchService.getAllPrivateJobsOfCompany(index, partner.getCompany())));
+//                    return ok(toJson(JobSearchService.getAllPrivateJobsOfCompany(index, partner.getCompany())));
                 }
             }
         }
@@ -1250,6 +1250,13 @@ public class Application extends Controller {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result ifCandidateExists(String mobile) {
+        if(session().get("partnerId") != null){
+            Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+            if(partner != null && partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+                //its a private partner
+                //TODO: check in main table
+            }
+        }
         if(mobile != null){
             mobile = FormValidator.convertToIndianMobileFormat(mobile);
             Candidate existingCandidate = CandidateService.isCandidateExists(mobile);

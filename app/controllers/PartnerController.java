@@ -196,6 +196,8 @@ public class PartnerController {
         }
         Logger.info("Req JSON : " + req);
         Boolean isNewCandidate = false;
+
+        //TODO: #privatePartner to check in lower pools
         Candidate candidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
         if(candidate == null){
             isNewCandidate = true; //checking if the candidate exists
@@ -210,13 +212,17 @@ public class PartnerController {
             CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
                     InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE,
                     ServerConstants.UPDATE_ALL_BY_SUPPORT);
+
             if(candidateSignUpResponse.getStatus() == CandidateSignUpResponse.STATUS_SUCCESS){
                 if(isNewCandidate){ //save a record in partnerToCandidate
                     candidateSignUpResponse =
                             PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+
                     Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
                     candidateSignUpResponse.setOtp(PartnerService.sendCandidateVerificationSms(existingCandidate));
 
+                    //TODO: #privatePartner no OTP for private partners and association of PtoCtoJc
+/*
                     //if the partner is a private partner
                     if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
                         existingCandidate.setCandidateAccessLevel(ServerConstants.CANDIDATE_ACCESS_LEVEL_PRIVATE);
@@ -228,6 +234,7 @@ public class PartnerController {
                         candidateToCompany.setCandidate(existingCandidate);
                         candidateToCompany.save();
                     }
+*/
                 } else{
                     candidateSignUpResponse.setOtp(0);
                 }
@@ -401,9 +408,11 @@ public static Result checkExistingCompany(String CompanyCode) {
                 if(partner != null){
                     if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
 
+/*
                         //fetching all the private jobs posted by the recruiter of the given company
                         Company company = Company.find.where().eq("CompanyId", partner.getCompany().getCompanyId()).findUnique();
                         matchingJobList = JobPostDAO.getAllActiveHotNonPrivateJobsPostOfCompany(company);
+*/
                     } else{
                         matchingJobList = JobSearchService
                                 .getAllJobsForCandidate(FormValidator.convertToIndianMobileFormat(

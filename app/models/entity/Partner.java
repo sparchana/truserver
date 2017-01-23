@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.OM.IDProofReference;
 import models.entity.OM.JobApplication;
 import models.entity.OM.PartnerToCandidate;
+import models.entity.OM.PartnerToCompany;
 import models.entity.Static.CandidateProfileStatus;
 import models.entity.Static.Locality;
 import models.entity.Static.PartnerProfileStatus;
@@ -77,17 +78,12 @@ public class Partner extends Model {
     @JsonManagedReference
     @PrivateOwned
     @OneToMany(mappedBy = "partner", cascade = CascadeType.ALL)
-    private List<PartnerToCandidate> partnerToCandidateList;
+    private List<JobApplication> jobApplicationList;
 
     @JsonManagedReference
     @PrivateOwned
     @OneToMany(mappedBy = "partner", cascade = CascadeType.ALL)
-    private List<JobApplication> jobApplicationList;
-
-    @JsonManagedReference
-    @ManyToOne
-    @JoinColumn(name = "CompanyId", referencedColumnName = "CompanyId")
-    private Company company;
+    private List<PartnerToCompany> partnerToCompanyList;
 
     public static Finder<String, Partner> find = new Finder(Partner.class);
 
@@ -202,11 +198,27 @@ public class Partner extends Model {
         this.jobApplicationList = jobApplicationList;
     }
 
-    public Company getCompany() {
-        return company;
+    public Timestamp getPartnerCreateTimestamp() {
+        return partnerCreateTimestamp;
     }
 
-    public void setCompany(Company company) {
-        this.company = company;
+    public void setPartnerCreateTimestamp(Timestamp partnerCreateTimestamp) {
+        this.partnerCreateTimestamp = partnerCreateTimestamp;
+    }
+
+    public Timestamp getPartnerUpdateTimestamp() {
+        return partnerUpdateTimestamp;
+    }
+
+    public void setPartnerUpdateTimestamp(Timestamp partnerUpdateTimestamp) {
+        this.partnerUpdateTimestamp = partnerUpdateTimestamp;
+    }
+
+    public List<PartnerToCompany> getPartnerToCompanyList() {
+        return partnerToCompanyList;
+    }
+
+    public void setPartnerToCompanyList(List<PartnerToCompany> partnerToCompanyList) {
+        this.partnerToCompanyList = partnerToCompanyList;
     }
 }

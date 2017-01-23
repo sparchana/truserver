@@ -417,4 +417,11 @@ public class ServerConstants {
     // candidate Access Level
     public static final int CANDIDATE_ACCESS_LEVEL_OPEN = 0;
     public static final int CANDIDATE_ACCESS_LEVEL_PRIVATE = 0; // TODO change it to 1 after testing
+
+    public static final int PARTNER_TO_COMPANY_VERIFIED = 1;
+
+    // private signup company association status
+    public static final int PARTNER_NO_COMPANY_ASSOCIATION = 0;
+    public static final int PARTNER_NEED_COMPANY_ASSOCIATION = 1;
+    public static final int PARTNER_COMPANY_ASSOCIATION_ALREADY_EXISTS = 2;
 }
