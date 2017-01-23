@@ -43,7 +43,6 @@ import models.util.SmsUtil;
 import models.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.tika.Tika;
-import org.apache.tika.mime.MimeTypes;
 import org.json.JSONException;
 import org.json.JSONObject;
 import play.Logger;
@@ -1667,7 +1666,7 @@ public class CandidateService
         HireWandService hw = HireWandService.get();
         try {
             hw.login("avishek@trujobs.in","hirewandswatkats");
-            hw.setCallback("http://52.89.66.63:9000/receive-parsed-resume");
+            hw.setCallback("http://trujobs.in/receive-parsed-resume");
         } catch (HWHTTPException e) {
             e.printStackTrace();
             try {
