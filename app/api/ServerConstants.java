@@ -90,6 +90,7 @@ public class ServerConstants {
     public static final String LOGO_UPLOAD_SUFFIX = "/";
     public static final String AWS_S3_BUCKET_NAME = "trujobs.in";
     public static final String AWS_S3_COMPANY_LOGO_FOLDER = "companyLogos";
+    public static final String AWS_S3_CANDIDATE_RESUME_FOLDER = "candidateResumes";
 
     public static final int CANDIDATE_STATE_ACTIVE = 1;
     public static final int CANDIDATE_STATE_DEACTIVE = 2;
@@ -381,6 +382,9 @@ public class ServerConstants {
 
     public static final String CREATED_BY = "Candidate";
 
+    /* upload resume */
+    public  static final int UPLOAD_RESUME_SUCCESS_STATUS = 1;
+    public  static final int UPLOAD_RESUME_FAIL_STATUS = 0;
     //reason type
     public static final int FREE_JOB_APPLICATION_DEFAULT_LIMIT_IN_A_WEEK = 7;
 }

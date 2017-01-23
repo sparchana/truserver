@@ -39,6 +39,7 @@ public class SmsUtil {
 
         //adding sms to notificationHandler queue
         NotificationEvent notificationEvent = new SMSEvent(toPhone, msg);
+        Logger.info("[-] smsTo: "+ toPhone + " - msg: " + msg);
         Global.getmNotificationHandler().addToQueue(notificationEvent);
 
         return "";
@@ -211,6 +212,11 @@ public class SmsUtil {
     public static void sendJobApplicationSmsToPartner(String candidateFirstName, String jobPostTitle, String companyName, String partnerMobile, String localityName, String partnerFirstName) {
         String msg = "Hi " + partnerFirstName + ", you have applied to " + jobPostTitle + " job at " + companyName + " @" + localityName + " for your candidate - " + candidateFirstName +". To know more about status of Applications, call us at +91 8880007799. www.trujobs.in";
         addSmsToNotificationQueue(partnerMobile, msg);
+    }
+
+    public static void resumeUploadStatusToPartner(String name ,String mobile) {
+        String msg = "Hi "+ name +", resumes that you uploaded have been converted to candidate(s). Go to 'My Candidate' section and schedule interviews for them.";
+        addSmsToNotificationQueue(mobile, msg);
     }
 
     public static void sendRecruiterOTPSms(int otp, String mobile) {
