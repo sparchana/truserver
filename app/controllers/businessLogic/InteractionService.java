@@ -57,13 +57,13 @@ public class InteractionService {
         }
     }
 
-    public static void createInteractionForJobApplicationViaWebsite(String objectAUUId, String objectBUUId, String result) {
+    public static void createInteractionForJobApplicationViaWebsite(String objectAUUId, String objectBUUId, String result, int interactionType) {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 objectBUUId,
                 ServerConstants.OBJECT_TYPE_JOB_POST,
-                InteractionConstants.INTERACTION_TYPE_APPLIED_JOB,
+                interactionType,
                 result,
                 INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_WEBSITE

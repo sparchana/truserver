@@ -277,7 +277,7 @@ public class Application extends Controller {
         if(session().get("sessionChannel") != null || !session().get("sessionChannel").isEmpty()){
             Integer channelId = Integer.parseInt(session().get("sessionChannel"));
             int channelType = channelId == null ? InteractionConstants.INTERACTION_CHANNEL_UNKNOWN : channelId;
-            return ok(toJson(JobService.applyJob(applyJobRequest, channelType)));
+            return ok(toJson(JobService.applyJob(applyJobRequest, channelType, InteractionConstants.INTERACTION_TYPE_APPLIED_JOB)));
         } else {
             return badRequest();
         }
@@ -2406,7 +2406,7 @@ public class Application extends Controller {
 
         Integer channelId = Integer.parseInt(session().get("sessionChannel"));
         int channelType = channelId == null ? InteractionConstants.INTERACTION_CHANNEL_UNKNOWN : channelId;
-        ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, channelType);
+        ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, channelType, InteractionConstants.INTERACTION_TYPE_APPLIED_JOB_IN_SHORT);
 
         if(applyJobResponse.getStatus() == ApplyJobResponse.STATUS_EXISTS){
             response.setStatus(PostApplyInShortResponse.Status.ALREADY_APPLIED);

@@ -739,13 +739,13 @@ public class JobService {
     }
 
     public static ApplyJobResponse applyJob(ApplyJobRequest applyJobRequest,
-                                            int channelType)
+                                            int channelType, int interactionType)
             throws IOException, JSONException
     {
         Logger.info("checking user and jobId: " + applyJobRequest.getCandidateMobile() + " + " + applyJobRequest.getJobId());
         ApplyJobResponse applyJobResponse = new ApplyJobResponse();
         Candidate existingCandidate = CandidateService.isCandidateExists(applyJobRequest.getCandidateMobile());
-        if(existingCandidate != null){
+        if(existingCandidate != null) {
             JobPost existingJobPost = JobPostDAO.findById(Long.valueOf(applyJobRequest.getJobId()));
             Boolean limitJobApplication = false;
 
@@ -865,7 +865,8 @@ public class JobService {
                             InteractionService.createInteractionForJobApplicationViaWebsite(
                                     existingCandidate.getCandidateUUId(),
                                     existingJobPost.getJobPostUUId(),
-                                    interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName()
+                                    interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName(),
+                                    interactionType
                             );
                         } else{
                             InteractionService.createInteractionForJobApplicationViaAndroid(
