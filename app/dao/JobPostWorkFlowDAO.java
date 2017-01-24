@@ -8,7 +8,6 @@ import models.entity.OM.JobPostWorkflow;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -248,6 +247,15 @@ public class JobPostWorkFlowDAO {
                 .in("status_id", statusList)
                 .findList();
     }
+
+
+    public static List<JobPostWorkflow> getRecords(List<Long> jobPostIdList, List<Integer> statusList) {
+        return JobPostWorkflow.find.where()
+                .in("jobPost.jobPostId", jobPostIdList)
+                .in("status_id", statusList)
+                .findList();
+    }
+
 
     public static List<JobPostWorkflow> getRecords(long jobPostId, int status, String startDate, String endDate) {
         return JobPostWorkflow.find.where()
@@ -494,4 +502,4 @@ public class JobPostWorkFlowDAO {
                 .findList();
     }
 
-    }
+}

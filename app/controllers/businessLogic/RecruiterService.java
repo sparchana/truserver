@@ -20,6 +20,7 @@ import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import dao.JobPostDAO;
+import dao.JobPostWorkFlowDAO;
 import dao.RecruiterCreditHistoryDAO;
 import dao.RecruiterDAO;
 import models.entity.Candidate;
@@ -844,23 +845,75 @@ public class RecruiterService {
         return newHistory;
     }
 
-    public static List<RecruiterSummaryResponse> getRecruiterSummary(Long companyId, Long callerRecruiterId) {
+    public List<RecruiterSummaryResponse> getRecruiterSummary(Long companyId, Long callerRecruiterId) {
 
         if(companyId == null || callerRecruiterId == null) {
             return new ArrayList<>();
         }
 
         List<RecruiterSummaryResponse> recruiterSummaryResponseList = new ArrayList<>();
-        Map<?, RecruiterProfile> recruiterProfileMap = RecruiterDAO.findMapByCompanyId(companyId);
+        Map<?, RecruiterProfile> recruiterProfileMap = RecruiterDAO.findMapByCompanyId(companyId, ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE);
 
         for(Map.Entry entry: recruiterProfileMap.entrySet()) {
-            RecruiterSummaryResponse recruiterSummaryResponse = new RecruiterSummaryResponse();
-            RecruiterProfile recruiterProfile= (RecruiterProfile) entry.getValue();
-            recruiterSummaryResponse.setNoOfJobPosted(recruiterProfile.getJobPosts().size());
 
+            RecruiterSummaryResponse recruiterSummaryResponse = new RecruiterSummaryResponse();
+            RecruiterProfile recruiterProfile = (RecruiterProfile) entry.getValue();
+
+            List<Long> jobPostIdList = new ArrayList<>();
+            List<JobPost> jobPostList = new ArrayList<>();
+            for(JobPost jobPost: recruiterProfile.getJobPosts()) {
+                // TODO post merge, add jobPost access level check here , and remove from list if not
+                jobPostList.add(jobPost);
+                jobPostIdList.add(jobPost.getJobPostId());
+            }
+
+            recruiterSummaryResponse.setRecruiterName(recruiterProfile.getRecruiterProfileName());
+            recruiterSummaryResponse.setRecruiterMobile(recruiterProfile.getRecruiterProfileMobile() +
+                    ((recruiterProfile.getRecruiterAlternateMobile() == null) ? "": "/"+recruiterProfile.getRecruiterAlternateMobile()));
+
+            recruiterSummaryResponse.setNoOfJobPosted(recruiterProfile.getJobPosts().size());
+            recruiterSummaryResponse.setTotalCandidatesApplied(computeTotalApplicant(jobPostIdList));
+            recruiterSummaryResponse.setTotalInterviewConducted(computeTotalInterviewConducted(jobPostIdList));
+            recruiterSummaryResponse.setTotalSelected(computeTotalSelected(jobPostIdList));
+            recruiterSummaryResponse.setPercentageFulfilled(computePercentageFulfilled(jobPostList, recruiterSummaryResponse.getTotalSelected()));
             recruiterSummaryResponseList.add(recruiterSummaryResponse);
         }
 
         return recruiterSummaryResponseList;
+    }
+
+    private Float computePercentageFulfilled(List<JobPost> jobPostList, Integer totalSelected) {
+
+        int totalVacancy = 0;
+        for(JobPost jobPost: jobPostList) {
+            totalVacancy += jobPost.getJobPostVacancies();
+        }
+        return ((float) totalSelected*100/totalVacancy);
+    }
+
+    private int computeTotalSelected(List<Long> jobPostIdList) {
+        List<Integer> statusList = new ArrayList<>();
+
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED);
+
+        return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList).size();
+    }
+
+    public int computeTotalApplicant(List<Long> jobPostIdList) {
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(ServerConstants.JWF_STATUS_SELECTED);
+
+        return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList).size();
+    }
+
+    public int computeTotalInterviewConducted(List<Long> jobPostIdList) {
+        List<Integer> statusList = new ArrayList<>();
+
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED);
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_REJECTED);
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED);
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW);
+
+        return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList).size();
     }
 }

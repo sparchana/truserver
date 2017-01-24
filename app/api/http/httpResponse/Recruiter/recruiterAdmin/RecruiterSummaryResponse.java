@@ -10,7 +10,7 @@ public class RecruiterSummaryResponse {
     private Integer totalCandidatesApplied;
     private Integer totalInterviewConducted;
     private Integer totalSelected;
-    private Double percentageFulfilled;
+    private Float percentageFulfilled;
 
     public String getRecruiterName() {
         return recruiterName;
@@ -60,11 +60,11 @@ public class RecruiterSummaryResponse {
         this.totalSelected = totalSelected;
     }
 
-    public Double getPercentageFulfilled() {
+    public Float getPercentageFulfilled() {
         return percentageFulfilled;
     }
 
-    public void setPercentageFulfilled(Double percentageFulfilled) {
+    public void setPercentageFulfilled(Float percentageFulfilled) {
         this.percentageFulfilled = percentageFulfilled;
     }
 }

@@ -168,7 +168,7 @@ public class RecruiterController {
             return badRequest();
         }
 
-        if(recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+        if(recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
             return ok(views.html.Recruiter.rmp.recruiter_candidate_search.render());
         }
         return ok(views.html.Recruiter.recruiter_candidate_search.render());
@@ -634,7 +634,7 @@ public class RecruiterController {
             return badRequest();
         }
 
-        if(recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+        if(recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
             return ok(views.html.Recruiter.rmp.recruiter_my_jobs.render());
         }
 
@@ -766,14 +766,15 @@ public class RecruiterController {
 
 
     @Security.Authenticated(RecruiterAdminSecured.class)
-    public static Result recruiterSummary(Long companyId, Long rid) {
+    public static Result recruiterSummary(Long companyId, Long recruiterId) {
         if(companyId == null) {
             return badRequest();
         }
 
-        if(rid == null) {
+        RecruiterService recruiterService = new RecruiterService();
+        if(recruiterId == null) {
             // return summary for all recruiter
-            RecruiterService.getRecruiterSummary(companyId, Long.valueOf(session().get("recruiterId")));
+            return ok(toJson(recruiterService.getRecruiterSummary(companyId, Long.valueOf(session().get("recruiterId")))));
         }
         return ok();
     }
