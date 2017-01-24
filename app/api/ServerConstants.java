@@ -387,6 +387,7 @@ public class ServerConstants {
     // recruiter Access Level
     public static final Integer RECRUITER_ACCESS_LEVEL_OPEN = 0;
     public static final Integer RECRUITER_ACCESS_LEVEL_PRIVATE = 1;
+    public static final Integer RECRUITER_ACCESS_LEVEL_PRIVATE_ADMIN = 2;
 
     // candidate Access Level
     public static final int CANDIDATE_ACCESS_LEVEL_OPEN = 0;

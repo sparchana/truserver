@@ -13,22 +13,26 @@ import api.http.httpResponse.Recruiter.AddCreditResponse;
 import api.http.httpResponse.Recruiter.AddRecruiterResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
+import api.http.httpResponse.Recruiter.recruiterAdmin.RecruiterSummaryResponse;
 import api.http.httpResponse.ResetPasswordResponse;
 import api.http.httpResponse.interview.InterviewResponse;
-import com.avaje.ebeaninternal.server.lib.util.Str;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import dao.JobPostDAO;
 import dao.RecruiterCreditHistoryDAO;
+import dao.RecruiterDAO;
+import models.entity.Candidate;
+import models.entity.Company;
+import models.entity.JobPost;
 import models.entity.OM.InterviewDetails;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterLead;
 import models.entity.Recruiter.RecruiterProfile;
-import models.entity.*;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.Recruiter.Static.RecruiterStatus;
+import models.entity.RecruiterCreditHistory;
 import models.entity.Static.JobStatus;
 import models.util.EmailUtil;
 import models.util.SmsUtil;
@@ -37,9 +41,6 @@ import play.Logger;
 import play.mvc.Result;
 
 import java.util.*;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
@@ -841,5 +842,25 @@ public class RecruiterService {
         newHistory.setUnits(oldHistory.getUnits());
 
         return newHistory;
+    }
+
+    public static List<RecruiterSummaryResponse> getRecruiterSummary(Long companyId, Long callerRecruiterId) {
+
+        if(companyId == null || callerRecruiterId == null) {
+            return new ArrayList<>();
+        }
+
+        List<RecruiterSummaryResponse> recruiterSummaryResponseList = new ArrayList<>();
+        Map<?, RecruiterProfile> recruiterProfileMap = RecruiterDAO.findMapByCompanyId(companyId);
+
+        for(Map.Entry entry: recruiterProfileMap.entrySet()) {
+            RecruiterSummaryResponse recruiterSummaryResponse = new RecruiterSummaryResponse();
+            RecruiterProfile recruiterProfile= (RecruiterProfile) entry.getValue();
+            recruiterSummaryResponse.setNoOfJobPosted(recruiterProfile.getJobPosts().size());
+
+            recruiterSummaryResponseList.add(recruiterSummaryResponse);
+        }
+
+        return recruiterSummaryResponseList;
     }
 }

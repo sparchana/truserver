@@ -19,6 +19,7 @@ import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import controllers.businessLogic.RecruiterService;
 import controllers.security.FlashSessionController;
 import controllers.security.RecruiterSecured;
+import controllers.security.RecruiterAdminSecured;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.RecruiterDAO;
@@ -763,4 +764,21 @@ public class RecruiterController {
         return ok(views.html.Recruiter.recruiter_interviews.render());
     }
 
+
+    @Security.Authenticated(RecruiterAdminSecured.class)
+    public static Result recruiterSummary(Long companyId, Long rid) {
+        if(companyId == null) {
+            return badRequest();
+        }
+
+        if(rid == null) {
+            // return summary for all recruiter
+            RecruiterService.getRecruiterSummary(companyId, Long.valueOf(session().get("recruiterId")));
+        }
+        return ok();
+    }
+
+    public static Result jobPostSummary(Long companyId, Long jpId) {
+        return ok();
+    }
 }

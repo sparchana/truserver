@@ -180,6 +180,11 @@ POST        /getRecruiterJobPostInfo/:id                                  contro
 POST        /getTodayInterviewDetails                                     controllers.RecruiterController.getTodayInterviewDetails()
 POST        /getPendingCandidateApproval                                  controllers.RecruiterController.getPendingCandidateApproval()
 
+# Recruiter SuperAdmin API
+# ~~~~~~~~~~~~~
+GET        /recruiter/api/summary/recruiter/:companyId                    controllers.RecruiterController.recruiterSummary(companyId: java.lang.Long, rid: java.lang.Long ?=null)
+GET        /recruiter/api/summary/jobpost/:companyId                      controllers.RecruiterController.jobPostSummary(companyId: java.lang.Long, jpId: java.lang.Long ?=null)
+
 # Search API
 # ~~~~~~~~~~~~~
 GET         /s/:searchText/                                               controllers.SearchController.renderSearch(searchText : String)
