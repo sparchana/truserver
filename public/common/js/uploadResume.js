@@ -44,7 +44,6 @@ function processDataForViewResume(returnedData){
         $("#userViewResume").innerHTML = "No Resume Uploaded Back";
     }
 }
-document.getElementById('uploadResumeContent').addEventListener('change', uploadResume, false);
 
 function uploadResume(evt){
     var files = evt.target.files;
