@@ -318,7 +318,7 @@ public class RecruiterController {
                         //sending sms
                         //RMP product sms blast
                         if(multipleCandidateActionRequest.getJobPostId() != null){
-                            JobPost jobPost = JobPost.find.where().eq("JobPostId", 686).findUnique();
+                            JobPost jobPost = JobPost.find.where().eq("JobPostId", multipleCandidateActionRequest.getJobPostId()).findUnique();
                             if(jobPost != null){
                                 NotificationEvent notificationEvent =
                                         new SMSEvent(candidate.getCandidateMobile(),
@@ -446,11 +446,24 @@ public class RecruiterController {
     public static Result getAllRecruiterJobPosts() {
         if(session().get("recruiterId") != null){
 
-            Map<?, JobPost> recruiterJobPostMap = JobPost.find.where().eq("JobRecruiterId", session().get("recruiterId")).setMapKey("jobPostId").findMap();
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+            Map<?, JobPost> recruiterJobPostMap;
+            if(recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
+                recruiterJobPostMap = JobPost.find.where()
+                        .eq("CompanyId", recruiterProfile.getCompany().getCompanyId())
+                        .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_PRIVATE)
+                        .setMapKey("jobPostId")
+                        .findMap();
+            } else{
+                recruiterJobPostMap = JobPost.find.where()
+                        .eq("JobRecruiterId", session().get("recruiterId"))
+                        .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_NOT_PRIVATE)
+                        .setMapKey("jobPostId")
+                        .findMap();
+            }
 
             String jpIdList = "";
 
-            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
             for(Map.Entry<?, JobPost> entity: recruiterJobPostMap.entrySet()) {
                 JobPost jobPost = entity.getValue();
 
@@ -814,6 +827,13 @@ public class RecruiterController {
         return ok(views.html.Recruiter.recruiter_my_jobs.render());
     }
     public static Result recruiterNavbar() {
+        if(session().get("recruiterId") != null) {
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
+            if (recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+                return ok(views.html.Recruiter.rmp.private_recruiter_nav.render());
+            }
+        }
+
         return ok(views.html.Recruiter.recruiter_navbar.render());
     }
 

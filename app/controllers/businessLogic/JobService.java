@@ -410,6 +410,12 @@ public class JobService {
             newJobPost.setRecruiterProfile(recruiterProfile);
         }
 
+        if(session().get("recruiterId") != null) {
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
+            if (recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+                newJobPost.setJobPostAccessLevel(ServerConstants.JOB_POST_TYPE_PRIVATE);
+            }
+        }
         return newJobPost;
     }
 

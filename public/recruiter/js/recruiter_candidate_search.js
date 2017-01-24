@@ -729,14 +729,6 @@ function closeCreditModal() {
     $("#modalBuyCredits").closeModal();
 }
 
-function closeSmsModal() {
-    $("#sendSmsModal").closeModal();
-}
-
-function closeUnlockModal() {
-    $("#unlockCandidateModal").closeModal();
-}
-
 function submitCredits() {
     $("#successMsg").hide();
     var contactCreditStatus = 1;

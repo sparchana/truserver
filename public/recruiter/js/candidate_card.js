@@ -1393,11 +1393,17 @@ function checkSmsText(){
 }
 
 function sendSms(){
-    if(checkedCandidateIdList.length > 0){
+    var urlParams = window.location.search.split('=');
+    var jpId = null;
+    if(urlParams[0] == "?jpId") {
+        jpId = parseInt(urlParams[1]);
+    }
+        if(checkedCandidateIdList.length > 0){
         $("#sendSms").addClass("disabled");
         var s = {
             candidateIdList: checkedCandidateIdList,
-            smsMessage :$("#smsText").val()
+            smsMessage : $("#smsText").val(),
+            jobPostId : jpId
         };
         $.ajax({
             type: "POST",
@@ -1424,4 +1430,12 @@ function processDataBulkSms(returnedData) {
         $("#sendSms").removeClass("disabled");
         notifyError("Something went wrong. Please try again later");
     }
+}
+
+function closeSmsModal() {
+    $("#sendSmsModal").closeModal();
+}
+
+function closeUnlockModal() {
+    $("#unlockCandidateModal").closeModal();
 }

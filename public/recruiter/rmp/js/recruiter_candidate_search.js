@@ -235,6 +235,15 @@ $(document).ready(function(){
     $("#endOfResultsDiv").hide();
     $("#loadingIcon").show();
 
+    $("#select_all").change(function() {
+        if(this.checked) {
+            checkAll();
+        } else{
+            uncheckAll();
+        }
+    });
+
+
     // TODO add url detection => identify jpid => get setters only on first load
     // then trigger search with those params
     // below code needs to be modified for this
@@ -710,6 +719,7 @@ function performSearch() {
         $("#filterBtn").addClass("disabled");
 
         $("#candidateResultContainer").html("");
+        $("#candidateTools").show();
         $("#searchJobPanel").hide();
         $("#noCandidateDiv").hide();
         $("#endOfResultsDiv").hide();
@@ -831,12 +841,16 @@ function processDataMatchCandidate(returnedData) {
             } catch (exception) {
                 console.log("exception occured!!" + exception.stack);
             }
-            $("#somethingWentWrong").hide();
+
+            $("#candidateTools").show();
+
         } else{
+            $("#candidateTools").hide();
             $("#noCandidateDiv").show();
-/*            notifySuccess("No Candidates found!");*/
+            /*            notifySuccess("No Candidates found!");*/
         }
     } else{
+        $("#candidateTools").hide();
         $("#noCandidateDiv").show();
         notifySuccess("Something went wrong! Please try again later!");
     }
