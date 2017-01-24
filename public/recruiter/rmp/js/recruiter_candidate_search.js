@@ -552,6 +552,19 @@ function checkRecruiterLogin() {
 function processDataRecruiterSession(returnedData) {
     if(returnedData == 0){
         logoutRecruiter();
+    } else{
+        if(returnedData.recruiterAccessLevel == 0){
+            $("#creditView").show();
+            $("#creditViewMobile").show();
+            $("#recruiterMsg").show();
+            $("#recruiterHIW").show();
+        } else{
+
+            $("#creditView").hide();
+            $("#creditViewMobile").hide();
+            $("#recruiterMsg").hide();
+            $("#recruiterHIW").hide();
+        }
     }
 }
 

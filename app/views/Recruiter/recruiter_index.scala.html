@@ -68,19 +68,34 @@
                                     <input style="border-bottom: 1px solid #e0e0e0" placeholder="Mobile" id="rec_mobile" type="text" maxlength="10" class="validate">
                                     <input style="border-bottom: 1px solid #e0e0e0" placeholder="Email" id="rec_email" type="email" class="validate">
 
-                                    <select id="rec_company" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
-                                    <script type="text/javascript">
-                                        $('#rec_company').tokenize({
-                                            displayDropdownOnFocus: true,
-                                            placeholder: "Enter your company",
-                                            nbDropdownElements: 1000,
-                                            newElements: true,
-                                            maxElements: 1,
-                                            onAddToken: function (value, text) {
-                                                validateCompanyVal(value, text);
-                                            }
-                                        });
-                                    </script>
+                                    <span style="float: left; margin-top: 8px">Have Company Unique Code?</span>
+                                    <div class="switch" style="position: inherit; margin-top: 24px">
+                                        <label>No
+                                            <input id="is_private_recruiter" type="checkbox">
+                                            <span class="lever"></span>Yes
+                                        </label>
+                                    </div>
+
+                                    <div style="margin-top: 72px">
+                                        <div id="privateRecruiter" style="display: none;">
+                                            <input style="border-bottom: 1px solid #e0e0e0" placeholder="Company unique code" id="rec_company_code" type="text" class="validate">
+                                        </div>
+                                        <div id="openRecruiter">
+                                            <select id="rec_company" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                                            <script type="text/javascript">
+                                                $('#rec_company').tokenize({
+                                                    displayDropdownOnFocus: true,
+                                                    placeholder: "Enter your company",
+                                                    nbDropdownElements: 1000,
+                                                    newElements: true,
+                                                    maxElements: 1,
+                                                    onAddToken: function (value, text) {
+                                                        validateCompanyVal(value, text);
+                                                    }
+                                                });
+                                            </script>
+                                        </div>
+                                    </div>
                                 </form>
                             </div>
                             <div class="input-field col s12">

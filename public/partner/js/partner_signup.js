@@ -179,7 +179,7 @@ $(function() {
 
                                 partnerSignUpSubmit(d);
                             } else{
-                                alert("Company code is incorrect");
+                                notifyError("Company code is incorrect");
 
                                 $("#registerPartnerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled',false).html("Register for FREE");
                                 document.getElementById("registerBtnSubmit").disabled = false;

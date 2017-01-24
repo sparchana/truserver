@@ -342,6 +342,19 @@ function checkRecruiterLogin() {
 function processDataRecruiterSession(returnedData) {
     if(returnedData == 0){
         logoutRecruiter();
+    } else{
+        if(returnedData.recruiterAccessLevel == 0){
+            $("#creditView").show();
+            $("#creditViewMobile").show();
+            $("#recruiterMsg").show();
+            $("#recruiterHIW").show();
+        } else{
+
+            $("#creditView").hide();
+            $("#creditViewMobile").hide();
+            $("#recruiterMsg").hide();
+            $("#recruiterHIW").hide();
+        }
     }
 }
 
@@ -351,8 +364,13 @@ function processDataRecruiterProfile(returnedData) {
     } else{
         $("#recName").html(returnedData.recruiterProfileName);
         $("#recMobile").html(returnedData.recruiterProfileMobile);
-        if(returnedData.recCompany != null)
+        if(returnedData.recCompany != null){
             $("#recCompany").html(returnedData.recCompany.companyName);
+            if(returnedData.recruiterAccessLevel == 1){
+                $("#recCompany").html(returnedData.company.companyWebsite + " (Private Recruiter)");
+            }
+
+        }
 
         if(returnedData.recruiterLinkedinProfile != null && returnedData.recruiterLinkedinProfile != "")
             $("#recLinkedin").html(returnedData.recruiterLinkedinProfile);

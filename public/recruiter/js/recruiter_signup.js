@@ -131,11 +131,15 @@ $(function() {
 function processDataAddAuth(returnedData) {
     if(returnedData.status == 1){
         $('#modalOtp').closeModal();
-        $('#messageModal').openModal();
-        setTimeout(function(){
-            window.location = "/recruiter/home";
-        }, 4000);
+        if(returnedData.firstTime == 1){
+            $('#messageModal').openModal();
+            setTimeout(function(){
+                window.location = "/recruiter/home";
+            }, 4000);
 
+        } else{
+            window.location = "/recruiter/home";
+        }
     } else{
         notifyError("Something went wrong. Please try again later");
     }
@@ -148,6 +152,7 @@ $(function() {
         var recruiterName = $("#rec_name").val();
         var recruiterMobile = $("#rec_mobile").val();
         var recruiterEmail = $("#rec_email").val();
+        var recruiterCompanyCode = $("#rec_company_code").val();
         recruiterCompany = $("#rec_company").val();
 
         var nameCheck = validateName(recruiterName);
@@ -171,9 +176,16 @@ $(function() {
         } else if(!validateEmail(recruiterEmail)){
             notifyError("Enter a valid email");
             statusCheck = 0;
-        } else if(recruiterCompany == "" || recruiterCompany == null) {
-            notifyError("Please enter your company");
-            statusCheck = 0;
+        } else if($('#is_private_recruiter').prop('checked')){
+            if(recruiterCompanyCode == "" || recruiterCompanyCode == null){
+                notifyError("Please enter Company Code");
+                statusCheck = 0;
+            }
+        } else if(!$('#is_private_recruiter').prop('checked')){
+            if(recruiterCompany == "" || recruiterCompany == null) {
+                notifyError("Please enter your company");
+                statusCheck = 0;
+            }
         }
 
         //checking if the company selected is from the list or its is a new company
@@ -183,26 +195,63 @@ $(function() {
         }
 
         if(statusCheck){
+            var companyId = parseInt(recruiterCompany);
+
             $("#SignSubmitUpBtn").addClass("disabled");
+            if($('#is_private_recruiter').prop('checked')){
+                companyId = null;
+            } else{
+                recruiterCompanyCode = null;
+            }
+
             var d = {
                 recruiterName : recruiterName,
                 recruiterMobile : recruiterMobile,
                 recruiterEmail : recruiterEmail,
-                recruiterCompany : parseInt(recruiterCompany),
-                recruiterCompanyName : recruiterCompanyName
+                recruiterCompany : companyId,
+                recruiterCompanyName : recruiterCompanyName,
+                companyCode : recruiterCompanyCode
             };
 
             recruiterMobileVal =  "+91" + d.recruiterMobile;
-            $.ajax({
-                type: "POST",
-                url: "/recruiterSignUp",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(d),
-                success: processDataSignUpSubmit
-            });
+
+            if(recruiterCompanyCode != null){
+                try {
+                    $.ajax({
+                        type: "POST",
+                        url: "/checkExistingCompany/" + recruiterCompanyCode,
+                        async: true,
+                        contentType: false,
+                        data: false,
+                        success: function (returnedData) {
+                            if(returnedData == 1){
+                                recruiterSignUpSubmit(d);
+                            } else{
+                                notifyError("Company code is incorrect");
+
+                                $("#SignSubmitUpBtn").removeClass("disabled");
+                            }
+                        }
+                    });
+                } catch (exception) {
+                    console.log("exception occured!!" + exception.stack);
+                }
+            } else{
+                recruiterSignUpSubmit(d);
+            }
         }
     });
 });
+
+function recruiterSignUpSubmit(d) {
+    $.ajax({
+        type: "POST",
+        url: "/recruiterSignUp",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(d),
+        success: processDataSignUpSubmit
+    });
+}
 
 // signup_recruiter_form ajax script
 $(function() {

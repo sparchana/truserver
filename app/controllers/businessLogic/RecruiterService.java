@@ -125,18 +125,29 @@ public class RecruiterService {
 
         if(recruiterProfile == null) {
 
-            //checking if company exists or not
-            Company existingCompany = Company.find.where().eq("companyId", recruiterSignUpRequest.getRecruiterCompany()).findUnique();
-            if(existingCompany == null) {
-                AddCompanyResponse addCompanyResponse;
-                AddCompanyRequest addCompanyRequest = new AddCompanyRequest();
-                addCompanyRequest.setCompanyName(recruiterSignUpRequest.getRecruiterCompanyName());
-                addCompanyRequest.setCompanyLogo(ServerConstants.DEFAULT_COMPANY_LOGO);
-                addCompanyRequest.setCompanyStatus(1);
-                addCompanyResponse = CompanyService.addCompany(addCompanyRequest);
+            Company existingCompany = null;
+            if(recruiterSignUpRequest.getCompanyCode() == null){
+                //checking if company exists or not
+                existingCompany = Company.find.where().eq("companyId", recruiterSignUpRequest.getRecruiterCompany()).findUnique();
+                if(existingCompany == null) {
+                    AddCompanyResponse addCompanyResponse;
+                    AddCompanyRequest addCompanyRequest = new AddCompanyRequest();
+                    addCompanyRequest.setCompanyName(recruiterSignUpRequest.getRecruiterCompanyName());
+                    addCompanyRequest.setCompanyLogo(ServerConstants.DEFAULT_COMPANY_LOGO);
+                    addCompanyRequest.setCompanyStatus(1);
+                    addCompanyResponse = CompanyService.addCompany(addCompanyRequest);
 
-                existingCompany = Company.find.where().eq("companyId", addCompanyResponse.getCompanyId()).findUnique();
-                if(existingCompany == null){
+                    existingCompany = Company.find.where().eq("companyId", addCompanyResponse.getCompanyId()).findUnique();
+                    if(existingCompany == null){
+                        recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.getStatusFailure());
+                        return recruiterSignUpResponse;
+                    }
+                }
+            } else{
+                existingCompany = Company.find.where().eq("CompanyCode", recruiterSignUpRequest.getCompanyCode()).findUnique();
+                if(existingCompany != null){
+                    newRecruiter.setRecruiterAccessLevel(ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE);
+                } else{
                     recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.getStatusFailure());
                     return recruiterSignUpResponse;
                 }
@@ -367,8 +378,12 @@ public class RecruiterService {
                 // this candidate has not been unlocked by the recruiter, hence unlock it
                 Logger.info("Recruiter with mobile no: " + recruiterProfile.getRecruiterProfileMobile() + " is unlocking candidate with mobile: " + candidate.getCandidateMobile());
 
-                if(recruiterProfile.getContactCreditCount() > 0){
+                Boolean unlockCandidate = false;
+                if(recruiterProfile.getContactCreditCount() > 0 || recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
+                    unlockCandidate = true;
+                }
 
+                if(unlockCandidate){
 
                     //recruiter has contact credits
                     debitCredits(recruiterProfile, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, -1, createdBy);

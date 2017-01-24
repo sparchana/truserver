@@ -484,7 +484,7 @@ public class PartnerController {
 
 public static Result checkExistingCompany(String CompanyCode) {
     Company company = Company.find.where().eq("CompanyCode", CompanyCode).findUnique();
-    if(company!= null){
+    if(company != null){
         return ok("1");
     } else{
         return ok("0");

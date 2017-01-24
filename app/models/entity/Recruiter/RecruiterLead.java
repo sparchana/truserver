@@ -74,10 +74,10 @@ public class RecruiterLead extends Model {
     private String recruiterLeadRequirement = "";
 
     @Column(name = "recruiter_lead_source_type", columnDefinition = "int not null")
-    private Integer recruiterLeadSourceType;
+    private Integer recruiterLeadSourceType = 0;
 
     @Column(name = "recruiter_lead_source_name", columnDefinition = "int not null")
-    private Integer recruiterLeadSourceName;
+    private Integer recruiterLeadSourceName = 0;
 
     @Column(name = "recruiter_lead_source_date", columnDefinition = "date null")
     private Date recruiterLeadSourceDate;

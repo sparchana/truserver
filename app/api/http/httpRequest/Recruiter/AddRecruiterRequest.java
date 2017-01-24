@@ -23,6 +23,8 @@ public class AddRecruiterRequest {
     private Integer contactCredits;
     private Integer interviewCredits;
 
+    private String companyCode;
+
     private Integer packId;
     private Integer creditCount;
     private Date expiryDate;
@@ -177,5 +179,13 @@ public class AddRecruiterRequest {
 
     public void setCreditCount(Integer creditCount) {
         this.creditCount = creditCount;
+    }
+
+    public String getCompanyCode() {
+        return companyCode;
+    }
+
+    public void setCompanyCode(String companyCode) {
+        this.companyCode = companyCode;
     }
 }
