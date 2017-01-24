@@ -1438,7 +1438,6 @@ function processDataAllJobPosts(returnedData) {
                 var applyJobText ;
 
                 if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != CTA_BTN_APPLY){
-                    console.log("jobPost.applyBtnStatus : "+ jobPost.applyBtnStatus);
                     if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_REQUIRED) {
                         applyJobText = "Book Interview";
                     } else if(jobPost.applyBtnStatus == CTA_BTN_DEACTIVE){
