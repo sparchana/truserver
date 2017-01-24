@@ -7,7 +7,6 @@ var jobArray = [];
 var prefLocation;
 var prefLocationName;
 var index = 0;
-var candidateId;
 
 function getLocality(){
     return localityArray;

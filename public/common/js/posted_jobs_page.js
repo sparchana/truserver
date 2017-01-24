@@ -139,7 +139,9 @@ function processDataForJobPostLocation(returnedData) {
     
 
     $('#jobLocality').html('');
-    var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
+    if(returnedData.jobPostToLocalityList.length > 1){
+        var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
+    }
     $('#jobLocality').append(defaultOption);
     var jobLocality = returnedData.jobPostToLocalityList;
     jobLocality.forEach(function (locality) {

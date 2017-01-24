@@ -1,4 +1,7 @@
 <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/materialDashboard.css">
+<script>
+    document.getElementById('uploadResumeContent').addEventListener('change', uploadResume, false);
+</script>
 <nav class="navbar navbar-fixed-top" style="background: #286ab6" role="navigation">
     <div class="container">
         <div class="navbar-header">
@@ -32,6 +35,12 @@
         </div>
     </div>
 </nav>
+<div class="container-fluid" style="display:none">
+    <label id="resumeUploadBoxInner">
+        <span class="glyphicon glyphicon-open" aria-hidden="true" style="margin-right:10px"></span>Upload Resume
+        <input type="file" id="uploadResumeContent" style="display: none">
+    </label>
+</div>
 <script>
     function renderShowJobsPage(){
         try {
