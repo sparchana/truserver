@@ -311,14 +311,17 @@ public class RecruiterController {
                     e.printStackTrace();
                 }
 
+                JobPost jobPost = null;
                 Logger.info("Sending recruiter sms to " + multipleCandidateActionRequest.getCandidateIdList().size() + " candidates");
+                if(multipleCandidateActionRequest.getJobPostId() != null) {
+                    jobPost = JobPost.find.where().eq("JobPostId", multipleCandidateActionRequest.getJobPostId()).findUnique();
+                }
                 for(Long candidateId : multipleCandidateActionRequest.getCandidateIdList()){
                     Candidate candidate = Candidate.find.where().eq("CandidateId", candidateId).findUnique();
                     if(candidate != null){
                         //sending sms
                         //RMP product sms blast
                         if(multipleCandidateActionRequest.getJobPostId() != null){
-                            JobPost jobPost = JobPost.find.where().eq("JobPostId", multipleCandidateActionRequest.getJobPostId()).findUnique();
                             if(jobPost != null){
                                 NotificationEvent notificationEvent =
                                         new SMSEvent(candidate.getCandidateMobile(),
@@ -330,8 +333,6 @@ public class RecruiterController {
 
                                 Global.getmNotificationHandler().addToQueue(notificationEvent);
 
-                                //start checking sent sms delivery status
-                                checkDeliveryStatus();
                             } else{
                                 return ok(toJson('0'));
                             }
@@ -357,7 +358,7 @@ public class RecruiterController {
     public static void checkDeliveryStatus(){
         new Thread(() -> {
             try{
-                Thread.sleep(300000); //check after 5 minutes
+                Thread.sleep(240000); //check after 4 minutes
             } catch(InterruptedException e){
                 Logger.info("exception: " + e);
             }
