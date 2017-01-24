@@ -1870,7 +1870,6 @@ public class JobPostWorkflowEngine {
             candidateUUIdList.add(candidate.getCandidateUUId());
             candidateIdList.add(candidate.getCandidateId());
         }
-        /* */
 
         List<JobApplication> allJobApplication = JobApplication.find.where().in("candidateId", candidateIdList).eq("jobPostId", jobPost.getJobPostId()).findList();
 
@@ -1989,53 +1988,51 @@ public class JobPostWorkflowEngine {
                         candidateExtraData.setWorkflowUUId(jobPostWorkflow.getJobPostWorkflowUUId());
                         candidateExtraData.setCreatedBy(jobPostWorkflow.getCreatedBy());
 
-                        if (jobPostWorkflow.getStatus().getStatusId() >= ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED) {
-                            List<Interaction> interactionList = Interaction.find
-                                    .where().eq("objectAUUId", jobPostWorkflow.getJobPostWorkflowUUId())
-                                    .findList();
+                        List<Interaction> interactionList = Interaction.find
+                                .where().eq("objectAUUId", jobPostWorkflow.getJobPostWorkflowUUId())
+                                .findList();
 
-                            candidateExtraData.setAllInteractionCount(interactionList.size());
+                        candidateExtraData.setAllInteractionCount(interactionList.size());
 
-                            String interviewDatetime = "";
-                            if (jobPostWorkflow.getScheduledInterviewTimeSlot() != null) {
-                                interviewDatetime = jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + " ";
-                            }
-                            if (jobPostWorkflow.getScheduledInterviewDate() != null) {
-                                interviewDatetime += sfd_date.format(jobPostWorkflow.getScheduledInterviewDate());
-                            }
-                            if (interviewDatetime.isEmpty()) {
-                                interviewDatetime = "NA";
-                            }
-                            candidateExtraData.setInterviewSchedule(interviewDatetime);
-                            candidateExtraData.setInterviewLat(jobPostWorkflow.getInterviewLocationLat());
-                            candidateExtraData.setInterviewLng(jobPostWorkflow.getInterviewLocationLng());
+                        String interviewDatetime = "";
+                        if (jobPostWorkflow.getScheduledInterviewTimeSlot() != null) {
+                            interviewDatetime = jobPostWorkflow.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + " ";
+                        }
+                        if (jobPostWorkflow.getScheduledInterviewDate() != null) {
+                            interviewDatetime += sfd_date.format(jobPostWorkflow.getScheduledInterviewDate());
+                        }
+                        if (interviewDatetime.isEmpty()) {
+                            interviewDatetime = "NA";
+                        }
+                        candidateExtraData.setInterviewSchedule(interviewDatetime);
+                        candidateExtraData.setInterviewLat(jobPostWorkflow.getInterviewLocationLat());
+                        candidateExtraData.setInterviewLng(jobPostWorkflow.getInterviewLocationLng());
 
-                            JobPostWorkflow jobPostWorkflowLatest = JobPostWorkflow.find.where()
-                                    .eq("candidate_id", candidate.getCandidateId())
-                                    .eq("Job_post_id", jobPostWorkflow.getJobPost().getJobPostId())
-                                    .orderBy().desc("job_post_workflow_id").setMaxRows(1).findUnique();
+                        JobPostWorkflow jobPostWorkflowLatest = JobPostWorkflow.find.where()
+                                .eq("candidate_id", candidate.getCandidateId())
+                                .eq("Job_post_id", jobPostWorkflow.getJobPost().getJobPostId())
+                                .orderBy().desc("job_post_workflow_id").setMaxRows(1).findUnique();
 
-                            candidateExtraData.setWorkflowStatus(jobPostWorkflowLatest.getStatus());
-                            candidateExtraData.setInterviewDate(jobPostWorkflowLatest.getScheduledInterviewDate());
-                            candidateExtraData.setInterviewSlot(jobPostWorkflowLatest.getScheduledInterviewTimeSlot());
-                            candidateExtraData.setCreationTimestamp(jobPostWorkflowLatest.getCreationTimestamp());
+                        candidateExtraData.setWorkflowStatus(jobPostWorkflowLatest.getStatus());
+                        candidateExtraData.setInterviewDate(jobPostWorkflowLatest.getScheduledInterviewDate());
+                        candidateExtraData.setInterviewSlot(jobPostWorkflowLatest.getScheduledInterviewTimeSlot());
+                        candidateExtraData.setCreationTimestamp(jobPostWorkflowLatest.getCreationTimestamp());
 
-                            CandidateInterviewStatusUpdate candidateInterviewStatusUpdate = CandidateInterviewStatusUpdate.find.where()
-                                    .eq("candidateId", candidate.getCandidateId())
-                                    .eq("JobPostId", jobPostWorkflow.getJobPost().getJobPostId())
-                                    .orderBy().desc("create_timestamp").setMaxRows(1).findUnique();
+                        CandidateInterviewStatusUpdate candidateInterviewStatusUpdate = CandidateInterviewStatusUpdate.find.where()
+                                .eq("candidateId", candidate.getCandidateId())
+                                .eq("JobPostId", jobPostWorkflow.getJobPost().getJobPostId())
+                                .orderBy().desc("create_timestamp").setMaxRows(1).findUnique();
 
 
-                            candidateExtraData.setCandidateInterviewStatus(null);
-                            if (candidateInterviewStatusUpdate != null) {
-                                candidateExtraData.setCandidateInterviewStatus(candidateInterviewStatusUpdate.getJobPostWorkflow().getStatus());
-                                candidateExtraData.setInterviewDate(candidateInterviewStatusUpdate.getJobPostWorkflow().getScheduledInterviewDate());
-                                candidateExtraData.setInterviewSlot(candidateInterviewStatusUpdate.getJobPostWorkflow().getScheduledInterviewTimeSlot());
-                            }
-                            candidateExtraData.setReason(null);
-                            if(candidateStatusMap.get(candidate.getCandidateId()) != null){
-                                candidateExtraData.setReason(candidateStatusMap.get(candidate.getCandidateId()).getRejectReason());
-                            }
+                        candidateExtraData.setCandidateInterviewStatus(null);
+                        if (candidateInterviewStatusUpdate != null) {
+                            candidateExtraData.setCandidateInterviewStatus(candidateInterviewStatusUpdate.getJobPostWorkflow().getStatus());
+                            candidateExtraData.setInterviewDate(candidateInterviewStatusUpdate.getJobPostWorkflow().getScheduledInterviewDate());
+                            candidateExtraData.setInterviewSlot(candidateInterviewStatusUpdate.getJobPostWorkflow().getScheduledInterviewTimeSlot());
+                        }
+                        candidateExtraData.setReason(null);
+                        if(candidateStatusMap.get(candidate.getCandidateId()) != null){
+                            candidateExtraData.setReason(candidateStatusMap.get(candidate.getCandidateId()).getRejectReason());
                         }
                     }
                 }
@@ -2272,7 +2269,7 @@ public class JobPostWorkflowEngine {
                                     candidate.getCandidateId()
                             );
             // TODO Check if interview is already confirmed,if yes then return '0' , 0 will trigger hard refresh on client side for the current page
-            if(jobPostWorkflowCurrent.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED){
+            if(jobPostWorkflowCurrent != null && jobPostWorkflowCurrent.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED){
                 return ok("0");
             }
             if (interviewStatusRequest.getInterviewStatus() == ServerConstants.INTERVIEW_STATUS_ACCEPTED) { // accept

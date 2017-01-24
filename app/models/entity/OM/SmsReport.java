@@ -7,10 +7,14 @@ import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
 import models.entity.Recruiter.RecruiterProfile;
+import models.entity.RecruiterCreditHistory;
 import models.entity.Static.SmsDeliveryStatus;
+import play.Logger;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by dodo on 19/1/17.
@@ -34,22 +38,22 @@ public class SmsReport extends Model {
     private String smsSchedulerId;
 
     @ManyToOne
-    @JsonManagedReference
+    @JsonBackReference
     @JoinColumn(name = "CompanyId", referencedColumnName = "CompanyId")
     private Company company;
 
     @ManyToOne
-    @JsonManagedReference
+    @JsonBackReference
     @JoinColumn(name = "recruiterProfileId", referencedColumnName = "recruiterProfileId")
     private RecruiterProfile recruiterProfile;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonManagedReference
     @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
     private Candidate candidate;
 
     @ManyToOne
-    @JsonManagedReference
+    @JsonBackReference
     @JoinColumn(name = "JobPostId", referencedColumnName = "JobPostId")
     private JobPost jobPost;
 
@@ -57,6 +61,9 @@ public class SmsReport extends Model {
     @JsonManagedReference
     @JoinColumn(name = "SmsDeliveryStatus")
     private SmsDeliveryStatus smsDeliveryStatus;
+
+    @Transient
+    private Integer hasApplied = 0;
 
     public static Model.Finder<String, SmsReport> find = new Model.Finder(SmsReport.class);
 
@@ -134,5 +141,27 @@ public class SmsReport extends Model {
 
     public void setRecruiterProfile(RecruiterProfile recruiterProfile) {
         this.recruiterProfile = recruiterProfile;
+    }
+
+    public Integer getHasApplied() {
+        return checkIfApplied();
+    }
+
+    public void setHasApplied(Integer hasApplied) {
+        this.hasApplied = hasApplied;
+    }
+
+    private Integer checkIfApplied() {
+        SmsReport smsReport = SmsReport.find.where().eq("sms_report_id", this.getSmsReportId()).findUnique();
+        JobApplication jobApplication = JobApplication.find.where()
+                .eq("CandidateId", smsReport.getCandidate().getCandidateId())
+                .eq("JobPostId", smsReport.getJobPost().getJobPostId())
+                .findUnique();
+
+        if(jobApplication != null){
+            return 1;
+        } else{
+            return 0;
+        }
     }
 }

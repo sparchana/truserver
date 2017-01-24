@@ -137,7 +137,7 @@ function processDataGenerateJobPostView(returnedData) {
                 colJobLocation.appendChild(spanJobLocality);
 
                 var colJobSalary = document.createElement("div");
-                colJobSalary.className = 'col s12 m1 l2';
+                colJobSalary.className = 'col s12 m1 l1';
                 colJobSalary.style = 'margin-top:8px';
                 outerRow.appendChild(colJobSalary);
 
@@ -176,6 +176,21 @@ function processDataGenerateJobPostView(returnedData) {
                 upcomingCounter.style = "margin-top: 4px";
                 upcomingCounter.className = "newCounter";
                 colApplicant.appendChild(upcomingCounter);
+
+                var colTrackView = document.createElement("div");
+                colTrackView.className = 'col s12 m1 l1';
+                colTrackView.style = "text-align:center";
+                outerRow.appendChild(colTrackView);
+
+                var trackViewBtn = document.createElement('button');
+                trackViewBtn.className = 'waves-effect waves-blue-grey lighten-5 btn-flat';
+                trackViewBtn.style = 'color:#1976d2; padding:0 6px 0 6px; font-size:12px;';
+                trackViewBtn.textContent='Track';
+
+                trackViewBtn.onclick = function () {
+                    openJobPosttrackView(jobPost.jobPost.jobPostId);
+                };
+                colTrackView.appendChild(trackViewBtn);
 
                 var colJobStatus = document.createElement("div");
                 colJobStatus.className = 'col s12 m1 l1';
@@ -329,7 +344,7 @@ function processDataGenerateJobPostView(returnedData) {
 
                 var editViewBtn = document.createElement('button');
                 editViewBtn.className = 'waves-effect waves-blue-grey lighten-5 btn-flat';
-                editViewBtn.style = 'color:#1976d2; padding:0; font-size:12px;';
+                editViewBtn.style = 'color:#1976d2; padding:0 6px 0 6px; font-size:12px;';
                 editViewBtn.textContent='View/Edit';
 
                 editViewBtn.onclick = function () {
@@ -345,7 +360,7 @@ function processDataGenerateJobPostView(returnedData) {
 
                 var candidateViewBtn = document.createElement('button');
                 candidateViewBtn.className = 'waves-effect waves-blue-grey lighten-5 btn-flat';
-                candidateViewBtn.style = 'color:#1976d2; padding:0; font-size:12px;';
+                candidateViewBtn.style = 'color:#1976d2; padding:0 6px 0 6px; font-size:12px;';
                 candidateViewBtn.textContent='View Candidate';
 
                 candidateViewBtn.onclick = function () {
@@ -372,6 +387,9 @@ function openJobPost(jobId) {
 }
 function openCandidateView(jpId) {
     window.location = "/recruiter/candidateSearch?jpId="+jpId;
+}
+function openJobPosttrackView(jpId) {
+    window.location = "/recruiter/jobPostTrack/" + jpId;
 }
 
 function openAppliedCandidate(jobId) {

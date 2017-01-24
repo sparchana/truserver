@@ -1402,8 +1402,8 @@ function sendSms(){
         $("#sendSms").addClass("disabled");
         var s = {
             candidateIdList: checkedCandidateIdList,
-            smsMessage : $("#smsText").val(),
-            jobPostId : jpId
+            smsMessage :$("#smsText").val(),
+            jobPostId :jpId
         };
         $.ajax({
             type: "POST",

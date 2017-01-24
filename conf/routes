@@ -157,6 +157,7 @@ GET         /getRecruiterProfileInfo                                      contro
 GET         /recruiter/profile                                            controllers.RecruiterController.recruiterEditProfile()
 GET         /recruiter/candidateSearch                                    controllers.RecruiterController.recruiterCandidateSearch(jpId: java.lang.Long ?= null)
 GET         /recruiter/allRecruiterJobPosts                               controllers.RecruiterController.renderAllRecruiterJobPosts
+GET         /recruiter/jobPostTrack/:id                                   controllers.RecruiterController.renderJobPostTrack(id : Long)
 GET         /recruiter/unlockedCandidates                                 controllers.RecruiterController.renderAllUnlockedCandidates
 GET         /recruiter/jobApplicants/:id                                  controllers.RecruiterController.renderAllApplications(id : Long)
 GET         /recruiterNavbar                                              controllers.RecruiterController.recruiterNavbar()
@@ -188,6 +189,9 @@ POST        /getTodayInterviewDetails                                     contro
 POST        /getPendingCandidateApproval                                  controllers.RecruiterController.getPendingCandidateApproval()
 POST        /bulkUnlockCandidate                                          controllers.RecruiterController.bulkUnlockCandidates()
 POST        /bulkSendSms                                                  controllers.RecruiterController.bulkSendSms()
+POST        /getSentSms/:id                                               controllers.RecruiterController.getSentSms(id : Long)
+POST        /getAppliedCandidates/:id                                     controllers.RecruiterController.getAppliedCandidates(id : Long)
+POST        /getConfirmedApplication/:id                                  controllers.RecruiterController.getConfirmedApplication(id : Long)
 
 # Search API
 # ~~~~~~~~~~~~~

@@ -358,7 +358,8 @@ public class RecruiterController {
     public static void checkDeliveryStatus(){
         new Thread(() -> {
             try{
-                Thread.sleep(240000); //check after 4 minutes
+                Thread.sleep(30000); //check after 4 minutes
+/*                Thread.sleep(240000); //check after 4 minutes*/
             } catch(InterruptedException e){
                 Logger.info("exception: " + e);
             }
@@ -422,7 +423,7 @@ public class RecruiterController {
 
                             List<CandidateWorkflowData> jobApplicantList = new LinkedList<>();
                             for (Map.Entry<Long, CandidateWorkflowData> entry : selectedCandidateMap.entrySet()) {
-                                sanitizeCandidateDate(entry.getValue().getCandidate());
+                                sanitizeCandidateData(entry.getValue().getCandidate());
                                 jobApplicantList.add(entry.getValue());
                             }
 
@@ -434,8 +435,7 @@ public class RecruiterController {
         }
         return ok("0");
     }
-
-    private static void sanitizeCandidateDate(Candidate candidate) {
+    private static void sanitizeCandidateData(Candidate candidate) {
         candidate.setJobApplicationList(null);
         candidate.setLead(null);
         candidate.setCandidateUUId(null);
@@ -584,12 +584,12 @@ public class RecruiterController {
     }
 
     public static class RecruiterJobPostObject{
+
         Map<Long, JobPostWorkflow> jobPostWorkflowMap;
         int pendingCount;
         int upcomingCount;
         int totalCount;
         JobPost jobPost;
-
         public RecruiterJobPostObject() {
             pendingCount = 0;
             totalCount = 0;
@@ -642,8 +642,8 @@ public class RecruiterController {
         public void setUpcomingCount(int upcomingCount) {
             this.upcomingCount = upcomingCount;
         }
-    }
 
+    }
     @Security.Authenticated(RecruiterSecured.class)
     public static Result getMatchingCandidate() {
         JsonNode matchingCandidateRequestJson = request().body().asJson();
@@ -827,6 +827,22 @@ public class RecruiterController {
 
         return ok(views.html.Recruiter.recruiter_my_jobs.render());
     }
+
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result renderJobPostTrack(Long id) {
+        Long recruiterId = Long.valueOf(session().get("recruiterId"));
+        RecruiterProfile recruiterProfile = RecruiterDAO.findById(recruiterId);
+        if(recruiterProfile == null) {
+            return badRequest();
+        }
+
+        if(recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+            return ok(views.html.Recruiter.rmp.job_post_sms_track.render());
+        }
+
+        return ok(views.html.Recruiter.recruiter_home.render());
+    }
+
     public static Result recruiterNavbar() {
         if(session().get("recruiterId") != null) {
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
@@ -837,7 +853,6 @@ public class RecruiterController {
 
         return ok(views.html.Recruiter.recruiter_navbar.render());
     }
-
     public static Result findRecruiterAndSendOtp() {
         JsonNode req = request().body().asJson();
         ResetPasswordResquest resetPasswordResquest = new ResetPasswordResquest();
@@ -916,9 +931,9 @@ public class RecruiterController {
             return o1.getExtraData().getLastActive().lastActiveValueId.compareTo(o2.getExtraData().getLastActive().lastActiveValueId);
 
         }
+
     }
     private static class SalaryComparatorHtoL implements Comparator<CandidateWorkflowData> {
-
         @Override
         public int compare(CandidateWorkflowData o1, CandidateWorkflowData o2) {
             if (o1.getCandidate().getCandidateLastWithdrawnSalary() == null) {
@@ -929,9 +944,9 @@ public class RecruiterController {
             }
             return o2.getCandidate().getCandidateLastWithdrawnSalary().compareTo(o1.getCandidate().getCandidateLastWithdrawnSalary());
         }
+
     }
     private static class SalaryComparatorLtoH implements Comparator<CandidateWorkflowData> {
-
         @Override
         public int compare(CandidateWorkflowData o1, CandidateWorkflowData o2) {
             if (o1.getCandidate().getCandidateLastWithdrawnSalary() == null) {
@@ -942,8 +957,8 @@ public class RecruiterController {
             }
             return o1.getCandidate().getCandidateLastWithdrawnSalary().compareTo(o2.getCandidate().getCandidateLastWithdrawnSalary());
         }
-    }
 
+    }
     @Security.Authenticated(RecruiterSecured.class)
     public static Result renderAllApplications(long id) {
         return ok(views.html.Recruiter.recruiter_applied_candidates.render());
@@ -1018,6 +1033,99 @@ public class RecruiterController {
 
     public static Result trackApplication(long id) {
         return ok(views.html.Recruiter.recruiter_interviews.render());
+    }
+
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result getSentSms(long jpId) {
+        JobPost jobPost = JobPostDAO.findById(jpId);
+        if(jobPost != null){
+            List<SmsReport> sentSmsList =
+                    SmsReport.find.where().eq("JobPostId", jpId).findList();
+
+            for(SmsReport reports : sentSmsList){
+                reports.setCompany(null);
+                reports.setJobPost(null);
+                reports.setRecruiterProfile(null);
+
+                Candidate candidate = reports.getCandidate();
+                candidate.setLocalityPreferenceList(null);
+                candidate.setJobApplicationList(null);
+                candidate.setJobHistoryList(null);
+                candidate.setJobPostWorkflowList(null);
+                candidate.setJobPreferencesList(null);
+                candidate.setLanguageKnownList(null);
+                candidate.setCandidateAssetList(null);
+                candidate.setCandidateEducation(null);
+                candidate.setCandidateExpList(null);
+                reports.setCandidate(candidate);
+            }
+            return ok(toJson(sentSmsList));
+        }
+        return ok("0");
+    }
+
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result getAppliedCandidates(long jpId) {
+        JobPost jobPost = JobPostDAO.findById(jpId);
+        if(jobPost != null){
+            List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllJobApplicationWithinStatusId(925L,
+                    ServerConstants.JWF_STATUS_SELECTED, ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE);
+
+            for(JobPostWorkflow workflow : applicationList){
+                sanitizeCandidateData(workflow.getCandidate());
+            }
+
+
+            List<Candidate> candidateList = new ArrayList<>();
+            for (JobPostWorkflow jpwf : applicationList) {
+                candidateList.add(jpwf.getCandidate());
+            }
+
+            Integer status = ServerConstants.JWF_STATUS_SELECTED;
+
+            Map<Long, CandidateWorkflowData> mapToBeReturned =
+                    JobPostWorkflowEngine.getCandidateMap(candidateList, 925L, new ArrayList<>(Collections.singletonList(status)), false);
+
+            List<CandidateWorkflowData> jobApplicantList = new LinkedList<>();
+            for (Map.Entry<Long, CandidateWorkflowData> entry : mapToBeReturned.entrySet()) {
+                sanitizeCandidateData(entry.getValue().getCandidate());
+                jobApplicantList.add(entry.getValue());
+            }
+
+            return ok(toJson(jobApplicantList));
+        }
+        return ok("0");
+    }
+
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result getConfirmedApplication(long jpId) {
+        JobPost jobPost = JobPostDAO.findById(jpId);
+        if(jobPost != null){
+            List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllConfirmedApplicationsJobPost(925L,
+                    ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED, ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED);
+
+            for(JobPostWorkflow workflow : applicationList){
+                sanitizeCandidateData(workflow.getCandidate());
+            }
+
+            List<Candidate> candidateList = new ArrayList<>();
+            for (JobPostWorkflow jpwf : applicationList) {
+                candidateList.add(jpwf.getCandidate());
+            }
+
+            Integer status = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
+
+            Map<Long, CandidateWorkflowData> mapToBeReturned = JobPostWorkflowEngine.getCandidateMap(candidateList, 925L, new ArrayList<>(Collections.singletonList(status)), false);
+
+            List<CandidateWorkflowData> jobApplicantList = new LinkedList<>();
+            for (Map.Entry<Long, CandidateWorkflowData> entry : mapToBeReturned.entrySet()) {
+                sanitizeCandidateData(entry.getValue().getCandidate());
+                jobApplicantList.add(entry.getValue());
+            }
+
+            return ok(toJson(jobApplicantList));
+        }
+        return ok("0");
     }
 
 }
