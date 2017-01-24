@@ -183,7 +183,7 @@ POST        /getPendingCandidateApproval                                  contro
 # Recruiter SuperAdmin API
 # ~~~~~~~~~~~~~
 GET         /recruiter/api/summary/recruiter/:companyId                    controllers.RecruiterController.recruiterSummary(companyId: java.lang.Long, rid: java.lang.Long ?=null)
-POST        /recruiter/api/summary/jobpost/:companyId                      controllers.RecruiterController.jobPostSummary(companyId: java.lang.Long, jpId: java.lang.Long ?=null)
+POST        /recruiter/api/summary/jobpost/:recruiterId                    controllers.RecruiterController.jobPostSummary(recruiterId: java.lang.Long, jpId: java.lang.Long ?=null)
 
 # Search API
 # ~~~~~~~~~~~~~

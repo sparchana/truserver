@@ -779,7 +779,16 @@ public class RecruiterController {
         return ok();
     }
 
-    public static Result jobPostSummary(Long companyId, Long jpId) {
+    public static Result jobPostSummary(Long recruiterId, Long jpId) {
+        if(recruiterId == null) {
+            return badRequest();
+        }
+
+        RecruiterService recruiterService = new RecruiterService();
+        if(jpId == null) {
+            // return summary for all jobPost per recruiter
+            return ok(toJson(recruiterService.getAllJobPostPerRecruiterSummary(recruiterId, Long.valueOf(session().get("recruiterId")))));
+        }
         return ok();
     }
 }

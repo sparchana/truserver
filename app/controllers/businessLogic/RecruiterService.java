@@ -13,6 +13,7 @@ import api.http.httpResponse.Recruiter.AddCreditResponse;
 import api.http.httpResponse.Recruiter.AddRecruiterResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
+import api.http.httpResponse.Recruiter.recruiterAdmin.JobPostSummaryResponse;
 import api.http.httpResponse.Recruiter.recruiterAdmin.RecruiterSummaryResponse;
 import api.http.httpResponse.ResetPasswordResponse;
 import api.http.httpResponse.interview.InterviewResponse;
@@ -899,14 +900,14 @@ public class RecruiterService {
         return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList).size();
     }
 
-    public int computeTotalApplicant(List<Long> jobPostIdList) {
+    private int computeTotalApplicant(List<Long> jobPostIdList) {
         List<Integer> statusList = new ArrayList<>();
         statusList.add(ServerConstants.JWF_STATUS_SELECTED);
 
         return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList).size();
     }
 
-    public int computeTotalInterviewConducted(List<Long> jobPostIdList) {
+    private int computeTotalInterviewConducted(List<Long> jobPostIdList) {
         List<Integer> statusList = new ArrayList<>();
 
         statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED);
@@ -915,5 +916,9 @@ public class RecruiterService {
         statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW);
 
         return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList).size();
+    }
+
+    public List<JobPostSummaryResponse> getAllJobPostPerRecruiterSummary(Long recruiterId, Long recruiterId1) {
+        return null;
     }
 }
