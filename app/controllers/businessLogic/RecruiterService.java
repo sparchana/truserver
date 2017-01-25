@@ -863,8 +863,16 @@ public class RecruiterService {
 
     public List<RecruiterSummaryResponse> getRecruiterSummary(Long companyId, Long callerRecruiterId) {
 
-        if(companyId == null || callerRecruiterId == null) {
+        if(callerRecruiterId == null) {
             return new ArrayList<>();
+        }
+
+        if(companyId == null) {
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", callerRecruiterId).findUnique();
+            if(recruiterProfile == null || recruiterProfile.getCompany() == null) {
+                return new ArrayList<>();
+            }
+            companyId = recruiterProfile.getCompany().getCompanyId();
         }
 
         List<RecruiterSummaryResponse> recruiterSummaryResponseList = new ArrayList<>();
@@ -884,6 +892,7 @@ public class RecruiterService {
                 jobPostIdList.add(jobPost.getJobPostId());
             }
 
+            recruiterSummaryResponse.setRecruiterId(recruiterProfile.getRecruiterProfileId());
             recruiterSummaryResponse.setRecruiterName(recruiterProfile.getRecruiterProfileName());
             recruiterSummaryResponse.setRecruiterMobile(recruiterProfile.getRecruiterProfileMobile() +
                     ((recruiterProfile.getRecruiterAlternateMobile() == null) ? "": "/"+recruiterProfile.getRecruiterAlternateMobile()));
@@ -961,7 +970,7 @@ public class RecruiterService {
             // for now this uses the jobpost workflow to figure out these info
             jobPostSummaryResponse.setTotalApplicants(computeTotalApplicant(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))));
             jobPostSummaryResponse.setTotalInterviewConducted(computeTotalInterviewConducted(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))));
-            jobPostSummaryResponse.setFulfilmentStatus(computePercentageFulfilled(new ArrayList<>(Arrays.asList(jobPost)),
+            jobPostSummaryResponse.setFulfillmentStatus(computePercentageFulfilled(new ArrayList<>(Arrays.asList(jobPost)),
                     computeTotalSelected(new ArrayList<>(Arrays.asList(jobPost.getJobPostId())))));
 
             try {
@@ -991,6 +1000,9 @@ public class RecruiterService {
 
         JobPostWorkflow jobPostWorkflow = JobPostWorkFlowDAO.findFirstJobSelection(jobPostId);
 
+        if(jobPostWorkflow == null) {
+            return -1;
+        }
         DateTime dt1 = new DateTime(jobPostedOn.getTime());
         DateTime dt2 = new DateTime(jobPostWorkflow.getCreationTimestamp().getTime());
 

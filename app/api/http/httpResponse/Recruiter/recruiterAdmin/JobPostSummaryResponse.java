@@ -6,7 +6,7 @@ package api.http.httpResponse.Recruiter.recruiterAdmin;
 public class JobPostSummaryResponse {
     private String jobTitle;
     private String jobPostedOn;
-    private float fulfilmentStatus;
+    private float fulfillmentStatus;
     private int totalSmsSent;
     private int totalApplicants;
     private int totalInterviewConducted;
@@ -28,12 +28,12 @@ public class JobPostSummaryResponse {
         this.jobPostedOn = jobPostedOn;
     }
 
-    public float getFulfilmentStatus() {
-        return fulfilmentStatus;
+    public float getFulfillmentStatus() {
+        return fulfillmentStatus;
     }
 
-    public void setFulfilmentStatus(float fulfilmentStatus) {
-        this.fulfilmentStatus = fulfilmentStatus;
+    public void setFulfillmentStatus(float fulfillmentStatus) {
+        this.fulfillmentStatus = fulfillmentStatus;
     }
 
     public int getTotalSmsSent() {

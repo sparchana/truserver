@@ -4,6 +4,7 @@ package api.http.httpResponse.Recruiter.recruiterAdmin;
  * Created by zero on 24/1/17.
  */
 public class RecruiterSummaryResponse {
+    private Long recruiterId;
     private String recruiterName;
     private String recruiterMobile;
     private Integer noOfJobPosted;
@@ -66,5 +67,13 @@ public class RecruiterSummaryResponse {
 
     public void setPercentageFulfilled(Float percentageFulfilled) {
         this.percentageFulfilled = percentageFulfilled;
+    }
+
+    public Long getRecruiterId() {
+        return recruiterId;
+    }
+
+    public void setRecruiterId(Long recruiterId) {
+        this.recruiterId = recruiterId;
     }
 }

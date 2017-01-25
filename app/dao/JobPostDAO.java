@@ -74,10 +74,6 @@ public class JobPostDAO {
 
         if(accessLevel == null) {
             accessLevel = 0;
-            return JobPost.find.where()
-                    .eq("recruiterProfile.recruiterProfileId", targetRecruiterId)
-                    .eq("jobPostAccessLevel", accessLevel)
-                    .setMapKey("jobPostId").findMap();
         }
         return JobPost.find.where()
                 .eq("recruiterProfile.recruiterProfileId", targetRecruiterId)

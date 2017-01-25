@@ -585,6 +585,7 @@ public class RecruiterController {
         jobPost.setJobPostDocumentRequirements(null);
     }
 
+
     public static class RecruiterJobPostObject{
 
         Map<Long, JobPostWorkflow> jobPostWorkflowMap;
@@ -850,6 +851,8 @@ public class RecruiterController {
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
             if (recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
                 return ok(views.html.Recruiter.rmp.private_recruiter_nav.render());
+            } else if (recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE_ADMIN) {
+                return ok(views.html.Recruiter.rmp.private_recruiter_admin_nav.render());
             }
         }
 
@@ -1148,15 +1151,12 @@ public class RecruiterController {
     }
 
     @Security.Authenticated(RecruiterAdminSecured.class)
-    public static Result recruiterSummary(Long companyId, Long recruiterId) {
-        if(companyId == null) {
-            return badRequest();
-        }
+    public static Result recruiterSummary(Long recruiterId) {
 
         RecruiterService recruiterService = new RecruiterService();
         if(recruiterId == null) {
             // return summary for all recruiter
-            return ok(toJson(recruiterService.getRecruiterSummary(companyId, Long.valueOf(session().get("recruiterId")))));
+            return ok(toJson(recruiterService.getRecruiterSummary(null, Long.valueOf(session().get("recruiterId")))));
         }
         return ok();
     }
@@ -1172,5 +1172,14 @@ public class RecruiterController {
             return ok(toJson(recruiterService.getAllJobPostPerRecruiterSummary(recruiterId, Long.valueOf(session().get("recruiterId")))));
         }
         return ok();
+    }
+
+
+    @Security.Authenticated(RecruiterAdminSecured.class)
+    public static Result renderReportPage(String summary, Long recruiterId) {
+        if(summary!= null && summary.equalsIgnoreCase("job_post")) {
+            return ok(views.html.Recruiter.rmp.private_recruiter_admin_job_post_report_view.render());
+        }
+        return ok(views.html.Recruiter.rmp.private_recruiter_admin_report_view.render());
     }
 }
