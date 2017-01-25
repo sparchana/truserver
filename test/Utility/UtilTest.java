@@ -54,6 +54,10 @@ public class UtilTest {
                 {MethodType.idToCode, 990, 1000},
                 {MethodType.idToCode, 9990, 10000},
                 {MethodType.idToCode, 99990, 100000},
+                {MethodType.idToCode, 999990, 1000000},
+                {MethodType.idToCode, 9999990, 10000000},
+                {MethodType.idToCode, 99999990, 100000000},
+                {MethodType.idToCode, 999999990, 1000000000},
         });
     }
 
@@ -63,7 +67,7 @@ public class UtilTest {
             Application fakeApp = fakeApplication();
             TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
             running(server, () -> {
-                for(long key = this.startKey; key< this.endKey; key++){
+                for(long key = this.startKey; key<= this.endKey; key++){
                     String code = Util.idToCode(key);
                     Logger.warn("test id #"+key + " code: " + code);
                     Assert.assertEquals(key, Util.codeToId(code));

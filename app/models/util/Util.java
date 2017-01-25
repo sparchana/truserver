@@ -1,7 +1,7 @@
 package models.util;
 
-import dao.CompanyDAO;
 import models.entity.Company;
+import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 
 import java.math.BigInteger;
@@ -36,45 +36,45 @@ public class Util {
     }
 
     public static String generateCompanyCode(Company company) {
-        Boolean shouldRun = true;
-        String companyCode = "";
-        String companyName = company.getCompanyName().replaceAll("\\s+","");
-
-        String companyId;
-        if(company.getCompanyId() < 1000){
-            if(company.getCompanyId() < 100){
-                if(company.getCompanyId() < 10){
-                    companyId = "000" + company.getCompanyId();
-                } else{
-                    companyId = "00" + company.getCompanyId();
-                }
-            } else {
-                companyId = "0" + company.getCompanyId();
-            }
-        } else{
-            companyId = company.getCompanyId() + "";
-        }
-
-        while(shouldRun){
-            int randomCode = (int) (Math.random()*90);
-            if(randomCode < 10){
-                randomCode += 10;
-            }
-
-            if(companyName.length() > 4){
-                companyCode = (companyName.substring(0, 4)).toUpperCase() + companyId + randomCode;
-            } else{
-                companyCode = (companyName).toUpperCase() + companyId + randomCode;
-            }
-
-            // query heavy
-            // TODO convert it to use idToCode method, then this check for existing code will not be required
-            Company existingCompany = CompanyDAO.getCompaniesByCompanyCode(companyCode);
-            if(existingCompany == null){
-                shouldRun = false;
-            }
-        }
-        return companyCode;
+//        Boolean shouldRun = true;
+//        String companyCode = "";
+//        String companyName = company.getCompanyName().replaceAll("\\s+","");
+//
+//        String companyId;
+//        if(company.getCompanyId() < 1000){
+//            if(company.getCompanyId() < 100){
+//                if(company.getCompanyId() < 10){
+//                    companyId = "000" + company.getCompanyId();
+//                } else{
+//                    companyId = "00" + company.getCompanyId();
+//                }
+//            } else {
+//                companyId = "0" + company.getCompanyId();
+//            }
+//        } else{
+//            companyId = company.getCompanyId() + "";
+//        }
+//
+//        while(shouldRun){
+//            int randomCode = (int) (Math.random()*90);
+//            if(randomCode < 10){
+//                randomCode += 10;
+//            }
+//
+//            if(companyName.length() > 4){
+//                companyCode = (companyName.substring(0, 4)).toUpperCase() + companyId + randomCode;
+//            } else{
+//                companyCode = (companyName).toUpperCase() + companyId + randomCode;
+//            }
+//
+//            // query heavy
+//            // TODO convert it to use idToCode method, then this check for existing code will not be required
+//            Company existingCompany = CompanyDAO.getCompaniesByCompanyCode(companyCode);
+//            if(existingCompany == null){
+//                shouldRun = false;
+//            }
+//        }
+        return genCompanyCode(company);
     }
 
     public static String idToCode(long id) {
@@ -83,9 +83,22 @@ public class Util {
     }
 
     public static int codeToId(String code) {
-        // no company id will exceed 2^31 :P
         return Base36.toBase10(code);
     }
+
+    public static String genCompanyCode(Company company) {
+        String companyName = company.getCompanyName().replaceAll("[^A-Za-z]","");
+        if(companyName.length() > 4) {
+            companyName = (companyName.substring(0, 2)).toUpperCase();
+        } else {
+            companyName =  companyName.toUpperCase();
+        }
+        String code = idToCode(company.getCompanyId());
+        // return company code
+        String formatted = StringUtils.leftPad(code, 4, "0");
+        return companyName + formatted;
+    }
+
     public static int randomInt() {
         return new Random().nextInt();
     }
