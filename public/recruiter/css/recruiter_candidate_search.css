@@ -225,6 +225,16 @@ body{
     padding: 16px;
 }
 
+.floatingTools{
+    padding-bottom: 12px;
+    padding-top: 8px;
+    display: none;
+    margin-top: -8px;
+    background: rgba(191, 191, 191, 0.96);
+    width: 100%;
+    z-index: 99;
+}
+
 @media screen and (max-width: 720px) {
     .back-banner-candidate {
         margin-top: -16%;

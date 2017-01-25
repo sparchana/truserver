@@ -37,14 +37,23 @@ var blockApiTrigger = false;
 $(document).scroll(function(){
     if ($(this).scrollTop() > 30) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
-    }
-    else{
+    } else{
         $('nav').css({"background": "transparent"});
     }
+
     if ($(this).scrollTop() > 500) {
         $("#fixedButton").show();
     } else{
         $("#fixedButton").hide();
+    }
+
+    if ($(document).scrollTop() > 150) {
+        $("#fixed-tools").css('background-color', 'rgba(228, 228, 228, 0.960784)');
+        $("#fixed-tools").css('position', 'fixed');
+        $("#fixed-tools").slideDown();
+        $(".navbar-default").css('background-color', 'white');
+    } else {
+        $("#fixed-tools").slideUp(100);
     }
 
     if($(window).scrollTop() + $(window).height() + 300 >= $(document).height()) {
