@@ -20,6 +20,8 @@ public class Util {
     public static final String ACTION_UPDATE = "U";
     public static final String ACTION_DELETE = "D";
     public static final String ACTION_READ = "R";
+    public static final int COMPANY_NAME_KEY_LENGTH = 3;
+    public static final int COMPANY_CODE_LENGTH = 8;
 
     public static long randomLong() {
         long random = new Random().nextLong();
@@ -88,14 +90,14 @@ public class Util {
 
     public static String genCompanyCode(Company company) {
         String companyName = company.getCompanyName().replaceAll("[^A-Za-z]","");
-        if(companyName.length() > 4) {
-            companyName = (companyName.substring(0, 2)).toUpperCase();
+        if(companyName.length() > COMPANY_NAME_KEY_LENGTH) {
+            companyName = (companyName.substring(0, COMPANY_NAME_KEY_LENGTH)).toUpperCase();
         } else {
             companyName =  companyName.toUpperCase();
         }
         String code = idToCode(company.getCompanyId());
-        // return company code
-        String formatted = StringUtils.leftPad(code, 4, "0");
+        // return company code, decide the no of trailing zeros need to be added to make the total length 8
+        String formatted = StringUtils.leftPad(code, COMPANY_CODE_LENGTH - companyName.length(), "0");
         return companyName + formatted;
     }
 
