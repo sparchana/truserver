@@ -2,9 +2,11 @@ package dao;
 
 import api.ServerConstants;
 import com.avaje.ebean.Ebean;
+import com.avaje.ebean.PagedList;
 import com.avaje.ebean.RawSql;
 import com.avaje.ebean.RawSqlBuilder;
 import models.entity.OM.JobPostWorkflow;
+import models.entity.OM.SmsReport;
 import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 
@@ -500,7 +502,7 @@ public class JobPostWorkFlowDAO {
      * @return List<JobPostWorkflow>, all the applications withing a given status
      */
 
-    public static List<JobPostWorkflow> getAllJobApplicationWithinStatusId(Long jpId, int startStatus, int endStatus) {
+    public static List<JobPostWorkflow> getAllJobApplicationWithinStatusId(Long jpId, int startStatus, int endStatus, int index) {
         String workFlowQueryBuilder = " select createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
                 " job_post_id, status_id from job_post_workflow i " +
                 " where i.job_post_id = " + jpId +
@@ -521,9 +523,39 @@ public class JobPostWorkFlowDAO {
                 .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
                 .create();
 
+        PagedList<JobPostWorkflow> pagedList = Ebean.find(JobPostWorkflow.class)
+                .setRawSql(rawSql)
+                .setFirstRow(Math.toIntExact(index))
+                .setMaxRows(10)
+                .findPagedList();
+
+        return pagedList.getList();
+    }
+
+    public static int getAllJobApplicationWithinStatusIdCount(Long jpId, int startStatus, int endStatus) {
+        String workFlowQueryBuilder = " select createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
+                " job_post_id, status_id from job_post_workflow i " +
+                " where i.job_post_id = " + jpId +
+                " and status_id >= " + startStatus +
+                " and status_id <= " + endStatus +
+                " and job_post_workflow_id = " +
+                " (select max(job_post_workflow_id) from job_post_workflow " +
+                "       where i.candidate_id = job_post_workflow.candidate_id " +
+                "       and i.job_post_id = job_post_workflow.job_post_id) " +
+                " order by job_post_workflow_id desc";
+
+        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder)
+                .columnMapping("creation_timestamp", "creationTimestamp")
+                .columnMapping("job_post_id", "jobPost.jobPostId")
+                .columnMapping("status_id", "status.statusId")
+                .columnMapping("candidate_id", "candidate.candidateId")
+                .columnMapping("createdby", "createdBy")
+                .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
+                .create();
+
         return Ebean.find(JobPostWorkflow.class)
                 .setRawSql(rawSql)
-                .findList();
+                .findRowCount();
     }
 
     /**
@@ -531,7 +563,7 @@ public class JobPostWorkFlowDAO {
      * @return List<JobPostWorkflow>, all the applications withing a given status
      */
 
-    public static List<JobPostWorkflow> getAllConfirmedApplicationsJobPost(Long jpId, int startStatus, int endStatus) {
+    public static List<JobPostWorkflow> getAllConfirmedApplicationsJobPost(Long jpId, int startStatus, int endStatus, int index) {
         String workFlowQueryBuilder = " select createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
                 " job_post_id, status_id from job_post_workflow i " +
                 " where i.job_post_id = " + jpId +
@@ -552,8 +584,42 @@ public class JobPostWorkFlowDAO {
                 .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
                 .create();
 
+        PagedList<JobPostWorkflow> pagedList = Ebean.find(JobPostWorkflow.class)
+                .setRawSql(rawSql)
+                .setFirstRow(Math.toIntExact(index))
+                .setMaxRows(10)
+                .orderBy().desc("scheduled_interview_date")
+                .findPagedList();
+
+        return pagedList.getList();
+
+    }
+
+    public static int getAllConfirmedApplicationsJobPostCount(Long jpId, int startStatus, int endStatus) {
+        String workFlowQueryBuilder = " select createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
+                " job_post_id, status_id from job_post_workflow i " +
+                " where i.job_post_id = " + jpId +
+                " and status_id >= " + startStatus +
+                " and status_id <= " + endStatus +
+                " and job_post_workflow_id = " +
+                " (select max(job_post_workflow_id) from job_post_workflow " +
+                "       where i.candidate_id = job_post_workflow.candidate_id " +
+                "       and i.job_post_id = job_post_workflow.job_post_id) " +
+                " order by scheduled_interview_date desc";
+
+        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder)
+                .columnMapping("creation_timestamp", "creationTimestamp")
+                .columnMapping("job_post_id", "jobPost.jobPostId")
+                .columnMapping("status_id", "status.statusId")
+                .columnMapping("candidate_id", "candidate.candidateId")
+                .columnMapping("createdby", "createdBy")
+                .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
+                .create();
+
         return Ebean.find(JobPostWorkflow.class)
                 .setRawSql(rawSql)
-                .findList();
+                .findRowCount();
+
     }
+
 }

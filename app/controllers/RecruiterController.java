@@ -13,7 +13,10 @@ import api.http.httpRequest.ResetPasswordResquest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Recruiter.MultipleCandidateContactUnlockResponse;
+import api.http.httpResponse.Recruiter.RMP.ApplicationResponse;
+import api.http.httpResponse.Recruiter.RMP.SmsReportResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
+import com.avaje.ebean.PagedList;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +25,7 @@ import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import controllers.businessLogic.Recruiter.RecruiterLeadStatusService;
+import controllers.businessLogic.SearchJobService;
 import controllers.security.RecruiterSecured;
 import controllers.businessLogic.RecruiterService;
 import controllers.security.FlashSessionController;
@@ -1036,112 +1040,152 @@ public class RecruiterController {
         return ok(views.html.Recruiter.recruiter_interviews.render());
     }
 
+    public static Boolean checkCompanyJob(JobPost jobPost){
+        RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+        if(recruiterProfile != null){
+            if(Objects.equals(recruiterProfile.getCompany().getCompanyId(), jobPost.getCompany().getCompanyId())){
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Security.Authenticated(RecruiterSecured.class)
-    public static Result getSentSms(long jpId) {
+    public static Result getSentSms(long jpId, long index) {
         JobPost jobPost = JobPostDAO.findById(jpId);
         if(jobPost != null){
-            List<SmsReport> sentSmsList =
-                    SmsReport.find.where().eq("JobPostId", jpId).findList();
+            if(checkCompanyJob(jobPost)){
+                SmsReportResponse smsReportResponse = new SmsReportResponse();
 
-            for(SmsReport reports : sentSmsList){
-                reports.setCompany(null);
-                reports.setJobPost(null);
-                reports.setRecruiterProfile(null);
+                PagedList<SmsReport> pagedList = SmsReport.find
+                        .where()
+                        .eq("JobPostId", jpId)
+                        .orderBy().desc("sms_report_id")
+                        .setFirstRow(Math.toIntExact(index))
+                        .setMaxRows(10)
+                        .findPagedList();
 
-                Candidate candidate = reports.getCandidate();
-                candidate.setLocalityPreferenceList(null);
-                candidate.setJobApplicationList(null);
-                candidate.setJobHistoryList(null);
-                candidate.setJobPostWorkflowList(null);
-                candidate.setJobPreferencesList(null);
-                candidate.setLanguageKnownList(null);
-                candidate.setCandidateAssetList(null);
-                candidate.setCandidateEducation(null);
-                candidate.setCandidateExpList(null);
-                reports.setCandidate(candidate);
+                List<SmsReport> smsReportList = pagedList.getList();
+
+                for(SmsReport reports : smsReportList){
+                    reports.setCompany(null);
+                    reports.setJobPost(null);
+                    reports.setRecruiterProfile(null);
+
+                    Candidate candidate = reports.getCandidate();
+                    candidate.setLocalityPreferenceList(null);
+                    candidate.setJobApplicationList(null);
+                    candidate.setJobHistoryList(null);
+                    candidate.setJobPostWorkflowList(null);
+                    candidate.setJobPreferencesList(null);
+                    candidate.setLanguageKnownList(null);
+                    candidate.setCandidateAssetList(null);
+                    candidate.setCandidateEducation(null);
+                    candidate.setCandidateExpList(null);
+                    reports.setCandidate(candidate);
+                }
+
+                smsReportResponse.setSmsReportList(smsReportList);
+                smsReportResponse.setTotalSms(SmsReport.find.where().eq("JobPostId", jpId).findRowCount());
+
+
+                return ok(toJson(smsReportResponse));
             }
-            return ok(toJson(sentSmsList));
         }
         return ok("0");
     }
 
     @Security.Authenticated(RecruiterSecured.class)
-    public static Result getAppliedCandidates(long jpId) {
+    public static Result getAppliedCandidates(long jpId, long index) {
         JobPost jobPost = JobPostDAO.findById(jpId);
         if(jobPost != null){
-            List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllJobApplicationWithinStatusId(jpId,
-                    ServerConstants.JWF_STATUS_SELECTED, ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE);
+            if(checkCompanyJob(jobPost)){
 
-            for(JobPostWorkflow workflow : applicationList){
-                sanitizeCandidateData(workflow.getCandidate());
-            }
+                List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllJobApplicationWithinStatusId(jpId,
+                        ServerConstants.JWF_STATUS_SELECTED, ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE, (int) index);
 
+                for(JobPostWorkflow workflow : applicationList){
+                    sanitizeCandidateData(workflow.getCandidate());
+                }
 
-            List<Candidate> candidateList = new ArrayList<>();
-            for (JobPostWorkflow jpwf : applicationList) {
-                candidateList.add(jpwf.getCandidate());
-            }
+                List<Candidate> candidateList = new ArrayList<>();
+                for (JobPostWorkflow jpwf : applicationList) {
+                    candidateList.add(jpwf.getCandidate());
+                }
 
-            Integer status = ServerConstants.JWF_STATUS_SELECTED;
+                Integer status = ServerConstants.JWF_STATUS_SELECTED;
 
-            Map<Long, CandidateWorkflowData> mapToBeReturned =
-                    JobPostWorkflowEngine.getCandidateMap(candidateList, jpId, new ArrayList<>(Collections.singletonList(status)), false);
+                Map<Long, CandidateWorkflowData> mapToBeReturned =
+                        JobPostWorkflowEngine.getCandidateMap(candidateList, jpId, new ArrayList<>(Collections.singletonList(status)), false);
 
-            List<CandidateWorkflowData> jobApplicantList = new LinkedList<>();
-            for (Map.Entry<Long, CandidateWorkflowData> entry : mapToBeReturned.entrySet()) {
-                sanitizeCandidateData(entry.getValue().getCandidate());
-                jobApplicantList.add(entry.getValue());
-            }
+                List<CandidateWorkflowData> jobApplicantList = new LinkedList<>();
+                for (Map.Entry<Long, CandidateWorkflowData> entry : mapToBeReturned.entrySet()) {
+                    sanitizeCandidateData(entry.getValue().getCandidate());
+                    jobApplicantList.add(entry.getValue());
+                }
 
-            for (CandidateWorkflowData data: jobApplicantList) {
-                JobApplication jobApplication = JobApplication.find.where()
-                        .eq("CandidateId", data.getCandidate().getCandidateId())
-                        .eq("JobPostId", jpId)
-                        .findUnique();
+                for (CandidateWorkflowData data: jobApplicantList) {
+                    JobApplication jobApplication = JobApplication.find.where()
+                            .eq("CandidateId", data.getCandidate().getCandidateId())
+                            .eq("JobPostId", jpId)
+                            .findUnique();
 
-                data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_SUPPORT);
-                if(jobApplication != null){
-                    if(jobApplication.getPartner() != null){
-                        data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_PARTNER);
-                        data.setPartner(jobApplication.getPartner());
-                    } else{
-                        data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_SELF);
+                    data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_SUPPORT);
+                    if(jobApplication != null){
+                        if(jobApplication.getPartner() != null){
+                            data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_PARTNER);
+                            data.setPartner(jobApplication.getPartner());
+                        } else{
+                            data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_SELF);
+                        }
                     }
                 }
-            }
+                ApplicationResponse applicationResponse = new ApplicationResponse();
+                applicationResponse.setApplicationList(jobApplicantList);
+                applicationResponse.setTotalCount(JobPostWorkFlowDAO.getAllJobApplicationWithinStatusIdCount(jpId,
+                        ServerConstants.JWF_STATUS_SELECTED, ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE));
 
-            return ok(toJson(jobApplicantList));
+                return ok(toJson(applicationResponse));
+            }
         }
         return ok("0");
     }
 
     @Security.Authenticated(RecruiterSecured.class)
-    public static Result getConfirmedApplication(long jpId) {
+    public static Result getConfirmedApplication(long jpId, long index) {
         JobPost jobPost = JobPostDAO.findById(jpId);
         if(jobPost != null){
-            List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllConfirmedApplicationsJobPost(jpId,
-                    ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED, ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED);
+            if(checkCompanyJob(jobPost)){
+                List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllConfirmedApplicationsJobPost(jpId,
+                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED, ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED,
+                        (int) index);
 
-            for(JobPostWorkflow workflow : applicationList){
-                sanitizeCandidateData(workflow.getCandidate());
+                for(JobPostWorkflow workflow : applicationList){
+                    sanitizeCandidateData(workflow.getCandidate());
+                }
+
+                List<Candidate> candidateList = new ArrayList<>();
+                for (JobPostWorkflow jpwf : applicationList) {
+                    candidateList.add(jpwf.getCandidate());
+                }
+
+                Integer status = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
+
+                Map<Long, CandidateWorkflowData> mapToBeReturned = JobPostWorkflowEngine.getCandidateMap(candidateList, jpId, new ArrayList<>(Collections.singletonList(status)), false);
+
+                List<CandidateWorkflowData> jobApplicantList = new LinkedList<>();
+                for (Map.Entry<Long, CandidateWorkflowData> entry : mapToBeReturned.entrySet()) {
+                    sanitizeCandidateData(entry.getValue().getCandidate());
+                    jobApplicantList.add(entry.getValue());
+                }
+
+                ApplicationResponse applicationResponse = new ApplicationResponse();
+                applicationResponse.setApplicationList(jobApplicantList);
+                applicationResponse.setTotalCount(JobPostWorkFlowDAO.getAllJobApplicationWithinStatusIdCount(jpId,
+                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED, ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED));
+
+                return ok(toJson(applicationResponse));
             }
-
-            List<Candidate> candidateList = new ArrayList<>();
-            for (JobPostWorkflow jpwf : applicationList) {
-                candidateList.add(jpwf.getCandidate());
-            }
-
-            Integer status = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
-
-            Map<Long, CandidateWorkflowData> mapToBeReturned = JobPostWorkflowEngine.getCandidateMap(candidateList, jpId, new ArrayList<>(Collections.singletonList(status)), false);
-
-            List<CandidateWorkflowData> jobApplicantList = new LinkedList<>();
-            for (Map.Entry<Long, CandidateWorkflowData> entry : mapToBeReturned.entrySet()) {
-                sanitizeCandidateData(entry.getValue().getCandidate());
-                jobApplicantList.add(entry.getValue());
-            }
-
-            return ok(toJson(jobApplicantList));
         }
         return ok("0");
     }

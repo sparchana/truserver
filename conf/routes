@@ -189,9 +189,9 @@ POST        /getTodayInterviewDetails                                     contro
 POST        /getPendingCandidateApproval                                  controllers.RecruiterController.getPendingCandidateApproval()
 POST        /bulkUnlockCandidate                                          controllers.RecruiterController.bulkUnlockCandidates()
 POST        /bulkSendSms                                                  controllers.RecruiterController.bulkSendSms()
-POST        /getSentSms/:id                                               controllers.RecruiterController.getSentSms(id : Long)
-POST        /getAppliedCandidates/:id                                     controllers.RecruiterController.getAppliedCandidates(id : Long)
-POST        /getConfirmedApplication/:id                                  controllers.RecruiterController.getConfirmedApplication(id : Long)
+POST        /getSentSms/                                                  controllers.RecruiterController.getSentSms(jpId: java.lang.Long ?= null, i: java.lang.Long ?= null)
+POST        /getAppliedCandidates/                                        controllers.RecruiterController.getAppliedCandidates(jpId: java.lang.Long ?= null, i: java.lang.Long ?= null)
+POST        /getConfirmedApplication/                                     controllers.RecruiterController.getConfirmedApplication(jpId: java.lang.Long ?= null, i: java.lang.Long ?= null)
 
 # Search API
 # ~~~~~~~~~~~~~

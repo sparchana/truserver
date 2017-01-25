@@ -10,9 +10,20 @@ var globalInterviewSlot = null;
 var globalSchedule = null;
 var allTimeSlots = [];
 var allReason = [];
+var index = 0;
 
 var notSelectedReason = [];
 
+function preformTabChange(tabId) {
+    index = 0;
+    if(tabId == 1){
+        tabChange1(index);
+    } else if(tabId == 2){
+        tabChange2(index);
+    } else if(tabId == 3){
+        tabChange3(index);
+    }
+}
 $(document).scroll(function(){
     if ($(this).scrollTop() > 30) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
@@ -29,7 +40,8 @@ $(document).ready(function(){
     var jobPostIdUrl = pathname.split('/');
     jobPostId = jobPostIdUrl[(jobPostIdUrl.length)-1];
 
-    tabChange1();
+    index = 0;
+    tabChange1(index);
 
     try {
         $.ajax({
@@ -121,16 +133,98 @@ function processDataGetAllReason(returnedData) {
     });
 }
 
+function smsPagination(noOfPages){
+    $('#paginationTab').twbsPagination({
+        totalPages: noOfPages,
+        visiblePages: 5,
+        onPageClick: function (event, page) {
+            if(page > 0 ){
+                index = (page - 1)*10;
+            }
+            else{
+                index = 0;
+            }
+            hideTab1();
+            tabChange1(index);
+            $(".page-link").click(function(){
+                $('html, body').animate({scrollTop : 0},800);
+            });
+            $(".first").hide();
+            $(".last").hide();
+            $(".prev a").html("<");
+            $(".next a").html(">");
+        }
+    });
+}
+
+function trackPagination(noOfPages){
+    $('#trackPaginationTab').twbsPagination({
+        totalPages: noOfPages,
+        visiblePages: 5,
+        onPageClick: function (event, page) {
+            if(page > 0 ){
+                index = (page - 1)*10;
+            }
+            else{
+                index = 0;
+            }
+            hideTab2();
+            tabChange2(index);
+            $(".page-link").click(function(){
+                $('html, body').animate({scrollTop : 0},800);
+            });
+            $(".first").hide();
+            $(".last").hide();
+            $(".prev a").html("<");
+            $(".next a").html(">");
+        }
+    });
+}
+
+function confirmedPagination(noOfPages){
+    $('#confirmedPaginationTab').twbsPagination({
+        totalPages: noOfPages,
+        visiblePages: 5,
+        onPageClick: function (event, page) {
+            if(page > 0 ){
+                index = (page - 1)*10;
+            }
+            else{
+                index = 0;
+            }
+            hideTab3();
+            tabChange3(index);
+            $(".page-link").click(function(){
+                $('html, body').animate({scrollTop : 0},800);
+            });
+            $(".first").hide();
+            $(".last").hide();
+            $(".prev a").html("<");
+            $(".next a").html(">");
+        }
+    });
+}
+
+
 function processDataGetSmsReport(returnedData) {
     $("#loadingIcon").hide();
     if(returnedData == 0){
         logoutRecruiter();
     } else{
-        if(returnedData.length > 0){
+        var smsList = returnedData.smsReportList;
+        if(smsList.length > 0){
             $('.allSms').html('');
+            var numberOfPages = parseInt(returnedData.totalSms)/10;
+            var rem = parseInt(returnedData.totalSms) % 10;
+            if(rem > 0){
+                numberOfPages ++;
+            }
+            if(index == 0){
+                smsPagination(numberOfPages);
+            }
+
             var parent = $('.allSms');
-            returnedData.reverse();
-            returnedData.forEach(function (smsObject) {
+            smsList.forEach(function (smsObject) {
 
                 var mainDiv =  document.createElement("div");
                 parent.append(mainDiv);
@@ -243,10 +337,21 @@ function processDataGetSmsReport(returnedData) {
 function processDataJobApplications(returnedData) {
     $("#loadingIcon").hide();
 
-    if(returnedData.length > 0){
+    var applicationList = returnedData.applicationList;
+    if(applicationList.length > 0){
         $('.allApplications').html('');
         var parent = $('.allApplications');
-        returnedData.forEach(function (workflowObj) {
+
+        var numberOfPages = parseInt(returnedData.totalCount)/10;
+        var rem = parseInt(returnedData.totalCount) % 10;
+        if(rem > 0){
+            numberOfPages ++;
+        }
+        if(index == 0){
+            trackPagination(numberOfPages);
+        }
+
+        applicationList.forEach(function (workflowObj) {
             var mainDiv =  document.createElement("div");
             parent.append(mainDiv);
 
@@ -459,7 +564,7 @@ function processDataRecruiterSession(returnedData) {
     }
 }
 
-function tabChange1() {
+function tabChange1(index) {
     $("#tab1").addClass("activeTab");
     $("#tab2").removeClass("activeTab");
     $("#tab3").removeClass("activeTab");
@@ -477,7 +582,7 @@ function tabChange1() {
     try {
         $.ajax({
             type: "POST",
-            url: "/getSentSms/" + jobPostId,
+            url: "/getSentSms/?jpId=" + jobPostId + "&i=" + index,
             data: false,
             contentType: false,
             processData: false,
@@ -493,7 +598,7 @@ function tabChange1() {
     }
 }
 
-function tabChange2() {
+function tabChange2(index) {
     $("#tab1").removeClass("activeTab");
     $("#tab2").addClass("activeTab");
     $("#tab3").removeClass("activeTab");
@@ -511,11 +616,41 @@ function tabChange2() {
     try {
         $.ajax({
             type: "POST",
-            url: "/getAppliedCandidates/" + jobPostId,
+            url: "/getAppliedCandidates/?jpId=" + jobPostId + "&i=" + index,
             data: false,
             contentType: false,
             processData: false,
             success: processDataJobApplications,
+            error: function (jqXHR, exception) {
+                $("#somethingWentWrong").show();
+                $("#loadingIcon").hide();
+            }
+
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function tabChange3(index) {
+    $("#tab1").removeClass("activeTab");
+    $("#tab2").removeClass("activeTab");
+    $("#tab3").addClass("activeTab");
+
+    $("#tab1Parent").removeClass("activeParent");
+    $("#tab2Parent").removeClass("activeParent");
+    $("#tab3Parent").addClass("activeParent");
+    hideTab1();
+    hideTab2();
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getConfirmedApplication/?jpId=" + jobPostId + "&i=" + index,
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataConfirmedApplication,
             error: function (jqXHR, exception) {
                 $("#somethingWentWrong").show();
                 $("#loadingIcon").hide();
@@ -711,10 +846,21 @@ function checkSlotAvailability(x, interviewDays) {
 function processDataConfirmedApplication(returnedData) {
     $("#loadingIcon").hide();
 
-    if(returnedData.length > 0){
+    var applicationList = returnedData.applicationList;
+    if(applicationList.length > 0){
         $('.allConfirmed').html('');
         var parent = $('.allConfirmed');
-        returnedData.forEach(function (workflowObj) {
+
+        var numberOfPages = parseInt(returnedData.totalCount)/10;
+        var rem = parseInt(returnedData.totalCount) % 10;
+        if(rem > 0){
+            numberOfPages ++;
+        }
+        if(index == 0){
+            confirmedPagination(numberOfPages);
+        }
+
+        applicationList.forEach(function (workflowObj) {
             var mainDiv =  document.createElement("div");
             parent.append(mainDiv);
 
@@ -877,36 +1023,6 @@ function processDataConfirmedApplication(returnedData) {
     }
 }
 
-function tabChange3() {
-    $("#tab1").removeClass("activeTab");
-    $("#tab2").removeClass("activeTab");
-    $("#tab3").addClass("activeTab");
-
-    $("#tab1Parent").removeClass("activeParent");
-    $("#tab2Parent").removeClass("activeParent");
-    $("#tab3Parent").addClass("activeParent");
-    hideTab1();
-    hideTab2();
-
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getConfirmedApplication/" + jobPostId,
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataConfirmedApplication,
-            error: function (jqXHR, exception) {
-                $("#somethingWentWrong").show();
-                $("#loadingIcon").hide();
-            }
-
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-}
-
 //feedback
 function openFeedbackModal(candidateId) {
     globalCandidateId = candidateId;
@@ -967,12 +1083,10 @@ function confirmAddFeedback() {
 
 function processDataUpdateFeedBack(returnedData) {
     if(returnedData == 1){
-        tabChange3();
+        tabChange3(index);
         notifySuccess("Feedback updated successfully");
 
         $("#addFeedback").closeModal();
-
-
 
     } else if(returnedData == -1){
         notifyError("You are out of interview credits. Please purchase interview credits!");
