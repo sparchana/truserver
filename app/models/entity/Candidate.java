@@ -30,7 +30,7 @@ import java.util.*;
 @Table(name = "candidate")
 public class Candidate extends Model {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CandidateId", columnDefinition = "bigint signed", unique = true)
     private long candidateId = 0;
 
@@ -228,7 +228,7 @@ public class Candidate extends Model {
     }
 
     public void registerCandidate() {
-        Logger.info("inside registerCandidate(), Candidate registered/saved" );
+        Logger.info("inside registerCandidate(), Candidate registered/saved");
         this.save();
     }
 
@@ -281,8 +281,9 @@ public class Candidate extends Model {
     public void setCandidateIsEmployed(Integer candidateIsEmployed) {
         this.candidateIsEmployed = candidateIsEmployed;
     }
+
     public void setCandidateIsEmployed(boolean candidateIsEmployed) {
-        if(candidateIsEmployed){
+        if (candidateIsEmployed) {
             this.candidateIsEmployed = 1;
         } else {
             this.candidateIsEmployed = 0;
@@ -422,7 +423,7 @@ public class Candidate extends Model {
     }
 
     public Integer getCandidateAge() {
-        if(this.candidateDOB != null){
+        if (this.candidateDOB != null) {
             Date current = new Date();
             Date bday = new Date(this.getCandidateDOB().getTime());
 
@@ -596,7 +597,8 @@ public class Candidate extends Model {
     public void setCandidateLocalityLng(Double candidateLocalityLng) {
         this.candidateLocalityLng = candidateLocalityLng;
     }
-    public String getCandidateFullName(){
+
+    public String getCandidateFullName() {
         return this.candidateFirstName + " " + (this.candidateLastName != null ? this.candidateLastName : "");
     }
 
@@ -672,5 +674,3 @@ public class Candidate extends Model {
         this.candidateAccessLevel = candidateAccessLevel;
     }
 }
-
-

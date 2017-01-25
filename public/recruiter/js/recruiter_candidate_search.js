@@ -9,6 +9,7 @@ var candidateSearchResultAll = [];
 
 var contactCreditUnitPrice;
 var interviewCreditUnitPrice;
+var contactCredits = 0;
 
 //global variables for lazy load
 var maxAge = "";
@@ -203,6 +204,14 @@ $(document).ready(function(){
     $("#endOfResultsDiv").hide();
     $("#loadingIcon").show();
 
+    $("#select_all").change(function() {
+        if(this.checked) {
+            checkAll();
+        } else{
+            uncheckAll();
+        }
+    });
+
     counter = 0;
     NProgress.start();
     var d = {
@@ -262,6 +271,7 @@ function processDataGetCreditCategory(returnedData) {
 
 
 function processDataRecruiterProfile(returnedData) {
+    contactCredits = returnedData.contactCreditCount;
     $("#remainingContactCredits").html(returnedData.contactCreditCount);
     $("#remainingContactCreditsMobile").html(returnedData.contactCreditCount);
     $("#remainingInterviewCredits").html(returnedData.interviewCreditCount);
@@ -486,6 +496,7 @@ function performSearch() {
         $("#filterBtn").addClass("disabled");
 
         $("#candidateResultContainer").html("");
+        $("#candidateTools").show();
         $("#searchJobPanel").hide();
         $("#noCandidateDiv").hide();
         $("#endOfResultsDiv").hide();
@@ -605,11 +616,15 @@ function processDataMatchCandidate(returnedData) {
                 console.log("exception occured!!" + exception.stack);
             }
 
+            $("#candidateTools").show();
+
         } else{
+            $("#candidateTools").hide();
             $("#noCandidateDiv").show();
 /*            notifySuccess("No Candidates found!");*/
         }
     } else{
+        $("#candidateTools").hide();
         $("#noCandidateDiv").show();
         notifySuccess("Something went wrong! Please try again later!");
     }

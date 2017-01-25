@@ -7,6 +7,8 @@ public class PartnerSignUpResponse {
     public static final int STATUS_SUCCESS = 1;
     public static final int STATUS_FAILURE = 2;
     public static final int STATUS_EXISTS = 3;
+    public static final int STATUS_ALREADY_ASSOCIATED = 4;
+    public static final int STATUS_REASSOCIATION = 4;
 
     public int status;
     public String partnerMobile;

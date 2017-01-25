@@ -1,8 +1,7 @@
 package models.util;
 
-import api.InteractionConstants;
-import api.ServerConstants;
-import controllers.businessLogic.InteractionService;
+import dao.CompanyDAO;
+import models.entity.Company;
 import play.Logger;
 
 import java.math.BigInteger;
@@ -13,11 +12,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
-import static play.mvc.Controller.session;
-
 public class Util {
     private Util() {
     }
+
+    public static final String ACTION_CREATE = "C";
+    public static final String ACTION_UPDATE = "U";
+    public static final String ACTION_DELETE = "D";
+    public static final String ACTION_READ = "R";
 
     public static long randomLong() {
         long random = new Random().nextLong();
@@ -31,6 +33,59 @@ public class Util {
     public static int generateOtp() {
         int otpCode = (int) ((Math.random()*9000)+1000);
         return otpCode;
+    }
+
+    public static String generateCompanyCode(Company company) {
+        Boolean shouldRun = true;
+        String companyCode = "";
+        String companyName = company.getCompanyName().replaceAll("\\s+","");
+
+        String companyId;
+        if(company.getCompanyId() < 1000){
+            if(company.getCompanyId() < 100){
+                if(company.getCompanyId() < 10){
+                    companyId = "000" + company.getCompanyId();
+                } else{
+                    companyId = "00" + company.getCompanyId();
+                }
+            } else {
+                companyId = "0" + company.getCompanyId();
+            }
+        } else{
+            companyId = company.getCompanyId() + "";
+        }
+
+        while(shouldRun){
+            int randomCode = (int) (Math.random()*90);
+            if(randomCode < 10){
+                randomCode += 10;
+            }
+
+            if(companyName.length() > 4){
+                companyCode = (companyName.substring(0, 4)).toUpperCase() + companyId + randomCode;
+            } else{
+                companyCode = (companyName).toUpperCase() + companyId + randomCode;
+            }
+
+            // query heavy
+            // TODO convert it to use idToCode method
+            Company existingCompany = CompanyDAO.getCompaniesByCompanyCode(companyCode);
+            if(existingCompany == null){
+                shouldRun = false;
+            }
+        }
+        return companyCode;
+    }
+
+    // TODO Test
+    public static void idToCode(long id) {
+        // no company id will exceed 2^31 :P
+        String code = Base62.fromBase10((int) id);
+        int decodedId = Base62.toBase10(code);
+
+        Logger.info("id: " + id);
+        Logger.info("code: " + code);
+        Logger.info("decoded: " + decodedId);
     }
 
     public static int randomInt() {

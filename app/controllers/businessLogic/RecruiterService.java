@@ -20,10 +20,7 @@ import api.http.httpResponse.interview.InterviewResponse;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
-import dao.JobPostDAO;
-import dao.JobPostWorkFlowDAO;
-import dao.RecruiterCreditHistoryDAO;
-import dao.RecruiterDAO;
+import dao.*;
 import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
@@ -43,7 +40,6 @@ import models.util.Util;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import play.Logger;
-import play.mvc.Result;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -53,9 +49,7 @@ import java.util.*;
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
 import static models.util.Util.generateOtp;
-import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
-import static play.mvc.Results.ok;
 
 /**
  * Created by batcoder1 on 7/7/16.
@@ -134,18 +128,29 @@ public class RecruiterService {
 
         if(recruiterProfile == null) {
 
-            //checking if company exists or not
-            Company existingCompany = Company.find.where().eq("companyId", recruiterSignUpRequest.getRecruiterCompany()).findUnique();
-            if(existingCompany == null) {
-                AddCompanyResponse addCompanyResponse;
-                AddCompanyRequest addCompanyRequest = new AddCompanyRequest();
-                addCompanyRequest.setCompanyName(recruiterSignUpRequest.getRecruiterCompanyName());
-                addCompanyRequest.setCompanyLogo(ServerConstants.DEFAULT_COMPANY_LOGO);
-                addCompanyRequest.setCompanyStatus(1);
-                addCompanyResponse = CompanyService.addCompany(addCompanyRequest);
+            Company existingCompany = null;
+            if(recruiterSignUpRequest.getCompanyCode() == null){
+                //checking if company exists or not
+                existingCompany = Company.find.where().eq("companyId", recruiterSignUpRequest.getRecruiterCompany()).findUnique();
+                if(existingCompany == null) {
+                    AddCompanyResponse addCompanyResponse;
+                    AddCompanyRequest addCompanyRequest = new AddCompanyRequest();
+                    addCompanyRequest.setCompanyName(recruiterSignUpRequest.getRecruiterCompanyName());
+                    addCompanyRequest.setCompanyLogo(ServerConstants.DEFAULT_COMPANY_LOGO);
+                    addCompanyRequest.setCompanyStatus(1);
+                    addCompanyResponse = CompanyService.addCompany(addCompanyRequest);
 
-                existingCompany = Company.find.where().eq("companyId", addCompanyResponse.getCompanyId()).findUnique();
-                if(existingCompany == null){
+                    existingCompany = Company.find.where().eq("companyId", addCompanyResponse.getCompanyId()).findUnique();
+                    if(existingCompany == null){
+                        recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.getStatusFailure());
+                        return recruiterSignUpResponse;
+                    }
+                }
+            } else{
+                existingCompany = Company.find.where().eq("CompanyCode", recruiterSignUpRequest.getCompanyCode()).findUnique();
+                if(existingCompany != null){
+                    newRecruiter.setRecruiterAccessLevel(ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE);
+                } else{
                     recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.getStatusFailure());
                     return recruiterSignUpResponse;
                 }
@@ -357,7 +362,7 @@ public class RecruiterService {
         }
     }
 
-    public static Result unlockCandidate(RecruiterProfile recruiterProfile, Long candidateId) {
+    public static UnlockContactResponse unlockCandidate(RecruiterProfile recruiterProfile, Long candidateId) {
         UnlockContactResponse unlockContactResponse = new UnlockContactResponse();
         Candidate candidate = Candidate.find.where().eq("CandidateId", candidateId).findUnique();
         if(candidate != null){
@@ -376,8 +381,12 @@ public class RecruiterService {
                 // this candidate has not been unlocked by the recruiter, hence unlock it
                 Logger.info("Recruiter with mobile no: " + recruiterProfile.getRecruiterProfileMobile() + " is unlocking candidate with mobile: " + candidate.getCandidateMobile());
 
-                if(recruiterProfile.getContactCreditCount() > 0){
+                Boolean unlockCandidate = false;
+                if(recruiterProfile.getContactCreditCount() > 0 || recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
+                    unlockCandidate = true;
+                }
 
+                if(unlockCandidate){
 
                     //recruiter has contact credits
                     debitCredits(recruiterProfile, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, -1, createdBy);
@@ -403,7 +412,7 @@ public class RecruiterService {
                     SmsUtil.sendCandidateUnlockSms(recruiterProfile.getCompany().getCompanyName(),
                             recruiterProfile.getRecruiterProfileName(), candidate.getCandidateMobile(), candidate.getCandidateFirstName());
 
-                    return ok(toJson(unlockContactResponse));
+                    return unlockContactResponse;
 
                 } else{
 
@@ -411,7 +420,7 @@ public class RecruiterService {
                     unlockContactResponse.setStatus(UnlockContactResponse.STATUS_NO_CREDITS);
                     unlockContactResponse.setCandidateMobile(null);
                     unlockContactResponse.setCandidateId(null);
-                    return ok(toJson(unlockContactResponse));
+                    return unlockContactResponse;
 
                 }
 
@@ -419,14 +428,14 @@ public class RecruiterService {
                 unlockContactResponse.setStatus(UnlockContactResponse.STATUS_ALREADY_UNLOCKED);
                 unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
                 unlockContactResponse.setCandidateId(candidate.getCandidateId());
-                return ok(toJson(unlockContactResponse));
+                return unlockContactResponse;
             }
         }
         Logger.info("Recruiter with mobile no: " + recruiterProfile.getRecruiterProfileMobile() + " does not have credits to unlock candidate");
         unlockContactResponse.setStatus(UnlockContactResponse.STATUS_FAILURE);
         unlockContactResponse.setCandidateMobile(null);
         unlockContactResponse.setCandidateId(null);
-        return ok(toJson(unlockContactResponse));
+        return unlockContactResponse;
     }
 
     public static AddCreditResponse requestCreditForRecruiter(AddCreditRequest addCreditRequest){
@@ -869,7 +878,8 @@ public class RecruiterService {
             List<Long> jobPostIdList = new ArrayList<>();
             List<JobPost> jobPostList = new ArrayList<>();
             for(JobPost jobPost: recruiterProfile.getJobPosts()) {
-                // TODO post merge, add jobPost access level check here , and remove from list if not
+                if(jobPost.getJobPostAccessLevel() != ServerConstants.JOB_POST_TYPE_PRIVATE) continue;
+
                 jobPostList.add(jobPost);
                 jobPostIdList.add(jobPost.getJobPostId());
             }
@@ -893,8 +903,11 @@ public class RecruiterService {
 
         int totalVacancy = 0;
         for(JobPost jobPost: jobPostList) {
+            if(jobPost.getJobPostVacancies() == null) continue;
+
             totalVacancy += jobPost.getJobPostVacancies();
         }
+        if (totalVacancy == 0 ) return 0F;
         return ((float) totalSelected*100/totalVacancy);
     }
 
@@ -957,6 +970,8 @@ public class RecruiterService {
                 e.printStackTrace();
                 Logger.error("unable to parse date for date diff in computeCycleTime");
             }
+            // TODO move this to map and then use it here
+            jobPostSummaryResponse.setTotalSmsSent(SmsReportDAO.getTotalSMSByRecruiterNJobPost(targetRecruiterId, jobPost.getJobPostId()));
 
             // adding it to the list
             jobPostSummaryResponseList.add(jobPostSummaryResponse);
@@ -965,13 +980,19 @@ public class RecruiterService {
         return jobPostSummaryResponseList;
     }
 
+    /**
+     * @param jobPostId
+     * @param jobPostedOn
+     * @return no of days between jobPosted on and first candidate got selected
+     * @throws ParseException
+     */
     private int computeCycleTime(Long jobPostId, Timestamp jobPostedOn) throws ParseException {
         // first selection data - job posted date
-        // no of days since it has happened
+
         JobPostWorkflow jobPostWorkflow = JobPostWorkFlowDAO.findFirstJobSelection(jobPostId);
 
-        DateTime dt1 = new DateTime(jobPostedOn);
-        DateTime dt2 = new DateTime(jobPostWorkflow.getCreationTimestamp());
+        DateTime dt1 = new DateTime(jobPostedOn.getTime());
+        DateTime dt2 = new DateTime(jobPostWorkflow.getCreationTimestamp().getTime());
 
         return Days.daysBetween(dt1, dt2).getDays();
     }

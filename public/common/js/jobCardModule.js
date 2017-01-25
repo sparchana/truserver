@@ -462,7 +462,7 @@ var cardModule = (function ($) {
                             applyJobText = "Already Applied";
                             applyBtn.disabled =  true;
                             applyBtn.style = "background:#ffa726";
-                        }else if(jobPost.applyBtnStatus == 5) {
+                        } else if(jobPost.applyBtnStatus == 5) {
                             applyJobText = "Application Closed";
                             applyBtn.disabled =  true;
                             applyBtn.style = "background:#ffa726";

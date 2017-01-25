@@ -1160,7 +1160,6 @@ function processDataAllJobPosts(returnedData) {
         if(month < 10){
             month = "0" + month;
         }
-
         returnedData.forEach(function (jobPost){
             count++;
             if(count){
@@ -1438,7 +1437,6 @@ function processDataAllJobPosts(returnedData) {
                 var applyJobText ;
 
                 if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != CTA_BTN_APPLY){
-                    console.log("jobPost.applyBtnStatus : "+ jobPost.applyBtnStatus);
                     if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_REQUIRED) {
                         applyJobText = "Book Interview";
                     } else if(jobPost.applyBtnStatus == CTA_BTN_DEACTIVE){
@@ -1880,6 +1878,41 @@ function processDataAllJobPosts(returnedData) {
 
             }
         });
+    } else{
+        $("#backgroundLoader").hide();
+        $("#jobLoaderDiv").hide();
+        var parent = $("#hotJobs");
+        var hotJobItem = document.createElement("div");
+        hotJobItem.style = "margin: 56px";
+        parent.append(hotJobItem);
+
+        var centreTag = document.createElement("center");
+        hotJobItem.appendChild(centreTag);
+
+        var rowDiv = document.createElement("div");
+        rowDiv.className = "row";
+        centreTag.appendChild(rowDiv);
+
+        var col = document.createElement("div");
+        col.className = "col-sm-12";
+        rowDiv.appendChild(col);
+
+        var jobImage = document.createElement("div");
+        jobImage.id = "jobImage";
+        col.appendChild(jobImage);
+
+        var jobImageSrc = document.createElement("img");
+        jobImageSrc.id = "jobImageSrc";
+        jobImage.appendChild(jobImageSrc);
+        $("#jobImageSrc").attr('src', '/assets/recruiter/img/empty_box.svg');
+        $("#jobImageSrc").attr('width', '96px');
+
+        var jobMsgLine1 = document.createElement("div");
+        jobMsgLine1.id = "jobMsgLine1";
+        jobMsgLine1.style = "font-size: 18px; margin-top: 12px";
+        col.appendChild(jobMsgLine1);
+        $("#jobMsgLine1").html("No jobs found!");
+
     }
     //getting all the applied jobs
     getAllAppliedJobs();
@@ -1897,7 +1930,7 @@ openPartnerPreScreenModal = function (jobPostId, candidateId) {
 
         // display only Min Requirement
         decorator.textContainers.noteContainer.visibility = false;
-        decorator.textContainers.minReqContainer.className = "col-lg-12 form-group remove-padding-left";
+        decorator.textContainers.minReqContainer.className = "mdl-cell mdl-cell--12-col";
 
         // remove callConnected
         decorator.callYesNoRequired = false;
@@ -1907,12 +1940,16 @@ openPartnerPreScreenModal = function (jobPostId, candidateId) {
             decorator.preScreen.title = "Job Application Form"
         }
         decorator.table.mainTable.title = "Job Requirements : Please verify and update candidate's details ";
+        decorator.table.mainTable.minReqTable.className = "mdl-grid--no-spacing panel-collapse collapse";
+        decorator.finalSubmissionButton.className = "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent modal-submit";
         decorator.table.otherTable.title = "Job Details: ";
         decorator.textContainers.minReqContainer.title = "Other Requirements";
         decorator.edit.title = "Update Info";
+        decorator.finalSubmissionButton.enable = true;
+
 
         // footerMessage
-        decorator.modalFooter.footerMessage = " I confirm that the above details are accurate and accept the terms and conditions.";
+        decorator.modalFooter.footerMessage = "I confirm and accept T&C";
 
         var isSupport = false;
         if( !decorator.callYesNoRequired) {

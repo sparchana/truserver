@@ -14,6 +14,8 @@ function getLocality(){
     return localityArray;
 }
 
+var index = 0;
+
 function openPartnerLogin() {
     $('#partnerLoginMobile').val("");
     $('#partnerLoginPassword').val("");

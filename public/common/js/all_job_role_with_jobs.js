@@ -102,10 +102,12 @@ function setJobRoles(returnedData, start){
             innerDiv.appendChild(jobIcon);
 
             var subDiv = document.createElement("div");
-            subDiv.id = "jobRoleName";
-            subDiv.style = "margin-top: 6px; color: #003557;";
-            subDiv.textContent = jobRole.jobName;
             innerDiv.appendChild(subDiv);
+
+            var heading = document.createElement("h2");
+            heading.id = "jobRoleName";
+            heading.textContent = jobRole.jobName;
+            subDiv.appendChild(heading);
         }
         count++;
         //checking when to end the loop

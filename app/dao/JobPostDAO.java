@@ -4,6 +4,7 @@ import api.ServerConstants;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.RawSql;
 import com.avaje.ebean.RawSqlBuilder;
+import models.entity.Company;
 import models.entity.JobPost;
 import models.entity.OM.JobApplication;
 
@@ -23,6 +24,17 @@ public class JobPostDAO {
     public static List<JobPost> findByIdList(List<Long> jobPostIdList) {
         if(jobPostIdList == null || jobPostIdList.size() == 0) return null;
         return JobPost.find.where().in("jobPostId", jobPostIdList).findList();
+    }
+
+    public static List<JobPost> getAllActiveHotNonPrivateJobsPostOfCompany(Company company) {
+        return JobPost.find.where()
+                .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_OPEN)
+                .eq("jobPostIsHot", "1")
+                .eq("CompanyId", company.getCompanyId())
+                .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
+                .eq("Source", ServerConstants.SOURCE_INTERNAL)
+                .orderBy().desc("jobPostUpdateTimestamp")
+                .findList();
     }
 
     public static List<JobPost> getAllJobPostWithRecruitersWithInterviewCredits() {

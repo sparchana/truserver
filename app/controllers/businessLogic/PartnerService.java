@@ -9,6 +9,7 @@ import api.http.httpRequest.VerifyCandidateRequest;
 import api.http.httpResponse.*;
 import models.entity.*;
 import models.entity.OM.PartnerToCandidate;
+import models.entity.OM.PartnerToCompany;
 import models.entity.Static.Locality;
 import models.entity.Static.PartnerProfileStatus;
 import models.entity.Static.PartnerType;
@@ -81,31 +82,46 @@ public class PartnerService {
             Partner partner = isPartnerExists(partnerSignUpRequest.getPartnerMobile());
             String leadName = partnerSignUpRequest.getPartnerName();
             Integer interactionType;
+            Integer companyAssociationResponse;
             Lead lead = LeadService.createOrUpdateConvertedLead(leadName, partnerSignUpRequest.getPartnerMobile(), leadSourceId, channelType, LeadService.LeadType.PARTNER);
             try {
                 if(partner == null) {
                     partner = new Partner();
                     Logger.info("creating new partner");
-                    if(partnerSignUpRequest.getPartnerName()!= null){
-                        partner.setPartnerFirstName(partnerSignUpRequest.getPartnerName());
-                    }
-                    if(partnerSignUpRequest.getPartnerLastName()!= null){
-                        partner.setPartnerLastName(partnerSignUpRequest.getPartnerLastName());
-                    }
-                    if(partnerSignUpRequest.getPartnerMobile()!= null){
-                        partner.setPartnerMobile(partnerSignUpRequest.getPartnerMobile());
-                    }
-                    resetPartnerTypeAndLocality(partner, partnerSignUpRequest);
-                    partnerSignUpResponse = createNewPartner(partner, lead);
+
                     interactionType = InteractionConstants.INTERACTION_TYPE_PARTNER_SIGN_UP;
-                    if(!(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE)){
-                        // triggers when partner is self created
-                        triggerOtp(partner, partnerSignUpResponse);
-                        result = InteractionConstants.INTERACTION_RESULT_NEW_PARTNER;
-                        objectAUUId = partner.getPartnerUUId();
+
+                    companyAssociationResponse = checkPrivatePartnerCompanyAssociation(partnerSignUpRequest.getPartnerMobile()
+                            , partnerSignUpRequest.getPartnerCompanyId(), true);
+
+                    if(companyAssociationResponse == 1){
+                        if(partnerSignUpRequest.getPartnerName()!= null){
+                            partner.setPartnerFirstName(partnerSignUpRequest.getPartnerName());
+                        }
+                        if(partnerSignUpRequest.getPartnerLastName()!= null){
+                            partner.setPartnerLastName(partnerSignUpRequest.getPartnerLastName());
+                        }
+                        if(partnerSignUpRequest.getPartnerMobile()!= null){
+                            partner.setPartnerMobile(partnerSignUpRequest.getPartnerMobile());
+                        }
+                        resetPartnerTypeAndLocality(partner, partnerSignUpRequest);
+                        partnerSignUpResponse = createNewPartner(partner, lead);
+
+                        interactionType = InteractionConstants.INTERACTION_TYPE_PARTNER_SIGN_UP;
+                        if(!(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE)){
+                            // triggers when partner is self created
+                            triggerOtp(partner, partnerSignUpResponse);
+                            result = InteractionConstants.INTERACTION_RESULT_NEW_PARTNER;
+                            objectAUUId = partner.getPartnerUUId();
+                        }
+                    } else{
+                        partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_EXISTS);
                     }
                 } else {
                     PartnerAuth auth = PartnerAuthService.isAuthExists(partner.getPartnerId());
+                    companyAssociationResponse = checkPrivatePartnerCompanyAssociation(partnerSignUpRequest.getPartnerMobile()
+                            , partnerSignUpRequest.getPartnerCompanyId(), false);
+
                     if(auth == null ) {
                         Logger.info("auth doesn't exists for this partner");
                         partner.setPartnerFirstName(partnerSignUpRequest.getPartnerName());
@@ -119,12 +135,36 @@ public class PartnerService {
 
                         }
                     } else{
-                        interactionType = InteractionConstants.INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED;
-                        result = InteractionConstants.INTERACTION_RESULT_EXISTING_PARTNER_SIGNUP;
-                        partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_EXISTS);
+                        if(partnerSignUpRequest.getPartnerCompanyId() == null){
+                            //its not a private partner
+                            interactionType = InteractionConstants.INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED;
+                            result = InteractionConstants.INTERACTION_RESULT_EXISTING_PARTNER_SIGNUP;
+                            partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_EXISTS);
+                        } else{
+
+                            if(companyAssociationResponse == ServerConstants.PARTNER_NEED_COMPANY_ASSOCIATION){
+                                interactionType = InteractionConstants.INTERACTION_TYPE_PARTNER_SIGN_UP;
+                                if(!(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE)){
+                                    // triggers when partner is self created
+                                    triggerOtp(partner, partnerSignUpResponse);
+                                    result = InteractionConstants.INTERACTION_RESULT_NEW_PARTNER;
+                                    objectAUUId = partner.getPartnerUUId();
+                                }
+                            } else{
+                                interactionType = InteractionConstants.INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED;
+                                result = InteractionConstants.INTERACTION_RESULT_EXISTING_PARTNER_SIGNUP;
+                                partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_EXISTS);
+                            }
+                        }
                     }
                     partner.partnerUpdate();
                 }
+
+                if(companyAssociationResponse == ServerConstants.PARTNER_NEED_COMPANY_ASSOCIATION){
+                    Logger.info("Creating association with the company");
+                    associatePrivatePartnerToCompany(partner, partnerSignUpRequest.getPartnerCompanyId());
+                }
+
                 //creating interaction
                 createInteractionForPartnerSignUp(objectAUUId, result, interactionType);
 
@@ -137,6 +177,48 @@ public class PartnerService {
             partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_FAILURE);
         }
         return partnerSignUpResponse;
+    }
+
+    public static Integer checkPrivatePartnerCompanyAssociation(String partnerMobile, String companyCode, Boolean newPartner){
+        if(companyCode != null){
+            Company company = Company.find.where().eq("CompanyCode", companyCode).findUnique();
+            if(newPartner){
+                return ServerConstants.PARTNER_NEED_COMPANY_ASSOCIATION;
+            } else{
+                Partner partner = Partner.find.where().eq("partner_mobile", FormValidator.convertToIndianMobileFormat(partnerMobile)).findUnique();
+                if(partner != null){
+                    PartnerToCompany partnerToCompany = PartnerToCompany.find.where()
+                            .eq("CompanyId", company.getCompanyId())
+                            .eq("partner_id", partner.getPartnerId())
+                            .findUnique();
+
+                    if(partnerToCompany == null){
+                        return ServerConstants.PARTNER_NEED_COMPANY_ASSOCIATION;
+                    } else{
+                        return ServerConstants.PARTNER_COMPANY_ASSOCIATION_ALREADY_EXISTS;
+                    }
+                } else {
+                    return ServerConstants.PARTNER_NO_COMPANY_ASSOCIATION;
+                }
+            }
+        }
+        return ServerConstants.PARTNER_NO_COMPANY_ASSOCIATION;
+
+    }
+
+    public static void associatePrivatePartnerToCompany(Partner partner, String companyCode){
+        if(companyCode != null){
+            Company company = Company.find.where().eq("CompanyCode", companyCode).findUnique();
+            PartnerToCompany partnerToCompany = new PartnerToCompany();
+            partnerToCompany.setPartner(partner);
+            partnerToCompany.setCompany(company);
+            partnerToCompany.save();
+
+            //setting partner type as a private partner
+            partner.setPartnerType(PartnerType.find.where().eq("partner_type_id", ServerConstants.PARTNER_TYPE_PRIVATE).findUnique());
+            partner.update();
+            session().put("partnerToCompanyId", String.valueOf(partnerToCompany.getPartnerToCompanyId()));
+        }
     }
 
     public static void resetPartnerTypeAndLocality(Partner existingPartner, PartnerSignUpRequest partnerSignUpRequest) {
@@ -154,7 +236,6 @@ public class PartnerService {
             Logger.info("LocalityId : " + partnerSignUpRequest.getPartnerLocality() + " does not exists");
         }
     }
-
 
     private static void triggerOtp(Partner partner, PartnerSignUpResponse partnerSignUpResponse) {
         int randomPIN = generateOtp();
@@ -362,10 +443,19 @@ public class PartnerService {
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(candidateMobile));
         if(existingCandidate != null){
-            PartnerToCandidate partnerToCandidate = new PartnerToCandidate();
-            partnerToCandidate.setCandidate(existingCandidate);
-            partnerToCandidate.setPartner(partner);
-            partnerToCandidate.savePartnerToCandidate(partnerToCandidate);
+
+            //check existing data
+            PartnerToCandidate existingPartnerToCandidate = PartnerToCandidate.find.where()
+                    .eq("partner_id", partner.getPartnerId())
+                    .eq("candidate_candidateid", existingCandidate.getCandidateId())
+                    .findUnique();
+
+            if(existingPartnerToCandidate == null){
+                PartnerToCandidate partnerToCandidate = new PartnerToCandidate();
+                partnerToCandidate.setCandidate(existingCandidate);
+                partnerToCandidate.setPartner(partner);
+                partnerToCandidate.savePartnerToCandidate(partnerToCandidate);
+            }
 
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
         } else {

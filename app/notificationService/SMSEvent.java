@@ -1,5 +1,9 @@
 package notificationService;
 
+import models.entity.Candidate;
+import models.entity.Company;
+import models.entity.JobPost;
+import models.entity.Recruiter.RecruiterProfile;
 import play.Logger;
 import play.Play;
 
@@ -20,6 +24,17 @@ public class SMSEvent extends NotificationEvent {
     public SMSEvent(String recipient, String message) {
         this.setMessage(message);
         this.setRecipient(recipient);
+    }
+
+    public SMSEvent(String recipient, String message, Company company
+            , RecruiterProfile recruiterProfile, JobPost jobPost, Candidate candidate)
+    {
+        this.setMessage(message);
+        this.setRecipient(recipient);
+        this.setJobPost(jobPost);
+        this.setCompany(company);
+        this.setCandidate(candidate);
+        this.setRecruiterProfile(recruiterProfile);
     }
 
     @Override

@@ -199,6 +199,10 @@ function processDataRecruiterProfile(returnedData) {
         if(returnedData.recruiterAlternateMobile != null){
             $("#rec_alternate_mobile").val(returnedData.recruiterAlternateMobile);
         }
+
+        if(returnedData.recruiterAccessLevel > 0){
+            $('#rec_company_name').tokenize().disable();
+        }
         if(returnedData.company != null){
             initialCompanyId = returnedData.company.companyId;
             initialCompanyName = returnedData.company.companyName;
