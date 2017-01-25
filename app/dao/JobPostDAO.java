@@ -9,6 +9,7 @@ import models.entity.OM.JobApplication;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zero on 18/12/16.
@@ -54,5 +55,21 @@ public class JobPostDAO {
                 .setRawSql(rawSql)
                 .findList();
 
+    }
+
+    public static Map<?, JobPost> findMapByRecruiterId(Long targetRecruiterId, Integer accessLevel) {
+        if(targetRecruiterId == null) return null;
+
+        if(accessLevel == null) {
+            accessLevel = 0;
+            return JobPost.find.where()
+                    .eq("recruiterProfile.recruiterProfileId", targetRecruiterId)
+                    .eq("jobPostAccessLevel", accessLevel)
+                    .setMapKey("jobPostId").findMap();
+        }
+        return JobPost.find.where()
+                .eq("recruiterProfile.recruiterProfileId", targetRecruiterId)
+                .eq("jobPostAccessLevel", accessLevel)
+                .setMapKey("jobPostId").findMap();
     }
 }

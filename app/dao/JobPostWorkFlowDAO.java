@@ -502,4 +502,10 @@ public class JobPostWorkFlowDAO {
                 .findList();
     }
 
+    public static JobPostWorkflow findFirstJobSelection(Long jobPostId) {
+        return JobPostWorkflow.find.where()
+                .eq("jobPost.jobPostId", jobPostId)
+                .eq("status_id", ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED)
+                .orderBy("job_post_workflow_id").setMaxRows(1).findUnique();
+    }
 }

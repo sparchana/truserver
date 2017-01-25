@@ -28,6 +28,7 @@ import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
 import models.entity.OM.InterviewDetails;
+import models.entity.OM.JobPostWorkflow;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterLead;
@@ -39,9 +40,14 @@ import models.entity.Static.JobStatus;
 import models.util.EmailUtil;
 import models.util.SmsUtil;
 import models.util.Util;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 import play.Logger;
 import play.mvc.Result;
 
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
@@ -918,7 +924,55 @@ public class RecruiterService {
         return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList).size();
     }
 
-    public List<JobPostSummaryResponse> getAllJobPostPerRecruiterSummary(Long recruiterId, Long recruiterId1) {
-        return null;
+    public List<JobPostSummaryResponse> getAllJobPostPerRecruiterSummary(Long targetRecruiterId, Long callerRecruiterId) {
+        if(targetRecruiterId == null || callerRecruiterId == null) return null;
+
+        List<JobPostSummaryResponse> jobPostSummaryResponseList = new ArrayList<>();
+        Map<?, JobPost> jobPostMap = JobPostDAO.findMapByRecruiterId(targetRecruiterId, ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE);
+
+        SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_DDMMYYYY);
+
+        for(Map.Entry entry: jobPostMap.entrySet()) {
+
+            JobPostSummaryResponse jobPostSummaryResponse = new JobPostSummaryResponse();
+            JobPost jobPost = (JobPost) entry.getValue();
+
+            if(jobPost == null) continue;
+
+            // forming individual responses again each jobpost
+            jobPostSummaryResponse.setJobTitle(jobPost.getJobPostTitle());
+            jobPostSummaryResponse.setJobPostedOn(sdf.format(jobPost.getJobPostCreateTimestamp()));
+
+            // not using the jobpost.getapplication since support matching doesn't goes here
+            // need to clarify if support can interact with private flow or not
+            // for now this uses the jobpost workflow to figure out these info
+            jobPostSummaryResponse.setTotalApplicants(computeTotalApplicant(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))));
+            jobPostSummaryResponse.setTotalInterviewConducted(computeTotalInterviewConducted(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))));
+            jobPostSummaryResponse.setFulfilmentStatus(computePercentageFulfilled(new ArrayList<>(Arrays.asList(jobPost)),
+                    computeTotalSelected(new ArrayList<>(Arrays.asList(jobPost.getJobPostId())))));
+
+            try {
+                jobPostSummaryResponse.setCycleTime(computeCycleTime(jobPost.getJobPostId(), jobPost.getJobPostCreateTimestamp()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                Logger.error("unable to parse date for date diff in computeCycleTime");
+            }
+
+            // adding it to the list
+            jobPostSummaryResponseList.add(jobPostSummaryResponse);
+        }
+
+        return jobPostSummaryResponseList;
+    }
+
+    private int computeCycleTime(Long jobPostId, Timestamp jobPostedOn) throws ParseException {
+        // first selection data - job posted date
+        // no of days since it has happened
+        JobPostWorkflow jobPostWorkflow = JobPostWorkFlowDAO.findFirstJobSelection(jobPostId);
+
+        DateTime dt1 = new DateTime(jobPostedOn);
+        DateTime dt2 = new DateTime(jobPostWorkflow.getCreationTimestamp());
+
+        return Days.daysBetween(dt1, dt2).getDays();
     }
 }
