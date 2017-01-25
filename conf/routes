@@ -193,6 +193,12 @@ POST        /getSentSms/                                                  contro
 POST        /getAppliedCandidates/                                        controllers.RecruiterController.getAppliedCandidates(jpId: java.lang.Long ?= null, i: java.lang.Long ?= null)
 POST        /getConfirmedApplication/                                     controllers.RecruiterController.getConfirmedApplication(jpId: java.lang.Long ?= null, i: java.lang.Long ?= null)
 
+# Recruiter SuperAdmin API
+# ~~~~~~~~~~~~~
+GET         /recruiter/api/summary/recruiter                              controllers.RecruiterController.recruiterSummary(rid: java.lang.Long ?=null)
+GET         /recruiter/api/summary/jobpost/:recruiterId                   controllers.RecruiterController.jobPostSummary(recruiterId: java.lang.Long, jpId: java.lang.Long ?=null)
+GET         /recruiter/report/                                            controllers.RecruiterController.renderReportPage(summary: String ?= null, rid: java.lang.Long ?= null)
+
 # Search API
 # ~~~~~~~~~~~~~
 GET         /s/:searchText/                                               controllers.SearchController.renderSearch(searchText : String)

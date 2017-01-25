@@ -8,10 +8,8 @@ import com.avaje.ebean.RawSqlBuilder;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.OM.SmsReport;
 import org.apache.commons.lang3.StringUtils;
-import play.Logger;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -251,6 +249,15 @@ public class JobPostWorkFlowDAO {
                 .in("status_id", statusList)
                 .findList();
     }
+
+
+    public static List<JobPostWorkflow> getRecords(List<Long> jobPostIdList, List<Integer> statusList) {
+        return JobPostWorkflow.find.where()
+                .in("jobPost.jobPostId", jobPostIdList)
+                .in("status_id", statusList)
+                .findList();
+    }
+
 
     public static List<JobPostWorkflow> getRecords(long jobPostId, int status, String startDate, String endDate) {
         return JobPostWorkflow.find.where()
@@ -623,4 +630,10 @@ public class JobPostWorkFlowDAO {
 
     }
 
+    public static JobPostWorkflow findFirstJobSelection(Long jobPostId) {
+        return JobPostWorkflow.find.where()
+                .eq("jobPost.jobPostId", jobPostId)
+                .eq("status_id", ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED)
+                .orderBy("job_post_workflow_id").setMaxRows(1).findUnique();
+    }
 }

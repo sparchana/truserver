@@ -7,14 +7,10 @@ import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
 import models.entity.Recruiter.RecruiterProfile;
-import models.entity.RecruiterCreditHistory;
 import models.entity.Static.SmsDeliveryStatus;
-import play.Logger;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * Created by dodo on 19/1/17.

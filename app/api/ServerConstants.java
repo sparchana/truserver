@@ -42,8 +42,8 @@ public class ServerConstants {
 
     public static final int PARTNER_TYPE_PRIVATE = 7;
 
+    public static final int JOB_POST_TYPE_OPEN = 0;
     public static final int JOB_POST_TYPE_PRIVATE = 1;
-    public static final int JOB_POST_TYPE_NOT_PRIVATE = 0;
 
     public static final int PARTNER_STATUS_NOT_VERIFIED = 0;
     public static final int PARTNER_STATUS_VERIFIED= 1;
@@ -417,6 +417,7 @@ public class ServerConstants {
     // recruiter Access Level
     public static final Integer RECRUITER_ACCESS_LEVEL_OPEN = 0;
     public static final Integer RECRUITER_ACCESS_LEVEL_PRIVATE = 1;
+    public static final Integer RECRUITER_ACCESS_LEVEL_PRIVATE_ADMIN = 2;
 
     // candidate Access Level
     public static final int CANDIDATE_ACCESS_LEVEL_OPEN = 0;

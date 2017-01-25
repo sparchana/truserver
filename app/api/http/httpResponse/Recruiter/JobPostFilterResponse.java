@@ -22,6 +22,35 @@ public class JobPostFilterResponse {
     private List<Integer> jobPostDocumentIdList;
     private List<Integer> jobPostAssetIdList;
 
+    private List<LocalityIdName> jobPostLocalityList ;
+
+
+    public static class LocalityIdName{
+        public Long localityId;
+        public String localityName;
+
+        public LocalityIdName(Long localityId, String localityName) {
+            this.localityId = localityId;
+            this.localityName = localityName;
+        }
+
+        public Long getLocalityId() {
+            return localityId;
+        }
+
+        public void setLocalityId(Long localityId) {
+            this.localityId = localityId;
+        }
+
+        public String getLocalityName() {
+            return localityName;
+        }
+
+        public void setLocalityName(String localityName) {
+            this.localityName = localityName;
+        }
+    }
+
     public Integer getGender() {
         return gender;
     }
@@ -117,4 +146,13 @@ public class JobPostFilterResponse {
     public void setJobPostJobRoleTitle(String jobPostJobRoleTitle) {
         this.jobPostJobRoleTitle = jobPostJobRoleTitle;
     }
+
+    public void setJobPostLocalityList(List<LocalityIdName> jobPostLocalityList) {
+        this.jobPostLocalityList = jobPostLocalityList;
+    }
+
+    public List<LocalityIdName> getJobPostLocalityList() {
+        return jobPostLocalityList;
+    }
+
 }

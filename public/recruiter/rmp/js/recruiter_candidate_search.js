@@ -20,6 +20,7 @@ var jobPostJobRoleId = 1;
 var jobPostJobRoleTitle = "accountant";
 var jobPostEducationIdList = [];
 var jobPostLocalityIdList = null;
+var jobPostLocalityList = null;
 var jobPostLanguageIdList = [];
 var jobPostDocumentIdList = [];
 var jobPostAssetIdList = [];
@@ -56,7 +57,7 @@ $(document).scroll(function(){
         $("#fixed-tools").slideUp(100);
     }
 
-    if($(window).scrollTop() + $(window).height() + 300 >= $(document).height()) {
+    if($(window).scrollTop() + $(window).height() == $(document).height()) {
         if(!endOfResult && !blockApiTrigger){ //trigger if the search results are still there in server
             blockApiTrigger = true;
             $("#endOfResultsDiv").hide();
@@ -315,9 +316,20 @@ function renderPreFillFilter(){
         }
 
 
-        if(jobPostJobRoleId != null && jobPostJobRoleTitle) {
-            $('#searchJobRole').tokenize().tokenRemove($('#searchJobRole').val()[0]);
+        if(jobPostJobRoleId != null && jobPostJobRoleTitle ) {
+            if($('#searchJobRole').val() != null) {
+                $('#searchJobRole').tokenize().tokenRemove($('#searchJobRole').val()[0]);
+            }
             $('#searchJobRole').tokenize().tokenAdd(jobPostJobRoleId, jobPostJobRoleTitle);
+        }
+
+        if(jobPostLocalityList != null && jobPostLocalityList.length > 0) {
+            if($('#searchLocality').val() != null) {
+                $('#searchLocality').tokenize().tokenRemove($('#searchLocality').val()[0]);
+            }
+            jobPostLocalityList.forEach(function (locality) {
+                $('#searchLocality').tokenize().tokenAdd(locality.localityId, locality.localityName);
+            });
         }
         resolve();
     });
@@ -351,8 +363,10 @@ function preFillFilter() {
                         // assign jobPost info to global values
 
                         // appending locality id
-                        if(returnedData.jobPostLocalityIdList != null ){
+                        if(returnedData.jobPostLocalityIdList != null
+                                        && returnedData.jobPostLocalityList != null){
                             jobPostLocalityIdList = returnedData.jobPostLocalityIdList;
+                            jobPostLocalityList = returnedData.jobPostLocalityList;
                         }
                         // appending jobrole id
                         if(returnedData.jobPostJobRoleId != null ){

@@ -7,7 +7,6 @@ import api.http.httpRequest.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.PartnerSecured;
@@ -522,7 +521,7 @@ public static Result checkExistingCompany(String CompanyCode) {
                     } else{
                         matchingJobList = JobSearchService
                                 .getAllJobsForCandidate(FormValidator.convertToIndianMobileFormat(
-                                        existingCandidate.getCandidateMobile()), ServerConstants.JOB_POST_TYPE_NOT_PRIVATE);
+                                        existingCandidate.getCandidateMobile()), ServerConstants.JOB_POST_TYPE_OPEN);
                     }
                 }
             }

@@ -14,4 +14,11 @@ public class SmsReportDAO {
                 .eq("SmsDeliveryStatus", status.getStatusId())
                 .findList();
     }
+
+    public static int getTotalSMSByRecruiterNJobPost(Long recruiterId, Long jobPostId){
+        return SmsReport.find.where()
+                .eq("recruiterProfile.recruiterProfileId", recruiterId)
+                .eq("jobPost.jobPostId", jobPostId)
+                .findList().size();
+    }
 }

@@ -1,10 +1,7 @@
 package models.util;
 
-import api.InteractionConstants;
-import api.ServerConstants;
-import controllers.businessLogic.InteractionService;
-import dao.CompanyDAO;
 import models.entity.Company;
+import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 
 import java.math.BigInteger;
@@ -23,6 +20,8 @@ public class Util {
     public static final String ACTION_UPDATE = "U";
     public static final String ACTION_DELETE = "D";
     public static final String ACTION_READ = "R";
+    public static final int COMPANY_NAME_KEY_LENGTH = 3;
+    public static final int COMPANY_CODE_LENGTH = 8;
 
     public static long randomLong() {
         long random = new Random().nextLong();
@@ -39,43 +38,67 @@ public class Util {
     }
 
     public static String generateCompanyCode(Company company) {
-        Boolean shouldRun = true;
-        String companyCode = "";
-        String companyName = company.getCompanyName().replaceAll("\\s+","");
+//        Boolean shouldRun = true;
+//        String companyCode = "";
+//        String companyName = company.getCompanyName().replaceAll("\\s+","");
+//
+//        String companyId;
+//        if(company.getCompanyId() < 1000){
+//            if(company.getCompanyId() < 100){
+//                if(company.getCompanyId() < 10){
+//                    companyId = "000" + company.getCompanyId();
+//                } else{
+//                    companyId = "00" + company.getCompanyId();
+//                }
+//            } else {
+//                companyId = "0" + company.getCompanyId();
+//            }
+//        } else{
+//            companyId = company.getCompanyId() + "";
+//        }
+//
+//        while(shouldRun){
+//            int randomCode = (int) (Math.random()*90);
+//            if(randomCode < 10){
+//                randomCode += 10;
+//            }
+//
+//            if(companyName.length() > 4){
+//                companyCode = (companyName.substring(0, 4)).toUpperCase() + companyId + randomCode;
+//            } else{
+//                companyCode = (companyName).toUpperCase() + companyId + randomCode;
+//            }
+//
+//            // query heavy
+//            // TODO convert it to use idToCode method, then this check for existing code will not be required
+//            Company existingCompany = CompanyDAO.getCompaniesByCompanyCode(companyCode);
+//            if(existingCompany == null){
+//                shouldRun = false;
+//            }
+//        }
+        return genCompanyCode(company);
+    }
 
-        String companyId;
-        if(company.getCompanyId() < 1000){
-            if(company.getCompanyId() < 100){
-                if(company.getCompanyId() < 10){
-                    companyId = "000" + company.getCompanyId();
-                } else{
-                    companyId = "00" + company.getCompanyId();
-                }
-            } else {
-                companyId = "0" + company.getCompanyId();
-            }
-        } else{
-            companyId = company.getCompanyId() + "";
+    public static String idToCode(long id) {
+        // no company id will exceed 2^31 :P
+        return Base36.fromBase10((int) id);
+    }
+
+    public static int codeToId(String code) {
+        return Base36.toBase10(code);
+    }
+
+    public static String genCompanyCode(Company company) {
+        String companyName = company.getCompanyName().replaceAll("[^A-Za-z]","");
+        if(companyName.length() > COMPANY_NAME_KEY_LENGTH) {
+            companyName = (companyName.substring(0, COMPANY_NAME_KEY_LENGTH)).toUpperCase();
+        } else {
+            companyName =  companyName.toUpperCase();
         }
-
-        while(shouldRun){
-            int randomCode = (int) (Math.random()*90);
-            if(randomCode < 10){
-                randomCode += 10;
-            }
-
-            if(companyName.length() > 4){
-                companyCode = (companyName.substring(0, 4)).toUpperCase() + companyId + randomCode;
-            } else{
-                companyCode = (companyName).toUpperCase() + companyId + randomCode;
-            }
-
-            Company existingCompany = CompanyDAO.getCompaniesByCompanyCode(companyCode);
-            if(existingCompany == null){
-                shouldRun = false;
-            }
-        }
-        return companyCode;
+        String code = idToCode(company.getCompanyId());
+        // return company code, decide the no of trailing zeros need to be added to make the total length 8
+        String formatted = StringUtils.leftPad(code, COMPANY_CODE_LENGTH - companyName.length(), "0");
+        return companyName + formatted;
     }
 
     public static int randomInt() {

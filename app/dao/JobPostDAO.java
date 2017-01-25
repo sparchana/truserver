@@ -10,6 +10,7 @@ import models.entity.OM.JobApplication;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zero on 18/12/16.
@@ -27,7 +28,7 @@ public class JobPostDAO {
 
     public static List<JobPost> getAllActiveHotNonPrivateJobsPostOfCompany(Company company) {
         return JobPost.find.where()
-                .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_NOT_PRIVATE)
+                .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_OPEN)
                 .eq("jobPostIsHot", "1")
                 .eq("CompanyId", company.getCompanyId())
                 .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
@@ -66,5 +67,17 @@ public class JobPostDAO {
                 .setRawSql(rawSql)
                 .findList();
 
+    }
+
+    public static Map<?, JobPost> findMapByRecruiterId(Long targetRecruiterId, Integer accessLevel) {
+        if(targetRecruiterId == null) return null;
+
+        if(accessLevel == null) {
+            accessLevel = 0;
+        }
+        return JobPost.find.where()
+                .eq("recruiterProfile.recruiterProfileId", targetRecruiterId)
+                .eq("jobPostAccessLevel", accessLevel)
+                .setMapKey("jobPostId").findMap();
     }
 }

@@ -89,11 +89,11 @@ public class JobSearchService {
             // Eg. For a telecaller job search, we want to first show all telecaller jobs sorted in the given order
             // followed by by all BPO jobs
 
-            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, filterParams, sortBy, isHot, source, ServerConstants.JOB_POST_TYPE_NOT_PRIVATE);
+            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, filterParams, sortBy, isHot, source, ServerConstants.JOB_POST_TYPE_OPEN);
 
             List<Long> relatedJobRoleIds = JobRelevancyEngine.getRelatedJobRoleIds(jobRoleIds);
 
-            List<JobPost> relatedJobRoleJobs = queryAndReturnJobPosts(relatedJobRoleIds, filterParams, sortBy, isHot, source, ServerConstants.JOB_POST_TYPE_NOT_PRIVATE);
+            List<JobPost> relatedJobRoleJobs = queryAndReturnJobPosts(relatedJobRoleIds, filterParams, sortBy, isHot, source, ServerConstants.JOB_POST_TYPE_OPEN);
 
             // if we have lat-long info, then lets go ahead and filter the job post lists based on distance criteria
             if (latitude != null && longitude != null && latitude != 0.0 && longitude != 0.0) {
@@ -198,7 +198,7 @@ public class JobSearchService {
 
         for (Integer source : jobPostSources) {
 
-            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, filterParams, sortBy, isHot, source, ServerConstants.JOB_POST_TYPE_NOT_PRIVATE);
+            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, filterParams, sortBy, isHot, source, ServerConstants.JOB_POST_TYPE_OPEN);
 
             if (latitude != null && longitude != null && latitude != 0.0 && longitude != 0.0) {
 
@@ -649,7 +649,7 @@ public class JobSearchService {
         if (index != null) {
             PagedList<JobPost> pagedList = JobPost.find
                     .where()
-                    .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_NOT_PRIVATE)
+                    .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_OPEN)
                     .eq("jobPostIsHot", "1")
                     .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
                     .eq("Source", ServerConstants.SOURCE_INTERNAL)
@@ -683,7 +683,7 @@ public class JobSearchService {
         if(index != null){
             PagedList<JobPost> pagedList = JobPost.find
                     .where()
-                    .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_NOT_PRIVATE)
+                    .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_OPEN)
                     .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
                     .eq("Source", ServerConstants.SOURCE_INTERNAL)
                     .setFirstRow(Math.toIntExact(index))
@@ -734,7 +734,7 @@ public class JobSearchService {
         if(index!=null){
             List<JobPost> jobPostList = JobPost.find.where()
                     .eq("jobRole.jobRoleId",jobRoleId)
-                    .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_NOT_PRIVATE)
+                    .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_OPEN)
                     .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
                     .eq("Source", ServerConstants.SOURCE_INTERNAL)
                     .setFirstRow(Math.toIntExact(index))
