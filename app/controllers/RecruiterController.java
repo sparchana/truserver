@@ -363,7 +363,7 @@ public class RecruiterController {
     public static void checkDeliveryStatus(){
         new Thread(() -> {
             try{
-                Thread.sleep(30000); //check after 4 minutes
+                Thread.sleep(240000); //check after 4 minutes
 /*                Thread.sleep(240000); //check after 4 minutes*/
             } catch(InterruptedException e){
                 Logger.info("exception: " + e);
