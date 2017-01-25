@@ -364,7 +364,6 @@ public class RecruiterController {
         new Thread(() -> {
             try{
                 Thread.sleep(240000); //check after 4 minutes
-/*                Thread.sleep(240000); //check after 4 minutes*/
             } catch(InterruptedException e){
                 Logger.info("exception: " + e);
             }

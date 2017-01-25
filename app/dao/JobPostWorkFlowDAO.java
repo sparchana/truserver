@@ -527,6 +527,7 @@ public class JobPostWorkFlowDAO {
                 .setRawSql(rawSql)
                 .setFirstRow(Math.toIntExact(index))
                 .setMaxRows(10)
+                .orderBy().desc("job_post_workflow_id")
                 .findPagedList();
 
         return pagedList.getList();

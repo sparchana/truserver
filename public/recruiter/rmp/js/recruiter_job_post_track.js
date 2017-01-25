@@ -16,7 +16,11 @@ var notSelectedReason = [];
 
 function preformTabChange(tabId) {
     index = 0;
+    hideTab1();
+    hideTab2();
+    hideTab3();
     if(tabId == 1){
+        hideTab1();
         tabChange1(index);
     } else if(tabId == 2){
         tabChange2(index);
@@ -385,7 +389,7 @@ function processDataJobApplications(returnedData) {
             colCandidateMobile.appendChild(spanCandidateMobile);
 
             var colChannel = document.createElement("div");
-            colChannel.className = 'col s12 m1 l2';
+            colChannel.className = 'col s12 m1 l1';
             colChannel.style = 'margin-top: 8px';
             outerRow.appendChild(colChannel);
 
@@ -404,8 +408,27 @@ function processDataJobApplications(returnedData) {
             spanChannel.style = "font-weight: 600;font-size:12px";
             colChannel.appendChild(spanChannel);
 
+            var colInterviewDate = document.createElement("div");
+            colInterviewDate.className = 'col s12 m1 l2';
+            colInterviewDate.style = 'margin-top: 8px';
+            outerRow.appendChild(colInterviewDate);
+
+            colInterviewDate.textContent = "-";
+            if(workflowObj.extraData.interviewDate != null){
+                var interviewDate = new Date(workflowObj.extraData.interviewDate);
+
+                colInterviewDate.textContent = interviewDate.getFullYear() + "-" + (interviewDate.getMonth() + 1) + "-" + interviewDate.getDate() +
+                    " @ " + workflowObj.extraData.interviewSlot.interviewTimeSlotName;
+            }
+
+            var spanInterviewDate = document.createElement("div");
+            spanInterviewDate.className = "col s4 hide-on-med-and-up right-align";
+            spanInterviewDate.textContent= "Channel: ";
+            spanInterviewDate.style = "font-weight: 600;font-size:12px";
+            colInterviewDate.appendChild(spanInterviewDate);
+
             var colAction = document.createElement("div");
-            colAction.className = 'col s12 m2 l4';
+            colAction.className = 'col s12 m2 l3';
             colAction.id = "interview_status_option_" + workflowObj.candidate.candidateId;
             colAction.style = 'margin-top: 8px';
             colAction.textContent = "No action required";
@@ -640,6 +663,10 @@ function tabChange3(index) {
     $("#tab1Parent").removeClass("activeParent");
     $("#tab2Parent").removeClass("activeParent");
     $("#tab3Parent").addClass("activeParent");
+
+    $("#loaderText").html("Fetching Confirmed Interviews");
+    $("#loadingIcon").show();
+
     hideTab1();
     hideTab2();
 
