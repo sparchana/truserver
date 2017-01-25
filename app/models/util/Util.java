@@ -68,7 +68,7 @@ public class Util {
             }
 
             // query heavy
-            // TODO convert it to use idToCode method
+            // TODO convert it to use idToCode method, then this check for existing code will not be required
             Company existingCompany = CompanyDAO.getCompaniesByCompanyCode(companyCode);
             if(existingCompany == null){
                 shouldRun = false;
@@ -77,17 +77,15 @@ public class Util {
         return companyCode;
     }
 
-    // TODO Test
-    public static void idToCode(long id) {
+    public static String idToCode(long id) {
         // no company id will exceed 2^31 :P
-        String code = Base62.fromBase10((int) id);
-        int decodedId = Base62.toBase10(code);
-
-        Logger.info("id: " + id);
-        Logger.info("code: " + code);
-        Logger.info("decoded: " + decodedId);
+        return Base36.fromBase10((int) id);
     }
 
+    public static int codeToId(String code) {
+        // no company id will exceed 2^31 :P
+        return Base36.toBase10(code);
+    }
     public static int randomInt() {
         return new Random().nextInt();
     }

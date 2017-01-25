@@ -2,11 +2,13 @@ package Utility;
 
 import common.TestConstants;
 import models.util.Util;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import play.Application;
+import play.Logger;
 import play.test.TestServer;
 
 import java.util.Arrays;
@@ -24,6 +26,8 @@ import static play.test.Helpers.*;
 public class UtilTest {
 
     private long id;
+    private long startKey;
+    private long endKey;
     enum MethodType {
         idToCode,
     }
@@ -34,8 +38,9 @@ public class UtilTest {
     public void initialize() {
     }
 
-    public UtilTest(MethodType type, long id) {
-        this.id = id;
+    public UtilTest(MethodType type, long startKey, long endKey) {
+        this.startKey = startKey;
+        this.endKey = endKey;
         this.type = type;
     }
 
@@ -44,9 +49,11 @@ public class UtilTest {
     @Parameterized.Parameters
     public static Collection getTestDataSet() {
         return Arrays.asList(new Object[][]{
-                {MethodType.idToCode, 0},
-                {MethodType.idToCode, 1},
-                {MethodType.idToCode, 11111}
+                {MethodType.idToCode, 1, 10},
+                {MethodType.idToCode, 90, 100},
+                {MethodType.idToCode, 990, 1000},
+                {MethodType.idToCode, 9990, 10000},
+                {MethodType.idToCode, 99990, 100000},
         });
     }
 
@@ -56,7 +63,12 @@ public class UtilTest {
             Application fakeApp = fakeApplication();
             TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
             running(server, () -> {
-                Util.idToCode(this.id);
+                for(long key = this.startKey; key< this.endKey; key++){
+                    String code = Util.idToCode(key);
+                    Logger.warn("test id #"+key + " code: " + code);
+                    Assert.assertEquals(key, Util.codeToId(code));
+
+                }
             });
         }
     }

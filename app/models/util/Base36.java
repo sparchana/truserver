@@ -3,13 +3,15 @@ package models.util;
 /**
  * Created by zero on 25/1/17.
  */
-public class Base62 {
+public class Base36 {
 
-    private static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    // only caps and numeric
+    private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    //    private static final String ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     private static final int BASE = ALPHABET.length();
 
-    private Base62() {}
+    private Base36() {}
 
     public static String fromBase10(int i) {
         StringBuilder sb = new StringBuilder("");
