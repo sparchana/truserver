@@ -832,10 +832,26 @@ function getRecruiterInfo() {
 }
 
 function processDataRecruiterProfile(returnedData) {
-    $("#remainingContactCredits").html(returnedData.contactCreditCount);
-    $("#remainingContactCreditsMobile").html(returnedData.contactCreditCount);
-    $("#remainingInterviewCredits").html(returnedData.interviewCreditCount);
-    $("#remainingInterviewCreditsMobile").html(returnedData.interviewCreditCount);
+    if(returnedData == 0){
+        logoutRecruiter();
+    } else{
+        if(returnedData.recruiterAccessLevel == 0){
+            $("#creditView").show();
+            $("#creditViewMobile").show();
+            $("#recruiterMsg").show();
+            $("#recruiterHIW").show();
+            $("#remainingContactCredits").html(returnedData.contactCreditCount);
+            $("#remainingContactCreditsMobile").html(returnedData.contactCreditCount);
+            $("#remainingInterviewCredits").html(returnedData.interviewCreditCount);
+            $("#remainingInterviewCreditsMobile").html(returnedData.interviewCreditCount);
+        } else{
+            $("#creditView").hide();
+            $("#creditViewMobile").hide();
+            $("#recruiterMsg").hide();
+            $("#recruiterHIW").hide();
+        }
+    }
+
 }
 
 
