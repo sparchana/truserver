@@ -505,8 +505,8 @@ function processPreScreenData(returnedData) {
     mainDiv.appendChild(subDivOne);
 
     var hintMessage = document.createElement("p");
-    hintMessage.textContent = "(Optional) Please provide following details to apply for this job";
-    hintMessage.style = "margin:0;font-size:16px;padding:10px;background:#eceff1;box-shadow:0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);";
+    hintMessage.textContent = "Please provide following details to apply for this job";
+    hintMessage.id = "panelHeader";
     hintMessage.onclick = function () {
         if($("#jobDetailsInfoFillCol").hasClass("in") == true){
             $("#collapseIcon").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
@@ -517,7 +517,7 @@ function processPreScreenData(returnedData) {
     subDivOne.appendChild(hintMessage);
 
     var spanIcon = document.createElement("span");
-    spanIcon.className = "glyphicon glyphicon-chevron-down pull-right";
+    spanIcon.className = "glyphicon glyphicon-chevron-up pull-right";
     spanIcon.id = "collapseIcon";
     spanIcon.setAttribute("aria-hidden",true);
     hintMessage.appendChild(spanIcon);
@@ -525,7 +525,7 @@ function processPreScreenData(returnedData) {
     var subDivTwo = document.createElement("div");
     subDivTwo.style = "padding:0 4%";
     subDivTwo.id = "jobDetailsInfoFillCol";
-    subDivTwo.className = "col-sm-12 panel-collapse collapse";
+    subDivTwo.className = "col-sm-12 panel-collapse collapse in";
     mainDiv.appendChild(subDivTwo);
 
     var orderList = document.createElement("ol");
