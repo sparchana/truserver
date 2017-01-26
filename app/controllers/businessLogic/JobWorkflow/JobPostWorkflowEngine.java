@@ -2706,6 +2706,7 @@ public class JobPostWorkflowEngine {
 
     public static Integer updateFeedback(AddFeedbackRequest addFeedbackRequest, int channel) {
         // fetch existing workflow old for a specific candidate associated with a specific jobPost
+
         JobPostWorkflow jobPostWorkflowCurrent =
                         JobPostWorkFlowDAO.getJobPostWorkflowCurrent(
                                 addFeedbackRequest.getJobPostId(),
@@ -2791,6 +2792,8 @@ public class JobPostWorkflowEngine {
                 interactionResult,
                 channel
         );
+
+        Logger.info("Yes");
 
         return 1;
     }

@@ -31,6 +31,7 @@ import dao.RecruiterDAO;
 import dao.SmsReportDAO;
 import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.OM.JobApplication;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.OM.SmsReport;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
@@ -1068,7 +1069,7 @@ public class RecruiterController {
     public static Result getAppliedCandidates(long jpId) {
         JobPost jobPost = JobPostDAO.findById(jpId);
         if(jobPost != null){
-            List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllJobApplicationWithinStatusId(925L,
+            List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllJobApplicationWithinStatusId(jpId,
                     ServerConstants.JWF_STATUS_SELECTED, ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE);
 
             for(JobPostWorkflow workflow : applicationList){
@@ -1084,12 +1085,29 @@ public class RecruiterController {
             Integer status = ServerConstants.JWF_STATUS_SELECTED;
 
             Map<Long, CandidateWorkflowData> mapToBeReturned =
-                    JobPostWorkflowEngine.getCandidateMap(candidateList, 925L, new ArrayList<>(Collections.singletonList(status)), false);
+                    JobPostWorkflowEngine.getCandidateMap(candidateList, jpId, new ArrayList<>(Collections.singletonList(status)), false);
 
             List<CandidateWorkflowData> jobApplicantList = new LinkedList<>();
             for (Map.Entry<Long, CandidateWorkflowData> entry : mapToBeReturned.entrySet()) {
                 sanitizeCandidateData(entry.getValue().getCandidate());
                 jobApplicantList.add(entry.getValue());
+            }
+
+            for (CandidateWorkflowData data: jobApplicantList) {
+                JobApplication jobApplication = JobApplication.find.where()
+                        .eq("CandidateId", data.getCandidate().getCandidateId())
+                        .eq("JobPostId", jpId)
+                        .findUnique();
+
+                data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_SUPPORT);
+                if(jobApplication != null){
+                    if(jobApplication.getPartner() != null){
+                        data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_PARTNER);
+                        data.setPartner(jobApplication.getPartner());
+                    } else{
+                        data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_SELF);
+                    }
+                }
             }
 
             return ok(toJson(jobApplicantList));
@@ -1101,7 +1119,7 @@ public class RecruiterController {
     public static Result getConfirmedApplication(long jpId) {
         JobPost jobPost = JobPostDAO.findById(jpId);
         if(jobPost != null){
-            List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllConfirmedApplicationsJobPost(925L,
+            List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllConfirmedApplicationsJobPost(jpId,
                     ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED, ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED);
 
             for(JobPostWorkflow workflow : applicationList){
@@ -1115,7 +1133,7 @@ public class RecruiterController {
 
             Integer status = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
 
-            Map<Long, CandidateWorkflowData> mapToBeReturned = JobPostWorkflowEngine.getCandidateMap(candidateList, 925L, new ArrayList<>(Collections.singletonList(status)), false);
+            Map<Long, CandidateWorkflowData> mapToBeReturned = JobPostWorkflowEngine.getCandidateMap(candidateList, jpId, new ArrayList<>(Collections.singletonList(status)), false);
 
             List<CandidateWorkflowData> jobApplicantList = new LinkedList<>();
             for (Map.Entry<Long, CandidateWorkflowData> entry : mapToBeReturned.entrySet()) {
@@ -1127,5 +1145,4 @@ public class RecruiterController {
         }
         return ok("0");
     }
-
 }

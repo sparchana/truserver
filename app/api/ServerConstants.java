@@ -434,4 +434,10 @@ public class ServerConstants {
     public static final int STATUS_CANDIDATE_EXISTS = 1;
     public static final int STATUS_CANDIDATE_EXISTS_DIFFERENT_COMPANY = 2;
     public static final int STATUS_CANDIDATE_EXISTS_SAME_COMPANY = 3;
+
+    //job application channel
+    public static final int APPLICATION_CHANNEL_SELF = 1;
+    public static final int APPLICATION_CHANNEL_PARTNER = 2;
+    public static final int APPLICATION_CHANNEL_SUPPORT = 3;
+
 }
