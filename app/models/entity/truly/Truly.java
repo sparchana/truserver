@@ -19,13 +19,13 @@ public class Truly extends Model {
     @Column(name = "truly_id", columnDefinition = "int unsigned", unique = true)
     private int trulyId;
 
-    @Column(name = "longUrl", columnDefinition = "text not null", unique = true)
+    @Column(name = "longUrl", columnDefinition = "text null")
     private String longUrl;
 
-    @Column(name = "shortUrl", columnDefinition = "varchar(255) not null", unique = true)
+    @Column(name = "shortUrl", columnDefinition = "varchar(255) null")
     private String shortUrl;
 
-    @Column(name = "hash", columnDefinition = "varchar(255) not null", unique = true)
+    @Column(name = "hash", columnDefinition = "varchar(255) null")
     private String hash;
 
     @Column(name = "create_timestamp", columnDefinition = "timestamp default current_timestamp not null")

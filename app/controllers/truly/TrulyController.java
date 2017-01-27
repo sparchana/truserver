@@ -2,6 +2,8 @@ package controllers.truly;
 
 import play.mvc.Result;
 
+import static play.mvc.Results.badRequest;
+import static play.mvc.Results.ok;
 import static play.mvc.Results.redirect;
 
 /**
@@ -28,6 +30,22 @@ public class TrulyController {
 
     // TODO add security class for internal support only to generate url
     public static Result renderGenerator() {
-        return play.mvc.Results.TODO;
+        return ok(views.html.truly.render());
+    }
+
+    public static Result compress(String longUrl) {
+        if(longUrl == null) return badRequest();
+
+        TrulyService trulyService = new TrulyService();
+
+        return ok(trulyService.generateShortURL(longUrl));
+    }
+
+    public static Result expand(String shortUrl) {
+        if(shortUrl == null) return badRequest();
+
+        TrulyService trulyService = new TrulyService();
+
+        return ok(trulyService.getLongURL(shortUrl));
     }
 }

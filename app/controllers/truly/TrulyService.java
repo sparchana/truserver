@@ -23,10 +23,10 @@ public class TrulyService {
     }
 
     /**
-     * @param longURL       takes a long url and gets a short url
+     * @param longURL       takes a long url and generates a shorter url
      * @return
      */
-    private String generateShortURL(String longURL) {
+    protected String generateShortURL(String longURL) {
         if(longURL == null) {
             return null;
         }
