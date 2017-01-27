@@ -1029,46 +1029,50 @@ function renderIndividualCandidateCard(value, parent, view) {
     candidateCardRowColOne.style = "text-align: left";
     unlockDivRow.appendChild(candidateCardRowColOne);
 
-    inlineBlockDiv = document.createElement("div");
-    inlineBlockDiv.style = "display: inline-block; margin: 0px 4px 4px 0;";
-    candidateCardRowColOne.appendChild(inlineBlockDiv);
+    if(value.createTimestamp != null) {
+        inlineBlockDiv = document.createElement("div");
+        inlineBlockDiv.style = "display: inline-block; margin: 0px 4px 4px 0;";
+        candidateCardRowColOne.appendChild(inlineBlockDiv);
 
-    iconImg = document.createElement("img");
-    iconImg.src = "/assets/recruiter/img/icons/clock.svg";
-    iconImg.style = "margin-top: -4px";
-    iconImg.setAttribute('height', '18px');
-    inlineBlockDiv.appendChild(iconImg);
+        iconImg = document.createElement("img");
+        iconImg.src = "/assets/recruiter/img/icons/clock.svg";
+        iconImg.style = "margin-top: -4px";
+        iconImg.setAttribute('height', '18px');
+        inlineBlockDiv.appendChild(iconImg);
 
-    inlineBlockDiv = document.createElement("div");
-    inlineBlockDiv.style = "display: inline-block;";
-    candidateCardRowColOne.appendChild(inlineBlockDiv);
+        inlineBlockDiv = document.createElement("div");
+        inlineBlockDiv.style = "display: inline-block;";
+        candidateCardRowColOne.appendChild(inlineBlockDiv);
 
-    innerInlineBlockDiv = document.createElement("div");
-    innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 10px";
-    if(view == view_unlocked_candidate){
-        innerInlineBlockDiv.textContent = "Candidate unlocked on";
-    } else{
-        innerInlineBlockDiv.textContent = "Last Active";
-    }
-    inlineBlockDiv.appendChild(innerInlineBlockDiv);
-
-    //candidate last active container
-    var candidateCardRowColTwoFont = document.createElement("font");
-
-    candidateCardRowColTwoFont.setAttribute("size", "3");
-    candidateCardRowColTwoFont.style = "font-size: 12px; color: black; margin-left: 4px";
-
-    if(view == view_unlocked_candidate){
-        var postedOn = new Date(value.createTimestamp);
-        candidateCardRowColTwoFont.textContent = "Unlocked on: " + ('0' + postedOn.getDate()).slice(-2) + '-' + getMonthVal((postedOn.getMonth()+1)) + '-' + postedOn.getFullYear();
-        candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
-    } else {
-        if(value.extraData.lastActive != null){
-            candidateCardRowColTwoFont.textContent = value.extraData.lastActive.lastActiveValueName;
+        innerInlineBlockDiv = document.createElement("div");
+        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 10px";
+        if (view == view_unlocked_candidate) {
+            innerInlineBlockDiv.textContent = "Candidate unlocked on";
+        } else {
+            innerInlineBlockDiv.textContent = "Last Active";
         }
-    }
+        inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
-    inlineBlockDiv.appendChild(candidateCardRowColTwoFont);
+        //candidate last active container
+        var candidateCardRowColTwoFont = document.createElement("font");
+
+        candidateCardRowColTwoFont.setAttribute("size", "3");
+        candidateCardRowColTwoFont.style = "font-size: 12px; color: black; margin-left: 4px";
+
+        if (view == view_unlocked_candidate) {
+            if (value.createTimestamp != null) {
+                var postedOn = new Date(value.createTimestamp);
+                candidateCardRowColTwoFont.textContent = "Unlocked on: " + ('0' + postedOn.getDate()).slice(-2) + '-' + getMonthVal((postedOn.getMonth() + 1)) + '-' + postedOn.getFullYear();
+                candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
+            }
+        } else {
+            if (value.extraData.lastActive != null) {
+                candidateCardRowColTwoFont.textContent = value.extraData.lastActive.lastActiveValueName;
+            }
+        }
+
+        inlineBlockDiv.appendChild(candidateCardRowColTwoFont);
+    }
 
     // candidate interview status
     var candidateCurrentStatus = document.createElement("div");

@@ -34,6 +34,7 @@ $(document).ready(function(){
 });
 
 function processDataForUnlockedCandidates(returnedData) {
+    console.log("data : "+ JSON.stringify(returnedData));
     if(Object.keys(returnedData).length > 0){
         var parent = $("#candidateContainer");
         if(returnedData != "0"){

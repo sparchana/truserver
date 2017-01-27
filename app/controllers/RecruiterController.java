@@ -28,6 +28,7 @@ import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.Lead;
 import models.entity.OM.IDProofReference;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.OM.LanguageKnown;
@@ -819,6 +820,20 @@ public class RecruiterController {
 
     public static Result trackApplication(long id) {
         return ok(views.html.Recruiter.recruiter_interviews.render());
+    }
+
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result recruiterGetCandidateInfo(long candidateId) {
+        Logger.info("Candidate Id : "+ candidateId);
+        Candidate candidate = Candidate.find.where().eq("CandidateId", candidateId).findUnique();
+        if(candidate != null) {
+                return ok(toJson(candidate));
+        }
+        return ok("0");
+    }
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result recruiterCandidateModal() {
+        return ok(views.html.Recruiter.recruiter_candidate_modal.render());
     }
 
 }
