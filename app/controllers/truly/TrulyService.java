@@ -35,11 +35,13 @@ public class TrulyService {
 
         if(truly == null) {
             truly = new Truly();
+            truly.save();
+
             truly.setLongUrl(longURL);
             truly.setHash(Base62.fromBase10(truly.getTrulyId()));
             truly.setShortUrl("https://trujobs.in/u/"+truly.getHash());
             truly.save();
-        }
+        } 
         return truly.getShortUrl();
     }
 

@@ -367,8 +367,8 @@ GET         /favicon.ico                                                    cont
 # Truly Url-Shortner route
 # ~~~~~~~~~
 GET         /truly                                                         controllers.truly.TrulyController.renderGenerator()
-GET         /truly/api/compress/:long_url                                  controllers.truly.TrulyController.compress(long_url: String)
-GET         /truly/api/expand/:short_url                                   controllers.truly.TrulyController.expand(short_url: String)
+GET         /truly/api/compress                                            controllers.truly.TrulyController.compress(url: String?=null)
+GET         /truly/api/expand                                              controllers.truly.TrulyController.expand(url: String?=null)
 GET         /t/:shortUrl                                                   controllers.truly.TrulyController.index(shortUrl: String)
 
 

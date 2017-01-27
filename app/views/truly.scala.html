@@ -45,7 +45,8 @@
             </div>*@
             <main class="mdl-layout__content" style="padding:1% 2%;background-color: #efefef">
                 <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
-                    <header class="section__play-btn mdl-cell mdl-cell--3-col-desktop mdl-cell--2-col-tablet mdl-cell--4-col-phone mdl-color--deep-orange-500 mdl-color-text--white">
+                    <header class="mdl-cell mdl-cell--3-col-desktop mdl-cell--2-col-tablet mdl-cell--4-col-phone mdl-color--deep-orange-500 mdl-color-text--white">
+                        <div style="color: #ffffff;"> COPY</div>
                     </header>
 
                     <div class="mdl-card mdl-cell mdl-cell--9-col-desktop mdl-cell--6-col-tablet mdl-cell--4-col-phone">
@@ -61,6 +62,7 @@
                                 </div>
 
                                 <button id="submitBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--deep-orange-500">Submit</button>
+                                <button id="copyBtn" data-clipboard-target="#long_url" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent mdl-color--orange-500">Copy</button>
                             </form>
                         </div>
 
@@ -76,6 +78,7 @@
             </main>
         </div>
         <script type="text/javascript" src="/assets/common/js/material.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.16/clipboard.min.js"></script>
         <script type="text/javascript" src="/assets/truly/js/trulyController.js"></script>
         <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
     </body>
