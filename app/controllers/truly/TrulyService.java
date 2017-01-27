@@ -2,6 +2,7 @@ package controllers.truly;
 
 import models.entity.truly.Truly;
 import models.util.Base62;
+import play.api.Play;
 
 /**
  * Created by zero on 27/1/17.
@@ -9,7 +10,18 @@ import models.util.Base62;
  * Non static service class for multiple instantiation and bulk use
  */
 public class TrulyService {
+    private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
+    private String BASE_URL = "localhost:9000";
+
+    TrulyService() {
+        if(!isDevMode) {
+            BASE_URL = "https://trujobs.in";
+        }
+    }
+
+    private final String POINT_URL = "/t/";
     public String getLongURL(String shortURL) {
+
         int trulyId = getIdFromShortURL(shortURL);
         Truly truly = Truly.find.where().eq("trulyId", trulyId).findUnique();
         if(truly == null){
@@ -39,9 +51,9 @@ public class TrulyService {
 
             truly.setLongUrl(longURL);
             truly.setHash(Base62.fromBase10(truly.getTrulyId()));
-            truly.setShortUrl("https://trujobs.in/u/"+truly.getHash());
+            truly.setShortUrl(BASE_URL + POINT_URL +truly.getHash());
             truly.save();
-        } 
+        }
         return truly.getShortUrl();
     }
 

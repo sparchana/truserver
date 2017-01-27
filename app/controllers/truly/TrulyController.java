@@ -1,5 +1,6 @@
 package controllers.truly;
 
+import play.Logger;
 import play.mvc.Result;
 
 import static play.mvc.Results.badRequest;
@@ -13,8 +14,7 @@ public class TrulyController {
 
     public static Result index(String shortUrl) {
 
-        // TODO sanity check in ShortUrl
-        if(shortUrl == null) {
+        if(shortUrl == null || shortUrl.trim().isEmpty()) {
             return redirect("/pageNotFound");
         }
 
@@ -25,7 +25,11 @@ public class TrulyController {
             return redirect("/pageNotFound");
         }
 
-        return redirect(longUrl);
+        if(longUrl.contains("//")){
+            return redirect(longUrl);
+        } else {
+            return redirect("//" + longUrl);
+        }
     }
 
     // TODO add security class for internal support only to generate url
