@@ -376,7 +376,6 @@ public class RecruiterController {
                     e.printStackTrace();
                 }
 
-                Logger.info(multipleCandidateActionRequest.getCandidateIdList().size() + " ----");
                 List<Candidate> candidateList = Candidate.find.where()
                         .in("CandidateId", multipleCandidateActionRequest.getCandidateIdList())
                         .findList();

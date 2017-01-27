@@ -2,6 +2,7 @@
  * Created by dodo on 20/12/16.
  */
 
+var viewResume = false;
 var view_search_candidate = 1;
 var view_unlocked_candidate = 2;
 var view_applied_candidate = 3;
@@ -337,14 +338,16 @@ function renderIndividualCandidateCard(value, parent, view) {
     resumeIcon.style = "margin: 0 4px 2px 6px;";
     resumeIcon.setAttribute('height', '24px');
 
-    var resumeLink = document.createElement("font");
-    resumeLink.style = "font-size: 14px; font-weight: bold; color: rgb(84, 192, 235); cursor: pointer";
-    resumeLink.onclick = function () {
-        unlockContact(value.candidate.candidateId);
-    };
+    var resumeLink = document.createElement("a");
+    resumeLink.class = "null";
     resumeLink.textContent = "View Resume";
-    candidateCardRowColOne.appendChild(candidateExperience);
+    resumeLink.id = "candidate_resume_" + value.candidate.candidateId;
+    resumeLink.onclick = function () {
+        //TODO: view resume
+    };
+    resumeLink.style = "font-size: 14px; font-weight: bold; color: rgb(84, 192, 235); ";
 
+    candidateCardRowColOne.appendChild(candidateExperience);
 
 //    candidateCardRowColOne.appendChild(resumeIcon);
 //    candidateCardRowColOne.appendChild(resumeLink);
