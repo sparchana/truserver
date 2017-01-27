@@ -9,6 +9,7 @@ var candidateSearchResultAll = [];
 
 var contactCreditUnitPrice;
 var interviewCreditUnitPrice;
+var contactCredits = 0;
 
 //global variables for lazy load
 var maxAge = "";
@@ -34,14 +35,23 @@ var blockApiTrigger = false;
 $(document).scroll(function(){
     if ($(this).scrollTop() > 30) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
-    }
-    else{
+    } else{
         $('nav').css({"background": "transparent"});
     }
+
     if ($(this).scrollTop() > 500) {
         $("#fixedButton").show();
     } else{
         $("#fixedButton").hide();
+    }
+
+    if ($(document).scrollTop() > 150) {
+        $("#fixed-tools").css('background-color', 'rgba(228, 228, 228, 0.960784)');
+        $("#fixed-tools").css('position', 'fixed');
+        $("#fixed-tools").slideDown();
+        $(".navbar-default").css('background-color', 'white');
+    } else {
+        $("#fixed-tools").slideUp(100);
     }
 
     if($(window).scrollTop() + $(window).height() == $(document).height()) {
@@ -203,6 +213,22 @@ $(document).ready(function(){
     $("#endOfResultsDiv").hide();
     $("#loadingIcon").show();
 
+    $("#select_all").change(function() {
+        if(this.checked) {
+            checkAll();
+        } else{
+            uncheckAll();
+        }
+    });
+
+    $("#select_all_floating").change(function() {
+        if(this.checked) {
+            checkAll();
+        } else{
+            uncheckAll();
+        }
+    });
+
     counter = 0;
     NProgress.start();
     var d = {
@@ -262,6 +288,7 @@ function processDataGetCreditCategory(returnedData) {
 
 
 function processDataRecruiterProfile(returnedData) {
+    contactCredits = returnedData.contactCreditCount;
     $("#remainingContactCredits").html(returnedData.contactCreditCount);
     $("#remainingContactCreditsMobile").html(returnedData.contactCreditCount);
     $("#remainingInterviewCredits").html(returnedData.interviewCreditCount);
@@ -486,6 +513,7 @@ function performSearch() {
         $("#filterBtn").addClass("disabled");
 
         $("#candidateResultContainer").html("");
+        $("#candidateTools").show();
         $("#searchJobPanel").hide();
         $("#noCandidateDiv").hide();
         $("#endOfResultsDiv").hide();
@@ -605,11 +633,15 @@ function processDataMatchCandidate(returnedData) {
                 console.log("exception occured!!" + exception.stack);
             }
 
+            $("#candidateTools").show();
+
         } else{
+            $("#candidateTools").hide();
             $("#noCandidateDiv").show();
 /*            notifySuccess("No Candidates found!");*/
         }
     } else{
+        $("#candidateTools").hide();
         $("#noCandidateDiv").show();
         notifySuccess("Something went wrong! Please try again later!");
     }

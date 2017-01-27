@@ -67,6 +67,8 @@ public class JobService {
         Integer interactionType;
         boolean isSendJobActivationAlert = false;
 
+        /* TODO add validation for critical incoming data like localityList etc */
+
         JobPost existingJobPost = JobPostDAO.findById(addJobPostRequest.getJobPostId());
         if(existingJobPost == null){
             Logger.info("Job post does not exists. Creating a new job Post");
@@ -408,6 +410,18 @@ public class JobService {
             newJobPost.setRecruiterProfile(recruiterProfile);
         }
 
+        if(session().get("recruiterId") != null) {
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
+            if (recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+
+                //setting job status and job post access level as active whn a private recruiter adds a job
+
+                newJobPost.setJobPostAccessLevel(ServerConstants.JOB_POST_TYPE_PRIVATE);
+
+                JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", ServerConstants.JOB_STATUS_ACTIVE).findUnique();
+                newJobPost.setJobPostStatus(jobStatus);
+            }
+        }
         return newJobPost;
     }
 
@@ -705,13 +719,13 @@ public class JobService {
         return languageRequirementList;
     }
 
-    private static List<JobPostDocumentRequirement> getJobPostDocumentRequirement(List<Long> jobPostDocumentList, JobPost newJobPost) {
+    private static List<JobPostDocumentRequirement> getJobPostDocumentRequirement(List<Long> jobPostDocumentIdList, JobPost newJobPost) {
 
         List<JobPostDocumentRequirement> jobPostDocumentRequirementList = new ArrayList<>();
-        if(jobPostDocumentList == null || jobPostDocumentList.size() == 0) {
+        if(jobPostDocumentIdList == null || jobPostDocumentIdList.size() == 0) {
             return jobPostDocumentRequirementList;
         }
-        List<IdProof> idProofList = IdProof.find.where().in("IdProofId", jobPostDocumentList).findList();
+        List<IdProof> idProofList = IdProof.find.where().in("IdProofId", jobPostDocumentIdList).findList();
         for(IdProof idProof: idProofList){
             JobPostDocumentRequirement jobPostDocumentRequirement = new JobPostDocumentRequirement();
             jobPostDocumentRequirement.setIdProof(idProof);

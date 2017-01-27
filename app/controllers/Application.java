@@ -16,6 +16,7 @@ import api.http.httpResponse.hirewand.HireWandResponse;
 import api.http.httpResponse.hirewand.UploadResumeResponse;
 import api.http.httpResponse.Workflow.InterviewSlotPopulateResponse;
 import api.http.httpResponse.interview.InterviewResponse;
+import api.http.httpResponse.Recruiter.JobPostFilterResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
@@ -40,6 +41,7 @@ import models.entity.OM.CandidateResume;
 import models.entity.OM.JobApplication;
 import models.entity.OM.JobPreference;
 import models.entity.OM.JobToSkill;
+import models.entity.OM.*;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
 import models.util.ParseCSV;
@@ -67,6 +69,7 @@ import java.util.stream.Collectors;
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static api.InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
 import static com.avaje.ebean.Expr.eq;
+import static controllers.PartnerController.checkCandidateExistence;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
@@ -877,6 +880,20 @@ public class Application extends Controller {
         return ok(toJson(JobSearchService.getAllActiveJobsPaginated(index)));
     }
 
+    public static Result getPartnerViewJobs(Long index) {
+        String sessionPartnerId = session().get("partnerId");
+        if(sessionPartnerId != null){
+            Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+            if(partner != null) {
+                if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+//                    return ok(toJson(JobSearchService.getAllPrivateJobsOfCompany(index, partner.getCompany())));
+                }
+            }
+        }
+
+        return ok(toJson(JobSearchService.getAllActiveJobsPaginated(index)));
+    }
+
     public static Result getAllHotJobPosts(Long index) {
         return ok(toJson(JobSearchService.getAllHotJobsPaginated(index)));
     }
@@ -1245,6 +1262,19 @@ public class Application extends Controller {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result ifCandidateExists(String mobile) {
+        if(session().get("partnerId") != null){
+            Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+            if(partner != null && partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+                //its a private partner
+                Integer associationStatus = checkCandidateExistence(partner, FormValidator.convertToIndianMobileFormat(mobile));
+                if(associationStatus == ServerConstants.STATUS_NO_CANDIDATE ||
+                        associationStatus == ServerConstants.STATUS_CANDIDATE_EXISTS_DIFFERENT_COMPANY){
+                    return ok("0");
+                } else{
+                    return ok("1");
+                }
+            }
+        }
         if(mobile != null){
             mobile = FormValidator.convertToIndianMobileFormat(mobile);
             Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
@@ -1313,6 +1343,7 @@ public class Application extends Controller {
 
     public static Result renderJobPostCards() { return ok(views.html.Fragment.hot_jobs_card_view.render());}
     public static Result pageNotFound() { return ok(views.html.page_not_found.render());}
+
     public static Result renderJobRelatedPages(String urlString){
 
         UrlValidatorUtil urlValidatorUtil = new UrlValidatorUtil();
@@ -1359,6 +1390,7 @@ public class Application extends Controller {
 
         return ok(views.html.page_not_found.render());
     }
+
 
     public static Result getJobsPageContent(String urlString,Long index) {
 
@@ -1683,8 +1715,8 @@ public class Application extends Controller {
                     matchingCandidateRequest.getJobPostEducationIdList(),
                     matchingCandidateRequest.getJobPostLocalityIdList(),
                     matchingCandidateRequest.getJobPostLanguageIdList(),
-                    matchingCandidateRequest.getJobPostDocumentList(),
-                    matchingCandidateRequest.getJobPostAssetList(),
+                    matchingCandidateRequest.getJobPostDocumentIdList(),
+                    matchingCandidateRequest.getJobPostAssetIdList(),
                     matchingCandidateRequest.getDistanceRadius())));
         }
         return badRequest();
@@ -2567,10 +2599,100 @@ public class Application extends Controller {
         InterviewResponse interviewResponse = RecruiterService.isInterviewRequired(jobPost);
 
         InterviewSlotPopulateResponse response =
-                        new InterviewSlotPopulateResponse(
-                                JobService.getInterviewSlot(jobPost), interviewResponse, jobPost);
+                new InterviewSlotPopulateResponse(
+                        JobService.getInterviewSlot(jobPost), interviewResponse, jobPost);
 
         return ok(toJson(response));
     }
-}
 
+    /**
+     *
+     * @param jobPostId
+     * @return
+     *
+     *  This class provides minimal jobp post data required to fill filters of
+     * private recruiter 'search candidate page'
+     *
+     */
+    public static Result getJobPostFilterData(Long jobPostId) {
+        if(jobPostId == null)
+            return badRequest();
+
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
+
+        if(jobPost == null)
+            return badRequest();
+
+        JobPostFilterResponse response = new JobPostFilterResponse();
+
+        response.setJobPostId(jobPost.getJobPostId());
+        response.setGender(jobPost.getGender());
+        response.setMaxSalary(jobPost.getJobPostMaxSalary());
+        response.setJobPostJobRoleId(jobPost.getJobRole().getJobRoleId());
+        response.setJobPostJobRoleTitle(jobPost.getJobRole().getJobName());
+        // add document
+        if(jobPost.getJobPostDocumentRequirements() != null
+                && jobPost.getJobPostDocumentRequirements().size() > 0) {
+            response.setJobPostDocumentIdList(new ArrayList<>());
+            for(JobPostDocumentRequirement documentRequirement : jobPost.getJobPostDocumentRequirements()){
+                response.getJobPostDocumentIdList().add( documentRequirement.getIdProof().getIdProofId());
+            }
+        }
+
+        // add asset
+        if(jobPost.getJobPostAssetRequirements() != null
+                && jobPost.getJobPostAssetRequirements().size() > 0) {
+            response.setJobPostAssetIdList(new ArrayList<>());
+            for(JobPostAssetRequirement assetRequirement : jobPost.getJobPostAssetRequirements()){
+                response.getJobPostAssetIdList().add(assetRequirement.getAsset().getAssetId());
+            }
+        }
+
+
+        // add language
+        if(jobPost.getJobPostLanguageRequirements() != null
+                && jobPost.getJobPostLanguageRequirements().size() > 0) {
+            response.setJobPostLanguageIdList(new ArrayList<>());
+            for(JobPostLanguageRequirement languageRequirement : jobPost.getJobPostLanguageRequirements()){
+                response.getJobPostLanguageIdList().add( languageRequirement.getLanguage().getLanguageId());
+            }
+        }
+
+        // add locality
+        if(jobPost.getJobPostToLocalityList() != null
+                && jobPost.getJobPostToLocalityList().size() > 0) {
+            response.setJobPostLocalityIdList(new ArrayList<>());
+            response.setJobPostLocalityList(new ArrayList<>());
+            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
+                response.getJobPostLocalityIdList().add( jobPostToLocality.getLocality().getLocalityId());
+                response.getJobPostLocalityList().add(
+                        new JobPostFilterResponse.LocalityIdName(
+                            jobPostToLocality.getLocality().getLocalityId(),
+                            jobPostToLocality.getLocality().getLocalityName())
+                        );
+            }
+        }
+
+        // add experience
+        if(jobPost.getJobPostExperience() != null) {
+            response.setJobPostExperienceId(jobPost.getJobPostExperience().getExperienceId());
+        }
+
+        // add education
+        if(jobPost.getJobPostEducation() != null) {
+            response.setJobPostEducationId(jobPost.getJobPostEducation().getEducationId());
+        }
+
+
+        return ok(toJson(response));
+    }
+
+    public static Result generateCompanyCode() {
+        List<Company> companyList = CompanyDAO.getCompaniesWithoutCompanyCode();
+        for (Company company : companyList) {
+            company.setCompanyCode(Util.generateCompanyCode(company));
+            company.update();
+        }
+        return ok("Done");
+    }
+}

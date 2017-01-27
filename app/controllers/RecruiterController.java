@@ -7,39 +7,49 @@ import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpRequest.LoginRequest;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
-import api.http.httpRequest.Recruiter.RecruiterLeadToLocalityRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.Recruiter.*;
 import api.http.httpRequest.ResetPasswordResquest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.CandidateWorkflowData;
-import com.amazonaws.util.json.JSONArray;
+import api.http.httpResponse.Recruiter.MultipleCandidateContactUnlockResponse;
+import api.http.httpResponse.Recruiter.RMP.ApplicationResponse;
+import api.http.httpResponse.Recruiter.RMP.SmsReportResponse;
+import api.http.httpResponse.Recruiter.UnlockContactResponse;
+import com.avaje.ebean.PagedList;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import controllers.businessLogic.*;
+import controllers.businessLogic.JobService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import controllers.businessLogic.Recruiter.RecruiterLeadStatusService;
+import controllers.businessLogic.SearchJobService;
 import controllers.security.RecruiterSecured;
+import controllers.businessLogic.RecruiterService;
 import controllers.security.FlashSessionController;
+import controllers.security.RecruiterAdminSecured;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
+import dao.RecruiterDAO;
+import dao.SmsReportDAO;
 import models.entity.Candidate;
 import models.entity.JobPost;
-import models.entity.OM.IDProofReference;
+import models.entity.OM.CandidateResume;
+import models.entity.OM.JobApplication;
 import models.entity.OM.JobPostWorkflow;
-import models.entity.OM.LanguageKnown;
+import models.entity.OM.SmsReport;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
-import models.entity.Static.Language;
-import org.apache.commons.logging.Log;
+import models.entity.Static.SmsDeliveryStatus;
+import models.util.SmsUtil;
+import notificationService.NotificationEvent;
+import notificationService.SMSEvent;
 import play.Logger;
-import play.api.i18n.Lang;
 import play.mvc.Result;
 import play.mvc.Security;
 
@@ -47,6 +57,9 @@ import java.io.IOException;
 import java.util.*;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
+import static api.ServerConstants.*;
+import static api.ServerConstants.SMS_STATUS_DND;
+import static api.ServerConstants.SMS_STATUS_PENDING;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterSearchCandidate;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.request;
@@ -181,7 +194,17 @@ public class RecruiterController {
     }
 
     @Security.Authenticated(RecruiterSecured.class)
-    public static Result recruiterCandidateSearch(){
+    public static Result recruiterCandidateSearch(Long jobPostId){
+        /* job post id is being used from url in js */
+        Long recruiterId = Long.valueOf(session().get("recruiterId"));
+        RecruiterProfile recruiterProfile = RecruiterDAO.findById(recruiterId);
+        if(recruiterProfile == null) {
+            return badRequest();
+        }
+
+        if(recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+            return ok(views.html.Recruiter.rmp.recruiter_candidate_search.render());
+        }
         return ok(views.html.Recruiter.recruiter_candidate_search.render());
     }
 
@@ -233,11 +256,197 @@ public class RecruiterController {
         if(session().get("recruiterId") != null){
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
             if(recruiterProfile != null){
-                return RecruiterService.unlockCandidate(recruiterProfile, candidateId);
+                return ok(toJson(RecruiterService.unlockCandidate(recruiterProfile, candidateId)));
             }
         }
         // no recruiter session found
         return ok("-1");
+    }
+
+    public static Result bulkUnlockCandidates() {
+        if(session().get("recruiterId") != null){
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null){
+                JsonNode req = request().body().asJson();
+                Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+                MultipleCandidateActionRequest multipleCandidateActionRequest = new MultipleCandidateActionRequest();
+                ObjectMapper newMapper = new ObjectMapper();
+                try {
+                    multipleCandidateActionRequest = newMapper.readValue(req.toString(), MultipleCandidateActionRequest.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Integer count = 0;
+                Logger.info("Recruiter: " + recruiterProfile.getRecruiterProfileName() + " trying to unlock "
+                        + multipleCandidateActionRequest.getCandidateIdList().size() + " candidate contacts");
+
+                MultipleCandidateContactUnlockResponse response = new MultipleCandidateContactUnlockResponse();
+                List<UnlockContactResponse> unlockContactResponses = new ArrayList<>();
+
+                for(Long candidateId : multipleCandidateActionRequest.getCandidateIdList()){
+                    UnlockContactResponse unlockContactResponse = RecruiterService.unlockCandidate(recruiterProfile, candidateId);
+                    if(unlockContactResponse.getStatus() == UnlockContactResponse.STATUS_SUCCESS){
+                        count++;
+                    }
+                    unlockContactResponses.add(unlockContactResponse);
+                }
+
+                Logger.info("Recruiter: " + recruiterProfile.getRecruiterProfileName() + " unlocked total " + count + " candidates contact");
+                response.setUnlockContactResponseList(unlockContactResponses);
+                response.setRecruiterContactCreditsLeft(recruiterProfile.getContactCreditCount());
+                response.setRecruiterInterviewCreditsLeft(recruiterProfile.getInterviewCreditCount());
+
+                return ok(toJson(response));
+            }
+        }
+        // no recruiter session found
+        return ok("-1");
+    }
+
+    public static Result bulkSendSms() {
+        if(session().get("recruiterId") != null){
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null){
+                JsonNode req = request().body().asJson();
+                Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+                MultipleCandidateActionRequest multipleCandidateActionRequest = new MultipleCandidateActionRequest();
+                ObjectMapper newMapper = new ObjectMapper();
+                try {
+                    multipleCandidateActionRequest = newMapper.readValue(req.toString(), MultipleCandidateActionRequest.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                JobPost jobPost = null;
+                Logger.info("Sending recruiter sms to " + multipleCandidateActionRequest.getCandidateIdList().size() + " candidates");
+                if(multipleCandidateActionRequest.getJobPostId() != null) {
+                    jobPost = JobPost.find.where().eq("JobPostId", multipleCandidateActionRequest.getJobPostId()).findUnique();
+                }
+                for(Long candidateId : multipleCandidateActionRequest.getCandidateIdList()){
+                    Candidate candidate = Candidate.find.where().eq("CandidateId", candidateId).findUnique();
+                    if(candidate != null){
+                        //sending sms
+                        //RMP product sms blast
+                        if(multipleCandidateActionRequest.getJobPostId() != null){
+                            if(jobPost != null){
+                                NotificationEvent notificationEvent =
+                                        new SMSEvent(candidate.getCandidateMobile(),
+                                                multipleCandidateActionRequest.getSmsMessage(),
+                                                recruiterProfile.getCompany(),
+                                                recruiterProfile,
+                                                jobPost,
+                                                candidate);
+
+                                Global.getmNotificationHandler().addToQueue(notificationEvent);
+
+                            } else{
+                                return ok(toJson('0'));
+                            }
+                        } else{
+                            // ordinary msg
+                            SmsUtil.addSmsToNotificationQueue(candidate.getCandidateMobile(), multipleCandidateActionRequest.getSmsMessage());
+                        }
+                    }
+                }
+
+                if(multipleCandidateActionRequest.getJobPostId() != null){
+                    //start checking sent sms delivery status
+                    checkDeliveryStatus();
+                }
+
+                return ok(toJson('1'));
+            }
+        }
+        // no recruiter session found
+        return ok("-1");
+    }
+
+    public static Result getCandidateUnlockedData() {
+        if(session().get("recruiterId") != null){
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() == RECRUITER_ACCESS_LEVEL_PRIVATE){
+                JsonNode req = request().body().asJson();
+                Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+                MultipleCandidateActionRequest multipleCandidateActionRequest = new MultipleCandidateActionRequest();
+                ObjectMapper newMapper = new ObjectMapper();
+                try {
+                    multipleCandidateActionRequest = newMapper.readValue(req.toString(), MultipleCandidateActionRequest.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                List<Candidate> candidateList = Candidate.find.where()
+                        .in("CandidateId", multipleCandidateActionRequest.getCandidateIdList())
+                        .findList();
+
+                List<UnlockContactResponse> responseList = new ArrayList<>();
+                for(Candidate candidate : candidateList){
+                    UnlockContactResponse unlockContactResponse = new UnlockContactResponse();
+                    unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
+                    unlockContactResponse.setCandidateId(candidate.getCandidateId());
+                    CandidateResume resume = CandidateResume.find.where().eq("CandidateId", candidate.getCandidateId()).findUnique();
+                    if(resume != null){
+                        unlockContactResponse.setResumeLink(resume.getFilePath());
+                    }
+                    responseList.add(unlockContactResponse);
+                }
+                MultipleCandidateContactUnlockResponse response = new MultipleCandidateContactUnlockResponse();
+                response.setUnlockContactResponseList(responseList);
+
+                return ok(toJson(response));
+            }
+        }
+        // no recruiter session found
+        return ok("-1");
+    }
+
+    public static void checkDeliveryStatus(){
+        new Thread(() -> {
+            try{
+                Thread.sleep(240000); //check after 4 minutes
+            } catch(InterruptedException e){
+                Logger.info("exception: " + e);
+            }
+
+            SmsDeliveryStatus status = SmsDeliveryStatus.find.where().eq("status_id", SMS_STATUS_PENDING).findUnique();
+            Boolean reRun = false;
+            if(status != null){
+                for(SmsReport report : SmsReportDAO.getAllSMSByStatus(status)){
+                    String response = SmsUtil.checkDeliveryReport(report.getSmsSchedulerId());
+                    response = response.substring(13, response.length() -4);
+                    Logger.info("Pinnacle Response :" + response);
+
+                    Integer statusId;
+                    if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_DELIVERED))){
+                        statusId = SMS_STATUS_DELIVERED;
+                    } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_UNDELIVERED))){
+                        statusId = SMS_STATUS_UNDELIVERED;
+                    } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_EXPIRED))){
+                        statusId = SMS_STATUS_EXPIRED;
+                    } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_DND))){
+                        statusId = SMS_STATUS_DND;
+                    } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_PENDING))){
+                        statusId = SMS_STATUS_PENDING;
+                        reRun = true;
+                    } else{
+                        statusId = SMS_STATUS_FAILED;
+                    }
+
+                    report.setSmsDeliveryStatus(SmsDeliveryStatus.find.where().eq("status_id", statusId).findUnique());
+                    report.update();
+                }
+
+                if(reRun){
+                    Logger.info("Re running the method since some");
+                    checkDeliveryStatus();
+                }
+
+            } else{
+                Logger.info("Sms delivery status static table empty");
+            }
+
+        }).start();
     }
 
     @Security.Authenticated(RecruiterSecured.class)
@@ -259,7 +468,7 @@ public class RecruiterController {
 
                             List<CandidateWorkflowData> jobApplicantList = new LinkedList<>();
                             for (Map.Entry<Long, CandidateWorkflowData> entry : selectedCandidateMap.entrySet()) {
-                                sanitizeCandidateDate(entry.getValue().getCandidate());
+                                sanitizeCandidateData(entry.getValue().getCandidate());
                                 jobApplicantList.add(entry.getValue());
                             }
 
@@ -271,8 +480,7 @@ public class RecruiterController {
         }
         return ok("0");
     }
-
-    private static void sanitizeCandidateDate(Candidate candidate) {
+    private static void sanitizeCandidateData(Candidate candidate) {
         candidate.setJobApplicationList(null);
         candidate.setLead(null);
         candidate.setCandidateUUId(null);
@@ -284,11 +492,24 @@ public class RecruiterController {
     public static Result getAllRecruiterJobPosts() {
         if(session().get("recruiterId") != null){
 
-            Map<?, JobPost> recruiterJobPostMap = JobPost.find.where().eq("JobRecruiterId", session().get("recruiterId")).setMapKey("jobPostId").findMap();
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+            Map<?, JobPost> recruiterJobPostMap;
+            if(recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
+                recruiterJobPostMap = JobPost.find.where()
+                        .eq("CompanyId", recruiterProfile.getCompany().getCompanyId())
+                        .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_PRIVATE)
+                        .setMapKey("jobPostId")
+                        .findMap();
+            } else{
+                recruiterJobPostMap = JobPost.find.where()
+                        .eq("JobRecruiterId", session().get("recruiterId"))
+                        .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_OPEN)
+                        .setMapKey("jobPostId")
+                        .findMap();
+            }
 
             String jpIdList = "";
 
-            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
             for(Map.Entry<?, JobPost> entity: recruiterJobPostMap.entrySet()) {
                 JobPost jobPost = entity.getValue();
 
@@ -407,13 +628,14 @@ public class RecruiterController {
         jobPost.setJobPostDocumentRequirements(null);
     }
 
+
     public static class RecruiterJobPostObject{
+
         Map<Long, JobPostWorkflow> jobPostWorkflowMap;
         int pendingCount;
         int upcomingCount;
         int totalCount;
         JobPost jobPost;
-
         public RecruiterJobPostObject() {
             pendingCount = 0;
             totalCount = 0;
@@ -466,8 +688,8 @@ public class RecruiterController {
         public void setUpcomingCount(int upcomingCount) {
             this.upcomingCount = upcomingCount;
         }
-    }
 
+    }
     @Security.Authenticated(RecruiterSecured.class)
     public static Result getMatchingCandidate() {
         JsonNode matchingCandidateRequestJson = request().body().asJson();
@@ -490,6 +712,7 @@ public class RecruiterController {
         if(session().get("recruiterId") != null) {
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
             if(recruiterProfile != null){
+                boolean isPrivate = recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE;
                 if (matchingCandidateRequest != null) {
                     Map<Long, CandidateWorkflowData> candidateSearchMap = JobPostWorkflowEngine.getCandidateForRecruiterSearch(
                             matchingCandidateRequest.getMaxAge(),
@@ -501,7 +724,10 @@ public class RecruiterController {
                             matchingCandidateRequest.getJobPostEducationIdList(),
                             matchingCandidateRequest.getJobPostLocalityIdList(),
                             matchingCandidateRequest.getJobPostLanguageIdList(),
-                            matchingCandidateRequest.getDistanceRadius());
+                            matchingCandidateRequest.getJobPostDocumentIdList(),
+                            matchingCandidateRequest.getJobPostAssetIdList(),
+                            matchingCandidateRequest.getDistanceRadius(),
+                            isPrivate);
 
                     //computing interactionResult values
                     String result = "Search Candidate. Total Candidates found: " + candidateSearchMap.size() +
@@ -543,6 +769,8 @@ public class RecruiterController {
                         // candidate lw salary L->H
                         Collections.sort(listToBeReturned,  new SalaryComparatorLtoH());
                     }
+
+                    Logger.info("total list size: " + listToBeReturned.size());
 
                     //getting limited results
                     for (CandidateWorkflowData val : listToBeReturned) {
@@ -601,17 +829,28 @@ public class RecruiterController {
 
     public static Result getRecruiterJobPostInfo(long jpId) {
         JobPost jobPost = JobPostDAO.findById(jpId);
+        Boolean toReturnJobPostObject = false;
+
         if(jobPost != null){
             if(session().get("recruiterId") != null){
                 RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
                 if(recruiterProfile != null){
+
                     if(jobPost.getRecruiterProfile() != null){
                         if(Objects.equals(jobPost.getRecruiterProfile().getRecruiterProfileId(), recruiterProfile.getRecruiterProfileId())){
-                            return ok(toJson(jobPost));
+                            toReturnJobPostObject = true;
+                        } else{
+                            if(Objects.equals(recruiterProfile.getCompany().getCompanyId(), jobPost.getCompany().getCompanyId())){
+                                toReturnJobPostObject = true;
+                            }
                         }
                     }
                 }
             }
+        }
+
+        if(toReturnJobPostObject){
+            return ok(toJson(jobPost));
         }
         return ok("0");
     }
@@ -633,12 +872,46 @@ public class RecruiterController {
 
     @Security.Authenticated(RecruiterSecured.class)
     public static Result renderAllRecruiterJobPosts() {
+        Long recruiterId = Long.valueOf(session().get("recruiterId"));
+        RecruiterProfile recruiterProfile = RecruiterDAO.findById(recruiterId);
+        if(recruiterProfile == null) {
+            return badRequest();
+        }
+
+        if(recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+            return ok(views.html.Recruiter.rmp.recruiter_my_jobs.render());
+        }
+
         return ok(views.html.Recruiter.recruiter_my_jobs.render());
     }
-    public static Result recruiterNavbar() {
-        return ok(views.html.Recruiter.recruiter_navbar.render());
+
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result renderJobPostTrack(Long id) {
+        Long recruiterId = Long.valueOf(session().get("recruiterId"));
+        RecruiterProfile recruiterProfile = RecruiterDAO.findById(recruiterId);
+        if(recruiterProfile == null) {
+            return badRequest();
+        }
+
+        if(recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+            return ok(views.html.Recruiter.rmp.job_post_sms_track.render());
+        }
+
+        return ok(views.html.Recruiter.recruiter_home.render());
     }
 
+    public static Result recruiterNavbar() {
+        if(session().get("recruiterId") != null) {
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
+            if (recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+                return ok(views.html.Recruiter.rmp.private_recruiter_nav.render());
+            } else if (recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE_ADMIN) {
+                return ok(views.html.Recruiter.rmp.private_recruiter_admin_nav.render());
+            }
+        }
+
+        return ok(views.html.Recruiter.recruiter_navbar.render());
+    }
     public static Result findRecruiterAndSendOtp() {
         JsonNode req = request().body().asJson();
         ResetPasswordResquest resetPasswordResquest = new ResetPasswordResquest();
@@ -717,9 +990,9 @@ public class RecruiterController {
             return o1.getExtraData().getLastActive().lastActiveValueId.compareTo(o2.getExtraData().getLastActive().lastActiveValueId);
 
         }
+
     }
     private static class SalaryComparatorHtoL implements Comparator<CandidateWorkflowData> {
-
         @Override
         public int compare(CandidateWorkflowData o1, CandidateWorkflowData o2) {
             if (o1.getCandidate().getCandidateLastWithdrawnSalary() == null) {
@@ -730,9 +1003,9 @@ public class RecruiterController {
             }
             return o2.getCandidate().getCandidateLastWithdrawnSalary().compareTo(o1.getCandidate().getCandidateLastWithdrawnSalary());
         }
+
     }
     private static class SalaryComparatorLtoH implements Comparator<CandidateWorkflowData> {
-
         @Override
         public int compare(CandidateWorkflowData o1, CandidateWorkflowData o2) {
             if (o1.getCandidate().getCandidateLastWithdrawnSalary() == null) {
@@ -743,8 +1016,8 @@ public class RecruiterController {
             }
             return o1.getCandidate().getCandidateLastWithdrawnSalary().compareTo(o2.getCandidate().getCandidateLastWithdrawnSalary());
         }
-    }
 
+    }
     @Security.Authenticated(RecruiterSecured.class)
     public static Result renderAllApplications(long id) {
         return ok(views.html.Recruiter.recruiter_applied_candidates.render());
@@ -821,4 +1094,189 @@ public class RecruiterController {
         return ok(views.html.Recruiter.recruiter_interviews.render());
     }
 
+    public static Boolean checkCompanyJob(JobPost jobPost){
+        RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+        if(recruiterProfile != null){
+            if(Objects.equals(recruiterProfile.getCompany().getCompanyId(), jobPost.getCompany().getCompanyId())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result getSentSms(long jpId, long index) {
+        JobPost jobPost = JobPostDAO.findById(jpId);
+        if(jobPost != null){
+            if(checkCompanyJob(jobPost)){
+                SmsReportResponse smsReportResponse = new SmsReportResponse();
+
+                PagedList<SmsReport> pagedList = SmsReport.find
+                        .where()
+                        .eq("JobPostId", jpId)
+                        .orderBy().desc("sms_report_id")
+                        .setFirstRow(Math.toIntExact(index))
+                        .setMaxRows(10)
+                        .findPagedList();
+
+                List<SmsReport> smsReportList = pagedList.getList();
+
+                for(SmsReport reports : smsReportList){
+                    reports.setCompany(null);
+                    reports.setJobPost(null);
+                    reports.setRecruiterProfile(null);
+
+                    Candidate candidate = reports.getCandidate();
+                    candidate.setLocalityPreferenceList(null);
+                    candidate.setJobApplicationList(null);
+                    candidate.setJobHistoryList(null);
+                    candidate.setJobPostWorkflowList(null);
+                    candidate.setJobPreferencesList(null);
+                    candidate.setLanguageKnownList(null);
+                    candidate.setCandidateAssetList(null);
+                    candidate.setCandidateEducation(null);
+                    candidate.setCandidateExpList(null);
+                    reports.setCandidate(candidate);
+                }
+
+                smsReportResponse.setSmsReportList(smsReportList);
+                smsReportResponse.setTotalSms(SmsReport.find.where().eq("JobPostId", jpId).findRowCount());
+
+
+                return ok(toJson(smsReportResponse));
+            }
+        }
+        return ok("0");
+    }
+
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result getAppliedCandidates(long jpId, long index) {
+        JobPost jobPost = JobPostDAO.findById(jpId);
+        if(jobPost != null){
+            if(checkCompanyJob(jobPost)){
+
+                List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllJobApplicationWithinStatusId(jpId,
+                        ServerConstants.JWF_STATUS_SELECTED, ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE, (int) index);
+
+                for(JobPostWorkflow workflow : applicationList){
+                    sanitizeCandidateData(workflow.getCandidate());
+                }
+
+                List<Candidate> candidateList = new ArrayList<>();
+                for (JobPostWorkflow jpwf : applicationList) {
+                    candidateList.add(jpwf.getCandidate());
+                }
+
+                Integer status = ServerConstants.JWF_STATUS_SELECTED;
+
+                Map<Long, CandidateWorkflowData> mapToBeReturned =
+                        JobPostWorkflowEngine.getCandidateMap(candidateList, jpId, new ArrayList<>(Collections.singletonList(status)), false);
+
+                List<CandidateWorkflowData> jobApplicantList = new LinkedList<>();
+                for (Map.Entry<Long, CandidateWorkflowData> entry : mapToBeReturned.entrySet()) {
+                    sanitizeCandidateData(entry.getValue().getCandidate());
+                    jobApplicantList.add(entry.getValue());
+                }
+
+                for (CandidateWorkflowData data: jobApplicantList) {
+                    JobApplication jobApplication = JobApplication.find.where()
+                            .eq("CandidateId", data.getCandidate().getCandidateId())
+                            .eq("JobPostId", jpId)
+                            .findUnique();
+
+                    data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_SUPPORT);
+
+                    if(jobApplication != null){
+                        data.setAppliedOn(jobApplication.getJobApplicationCreateTimeStamp());
+
+                        if(jobApplication.getPartner() != null){
+                            data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_PARTNER);
+                            data.setPartner(jobApplication.getPartner());
+                        } else{
+                            data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_SELF);
+                        }
+                    }
+                }
+                ApplicationResponse applicationResponse = new ApplicationResponse();
+                applicationResponse.setApplicationList(jobApplicantList);
+                applicationResponse.setTotalCount(JobPostWorkFlowDAO.getAllJobApplicationWithinStatusIdCount(jpId,
+                        ServerConstants.JWF_STATUS_SELECTED, ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE));
+
+                return ok(toJson(applicationResponse));
+            }
+        }
+        return ok("0");
+    }
+
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result getConfirmedApplication(long jpId, long index) {
+        JobPost jobPost = JobPostDAO.findById(jpId);
+        if(jobPost != null){
+            if(checkCompanyJob(jobPost)){
+                List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllConfirmedApplicationsJobPost(jpId,
+                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED, ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED,
+                        (int) index);
+
+                for(JobPostWorkflow workflow : applicationList){
+                    sanitizeCandidateData(workflow.getCandidate());
+                }
+
+                List<Candidate> candidateList = new ArrayList<>();
+                for (JobPostWorkflow jpwf : applicationList) {
+                    candidateList.add(jpwf.getCandidate());
+                }
+
+                Integer status = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
+
+                Map<Long, CandidateWorkflowData> mapToBeReturned = JobPostWorkflowEngine.getCandidateMap(candidateList, jpId, new ArrayList<>(Collections.singletonList(status)), false);
+
+                List<CandidateWorkflowData> jobApplicantList = new LinkedList<>();
+                for (Map.Entry<Long, CandidateWorkflowData> entry : mapToBeReturned.entrySet()) {
+                    sanitizeCandidateData(entry.getValue().getCandidate());
+                    jobApplicantList.add(entry.getValue());
+                }
+
+                ApplicationResponse applicationResponse = new ApplicationResponse();
+                applicationResponse.setApplicationList(jobApplicantList);
+                applicationResponse.setTotalCount(JobPostWorkFlowDAO.getAllConfirmedApplicationsJobPostCount(jpId,
+                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED, ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED));
+
+                return ok(toJson(applicationResponse));
+            }
+        }
+        return ok("0");
+    }
+
+    @Security.Authenticated(RecruiterAdminSecured.class)
+    public static Result recruiterSummary(Long recruiterId) {
+
+        RecruiterService recruiterService = new RecruiterService();
+        if(recruiterId == null) {
+            // return summary for all recruiter
+            return ok(toJson(recruiterService.getRecruiterSummary(null, Long.valueOf(session().get("recruiterId")))));
+        }
+        return ok();
+    }
+
+    public static Result jobPostSummary(Long recruiterId, Long jpId) {
+        if(recruiterId == null) {
+            return badRequest();
+        }
+
+        RecruiterService recruiterService = new RecruiterService();
+        if(jpId == null) {
+            // return summary for all jobPost per recruiter
+            return ok(toJson(recruiterService.getAllJobPostPerRecruiterSummary(recruiterId, Long.valueOf(session().get("recruiterId")))));
+        }
+        return ok();
+    }
+
+
+    @Security.Authenticated(RecruiterAdminSecured.class)
+    public static Result renderReportPage(String summary, Long recruiterId) {
+        if(summary!= null && summary.equalsIgnoreCase("job_post")) {
+            return ok(views.html.Recruiter.rmp.private_recruiter_admin_job_post_report_view.render());
+        }
+        return ok(views.html.Recruiter.rmp.private_recruiter_admin_report_view.render());
+    }
 }

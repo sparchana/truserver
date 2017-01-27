@@ -1160,7 +1160,6 @@ function processDataAllJobPosts(returnedData) {
         if(month < 10){
             month = "0" + month;
         }
-
         returnedData.forEach(function (jobPost){
             count++;
             if(count){
@@ -1438,7 +1437,6 @@ function processDataAllJobPosts(returnedData) {
                 var applyJobText ;
 
                 if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != CTA_BTN_APPLY){
-                    console.log("jobPost.applyBtnStatus : "+ jobPost.applyBtnStatus);
                     if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_REQUIRED) {
                         applyJobText = "Book Interview";
                     } else if(jobPost.applyBtnStatus == CTA_BTN_DEACTIVE){
@@ -1880,6 +1878,41 @@ function processDataAllJobPosts(returnedData) {
 
             }
         });
+    } else{
+        $("#backgroundLoader").hide();
+        $("#jobLoaderDiv").hide();
+        var parent = $("#hotJobs");
+        var hotJobItem = document.createElement("div");
+        hotJobItem.style = "margin: 56px";
+        parent.append(hotJobItem);
+
+        var centreTag = document.createElement("center");
+        hotJobItem.appendChild(centreTag);
+
+        var rowDiv = document.createElement("div");
+        rowDiv.className = "row";
+        centreTag.appendChild(rowDiv);
+
+        var col = document.createElement("div");
+        col.className = "col-sm-12";
+        rowDiv.appendChild(col);
+
+        var jobImage = document.createElement("div");
+        jobImage.id = "jobImage";
+        col.appendChild(jobImage);
+
+        var jobImageSrc = document.createElement("img");
+        jobImageSrc.id = "jobImageSrc";
+        jobImage.appendChild(jobImageSrc);
+        $("#jobImageSrc").attr('src', '/assets/recruiter/img/empty_box.svg');
+        $("#jobImageSrc").attr('width', '96px');
+
+        var jobMsgLine1 = document.createElement("div");
+        jobMsgLine1.id = "jobMsgLine1";
+        jobMsgLine1.style = "font-size: 18px; margin-top: 12px";
+        col.appendChild(jobMsgLine1);
+        $("#jobMsgLine1").html("No jobs found!");
+
     }
     //getting all the applied jobs
     getAllAppliedJobs();

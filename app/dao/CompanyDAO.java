@@ -1,9 +1,6 @@
 package dao;
 
 import api.ServerConstants;
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.RawSql;
-import com.avaje.ebean.RawSqlBuilder;
 import models.entity.Company;
 import models.entity.JobPost;
 
@@ -46,4 +43,17 @@ public class CompanyDAO {
 
         return hiringCompanyLogo;
     }
+
+    public static List<Company> getCompaniesWithoutCompanyCode() {
+        return Company.find.where()
+                .isNull("CompanyCode")
+                .findList();
+    }
+
+    public static Company getCompaniesByCompanyCode(String code) {
+        return Company.find.where()
+                .eq("CompanyCode", code)
+                .findUnique();
+    }
+
 }

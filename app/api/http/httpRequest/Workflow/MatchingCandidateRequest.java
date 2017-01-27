@@ -1,7 +1,5 @@
 package api.http.httpRequest.Workflow;
 
-import api.http.httpRequest.Workflow.WorkflowRequest;
-
 import java.util.List;
 
 /**
@@ -19,8 +17,8 @@ public class MatchingCandidateRequest extends WorkflowRequest{
     public Integer jobPostEducationId ;
     public List<Long> jobPostLocalityIdList ;
     public List<Integer> jobPostLanguageIdList ;
-    public List<Integer> jobPostDocumentList ;
-    public List<Integer> jobPostAssetList ;
+    public List<Integer> jobPostDocumentIdList;
+    public List<Integer> jobPostAssetIdList;
     public Double distanceRadius ;
     public Integer initialValue;
     public Integer sortBy; //1-> latest active, 2-> High to low salary 3-> low to high salary
@@ -122,20 +120,20 @@ public class MatchingCandidateRequest extends WorkflowRequest{
         this.jobPostEducationIdList = jobPostEducationIdList;
     }
 
-    public List<Integer> getJobPostDocumentList() {
-        return jobPostDocumentList;
+    public List<Integer> getJobPostDocumentIdList() {
+        return jobPostDocumentIdList;
     }
 
-    public void setJobPostDocumentList(List<Integer> jobPostDocumentList) {
-        this.jobPostDocumentList = jobPostDocumentList;
+    public void setJobPostDocumentIdList(List<Integer> jobPostDocumentIdList) {
+        this.jobPostDocumentIdList = jobPostDocumentIdList;
     }
 
-    public List<Integer> getJobPostAssetList() {
-        return jobPostAssetList;
+    public List<Integer> getJobPostAssetIdList() {
+        return jobPostAssetIdList;
     }
 
-    public void setJobPostAssetList(List<Integer> jobPostAssetList) {
-        this.jobPostAssetList = jobPostAssetList;
+    public void setJobPostAssetIdList(List<Integer> jobPostAssetIdList) {
+        this.jobPostAssetIdList = jobPostAssetIdList;
     }
 
     public Integer getInitialValue() {

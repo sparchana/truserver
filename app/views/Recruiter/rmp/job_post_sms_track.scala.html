@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Job Post SMS Track | TruJobs - Post jobs and hire the right candidates</title>
+
+        <meta name="keywords" content="hire driver, hire fresher, hire candidate sites, job posting, hire sales candidate, hire beautician,
+        hire, hire receptionist, hire office admin, hire office assistant,
+        hire plumber, hire teacher, hire entry level candidate,
+        hire delivery boys, hire call center executives, hire BPO, hire kpo, hire hire hire , hire data entry candidate, hire back office canididate,
+        hire receptionist, hire beautician, hire experienced candidate, hire in Bangalore, hire cashier, hire entry level candidate, hire freshers,
+        hire plumber, hire electrician, hire accountants, hire in bangalore">
+
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+
+            <!-- Bootstrap Core CSS -->
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_myjobs.css">
+
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+        <meta name="theme-color" content="#000000">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+    <body>
+        <div class="recruiter_navbar"></div>
+
+        <div class="back-banner-recruiter" style="height: 90px"></div>
+        <h5 style="margin: 8px 8px 8px 16px" id="job_heading">Track Job Post</h5>
+
+        <!-- tabular view -->
+        <div class="row">
+            <div class="col s12">
+                <ul class="tabs tabs-fixed-width" style="margin-bottom: 8px">
+                    <li id="tab1Parent" class="tab col s3" onclick="preformTabChange(1)">
+                        <a id="tabSms" href="#pendingConfirmation">
+                            <font id="tab1">SMS Report</font>
+                        </a>
+                    </li>
+                    <li id="tab2Parent" class="tab col s3" onclick="preformTabChange(2)">
+                        <a id="tabTrack" href="#confirmed">
+                            <font id="tab2">Track Application(s)</font>
+                        </a>
+
+                    </li>
+                    <li id="tab3Parent" class="tab col s3" onclick="preformTabChange(3)">
+                        <a id="tabConfirmed" href="#completed">
+                            <font id="tab3">Confirmed interview(s)</font>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div style="padding-top: 8%; padding-bottom: 8%" id="loadingIcon">
+                <center>
+                    <h6 id="loaderText">Fetching SMS Reports</h6>
+                    <div class="spinner">
+                        <div class="double-bounce1"></div>
+                        <div class="double-bounce2"></div>
+                    </div>
+                </center>
+            </div>
+
+            <div id="smsReport" class="col s12">
+                <div id="noSmsSent" style="padding: 90px 6% 90px 6%; display: none">
+                    <center>
+                        <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                        <h5>No SMS sent!</h5>
+                        <h6>Looks like you have not sent any SMS to any of the candidates!</h6>
+                    </center>
+                </div>
+
+                <div id="smsReportContainer">
+                    <div class="container-fluid" id="smsReportTable" style="display: none">
+                        <div class="card" id="myJobPost">
+                            <div class="row hide-on-small-only" id='headerForData' style="font-size: 14px">
+                                <div class="col s1 l1" id="colHeadDataTable">
+                                    <font>Date</font>
+                                </div>
+                                <div class="col s2 l2" id="colHeadDataTable">
+                                    <font>Candidate</font>
+                                </div>
+                                <div class="col s2 l2" id="colHeadDataTable">
+                                    <font>Mobile</font>
+                                </div>
+                                <div class="col s1 l1" id="colHeadDataTable">
+                                    <font>SMS Status</font>
+                                </div>
+                                <div class="col s1 l2" id="colHeadDataTable">
+                                    <font>Job Application Status</font>
+                                </div>
+                                <div class="col s1 l4" id="colHeadDataTable">
+                                    <font>SMS Message</font>
+                                </div>
+                            </div>
+                            <div class="allSms"></div>
+                        </div>
+                        <div id="paginationTab"></div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="trackApplication" class="col s12">
+                <div id="noApplications" style="padding: 90px 6% 90px 6%; display: none">
+                    <center>
+                        <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                        <h5>No Applications!</h5>
+                        <h6>Looks like no one has applied to the job!</h6>
+                    </center>
+                </div>
+                <div id="trackApplicationContainer">
+                    <div class="container-fluid" id="trackApplicationTable" style="display: none">
+                        <div class="card" id="myJobPost">
+                            <div class="row hide-on-small-only" id='headerForData' style="font-size: 14px">
+                                <div class="col s1 l1" id="colHeadDataTable">
+                                    <font>Date & Time</font>
+                                </div>
+                                <div class="col s2 l2" id="colHeadDataTable">
+                                    <font>Candidate</font>
+                                </div>
+                                <div class="col s2 l1" id="colHeadDataTable">
+                                    <font>Mobile</font>
+                                </div>
+                                <div class="col s1 l1" id="colHeadDataTable">
+                                    <font>Channel</font>
+                                </div>
+                                <div class="col s1 l2" id="colHeadDataTable">
+                                    <font>Interview Date & Time</font>
+                                </div>
+                                <div class="col s1 l2" id="colHeadDataTable">
+                                    <font>Application Status</font>
+                                </div>
+                                <div class="col s1 l3" id="colHeadDataTable">
+                                    <font>Action</font>
+                                </div>
+                            </div>
+                            <div class="allApplications"></div>
+                        </div>
+                        <div id="trackPaginationTab"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="confirmedApplications" class="col s12">
+                <div id="noConfirmedApplications" style="padding: 90px 6% 90px 6%; display: none">
+                    <center>
+                        <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                        <h5>No confirmed applications yet!</h5>
+                        <h6>Looks like there no confirmed applications!</h6>
+                    </center>
+                </div>
+                <div id="confirmedApplicationContainer">
+                    <div class="container-fluid" id="confirmedApplicationTable" style="display: none">
+                        <div class="card" id="myJobPost">
+                            <div class="row hide-on-small-only" id='headerForData' style="font-size: 14px">
+                                <div class="col s1 l1" id="colHeadDataTable">
+                                    <font>Date & Time</font>
+                                </div>
+                                <div class="col s2 l2" id="colHeadDataTable">
+                                    <font>Candidate</font>
+                                </div>
+                                <div class="col s2 l2" id="colHeadDataTable">
+                                    <font>Mobile</font>
+                                </div>
+                                <div class="col s1 l3" id="colHeadDataTable">
+                                    <font>Interview Date & Time</font>
+                                </div>
+                                <div class="col s1 l4" id="colHeadDataTable">
+                                    <font>Interview Feedback</font>
+                                </div>
+                            </div>
+                            <div class="allConfirmed"></div>
+                        </div>
+                        <div id="confirmedPaginationTab"></div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+            <!-- Modal reject interview date and slot -->
+        <div id="modalRejectReason" class="modal" style="background: transparent; box-shadow: none">
+            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeRejectModal()"></div>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+                <center><font style="color: #fff"><h5>Job Application Rejection</h5></font></center>
+            </div>
+            <div style="background: #fff; padding: 12px">
+                <br>
+                <center>
+                    <img src="/assets/recruiter/img/icons/reject_application.svg" width="60px">
+                </center>
+
+                <center>
+                    <select id="reject_reason" style="width: 60%; margin: 8px"></select>
+                </center>
+
+                <center>
+                    <div id="rejectInterviewBtn" class="waves-effect waves-light red lighten-1 btn" data-toggle="collapse" onclick="confirmRejectInterview()"><font style="color: #fff;
+                        font-weight: 400"><b>Reject Job Application!</b></font>
+                    </div>
+                </center>
+
+            </div>
+        </div>
+
+            <!-- feedback credit Structure -->
+        <div id="addFeedback" class="modal" style="background: transparent; box-shadow: none">
+            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeFeedbackModal()"></div>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+                <center><font style="color: #fff"><h5>Interview Feedback!</h5></font></center>
+            </div>
+            <div style="background: #fff; padding: 12px">
+                <center>
+                    <div class="row">
+                        <div class="col s12 l12">
+                            <br>
+                            <img src="/assets/recruiter/img/feedback.svg" width="70px">
+                            <div class="row" style="margin-top: 12px; margin-bottom: 0" >
+                                <div class="col-sm-6">
+                                    <h6 style="text-align: right; margin-top: 28px;">Please select a feedback result:</h6>
+                                </div>
+                                <div class="input-field col s12 l6">
+                                    <select id="feedbackOption" class="selectDropdown">
+                                        <option value="0">Select a feedback</option>
+                                        <option value="1">Interview Complete - Selected</option>
+                                        <option value="2">Interview Complete - Rejected</option>
+                                        <option value="3">Candidate no show</option>
+                                        <option value="4">Candidate not qualified</option>
+                                    </select>
+                                    <style>
+                                    select{
+                                        display: inline-block;
+                                    }
+                                    </style>
+                                </div>
+                            </div>
+
+                            <div class="row" id="otherReason" style="margin-top: 12px; margin-bottom: 0; display: none">
+                                <div class="col-sm-6">
+                                    <h6 style="text-align: right; margin-top: 28px">Please select a reason:</h6>
+                                </div>
+                                <div class="input-field col s12 l6">
+                                    <select id="reasonVal" class="selectDropdown"></select>
+                                    <style>
+                                    select{
+                                        display: inline-block;
+                                    }
+                                    </style>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </center>
+                <div class="row">
+                    <form class="col s12">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">mode_edit</i>
+                                <textarea id="feedbackNote" class="materialize-textarea"></textarea>
+                                <label for="feedbackNote">Interview Comments</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <center>
+                    <div id="rescheduleInterviewDateBtn" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="confirmAddFeedback()"><font style="color: #fff;
+                        font-weight: 400"><b>Submit Feedback!</b></font>
+                    </div>
+                </center>
+            </div>
+        </div>
+
+            <!-- Modal reschedule interview date and slot -->
+        <div id="modalRescheduleSlot" class="modal" style="background: transparent; box-shadow: none">
+            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeRescheduleModal()"></div>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+                <center><font style="color: #fff"><h5>Reschedule Interview Date and Time Slot</h5></font></center>
+            </div>
+            <div id="openCreditModal" style="background: #fff; padding: 12px">
+                <center>
+                    <div class="row">
+                        <div class="col s12 l12">
+                            <br>
+                            <img src="/assets/recruiter/img/icons/reschedule-color.svg" width="60px">
+                            <div class="row" style="margin-top: 4px" >
+                                <div class="col-sm-6">
+                                    <h6 style="text-align: right; margin-top: 28px">Please select a new interview date and time:</h6>
+                                </div>
+                                <div class="input-field col s12 l6">
+                                    <select id="rescheduleDateAndSlot" class="selectDropdown"></select>
+                                    <style>
+                                    select{
+                                        display: inline-block;
+                                    }
+                                    </style>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div id="rescheduleInterviewDateBtn" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="rescheduleInterviewStatus()"><font style="color: #fff;
+                        font-weight: 400"><b>Reschedule Date and Time!</b></font>
+                    </div>
+                </center>
+            </div>
+        </div>
+
+            <!-- feedback modal Structure -->
+        <div id="addFeedback" class="modal" style="background: transparent; box-shadow: none">
+            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeFeedbackModal()"></div>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+                <center><font style="color: #fff"><h5>Interview Feedback!</h5></font></center>
+            </div>
+            <div style="background: #fff; padding: 12px">
+                <center>
+                    <div class="row">
+                        <div class="col s12 l12">
+                            <br>
+                            <img src="/assets/recruiter/img/feedback.svg" width="70px">
+                            <div class="row" style="margin-top: 12px; margin-bottom: 0" >
+                                <div class="col-sm-6">
+                                    <h6 style="text-align: right; margin-top: 28px;">Please select a feedback result:</h6>
+                                </div>
+                                <div class="input-field col s12 l6">
+                                    <select id="feedbackOption" class="selectDropdown">
+                                        <option value="0">Select a feedback</option>
+                                        <option value="1">Interview Complete - Selected</option>
+                                        <option value="2">Interview Complete - Rejected</option>
+                                        <option value="3">Candidate no show</option>
+                                        <option value="4">Candidate not qualified</option>
+                                    </select>
+                                    <style>
+                                    select{
+                                        display: inline-block;
+                                    }
+                                    </style>
+                                </div>
+                            </div>
+
+                            <div class="row" id="otherReason" style="margin-top: 12px; margin-bottom: 0; display: none">
+                                <div class="col-sm-6">
+                                    <h6 style="text-align: right; margin-top: 28px">Please select a reason:</h6>
+                                </div>
+                                <div class="input-field col s12 l6">
+                                    <select id="reasonVal" class="selectDropdown"></select>
+                                    <style>
+                                    select{
+                                        display: inline-block;
+                                    }
+                                    </style>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </center>
+                <div class="row">
+                    <form class="col s12">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">mode_edit</i>
+                                <textarea id="feedbackNote" class="materialize-textarea"></textarea>
+                                <label for="feedbackNote">Interview Comments</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <center>
+                    <div id="rescheduleInterviewDateBtn" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="confirmAddFeedback()"><font style="color: #fff;
+                        font-weight: 400"><b>Submit Feedback!</b></font>
+                    </div>
+                </center>
+            </div>
+        </div>
+
+
+        <!--Footer start-->
+        <footer class="page-footer" style="background-color: #424242;">
+            <div class="container">
+                <div class="row" style="margin: 0">
+                    <div class="col l6 s6">
+                        <h5 class="white-text">Hire in Bangalore</h5>
+                        <p class="grey-text text-lighten-4">Connect With Us On<img src="/assets/recruiter/img/fbmain.svg" id="fbLogo" style="margin-left: 2%;
+                            width: 6%"></p>
+                    </div>
+                    <div class="col l4 offset-l2 s6">
+                        <h5 class="white-text">Get in touch</h5>
+                        <ul>
+                            <li><a class="grey-text text-lighten-3" href="#">Write us at: info@@trujobs.in</a></li>
+                            <li><a class="grey-text text-lighten-3" href="#">Have queries? Talk to us at 8880007799</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row" style="margin: 0">
+                    <img src="/assets/recruiter/img/skyline_small.svg" width="100%">
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <div class="container">
+                    © 2016 Trujobs.in | Bengaluru, India. All Right Reserved. Privacy Policy
+                </div>
+            </div>
+        </footer>
+    </body>
+
+    <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
+    <script>
+            $('.recruiter_navbar').load('/recruiterNavbar');
+    </script>
+    <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/common/js/jquery.twbsPagination.js"></script>
+    <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
+    <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+    <script type="text/javascript" src="/assets/common/js/script_constants.js"></script>
+    <script type="text/javascript" src="/assets/common/js/jobpost_workflow_constants.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/rmp/js/recruiter_job_post_track.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/recruiter_notifier.js"></script>
+</html>

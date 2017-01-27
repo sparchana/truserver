@@ -2,6 +2,7 @@
  * Created by dodo on 20/12/16.
  */
 
+var viewResume = false;
 var view_search_candidate = 1;
 var view_unlocked_candidate = 2;
 var view_applied_candidate = 3;
@@ -239,6 +240,22 @@ function renderIndividualCandidateCard(value, parent, view) {
     candidateCardRowColOne.style = "padding: 8px; margin-top: 8px";
     candidateCardRow.appendChild(candidateCardRowColOne);
 
+    if(view == view_search_candidate || view == view_unlocked_candidate){
+        var candidateCheckbox = document.createElement("input");
+        candidateCheckbox.type = "checkbox";
+        candidateCheckbox.name = "candidate_cb";
+        candidateCheckbox.value = value.candidate.candidateId + "_" + value.candidate.candidateFirstName;
+        candidateCheckbox.class = "filled-in";
+        candidateCheckbox.id = "candidate_cb_" + value.candidate.candidateId;
+
+        var cbLabel = document.createElement("label");
+        cbLabel.textContent = ".";
+        cbLabel.style = "color: transparent";
+        cbLabel.setAttribute("for", "candidate_cb_" + value.candidate.candidateId);
+        candidateCardRowColOne.appendChild(candidateCheckbox);
+        candidateCardRowColOne.appendChild(cbLabel);
+    }
+
     var userAvatar = document.createElement("img");
     userAvatar.className = "tooltipped";
     userAvatar.style = "margin: -6px 8px 0 -6px; cursor: pointer; text-decoration: none";
@@ -315,7 +332,25 @@ function renderIndividualCandidateCard(value, parent, view) {
     var candidateExperience = document.createElement("font");
     candidateExperience.style = "font-size: 14px";
     candidateExperience.textContent = ", " + expVal;
+
+    var resumeIcon = document.createElement("img");
+    resumeIcon.src = "/assets/recruiter/img/icons/cv.svg";
+    resumeIcon.style = "margin: 0 4px 2px 6px;";
+    resumeIcon.setAttribute('height', '24px');
+
+    var resumeLink = document.createElement("a");
+    resumeLink.class = "null";
+    resumeLink.textContent = "View Resume";
+    resumeLink.id = "candidate_resume_" + value.candidate.candidateId;
+    resumeLink.onclick = function () {
+        //TODO: view resume
+    };
+    resumeLink.style = "font-size: 14px; font-weight: bold; color: rgb(84, 192, 235); ";
+
     candidateCardRowColOne.appendChild(candidateExperience);
+
+//    candidateCardRowColOne.appendChild(resumeIcon);
+//    candidateCardRowColOne.appendChild(resumeLink);
 
     if(view == view_tracking_candidate || view == view_applied_candidate){
         //match score col
@@ -540,7 +575,7 @@ function renderIndividualCandidateCard(value, parent, view) {
         pastCompanyList.forEach(function (jobHistory){
             companyList += jobHistory.candidatePastCompany + ", ";
         });
-        currentCompanyVal.textContent = companyList.substring(0, (companyList.length - 2));
+        currentCompanyVal.textContent = toTitleCase(companyList.substring(0, (companyList.length - 2)));
     } else{
         currentCompanyVal.textContent = "Not specified";
     }
@@ -1184,7 +1219,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                         feedbackBtn.className = "customFeedbackBtn feedbackVal";
                         feedbackBtn.onclick = function () {
                             candidateCardData = value;
-                            openFeedbackModal(value.candidate.candidateId);
+                            openFeedbackModal();
                         };
                         feedbackBtn.textContent = "Add Feedback";
                         feedbackBtn.style = "font-size: 12px; background: rgb(46, 200, 102)";
@@ -1193,6 +1228,17 @@ function renderIndividualCandidateCard(value, parent, view) {
                 }
             }
         }
+    } else if(view == view_search_candidate || view == view_unlocked_candidate){
+        var smsBtn = document.createElement("a");
+        smsBtn.className = "waves-effect waves-light customSmsBtn btnGreen";
+        smsBtn.id = value.candidate.candidateId + "_sms_btn";
+        smsBtn.onclick = function () {
+            candidateCardData = value;
+            sendSelectedSms(value.candidate.candidateId, value.candidate.candidateFirstName);
+        };
+        smsBtn.style = "margin-top: -1px";
+        smsBtn.textContent = "Send SMS";
+        unlockContactCol.appendChild(smsBtn);
     }
 
     if(view == view_unlocked_candidate){
@@ -1212,7 +1258,7 @@ function renderIndividualCandidateCard(value, parent, view) {
         unlockCandidateBtn.style = "margin-top: -1px";
 
         unlockCandidateBtn.className = "waves-effect waves-light customUnlockBtn";
-    } else if(view == view_unlocked_candidate){
+    } else if(view == view_unlocked_candidate) {
         unlockCandidateBtn.className = "contactUnlocked right";
         unlockCandidateBtn.style = "margin-right: 8px";
     }
@@ -1233,4 +1279,180 @@ function renderIndividualCandidateCard(value, parent, view) {
     }
     candidateUnlockFont.style = "font-weight: bold; font-size: 12px";
     unlockCandidateBtn.appendChild(candidateUnlockFont);
+}
+
+//candidate actions common methods
+
+var checkedCandidateIdList = [];
+var checkedCandidateNameList = [];
+
+function selectCheckedCandidates() {
+    checkedCandidateIdList = [];
+    checkedCandidateNameList = [];
+    $('#candidateResultContainer input:checked').each(function() {
+        var val = this.value;
+        var valArray = val.split("_");
+        checkedCandidateIdList.push(parseInt(valArray[0]));
+        checkedCandidateNameList.push(valArray[1]);
+    });
+
+    if(checkedCandidateIdList.length > 0){
+        $("#smsText").val('');
+        $("#totalCount").html("Total " + checkedCandidateNameList.length + " Candidates");
+        $("#sendSmsModal").openModal();
+    } else{
+        notifyError("Please select at least 1 candidate to send SMS");
+    }
+}
+
+function sendSelectedSms(candidateId, candidateName) {
+    checkedCandidateIdList = [];
+    checkedCandidateNameList = [];
+
+    checkedCandidateIdList.push(candidateId);
+    checkedCandidateNameList.push(candidateName);
+
+    if(checkedCandidateIdList.length > 0){
+        $("#smsText").val('');
+        $("#totalCount").html("Total " + checkedCandidateNameList.length + " Candidates");
+        $("#sendSmsModal").openModal();
+    } else{
+        notifyError("Please select at least 1 candidate to send SMS");
+    }
+}
+
+function uncheckAll() {
+    $('#candidateResultContainer').find('input[type=checkbox]:checked').removeAttr('checked');
+}
+
+function checkAll() {
+    uncheckAll();
+    $("#candidateResultContainer").find('input[type=checkbox]').each(function () {
+        this.checked = true;
+    });
+}
+
+function selectCheckedCandidatesToUnlock() {
+    checkedCandidateIdList = [];
+    checkedCandidateNameList = [];
+    $('#candidateResultContainer input:checked').each(function() {
+        var val = this.value;
+        var valArray = val.split("_");
+        checkedCandidateIdList.push(parseInt(valArray[0]));
+        checkedCandidateNameList.push(valArray[1]);
+    });
+
+    if(checkedCandidateIdList.length > 0){
+        if(checkedCandidateIdList.length > contactCredits){
+            notifyError("You can unlock " + contactCredits + " candidates only.");
+        } else{
+            $("#totalUnlockCount").html("You are unlocking " + checkedCandidateNameList.length + " candidate's contact. A total of " +
+                checkedCandidateNameList.length + " contact unlock credits will be debited from your account. Please confirm");
+            $("#unlockCandidateModal").openModal();
+        }
+    } else{
+        notifyError("Please select at least 1 candidate to unlock contact");
+    }
+}
+
+function confirmUnlock() {
+    if(checkedCandidateIdList.length > contactCredits){
+        notifyError("You can unlock " + contactCredits + " candidates only.");
+    } else{
+        var s = {
+            candidateIdList: checkedCandidateIdList
+        };
+        $.ajax({
+            type: "POST",
+            url: "/bulkUnlockCandidate",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(s),
+            success: processDataBulkUnlock
+        });
+    }
+}
+
+function processDataBulkUnlock(returnedData){
+    if(returnedData != "-1"){
+        var count = 0;
+        var unlockedCandidateList = returnedData.unlockContactResponseList;
+        unlockedCandidateList.forEach(function (unlockedCandidate) {
+            if(unlockedCandidate.status == 1){
+                try {
+                    count++;
+                    $("#candidate_" + unlockedCandidate.candidateId).html(unlockedCandidate.candidateMobile);
+                    $("#unlock_candidate_" + unlockedCandidate.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 customUnlockBtn").addClass("contactUnlocked right").removeAttr('onclick');
+                } catch (err){}
+            }
+        });
+
+        contactCredits = returnedData.contactCreditCount;
+        $("#remainingContactCredits").html(returnedData.recruiterContactCreditsLeft);
+        $("#remainingContactCreditsMobile").html(returnedData.recruiterContactCreditsLeft);
+        $("#remainingInterviewCredits").html(returnedData.recruiterInterviewCreditsLeft);
+        $("#remainingInterviewCreditsMobile").html(returnedData.recruiterInterviewCreditsLeft);
+
+        notifySuccess("Successfully unlocked " + count + " candidate's contact information!");
+
+        $("#unlockCandidateModal").closeModal();
+    } else{
+        //session not available
+        logoutRecruiter();
+    }
+}
+
+function checkSmsText(){
+    if($("#smsText").val() == ""){
+        $("#sendSms").removeClass("disabled").addClass("disabled");
+    } else{
+        $("#sendSms").removeClass("disabled");
+    }
+}
+
+function sendSms(){
+    var urlParams = window.location.search.split('=');
+    var jpId = null;
+    if(urlParams[0] == "?jpId") {
+        jpId = parseInt(urlParams[1]);
+    }
+        if(checkedCandidateIdList.length > 0){
+        $("#sendSms").addClass("disabled");
+        var s = {
+            candidateIdList: checkedCandidateIdList,
+            smsMessage :$("#smsText").val(),
+            jobPostId :jpId
+        };
+        $.ajax({
+            type: "POST",
+            url: "/bulkSendSms",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(s),
+            success: processDataBulkSms
+        });
+    } else{
+        notifyError("Please select atleast 1 candidate to send SMS");
+    }
+}
+
+function processDataBulkSms(returnedData) {
+    if(returnedData == '1'){
+        checkedCandidateIdList.forEach(function (candidateId) {
+            $("#" + candidateId + "_sms_btn").removeClass("btnGreen").addClass("btnBlue").html("Resend SMS");
+        });
+        notifySuccess("SMS sent successfully to " + checkedCandidateNameList.length + " candidates!");
+        $("#sendSmsModal").closeModal();
+    } else if(returnedData == '-1'){
+        logoutRecruiter();
+    } else{
+        $("#sendSms").removeClass("disabled");
+        notifyError("Something went wrong. Please try again later");
+    }
+}
+
+function closeSmsModal() {
+    $("#sendSmsModal").closeModal();
+}
+
+function closeUnlockModal() {
+    $("#unlockCandidateModal").closeModal();
 }

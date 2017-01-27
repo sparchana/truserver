@@ -1,0 +1,50 @@
+<style>
+nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i {
+    height: 56px;
+    line-height: 56px;
+}
+</style>
+<div class="navbar-fixed">
+    <nav>
+        <div class="container" style="width: 85%;">
+            <div class="nav-wrapper">
+                <a href="#" class="brand-logo">
+                    <img id="navLogo" src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 32px;
+                        margin-top: -2%">
+                </a>
+                <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+                <ul class="right hide-on-med-and-down">
+                    <li class="homeNav"><a href="/recruiter/home">Home</a></li>
+                    <li class="report"><a href="/recruiter/report/">Report</a></li>
+                    <li class="profileNav"><a href="/recruiter/profile">Profile</a></li>
+                    <li class="jobNav"><a href="/recruiter/allRecruiterJobPosts">View Application(s)<div class="newNotification" id="pendingApproval" style="display: none"></div></a></li>
+                    <li class="postJobNav"><a href="/recruiter/jobPost/0">Post Job</a></li>
+                    <li class="unlockNav"><a href="/recruiter/unlockedCandidates">Unlocked Candidates</a></li>
+                    <li><a onclick="logoutRecruiter()">Logout</a></li>
+                </ul>
+            </div>
+
+            <ul class="side-nav" id="mobile-demo">
+                <li class="homeNavMobile"><a href="/recruiter/home">Home</a></li>
+                <li class="report"><a href="/recruiter/report/">Report</a></li>
+                <li class="profileNavMobile"><a href="/recruiter/profile">Profile</a></li>
+                <li class="jobNavMobile"><a href="/recruiter/allRecruiterJobPosts">View Application(s)<div class="newNotification" id="pendingApprovalMobile"></div></a></li>
+                <li class="postJobNavMobile"><a href="/recruiter/jobPost/0">Post Job</a></li>
+                <li><a class="dropdown-button" data-hover="true" data-beloworigin="true" data-activates="candidateDropDownMobile">Candidates</a>
+                    <ul id="candidateDropDownMobile" class="dropdown-content">
+                        <li class="searchNavMobile"><a href="/recruiter/candidateSearch">Search Candidates</a></li>
+                        <li class="unlockNavMobile"><a href="/recruiter/unlockedCandidates">View Unlocked Candidates</a></li>
+                    </ul>
+                </li>
+                <li><a onclick="logoutRecruiter()">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $(".button-collapse").sideNav();
+        $(".dropdown-button").dropdown();
+    });
+</script>
