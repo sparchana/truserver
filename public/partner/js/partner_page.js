@@ -314,7 +314,7 @@ function renderCandidateTable() {
                 { "data": "appliedJobs" }
             ],
             "language": {
-                "emptyTable": "Looks like you have not added any candidates yet! " + '<a href="/partner/candidate/0" style="color: #26A69A"> '+"Add Now!" +'</a>'
+                "emptyTable": "Looks like you have not added any candidates yet! " + '<a data-target="#candidateCreateOptionModal" data-toggle="modal" style="color: #26A69A"> '+"Add Now!" +'</a>'
             },
             "order": [[2, "desc"]],
             responsive: true,

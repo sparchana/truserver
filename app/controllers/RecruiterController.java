@@ -36,6 +36,7 @@ import dao.RecruiterDAO;
 import dao.SmsReportDAO;
 import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.OM.CandidateResume;
 import models.entity.OM.JobApplication;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.OM.SmsReport;
@@ -355,6 +356,46 @@ public class RecruiterController {
                 }
 
                 return ok(toJson('1'));
+            }
+        }
+        // no recruiter session found
+        return ok("-1");
+    }
+
+    public static Result getCandidateUnlockedData() {
+        if(session().get("recruiterId") != null){
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() == RECRUITER_ACCESS_LEVEL_PRIVATE){
+                JsonNode req = request().body().asJson();
+                Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+                MultipleCandidateActionRequest multipleCandidateActionRequest = new MultipleCandidateActionRequest();
+                ObjectMapper newMapper = new ObjectMapper();
+                try {
+                    multipleCandidateActionRequest = newMapper.readValue(req.toString(), MultipleCandidateActionRequest.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Logger.info(multipleCandidateActionRequest.getCandidateIdList().size() + " ----");
+                List<Candidate> candidateList = Candidate.find.where()
+                        .in("CandidateId", multipleCandidateActionRequest.getCandidateIdList())
+                        .findList();
+
+                List<UnlockContactResponse> responseList = new ArrayList<>();
+                for(Candidate candidate : candidateList){
+                    UnlockContactResponse unlockContactResponse = new UnlockContactResponse();
+                    unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
+                    unlockContactResponse.setCandidateId(candidate.getCandidateId());
+                    CandidateResume resume = CandidateResume.find.where().eq("CandidateId", candidate.getCandidateId()).findUnique();
+                    if(resume != null){
+                        unlockContactResponse.setResumeLink(resume.getFilePath());
+                    }
+                    responseList.add(unlockContactResponse);
+                }
+                MultipleCandidateContactUnlockResponse response = new MultipleCandidateContactUnlockResponse();
+                response.setUnlockContactResponseList(responseList);
+
+                return ok(toJson(response));
             }
         }
         // no recruiter session found

@@ -331,7 +331,23 @@ function renderIndividualCandidateCard(value, parent, view) {
     var candidateExperience = document.createElement("font");
     candidateExperience.style = "font-size: 14px";
     candidateExperience.textContent = ", " + expVal;
+
+    var resumeIcon = document.createElement("img");
+    resumeIcon.src = "/assets/recruiter/img/icons/cv.svg";
+    resumeIcon.style = "margin: 0 4px 2px 6px;";
+    resumeIcon.setAttribute('height', '24px');
+
+    var resumeLink = document.createElement("font");
+    resumeLink.style = "font-size: 14px; font-weight: bold; color: rgb(84, 192, 235); cursor: pointer";
+    resumeLink.onclick = function () {
+        unlockContact(value.candidate.candidateId);
+    };
+    resumeLink.textContent = "View Resume";
     candidateCardRowColOne.appendChild(candidateExperience);
+
+
+//    candidateCardRowColOne.appendChild(resumeIcon);
+//    candidateCardRowColOne.appendChild(resumeLink);
 
     if(view == view_tracking_candidate || view == view_applied_candidate){
         //match score col
@@ -1279,7 +1295,6 @@ function selectCheckedCandidates() {
 
     if(checkedCandidateIdList.length > 0){
         $("#smsText").val('');
-        $("#candidateNameList").html(checkedCandidateNameList.join(", "));
         $("#totalCount").html("Total " + checkedCandidateNameList.length + " Candidates");
         $("#sendSmsModal").openModal();
     } else{
@@ -1296,7 +1311,6 @@ function sendSelectedSms(candidateId, candidateName) {
 
     if(checkedCandidateIdList.length > 0){
         $("#smsText").val('');
-        $("#candidateNameList").html(checkedCandidateNameList.join(", "));
         $("#totalCount").html("Total " + checkedCandidateNameList.length + " Candidates");
         $("#sendSmsModal").openModal();
     } else{

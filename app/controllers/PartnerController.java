@@ -236,72 +236,81 @@ public class PartnerController {
             isNewCandidate = true; //checking if the candidate exists
         }
         if(partner != null){
-            Boolean isPrivatePartner = false;
-            if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
-                isPrivatePartner = true;
-            }
-
             LeadSource leadSource = LeadSource.find.where().eq("leadSourceId", addSupportCandidateRequest.getLeadSource()).findUnique();
             if(leadSource != null){
                 addSupportCandidateRequest.setLeadSource(leadSource.getLeadSourceId());
             }
-            CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                    InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE,
-                    ServerConstants.UPDATE_ALL_BY_SUPPORT);
 
-            if(candidateSignUpResponse.getStatus() == CandidateSignUpResponse.STATUS_SUCCESS){
-
-                candidateSignUpResponse.setOtp(0);
-                Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
-
-                if(isNewCandidate){ //save a record in partnerToCandidate
-                    candidateSignUpResponse =
-                            PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
-
-                    //if the partner is a private partner
-                    if(isPrivatePartner){
-
-                        //auto verifying candidate profile as it is created via private partner
-                        Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
-                        if(existingAuth != null){
-                            existingAuth.setAuthStatus(ServerConstants.CANDIDATE_STATUS_VERIFIED);
-                            existingAuth.update();
-                            CandidateService.sendDummyAuthForCandidateByPartner(existingCandidate);
-                            String objAUUID = existingCandidate.getCandidateUUId();
-                            String objBUUID = partner.getPartnerUUId();
-
-                            //creating interaction
-                            PartnerInteractionService.createInteractionForPartnerVerifyingCandidate(objAUUID, objBUUID, partner.getPartnerFirstName());
-                        }
-
-                        existingCandidate.setCandidateAccessLevel(ServerConstants.CANDIDATE_ACCESS_LEVEL_PRIVATE);
-                        existingCandidate.update();
-
-                        //don't send otp
-                        candidateSignUpResponse.setOtp(0);
-                    } else{
-                        candidateSignUpResponse.setOtp(PartnerService.sendCandidateVerificationSms(existingCandidate));
-                    }
-                }
-
-                //STATUS NO CANDIDATE means its a new candidate, STATUS_CANDIDATE_EXISTS_DIFFERENT_COMPANY means this candidate exists
-                // and is associated with other company, hence create an entry in partner to candidate followed by PartnerToCandidateToCompany
-
-                if(associationStatus == ServerConstants.STATUS_NO_CANDIDATE
-                        || associationStatus == ServerConstants.STATUS_CANDIDATE_EXISTS_DIFFERENT_COMPANY)
-                {
-
-                    PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
-
-                    //making entry in partnerToCandidateToCompany table
-                    partnerToCandidateToCompanyMapping(partner, existingCandidate);
-                }
-            }
-
-            return ok(toJson(candidateSignUpResponse));
+            return ok(toJson(createCandidateViaPartner(addSupportCandidateRequest, partner, isNewCandidate, associationStatus)));
         } else{
             return ok("-1");
         }
+    }
+
+    public static CandidateSignUpResponse createCandidateViaPartner(AddSupportCandidateRequest addSupportCandidateRequest,
+                                                                    Partner partner,
+                                                                    Boolean isNewCandidate,
+                                                                    Integer associationStatus){
+        Boolean isPrivatePartner = false;
+        if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+            isPrivatePartner = true;
+        }
+
+        CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
+                InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE,
+                ServerConstants.UPDATE_ALL_BY_SUPPORT);
+
+        if(candidateSignUpResponse.getStatus() == CandidateSignUpResponse.STATUS_SUCCESS){
+
+            candidateSignUpResponse.setOtp(0);
+            Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+
+            if(isNewCandidate){ //save a record in partnerToCandidate
+                candidateSignUpResponse =
+                        PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+
+                //if the partner is a private partner
+                if(isPrivatePartner){
+
+                    //auto verifying candidate profile as it is created via private partner
+                    Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
+                    if(existingAuth != null){
+                        existingAuth.setAuthStatus(ServerConstants.CANDIDATE_STATUS_VERIFIED);
+                        existingAuth.update();
+                        CandidateService.sendDummyAuthForCandidateByPartner(existingCandidate);
+                        String objAUUID = existingCandidate.getCandidateUUId();
+                        String objBUUID = partner.getPartnerUUId();
+
+                        //creating interaction
+                        PartnerInteractionService.createInteractionForPartnerVerifyingCandidate(objAUUID, objBUUID, partner.getPartnerFirstName());
+                    }
+
+                    existingCandidate.setCandidateAccessLevel(ServerConstants.CANDIDATE_ACCESS_LEVEL_PRIVATE);
+                    existingCandidate.update();
+
+                    //don't send otp
+                    candidateSignUpResponse.setOtp(0);
+                } else{
+                    candidateSignUpResponse.setOtp(PartnerService.sendCandidateVerificationSms(existingCandidate));
+                }
+            }
+
+            //STATUS NO CANDIDATE means its a new candidate, STATUS_CANDIDATE_EXISTS_DIFFERENT_COMPANY means this candidate exists
+            // and is associated with other company, hence create an entry in partner to candidate followed by PartnerToCandidateToCompany
+
+            if(associationStatus == ServerConstants.STATUS_NO_CANDIDATE
+                    || associationStatus == ServerConstants.STATUS_CANDIDATE_EXISTS_DIFFERENT_COMPANY)
+            {
+
+                PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+
+                //making entry in partnerToCandidateToCompany table
+                partnerToCandidateToCompanyMapping(partner, existingCandidate);
+            }
+        }
+
+        return candidateSignUpResponse;
+
     }
 
     public static void partnerToCandidateToCompanyMapping(Partner partner, Candidate candidate){

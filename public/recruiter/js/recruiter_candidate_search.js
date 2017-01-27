@@ -221,6 +221,14 @@ $(document).ready(function(){
         }
     });
 
+    $("#select_all_floating").change(function() {
+        if(this.checked) {
+            checkAll();
+        } else{
+            uncheckAll();
+        }
+    });
+
     counter = 0;
     NProgress.start();
     var d = {

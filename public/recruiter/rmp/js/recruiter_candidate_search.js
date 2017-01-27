@@ -254,6 +254,14 @@ $(document).ready(function(){
     });
 
 
+    $("#select_all_floating").change(function() {
+        if(this.checked) {
+            checkAll();
+        } else{
+            uncheckAll();
+        }
+    });
+
     // TODO add url detection => identify jpid => get setters only on first load
     // then trigger search with those params
     // below code needs to be modified for this
@@ -817,13 +825,15 @@ function updateSalarySliderVal(maxSalarySelected) {
     performSearch();
 }
 
-function processDataUnlockedCandidates(returnedData) {
-    returnedData.forEach(function (unlockedCandidate){
+function processDataCandidateData(returnedData) {
+    var candidateList = returnedData.unlockContactResponseList;
+    candidateList.forEach(function (unlockedCandidate){
         try {
-            $("#candidate_" + unlockedCandidate.candidate.candidateId).html(unlockedCandidate.candidate.candidateMobile);
-            $("#unlock_candidate_" + unlockedCandidate.candidate.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 customUnlockBtn").addClass("contactUnlocked right").removeAttr('onclick');
+            $("#candidate_" + unlockedCandidate.candidateId).html(unlockedCandidate.candidateMobile);
+            $("#unlock_candidate_" + unlockedCandidate.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 customUnlockBtn").addClass("contactUnlocked right").removeAttr('onclick');
         } catch (err){}
     });
+
 }
 
 function processDataMatchCandidate(returnedData) {
@@ -852,18 +862,21 @@ function processDataMatchCandidate(returnedData) {
 
             generateCandidateCards(candidateSearchResult);
 
-            try {
-                $.ajax({
-                    type: "POST",
-                    url: "/recruiter/api/getUnlockedCandidates/",
-                    async: true,
-                    contentType: false,
-                    data: false,
-                    success: processDataUnlockedCandidates
-                });
-            } catch (exception) {
-                console.log("exception occured!!" + exception.stack);
-            }
+            var candidateIdList = [];
+            candidateSearchResult.forEach(function (candidate) {
+                candidateIdList.push(candidate.candidate.candidateId);
+            });
+
+            var d = {
+                candidateIdList: candidateIdList
+            };
+            $.ajax({
+                type: "POST",
+                url: "/getCandidateUnlockedData",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processDataCandidateData
+            });
 
             $("#candidateTools").show();
 
@@ -881,6 +894,8 @@ function processDataMatchCandidate(returnedData) {
 
 function generateCandidateCards(candidateSearchResult) {
     var parent = $("#candidateResultContainer");
+
+
 
     candidateSearchResult.forEach(function (value){
 

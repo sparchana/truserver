@@ -5,6 +5,7 @@ import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.annotation.WhoCreated;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.Recruiter.RecruiterLead;
 
@@ -38,7 +39,7 @@ public class CandidateResume extends Model {
     private String createdBy;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonManagedReference
     @JoinColumn(name = "CandidateId", referencedColumnName = "candidateId")
     private Candidate candidate;
 
