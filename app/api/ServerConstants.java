@@ -326,6 +326,7 @@ public class ServerConstants {
     public static int RECRUITER_CATEGORY_INTERVIEW_UNLOCK = 2;
 
     public static int RECRUITER_FREE_CONTACT_CREDITS = 3;
+    public static int RECRUITER_DEFAULT_INTERVIEW_CREDITS = 99999999;
 
     // pre screen front end ui ids
 
