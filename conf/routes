@@ -360,9 +360,15 @@ GET         /favicon.ico                                                  contro
 GET         /showResumeUpload                                               controllers.Application.showResumeUpload()
 POST        /addResume/                                                     controllers.Application.doResumeUpload(candidateId: String ?=null)
 POST        /receive-parsed-resume                                          controllers.Application.receiveParsedResume()
-GET        /fetchResume/                                                   controllers.Application.fetchResume(candidateId: String ?=null)
+GET        /fetchResume/                                                    controllers.Application.fetchResume(candidateId: String ?=null)
 GET         /favicon.ico                                                    controllers.Assets.at(path="/public/common/img/", file="icon.png")
 #GET        /webjars/*file                                                  controllers.WebJarAssets.at(file)
+
+# Truly Url-Shortner route
+# ~~~~~~~~~
+GET         /truly/                                                         controllers.truly.TrulyController.renderGenerator()
+GET         /t/:shortUrl                                                    controllers.truly.TrulyController.index(shortUrl: String)
+
 
 # Candidate Excel Upload
 # ~~~~~~~~~
