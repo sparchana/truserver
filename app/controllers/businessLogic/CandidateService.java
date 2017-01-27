@@ -2490,6 +2490,7 @@ public class CandidateService
                                     Logger.info("addSupportCandidateRequest.setCandidateMobile ="+addSupportCandidateRequest.getCandidateMobile());
                                     break;
                                 case "current salary per month":
+                                case "Salary":
                                     addSupportCandidateRequest.setCandidateLastWithdrawnSalary(Long.valueOf(nextLine[i],10));
                                     Logger.info("addSupportCandidateRequest.setCandidateLastWithdrawnSalary ="+addSupportCandidateRequest.getCandidateLastWithdrawnSalary());
                                     break;
@@ -2561,6 +2562,10 @@ public class CandidateService
                                         Logger.info("pastCompany.setCompanyName ="+pastCompany.getCompanyName());
                                     }
                                     break;
+                                case "Gender":
+                                    if(nextLine[i].toLowerCase().startsWith("f")) addSupportCandidateRequest.setCandidateGender(ServerConstants.GENDER_FEMALE);
+                                    else if (nextLine[i].toLowerCase().startsWith("m")) addSupportCandidateRequest.setCandidateGender(ServerConstants.GENDER_MALE);
+                                    break;
                                 default:
                                     String misc = addSupportCandidateRequest.getSupportNote();
                                     misc = ((misc == null)?header[i]+":"+nextLine[i]: misc+" || "+header[i]+":"+nextLine[i]);
@@ -2584,8 +2589,20 @@ public class CandidateService
                         addSupportCandidateRequest.setCandidateLocality(list);
 
                         Logger.info("Add support candidate request : "+ toJson(addSupportCandidateRequest));
+                        int channel = 0;
+                        // determine channel
+                        if(session() != null && (session().get("sessionChannel") != null && !session().get("sessionChannel").isEmpty())){
+                            Logger.info("Session : "+ session().get("sessionChannel"));
+                            if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
+                                channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
+                            }else{
+                                channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
+                            }
+                        }
+                        else {channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;}
+
                         CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                                InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE,
+                                channel,
                                 ServerConstants.UPDATE_ALL_BY_SUPPORT);
                         // keep count
                         if(candidateSignUpResponse.getCandidateId() > 0) {
