@@ -236,6 +236,7 @@ function processDataGetSmsReport(returnedData) {
                 var outerRow = document.createElement("div");
                 outerRow.className = 'row';
                 outerRow.id="outerBoxMain";
+                outerRow.style="font-size: 12px";
                 mainDiv.appendChild(outerRow);
 
                 var colDate = document.createElement("div");
@@ -362,7 +363,25 @@ function processDataJobApplications(returnedData) {
             var outerRow = document.createElement("div");
             outerRow.className = 'row';
             outerRow.id="outerBoxMain";
+            outerRow.style="font-size: 12px";
+
             mainDiv.appendChild(outerRow);
+
+            var colDateTime= document.createElement("div");
+            colDateTime.className = 'col s12 m2 l1';
+            colDateTime.style = 'margin-top:8px';
+
+            var creationTimestamp = new Date(workflowObj.extraData.creationTimestamp);
+
+            colDateTime.textContent = validateDateFormat(creationTimestamp);
+
+            outerRow.appendChild(colDateTime);
+
+            var spanDateTime = document.createElement("div");
+            spanDateTime.className = "col s4 hide-on-med-and-up right-align";
+            spanDateTime.textContent= "Candidate :";
+            spanDateTime.style = "font-weight: 600;font-size:12px";
+            colDateTime.appendChild(spanDateTime);
 
             var colCandidateName= document.createElement("div");
             colCandidateName.className = 'col s12 m2 l2';
@@ -377,7 +396,7 @@ function processDataJobApplications(returnedData) {
             colCandidateName.appendChild(spanCandidateName);
 
             var colCandidateMobile = document.createElement("div");
-            colCandidateMobile.className = 'col s12 m2 l2';
+            colCandidateMobile.className = 'col s12 m2 l1';
             colCandidateMobile.style = 'margin-top:8px';
             colCandidateMobile.textContent = workflowObj.candidate.candidateMobile;
             outerRow.appendChild(colCandidateMobile);
@@ -394,10 +413,12 @@ function processDataJobApplications(returnedData) {
             outerRow.appendChild(colChannel);
 
             colChannel.textContent = "N/A";
+            var applicationTimestamp = new Date(workflowObj.appliedOn);
+
             if(workflowObj.applicationChannel == 1){
-                colChannel.textContent = "Self Application";
+                colChannel.textContent = "SMS (on " + validateDateFormat(applicationTimestamp) + ")";
             } else if(workflowObj.applicationChannel == 2){
-                colChannel.textContent = "Partner (" + workflowObj.partner.parnterName + ")";
+                colChannel.textContent = "Partner (" + workflowObj.partner.parnterName + " on " + validateDateFormat(applicationTimestamp)+ ")" ;
             } else if(workflowObj.applicationChannel == 3){
                 colChannel.textContent = "TruJobs Support";
             }
@@ -417,7 +438,7 @@ function processDataJobApplications(returnedData) {
             if(workflowObj.extraData.interviewDate != null){
                 var interviewDate = new Date(workflowObj.extraData.interviewDate);
 
-                colInterviewDate.textContent = interviewDate.getFullYear() + "-" + (interviewDate.getMonth() + 1) + "-" + interviewDate.getDate() +
+                colInterviewDate.textContent = validateDateFormat(interviewDate) +
                     " @ " + workflowObj.extraData.interviewSlot.interviewTimeSlotName;
             }
 
@@ -431,7 +452,7 @@ function processDataJobApplications(returnedData) {
             colAction.className = 'col s12 m2 l3';
             colAction.id = "interview_status_option_" + workflowObj.candidate.candidateId;
             colAction.style = 'margin-top: 8px';
-            colAction.textContent = "No action required";
+            colAction.textContent = "Call candidate to schedule interview";
 
             var colStatus = document.createElement("div");
             colStatus.className = 'col s12 m2 l2';
@@ -894,7 +915,18 @@ function processDataConfirmedApplication(returnedData) {
             var outerRow = document.createElement("div");
             outerRow.className = 'row';
             outerRow.id="outerBoxMain";
+            outerRow.style="font-size: 12px";
             mainDiv.appendChild(outerRow);
+
+            var colDateTime= document.createElement("div");
+            colDateTime.className = 'col s12 m2 l1';
+            colDateTime.style = 'margin-top:8px';
+
+            var creationTimestamp = new Date(workflowObj.extraData.creationTimestamp);
+
+            colDateTime.textContent = validateDateFormat(creationTimestamp);
+
+            outerRow.appendChild(colDateTime);
 
             var colCandidateName= document.createElement("div");
             colCandidateName.className = 'col s12 m2 l2';
@@ -921,13 +953,13 @@ function processDataConfirmedApplication(returnedData) {
             colCandidateMobile.appendChild(spanCandidateMobile);
 
             var colInterviewDateAndTime = document.createElement("div");
-            colInterviewDateAndTime.className = 'col s12 m2 l2';
+            colInterviewDateAndTime.className = 'col s12 m2 l3';
             colInterviewDateAndTime.style = 'margin-top: 8px';
             outerRow.appendChild(colInterviewDateAndTime);
 
             var interviewDate = new Date(workflowObj.extraData.interviewDate);
 
-            colInterviewDateAndTime.textContent = interviewDate.getFullYear() + "-" + (interviewDate.getMonth() + 1) + "-" + interviewDate.getDate() +
+            colInterviewDateAndTime.textContent = validateDateFormat(interviewDate) +
                 " @ " + workflowObj.extraData.interviewSlot.interviewTimeSlotName;
 
             var spanInterviewDate = document.createElement("div");
@@ -936,71 +968,8 @@ function processDataConfirmedApplication(returnedData) {
             spanInterviewDate.style = "font-weight: 600;font-size:12px;";
             colInterviewDateAndTime.appendChild(spanInterviewDate);
 
-            var colCandidateStatus = document.createElement("div");
-            colCandidateStatus.className = 'col s12 m2 l3';
-            outerRow.appendChild(colCandidateStatus);
-
-            colCandidateStatus.textContent = "Status not Available";
-
-            if(workflowObj.extraData.candidateInterviewStatus != null){
-                var reason = "";
-                if(workflowObj.extraData.reason != null){
-                    if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING) { //not going
-                        reason = ' [Reason: ' + workflowObj.extraData.reason.reasonName + ']';
-                    } else{
-                        reason = ' [Reaching: ' + workflowObj.extraData.reason.reasonName + ']';
-                    }
-                }
-
-                var lastUpdate = new Date(workflowObj.extraData.creationTimestamp);
-                var timing = "";
-                if(lastUpdate.getHours() == 12){
-                    timing = minuteHourFormat(lastUpdate.getHours()) + ":" + minuteHourFormat(lastUpdate.getMinutes()) + " pm";
-                } else if(lastUpdate.getHours() > 12){
-                    timing = minuteHourFormat(lastUpdate.getHours() - 12) + ":" + minuteHourFormat(lastUpdate.getMinutes()) + " pm";
-                } else{
-                    timing = minuteHourFormat(lastUpdate.getHours()) + ":" + minuteHourFormat(lastUpdate.getMinutes()) + " am";
-                }
-
-                var dateAndTime = "(Reported - " + lastUpdate.getDate() + "-" + (lastUpdate.getMonth() + 1) + "-" + lastUpdate.getFullYear() + " " + timing + ')';
-
-                var today = new Date();
-                if(lastUpdate.getDate() == today.getDate() && lastUpdate.getMonth() == today.getMonth()){
-                    dateAndTime = " (Reported - Today at: " + timing + ")";
-                } else if(lastUpdate.getDate() == (today.getDate() -1) && lastUpdate.getMonth() == today.getMonth()){
-                    dateAndTime = " (Reported - Yesterday at: " + timing + ")";
-                }
-
-                if(workflowObj.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING){
-                    colCandidateStatus.textContent = "Not going for interview " + reason ;
-                    colCandidateStatus.style = "margin-top: 8px; color: red; font-weight: bold; font-size: 12px";
-                } else if(workflowObj.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){
-                    colCandidateStatus.textContent = "Delayed for Interview " + reason ;
-                    colCandidateStatus.style = "margin-top: 8px; color: orange; font-weight: bold; font-size: 12px";
-                } else if(workflowObj.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY){
-                    colCandidateStatus.textContent = "On the way for interview" + reason ;
-                    colCandidateStatus.style = "margin-top: 8px; color: green; font-weight: bold; font-size: 12px";
-                } else if(workflowObj.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
-                    colCandidateStatus.textContent = "Reached for Interview " + reason ;
-                    colCandidateStatus.style = "margin-top: 8px; color: green; font-weight: bold; font-size: 12px";
-                }
-
-                var lastUpdateDiv = document.createElement("div");
-                lastUpdateDiv.id = "last_update_div_" + workflowObj.candidate.candidateId;
-                lastUpdateDiv.textContent = dateAndTime;
-                lastUpdateDiv.style = "color: black; font-weight: 100";
-                colCandidateStatus.appendChild(lastUpdateDiv);
-
-            }
-
-            var spanCandidateStatus = document.createElement("div");
-            spanCandidateStatus.className = "col s4 hide-on-med-and-up right-align";
-            spanCandidateStatus.textContent= "Candidate Status:";
-            spanCandidateStatus.style = "font-weight: 600;font-size:12px;";
-            colCandidateStatus.appendChild(spanCandidateStatus);
-
             var colFeedback = document.createElement("div");
-            colFeedback.className = 'col s12 m2 l3';
+            colFeedback.className = 'col s12 m2 l4';
             colFeedback.style = 'margin-top: 8px';
             outerRow.appendChild(colFeedback);
 
@@ -1016,23 +985,15 @@ function processDataConfirmedApplication(returnedData) {
                         colFeedback.style = "margin-top: 8px; color: red; font-weight: bold";
                     }
                 } else{
-                    today = new Date();
-                    interviewDate = new Date(workflowObj.extraData.interviewDate);
-                    if(interviewDate.getTime() <= today.getTime()) { // today's schedule
-                        //interview for this job is scheduled today, hence allow to update status
+                    colFeedback.textContent = "";
 
-                        colFeedback.textContent = "";
-
-                        var addFeedbackBtn = document.createElement("span");
-                        colFeedback.appendChild(addFeedbackBtn);
-                        addFeedbackBtn.style = "font-weight: bold; cursor: pointer; background: green; padding: 4px; color: white; border-radius: 4px";
-                        addFeedbackBtn.textContent = "Add Feedback";
-                        addFeedbackBtn.onclick = function () {
-                            openFeedbackModal(workflowObj.candidate.candidateId);
-                        };
-                    } else{
-                        colFeedback.textContent = "-";
-                    }
+                    var addFeedbackBtn = document.createElement("span");
+                    colFeedback.appendChild(addFeedbackBtn);
+                    addFeedbackBtn.style = "font-weight: bold; cursor: pointer; background: green; padding: 4px; color: white; border-radius: 4px";
+                    addFeedbackBtn.textContent = "Add Feedback";
+                    addFeedbackBtn.onclick = function () {
+                        openFeedbackModal(workflowObj.candidate.candidateId);
+                    };
                 }
             }
 
@@ -1210,4 +1171,28 @@ function notifyError(msg){
 
 function notifySuccess(msg){
     Materialize.toastSuccess(msg, 3000, 'rounded');
+}
+
+function logoutRecruiter() {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/logoutRecruiter",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataLogoutRecruiter
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataLogoutRecruiter() {
+    window.location = "/recruiter";
+}
+
+function closeFeedbackModal() {
+    $("#addFeedback").closeModal();
 }

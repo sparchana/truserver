@@ -146,7 +146,8 @@ public class PartnerController {
     public static Result checkPartnerSession() {
         String sessionPartnerId = session().get("partnerId");
         if(sessionPartnerId != null){
-            return ok("1");
+            Partner partner = Partner.find.where().eq("partner_id", sessionPartnerId).findUnique();
+            return ok(toJson(partner));
         } else{
             return ok("0");
         }
@@ -412,6 +413,7 @@ public class PartnerController {
                     PartnerToCandidate partnerToCandidate = PartnerToCandidate.find
                             .where()
                             .eq("candidate_candidateid", candidate.getCandidateId())
+                            .setMaxRows(1)
                             .findUnique();
                     if(partnerToCandidate != null){
                         if(partnerToCandidate.getPartner().getPartnerId() == partner.getPartnerId()){
@@ -465,10 +467,13 @@ public class PartnerController {
         if(partner != null){ //checking if partner is logged in or not
             Candidate candidate = Candidate.find.where().eq("candidateId", id).findUnique(); //getting candidate profile from db
             if(candidate != null){ //checking if the candidate was created by the requested partner
+
                 PartnerToCandidate partnerToCandidate = PartnerToCandidate.find
                         .where()
                         .eq("candidate_candidateid", candidate.getCandidateId())
+                        .setMaxRows(1)
                         .findUnique();
+
                 if(partnerToCandidate != null){
                     if(partnerToCandidate.getPartner().getPartnerId() == partner.getPartnerId()){
                         return ok(toJson(candidate));
@@ -513,11 +518,16 @@ public static Result checkExistingCompany(String CompanyCode) {
                 if(partner != null){
                     if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
 
-/*
                         //fetching all the private jobs posted by the recruiter of the given company
-                        Company company = Company.find.where().eq("CompanyId", partner.getCompany().getCompanyId()).findUnique();
-                        matchingJobList = JobPostDAO.getAllActiveHotNonPrivateJobsPostOfCompany(company);
-*/
+                        List<PartnerToCompany> partnerToCompanyList = PartnerToCompany.find.where()
+                                .eq("partner_id", partner.getPartnerId())
+                                .findList();
+
+                        List<Long> companyIdList = new ArrayList<>();
+                        for(PartnerToCompany partnerToCompany : partnerToCompanyList){
+                            companyIdList.add(partnerToCompany.getCompany().getCompanyId());
+                        }
+                        matchingJobList = JobPostDAO.getAllActiveHotNonPrivateJobsPostOfCompany(companyIdList);
                     } else{
                         matchingJobList = JobSearchService
                                 .getAllJobsForCandidate(FormValidator.convertToIndianMobileFormat(

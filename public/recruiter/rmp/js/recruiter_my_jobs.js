@@ -2,22 +2,7 @@
  * Created by hawk on 21/10/16.
  */
 
-var newCount = 0;
 var jobPostObj;
-
-$(window).load(function() {
-    setTimeout(function(){
-        if(newCount == 0){
-            $(".newNotification").hide();
-        } else{
-            $(".newNotification").show();
-            $("#pendingApproval").html(newCount);
-            $("#pendingApprovalMobile").html(newCount);
-        }
-        $(".jobNav").addClass("active");
-        $(".jobNavMobile").addClass("active");
-    }, 100);
-});
 
 $(document).scroll(function(){
     if ($(this).scrollTop() > 30) {
@@ -76,7 +61,6 @@ function processDataGenerateJobPostView(returnedData) {
         logoutRecruiter();
     } else{
         $("#jobTable").show();
-        newCount = 0;
         var jobPostList = returnedData;
         var parent = $('.myJobsRecruiter');
         if(Object.keys(jobPostList).length){
@@ -89,6 +73,7 @@ function processDataGenerateJobPostView(returnedData) {
                 var outerRow = document.createElement("div");
                 outerRow.className = 'row';
                 outerRow.id="outerBoxMain";
+                outerRow.style="font-size: 12px";
                 mainDiv.appendChild(outerRow);
 
                 var colDatePost = document.createElement("div");
@@ -106,7 +91,7 @@ function processDataGenerateJobPostView(returnedData) {
                 colDatePost.appendChild(spanPostedOn);
 
                 var colJobPost = document.createElement("div");
-                colJobPost.className = 'col s12 m2 l2';
+                colJobPost.className = 'col s12 m2 l3';
                 colJobPost.style = 'margin-top:8px';
                 colJobPost.textContent = jobPost.jobPost.jobPostTitle;
                 outerRow.appendChild(colJobPost);
@@ -125,7 +110,7 @@ function processDataGenerateJobPostView(returnedData) {
                 });
 
                 var colJobLocation = document.createElement("div");
-                colJobLocation.className = 'col s12 m2 l2';
+                colJobLocation.className = 'col s12 m2 l3';
                 colJobLocation.style = 'margin-top:8px';
                 colJobLocation.textContent = localities.substring(0, localities.length - 2);
                 outerRow.appendChild(colJobLocation);
@@ -153,30 +138,6 @@ function processDataGenerateJobPostView(returnedData) {
                 spanSalary.style = "font-weight: 600;font-size:12px";
                 colJobSalary.appendChild(spanSalary);
 
-                var colApplicant = document.createElement("div");
-                colApplicant.className = 'col s12 m2 l2';
-                outerRow.appendChild(colApplicant);
-
-                var spanApplications  = document.createElement("div");
-                spanApplications.className = "col s4 hide-on-med-and-up right-align";
-                spanApplications.textContent= "No. of Applications :";
-                spanApplications.style = "font-weight: 600;font-size:12px;";
-                colApplicant.appendChild(spanApplications);
-
-                var applicantBtn = document.createElement('a');
-                applicantBtn.style = "font-weight: bold; text-decoration:none";
-                colApplicant.appendChild(applicantBtn);
-
-                var newApplication = document.createElement('div');
-                newApplication.style = "margin-top: 4px";
-                newApplication.className = "newCounter";
-                colApplicant.appendChild(newApplication);
-
-                var upcomingCounter = document.createElement('div');
-                upcomingCounter.style = "margin-top: 4px";
-                upcomingCounter.className = "newCounter";
-                colApplicant.appendChild(upcomingCounter);
-
                 var colTrackView = document.createElement("div");
                 colTrackView.className = 'col s12 m1 l1';
                 colTrackView.style = "text-align:center";
@@ -191,6 +152,23 @@ function processDataGenerateJobPostView(returnedData) {
                     openJobPosttrackView(jobPost.jobPost.jobPostId);
                 };
                 colTrackView.appendChild(trackViewBtn);
+
+                var newApplication = document.createElement('div');
+                newApplication.style = "margin-top: 4px";
+                newApplication.className = "newCounter";
+                colTrackView.appendChild(newApplication);
+
+                var upcomingCounter = document.createElement('div');
+                upcomingCounter.style = "margin-top: 4px";
+                upcomingCounter.className = "newCounter";
+                colTrackView.appendChild(upcomingCounter);
+
+                if(jobPost.pendingCount > 0){
+                    newApplication.textContent = " (" + jobPost.pendingCount + " Action Required)";
+                }
+                if(jobPost.upcomingCount > 0){
+                    upcomingCounter.textContent = " (" + jobPost.upcomingCount + " Upcoming)";
+                }
 
                 var colJobStatus = document.createElement("div");
                 colJobStatus.className = 'col s12 m1 l1';
@@ -315,28 +293,6 @@ function processDataGenerateJobPostView(returnedData) {
                     statusName.textContent = "Not specified";
                 }
 
-                applicantBtn.textContent = jobPost.totalCount;
-                if(jobPost.pendingCount > 0){
-                    newApplication.textContent = " (" + jobPost.pendingCount + " Action Required)";
-                }
-                if(jobPost.upcomingCount > 0){
-                    upcomingCounter.textContent = " (" + jobPost.upcomingCount + " Upcoming)";
-                }
-                newCount += jobPost.pendingCount;
-                newCount += jobPost.upcomingCount;
-                applicantBtn.style = 'text-align: center; font-weight: bold';
-                if(jobPost.totalCount > 0){
-                    applicantBtn.className = 'btn-floating btn-small waves-effect waves-light green accent-3';
-                }
-                else{
-                    applicantBtn.className = 'btn-floating btn-small waves-effect waves-light blue-grey lighten-4';
-                }
-                if(jobPost.totalCount > 0){
-                    applicantBtn.onclick = function () {
-                        openAppliedCandidate(jobPost.jobPost.jobPostId);
-                    };
-                }
-
                 var colEditView = document.createElement("div");
                 colEditView.className = 'col s12 m1 l1';
                 colEditView.style = "text-align:center";
@@ -361,7 +317,7 @@ function processDataGenerateJobPostView(returnedData) {
                 var candidateViewBtn = document.createElement('button');
                 candidateViewBtn.className = 'waves-effect waves-blue-grey lighten-5 btn-flat';
                 candidateViewBtn.style = 'color:#1976d2; padding:0 6px 0 6px; font-size:12px;';
-                candidateViewBtn.textContent='View Candidate';
+                candidateViewBtn.textContent='View Candidates';
 
                 candidateViewBtn.onclick = function () {
                     openCandidateView(jobPost.jobPost.jobPostId);

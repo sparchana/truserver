@@ -789,17 +789,28 @@ public class RecruiterController {
 
     public static Result getRecruiterJobPostInfo(long jpId) {
         JobPost jobPost = JobPostDAO.findById(jpId);
+        Boolean toReturnJobPostObject = false;
+
         if(jobPost != null){
             if(session().get("recruiterId") != null){
                 RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
                 if(recruiterProfile != null){
+
                     if(jobPost.getRecruiterProfile() != null){
                         if(Objects.equals(jobPost.getRecruiterProfile().getRecruiterProfileId(), recruiterProfile.getRecruiterProfileId())){
-                            return ok(toJson(jobPost));
+                            toReturnJobPostObject = true;
+                        } else{
+                            if(Objects.equals(recruiterProfile.getCompany().getCompanyId(), jobPost.getCompany().getCompanyId())){
+                                toReturnJobPostObject = true;
+                            }
                         }
                     }
                 }
             }
+        }
+
+        if(toReturnJobPostObject){
+            return ok(toJson(jobPost));
         }
         return ok("0");
     }
@@ -1134,7 +1145,10 @@ public class RecruiterController {
                             .findUnique();
 
                     data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_SUPPORT);
+
                     if(jobApplication != null){
+                        data.setAppliedOn(jobApplication.getJobApplicationCreateTimeStamp());
+
                         if(jobApplication.getPartner() != null){
                             data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_PARTNER);
                             data.setPartner(jobApplication.getPartner());

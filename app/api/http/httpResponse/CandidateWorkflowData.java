@@ -4,6 +4,8 @@ import models.entity.Candidate;
 import models.entity.OM.JobApplication;
 import models.entity.Partner;
 
+import java.util.Date;
+
 /**
  * Created by zero on 4/10/16.
  */
@@ -12,6 +14,7 @@ public class CandidateWorkflowData {
     private CandidateExtraData extraData;
     private CandidateScoreData scoreData;
     private Integer applicationChannel;
+    private Date appliedOn;
     private Partner partner;
 
     public Candidate getCandidate() {
@@ -52,5 +55,13 @@ public class CandidateWorkflowData {
 
     public void setPartner(Partner partner) {
         this.partner = partner;
+    }
+
+    public Date getAppliedOn() {
+        return appliedOn;
+    }
+
+    public void setAppliedOn(Date appliedOn) {
+        this.appliedOn = appliedOn;
     }
 }

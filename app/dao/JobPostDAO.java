@@ -7,6 +7,7 @@ import com.avaje.ebean.RawSqlBuilder;
 import models.entity.Company;
 import models.entity.JobPost;
 import models.entity.OM.JobApplication;
+import play.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,13 +27,13 @@ public class JobPostDAO {
         return JobPost.find.where().in("jobPostId", jobPostIdList).findList();
     }
 
-    public static List<JobPost> getAllActiveHotNonPrivateJobsPostOfCompany(Company company) {
+    public static List<JobPost> getAllActiveHotNonPrivateJobsPostOfCompany(List<Long> companyIdList) {
         return JobPost.find.where()
-                .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_OPEN)
-                .eq("jobPostIsHot", "1")
-                .eq("CompanyId", company.getCompanyId())
+                .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_PRIVATE)
+                .in("CompanyId", companyIdList)
                 .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
                 .eq("Source", ServerConstants.SOURCE_INTERNAL)
+                .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_PRIVATE)
                 .orderBy().desc("jobPostUpdateTimestamp")
                 .findList();
     }

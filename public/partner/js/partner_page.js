@@ -74,6 +74,18 @@ function checkPartnerLogin() {
 function processDataPartnerSession(returnedData) {
     if(returnedData == 0){
         logoutPartner();
+    } else{
+        if(returnedData.partnerType.partnerTypeId == 7){
+            $("#jobs").remove();
+            $("#openPartner").hide();
+            $("#footer_inc").remove();
+            $("#privatePartner").show();
+
+        } else{
+            $("#openPartner").show();
+            $("#privatePartner").hide();
+
+        }
     }
 }
 
@@ -90,6 +102,7 @@ function processDataUpdateProfile(returnedData) {
 
 
 $(document).ready(function() {
+    checkPartnerLogin()
     //getting all localities
     try {
         $.ajax({

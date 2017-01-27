@@ -24,6 +24,7 @@ import dao.*;
 import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
+import models.entity.OM.CandidateResume;
 import models.entity.OM.InterviewDetails;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
@@ -407,6 +408,11 @@ public class RecruiterService {
                     unlockContactResponse.setStatus(UnlockContactResponse.STATUS_SUCCESS);
                     unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
                     unlockContactResponse.setCandidateId(candidate.getCandidateId());
+
+                    CandidateResume resume = CandidateResume.find.where().eq("CandidateId", candidate.getCandidateId()).findUnique();
+                    if(resume != null){
+                        unlockContactResponse.setResumeLink(resume.getFilePath());
+                    }
 
                     // Send sms to candidate that a recruiter has unlocked their profile
                     SmsUtil.sendCandidateUnlockSms(recruiterProfile.getCompany().getCompanyName(),
