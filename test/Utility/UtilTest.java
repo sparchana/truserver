@@ -49,13 +49,7 @@ public class UtilTest {
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][]{
-                {100020005, 1079},
-                {100020005, 1078},
-                {100020005, 1077},
-                {100020005, 1076},
-                {100020005, 1075},
-                {100020005, 1074},
-                {100020005, 1073},
+                {100020117, 1079},
         });
     }
 

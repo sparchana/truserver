@@ -1600,6 +1600,9 @@ public class CandidateService
                 isVerifyAadhaar = CandidateService.updateCandidateDocument(candidate, updateCandidateDocument);
             } else if (ServerConstants.PROPERTY_TYPE_LANGUAGE == propertyId) {
 
+                if(updateCandidateDetail.getCandidateKnownLanguageList() ==null
+                        || updateCandidateDetail.getCandidateKnownLanguageList().size() == 0) continue;
+
                 UpdateCandidateLanguageKnown updateCandidateLanguageKnown = new UpdateCandidateLanguageKnown();
 
                 updateCandidateLanguageKnown.setCandidateKnownLanguageList(updateCandidateDetail.getCandidateKnownLanguageList());
@@ -1610,11 +1613,18 @@ public class CandidateService
 
                 CandidateService.updateCandidateAssetOwned(candidate, updateCandidateAsset);
             } else if (ServerConstants.PROPERTY_TYPE_MAX_AGE == propertyId) {
+                // don't update data when its not available
+                if(updateCandidateDetail.getCandidateDob() == null) continue;
+
                 UpdateCandidateDob updateCandidateDob = new UpdateCandidateDob();
 
                 updateCandidateDob.setCandidateDob(updateCandidateDetail.getCandidateDob());
                 CandidateService.updateCandidateDOB(candidate, updateCandidateDob);
             } else if (ServerConstants.PROPERTY_TYPE_EXPERIENCE == propertyId) {
+
+                // don't update data when its not available
+                if(updateCandidateDetail.getCandidateTotalExperience() == null) continue;
+
                 UpdateCandidateWorkExperience updateCandidateWorkExperience = new UpdateCandidateWorkExperience();
 
                 updateCandidateWorkExperience.setCandidateTotalExperience(updateCandidateDetail.getCandidateTotalExperience());
@@ -1624,6 +1634,10 @@ public class CandidateService
 
                 CandidateService.updateCandidateWorkExperience(candidate, updateCandidateWorkExperience);
             } else if (ServerConstants.PROPERTY_TYPE_EDUCATION == propertyId) {
+
+                // don't update data when its not available
+                if(updateCandidateDetail.getCandidateDegree() == null) continue;
+
                 UpdateCandidateEducation updateCandidateEducation= new UpdateCandidateEducation();
 
                 updateCandidateEducation.setCandidateDegree(updateCandidateDetail.getCandidateDegree());
@@ -1633,11 +1647,15 @@ public class CandidateService
 
                 CandidateService.updateCandidateEducation(candidate, updateCandidateEducation);
             } else if (ServerConstants.PROPERTY_TYPE_GENDER == propertyId) {
+                if(updateCandidateDetail.getCandidateGender() == null) continue;
+
                 UpdateCandidateGender updateCandidateGender = new UpdateCandidateGender();
 
                 updateCandidateGender.setCandidateGender(updateCandidateDetail.getCandidateGender());
                 CandidateService.updateCandidateGender(candidate, updateCandidateGender);
             } else if (ServerConstants.PROPERTY_TYPE_SALARY == propertyId) {
+                if(updateCandidateDetail.getCandidateLastWithdrawnSalary() == null) continue;
+
                 UpdateCandidateLastWithdrawnSalary lastWithdrawnSalary = new UpdateCandidateLastWithdrawnSalary();
 
                 lastWithdrawnSalary.setCandidateLastWithdrawnSalary(updateCandidateDetail.getCandidateLastWithdrawnSalary());

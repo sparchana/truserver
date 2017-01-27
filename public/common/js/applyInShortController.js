@@ -1442,7 +1442,7 @@ var applyInShort = (function ($) {
 
                 if(localityId == null || localityId == 0){
                     okToSubmit = false;
-                    msg = "Please select a valid locality.";
+                    msg = "Please select a valid Interview locality.";
 
                     $.notify(msg, 'error');
 
@@ -1472,7 +1472,7 @@ var applyInShort = (function ($) {
                         };
                         okToSubmitList.push(submit);
                     } else {
-                        main["dateInMillis"] =parseInt(selectedInterview.split("_")[0]);
+                        main["dateInMillis"] = parseInt(selectedInterview.split("_")[0]);
                         main["timeSlotId"] = parseInt(selectedInterview.split("_")[1]);
                     }
                 }
@@ -1496,7 +1496,7 @@ var applyInShort = (function ($) {
                                     item["idNumber"] = $('input#idProofValue_' + id).val().trim();
                                 } else if (isChecked && !isValid) {
                                     okToSubmit = false;
-                                    $.notify("Please provide valid document details.", 'error');
+                                    // $.notify("Please provide valid document details.", 'error');
                                 }
 
                                 if (!jQuery.isEmptyObject(item)) {
@@ -1509,7 +1509,7 @@ var applyInShort = (function ($) {
                                         message: msg,
                                         submissionStatus: okToSubmit
                                     };
-                                    okToSubmitList.push(submit);
+                                    // okToSubmitList.push(submit);
                                 }
                             });
                         });
@@ -1562,6 +1562,7 @@ var applyInShort = (function ($) {
                          $.notify("Please provide all known languages", 'error');
                          }*/
                         if(!okToSubmit) {
+                            d ["candidateKnownLanguageList"] = [];
                             var submit = {
                                 propId : propId,
                                 message: msg,
@@ -1582,7 +1583,7 @@ var applyInShort = (function ($) {
                         // age submission
                         if($('#dob_day').val() == "Day" || $('#dob_month').val() == "Month" || $('#dob_year').val() == "Year") {
                             okToSubmit = false;
-                        }else{
+                        } else{
                             var selectedDob = $('#dob_year').val() + "-" + $('#dob_month').val() + "-" + $('#dob_day').val();
                         }
                         if(selectedDob == "") {
@@ -1609,19 +1610,20 @@ var applyInShort = (function ($) {
                         msg = "Please provide valid Date of birth";
 
                         if(!okToSubmit){
-                            $.notify(msg, 'error');
+                            // $.notify(msg, 'error');
+                            d ["candidateDob"] = null;
                             var submit = {
                                 propId : propId,
                                 message: msg,
                                 submissionStatus: okToSubmit
                             };
-                            okToSubmitList.push(submit);
+                            // okToSubmitList.push(submit);
                         }
                     } else if (propId == 4) {
                         /* calculate total experience in months */
                         if(($('input:radio[name="candidateExperience"]:checked').length == 0)){
                             okToSubmit = false;
-                            $.notify("Please select Fresher/Experienced.", 'error');
+                            // $.notify("Please select Fresher/Experienced.", 'error');
                         }
                         var expMonth;
                         var expYear;
@@ -1678,12 +1680,18 @@ var applyInShort = (function ($) {
                         d ["extraDetailAvailable"] = true;
 
                         if(!okToSubmit){
+
+                            d ["candidateTotalExperience"] = null;
+                            d ["pastCompanyList"] = null;
+                            d ["candidateIsEmployed"] = null;
+                            d ["extraDetailAvailable"] = null;
+
                             var submit = {
                                 propId : propId,
                                 message: msg,
                                 submissionStatus: okToSubmit
                             };
-                            okToSubmitList.push(submit);
+                            // okToSubmitList.push(submit);
                         }
 
                     } else if (propId == 5) {
@@ -1697,32 +1705,38 @@ var applyInShort = (function ($) {
                             if(($('#candidateHighestDegree').val()) == "-1" ||
                                 $('#candidateEducationInstitute').val() == "") {
                                 okToSubmit = false;
-                                $.notify("Please provide full education details", 'error');
+                                // $.notify("Please provide full education details", 'error');
 
                             }
                         }
 
                         if(!okToSubmit){
+                            d ["candidateEducationLevel"] = null;
+                            d ["candidateDegree"] = null;
+                            d ["candidateEducationInstitute"] = null;
+                            d ["candidateEducationCompletionStatus"] = null;
+
                             var submit = {
                                 propId : propId,
                                 message: msg,
                                 submissionStatus: okToSubmit
                             };
-                            okToSubmitList.push(submit);
+                            // okToSubmitList.push(submit);
                         }
                     } else if (propId == 6) {
                         d ["candidateGender"] = ($('input:radio[name="gender"]:checked').val());
                         if(($('input:radio[name="gender"]:checked').length == 0)) {
                             okToSubmit = false;
-                            $.notify("Please provide your gender details", 'error');
+                            // $.notify("Please provide your gender details", 'error');
                         }
                         if(!okToSubmit){
+                            d ["candidateGender"] = null;
                             var submit = {
                                 propId : propId,
                                 message: msg,
                                 submissionStatus: okToSubmit
                             };
-                            okToSubmitList.push(submit);
+                            // okToSubmitList.push(submit);
                         }
                     } else if (propId == 7) {
                         var salary = $('#candidateLastWithdrawnSalary').val();
@@ -1730,21 +1744,23 @@ var applyInShort = (function ($) {
                             d ["candidateLastWithdrawnSalary"] = parseInt($('#candidateLastWithdrawnSalary').val());
                         } else {
                             okToSubmit = false;
-                            $.notify("Please enter a valid 'Last Withdrawn Salary' per month. (Min: 1000, Max: 1,00,000)", 'error');
+                            // $.notify("Please enter a valid 'Last Withdrawn Salary' per month. (Min: 1000, Max: 1,00,000)", 'error');
                             if(!okToSubmit){
+                                d ["candidateLastWithdrawnSalary"] = null;
                                 var submit = {
                                     propId : propId,
                                     message: "Please enter a valid 'Last Withdrawn Salary' per month. (Min: 1000, Max: 1,00,000)",
                                     submissionStatus: okToSubmit
                                 };
-                                okToSubmitList.push(submit);
+                                // okToSubmitList.push(submit);
                             }
                         }
                     } else if (propId == 8) {
                         var lId = $('#candidateHomeLocality').val();
                         if(lId == null) {
                             okToSubmit = false;
-                            $.notify("Please enter a valid Locality", 'error');
+                            d ["candidateHomeLocality"] = null;
+                            // $.notify("Please enter a valid Locality", 'error');
                         } else{
                             d ["candidateHomeLocality"] = parseInt(lId);
                         }
@@ -1754,13 +1770,14 @@ var applyInShort = (function ($) {
                                 message: "Please enter a valid Home locality",
                                 submissionStatus: okToSubmit
                             };
-                            okToSubmitList.push(submit);
+                            // okToSubmitList.push(submit);
                         }
                     } else if (propId == 9) {
                         var timeShiftPrefId = $('#candidateTimeShiftPref').val();
                         if(timeShiftPrefId == "-1") {
                             okToSubmit = false;
-                            $.notify("Please enter a valid time/shift preference (ex: Part time, Full time)", 'error');
+                            d ["candidateTimeShiftPref"] = null;
+                            // $.notify("Please enter a valid time/shift preference (ex: Part time, Full time)", 'error');
                         } else {
                             d ["candidateTimeShiftPref"] = $('#candidateTimeShiftPref').val();
                         }
@@ -1770,11 +1787,12 @@ var applyInShort = (function ($) {
                                 message: "Please enter a valid time preference",
                                 submissionStatus: okToSubmit
                             };
-                            okToSubmitList.push(submit);
+                            // okToSubmitList.push(submit);
                         }
                     }
                 });
 
+                console.log(okToSubmitList.length);
                 if (okToSubmitList.length == 0) {
                     main["updateCandidateDetail"] = d;
                     this.submit(main);
