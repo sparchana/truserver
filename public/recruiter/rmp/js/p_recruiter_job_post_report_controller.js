@@ -9,6 +9,8 @@ var zapp = (function () {
 
     var zapp = {
         rows : [],
+        csv: ["Job Title, Job Posted On, Fulfilment status, Total SMS Sent, Total Applications, Total Interviews, Cycle Time"],
+        csvString: "",
         recruiterId: null,
         method: {
             init: function () {
@@ -20,14 +22,30 @@ var zapp = (function () {
             setRecruiterId: function () {
                 zapp.recruiterId = parseInt(window.location.search.split("&")[1].split("=")[1]);
             },
-            getFulfillmentText: function (bundle) {
-                if(bundle == null) {
-                    return "NA";
-                }
-                return parseFloat(Math.round(bundle.percentage * 100) / 100).toFixed(1)+ " %  ("+bundle.selected+" out of "+bundle.total+")";
+            generateCSVString: function () {
+                var json = zapp.rows;
+                var fields = Object.keys(json[0]);
+                var replacer = function(key, value) { return value === null ? '' : value };
+                var csv = json.map(function(row){
+                    return fields.map(function(fieldName){
+                        return JSON.stringify(row[fieldName], replacer)
+                    }).join(',')
+                });
+                csv.unshift(zapp.csv[0]); // add header column
+                zapp.csvString = csv.join('\r\n');
             }
         },
         render: {
+            csvDownloadBtn: function () {
+                zapp.method.generateCSVString();
+
+                // modify btn
+                var a         = document.getElementById('downloadJpSummaryBtn');
+                a.href        = 'data:attachment/csv,' +  encodeURIComponent(zapp.csvString);
+                a.target      = '_blank';
+                a.download    = 'job_post_summary_'+zapp.recruiterId+'.csv';
+
+            },
             jobPostTable: function () {
                 $("#jpTable").show();
                 $("#loadingIcon").hide();
@@ -61,7 +79,7 @@ var zapp = (function () {
                     var colFulfillmentStatus = document.createElement("div");
                     colFulfillmentStatus.className = 'col s12 l2';
                     colFulfillmentStatus.style = 'margin-top:8px';
-                    colFulfillmentStatus.textContent = zapp.method.getFulfillmentText(response.percentageFulfillmentBundle);
+                    colFulfillmentStatus.textContent = response.percentageFulfillment;
                     outerRow.appendChild(colFulfillmentStatus);
 
                     // column #4
@@ -88,11 +106,7 @@ var zapp = (function () {
                     // column #7
                     var colCycleTime = document.createElement("div");
                     colCycleTime.className = "col s12 l1";
-                    if(response.cycleTime < 0) {
-                        colCycleTime.textContent = "NA";
-                    } else {
-                        colCycleTime.textContent = response.cycleTime + " Day(s)";
-                    }
+                    colCycleTime.textContent = response.cycleTime;
                     colCycleTime.style = "font-weight: 600;font-size:12px";
                     outerRow.appendChild(colCycleTime);
 
@@ -108,6 +122,7 @@ var zapp = (function () {
                 }).success(function (returnedData) {
                     zapp.rows = returnedData;
                     zapp.render.jobPostTable();
+                    zapp.render.csvDownloadBtn();
                 }).error(function (jqXHR, exception) {
                     $("#somethingWentWrong").show();
                     $("#loadingIcon").hide();

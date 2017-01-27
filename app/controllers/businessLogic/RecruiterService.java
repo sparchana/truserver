@@ -905,8 +905,9 @@ public class RecruiterService {
             recruiterSummaryResponse.setTotalInterviewConducted(computeTotalInterviewConducted(jobPostIdList));
             recruiterSummaryResponse.setTotalSelected(computeTotalSelected(jobPostIdList));
 
-            recruiterSummaryResponse.setPercentageFulfillmentBundle(
-                                     computePercentageFulfilled(jobPostList, recruiterSummaryResponse.getTotalSelected()));
+            recruiterSummaryResponse.setPercentageFulfillment(
+                    formatPercentageFulfilled(computePercentageFulfilled(jobPostList, recruiterSummaryResponse.getTotalSelected()))
+                                     );
 
             recruiterSummaryResponseList.add(recruiterSummaryResponse);
         }
@@ -924,8 +925,14 @@ public class RecruiterService {
         if(totalVacancy == 0) {
             return null;
         }
-        float percentage = Float.parseFloat( new DecimalFormat("##.##").format( ((float) totalSelected*100/totalVacancy)));
+        float percentage = Float.parseFloat( new DecimalFormat("###.##").format( ((float) totalSelected*100/totalVacancy)));
         return new PercentageBundle(totalSelected, totalVacancy, percentage);
+    }
+
+    private String formatPercentageFulfilled(PercentageBundle percentageBundle) {
+        if(percentageBundle == null)  return "NA";
+        return percentageBundle.getPercentage()+" % ("+percentageBundle.getSelected() + " out of "+percentageBundle.getTotal() + ")";
+
     }
 
     private int computeTotalSelected(List<Long> jobPostIdList) {
@@ -978,11 +985,12 @@ public class RecruiterService {
             // for now this uses the jobpost workflow to figure out these info
             jobPostSummaryResponse.setTotalApplicants(computeTotalApplicant(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))));
             jobPostSummaryResponse.setTotalInterviewConducted(computeTotalInterviewConducted(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))));
-            jobPostSummaryResponse.setPercentageFulfillmentBundle(computePercentageFulfilled(new ArrayList<>(Arrays.asList(jobPost)),
-                    computeTotalSelected(new ArrayList<>(Arrays.asList(jobPost.getJobPostId())))));
+            jobPostSummaryResponse.setPercentageFulfillment(
+                    formatPercentageFulfilled(computePercentageFulfilled(new ArrayList<>(Arrays.asList(jobPost)),
+                    computeTotalSelected(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))))));
 
             try {
-                jobPostSummaryResponse.setCycleTime(computeCycleTime(jobPost.getJobPostId(), jobPost.getJobPostCreateTimestamp()));
+                jobPostSummaryResponse.setCycleTime(formatCycleTime(computeCycleTime(jobPost.getJobPostId(), jobPost.getJobPostCreateTimestamp())));
             } catch (ParseException e) {
                 e.printStackTrace();
                 Logger.error("unable to parse date for date diff in computeCycleTime");
@@ -995,6 +1003,13 @@ public class RecruiterService {
         }
 
         return jobPostSummaryResponseList;
+    }
+
+    private String formatCycleTime(int i) {
+        if(i < 0) {
+            return "NA";
+        }
+        return i + " Day(s)";
     }
 
     /**

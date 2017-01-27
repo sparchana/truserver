@@ -9,18 +9,37 @@ var zapp = (function () {
 
     var zapp = {
         rows : [],
+        csv: ["Id, Recruiter Name, Recruiter, Mobile, No. of Jobs Posted, Total Applications, Total Interviews, Total Selections, Percentage fulfilled"],
+        csvString: "",
+
         method: {
             init: function () {
                 zapp.get.allJobPosts();
             },
-            getFulfillmentText: function (bundle) {
-                if(bundle == null) {
-                    return "NA";
-                }
-                return parseFloat(Math.round(bundle.percentage * 100) / 100).toFixed(1)+ " %  ("+bundle.selected+" out of "+bundle.total+")";
+            generateCSVString: function () {
+                var json = zapp.rows;
+                var fields = Object.keys(json[0]);
+                var replacer = function(key, value) { return value === null ? '' : value };
+                var csv = json.map(function(row){
+                    return fields.map(function(fieldName){
+                        return JSON.stringify(row[fieldName], replacer)
+                    }).join(',')
+                });
+                csv.unshift(zapp.csv[0]); // add header column
+                zapp.csvString = csv.join('\r\n');
             }
         },
         render: {
+            csvDownloadBtn: function () {
+                zapp.method.generateCSVString();
+
+                // modify btn
+                var a         = document.getElementById('downloadBtn');
+                a.href        = 'data:attachment/csv,' +  encodeURIComponent(zapp.csvString);
+                a.target      = '_blank';
+                a.download    = 'recruiter_summary.csv';
+
+            },
             recruiterTable: function () {
                 $("#recTable").show();
                 $("#loadingIcon").hide();
@@ -87,7 +106,7 @@ var zapp = (function () {
                     // column #7
                     var colPercentFulfilled = document.createElement("div");
                     colPercentFulfilled.className = "col s12 l1";
-                    colPercentFulfilled.textContent= zapp.method.getFulfillmentText(recObject.percentageFulfillmentBundle);
+                    colPercentFulfilled.textContent= recObject.percentageFulfillment;
                     colPercentFulfilled.style = "font-weight: 600;font-size:12px";
                     outerRow.appendChild(colPercentFulfilled);
 
@@ -103,6 +122,7 @@ var zapp = (function () {
                 }).success(function (returnedData) {
                     zapp.rows = returnedData;
                     zapp.render.recruiterTable();
+                    zapp.render.csvDownloadBtn();
                 }).error(function (jqXHR, exception) {
                     $("#somethingWentWrong").show();
                     $("#loadingIcon").hide();
@@ -115,4 +135,3 @@ var zapp = (function () {
 
     return zapp;
 }());
-

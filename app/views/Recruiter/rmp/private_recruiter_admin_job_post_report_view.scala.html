@@ -38,7 +38,10 @@
     </script>
 
         <div class="back-banner-recruiter" style="height: 90px"></div>
-        <h5 style="margin: 8px 8px 8px 16px">Jobs Summary</h5>
+        <h5 style="margin: 8px 8px 8px 16px">Jobs Summary
+            <a class="waves-effect waves-light btn " id="downloadJpSummaryBtn"><i class="material-icons left">settings</i> Download</a>
+        </h5>
+
 
         <div style="padding-top: 8%; padding-bottom: 8%" id="loadingIcon">
             <center>
@@ -65,8 +68,11 @@
                 <h6>Looks like your company doesn't have any recruiter yet. </h6>
             </center>
         </div>
+
+
         <div class="container-fluid" id="jpTable" style="display: none">
             <div class="card" id="jobPostSummary">
+
                 <div class="row hide-on-small-only" id='headerForData'>
                     <div class="col s1 l1" id="colHeadDataTable">
                         <font>Job Title</font>
@@ -94,6 +100,7 @@
             </div>
             </div>
         </div>
+
 
             <!--Footer start-->
         <footer class="page-footer" style="background-color: #424242;">
