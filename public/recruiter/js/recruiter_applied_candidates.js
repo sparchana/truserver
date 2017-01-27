@@ -207,6 +207,12 @@ function processDataUnlockedCandidates(returnedData) {
         try {
             $("#candidate_" + unlockedCandidate.candidate.candidateId).html(unlockedCandidate.candidate.candidateMobile);
             $("#unlock_candidate_" + unlockedCandidate.candidate.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 customUnlockBtn").addClass("contactUnlocked right").removeAttr('onclick');
+
+            var link = unlockedCandidate.candidate.candidateResumeLink;
+            if(link != null){
+                $("#candidate_resume_" + unlockedCandidate.candidate.candidateId).attr("val", "http://docs.google.com/gview?url=" + link + "&embedded=true");
+            }
+
         } catch (err){}
     });
 }

@@ -84,7 +84,6 @@ function processDataPartnerSession(returnedData) {
         } else{
             $("#openPartner").show();
             $("#privatePartner").hide();
-
         }
     }
 }

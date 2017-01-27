@@ -8,6 +8,8 @@ var view_unlocked_candidate = 2;
 var view_applied_candidate = 3;
 var view_tracking_candidate = 4;
 
+var resumeDiv = null;
+
 /* variables, flags and lists for applied candidate use case */
 var pendingParent = $("#pendingCandidateContainer");
 var confirmedParent = $("#confirmedCandidateContainer");
@@ -276,6 +278,7 @@ function renderIndividualCandidateCard(value, parent, view) {
         }
     }
 
+    var resumeLink = document.createElement("a");
     candidateCardRowColOne.appendChild(userAvatar);
 
     //candidate name container
@@ -333,24 +336,38 @@ function renderIndividualCandidateCard(value, parent, view) {
     candidateExperience.style = "font-size: 14px";
     candidateExperience.textContent = ", " + expVal;
 
-    var resumeIcon = document.createElement("img");
-    resumeIcon.src = "/assets/recruiter/img/icons/cv.svg";
-    resumeIcon.style = "margin: 0 4px 2px 6px;";
-    resumeIcon.setAttribute('height', '24px');
+    if(value.candidate.candidateResumeLink != null){
+        var resumeIcon = document.createElement("img");
+        resumeIcon.src = "/assets/recruiter/img/icons/cv.svg";
+        resumeIcon.style = "margin: 0 4px 2px 6px;";
+        resumeIcon.setAttribute('height', '24px');
 
-    var resumeLink = document.createElement("a");
-    resumeLink.class = "null";
-    resumeLink.textContent = "View Resume";
-    resumeLink.id = "candidate_resume_" + value.candidate.candidateId;
-    resumeLink.onclick = function () {
-        //TODO: view resume
-    };
-    resumeLink.style = "font-size: 14px; font-weight: bold; color: rgb(84, 192, 235); ";
+        resumeLink = document.createElement("a");
+        if(view == view_search_candidate || view == view_applied_candidate || view == view_tracking_candidate){
+            resumeLink.setAttribute("val", "0");
+        } else{
+            resumeLink.setAttribute("val", "http://docs.google.com/gview?url=" + value.candidate.candidateResumeLink + "&embedded=true");
+        }
 
-    candidateCardRowColOne.appendChild(candidateExperience);
+        resumeLink.textContent = "View Resume";
+        resumeLink.id = "candidate_resume_" + value.candidate.candidateId;
+        resumeLink.onclick = function () {
+            resumeDiv = resumeLink;
+            if($(this).attr("val") == "0"){
+                viewResume = true;
+                unlockContact(value.candidate.candidateId);
+            } else{
+                window.open("http://docs.google.com/gview?url=" + $(this).attr("val") + "&embedded=true");
+            }
+        };
+        resumeLink.style = "font-size: 14px; font-weight: bold; color: rgb(84, 192, 235); ";
 
-//    candidateCardRowColOne.appendChild(resumeIcon);
-//    candidateCardRowColOne.appendChild(resumeLink);
+        candidateCardRowColOne.appendChild(candidateExperience);
+
+        candidateCardRowColOne.appendChild(resumeIcon);
+        candidateCardRowColOne.appendChild(resumeLink);
+    }
+
 
     if(view == view_tracking_candidate || view == view_applied_candidate){
         //match score col
@@ -1273,6 +1290,7 @@ function renderIndividualCandidateCard(value, parent, view) {
             unlockCandidateBtn.className = "contactUnlocked right";
             unlockCandidateBtn.style = "margin-right: 8px";
             candidateUnlockFont.textContent = value.candidate.candidateMobile;
+            resumeLink.setAttribute("val", "http://docs.google.com/gview?url=" + value.candidate.candidateResumeLink + "&embedded=true");
         }
     } else if(view == view_unlocked_candidate){
         candidateUnlockFont.textContent = value.candidate.candidateMobile;
