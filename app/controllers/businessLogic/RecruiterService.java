@@ -14,6 +14,7 @@ import api.http.httpResponse.Recruiter.AddRecruiterResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
 import api.http.httpResponse.Recruiter.recruiterAdmin.JobPostSummaryResponse;
+import api.http.httpResponse.Recruiter.recruiterAdmin.PercentageBundle;
 import api.http.httpResponse.Recruiter.recruiterAdmin.RecruiterSummaryResponse;
 import api.http.httpResponse.ResetPasswordResponse;
 import api.http.httpResponse.interview.InterviewResponse;
@@ -888,6 +889,7 @@ public class RecruiterService {
             List<JobPost> jobPostList = new ArrayList<>();
             for(JobPost jobPost: recruiterProfile.getJobPosts()) {
                 if(jobPost.getJobPostAccessLevel() != ServerConstants.JOB_POST_TYPE_PRIVATE) continue;
+                if(jobPost.getJobPostStatus().getJobStatusId() != ServerConstants.JOB_STATUS_ACTIVE) continue;
 
                 jobPostList.add(jobPost);
                 jobPostIdList.add(jobPost.getJobPostId());
@@ -898,27 +900,32 @@ public class RecruiterService {
             recruiterSummaryResponse.setRecruiterMobile(recruiterProfile.getRecruiterProfileMobile() +
                     ((recruiterProfile.getRecruiterAlternateMobile() == null) ? "": "/"+recruiterProfile.getRecruiterAlternateMobile()));
 
-            recruiterSummaryResponse.setNoOfJobPosted(recruiterProfile.getJobPosts().size());
+            recruiterSummaryResponse.setNoOfJobPosted(jobPostList.size());
             recruiterSummaryResponse.setTotalCandidatesApplied(computeTotalApplicant(jobPostIdList));
             recruiterSummaryResponse.setTotalInterviewConducted(computeTotalInterviewConducted(jobPostIdList));
             recruiterSummaryResponse.setTotalSelected(computeTotalSelected(jobPostIdList));
-            recruiterSummaryResponse.setPercentageFulfilled(computePercentageFulfilled(jobPostList, recruiterSummaryResponse.getTotalSelected()));
+
+            recruiterSummaryResponse.setPercentageFulfillmentBundle(
+                                     computePercentageFulfilled(jobPostList, recruiterSummaryResponse.getTotalSelected()));
+
             recruiterSummaryResponseList.add(recruiterSummaryResponse);
         }
 
         return recruiterSummaryResponseList;
     }
 
-    private Float computePercentageFulfilled(List<JobPost> jobPostList, Integer totalSelected) {
-
+    private PercentageBundle computePercentageFulfilled(List<JobPost> jobPostList, Integer totalSelected) {
         int totalVacancy = 0;
         for(JobPost jobPost: jobPostList) {
             if(jobPost.getJobPostVacancies() == null) continue;
 
             totalVacancy += jobPost.getJobPostVacancies();
         }
-        if (totalVacancy == 0 ) return 0F;
-        return Float.parseFloat( new DecimalFormat("##.##").format( ((float) totalSelected*100/totalVacancy)));
+        if(totalVacancy == 0) {
+            return null;
+        }
+        float percentage = Float.parseFloat( new DecimalFormat("##.##").format( ((float) totalSelected*100/totalVacancy)));
+        return new PercentageBundle(totalSelected, totalVacancy, percentage);
     }
 
     private int computeTotalSelected(List<Long> jobPostIdList) {
@@ -971,7 +978,7 @@ public class RecruiterService {
             // for now this uses the jobpost workflow to figure out these info
             jobPostSummaryResponse.setTotalApplicants(computeTotalApplicant(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))));
             jobPostSummaryResponse.setTotalInterviewConducted(computeTotalInterviewConducted(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))));
-            jobPostSummaryResponse.setFulfillmentStatus(computePercentageFulfilled(new ArrayList<>(Arrays.asList(jobPost)),
+            jobPostSummaryResponse.setPercentageFulfillmentBundle(computePercentageFulfilled(new ArrayList<>(Arrays.asList(jobPost)),
                     computeTotalSelected(new ArrayList<>(Arrays.asList(jobPost.getJobPostId())))));
 
             try {

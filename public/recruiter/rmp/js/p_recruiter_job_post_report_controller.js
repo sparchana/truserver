@@ -19,6 +19,12 @@ var zapp = (function () {
             },
             setRecruiterId: function () {
                 zapp.recruiterId = parseInt(window.location.search.split("&")[1].split("=")[1]);
+            },
+            getFulfillmentText: function (bundle) {
+                if(bundle == null) {
+                    return "NA";
+                }
+                return parseFloat(Math.round(bundle.percentage * 100) / 100).toFixed(1)+ " %  ("+bundle.selected+" out of "+bundle.total+")";
             }
         },
         render: {
@@ -55,11 +61,7 @@ var zapp = (function () {
                     var colFulfillmentStatus = document.createElement("div");
                     colFulfillmentStatus.className = 'col s12 l2';
                     colFulfillmentStatus.style = 'margin-top:8px';
-                    if(response.fulfillmentStatus != null) {
-                        colFulfillmentStatus.textContent = parseFloat(Math.round(response.fulfillmentStatus * 100) / 100).toFixed(1)+ " %";
-                    } else {
-                        colFulfillmentStatus.textContent = "NA";
-                    }
+                    colFulfillmentStatus.textContent = zapp.method.getFulfillmentText(response.percentageFulfillmentBundle);
                     outerRow.appendChild(colFulfillmentStatus);
 
                     // column #4
