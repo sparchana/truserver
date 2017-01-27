@@ -42,6 +42,7 @@ import org.joda.time.Days;
 import play.Logger;
 
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -917,7 +918,7 @@ public class RecruiterService {
             totalVacancy += jobPost.getJobPostVacancies();
         }
         if (totalVacancy == 0 ) return 0F;
-        return ((float) totalSelected*100/totalVacancy);
+        return Float.parseFloat( new DecimalFormat("##.##").format( ((float) totalSelected*100/totalVacancy)));
     }
 
     private int computeTotalSelected(List<Long> jobPostIdList) {

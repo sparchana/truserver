@@ -81,7 +81,11 @@ var zapp = (function () {
                     // column #7
                     var colPercentFulfilled = document.createElement("div");
                     colPercentFulfilled.className = "col s12 l1";
-                    colPercentFulfilled.textContent= recObject.percentageFulfilled + " %";
+                    if(recObject.percentageFulfilled != null) {
+                        colPercentFulfilled.textContent= parseFloat(Math.round(recObject.percentageFulfilled  * 100) / 100).toFixed(1)+ " %";
+                    } else {
+                        colPercentFulfilled.textContent= "NA";
+                    }
                     colPercentFulfilled.style = "font-weight: 600;font-size:12px";
                     outerRow.appendChild(colPercentFulfilled);
 

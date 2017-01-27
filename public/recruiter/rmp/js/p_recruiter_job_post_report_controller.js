@@ -55,7 +55,11 @@ var zapp = (function () {
                     var colFulfillmentStatus = document.createElement("div");
                     colFulfillmentStatus.className = 'col s12 l2';
                     colFulfillmentStatus.style = 'margin-top:8px';
-                    colFulfillmentStatus.textContent = response.fulfillmentStatus + " %";
+                    if(response.fulfillmentStatus != null) {
+                        colFulfillmentStatus.textContent = parseFloat(Math.round(response.fulfillmentStatus * 100) / 100).toFixed(1)+ " %";
+                    } else {
+                        colFulfillmentStatus.textContent = "NA";
+                    }
                     outerRow.appendChild(colFulfillmentStatus);
 
                     // column #4

@@ -534,7 +534,12 @@ public class JobSearchService {
         query = query.where().eq("source", source).query();
 
         //checking if job post is private or not
-        query = query.where().eq("JobPostIsPrivate", isPrivate).query();
+        if(isPrivate){
+
+            query = query.where().eq("jobPostAccessLevel", ServerConstants.JOB_POST_TYPE_PRIVATE).query();
+        } else {
+            query = query.where().eq("jobPostAccessLevel", ServerConstants.JOB_POST_TYPE_OPEN).query();
+        }
 
         query = query.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).query();
 

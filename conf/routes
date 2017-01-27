@@ -167,7 +167,7 @@ GET         /recruiter/job/track/:id                                      contro
 
 POST        /showRecruiterLead/:id                                        controllers.RecruiterController.readRecruiterLead(id: Long)
 POST        /getAllJobApplicants/:id                                      controllers.RecruiterController.getAllJobApplicants(id : Long)
-POST        /getAllRecruiterJobPosts                                      controllers.RecruiterController.getAllRecruiterJobPosts
+POST        /getAllRecruiterJobPosts                                      controllers.RecruiterController.getAllRecruiterJobPosts()
 POST        /getRecruiterCredits/:id                                      controllers.RecruiterController.getRecruiterCredits(id : Long)
 POST        /getAllCreditCategory                                         controllers.RecruiterController.getAllCreditCategory()
 POST        /recruiter/unlockCandidateContact/:id                         controllers.RecruiterController.unlockCandidateContact(id : Long)
