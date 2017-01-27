@@ -1417,6 +1417,30 @@ var applyInShort = (function ($) {
                     console.log("exception occured!!" + exception);
                 }
             },
+            interviewIconChange: function () {
+                if($("#jobInterviewPanel").hasClass("in")== true){
+                    $("#interviewCollapsePanelIcon").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+                }
+                else{
+                    $("#interviewCollapsePanelIcon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+                }
+            },
+            localityIconChange: function () {
+                if($("#jobLocalityPanel").hasClass("in")== true){
+                    $("#localityCollapsePanelIcon").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+                }
+                else{
+                    $("#localityCollapsePanelIcon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+                }
+            },
+            detailsIconChange: function () {
+                if($("#missingInfo").hasClass("in")== true){
+                    $("#detailsCollapsePanelIcon").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+                }
+                else{
+                    $("#detailsCollapsePanelIcon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+                }
+            },
             validateSubmit: function () {
 
                 appz.missingData.shortPSPopulateResponse.propertyIdList;
@@ -1817,6 +1841,17 @@ var applyInShort = (function ($) {
     // search click listener
     document.getElementById("finalSubmitBtn").addEventListener("click", function () {
         appz.do.validateSubmit();
+    });
+    //
+    document.getElementById("jobInterviewHead").addEventListener("click",function () {
+        appz.do.interviewIconChange();
+    });
+    document.getElementById("jobLocalityHead").addEventListener("click",function () {
+        appz.do.localityIconChange();
+    });
+
+    document.getElementById("jobInterviewHead").addEventListener("click",function () {
+        appz.do.detailsIconChange();
     });
 
     return appz;

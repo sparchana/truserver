@@ -43,6 +43,9 @@
             color:#286ab6;
         }
         </style>
+        <script>
+
+        </script>
     </head>
     <body>
             <!-- Nav start -->
@@ -80,8 +83,10 @@
                 <div class="col-xs-12 col-sm-8 col-sm-offset-2">
                     <div class="panel-group">
                     <div class="panel panel-default">
-                        <div class="panel-heading data-toggle" data-target="#jobInterviewPanel" data-toggle="collapse" style=" background-color: #cfd8dc" href="#sortByOpener">
-                            <h4 class="panel-title" style="font-weight: bold">When can you come for interview ?</h4>
+                        <div class="panel-heading data-toggle" id="jobInterviewHead" data-target="#jobInterviewPanel" data-toggle="collapse" style="background-color: #cfd8dc" href="#sortByOpener">
+                            <h4 class="panel-title" style="font-weight: bold">When can you come for interview ?
+                                <span id="interviewCollapsePanelIcon" class="glyphicon glyphicon-chevron-up pull-right"></span>
+                            </h4>
                         </div>
                         <div class="panel-collapse collapse in" id="jobInterviewPanel">
                             <div class="row" style="margin: 10px 0">
@@ -102,8 +107,10 @@
                 <div class="col-xs-12 col-sm-8 col-sm-offset-2">
                 <div class="panel-group">
                     <div class="panel panel-default">
-                        <div class="panel-heading" data-toggle="collapse" data-target="#jobLocalityPanel" style="background-color: #cfd8dc" href="#sortByOpener">
-                            <h4 class="panel-title" style="font-weight: bold">Where can you work ?</h4>
+                        <div class="panel-heading" id="jobLocalityHead" data-toggle="collapse" data-target="#jobLocalityPanel" style="background-color: #cfd8dc" href="#sortByOpener">
+                            <h4 class="panel-title" style="font-weight: bold">Where can you work ?
+                                <span id="localityCollapsePanelIcon" class="glyphicon glyphicon-chevron-up pull-right"></span>
+                            </h4>
                         </div>
                         <div class="panel-collapse collapse in" id="jobLocalityPanel">
                             <div class="row" style="margin: 10px 0">
@@ -124,7 +131,9 @@
                 <div class="col-sm-12">
                     <div class="panel panel-default" id="preScreenCardDiv">
                     <div class="panel-heading" data-target="#missingInfo" style=" background-color: #cfd8dc" data-toggle="collapse" href="#sortByOpener">
-                        <h4 class="panel-title" style="font-weight: bold">Provide Details</h4>
+                        <h4 class="panel-title" style="font-weight: bold">Provide Details
+                            <span id="detailsCollapsePanelIcon" class="glyphicon glyphicon-chevron-down pull-right"></span>
+                        </h4>
                     </div>
                     <div class="panel-collapse collapse" id="missingInfo"></div>
                 </div>
