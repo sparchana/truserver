@@ -348,8 +348,11 @@ function processDataRecruiterSession(returnedData) {
             $("#recruiterMsg").show();
             $("#recruiterHIW").show();
             $("#recruiterHighlights").show();
+            $("#companyCode").hide();
         } else{
 
+            $("#companyCode").show();
+            $("#companyCode").html("Company Unique Code : " + returnedData.company.companyCode);
             $("#creditView").hide();
             $("#creditViewMobile").hide();
             $("#recruiterMsg").hide();
