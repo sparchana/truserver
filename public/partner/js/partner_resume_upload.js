@@ -2,6 +2,7 @@
  * Created by hawk on 16/1/17.
  */
 
+//trigger if resume file selected
 function uploadResume(evt){
     var files = evt.target.files;
     var url = "/addResume/";
@@ -36,6 +37,10 @@ function uploadResume(evt){
 
 function processDataForAddResume(returnedData) {
     $('#uploadResumeModalProcess').modal('hide');
+
+    //for partner
+    $(".textResponse").hide();
+
     if(returnedData != null){
         if(returnedData.status == 1)
         {
@@ -69,10 +74,13 @@ function processDataForAddResume(returnedData) {
             h4.style = "font-weight:600";
             resumeColRight.appendChild(h4);
 
+
+            $("#uploadResumeModalContent").show();
             $('#uploadResumeModal').modal('show');
             setTimeout(function(){
                 $('#uploadResumeModal').modal('hide');
             }, 3000);
+            $(".textResponse").hide();
 
         }
         else{
@@ -107,6 +115,7 @@ function processDataForAddResume(returnedData) {
             h4.style = "font-weight:600";
             resumeColRight.appendChild(h4);
 
+            $("#uploadResumeModalContent").show();
             $('#uploadResumeModal').modal('show');
             setTimeout(function(){
                 $('#uploadResumeModal').modal('hide');

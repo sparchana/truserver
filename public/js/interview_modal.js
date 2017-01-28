@@ -48,8 +48,8 @@ function processJobPostInterviewSlot(returnedData, isSupport) {
     if (returnedData.interviewSlotMap!= null && Object.keys(returnedData.interviewSlotMap).length > 0) {
         //slots
         $('#interViewSlot').html('');
-        var defaultOption = $('<option value="-1"></option>').text("Select Time Slot");
-        $('#interViewSlot').append(defaultOption);
+
+
 
         $.each( returnedData.interviewSlotMap, function( key, value ) {
             var slotValue = value.interviewDateMillis +"_"+value.interviewTimeSlot.slotId;
@@ -218,7 +218,7 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
                 id:"interviewModalBtn",
                 className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent interview-selector-submit",
                 callback: function () {
-                    $(".btn.interview-selector-submit").prop('disabled', true);
+                    /*$(".btn.interview-selector-submit").prop('disabled', true);*/
                     finalInterviewSlotSubmission(candidateId, jobPostId);
                 }
             }
@@ -226,17 +226,17 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
     });
     interviewDialog.attr("id", "interview-selector-modal");
 
-    $("#interViewSlot").change(function (){
+    /*$("#interViewSlot").click(function (){
         if($("#interViewSlot").val() != -1){
             $(".btn.interview-selector-submit").prop('disabled', false);
             $(".btn.interview-selector-submit").css({'background-color':'#09ac58','color':'#ffffff'});
         } else {
             $(".btn.interview-selector-submit").prop('disabled', true);
         }
-    });
-
+    });*/
+    $(".btn.interview-selector-submit").css({'background-color':'#09ac58','color':'#ffffff'});
     $('#interview-slot-selector-modal div.modal-body').attr('style', 'overflow: visible !important');
-    $('.btn.interview-selector-submit').prop('disabled', true);
+    /*$('.btn.interview-selector-submit').prop('disabled', true);*/
     $('body').removeClass('modal-open').removeClass('open-interview-selector-modal').addClass('open-interview-selector-modal');
 }
 
