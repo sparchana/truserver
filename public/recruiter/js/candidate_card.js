@@ -7,6 +7,7 @@ var view_search_candidate = 1;
 var view_unlocked_candidate = 2;
 var view_applied_candidate = 3;
 var view_tracking_candidate = 4;
+var view_candidate_info = 5;
 
 var resumeDiv = null;
 
@@ -265,6 +266,9 @@ function renderIndividualCandidateCard(value, parent, view) {
     userAvatar.setAttribute("data-delay", "50");
 
     userAvatar.setAttribute('height', '36px');
+    userAvatar.src = "/assets/recruiter/img/icons/user.svg";
+    userAvatar.setAttribute("data-tooltip", "Not Specified");
+
     if(value.candidate.candidateGender != null){
         if(value.candidate.candidateGender == 0){
             userAvatar.src = "/assets/recruiter/img/icons/male.svg";
@@ -274,7 +278,7 @@ function renderIndividualCandidateCard(value, parent, view) {
             userAvatar.setAttribute("data-tooltip", "Female");
         } else{
             userAvatar.src = "/assets/recruiter/img/icons/user.svg";
-            userAvatar.setAttribute("data-tooltip", "Male");
+            userAvatar.setAttribute("data-tooltip", "Not Specified");
         }
     }
 
@@ -1081,46 +1085,50 @@ function renderIndividualCandidateCard(value, parent, view) {
     candidateCardRowColOne.style = "text-align: left";
     unlockDivRow.appendChild(candidateCardRowColOne);
 
-    inlineBlockDiv = document.createElement("div");
-    inlineBlockDiv.style = "display: inline-block; margin: 0px 4px 4px 0;";
-    candidateCardRowColOne.appendChild(inlineBlockDiv);
+    if(value.createTimestamp != null) {
+        inlineBlockDiv = document.createElement("div");
+        inlineBlockDiv.style = "display: inline-block; margin: 0px 4px 4px 0;";
+        candidateCardRowColOne.appendChild(inlineBlockDiv);
 
-    iconImg = document.createElement("img");
-    iconImg.src = "/assets/recruiter/img/icons/clock.svg";
-    iconImg.style = "margin-top: -4px";
-    iconImg.setAttribute('height', '18px');
-    inlineBlockDiv.appendChild(iconImg);
+        iconImg = document.createElement("img");
+        iconImg.src = "/assets/recruiter/img/icons/clock.svg";
+        iconImg.style = "margin-top: -4px";
+        iconImg.setAttribute('height', '18px');
+        inlineBlockDiv.appendChild(iconImg);
 
-    inlineBlockDiv = document.createElement("div");
-    inlineBlockDiv.style = "display: inline-block;";
-    candidateCardRowColOne.appendChild(inlineBlockDiv);
+        inlineBlockDiv = document.createElement("div");
+        inlineBlockDiv.style = "display: inline-block;";
+        candidateCardRowColOne.appendChild(inlineBlockDiv);
 
-    innerInlineBlockDiv = document.createElement("div");
-    innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 10px";
-    if(view == view_unlocked_candidate){
-        innerInlineBlockDiv.textContent = "Candidate unlocked on";
-    } else{
-        innerInlineBlockDiv.textContent = "Last Active";
-    }
-    inlineBlockDiv.appendChild(innerInlineBlockDiv);
-
-    //candidate last active container
-    var candidateCardRowColTwoFont = document.createElement("font");
-
-    candidateCardRowColTwoFont.setAttribute("size", "3");
-    candidateCardRowColTwoFont.style = "font-size: 12px; color: black; margin-left: 4px";
-
-    if(view == view_unlocked_candidate){
-        var postedOn = new Date(value.createTimestamp);
-        candidateCardRowColTwoFont.textContent = "Unlocked on: " + ('0' + postedOn.getDate()).slice(-2) + '-' + getMonthVal((postedOn.getMonth()+1)) + '-' + postedOn.getFullYear();
-        candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
-    } else {
-        if(value.extraData.lastActive != null){
-            candidateCardRowColTwoFont.textContent = value.extraData.lastActive.lastActiveValueName;
+        innerInlineBlockDiv = document.createElement("div");
+        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 10px";
+        if (view == view_unlocked_candidate) {
+            innerInlineBlockDiv.textContent = "Candidate unlocked on";
+        } else {
+            innerInlineBlockDiv.textContent = "Last Active";
         }
-    }
+        inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
-    inlineBlockDiv.appendChild(candidateCardRowColTwoFont);
+        //candidate last active container
+        var candidateCardRowColTwoFont = document.createElement("font");
+
+        candidateCardRowColTwoFont.setAttribute("size", "3");
+        candidateCardRowColTwoFont.style = "font-size: 12px; color: black; margin-left: 4px";
+
+        if (view == view_unlocked_candidate) {
+            if (value.createTimestamp != null) {
+                var postedOn = new Date(value.createTimestamp);
+                candidateCardRowColTwoFont.textContent = "Unlocked on: " + ('0' + postedOn.getDate()).slice(-2) + '-' + getMonthVal((postedOn.getMonth() + 1)) + '-' + postedOn.getFullYear();
+                candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
+            }
+        } else {
+            if (value.extraData.lastActive != null) {
+                candidateCardRowColTwoFont.textContent = value.extraData.lastActive.lastActiveValueName;
+            }
+        }
+
+        inlineBlockDiv.appendChild(candidateCardRowColTwoFont);
+    }
 
     // candidate interview status
     var candidateCurrentStatus = document.createElement("div");
@@ -1262,6 +1270,10 @@ function renderIndividualCandidateCard(value, parent, view) {
         showContact = false;
     }
 
+    if(view == view_candidate_info){
+        showContact = true;
+    }
+
     //unlock candidate div
     var unlockCandidateBtn = document.createElement("div");
     unlockCandidateBtn.id = "unlock_candidate_" + value.candidate.candidateId;
@@ -1275,7 +1287,7 @@ function renderIndividualCandidateCard(value, parent, view) {
         unlockCandidateBtn.style = "margin-top: -1px";
 
         unlockCandidateBtn.className = "waves-effect waves-light customUnlockBtn";
-    } else if(view == view_unlocked_candidate) {
+    } else if(view == view_unlocked_candidate || view == view_candidate_info) {
         unlockCandidateBtn.className = "contactUnlocked right";
         unlockCandidateBtn.style = "margin-right: 8px";
     }
@@ -1292,7 +1304,7 @@ function renderIndividualCandidateCard(value, parent, view) {
             candidateUnlockFont.textContent = value.candidate.candidateMobile;
             resumeLink.setAttribute("val", "http://docs.google.com/gview?url=" + value.candidate.candidateResumeLink + "&embedded=true");
         }
-    } else if(view == view_unlocked_candidate){
+    } else if(view == view_unlocked_candidate || view == view_candidate_info){
         candidateUnlockFont.textContent = value.candidate.candidateMobile;
     }
     candidateUnlockFont.style = "font-weight: bold; font-size: 12px";

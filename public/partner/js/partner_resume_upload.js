@@ -65,7 +65,7 @@ function processDataForAddResume(returnedData) {
             resumeColRight.appendChild(h5);
 
             var h4 = document.createElement("h4");
-            h4.textContent = "You will short receive a SMS with more details";
+            h4.textContent = "You will shortly receive a SMS with more details";
             h4.style = "font-weight:600";
             resumeColRight.appendChild(h4);
 

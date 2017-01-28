@@ -73,6 +73,8 @@ public class RecruiterLead extends Model {
     @Column(name = "recruiter_lead_requirement", columnDefinition = "varchar(255)")
     private String recruiterLeadRequirement = "";
 
+    //the below two new columns are not being used anywhere in the project. It does not accept null values hence breaking.
+    // Therefore giving it a default value as '0'
     @Column(name = "recruiter_lead_source_type", columnDefinition = "int not null")
     private Integer recruiterLeadSourceType = 0;
 

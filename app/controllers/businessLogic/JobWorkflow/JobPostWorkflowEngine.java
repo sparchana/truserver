@@ -654,12 +654,20 @@ public class JobPostWorkflowEngine {
             return populateResponse;
         }
 
+        populateResponse.jobPostId = jobPostId;
+        populateResponse.candidateId = candidateId;
+
         if (!rePreScreen) {
             // fetch existing workflow old
             JobPostWorkflow jobPostWorkflowCurrent = JobPostWorkFlowDAO.getJobPostWorkflowCurrent(jobPostId, candidateId);
 
             if ((jobPostWorkflowCurrent != null) && (jobPostWorkflowCurrent.getStatus().getStatusId() >= ServerConstants.JWF_STATUS_PRESCREEN_FAILED)) {
                 populateResponse.setStatus(PreScreenPopulateResponse.Status.INVALID);
+                populateResponse.setVisible(false);
+
+                // this allows partner to take interview slot even though they have already taken pre
+                InterviewResponse interviewResponse = RecruiterService.isInterviewRequired(jobPost);
+                populateResponse.setInterviewRequired(interviewResponse.getStatus() == ServerConstants.INTERVIEW_REQUIRED);
                 return populateResponse;
             }
         }
@@ -669,8 +677,6 @@ public class JobPostWorkflowEngine {
 
 
         // constructor for this class make all default flag as true, we will mark it false wherever its not satisfied
-        populateResponse.jobPostId = jobPostId;
-        populateResponse.candidateId = candidateId;
 
         populateResponse.setJobPostMinReq(jobPost.getJobPostMinRequirement());
 
@@ -2901,8 +2907,6 @@ public class JobPostWorkflowEngine {
         for (PreScreenRequirement preScreenRequirement : preScreenRequirementList) {
             preScreenRequirementMap.putIfAbsent(preScreenRequirement.getJobPost().getJobPostId(), preScreenRequirement);
         }
-
-        Logger.info("preScreenReqList: " + preScreenRequirementList.size());
 
         for (JobPostWorkflow jobPostWorkflowObj : appliedJobsList) {
             if (preScreenRequirementMap.get(jobPostWorkflowObj.getJobPost().getJobPostId()) == null) {

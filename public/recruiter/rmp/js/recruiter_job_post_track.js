@@ -255,8 +255,11 @@ function processDataGetSmsReport(returnedData) {
 
                 var colCandidateName= document.createElement("div");
                 colCandidateName.className = 'col s12 m2 l2';
-                colCandidateName.style = 'margin-top:8px';
+                colCandidateName.style = 'margin-top: 8px; color: #55b2ce; font-weight: bold; cursor: pointer';
                 colCandidateName.textContent = toTitleCase(smsObject.candidate.candidateFullName);
+                colCandidateName.onclick = function () {
+                    getCandidateInfo(smsObject.candidate.candidateId);
+                };
                 outerRow.appendChild(colCandidateName);
 
                 var spanCandidateName = document.createElement("div");
@@ -385,8 +388,11 @@ function processDataJobApplications(returnedData) {
 
             var colCandidateName= document.createElement("div");
             colCandidateName.className = 'col s12 m2 l2';
-            colCandidateName.style = 'margin-top:8px';
+            colCandidateName.style = 'margin-top: 8px; color: #55b2ce; font-weight: bold; cursor: pointer';
             colCandidateName.textContent = toTitleCase(workflowObj.candidate.candidateFullName);
+            colCandidateName.onclick = function () {
+                getCandidateInfo(workflowObj.candidate.candidateId);
+            };
             outerRow.appendChild(colCandidateName);
 
             var spanCandidateName = document.createElement("div");
@@ -930,8 +936,11 @@ function processDataConfirmedApplication(returnedData) {
 
             var colCandidateName= document.createElement("div");
             colCandidateName.className = 'col s12 m2 l2';
-            colCandidateName.style = 'margin-top:8px';
+            colCandidateName.style = 'margin-top: 8px; color: #55b2ce; font-weight: bold; cursor: pointer';
             colCandidateName.textContent = toTitleCase(workflowObj.candidate.candidateFullName);
+            colCandidateName.onclick = function () {
+                getCandidateInfo(workflowObj.candidate.candidateId);
+            };
             outerRow.appendChild(colCandidateName);
 
             var spanCandidateName = document.createElement("div");

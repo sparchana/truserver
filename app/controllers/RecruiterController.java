@@ -25,7 +25,6 @@ import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import controllers.businessLogic.Recruiter.RecruiterLeadStatusService;
-import controllers.businessLogic.SearchJobService;
 import controllers.security.RecruiterSecured;
 import controllers.businessLogic.RecruiterService;
 import controllers.security.FlashSessionController;
@@ -1278,5 +1277,19 @@ public class RecruiterController {
             return ok(views.html.Recruiter.rmp.private_recruiter_admin_job_post_report_view.render());
         }
         return ok(views.html.Recruiter.rmp.private_recruiter_admin_report_view.render());
+    }
+
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result recruiterGetCandidateInfo(long candidateId) {
+        Logger.info("Candidate Id : "+ candidateId);
+        Candidate candidate = Candidate.find.where().eq("CandidateId", candidateId).findUnique();
+        if(candidate != null) {
+                return ok(toJson(candidate));
+        }
+        return ok("0");
+    }
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result recruiterCandidateModal() {
+        return ok(views.html.Recruiter.recruiter_candidate_modal.render());
     }
 }

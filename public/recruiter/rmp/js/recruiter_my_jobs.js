@@ -91,7 +91,7 @@ function processDataGenerateJobPostView(returnedData) {
                 colDatePost.appendChild(spanPostedOn);
 
                 var colJobPost = document.createElement("div");
-                colJobPost.className = 'col s12 m2 l3';
+                colJobPost.className = 'col s12 m2 l2';
                 colJobPost.style = 'margin-top:8px';
                 colJobPost.textContent = jobPost.jobPost.jobPostTitle;
                 outerRow.appendChild(colJobPost);
@@ -110,7 +110,7 @@ function processDataGenerateJobPostView(returnedData) {
                 });
 
                 var colJobLocation = document.createElement("div");
-                colJobLocation.className = 'col s12 m2 l3';
+                colJobLocation.className = 'col s12 m2 l2';
                 colJobLocation.style = 'margin-top:8px';
                 colJobLocation.textContent = localities.substring(0, localities.length - 2);
                 outerRow.appendChild(colJobLocation);
@@ -139,7 +139,7 @@ function processDataGenerateJobPostView(returnedData) {
                 colJobSalary.appendChild(spanSalary);
 
                 var colTrackView = document.createElement("div");
-                colTrackView.className = 'col s12 m1 l1';
+                colTrackView.className = 'col s12 m1 l2';
                 colTrackView.style = "text-align:center";
                 outerRow.appendChild(colTrackView);
 
@@ -171,7 +171,7 @@ function processDataGenerateJobPostView(returnedData) {
                 }
 
                 var colJobStatus = document.createElement("div");
-                colJobStatus.className = 'col s12 m1 l1';
+                colJobStatus.className = 'col s12 m1 l2';
                 colJobStatus.style = 'margin-top: 8px';
                 outerRow.appendChild(colJobStatus);
 
