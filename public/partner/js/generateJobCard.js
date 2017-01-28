@@ -2160,14 +2160,16 @@ function addLocalitiesToModal(jobPostId) {
 }
 
 function processDataForJobPostLocation(returnedData) {
-    $("#applyButton").hide();
+    $("#applyButton").show();
     document.getElementById("applyJobCandidateName").innerHTML = candidateInfo.candidateFirstName;
     document.getElementById("applyJobCandidateNameSecond").innerHTML = candidateInfo.candidateFirstName;
     $("#jobNameConfirmation").html(returnedData.jobPostTitle);
     $("#companyNameConfirmation").html(returnedData.company.companyName);
     var i;
     $('#jobLocality').html('');
-    var defaultOption = $('<option value="-1"></option>').text("Select Preferred Location");
+    if(returnedData.jobPostToLocalityList.length > 1){
+        var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
+    }
     $('#jobLocality').append(defaultOption);
     var jobLocality = returnedData.jobPostToLocalityList;
     jobLocality.forEach(function (locality) {
@@ -2178,6 +2180,7 @@ function processDataForJobPostLocation(returnedData) {
         var option = $('<option value=' + locality.locality.localityId + '></option>').text(locality.locality.localityName);
         $('#jobLocality').append(option);
     });
+    enableLocalityBtn();
     // if (Object.keys(returnedData.interviewDetailsList).length > 0) {
     //     //slots
     //     $('#interviewSlot').html('');
@@ -2343,28 +2346,22 @@ function processDataCheckCandidate(returnedData, candidateId) {
     $("#applyBtnDiv_" + jobPostId).prop('disabled',true).click(false);
 }
 
-$(function() {
-    $("#jobLocality").change(function (){
-        prefLocation = $(this).val();
-        prefLocationName = $("#jobLocality option:selected").text();
-        $("#applyButton").show();
-
-    });
-
-    // $("#interviewSlot").change(function (){
-    //     if($(this).val() != -1 && $("#jobLocality").val() != -1){
-    //         var combinedValue = $(this).val().split("_");
-    //         scheduledInterviewDate = combinedValue[0];
-    //         prefTimeSlot = combinedValue[1];
-    //
-    //         prefLocation = $("#jobLocality").val();
-    //         prefLocationName = $("#jobLocality option:selected").text();
-    //         $("#applyButton").show();
-    //     } else{
-    //         $("#applyButton").hide();
-    //     }
-    // });
+$("#jobLocality").change(function () {
+    enableLocalityBtn();
 });
+
+function enableLocalityBtn() {
+    if ($("#jobLocality").val() != -1 && $("#interviewSlot").val() != -1) {
+        prefLocation = $("#jobLocality").val();
+        prefLocationName = $("#jobLocality option:selected").text();
+
+        $(".jobApplyBtnModal").prop('disabled', false);
+        $(".jobApplyBtnModal").css({'background-color': '#09ac58', 'color': '#ffffff', 'cursor': 'default'});
+    } else {
+        $(".jobApplyBtnModal").prop('disabled', true);
+        $(".jobApplyBtnModal").css({'background-color': '#dde0dd', 'color': '#000000', 'cursor': 'not-allowed'});
+    }
+}
 
 function confirmInterview(jpId, status) {
     globalJpId = jpId;
