@@ -495,7 +495,7 @@ public class RecruiterController {
             Map<?, JobPost> recruiterJobPostMap;
             if(recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
                 recruiterJobPostMap = JobPost.find.where()
-                        .eq("JobRecruiterId", recruiterProfile.getRecruiterProfileId())
+                        //.eq("JobRecruiterId", recruiterProfile.getRecruiterProfileId())
                         .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_PRIVATE)
                         .eq("CompanyId", recruiterProfile.getCompany().getCompanyId())
                         .setMapKey("jobPostId")
