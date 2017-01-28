@@ -64,7 +64,7 @@ public class TrulyService {
             truly.setShortUrl(BASE_URL + POINT_URL +truly.getHash());
             truly.save();
         }
-        return truly.getShortUrl();
+        return BASE_URL + POINT_URL + truly.getHash();
     }
 
 }
