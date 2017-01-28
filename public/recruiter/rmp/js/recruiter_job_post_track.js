@@ -10,9 +10,32 @@ var globalInterviewSlot = null;
 var globalSchedule = null;
 var allTimeSlots = [];
 var allReason = [];
+var index = 0;
 
 var notSelectedReason = [];
 
+function preformTabChange(tabId) {
+    index = 0;
+    hideTab1();
+    hideTab2();
+    hideTab3();
+    if(tabId == 1){
+        hideTab1();
+        tabChange1(index);
+    } else if(tabId == 2){
+        tabChange2(index);
+    } else if(tabId == 3){
+        tabChange3(index);
+    }
+}
+$(document).scroll(function(){
+    if ($(this).scrollTop() > 30) {
+        $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
+    }
+    else{
+        $('nav').css({"background": "transparent"});
+    }
+});
 
 $(document).ready(function(){
     checkRecruiterLogin();
@@ -21,7 +44,8 @@ $(document).ready(function(){
     var jobPostIdUrl = pathname.split('/');
     jobPostId = jobPostIdUrl[(jobPostIdUrl.length)-1];
 
-    tabChange1();
+    index = 0;
+    tabChange1(index);
 
     try {
         $.ajax({
@@ -113,16 +137,106 @@ function processDataGetAllReason(returnedData) {
     });
 }
 
+function smsPagination(noOfPages){
+    $('#paginationTab').twbsPagination({
+        totalPages: noOfPages,
+        visiblePages: 5,
+        onPageClick: function (event, page) {
+            if(page > 0 ){
+                index = (page - 1)*10;
+            }
+            else{
+                index = 0;
+            }
+            hideTab1();
+            tabChange1(index);
+            $(".page-link").click(function(){
+                $('html, body').animate({scrollTop : 0},800);
+            });
+            $(".first").hide();
+            $(".last").hide();
+            $(".prev a").html("<");
+            $(".next a").html(">");
+        }
+    });
+}
+
+function trackPagination(noOfPages){
+    $('#trackPaginationTab').twbsPagination({
+        totalPages: noOfPages,
+        visiblePages: 5,
+        onPageClick: function (event, page) {
+            if(page > 0 ){
+                index = (page - 1)*10;
+            }
+            else{
+                index = 0;
+            }
+            hideTab2();
+            tabChange2(index);
+            $(".page-link").click(function(){
+                $('html, body').animate({scrollTop : 0},800);
+            });
+            $(".first").hide();
+            $(".last").hide();
+            $(".prev a").html("<");
+            $(".next a").html(">");
+        }
+    });
+}
+
+function confirmedPagination(noOfPages){
+    $('#confirmedPaginationTab').twbsPagination({
+        totalPages: noOfPages,
+        visiblePages: 5,
+        onPageClick: function (event, page) {
+            if(page > 0 ){
+                index = (page - 1)*10;
+            }
+            else{
+                index = 0;
+            }
+            hideTab3();
+            tabChange3(index);
+            $(".page-link").click(function(){
+                $('html, body').animate({scrollTop : 0},800);
+            });
+            $(".first").hide();
+            $(".last").hide();
+            $(".prev a").html("<");
+            $(".next a").html(">");
+        }
+    });
+}
+
+
 function processDataGetSmsReport(returnedData) {
     $("#loadingIcon").hide();
     if(returnedData == 0){
         logoutRecruiter();
     } else{
-        if(returnedData.length > 0){
+        var smsList = returnedData.smsReportList;
+        if(smsList.length > 0){
             $('.allSms').html('');
+            var currentCount = 0;
+            if((index + 10) > returnedData.totalSms){
+                currentCount = returnedData.totalSms;
+            } else{
+                currentCount = index + 10;
+            }
+            $("#totalSmsReports").html("Showing " + currentCount + " out of " + returnedData.totalSms + " results");
+
+            var numberOfPages = parseInt(returnedData.totalSms)/10;
+            var rem = parseInt(returnedData.totalSms) % 10;
+            if(rem > 0){
+                numberOfPages ++;
+            }
+            if(index == 0){
+                smsPagination(numberOfPages);
+            }
+
             var parent = $('.allSms');
-            returnedData.reverse();
-            returnedData.forEach(function (smsObject) {
+            smsList.forEach(function (smsObject) {
 
                 var mainDiv =  document.createElement("div");
                 parent.append(mainDiv);
@@ -130,6 +244,7 @@ function processDataGetSmsReport(returnedData) {
                 var outerRow = document.createElement("div");
                 outerRow.className = 'row';
                 outerRow.id="outerBoxMain";
+                outerRow.style="font-size: 12px";
                 mainDiv.appendChild(outerRow);
 
                 var colDate = document.createElement("div");
@@ -148,8 +263,11 @@ function processDataGetSmsReport(returnedData) {
 
                 var colCandidateName= document.createElement("div");
                 colCandidateName.className = 'col s12 m2 l2';
-                colCandidateName.style = 'margin-top:8px';
+                colCandidateName.style = 'margin-top: 8px; color: #55b2ce; font-weight: bold; cursor: pointer';
                 colCandidateName.textContent = toTitleCase(smsObject.candidate.candidateFullName);
+                colCandidateName.onclick = function () {
+                    getCandidateInfo(smsObject.candidate.candidateId);
+                };
                 outerRow.appendChild(colCandidateName);
 
                 var spanCandidateName = document.createElement("div");
@@ -178,6 +296,13 @@ function processDataGetSmsReport(returnedData) {
                 colSmsStatus.textContent = "Pending";
 
                 if(smsObject.smsDeliveryStatus != null){
+                    if(smsObject.smsDeliveryStatus.statusId == 1){
+                        colSmsStatus.style = 'margin-top: 8px; color: orange; font-weight: bold';
+                    } else if(smsObject.smsDeliveryStatus.statusId == 2){
+                        colSmsStatus.style = 'margin-top: 8px; color: green; font-weight: bold';
+                    } else{
+                        colSmsStatus.style = 'margin-top: 8px; color: red; font-weight: bold';
+                    }
                     colSmsStatus.textContent = smsObject.smsDeliveryStatus.statusName;
                 }
 
@@ -228,22 +353,62 @@ function processDataGetSmsReport(returnedData) {
 function processDataJobApplications(returnedData) {
     $("#loadingIcon").hide();
 
-    if(returnedData.length > 0){
+    var applicationList = returnedData.applicationList;
+    if(applicationList.length > 0){
         $('.allApplications').html('');
         var parent = $('.allApplications');
-        returnedData.forEach(function (workflowObj) {
+
+        var currentCount = 0;
+        if((index + 10) > returnedData.totalCount){
+            currentCount = returnedData.totalCount;
+        } else{
+            currentCount = index + 10;
+        }
+        $("#totalTrackingCandidates").html("Showing " + currentCount + " out of " + returnedData.totalCount + " results");
+
+        var numberOfPages = parseInt(returnedData.totalCount)/10;
+        var rem = parseInt(returnedData.totalCount) % 10;
+        if(rem > 0){
+            numberOfPages ++;
+        }
+        if(index == 0){
+            trackPagination(numberOfPages);
+        }
+
+        applicationList.forEach(function (workflowObj) {
             var mainDiv =  document.createElement("div");
             parent.append(mainDiv);
 
             var outerRow = document.createElement("div");
             outerRow.className = 'row';
             outerRow.id="outerBoxMain";
+            outerRow.style="font-size: 12px";
+
             mainDiv.appendChild(outerRow);
+
+            var colDateTime= document.createElement("div");
+            colDateTime.className = 'col s12 m2 l1';
+            colDateTime.style = 'margin-top:8px';
+
+            var creationTimestamp = new Date(workflowObj.extraData.creationTimestamp);
+
+            colDateTime.textContent = validateDateFormat(creationTimestamp);
+
+            outerRow.appendChild(colDateTime);
+
+            var spanDateTime = document.createElement("div");
+            spanDateTime.className = "col s4 hide-on-med-and-up right-align";
+            spanDateTime.textContent= "Candidate :";
+            spanDateTime.style = "font-weight: 600;font-size:12px";
+            colDateTime.appendChild(spanDateTime);
 
             var colCandidateName= document.createElement("div");
             colCandidateName.className = 'col s12 m2 l2';
-            colCandidateName.style = 'margin-top:8px';
+            colCandidateName.style = 'margin-top: 8px; color: #55b2ce; font-weight: bold; cursor: pointer';
             colCandidateName.textContent = toTitleCase(workflowObj.candidate.candidateFullName);
+            colCandidateName.onclick = function () {
+                getCandidateInfo(workflowObj.candidate.candidateId);
+            };
             outerRow.appendChild(colCandidateName);
 
             var spanCandidateName = document.createElement("div");
@@ -253,7 +418,7 @@ function processDataJobApplications(returnedData) {
             colCandidateName.appendChild(spanCandidateName);
 
             var colCandidateMobile = document.createElement("div");
-            colCandidateMobile.className = 'col s12 m2 l2';
+            colCandidateMobile.className = 'col s12 m2 l1';
             colCandidateMobile.style = 'margin-top:8px';
             colCandidateMobile.textContent = workflowObj.candidate.candidateMobile;
             outerRow.appendChild(colCandidateMobile);
@@ -265,15 +430,17 @@ function processDataJobApplications(returnedData) {
             colCandidateMobile.appendChild(spanCandidateMobile);
 
             var colChannel = document.createElement("div");
-            colChannel.className = 'col s12 m1 l2';
+            colChannel.className = 'col s12 m1 l1';
             colChannel.style = 'margin-top: 8px';
             outerRow.appendChild(colChannel);
 
             colChannel.textContent = "N/A";
+            var applicationTimestamp = new Date(workflowObj.appliedOn);
+
             if(workflowObj.applicationChannel == 1){
-                colChannel.textContent = "Self Application";
+                colChannel.textContent = "SMS (on " + validateDateFormat(applicationTimestamp) + ")";
             } else if(workflowObj.applicationChannel == 2){
-                colChannel.textContent = "Partner (" + workflowObj.partner.parnterName + ")";
+                colChannel.textContent = "Partner (" + workflowObj.partner.parnterName + " on " + validateDateFormat(applicationTimestamp)+ ")" ;
             } else if(workflowObj.applicationChannel == 3){
                 colChannel.textContent = "TruJobs Support";
             }
@@ -284,11 +451,30 @@ function processDataJobApplications(returnedData) {
             spanChannel.style = "font-weight: 600;font-size:12px";
             colChannel.appendChild(spanChannel);
 
+            var colInterviewDate = document.createElement("div");
+            colInterviewDate.className = 'col s12 m1 l2';
+            colInterviewDate.style = 'margin-top: 8px';
+            outerRow.appendChild(colInterviewDate);
+
+            colInterviewDate.textContent = "-";
+            if(workflowObj.extraData.interviewDate != null){
+                var interviewDate = new Date(workflowObj.extraData.interviewDate);
+
+                colInterviewDate.textContent = validateDateFormat(interviewDate) +
+                    " @ " + workflowObj.extraData.interviewSlot.interviewTimeSlotName;
+            }
+
+            var spanInterviewDate = document.createElement("div");
+            spanInterviewDate.className = "col s4 hide-on-med-and-up right-align";
+            spanInterviewDate.textContent= "Channel: ";
+            spanInterviewDate.style = "font-weight: 600;font-size:12px";
+            colInterviewDate.appendChild(spanInterviewDate);
+
             var colAction = document.createElement("div");
-            colAction.className = 'col s12 m2 l4';
+            colAction.className = 'col s12 m2 l3';
             colAction.id = "interview_status_option_" + workflowObj.candidate.candidateId;
             colAction.style = 'margin-top: 8px';
-            colAction.textContent = "No action required";
+            colAction.textContent = "Call candidate to schedule interview";
 
             var colStatus = document.createElement("div");
             colStatus.className = 'col s12 m2 l2';
@@ -296,15 +482,20 @@ function processDataJobApplications(returnedData) {
             outerRow.appendChild(colStatus);
 
             if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_SELECTED){
+                colStatus.style = 'margin-top: 8px; color: orange; font-weight: bold';
                 colStatus.textContent = "Applied";
             } else if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_PRESCREEN_ATTEMPTED){
                 colStatus.textContent = "Attempted pre screen";
+                colStatus.style = 'margin-top: 8px; color: orange; font-weight: bold';
             } else if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_PRESCREEN_FAILED){
                 colStatus.textContent = "Pre screen failed";
+                colStatus.style = 'margin-top: 8px; color: red; font-weight: bold';
             } else if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_PRESCREEN_COMPLETED){
                 colStatus.textContent = "Pre screen Complete";
+                colStatus.style = 'margin-top: 8px; color: orange; font-weight: bold';
             } else if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED){
                 colStatus.textContent = "Interview Scheduled";
+                colStatus.style = 'margin-top: 8px; color: green; font-weight: bold';
                 colAction.textContent = "";
 
                 //action button
@@ -384,10 +575,13 @@ function processDataJobApplications(returnedData) {
 
             } else if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT){
                 colStatus.textContent = "Rejected";
+                colStatus.style = 'margin-top: 8px; color: red; font-weight: bold';
             } else if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE){
                 colStatus.textContent = "Rejected by candidate";
+                colStatus.style = 'margin-top: 8px; color: red; font-weight: bold';
             } else if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE){
                 colStatus.textContent = "Rescheduled. Awaiting candidate's response";
+                colStatus.style = 'margin-top: 8px; color: orange; font-weight: bold';
             } else{
                 colStatus.textContent = "N/A";
             }
@@ -436,7 +630,7 @@ function processDataRecruiterSession(returnedData) {
     }
 }
 
-function tabChange1() {
+function tabChange1(index) {
     $("#tab1").addClass("activeTab");
     $("#tab2").removeClass("activeTab");
     $("#tab3").removeClass("activeTab");
@@ -454,7 +648,7 @@ function tabChange1() {
     try {
         $.ajax({
             type: "POST",
-            url: "/getSentSms/" + jobPostId,
+            url: "/getSentSms/?jpId=" + jobPostId + "&i=" + index,
             data: false,
             contentType: false,
             processData: false,
@@ -470,7 +664,7 @@ function tabChange1() {
     }
 }
 
-function tabChange2() {
+function tabChange2(index) {
     $("#tab1").removeClass("activeTab");
     $("#tab2").addClass("activeTab");
     $("#tab3").removeClass("activeTab");
@@ -488,11 +682,45 @@ function tabChange2() {
     try {
         $.ajax({
             type: "POST",
-            url: "/getAppliedCandidates/" + jobPostId,
+            url: "/getAppliedCandidates/?jpId=" + jobPostId + "&i=" + index,
             data: false,
             contentType: false,
             processData: false,
             success: processDataJobApplications,
+            error: function (jqXHR, exception) {
+                $("#somethingWentWrong").show();
+                $("#loadingIcon").hide();
+            }
+
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function tabChange3(index) {
+    $("#tab1").removeClass("activeTab");
+    $("#tab2").removeClass("activeTab");
+    $("#tab3").addClass("activeTab");
+
+    $("#tab1Parent").removeClass("activeParent");
+    $("#tab2Parent").removeClass("activeParent");
+    $("#tab3Parent").addClass("activeParent");
+
+    $("#loaderText").html("Fetching Confirmed Interviews");
+    $("#loadingIcon").show();
+
+    hideTab1();
+    hideTab2();
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getConfirmedApplication/?jpId=" + jobPostId + "&i=" + index,
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataConfirmedApplication,
             error: function (jqXHR, exception) {
                 $("#somethingWentWrong").show();
                 $("#loadingIcon").hide();
@@ -510,7 +738,7 @@ function setInterviewStatus(candidateId, status, rescheduledDate, rescheduledSlo
 
     var d = {
         candidateId: candidateId,
-        jobPostId: globalJpId,
+        jobPostId: jobPostId,
         interviewStatus: status,
         rescheduledDate: rescheduledDate,
         rescheduledSlot: rescheduledSlot,
@@ -685,55 +913,58 @@ function checkSlotAvailability(x, interviewDays) {
 }
 
 
-function tabChange3() {
-    $("#tab1").removeClass("activeTab");
-    $("#tab2").removeClass("activeTab");
-    $("#tab3").addClass("activeTab");
-
-    $("#tab1Parent").removeClass("activeParent");
-    $("#tab2Parent").removeClass("activeParent");
-    $("#tab3Parent").addClass("activeParent");
-    hideTab1();
-    hideTab2();
-
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getConfirmedApplication/" + jobPostId,
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataConfirmedApplication,
-            error: function (jqXHR, exception) {
-                $("#somethingWentWrong").show();
-                $("#loadingIcon").hide();
-            }
-
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-}
-
 function processDataConfirmedApplication(returnedData) {
     $("#loadingIcon").hide();
 
-    if(returnedData.length > 0){
+    var applicationList = returnedData.applicationList;
+    if(applicationList.length > 0){
         $('.allConfirmed').html('');
         var parent = $('.allConfirmed');
-        returnedData.forEach(function (workflowObj) {
+
+        var currentCount = 0;
+        if((index + 10) > returnedData.totalCount){
+            currentCount = returnedData.totalCount;
+        } else{
+            currentCount = index + 10;
+        }
+        $("#totalConfirmedCandidates").html("Showing " + currentCount + " out of " + returnedData.totalCount + " results");
+
+        var numberOfPages = parseInt(returnedData.totalCount)/10;
+        var rem = parseInt(returnedData.totalCount) % 10;
+        if(rem > 0){
+            numberOfPages ++;
+        }
+        if(index == 0){
+            confirmedPagination(numberOfPages);
+        }
+
+        applicationList.forEach(function (workflowObj) {
             var mainDiv =  document.createElement("div");
             parent.append(mainDiv);
 
             var outerRow = document.createElement("div");
             outerRow.className = 'row';
             outerRow.id="outerBoxMain";
+            outerRow.style="font-size: 12px";
             mainDiv.appendChild(outerRow);
+
+            var colDateTime= document.createElement("div");
+            colDateTime.className = 'col s12 m2 l1';
+            colDateTime.style = 'margin-top:8px';
+
+            var creationTimestamp = new Date(workflowObj.extraData.creationTimestamp);
+
+            colDateTime.textContent = validateDateFormat(creationTimestamp);
+
+            outerRow.appendChild(colDateTime);
 
             var colCandidateName= document.createElement("div");
             colCandidateName.className = 'col s12 m2 l2';
-            colCandidateName.style = 'margin-top:8px';
+            colCandidateName.style = 'margin-top: 8px; color: #55b2ce; font-weight: bold; cursor: pointer';
             colCandidateName.textContent = toTitleCase(workflowObj.candidate.candidateFullName);
+            colCandidateName.onclick = function () {
+                getCandidateInfo(workflowObj.candidate.candidateId);
+            };
             outerRow.appendChild(colCandidateName);
 
             var spanCandidateName = document.createElement("div");
@@ -755,13 +986,13 @@ function processDataConfirmedApplication(returnedData) {
             colCandidateMobile.appendChild(spanCandidateMobile);
 
             var colInterviewDateAndTime = document.createElement("div");
-            colInterviewDateAndTime.className = 'col s12 m2 l2';
+            colInterviewDateAndTime.className = 'col s12 m2 l3';
             colInterviewDateAndTime.style = 'margin-top: 8px';
             outerRow.appendChild(colInterviewDateAndTime);
 
             var interviewDate = new Date(workflowObj.extraData.interviewDate);
 
-            colInterviewDateAndTime.textContent = interviewDate.getFullYear() + "-" + (interviewDate.getMonth() + 1) + "-" + interviewDate.getDate() +
+            colInterviewDateAndTime.textContent = validateDateFormat(interviewDate) +
                 " @ " + workflowObj.extraData.interviewSlot.interviewTimeSlotName;
 
             var spanInterviewDate = document.createElement("div");
@@ -770,75 +1001,8 @@ function processDataConfirmedApplication(returnedData) {
             spanInterviewDate.style = "font-weight: 600;font-size:12px;";
             colInterviewDateAndTime.appendChild(spanInterviewDate);
 
-            var colCandidateStatus = document.createElement("div");
-            colCandidateStatus.className = 'col s12 m2 l3';
-            outerRow.appendChild(colCandidateStatus);
-
-            colCandidateStatus.textContent = "Status not Available";
-
-            if(workflowObj.extraData.candidateInterviewStatus != null){
-                if(workflowObj.extraData.workflowStatus.statusId > JWF_STATUS_INTERVIEW_CONFIRMED
-                    && workflowObj.extraData.workflowStatus.statusId < JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
-                    var reason = "";
-                    if(workflowObj.extraData.reason != null){
-                        if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING) { //not going
-                            reason = ' [Reason: ' + workflowObj.extraData.reason.reasonName + ']';
-                        } else{
-                            reason = ' [Reaching: ' + workflowObj.extraData.reason.reasonName + ']';
-                        }
-                    }
-
-                    var lastUpdate = new Date(workflowObj.extraData.creationTimestamp);
-                    var timing = "";
-                    if(lastUpdate.getHours() == 12){
-                        timing = minuteHourFormat(lastUpdate.getHours()) + ":" + minuteHourFormat(lastUpdate.getMinutes()) + " pm";
-                    } else if(lastUpdate.getHours() > 12){
-                        timing = minuteHourFormat(lastUpdate.getHours() - 12) + ":" + minuteHourFormat(lastUpdate.getMinutes()) + " pm";
-                    } else{
-                        timing = minuteHourFormat(lastUpdate.getHours()) + ":" + minuteHourFormat(lastUpdate.getMinutes()) + " am";
-                    }
-
-                    var dateAndTime = "(Reported - " + lastUpdate.getDate() + "-" + (lastUpdate.getMonth() + 1) + "-" + lastUpdate.getFullYear() + " " + timing + ')';
-
-                    var today = new Date();
-                    if(lastUpdate.getDate() == today.getDate() && lastUpdate.getMonth() == today.getMonth()){
-                        dateAndTime = " (Reported - Today at: " + timing + ")";
-                    } else if(lastUpdate.getDate() == (today.getDate() -1) && lastUpdate.getMonth() == today.getMonth()){
-                        dateAndTime = " (Reported - Yesterday at: " + timing + ")";
-                    }
-
-                    if(workflowObj.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING){
-                        colCandidateStatus.textContent = "Not going for interview " + reason ;
-                        colCandidateStatus.style = "margin-top: 8px; color: red; font-weight: bold; font-size: 12px";
-                    } else if(workflowObj.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED){
-                        colCandidateStatus.textContent = "Delayed for Interview " + reason ;
-                        colCandidateStatus.style = "margin-top: 8px; color: orange; font-weight: bold; font-size: 12px";
-                    } else if(workflowObj.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY){
-                        colCandidateStatus.textContent = "On the way for interview" + reason ;
-                        colCandidateStatus.style = "margin-top: 8px; color: green; font-weight: bold; font-size: 12px";
-                    } else if(workflowObj.extraData.candidateInterviewStatus.statusId == JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
-                        colCandidateStatus.textContent = "Reached for Interview " + reason ;
-                        colCandidateStatus.style = "margin-top: 8px; color: green; font-weight: bold; font-size: 12px";
-                    }
-
-                    var lastUpdateDiv = document.createElement("div");
-                    lastUpdateDiv.id = "last_update_div_" + workflowObj.candidate.candidateId;
-                    lastUpdateDiv.textContent = dateAndTime;
-                    lastUpdateDiv.style = "color: black; font-weight: 100";
-                    colCandidateStatus.appendChild(lastUpdateDiv);
-                } else{
-                    colCandidateStatus.textContent = "-";
-                }
-            }
-
-            var spanCandidateStatus = document.createElement("div");
-            spanCandidateStatus.className = "col s4 hide-on-med-and-up right-align";
-            spanCandidateStatus.textContent= "Candidate Status:";
-            spanCandidateStatus.style = "font-weight: 600;font-size:12px;";
-            colCandidateStatus.appendChild(spanCandidateStatus);
-
             var colFeedback = document.createElement("div");
-            colFeedback.className = 'col s12 m2 l3';
+            colFeedback.className = 'col s12 m2 l4';
             colFeedback.style = 'margin-top: 8px';
             outerRow.appendChild(colFeedback);
 
@@ -846,19 +1010,23 @@ function processDataConfirmedApplication(returnedData) {
 
             if(workflowObj.extraData.workflowStatus != null){
                 if(workflowObj.extraData.workflowStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
+
                     colFeedback.textContent = workflowObj.extraData.workflowStatus.statusTitle;
-                } else{
-                    today = new Date();
-                    interviewDate = new Date(workflowObj.extraData.interviewDate);
-                    if(interviewDate.getTime() <= today.getTime()) { // today's schedule
-                        //interview for this job is scheduled today, hence allow to update status
-                        colFeedback.textContent = "Add Feedback";
-                        colFeedback.onclick = function () {
-                            openFeedbackModal(workflowObj.candidate.candidateId);
-                        };
+                    if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+                        colFeedback.style = "margin-top: 8px; color: green; font-weight: bold";
                     } else{
-                        colFeedback.textContent = "-";
+                        colFeedback.style = "margin-top: 8px; color: red; font-weight: bold";
                     }
+                } else{
+                    colFeedback.textContent = "";
+
+                    var addFeedbackBtn = document.createElement("span");
+                    colFeedback.appendChild(addFeedbackBtn);
+                    addFeedbackBtn.style = "font-weight: bold; cursor: pointer; background: green; padding: 4px; color: white; border-radius: 4px";
+                    addFeedbackBtn.textContent = "Add Feedback";
+                    addFeedbackBtn.onclick = function () {
+                        openFeedbackModal(workflowObj.candidate.candidateId);
+                    };
                 }
             }
 
@@ -936,12 +1104,10 @@ function confirmAddFeedback() {
 
 function processDataUpdateFeedBack(returnedData) {
     if(returnedData == 1){
-        tabChange3();
+        tabChange3(index);
         notifySuccess("Feedback updated successfully");
 
         $("#addFeedback").closeModal();
-
-
 
     } else if(returnedData == -1){
         notifyError("You are out of interview credits. Please purchase interview credits!");
@@ -961,7 +1127,7 @@ function hideTab2() {
 }
 
 function hideTab3() {
-    $("#noConfirmedApplication").hide();
+    $("#noConfirmedApplications").hide();
     $("#confirmedApplicationTable").hide();
 }
 
@@ -1038,4 +1204,28 @@ function notifyError(msg){
 
 function notifySuccess(msg){
     Materialize.toastSuccess(msg, 3000, 'rounded');
+}
+
+function logoutRecruiter() {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/logoutRecruiter",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataLogoutRecruiter
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataLogoutRecruiter() {
+    window.location = "/recruiter";
+}
+
+function closeFeedbackModal() {
+    $("#addFeedback").closeModal();
 }

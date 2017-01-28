@@ -220,6 +220,9 @@ public class Candidate extends Model {
     @Column(name = "candidate_access_level", columnDefinition = "int(2) signed not null default 0")
     private int candidateAccessLevel;
 
+    @Transient
+    private String candidateResumeLink = "";
+
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
     public Candidate() {
@@ -672,5 +675,18 @@ public class Candidate extends Model {
 
     public void setCandidateAccessLevel(int candidateAccessLevel) {
         this.candidateAccessLevel = candidateAccessLevel;
+    }
+
+    public String getCandidateResumeLink() {
+        CandidateResume resume = CandidateResume.find.where().eq("CandidateId", this.getCandidateId()).findUnique();
+        if(resume != null){
+            return resume.getFilePath();
+        } else{
+            return null;
+        }
+    }
+
+    public void setCandidateResumeLink(String candidateResumeLink) {
+        this.candidateResumeLink = candidateResumeLink;
     }
 }

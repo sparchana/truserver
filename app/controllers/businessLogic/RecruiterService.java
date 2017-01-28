@@ -27,6 +27,7 @@ import dao.RecruiterCreditHistoryDAO;
 import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
+import models.entity.OM.CandidateResume;
 import models.entity.OM.InterviewDetails;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
@@ -386,35 +387,45 @@ public class RecruiterService {
                 Logger.info("Recruiter with mobile no: " + recruiterProfile.getRecruiterProfileMobile() + " is unlocking candidate with mobile: " + candidate.getCandidateMobile());
 
                 Boolean unlockCandidate = false;
+                Boolean isPrivateRecruiter = false;
+                if(recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
+                    isPrivateRecruiter = true;
+                }
                 if(recruiterProfile.getContactCreditCount() > 0 || recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
                     unlockCandidate = true;
                 }
 
                 if(unlockCandidate){
 
-                    //recruiter has contact credits
-                    debitCredits(recruiterProfile, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, -1, createdBy);
+                    if(!isPrivateRecruiter){
+                        //recruiter has contact credits
+                        debitCredits(recruiterProfile, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, -1, createdBy);
 
-                    RecruiterToCandidateUnlocked recruiterToCandidateUnlocked = new RecruiterToCandidateUnlocked();
+                        RecruiterToCandidateUnlocked recruiterToCandidateUnlocked = new RecruiterToCandidateUnlocked();
 
-                    recruiterToCandidateUnlocked.setRecruiterProfile(recruiterProfile);
-                    recruiterToCandidateUnlocked.setCandidate(candidate);
+                        recruiterToCandidateUnlocked.setRecruiterProfile(recruiterProfile);
+                        recruiterToCandidateUnlocked.setCandidate(candidate);
 
-                    //saving unlocked candidate
-                    recruiterToCandidateUnlocked.save();
+                        //saving unlocked candidate
+                        recruiterToCandidateUnlocked.save();
 
-                    //adding interaction
-                    String objAUuid = candidate.getCandidateUUId();
-                    String objBUuid = recruiterProfile.getRecruiterProfileUUId();
-                    createInteractionForRecruiterUnlockCandidateContact(objAUuid, objBUuid);
+                        //adding interaction
+                        String objAUuid = candidate.getCandidateUUId();
+                        String objBUuid = recruiterProfile.getRecruiterProfileUUId();
+                        createInteractionForRecruiterUnlockCandidateContact(objAUuid, objBUuid);
 
+                        // Send sms to candidate that a recruiter has unlocked their profile
+                        SmsUtil.sendCandidateUnlockSms(recruiterProfile.getCompany().getCompanyName(),
+                                recruiterProfile.getRecruiterProfileName(), candidate.getCandidateMobile(), candidate.getCandidateFirstName());
+                    }
                     unlockContactResponse.setStatus(UnlockContactResponse.STATUS_SUCCESS);
                     unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
                     unlockContactResponse.setCandidateId(candidate.getCandidateId());
 
-                    // Send sms to candidate that a recruiter has unlocked their profile
-                    SmsUtil.sendCandidateUnlockSms(recruiterProfile.getCompany().getCompanyName(),
-                            recruiterProfile.getRecruiterProfileName(), candidate.getCandidateMobile(), candidate.getCandidateFirstName());
+                    CandidateResume resume = CandidateResume.find.where().eq("CandidateId", candidate.getCandidateId()).findUnique();
+                    if(resume != null){
+                        unlockContactResponse.setResumeLink(resume.getFilePath());
+                    }
 
                     return unlockContactResponse;
 
@@ -432,6 +443,11 @@ public class RecruiterService {
                 unlockContactResponse.setStatus(UnlockContactResponse.STATUS_ALREADY_UNLOCKED);
                 unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
                 unlockContactResponse.setCandidateId(candidate.getCandidateId());
+                CandidateResume resume = CandidateResume.find.where().eq("CandidateId", candidate.getCandidateId()).findUnique();
+                if(resume != null){
+                    unlockContactResponse.setResumeLink(resume.getFilePath());
+                }
+
                 return unlockContactResponse;
             }
         }

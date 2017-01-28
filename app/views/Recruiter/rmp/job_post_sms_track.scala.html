@@ -17,6 +17,7 @@
         <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_candidate_search.css">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_myjobs.css">
 
         <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -28,25 +29,25 @@
     <body>
         <div class="recruiter_navbar"></div>
 
-        <div class="back-banner-recruiter" style="height: 90px"></div>
+        <div class="back-banner-recruiter" style="height: 90px; margin-top: -64px"></div>
         <h5 style="margin: 8px 8px 8px 16px" id="job_heading">Track Job Post</h5>
 
         <!-- tabular view -->
         <div class="row">
             <div class="col s12">
                 <ul class="tabs tabs-fixed-width" style="margin-bottom: 8px">
-                    <li id="tab1Parent" class="tab col s3" onclick="tabChange1()">
+                    <li id="tab1Parent" class="tab col s3" onclick="preformTabChange(1)">
                         <a id="tabSms" href="#pendingConfirmation">
                             <font id="tab1">SMS Report</font>
                         </a>
                     </li>
-                    <li id="tab2Parent" class="tab col s3" onclick="tabChange2()">
+                    <li id="tab2Parent" class="tab col s3" onclick="preformTabChange(2)">
                         <a id="tabTrack" href="#confirmed">
                             <font id="tab2">Track Application(s)</font>
                         </a>
 
                     </li>
-                    <li id="tab3Parent" class="tab col s3" onclick="tabChange3()">
+                    <li id="tab3Parent" class="tab col s3" onclick="preformTabChange(3)">
                         <a id="tabConfirmed" href="#completed">
                             <font id="tab3">Confirmed interview(s)</font>
                         </a>
@@ -76,7 +77,7 @@
                 <div id="smsReportContainer">
                     <div class="container-fluid" id="smsReportTable" style="display: none">
                         <div class="card" id="myJobPost">
-                            <div class="row hide-on-small-only" id='headerForData'>
+                            <div class="row hide-on-small-only" id='headerForData' style="font-size: 14px">
                                 <div class="col s1 l1" id="colHeadDataTable">
                                     <font>Date</font>
                                 </div>
@@ -98,6 +99,9 @@
                             </div>
                             <div class="allSms"></div>
                         </div>
+                        <div id="paginationTab" style="float: right; margin-top: 8px">
+                            <span style="margin: 12px 8px 0 0" id="totalSmsReports"></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -113,24 +117,33 @@
                 <div id="trackApplicationContainer">
                     <div class="container-fluid" id="trackApplicationTable" style="display: none">
                         <div class="card" id="myJobPost">
-                            <div class="row hide-on-small-only" id='headerForData'>
+                            <div class="row hide-on-small-only" id='headerForData' style="font-size: 14px">
+                                <div class="col s1 l1" id="colHeadDataTable">
+                                    <font>Date & Time</font>
+                                </div>
                                 <div class="col s2 l2" id="colHeadDataTable">
                                     <font>Candidate</font>
                                 </div>
-                                <div class="col s2 l2" id="colHeadDataTable">
+                                <div class="col s2 l1" id="colHeadDataTable">
                                     <font>Mobile</font>
                                 </div>
-                                <div class="col s1 l2" id="colHeadDataTable">
+                                <div class="col s1 l1" id="colHeadDataTable">
                                     <font>Channel</font>
+                                </div>
+                                <div class="col s1 l2" id="colHeadDataTable">
+                                    <font>Interview Date & Time</font>
                                 </div>
                                 <div class="col s1 l2" id="colHeadDataTable">
                                     <font>Application Status</font>
                                 </div>
-                                <div class="col s1 l4" id="colHeadDataTable">
+                                <div class="col s1 l3" id="colHeadDataTable">
                                     <font>Action</font>
                                 </div>
                             </div>
                             <div class="allApplications"></div>
+                        </div>
+                        <div id="trackPaginationTab" style="float: right; margin-top: 8px">
+                            <span style="margin: 12px 8px 0 0" id="totalTrackingCandidates"></span>
                         </div>
                     </div>
                 </div>
@@ -146,24 +159,27 @@
                 <div id="confirmedApplicationContainer">
                     <div class="container-fluid" id="confirmedApplicationTable" style="display: none">
                         <div class="card" id="myJobPost">
-                            <div class="row hide-on-small-only" id='headerForData'>
+                            <div class="row hide-on-small-only" id='headerForData' style="font-size: 14px">
+                                <div class="col s1 l1" id="colHeadDataTable">
+                                    <font>Date & Time</font>
+                                </div>
                                 <div class="col s2 l2" id="colHeadDataTable">
                                     <font>Candidate</font>
                                 </div>
                                 <div class="col s2 l2" id="colHeadDataTable">
                                     <font>Mobile</font>
                                 </div>
-                                <div class="col s1 l2" id="colHeadDataTable">
+                                <div class="col s1 l3" id="colHeadDataTable">
                                     <font>Interview Date & Time</font>
                                 </div>
-                                <div class="col s1 l3" id="colHeadDataTable">
-                                    <font>Candidate Status</font>
-                                </div>
-                                <div class="col s1 l3" id="colHeadDataTable">
+                                <div class="col s1 l4" id="colHeadDataTable">
                                     <font>Interview Feedback</font>
                                 </div>
                             </div>
                             <div class="allConfirmed"></div>
+                        </div>
+                        <div id="confirmedPaginationTab" style="float: right; margin-top: 8px">
+                            <span style="margin: 12px 8px 0 0" id="totalConfirmedCandidates"></span>
                         </div>
                     </div>
 
@@ -369,6 +385,9 @@
             </div>
         </div>
 
+        <div id="candidateInfoModal" class="modal viewCandidateModal">
+            <div class="modal-content" id="candidateInfoModal"></div>
+        </div>
 
         <!--Footer start-->
         <footer class="page-footer" style="background-color: #424242;">
@@ -406,9 +425,13 @@
             $('.recruiter_navbar').load('/recruiterNavbar');
     </script>
     <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/common/js/jquery.twbsPagination.js"></script>
     <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
     <script type="text/javascript" src="/assets/common/js/validation.js"></script>
     <script type="text/javascript" src="/assets/common/js/script_constants.js"></script>
     <script type="text/javascript" src="/assets/common/js/jobpost_workflow_constants.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/candidate_card.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/get_candidate_Info_recruiter.js"></script>
     <script type="text/javascript" src="/assets/recruiter/rmp/js/recruiter_job_post_track.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/recruiter_notifier.js"></script>
 </html>

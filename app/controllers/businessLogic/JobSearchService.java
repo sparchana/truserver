@@ -436,7 +436,7 @@ public class JobSearchService {
                                                          Integer source,
                                                          int page,
                                                          FilterParamRequest filterParamRequest,
-                                                         boolean isPrivate)
+                                                         Integer jobPostAccessLevel)
     {
         int MAX_ROW = 5;
         JobPostResponse response = new JobPostResponse();
@@ -534,12 +534,8 @@ public class JobSearchService {
         query = query.where().eq("source", source).query();
 
         //checking if job post is private or not
-        if(isPrivate){
 
-            query = query.where().eq("jobPostAccessLevel", ServerConstants.JOB_POST_TYPE_PRIVATE).query();
-        } else {
-            query = query.where().eq("jobPostAccessLevel", ServerConstants.JOB_POST_TYPE_OPEN).query();
-        }
+        query = query.where().eq("job_post_access_level", jobPostAccessLevel).query();
 
         query = query.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).query();
 

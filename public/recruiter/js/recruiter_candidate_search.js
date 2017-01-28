@@ -35,14 +35,23 @@ var blockApiTrigger = false;
 $(document).scroll(function(){
     if ($(this).scrollTop() > 30) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
-    }
-    else{
+    } else{
         $('nav').css({"background": "transparent"});
     }
+
     if ($(this).scrollTop() > 500) {
         $("#fixedButton").show();
     } else{
         $("#fixedButton").hide();
+    }
+
+    if ($(document).scrollTop() > 150) {
+        $("#fixed-tools").css('background-color', 'rgba(228, 228, 228, 0.960784)');
+        $("#fixed-tools").css('position', 'fixed');
+        $("#fixed-tools").slideDown();
+        $(".navbar-default").css('background-color', 'white');
+    } else {
+        $("#fixed-tools").slideUp(100);
     }
 
     if($(window).scrollTop() + $(window).height() == $(document).height()) {
@@ -205,6 +214,14 @@ $(document).ready(function(){
     $("#loadingIcon").show();
 
     $("#select_all").change(function() {
+        if(this.checked) {
+            checkAll();
+        } else{
+            uncheckAll();
+        }
+    });
+
+    $("#select_all_floating").change(function() {
         if(this.checked) {
             checkAll();
         } else{
@@ -574,6 +591,10 @@ function processDataUnlockedCandidates(returnedData) {
         try {
             $("#candidate_" + unlockedCandidate.candidate.candidateId).html(unlockedCandidate.candidate.candidateMobile);
             $("#unlock_candidate_" + unlockedCandidate.candidate.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 customUnlockBtn").addClass("contactUnlocked right").removeAttr('onclick');
+            var link = unlockedCandidate.candidate.candidateResumeLink;
+            if(link != null){
+                $("#candidate_resume_" + unlockedCandidate.candidate.candidateId).attr("val", "http://docs.google.com/gview?url=" + link + "&embedded=true");
+            }
         } catch (err){}
     });
 }
@@ -692,8 +713,15 @@ function processDataUnlockCandidate(returnedData) {
     if(returnedData.status == 1){
         notifySuccess("Contact successfully unlocked");
         getRecruiterInfo();
+
+        resumeDiv.setAttribute("val", "http://docs.google.com/gview?url=" + returnedData.resumeLink + "&embedded=true");
         $("#candidate_" + candidateIdVal).html(returnedData.candidateMobile);
         $("#unlock_candidate_" + returnedData.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 customUnlockBtn").addClass("contactUnlocked right").removeAttr('onclick');
+        if(viewResume == true){
+            viewResume = false;
+            window.open("http://docs.google.com/gview?url=" + returnedData.resumeLink + "&embedded=true");
+        }
+
     } else if(returnedData.status == 2){
         notifySuccess("You have already unlocked the candidate");
         getRecruiterInfo();

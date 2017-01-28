@@ -48,9 +48,27 @@
     </head>
     <body>
         <div class="recruiter_navbar"></div>
+        <div id="fixed-tools" class="floatingTools" >
+            <div class="container" style="padding: 0">
+                <div class="row" style="margin: 0">
+                    <div class="col s12 l3"></div>
+                    <div class="col s12 l9">
+                        <input type="checkbox" class="filled-in" id="select_all_floating" />
+                        <label for="select_all_floating" style="margin: 0 4px 0 14px; font-size: 1px; color: transparent">.</label>
+
+                        <div class="waves-effect waves-light customBtn btnGreen" onclick="selectCheckedCandidates()" style="margin-left: -8px">
+                            <font style="font-weight: bold; font-size: 12px;" >Send SMS</font>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script>
             $('.recruiter_navbar').load('/recruiterNavbar');
         </script>
+
+
         <div class="row hide-on-med-and-up" id="creditViewMobile" style="display: none;">
             <div class="col s12 ">
                 <div class="row" style="margin: 0;">
@@ -347,10 +365,6 @@
                         <div class="waves-effect waves-light customBtn btnGreen" onclick="selectCheckedCandidates()" style="margin-left: -8px">
                             <font style="font-weight: bold; font-size: 12px;" >Send SMS</font>
                         </div>
-                        <div class="waves-effect waves-light customBtn btnBlue" onclick="selectCheckedCandidatesToUnlock()">
-                            <font style="font-weight: bold; font-size: 12px;" >Unlock Candidate(s)</font>
-                        </div>
-
                     </div>
                     <div id="candidateResultContainer"></div>
                     <div id="searchJobPanel">
