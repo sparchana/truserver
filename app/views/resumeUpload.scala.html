@@ -12,7 +12,7 @@
     <br><div id="list"></div>
 </form>
 
-<script>
+@*<script>
 
   function handleFileSelect(evt) {
 
@@ -54,8 +54,7 @@
 	        } catch(exception) {
 	            console.log("Exception Occurred!!" + exception);
 	            console.log(new Error().stack);
-	        }*/
-
+	        }
     document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
   }
 
@@ -63,7 +62,6 @@
 
   document.getElementById('resumes').addEventListener('change', handleFileSelect, false);
 
-</script>
-
+</script>*@
 </body>
 </html>

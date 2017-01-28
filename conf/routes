@@ -165,6 +165,10 @@ GET         /showRecruiterLead/:id                                        contro
 GET         /showRecruiterLeadStatus                                      controllers.RecruiterController.showRecruiterLeadStatus
 GET         /recruiter/job/track/:id                                      controllers.RecruiterController.trackApplication(id : Long)
 
+#Temp route delete after use
+GET         /recruiter/job/candidateModal                                 controllers.RecruiterController.recruiterCandidateModal()
+GET         /recruiter/getCandidateInfo/:id                               controllers.RecruiterController.recruiterGetCandidateInfo(id: Long)
+
 POST        /showRecruiterLead/:id                                        controllers.RecruiterController.readRecruiterLead(id: Long)
 POST        /getAllJobApplicants/:id                                      controllers.RecruiterController.getAllJobApplicants(id : Long)
 POST        /getAllRecruiterJobPosts                                      controllers.RecruiterController.getAllRecruiterJobPosts
@@ -361,7 +365,7 @@ GET         /favicon.ico                                                  contro
 GET         /showResumeUpload                                               controllers.Application.showResumeUpload()
 POST        /addResume/                                                     controllers.Application.doResumeUpload(candidateId: String ?=null)
 POST        /receive-parsed-resume                                          controllers.Application.receiveParsedResume()
-GET        /fetchResume/                                                   controllers.Application.fetchResume(candidateId: String ?=null)
+GET         /fetchResume/                                                   controllers.Application.fetchResume(candidateId: String ?=null)
 GET         /favicon.ico                                                    controllers.Assets.at(path="/public/common/img/", file="icon.png")
 #GET        /webjars/*file                                                  controllers.WebJarAssets.at(file)
 

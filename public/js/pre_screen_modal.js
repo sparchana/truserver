@@ -1525,6 +1525,12 @@ function processPreScreenContent(returnedData, customD, isSupport) {
     if(returnedData == null || returnedData.status != "SUCCESS") {
         if (returnedData != null && returnedData.status == "INVALID") {
             notifyModal("Pre Screen Status: Completed", "Pre Screen Already Completed");
+
+            if(returnedData.isInterviewRequired) {
+                bootbox.hideAll();
+                initInterviewModal(returnedData.candidateId, returnedData.jobPostId, false);
+            }
+            return;
         } else {
             notifyModal("Error","Request failed. Something went Wrong! Please Refresh");
         }

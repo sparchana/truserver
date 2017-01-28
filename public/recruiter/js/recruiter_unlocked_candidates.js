@@ -42,6 +42,7 @@ $(document).ready(function(){
 });
 
 function processDataForUnlockedCandidates(returnedData) {
+    console.log("data : "+ JSON.stringify(returnedData));
     if(Object.keys(returnedData).length > 0){
         $("#candidateTools").show();
         var parent = $("#candidateResultContainer");

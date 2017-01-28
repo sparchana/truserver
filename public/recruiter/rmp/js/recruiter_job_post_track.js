@@ -218,6 +218,14 @@ function processDataGetSmsReport(returnedData) {
         var smsList = returnedData.smsReportList;
         if(smsList.length > 0){
             $('.allSms').html('');
+            var currentCount = 0;
+            if((index + 10) > returnedData.totalSms){
+                currentCount = returnedData.totalSms;
+            } else{
+                currentCount = index + 10;
+            }
+            $("#totalSmsReports").html("Showing " + currentCount + " out of " + returnedData.totalSms + " results");
+
             var numberOfPages = parseInt(returnedData.totalSms)/10;
             var rem = parseInt(returnedData.totalSms) % 10;
             if(rem > 0){
@@ -255,8 +263,11 @@ function processDataGetSmsReport(returnedData) {
 
                 var colCandidateName= document.createElement("div");
                 colCandidateName.className = 'col s12 m2 l2';
-                colCandidateName.style = 'margin-top:8px';
+                colCandidateName.style = 'margin-top: 8px; color: #55b2ce; font-weight: bold; cursor: pointer';
                 colCandidateName.textContent = toTitleCase(smsObject.candidate.candidateFullName);
+                colCandidateName.onclick = function () {
+                    getCandidateInfo(smsObject.candidate.candidateId);
+                };
                 outerRow.appendChild(colCandidateName);
 
                 var spanCandidateName = document.createElement("div");
@@ -347,6 +358,14 @@ function processDataJobApplications(returnedData) {
         $('.allApplications').html('');
         var parent = $('.allApplications');
 
+        var currentCount = 0;
+        if((index + 10) > returnedData.totalCount){
+            currentCount = returnedData.totalCount;
+        } else{
+            currentCount = index + 10;
+        }
+        $("#totalTrackingCandidates").html("Showing " + currentCount + " out of " + returnedData.totalCount + " results");
+
         var numberOfPages = parseInt(returnedData.totalCount)/10;
         var rem = parseInt(returnedData.totalCount) % 10;
         if(rem > 0){
@@ -385,8 +404,11 @@ function processDataJobApplications(returnedData) {
 
             var colCandidateName= document.createElement("div");
             colCandidateName.className = 'col s12 m2 l2';
-            colCandidateName.style = 'margin-top:8px';
+            colCandidateName.style = 'margin-top: 8px; color: #55b2ce; font-weight: bold; cursor: pointer';
             colCandidateName.textContent = toTitleCase(workflowObj.candidate.candidateFullName);
+            colCandidateName.onclick = function () {
+                getCandidateInfo(workflowObj.candidate.candidateId);
+            };
             outerRow.appendChild(colCandidateName);
 
             var spanCandidateName = document.createElement("div");
@@ -899,6 +921,14 @@ function processDataConfirmedApplication(returnedData) {
         $('.allConfirmed').html('');
         var parent = $('.allConfirmed');
 
+        var currentCount = 0;
+        if((index + 10) > returnedData.totalCount){
+            currentCount = returnedData.totalCount;
+        } else{
+            currentCount = index + 10;
+        }
+        $("#totalConfirmedCandidates").html("Showing " + currentCount + " out of " + returnedData.totalCount + " results");
+
         var numberOfPages = parseInt(returnedData.totalCount)/10;
         var rem = parseInt(returnedData.totalCount) % 10;
         if(rem > 0){
@@ -930,8 +960,11 @@ function processDataConfirmedApplication(returnedData) {
 
             var colCandidateName= document.createElement("div");
             colCandidateName.className = 'col s12 m2 l2';
-            colCandidateName.style = 'margin-top:8px';
+            colCandidateName.style = 'margin-top: 8px; color: #55b2ce; font-weight: bold; cursor: pointer';
             colCandidateName.textContent = toTitleCase(workflowObj.candidate.candidateFullName);
+            colCandidateName.onclick = function () {
+                getCandidateInfo(workflowObj.candidate.candidateId);
+            };
             outerRow.appendChild(colCandidateName);
 
             var spanCandidateName = document.createElement("div");

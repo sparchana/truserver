@@ -48,8 +48,12 @@ function processJobPostInterviewSlot(returnedData, isSupport) {
     if (returnedData.interviewSlotMap!= null && Object.keys(returnedData.interviewSlotMap).length > 0) {
         //slots
         $('#interViewSlot').html('');
-        var defaultOption = $('<option value="-1"></option>').text("Select Time Slot");
-        $('#interViewSlot').append(defaultOption);
+
+        //if slot selected is more the one, add select option
+        if(Object.keys(returnedData.interviewSlotMap).length > 1 ){
+            var defaultOption = $('<option value="-1"></option>').text("Select Time Slot");
+            $('#interViewSlot').append(defaultOption);
+        }
 
         $.each( returnedData.interviewSlotMap, function( key, value ) {
             var slotValue = value.interviewDateMillis +"_"+value.interviewTimeSlot.slotId;
@@ -226,7 +230,7 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
     });
     interviewDialog.attr("id", "interview-selector-modal");
 
-    $("#interViewSlot").change(function (){
+    $("#interViewSlot").click(function (){
         if($("#interViewSlot").val() != -1){
             $(".btn.interview-selector-submit").prop('disabled', false);
             $(".btn.interview-selector-submit").css({'background-color':'#09ac58','color':'#ffffff'});

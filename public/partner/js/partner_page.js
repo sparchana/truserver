@@ -84,7 +84,6 @@ function processDataPartnerSession(returnedData) {
         } else{
             $("#openPartner").show();
             $("#privatePartner").hide();
-
         }
     }
 }
@@ -286,6 +285,10 @@ function renderCandidateTable() {
                                     return "-";
                                 }
                             },
+                            'resume':'<div id="resumeLink" style="width:100%" >' +
+                            '<label class="mBtn blue btn-file">UPLOAD'+
+                            '<input type="file" accept=".pdf,.doc,.docx" id="uploadBulkResumeContent" style="display: none">'+
+                            '</label>',
                             'btnView' : '<button type="button" class="mBtn blue" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" >'+ 'View/Edit' +'</button>',
                             'apply' :  function() {
                                 if (statusVal.localeCompare("Active") == 0){
@@ -310,6 +313,7 @@ function renderCandidateTable() {
                 { "data": "candidateCreationTimestamp" },
                 { "data": "candidateStatus" },
                 { "data": "btnView" },
+                { "data": "resume" },
                 { "data": "apply" },
                 { "data": "appliedJobs" }
             ],

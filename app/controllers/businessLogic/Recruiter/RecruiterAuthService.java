@@ -14,6 +14,10 @@ import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterAddPasswordViaWebsite;
@@ -103,6 +107,17 @@ public class RecruiterAuthService {
                             existingRecruiter.getRecruiterProfileMobile());
 
                     recruiterSignUpResponse.setFirstTime(ServerConstants.RECRUITER_FIRST_TIME);
+                } else{
+                    String startDateString = "2020-12-31";
+                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                    Date startDate = null;
+                    try {
+                        startDate = df.parse(startDateString);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    addCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK, ServerConstants.RECRUITER_DEFAULT_INTERVIEW_CREDITS, createdBy, startDate);
                 }
 
                 existingRecruiter.update();

@@ -831,6 +831,11 @@ function processDataCandidateData(returnedData) {
         try {
             $("#candidate_" + unlockedCandidate.candidateId).html(unlockedCandidate.candidateMobile);
             $("#unlock_candidate_" + unlockedCandidate.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 customUnlockBtn").addClass("contactUnlocked right").removeAttr('onclick');
+            var link = unlockedCandidate.resumeLink;
+            console.log(unlockedCandidate.resumeLink);
+            if(link != null){
+                $("#candidate_resume_" + unlockedCandidate.candidateId).attr("val", "http://docs.google.com/gview?url=" + link + "&embedded=true");
+            }
         } catch (err){}
     });
 

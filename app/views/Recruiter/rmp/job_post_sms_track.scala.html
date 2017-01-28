@@ -17,6 +17,7 @@
         <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_candidate_search.css">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_myjobs.css">
 
         <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -28,7 +29,7 @@
     <body>
         <div class="recruiter_navbar"></div>
 
-        <div class="back-banner-recruiter" style="height: 90px"></div>
+        <div class="back-banner-recruiter" style="height: 90px; margin-top: -64px"></div>
         <h5 style="margin: 8px 8px 8px 16px" id="job_heading">Track Job Post</h5>
 
         <!-- tabular view -->
@@ -98,8 +99,9 @@
                             </div>
                             <div class="allSms"></div>
                         </div>
-                        <div id="paginationTab"></div>
-
+                        <div id="paginationTab" style="float: right; margin-top: 8px">
+                            <span style="margin: 12px 8px 0 0" id="totalSmsReports"></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -140,7 +142,9 @@
                             </div>
                             <div class="allApplications"></div>
                         </div>
-                        <div id="trackPaginationTab"></div>
+                        <div id="trackPaginationTab" style="float: right; margin-top: 8px">
+                            <span style="margin: 12px 8px 0 0" id="totalTrackingCandidates"></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -174,7 +178,9 @@
                             </div>
                             <div class="allConfirmed"></div>
                         </div>
-                        <div id="confirmedPaginationTab"></div>
+                        <div id="confirmedPaginationTab" style="float: right; margin-top: 8px">
+                            <span style="margin: 12px 8px 0 0" id="totalConfirmedCandidates"></span>
+                        </div>
                     </div>
 
                 </div>
@@ -379,6 +385,9 @@
             </div>
         </div>
 
+        <div id="candidateInfoModal" class="modal viewCandidateModal">
+            <div class="modal-content" id="candidateInfoModal"></div>
+        </div>
 
         <!--Footer start-->
         <footer class="page-footer" style="background-color: #424242;">
@@ -421,6 +430,8 @@
     <script type="text/javascript" src="/assets/common/js/validation.js"></script>
     <script type="text/javascript" src="/assets/common/js/script_constants.js"></script>
     <script type="text/javascript" src="/assets/common/js/jobpost_workflow_constants.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/candidate_card.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/get_candidate_Info_recruiter.js"></script>
     <script type="text/javascript" src="/assets/recruiter/rmp/js/recruiter_job_post_track.js"></script>
     <script type="text/javascript" src="/assets/recruiter/js/recruiter_notifier.js"></script>
 </html>
