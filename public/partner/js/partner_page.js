@@ -101,7 +101,6 @@ function processDataUpdateProfile(returnedData) {
 
 
 $(document).ready(function() {
-    checkPartnerLogin()
     //getting all localities
     try {
         $.ajax({
