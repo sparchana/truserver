@@ -26,6 +26,7 @@ import controllers.businessLogic.hirewand.HireWandService;
 import controllers.businessLogic.hirewand.InvalidRequestException;
 import controllers.businessLogic.ongrid.AadhaarService;
 import controllers.businessLogic.ongrid.OnGridConstants;
+import dao.CandidateDAO;
 import dao.staticdao.IdProofDAO;
 import in.trujobs.proto.AddFeedbackRequest;
 import in.trujobs.proto.FeedbackReasonObject;
@@ -1715,20 +1716,20 @@ public class CandidateService
         }
 
         Logger.info("response= "+response);
-            JSONObject result = null;
+        JSONObject result = null;
+        try {
+            result = new JSONObject(String.valueOf(response));
+        } catch (JSONException e) {
+            e.printStackTrace();
             try {
-                result = new JSONObject(String.valueOf(response));
-            } catch (JSONException e) {
-                e.printStackTrace();
-                try {
-                    responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
-                    responseJson.put("msg",e.getMessage());
-                } catch (JSONException ee) {
-                    ee.printStackTrace();
-                    return responseJson;
-                }
+                responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
+                responseJson.put("msg",e.getMessage());
+            } catch (JSONException ee) {
+                ee.printStackTrace();
                 return responseJson;
             }
+            return responseJson;
+        }
 
         try {
 
@@ -1742,17 +1743,17 @@ public class CandidateService
                 personId = String.valueOf(result.getString("personid"));
                 Logger.info("personId="+personId);
 
-                    String awsName;
-                    if(candidateId > 0){
-                        // store resume in AWS with standard naming (candidateId_firstName_TimeStamp)
-                        awsName = fileName;
-                    }
-                    else {
-                        // store resume in AWS with person Id
-                        awsName = personId;
-                        awsName += fileName.substring(fileName.lastIndexOf("."));
-                    }
-                    Logger.info("AWS upload fileName ="+awsName);
+                String awsName;
+                if(candidateId > 0){
+                    // store resume in AWS with standard naming (candidateId_firstName_TimeStamp)
+                    awsName = fileName;
+                }
+                else {
+                    // store resume in AWS with person Id
+                    awsName = personId;
+                    awsName += fileName.substring(fileName.lastIndexOf("."));
+                }
+                Logger.info("AWS upload fileName ="+awsName);
 
                 //Http.Session backupSession = session();
 
@@ -1783,82 +1784,82 @@ public class CandidateService
 
 
                 if(path == "") {
-                        // Resume could not be uploaded to S3
+                    // Resume could not be uploaded to S3
+                    try {
+                        responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
+                        responseJson.put("msg","Resume could not be uploaded into AWS");
+                    } catch (JSONException ee) {
+                        ee.printStackTrace();
+                        return responseJson;
+                    }
+                    return responseJson;
+                }
+                else {
+
+                    // Resume uploaded into S3
+                    Logger.info("AWS file Path = "+path);
+                    path = "https://s3.amazonaws.com/"+path;
+
+                    // Need to make an entry in the CandidateResume table
+                    CandidateResumeService candidateResumeService = new CandidateResumeService();
+                    CandidateResumeRequest candidateResumeRequest = new CandidateResumeRequest();
+
+                    // determine channel, user
+                    String user = "";
+                    if(session() != null){
+                        //Logger.info("Session : "+ session().get("sessionChannel"));
+                        if(session().get("sessionChannel")!=null && Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
+                            user = session().get("partnerId")+"(Partner)";
+                        }
+                        else if(session().get("sessionChannel")!=null && Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
+                            user = session().get("candidateId")+"(Candidate-Web)";
+                        }
+                        else if(session().get("sessionChannel")!=null && Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID){
+                            user = session().get("candidateId")+"(Candidate-App)";
+                        }
+                    }
+                    else user = "Unknown";
+                    Logger.info("user ="+user);
+
+                    // Prepare the Request
+                    if(candidateId > 0) candidateResumeRequest.setCandidate(candidateId);
+                    candidateResumeRequest.setCreatedBy(user);
+                    candidateResumeRequest.setExternalKey(personId);
+                    candidateResumeRequest.setFilePath(path);
+                    //candidateResumeRequest.setParsedResume(profileJson.toString());
+
+                    // Create the entry
+                    TruResponse candidateResumeResponse = (TruResponse) candidateResumeService.create(candidateResumeRequest);
+
+                    if(candidateResumeResponse.getStatus() == TruResponse.STATUS_FAILURE) {
+                        // error reported, delete the AWS entry
+                        removeResumeFromAws(path.replace("https://s3.amazonaws.com/trujobs.in/",""));
                         try {
-                            responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
-                            responseJson.put("msg","Resume could not be uploaded into AWS");
+                            responseJson.put("status","Fail");
+                            responseJson.put("msg","Resume could not be updated in TruJobs Database");
                         } catch (JSONException ee) {
                             ee.printStackTrace();
                             return responseJson;
                         }
                         return responseJson;
                     }
-                    else {
-
-                        // Resume uploaded into S3
-                        Logger.info("AWS file Path = "+path);
-                        path = "https://s3.amazonaws.com/"+path;
-
-                        // Need to make an entry in the CandidateResume table
-                        CandidateResumeService candidateResumeService = new CandidateResumeService();
-                        CandidateResumeRequest candidateResumeRequest = new CandidateResumeRequest();
-
-                        // determine channel, user
-                        String user = "";
-                        if(session() != null){
-                            //Logger.info("Session : "+ session().get("sessionChannel"));
-                            if(session().get("sessionChannel")!=null && Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
-                                user = session().get("partnerId")+"(Partner)";
-                            }
-                            else if(session().get("sessionChannel")!=null && Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE){
-                                user = session().get("candidateId")+"(Candidate-Web)";
-                            }
-                            else if(session().get("sessionChannel")!=null && Integer.parseInt(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID){
-                                user = session().get("candidateId")+"(Candidate-App)";
-                            }
-                        }
-                        else user = "Unknown";
-                        Logger.info("user ="+user);
-
-                        // Prepare the Request
-                        if(candidateId > 0) candidateResumeRequest.setCandidate(candidateId);
-                        candidateResumeRequest.setCreatedBy(user);
-                        candidateResumeRequest.setExternalKey(personId);
-                        candidateResumeRequest.setFilePath(path);
-                        //candidateResumeRequest.setParsedResume(profileJson.toString());
-
-                        // Create the entry
-                        TruResponse candidateResumeResponse = (TruResponse) candidateResumeService.create(candidateResumeRequest);
-
-                        if(candidateResumeResponse.getStatus() == TruResponse.STATUS_FAILURE) {
-                            // error reported, delete the AWS entry
-                            removeResumeFromAws(path.replace("https://s3.amazonaws.com/trujobs.in/",""));
-                            try {
-                                responseJson.put("status","Fail");
-                                responseJson.put("msg","Resume could not be updated in TruJobs Database");
-                            } catch (JSONException ee) {
-                                ee.printStackTrace();
-                                return responseJson;
-                            }
-                            return responseJson;
-                        }
-
-                    }
 
                 }
 
             }
-            catch (JSONException e){
-                e.printStackTrace();
-                try {
-                    responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
-                    responseJson.put("msg",e.getMessage());
-                } catch (JSONException ee) {
-                    ee.printStackTrace();
-                    return responseJson;
-                }
+
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+            try {
+                responseJson.put("status",ServerConstants.UPLOAD_RESUME_FAIL_STATUS);
+                responseJson.put("msg",e.getMessage());
+            } catch (JSONException ee) {
+                ee.printStackTrace();
                 return responseJson;
             }
+            return responseJson;
+        }
 
         try {
             responseJson.put("status",ServerConstants.UPLOAD_RESUME_SUCCESS_STATUS);
@@ -2368,9 +2369,9 @@ public class CandidateService
 
         // created-by check
         if(candidateResume.getCreatedBy() == null ||
-          (candidateResume.getCreatedBy() != null && candidateResume.getCreatedBy().equalsIgnoreCase("unknown"))){
-                candidateResumeRequest.setCreatedBy(candidateId+"(Candidate)");
-                changedFields.add("createdBy");
+                (candidateResume.getCreatedBy() != null && candidateResume.getCreatedBy().equalsIgnoreCase("unknown"))){
+            candidateResumeRequest.setCreatedBy(candidateId+"(Candidate)");
+            changedFields.add("createdBy");
         }
 
         // update the candidate resume entry
@@ -2419,7 +2420,7 @@ public class CandidateService
                 }
             }
             catch (NullPointerException e){
-                    e.printStackTrace();
+                e.printStackTrace();
             }
         }
         return responseJson;
@@ -2544,9 +2545,9 @@ public class CandidateService
                                     break;
                                 case "Company":
                                     if(nextLine[i].toLowerCase() != "nil" ||
-                                       nextLine[i].toLowerCase() != "no" ||
-                                       nextLine[i].toLowerCase() != "any" ||
-                                       nextLine[i].toLowerCase() != "any company"){
+                                            nextLine[i].toLowerCase() != "no" ||
+                                            nextLine[i].toLowerCase() != "any" ||
+                                            nextLine[i].toLowerCase() != "any company"){
                                         List<AddSupportCandidateRequest.PastCompany> pastCompanyList = new ArrayList<>();
                                         AddSupportCandidateRequest.PastCompany pastCompany = new AddSupportCandidateRequest.PastCompany();
                                         pastCompany.setCompanyName(nextLine[i]);
@@ -2606,5 +2607,112 @@ public class CandidateService
         Logger.info("Exiting bulkUploadCandidates(). Count = "+count);
         return bulkUploadResponse;
     }
+    public static boolean updateCandidateDetail(List<Integer> propertyIds, Candidate candidate, UpdateCandidateDetail updateCandidateDetail){
+        boolean isVerifyAadhaar = false;
 
+        for(Integer propId: propertyIds) {
+            if (propId == null) continue;
+            Integer propertyId = propId;
+            if (ServerConstants.PROPERTY_TYPE_DOCUMENT == propertyId) {
+                UpdateCandidateDocument updateCandidateDocument = new UpdateCandidateDocument();
+                updateCandidateDocument.setIdProofWithIdNumberList(updateCandidateDetail.getIdProofWithIdNumberList());
+                isVerifyAadhaar = CandidateService.updateCandidateDocument(candidate, updateCandidateDocument);
+            } else if (ServerConstants.PROPERTY_TYPE_LANGUAGE == propertyId) {
+
+                if(updateCandidateDetail.getCandidateKnownLanguageList() ==null
+                        || updateCandidateDetail.getCandidateKnownLanguageList().size() == 0) continue;
+
+                UpdateCandidateLanguageKnown updateCandidateLanguageKnown = new UpdateCandidateLanguageKnown();
+
+                updateCandidateLanguageKnown.setCandidateKnownLanguageList(updateCandidateDetail.getCandidateKnownLanguageList());
+                CandidateService.updateCandidateLanguageKnown(candidate, updateCandidateLanguageKnown);
+            } else if (ServerConstants.PROPERTY_TYPE_ASSET_OWNED == propertyId) {
+                UpdateCandidateAsset updateCandidateAsset = new UpdateCandidateAsset();
+                updateCandidateAsset.setAssetIdList(updateCandidateDetail.getAssetIdList());
+
+                CandidateService.updateCandidateAssetOwned(candidate, updateCandidateAsset);
+            } else if (ServerConstants.PROPERTY_TYPE_MAX_AGE == propertyId) {
+                // don't update data when its not available
+                if(updateCandidateDetail.getCandidateDob() == null) continue;
+
+                UpdateCandidateDob updateCandidateDob = new UpdateCandidateDob();
+
+                updateCandidateDob.setCandidateDob(updateCandidateDetail.getCandidateDob());
+                CandidateService.updateCandidateDOB(candidate, updateCandidateDob);
+            } else if (ServerConstants.PROPERTY_TYPE_EXPERIENCE == propertyId) {
+
+                // don't update data when its not available
+                if(updateCandidateDetail.getCandidateTotalExperience() == null) continue;
+
+                UpdateCandidateWorkExperience updateCandidateWorkExperience = new UpdateCandidateWorkExperience();
+
+                updateCandidateWorkExperience.setCandidateTotalExperience(updateCandidateDetail.getCandidateTotalExperience());
+                updateCandidateWorkExperience.setCandidateIsEmployed(updateCandidateDetail.getCandidateIsEmployed());
+                updateCandidateWorkExperience.setExtraDetailAvailable(updateCandidateDetail.getExtraDetailAvailable());
+                updateCandidateWorkExperience.setPastCompanyList(updateCandidateDetail.getPastCompanyList());
+
+                CandidateService.updateCandidateWorkExperience(candidate, updateCandidateWorkExperience);
+            } else if (ServerConstants.PROPERTY_TYPE_EDUCATION == propertyId) {
+
+                // don't update data when its not available
+                if(updateCandidateDetail.getCandidateDegree() == null) continue;
+
+                UpdateCandidateEducation updateCandidateEducation= new UpdateCandidateEducation();
+
+                updateCandidateEducation.setCandidateDegree(updateCandidateDetail.getCandidateDegree());
+                updateCandidateEducation.setCandidateEducationCompletionStatus(updateCandidateDetail.getCandidateEducationCompletionStatus());
+                updateCandidateEducation.setCandidateEducationInstitute(updateCandidateDetail.getCandidateEducationInstitute());
+                updateCandidateEducation.setCandidateEducationLevel(updateCandidateDetail.getCandidateEducationLevel());
+
+                CandidateService.updateCandidateEducation(candidate, updateCandidateEducation);
+            } else if (ServerConstants.PROPERTY_TYPE_GENDER == propertyId) {
+                if(updateCandidateDetail.getCandidateGender() == null) continue;
+
+                UpdateCandidateGender updateCandidateGender = new UpdateCandidateGender();
+
+                updateCandidateGender.setCandidateGender(updateCandidateDetail.getCandidateGender());
+                CandidateService.updateCandidateGender(candidate, updateCandidateGender);
+            } else if (ServerConstants.PROPERTY_TYPE_SALARY == propertyId) {
+                if(updateCandidateDetail.getCandidateLastWithdrawnSalary() == null) continue;
+
+                UpdateCandidateLastWithdrawnSalary lastWithdrawnSalary = new UpdateCandidateLastWithdrawnSalary();
+
+                lastWithdrawnSalary.setCandidateLastWithdrawnSalary(updateCandidateDetail.getCandidateLastWithdrawnSalary());
+                CandidateService.updateCandidateLastWithdrawnSalary(candidate, lastWithdrawnSalary);
+            } else if (ServerConstants.PROPERTY_TYPE_LOCALITY == propertyId) {
+                UpdateCandidateHomeLocality updateCandidateHomeLocality = new UpdateCandidateHomeLocality();
+
+                updateCandidateHomeLocality.setCandidateHomeLocality(updateCandidateDetail.getCandidateHomeLocality());
+                CandidateService.updateCandidateHomeLocality(candidate, updateCandidateHomeLocality);
+            } else if (ServerConstants.PROPERTY_TYPE_WORK_SHIFT == propertyId) {
+                UpdateCandidateTimeShiftPreference timeShiftPreference= new UpdateCandidateTimeShiftPreference();
+
+                timeShiftPreference.setCandidateTimeShiftPref(updateCandidateDetail.getCandidateTimeShiftPref());
+                CandidateService.updateCandidateWorkshift(candidate, timeShiftPreference);
+            }
+        }
+        return isVerifyAadhaar;
+    }
+
+    public static String getDeActivationMessage(Long candidateId) {
+        if (candidateId != null) {
+            Candidate candidate = CandidateDAO.getById(candidateId);
+
+            return getDeActivationMessage(candidate);
+        }
+        return null;
+    }
+
+    public static String getDeActivationMessage(Candidate candidate) {
+        if (candidate != null) {
+            if (candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
+                String message =
+                        SmsUtil.getDeactivationMessage(candidate.getCandidateFullName(), candidate.getCandidateStatusDetail().getStatusExpiryDate());
+
+                Logger.info("de Activation is available");
+                return message;
+            }
+        }
+        return null;
+    }
 }

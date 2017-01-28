@@ -4,6 +4,7 @@ import common.TestConstants;
 import models.util.Util;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -17,7 +18,7 @@ import java.util.Collection;
 import static play.test.Helpers.*;
 
 /**
- * Created by zero on 25/1/17.
+ * Created by zero on 20/1/17.
  *
  * prod/activator-1.3.9-minimal/bin/activator "test-only Utility.UtilTest"
  *
@@ -28,8 +29,14 @@ public class UtilTest {
     private long id;
     private long startKey;
     private long endKey;
+
+
+    private Long candidateId;
+    private Long jobPostId;
     enum MethodType {
         idToCode,
+        generateShortURL,
+
     }
     private MethodType type;
 
@@ -39,11 +46,16 @@ public class UtilTest {
     }
 
     public UtilTest(MethodType type, long startKey, long endKey) {
-        this.startKey = startKey;
-        this.endKey = endKey;
         this.type = type;
-    }
 
+        if(type == MethodType.idToCode) {
+            this.startKey = startKey;
+            this.endKey = endKey;
+        } else if (type == MethodType.generateShortURL){
+            this.candidateId = startKey;
+            this.jobPostId = endKey;
+        }
+    }
 
 
     @Parameterized.Parameters
@@ -58,10 +70,12 @@ public class UtilTest {
                 {MethodType.idToCode, 9999990, 10000000},
                 {MethodType.idToCode, 99999990, 100000000},
                 {MethodType.idToCode, 999999990, 1000000000},
+                {MethodType.generateShortURL, 100020117, 925},
+
         });
     }
 
-    @Test
+    @Ignore
     public void idToCodeTest() {
         if (type == MethodType.idToCode) {
             Application fakeApp = fakeApplication();
@@ -73,6 +87,18 @@ public class UtilTest {
                     Assert.assertEquals(key, Util.codeToId(code));
 
                 }
+            });
+        }
+    }
+
+    @Test
+    public void testGenerateApplyInShortURL() {
+
+        if (type == MethodType.generateShortURL) {
+            Application fakeApp = fakeApplication();
+            TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
+            running(server, () -> {
+                Logger.info("URL: " + Util.generateApplyInShortUrl(this.candidateId, this.jobPostId));
             });
         }
     }

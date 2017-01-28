@@ -1,7 +1,14 @@
 package models.util;
 
+import controllers.truly.TrulyService;
 import models.entity.Company;
 import org.apache.commons.lang3.StringUtils;
+import controllers.businessLogic.AuthService;
+import dao.CandidateDAO;
+import dao.JobPostDAO;
+import models.entity.Auth;
+import models.entity.Candidate;
+import models.entity.JobPost;
 import play.Logger;
 
 import java.math.BigInteger;
@@ -13,6 +20,10 @@ import java.util.Date;
 import java.util.Random;
 
 public class Util {
+//    private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
+
+    private static String BASE_URL = true ? "http://localhost:9000": "https://trujobs.in";
+
     private Util() {
     }
 
@@ -146,5 +157,41 @@ public class Util {
     public static Double RoundTo2Decimals(Double val) {
         DecimalFormat df2 = new DecimalFormat("##.##");
         return Double.valueOf(df2.format(val));
+    }
+
+    public static String generateApplyInShortUrl(Candidate candidate, JobPost jobPost, Auth auth){
+        StringBuilder stringBuilder = new StringBuilder();
+        if(candidate != null && jobPost != null) {
+            stringBuilder.append(BASE_URL);
+            stringBuilder.append("/apply/inshort/");
+            stringBuilder.append(jobPost.getJobPostTitle().replaceAll("[\\s]","-").toLowerCase());
+            stringBuilder.append("-jobs-in-bangalore-at-");
+            stringBuilder.append(jobPost.getCompany().getCompanyName().replaceAll("[\\s]","-").toLowerCase());
+            stringBuilder.append("-"+jobPost.getJobPostId());
+            stringBuilder.append("?cid="+candidate.getCandidateId());
+            stringBuilder.append("&key="+md5(String.valueOf(auth.getOtp())));
+//            stringBuilder.append("&key="+(auth.getOtp()));
+        }
+
+        // trulyfy this url
+        TrulyService trulyService = new TrulyService();
+        
+        return trulyService.generateShortURL(stringBuilder.toString());
+    }
+
+
+    public static String generateApplyInShortUrl(Long candidateId, Long jobPostId){
+        if(candidateId != null && jobPostId != null) {
+            Candidate candidate = CandidateDAO.getById(candidateId);
+
+            Auth auth = AuthService.isAuthExists(candidateId);
+            auth.setOtp(generateOtp());
+            auth.save();
+
+            JobPost jobPost = JobPostDAO.findById(jobPostId);
+
+            return generateApplyInShortUrl(candidate, jobPost, auth);
+        }
+        return null;
     }
 }

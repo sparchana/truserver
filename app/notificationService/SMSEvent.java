@@ -24,6 +24,8 @@ public class SMSEvent extends NotificationEvent {
     public SMSEvent(String recipient, String message) {
         this.setMessage(message);
         this.setRecipient(recipient);
+
+        Logger.info("[SMS Event] smsTo: " + recipient + " - Msg: " + message);
     }
 
     public SMSEvent(String recipient, String message, Company company

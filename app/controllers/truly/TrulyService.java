@@ -13,7 +13,7 @@ public class TrulyService {
     private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
     private String BASE_URL = "localhost:9000";
 
-    TrulyService() {
+    public TrulyService() {
         if(!isDevMode) {
             BASE_URL = "https://trujobs.in";
         }
@@ -38,7 +38,7 @@ public class TrulyService {
      * @param longURL       takes a long url and generates a shorter url
      * @return
      */
-    protected String generateShortURL(String longURL) {
+    public String generateShortURL(String longURL) {
         if(longURL == null) {
             return null;
         }

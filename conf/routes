@@ -108,6 +108,7 @@ POST        /submitPreScreen                                              contro
 POST        /confirmInterview/:jpId/:value                                controllers.Application.confirmInterview(jpId : Long, value : Long)
 POST        /partnerConfirmInterview/:cId/:jpId/:value                    controllers.PartnerController.confirmInterview(cId : Long, jpId : Long, value : Long)
 POST        /updateCandidateDetailsViaPreScreen/                          controllers.Application.updateCandidateDetailsViaPreScreen(propertyIdList: String?= null, candidateMobile: String?= null,  jobPostId: java.lang.Long ?= null)
+POST        /updateCandidateDetailViaShortJobApply/                       controllers.Application.updateCandidateDetailsViaShortJobApply()
 POST        /updateFeedback                                               controllers.Application.updateFeedback()
 POST        /getDeActivationMessage                                       controllers.Application.getDeactivationMessage(candidateId: java.lang.Long?= null)
 POST        /updateRecruiterCreditPack                                    controllers.Application.updateRecruiterCreditPack()
@@ -206,6 +207,11 @@ GET         /ss/                                                          contro
 POST        /api/search/                                                  controllers.SearchController.search(page: Integer?=null)
 
 
+# Job Apply InShort routes
+#~~~~~~~~~~~~~~~~~~~~
+GET         /apply/inshort/:urlString                                     controllers.Application.renderJobRelatedPages( urlString: String, cid:java.lang.Long ?=null, key:String ?=null)
+GET         /apply/inshort/api/getMissingData                             controllers.Application.getMissingData(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
+
 #new routes
 #~~~~~~~~~~~~~~~~~~~~
 GET         /navBar                                                       controllers.Application.renderPageNavBar()
@@ -213,7 +219,7 @@ GET         /navBarLoggedIn                                               contro
 GET         /footer                                                       controllers.Application.renderPageFooter()
 GET         /jobPostCardView                                              controllers.Application.renderJobPostCards()
 GET         /pageNotFound                                                 controllers.Application.pageNotFound()
-GET         /jobs/:urlString                                              controllers.Application.renderJobRelatedPages( urlString: String)
+GET         /jobs/:urlString                                              controllers.Application.renderJobRelatedPages( urlString: String, cid:java.lang.Long ?=null, key:String ?=null)
 GET         /job/:getJobsPageContentString                                controllers.Application.getJobsPageContent( getJobsPageContentString: String,i:java.lang.Long ?=null)
 
 # Both support and user
@@ -319,6 +325,7 @@ GET         /testNotification                                             contro
 GET         /convertOldData                                               controllers.TestController.convertOldData()
 GET         /testQueue                                                    controllers.TestController.testQueue()
 GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
+GET         /testResponse                                                 controllers.TestController.testApplyInShortResponse()
 
 # Scrap API
 # ~~~~~~~~~~~~~

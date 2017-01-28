@@ -2,9 +2,9 @@
  * truly: TruJobs Url shortener
  * Version 1.0.0
  *
- * Copyright (c) 2016 TruJobs.in (http://trujobs.in)
+ * Copyright (c) 2017 TruJobs.in (http://trujobs.in)
  *
- * Created by zero on 23/12/16.
+ * Created by zero on 27/01/17.
  *
  */
 

@@ -25,6 +25,7 @@ import models.entity.OM.*;
 import models.entity.Partner;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
+import models.entity.Static.InterviewTimeSlot;
 import models.util.EmailUtil;
 import models.util.InterviewUtil;
 import models.util.NotificationUtil;
@@ -746,13 +747,13 @@ public class JobService {
     }
 
     public static ApplyJobResponse applyJob(ApplyJobRequest applyJobRequest,
-                                            int channelType)
+                                            int channelType, int interactionType)
             throws IOException, JSONException
     {
         Logger.info("checking user and jobId: " + applyJobRequest.getCandidateMobile() + " + " + applyJobRequest.getJobId());
         ApplyJobResponse applyJobResponse = new ApplyJobResponse();
         Candidate existingCandidate = CandidateService.isCandidateExists(applyJobRequest.getCandidateMobile());
-        if(existingCandidate != null){
+        if(existingCandidate != null) {
             JobPost existingJobPost = JobPostDAO.findById(Long.valueOf(applyJobRequest.getJobId()));
             Boolean limitJobApplication = false;
 
@@ -790,7 +791,7 @@ public class JobService {
                 JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).eq("jobPostId", applyJobRequest.getJobId()).findUnique();
                 if(existingJobApplication == null){
 
-                    if(existingJobPost.getRecruiterProfile() != null){
+                    if(existingJobPost.getRecruiterProfile() != null) {
                         if((existingJobPost.getRecruiterProfile().getContactCreditCount() == 0) &&
                                 (existingJobPost.getRecruiterProfile().getInterviewCreditCount() == 0)){
 
@@ -872,7 +873,8 @@ public class JobService {
                             InteractionService.createInteractionForJobApplicationViaWebsite(
                                     existingCandidate.getCandidateUUId(),
                                     existingJobPost.getJobPostUUId(),
-                                    interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName()
+                                    interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName(),
+                                    interactionType
                             );
                         } else{
                             InteractionService.createInteractionForJobApplicationViaAndroid(
@@ -1371,7 +1373,6 @@ public class JobService {
             for (InterviewDetails details : jobPost.getInterviewDetailsList()) {
                 /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
                 String interviewDays = InterviewUtil.fixPrecedingZero(Integer.toBinaryString(details.getInterviewDays()));
-
 
                 if (InterviewUtil.checkSlotAvailability(future, interviewDays)) {
 

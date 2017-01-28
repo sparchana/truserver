@@ -22,6 +22,8 @@ import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import dao.*;
+import dao.JobPostDAO;
+import dao.RecruiterCreditHistoryDAO;
 import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
@@ -572,12 +574,14 @@ public class RecruiterService {
         InterviewResponse interviewResponse = new InterviewResponse();
         if (jobPost == null) {
             interviewResponse.setStatus(ServerConstants.ERROR);
+            interviewResponse.setStatusTitle("ERROR");
             return interviewResponse;
         }
         int validCount = 0;
         if (jobPost.getRecruiterProfile() == null) {
             // don't show interview modal if no recruiter is set for a jobpost
             interviewResponse.setStatus(ServerConstants.INTERVIEW_NOT_REQUIRED);
+            interviewResponse.setStatusTitle("INTERVIEW_NOT_REQUIRED");
             return interviewResponse;
         }
 
@@ -603,6 +607,7 @@ public class RecruiterService {
                 Logger.info("Interview closed for this week");
                 // interview closed
                 interviewResponse.setStatus(ServerConstants.INTERVIEW_CLOSED);
+                interviewResponse.setStatusTitle("INTERVIEW_CLOSED");
                 return interviewResponse;
             }
 
@@ -622,10 +627,12 @@ public class RecruiterService {
 
         if (validCount == 2) {
             interviewResponse.setStatus(ServerConstants.INTERVIEW_REQUIRED);
+            interviewResponse.setStatusTitle("INTERVIEW_REQUIRED");
             return interviewResponse;
         }
 
         interviewResponse.setStatus(ServerConstants.INTERVIEW_NOT_REQUIRED);
+        interviewResponse.setStatusTitle("INTERVIEW_NOT_REQUIRED");
         return interviewResponse;
     }
 
