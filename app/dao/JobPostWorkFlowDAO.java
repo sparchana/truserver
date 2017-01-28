@@ -8,6 +8,7 @@ import com.avaje.ebean.RawSqlBuilder;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.OM.SmsReport;
 import org.apache.commons.lang3.StringUtils;
+import play.Logger;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

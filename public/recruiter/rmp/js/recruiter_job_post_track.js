@@ -218,6 +218,14 @@ function processDataGetSmsReport(returnedData) {
         var smsList = returnedData.smsReportList;
         if(smsList.length > 0){
             $('.allSms').html('');
+            var currentCount = 0;
+            if((index + 10) > returnedData.totalSms){
+                currentCount = returnedData.totalSms;
+            } else{
+                currentCount = index + 10;
+            }
+            $("#totalSmsReports").html("Showing " + currentCount + " out of " + returnedData.totalSms + " results");
+
             var numberOfPages = parseInt(returnedData.totalSms)/10;
             var rem = parseInt(returnedData.totalSms) % 10;
             if(rem > 0){
@@ -349,6 +357,14 @@ function processDataJobApplications(returnedData) {
     if(applicationList.length > 0){
         $('.allApplications').html('');
         var parent = $('.allApplications');
+
+        var currentCount = 0;
+        if((index + 10) > returnedData.totalCount){
+            currentCount = returnedData.totalCount;
+        } else{
+            currentCount = index + 10;
+        }
+        $("#totalTrackingCandidates").html("Showing " + currentCount + " out of " + returnedData.totalCount + " results");
 
         var numberOfPages = parseInt(returnedData.totalCount)/10;
         var rem = parseInt(returnedData.totalCount) % 10;
@@ -904,6 +920,14 @@ function processDataConfirmedApplication(returnedData) {
     if(applicationList.length > 0){
         $('.allConfirmed').html('');
         var parent = $('.allConfirmed');
+
+        var currentCount = 0;
+        if((index + 10) > returnedData.totalCount){
+            currentCount = returnedData.totalCount;
+        } else{
+            currentCount = index + 10;
+        }
+        $("#totalConfirmedCandidates").html("Showing " + currentCount + " out of " + returnedData.totalCount + " results");
 
         var numberOfPages = parseInt(returnedData.totalCount)/10;
         var rem = parseInt(returnedData.totalCount) % 10;
