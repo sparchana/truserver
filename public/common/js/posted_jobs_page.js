@@ -193,7 +193,7 @@ function processDataForJobPostLocation(returnedData) {
     } else{
         $('#interviewSection').hide();
     }
-    enableBtn();
+    enableLocalityBtn();
 }
 
 function confirmApply() {
@@ -206,9 +206,9 @@ function confirmApply() {
 //    applyJob(jobPostId, prefLocation, true);
 }
 $("#jobLocality").change(function () {
-    enableBtn();
+    enableLocalityBtn();
 });
-function enableBtn() {
+function enableLocalityBtn() {
     if($("#jobLocality").val() != -1 && $("#interviewSlot").val() != -1){
             prefLocation = $("#jobLocality").val();
             prefLocationName = $("#jobLocality option:selected").text();
