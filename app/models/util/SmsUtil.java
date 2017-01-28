@@ -241,7 +241,7 @@ public class SmsUtil {
 
     public static void sendRecruiterWelcomeSmsForSelfSignup(String name, String mobile)
     {
-        String msg = "Hi " + name + ", Your TruJobs business account is now setup and we have added 5 FREE candidate contact credits to your account! "
+        String msg = "Hi " + name + ", Your TruJobs business account is now setup and we have added " + ServerConstants.RECRUITER_FREE_CONTACT_CREDITS + " FREE candidate contact credits to your account! "
                 + ". Log on to www.trujobs.in/recruiter to access thousands of verified candidate profiles!!!";
 
         addSmsToNotificationQueue(mobile, msg);

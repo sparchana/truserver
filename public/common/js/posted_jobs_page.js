@@ -206,7 +206,7 @@ function confirmApply() {
 }
 
 $(function() {
-    $("#jobLocality").change(function (){
+    $("#jobLocality").click(function (){
         if($(this).val() != -1 && $("#interviewSlot").val() != -1){
             prefLocation = $(this).val();
             prefLocationName = $("#jobLocality option:selected").text();
