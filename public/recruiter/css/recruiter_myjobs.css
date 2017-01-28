@@ -189,7 +189,19 @@
     border-color: rgba(0, 159, 219, 0.99);
 }
 
+.viewCandidateModal{
+    background: none;
+    box-shadow: none;
+    width: 70%;
+    height: 40%;
+    top: 0;
+}
+
 @media screen and (max-width:1000px){
+    .viewCandidateModal{
+        width: 90%;
+        height: auto;
+    }
 
     #tab1, #tab2, #tab3, #tab4{
         font-size: 9px;

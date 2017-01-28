@@ -24,6 +24,7 @@ function processDataCandidateInfo(returnedData) {
     var obj = {
         candidate: returnedData
     };
+
     //calling render candidate card method to render candidate card
     renderIndividualCandidateCard(obj, parent, view_candidate_info);
     $('.tooltipped').tooltip({delay: 50});
