@@ -347,12 +347,14 @@ function processDataRecruiterSession(returnedData) {
             $("#creditViewMobile").show();
             $("#recruiterMsg").show();
             $("#recruiterHIW").show();
+            $("#recruiterHighlights").show();
         } else{
 
             $("#creditView").hide();
             $("#creditViewMobile").hide();
             $("#recruiterMsg").hide();
             $("#recruiterHIW").hide();
+            $("#recruiterHighlights").hide();
         }
     }
 }
