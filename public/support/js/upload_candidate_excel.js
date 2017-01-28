@@ -1,44 +1,46 @@
-
-$("#excelfile").on('change',function () {
-    $("#uploadBtn").prop("disabled",false);
-    $(".textResponse h4").html("Click On Upload");
-});
-
-$(function() {
-    $("#upload_excel").submit(function(eventObj) {
-        eventObj.preventDefault();
-        if($('#excelfile')[0].files[0] != null) {
-            try {
-                var file = $('#excelfile')[0].files[0];
-                var formData = new FormData();
-                formData.append('file', file);
-                console.log("File Name = " + file.name);
-
-                $.ajax({
-                    type: "POST",
-                    url: "/support/administrator/processCandidates",
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: processData
-                });
-                $("#loadSpinner").show();
-                $(".textResponse").hide();
-                $("#uploadBtn").prop("disabled",true);
-            } catch (exception) {
-                console.log("exception occured!!" + exception);
-            }
-        }else{
-            var data = {message:'Please select file to upload'};
-            notification(data);
-        }
-    }); // end of submit
-}); // end of function
+//trigger if CSV file selected
+function uploadCSV(event) {
+    var file = event.target.files;
+    var formData = new FormData();
+    var ext;
+    for (var i = 0, f; f = file[i]; i++) {
+        ext = (f.name).split('.').pop().toLowerCase();
+        formData.append('file', f);
+    }
+    if( ext == 'csv' ){
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/support/administrator/processCandidates",
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: processDataForCSV
+        });
+        $('#uploadResumeModalProcess').modal('show');
+        $('#candidateCreateOptionModal').modal('hide');
+        $("#loadSpinner").show();
+        $(".textResponse").hide();
+        $("#uploadBtn").prop("disabled",true);
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+    }else{
+        var data = {message:'Please select file to upload'};
+        notification(data);
+    }
+}
 
 // function to post the reg data to the server
-function processData(returnedData) {
+function processDataForCSV(returnedData) {
+    //for partner
+    $('#uploadResumeModalProcess').modal('hide');
+    $("#uploadResumeModalContent").hide();
+
+    //for support
     $("#loadSpinner").hide();
     $(".textResponse").html("");
+
     if(returnedData.totalNumberOfCandidateCreated == 0) {
 
         var parent = $(".textResponse");
@@ -57,6 +59,10 @@ function processData(returnedData) {
         parent.append(message);
 
         $(".textResponse").show();
+        $('#uploadResumeModal').modal('show');
+        setTimeout(function(){
+            $('#uploadResumeModal').modal('hide');
+        }, 3000);
     }
     else if(returnedData.totalNumberOfCandidateCreated > 0) {
         var parent = $(".textResponse");
@@ -75,6 +81,10 @@ function processData(returnedData) {
         parent.append(message);
 
         $(".textResponse").show();
+        $('#uploadResumeModal').modal('show');
+        setTimeout(function(){
+            $('#uploadResumeModal').modal('hide');
+        }, 3000);
     }else{
         var data = {message:'Error Uploading!! check csv'};
         notification(data);

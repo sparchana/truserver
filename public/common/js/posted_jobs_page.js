@@ -193,6 +193,7 @@ function processDataForJobPostLocation(returnedData) {
     } else{
         $('#interviewSection').hide();
     }
+    enableBtn();
 }
 
 function confirmApply() {
@@ -204,11 +205,12 @@ function confirmApply() {
     applyJobSubmitViaCandidate(jobPostId, prefLocation, prefTimeSlot, scheduledInterviewDate, true);
 //    applyJob(jobPostId, prefLocation, true);
 }
-
-$(function() {
-    $("#jobLocality").click(function (){
-        if($(this).val() != -1 && $("#interviewSlot").val() != -1){
-            prefLocation = $(this).val();
+$("#jobLocality").change(function () {
+    enableBtn();
+});
+function enableBtn() {
+    if($("#jobLocality").val() != -1 && $("#interviewSlot").val() != -1){
+            prefLocation = $("#jobLocality").val();
             prefLocationName = $("#jobLocality option:selected").text();
 
             try{
@@ -219,11 +221,12 @@ $(function() {
                 }
             } catch(err){}
 
-            $("#applyButton").show();
+            $(".jobApplyBtnModal").prop('disabled', false);
+            $(".jobApplyBtnModal").css({'background-color':'#09ac58','color':'#ffffff','cursor':'default'});
         } else{
-            $("#applyButton").hide();
+            $(".jobApplyBtnModal").prop('disabled', true);
+            $(".jobApplyBtnModal").css({'background-color':'#dde0dd','color':'#000000','cursor':'not-allowed'});
         }
-    });
 
     $("#interviewSlot").change(function (){
         if($(this).val() != -1 && $("#jobLocality").val() != -1){
@@ -238,7 +241,7 @@ $(function() {
             $("#applyButton").hide();
         }
     });
-});
+}
 
 function getDayVal(month){
     switch(month) {
@@ -367,7 +370,7 @@ function applyJobBtnAction() {
     jobPostId = jobId;
     jobLocalityArray = [];
     //openCandidatePreScreenModal(jobPostId, localStorage.getItem("mobile"));
-    $('#applyButton').hide();
+    $('#applyButton').show();
     addLocalitiesToModal();
 }
 
