@@ -90,6 +90,7 @@ public class TrudroidController {
                     loginRequest.getCandidateLoginPassword(), InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
 
             //app version check
+            Logger.info("Version code: " + pLogInRequest.getAppVersionCode());
             if(pLogInRequest.getAppVersionCode() >= ServerConstants.APP_NEW_LOGIN_STATUS_VERSION_CODE){
                 loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(loginResponse.getStatus()));
             } else{

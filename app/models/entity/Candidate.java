@@ -30,7 +30,7 @@ import java.util.*;
 @Table(name = "candidate")
 public class Candidate extends Model {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CandidateId", columnDefinition = "bigint signed", unique = true)
     private long candidateId = 0;
 
@@ -217,6 +217,12 @@ public class Candidate extends Model {
     @Column(name = "candidate_android_token", columnDefinition = "text null")
     private String candidateAndroidToken;
 
+    @Column(name = "candidate_access_level", columnDefinition = "int(2) signed not null default 0")
+    private int candidateAccessLevel;
+
+    @Transient
+    private String candidateResumeLink = "";
+
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
     public Candidate() {
@@ -225,7 +231,7 @@ public class Candidate extends Model {
     }
 
     public void registerCandidate() {
-        Logger.info("inside registerCandidate(), Candidate registered/saved" );
+        Logger.info("inside registerCandidate(), Candidate registered/saved");
         this.save();
     }
 
@@ -278,8 +284,9 @@ public class Candidate extends Model {
     public void setCandidateIsEmployed(Integer candidateIsEmployed) {
         this.candidateIsEmployed = candidateIsEmployed;
     }
+
     public void setCandidateIsEmployed(boolean candidateIsEmployed) {
-        if(candidateIsEmployed){
+        if (candidateIsEmployed) {
             this.candidateIsEmployed = 1;
         } else {
             this.candidateIsEmployed = 0;
@@ -419,7 +426,7 @@ public class Candidate extends Model {
     }
 
     public Integer getCandidateAge() {
-        if(this.candidateDOB != null){
+        if (this.candidateDOB != null) {
             Date current = new Date();
             Date bday = new Date(this.getCandidateDOB().getTime());
 
@@ -593,7 +600,8 @@ public class Candidate extends Model {
     public void setCandidateLocalityLng(Double candidateLocalityLng) {
         this.candidateLocalityLng = candidateLocalityLng;
     }
-    public String getCandidateFullName(){
+
+    public String getCandidateFullName() {
         return this.candidateFirstName + " " + (this.candidateLastName != null ? this.candidateLastName : "");
     }
 
@@ -660,6 +668,25 @@ public class Candidate extends Model {
     public void setCandidateScore(Integer candidateScore) {
         this.candidateScore = candidateScore;
     }
+
+    public int getCandidateAccessLevel() {
+        return candidateAccessLevel;
+    }
+
+    public void setCandidateAccessLevel(int candidateAccessLevel) {
+        this.candidateAccessLevel = candidateAccessLevel;
+    }
+
+    public String getCandidateResumeLink() {
+        CandidateResume resume = CandidateResume.find.where().eq("CandidateId", this.getCandidateId()).findUnique();
+        if(resume != null){
+            return resume.getFilePath();
+        } else{
+            return null;
+        }
+    }
+
+    public void setCandidateResumeLink(String candidateResumeLink) {
+        this.candidateResumeLink = candidateResumeLink;
+    }
 }
-
-

@@ -16,11 +16,14 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.Query;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
+import com.google.common.base.CharMatcher;
+import controllers.PartnerController;
 import controllers.businessLogic.hirewand.HWHTTPException;
 import controllers.businessLogic.hirewand.HireWandService;
 import controllers.businessLogic.hirewand.InvalidRequestException;
@@ -55,6 +58,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static api.InteractionConstants.*;
+import static controllers.PartnerController.checkCandidateExistence;
+import static controllers.PartnerController.createCandidateViaPartner;
 import static controllers.businessLogic.InteractionService.createInteractionForSignUpCandidateViaAndroid;
 import static controllers.businessLogic.InteractionService.createInteractionForSignUpCandidateViaWebsite;
 import static controllers.businessLogic.LeadService.createOrUpdateConvertedLead;
@@ -826,7 +831,6 @@ public class CandidateService
         float p2Weight = 0.05f;
 
         if (candidate != null) {
-
             p0CompletionPercent = getP0FieldsCompletionPercent(candidate);
             p1CompletionPercent = getP1FieldsCompletionPercent(candidate);
             p2CompletionPercent = getP2FieldsCompletionPercent(candidate);
@@ -2037,9 +2041,7 @@ public class CandidateService
 
             // Default locality to "Others" --> Locality ID 345
             // this is required since every candidate is expected to have some locality
-            List<Integer> localityList = new ArrayList<>();
-            localityList.add(345);
-            addSupportCandidateRequest.setCandidateLocality(localityList);
+            addSupportCandidateRequest.setCandidateHomeLocality(345);
 
             // Default Job Role Preference to "Others" --> Job Role ID 34
             // this is required since every candidate is expected to have some job role pref
@@ -2095,9 +2097,18 @@ public class CandidateService
 
             AmazonS3 s3client = new AmazonS3Client(credentials);
             String bucketName = ServerConstants.AWS_S3_BUCKET_NAME;
-            s3client.copyObject(bucketName,(ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+fromKey),bucketName,(ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+toKey));
+
+            CopyObjectRequest copyObjectRequest = new CopyObjectRequest(
+                    bucketName,                                                     // source bucket name
+                    (ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+fromKey),   // source key
+                    bucketName,                                                     // destination bucket name
+                    (ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+toKey));    // destination key
+            copyObjectRequest.setCannedAccessControlList(CannedAccessControlList.PublicRead);
+
+            //s3client.copyObject(bucketName,(ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+fromKey),bucketName,(ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+toKey));
+            s3client.copyObject(copyObjectRequest);
         } catch (Exception e){
-            Logger.info("Exception while copying resume from AWS with key ="+(ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+fromKey)+" Exception: " + e);
+            Logger.info("Exception while copying resume from AWS with key ="+(ServerConstants.AWS_S3_CANDIDATE_RESUME_FOLDER+"/"+fromKey)+" Exception: " + e.getMessage());
         }
     }
 
@@ -2274,22 +2285,44 @@ public class CandidateService
                 Logger.info("About to call CandidateService.createCandidateProfile");
 
                 CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
+
                 int channel = 0;
+                Partner partner = null;
+                LeadSource leadSource = null;
+
                 // determine channel
                 if(session() != null && (session().get("sessionChannel") != null && !session().get("sessionChannel").isEmpty())){
                     Logger.info("Session : "+ session().get("sessionChannel"));
                     if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
                         channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
+                        String partnerId = session().get("partnerId");
+                        if(partnerId != null){partner = Partner.find.where().eq("partner_id", partnerId).findUnique();}
                     }else{
                         channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
                     }
                 }
                 else {channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;}
 
-                // candidate self creation (i.e. 1 click resume upload) is treated as "support" since the create API does not allow full candidate creation with channel = self
-                candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                        channel,
-                        ServerConstants.UPDATE_ALL_BY_SUPPORT);
+                if(partner == null){
+                    // candidate self creation (i.e. 1 click resume upload) is treated as "support" since the create API does not allow full candidate creation with channel = self
+                    candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
+                            channel,
+                            ServerConstants.UPDATE_ALL_BY_SUPPORT);
+                }
+                else{
+                    // candidate created by a partner
+                    //checking if a candidate can be associate with a partner or not
+                    Integer associationStatus = checkCandidateExistence(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+                    leadSource = LeadSource.find.where().eq("leadSourceId", addSupportCandidateRequest.getLeadSource()).findUnique();
+                    if(leadSource != null){
+                        addSupportCandidateRequest.setLeadSource(leadSource.getLeadSourceId());
+                    }
+                    // inherit candidate locality from partner locality
+                    if(partner.getLocality() != null && partner.getLocality().getLocalityId() > 0){
+                        addSupportCandidateRequest.setCandidateHomeLocality(Math.toIntExact(partner.getLocality().getLocalityId()));
+                    }
+                    candidateSignUpResponse = createCandidateViaPartner(addSupportCandidateRequest, partner, isNew, associationStatus);
+                }
 
                 // get candidate Id, Name
                 candidateId = candidateSignUpResponse.getCandidateId();
@@ -2400,9 +2433,6 @@ public class CandidateService
             String partnerId = candidateResume.getCreatedBy().split("\\(")[0];
             Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
 
-            // to associate partner and candidate - if partner create a candidate by uploading resume
-            PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(candidateMobile));
-
             try {
                 // is there any resume that was uploaded AFTER this resume by this partner?
                 Integer c = CandidateResume.find.where()
@@ -2410,7 +2440,6 @@ public class CandidateService
                         .findRowCount();
 
                 if (c == 0) {
-
                     // send info SMS informing that uploaded resumes have been processed
                     Logger.info("Sending SMS to partner : name = " + partner.getPartnerFirstName() + " mobile = "+partner.getPartnerMobile() );
                     SmsUtil.resumeUploadStatusToPartner(partner.getPartnerFirstName(),partner.getPartnerMobile());
@@ -2444,9 +2473,14 @@ public class CandidateService
             String[] nextLine;
 
             header = reader.readNext();
+
+            int channel = 0;
+            Partner partner = null;
+            LeadSource leadSource = null;
+
             if(header != null){
                 while((nextLine = reader.readNext()) != null){
-                    Logger.info("Next line value : "+ toJson(nextLine));
+                    //Logger.info("Next line value : "+ toJson(nextLine));
                     AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
                     List<CandidateSkills> candidateSkills = new ArrayList<>();
                     addSupportCandidateRequest.setCandidateSkills(candidateSkills);
@@ -2464,21 +2498,21 @@ public class CandidateService
 
                     for(int i = 0; i < nextLine.length ; i++){
                         if(!nextLine[i].isEmpty()){
-                            Logger.info("nextLine["+i+"]="+nextLine[i]);
-                            Logger.info("header["+i+"]="+header[i]);
+                            //Logger.info("nextLine["+i+"]="+nextLine[i]);
+                            //Logger.info("header["+i+"]="+header[i]);
                             tempMobile = "";
                             switch (header[i]){
                                 case "Name":
                                     String fName = nextLine[i].split(" ")[0];
                                     String lName = nextLine[i].replace(fName,"").trim();
                                     addSupportCandidateRequest.setCandidateFirstName(fName);
-                                    Logger.info("addSupportCandidateRequest.setCandidateFirstName ="+fName);
+                                    //Logger.info("addSupportCandidateRequest.setCandidateFirstName ="+fName);
                                     addSupportCandidateRequest.setCandidateSecondName(lName);
-                                    Logger.info("addSupportCandidateRequest.setCandidateSecondName ="+lName);
+                                    //Logger.info("addSupportCandidateRequest.setCandidateSecondName ="+lName);
                                     break;
                                 case "Email":
                                     addSupportCandidateRequest.setCandidateEmail(nextLine[i]);
-                                    Logger.info("addSupportCandidateRequest.setCandidateEmail ="+nextLine[i]);
+                                    //Logger.info("addSupportCandidateRequest.setCandidateEmail ="+nextLine[i]);
                                     break;
                                 case "Mobile":
                                     //Logger.info("About to check for "+nextLine[i]);
@@ -2486,11 +2520,14 @@ public class CandidateService
                                     //Logger.info("Candidate.find.where().eq(\"candidatemobile\",FormValidator.convertToIndianMobileFormat(nextLine[i])).findRowCount()"+Candidate.find.where().eq("candidatemobile",FormValidator.convertToIndianMobileFormat(nextLine[i])).findRowCount());
                                     addSupportCandidateRequest.setCandidateMobile(FormValidator.convertToIndianMobileFormat(nextLine[i]));
                                     tempMobile = addSupportCandidateRequest.getCandidateMobile();
-                                    Logger.info("addSupportCandidateRequest.setCandidateMobile ="+addSupportCandidateRequest.getCandidateMobile());
+                                    //Logger.info("addSupportCandidateRequest.setCandidateMobile ="+addSupportCandidateRequest.getCandidateMobile());
                                     break;
                                 case "current salary per month":
-                                    addSupportCandidateRequest.setCandidateLastWithdrawnSalary(Long.valueOf(nextLine[i],10));
-                                    Logger.info("addSupportCandidateRequest.setCandidateLastWithdrawnSalary ="+addSupportCandidateRequest.getCandidateLastWithdrawnSalary());
+                                case "Salary":
+                                    String salary = CharMatcher.digit().retainFrom(nextLine[i]);
+                                    if(salary.isEmpty()) salary = "0";
+                                    addSupportCandidateRequest.setCandidateLastWithdrawnSalary(Long.valueOf(salary,10));
+                                    //Logger.info("addSupportCandidateRequest.setCandidateLastWithdrawnSalary ="+addSupportCandidateRequest.getCandidateLastWithdrawnSalary());
                                     break;
                                 case "Role":
                                     List<JobRole> jobRoleList = JobRole.find.where().ilike("jobname","%"+nextLine[i]+"%").findPagedList(0,3).getList();
@@ -2504,13 +2541,14 @@ public class CandidateService
                                     }
                                     // Default is "Others" --> Id 34
                                     else addSupportCandidateRequest.setCandidateCurrentJobRoleId(34L);
-                                    Logger.info("addSupportCandidateRequest.setCandidateCurrentJobRoleId ="+addSupportCandidateRequest.getCandidateCurrentJobRoleId());
+                                    //Logger.info("addSupportCandidateRequest.setCandidateCurrentJobRoleId ="+addSupportCandidateRequest.getCandidateCurrentJobRoleId());
                                     break;
                                 case "Role Experience (in Years)":
+                                case "Experience":
                                     //check if experience is define as a aplpha-numerical string
                                     if(StringUtils.isNumeric(nextLine[i])){
                                         addSupportCandidateRequest.setCandidateTotalExperience(Integer.valueOf(nextLine[i])*12);
-                                        Logger.info("addSupportCandidateRequest.setCandidateTotalExperience ="+addSupportCandidateRequest.getCandidateTotalExperience());
+                                        //Logger.info("addSupportCandidateRequest.setCandidateTotalExperience ="+addSupportCandidateRequest.getCandidateTotalExperience());
                                     }
                                     break;
                                 case "Languages known":
@@ -2526,7 +2564,7 @@ public class CandidateService
                                     }
                                     if(candidateKnownLanguages.size() > 0) {
                                         addSupportCandidateRequest.setCandidateLanguageKnown(candidateKnownLanguages);
-                                        Logger.info("Count of addSupportCandidateRequest.setCandidateLanguageKnown ="+addSupportCandidateRequest.getCandidateLanguageKnown().size());
+                                        //Logger.info("Count of addSupportCandidateRequest.setCandidateLanguageKnown ="+addSupportCandidateRequest.getCandidateLanguageKnown().size());
                                     }
                                     break;
                                 case "Education":
@@ -2540,7 +2578,7 @@ public class CandidateService
                                     else if(educationString.startsWith("postgraduat")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_PG);}
                                     if(addCandidateEducationRequest.getCandidateEducationLevel() > 0){
                                         addSupportCandidateRequest.setCandidateEducationLevel(addCandidateEducationRequest.getCandidateEducationLevel());
-                                        Logger.info("addSupportCandidateRequest.setCandidateEducationLevel ="+addSupportCandidateRequest.getCandidateEducationLevel());
+                                        //Logger.info("addSupportCandidateRequest.setCandidateEducationLevel ="+addSupportCandidateRequest.getCandidateEducationLevel());
                                     }
                                     break;
                                 case "Company":
@@ -2557,8 +2595,12 @@ public class CandidateService
                                         pastCompany.setCurrent(Boolean.TRUE);
                                         pastCompanyList.add(pastCompany);
                                         addSupportCandidateRequest.setPastCompanyList(pastCompanyList);
-                                        Logger.info("pastCompany.setCompanyName ="+pastCompany.getCompanyName());
+                                        //Logger.info("pastCompany.setCompanyName ="+pastCompany.getCompanyName());
                                     }
+                                    break;
+                                case "Gender":
+                                    if(nextLine[i].toLowerCase().startsWith("f")) addSupportCandidateRequest.setCandidateGender(ServerConstants.GENDER_FEMALE);
+                                    else if (nextLine[i].toLowerCase().startsWith("m")) addSupportCandidateRequest.setCandidateGender(ServerConstants.GENDER_MALE);
                                     break;
                                 default:
                                     String misc = addSupportCandidateRequest.getSupportNote();
@@ -2566,10 +2608,34 @@ public class CandidateService
                                     addSupportCandidateRequest.setSupportNote(misc);
                             }
                         }
+
                     }
 
-                    // create candidate
+                    // approximate EO File detection --> If name, mobile, email are ALL empty
+                    if(addSupportCandidateRequest.getCandidateMobile() == null &&
+                            addSupportCandidateRequest.getCandidateFirstName() == null &&
+                            addSupportCandidateRequest.getCandidateEmail() == null) break;
+
+                    // check if candidate has to be created
                     if(isNew && addSupportCandidateRequest.getCandidateMobile() != null && !addSupportCandidateRequest.getCandidateMobile().isEmpty()){
+
+                        // initialize channel
+                        if(channel == 0){
+                            String partnerId;
+                            // determine channel
+                            if(session() != null && (session().get("sessionChannel") != null && !session().get("sessionChannel").isEmpty())){
+                                //Logger.info("Session : "+ session().get("sessionChannel"));
+                                if(Integer.parseInt(session().get("sessionChannel"),10) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
+                                    partnerId = session().get("partnerId");
+                                    partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
+                                    Logger.info("BulkUploadCandidates: Partner with ID = '"+partnerId+((partner == null)?"' not found":"' found"));
+                                    channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
+                                }else{
+                                    channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
+                                }
+                            }
+                            else {channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;}
+                        }
 
                         List<Integer> list = new ArrayList<>();
                         if(addSupportCandidateRequest.getCandidateJobPref() == null || addSupportCandidateRequest.getCandidateJobPref().size() == 0){
@@ -2577,19 +2643,44 @@ public class CandidateService
                             list.add(34);
                             addSupportCandidateRequest.setCandidateJobPref(list);
                         }
-                        // set location to Others --> Every candidate is expected to have some location
+                        // set location to Others (by default) --> Every candidate is expected to have some location
+                        // if a partner is available, inherit candidate location from partner
                         list.clear();
-                        list.add(345);
-                        addSupportCandidateRequest.setCandidateLocality(list);
+                        if(partner != null && partner.getLocality() != null){
+                            list.add(Math.toIntExact(partner.getLocality().getLocalityId()));
+                        }
+                        else{list.add(345);}
 
-                        Logger.info("Add support candidate request : "+ toJson(addSupportCandidateRequest));
-                        CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                                InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE,
-                                ServerConstants.UPDATE_ALL_BY_SUPPORT);
+                        addSupportCandidateRequest.setCandidateHomeLocality(list.get(0));
+
+                        Logger.info("Bulk Upload Candidate Request : "+ toJson(addSupportCandidateRequest));
+                        CandidateSignUpResponse candidateSignUpResponse = null;
+
+                        if(partner == null){
+                            // create standalone candidate
+                            candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
+                                    channel,
+                                    ServerConstants.UPDATE_ALL_BY_SUPPORT);
+                            Logger.info("Candidate Created with Id = "+candidateSignUpResponse.getCandidateId());
+                        }
+                        else {
+                            // create partner-owned candidate
+                            //checking if a candidate can be associate with a partner or not
+                            Integer associationStatus = checkCandidateExistence(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+                            if(leadSource == null){
+                                leadSource = LeadSource.find.where().eq("leadSourceId", addSupportCandidateRequest.getLeadSource()).findUnique();
+                            }
+                            if(leadSource != null){
+                                addSupportCandidateRequest.setLeadSource(leadSource.getLeadSourceId());
+                            }
+                            candidateSignUpResponse = createCandidateViaPartner(addSupportCandidateRequest, partner, isNew, associationStatus);
+                            //Logger.info("createCandidateViaPartner.candidateSignUpResponse JSON = "+toJson(candidateSignUpResponse));
+                            Logger.info("Candidate Created with Id = "+candidateSignUpResponse.getCandidateId());
+                        }
+
                         // keep count
                         if(candidateSignUpResponse.getCandidateId() > 0) {
                             count++;
-                            Logger.info("Candidate Created with Id = "+candidateSignUpResponse.getCandidateId());
                         }
                     }
                     else if(addSupportCandidateRequest.getCandidateMobile() != null && !addSupportCandidateRequest.getCandidateMobile().isEmpty())

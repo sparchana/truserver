@@ -13,7 +13,6 @@ $(window).load(function() {
     if(window.location.href.indexOf('#signin') != -1) {
         $("#modalLogIn").openModal();
     }
-
     setTimeout(function(){
         $(".homeNav").addClass("active");
         $(".homeNavMobile").addClass("active");
@@ -342,6 +341,19 @@ function checkRecruiterLogin() {
 function processDataRecruiterSession(returnedData) {
     if(returnedData == 0){
         logoutRecruiter();
+    } else{
+        if(returnedData.recruiterAccessLevel == 0){
+            $("#creditView").show();
+            $("#creditViewMobile").show();
+            $("#recruiterMsg").show();
+            $("#recruiterHIW").show();
+        } else{
+
+            $("#creditView").hide();
+            $("#creditViewMobile").hide();
+            $("#recruiterMsg").hide();
+            $("#recruiterHIW").hide();
+        }
     }
 }
 
@@ -351,8 +363,17 @@ function processDataRecruiterProfile(returnedData) {
     } else{
         $("#recName").html(returnedData.recruiterProfileName);
         $("#recMobile").html(returnedData.recruiterProfileMobile);
-        if(returnedData.recCompany != null)
+        if(returnedData.recCompany != null){
             $("#recCompany").html(returnedData.recCompany.companyName);
+            if(returnedData.recruiterAccessLevel == 1){
+                var parent = $("#recCompany");
+                var privateLabel = document.createElement("span");
+                privateLabel.textContent = "Private";
+                privateLabel.style = "margin-left: 4px; border-radius: 4px; font-size: 12px; font-weight: bold; padding: 4px; color: white; background: #00a1ff";
+                parent.append(privateLabel);
+            }
+
+        }
 
         if(returnedData.recruiterLinkedinProfile != null && returnedData.recruiterLinkedinProfile != "")
             $("#recLinkedin").html(returnedData.recruiterLinkedinProfile);
