@@ -6,11 +6,11 @@ package api.http.httpResponse.Recruiter.recruiterAdmin;
 public class JobPostSummaryResponse {
     private String jobTitle;
     private String jobPostedOn;
-    private PercentageBundle percentageFulfillmentBundle;
+    private String percentageFulfillment;
     private int totalSmsSent;
     private int totalApplicants;
     private int totalInterviewConducted;
-    private int cycleTime;
+    private String cycleTime;
 
     public String getJobTitle() {
         return jobTitle;
@@ -28,12 +28,12 @@ public class JobPostSummaryResponse {
         this.jobPostedOn = jobPostedOn;
     }
 
-    public PercentageBundle getPercentageFulfillmentBundle() {
-        return percentageFulfillmentBundle;
+    public String getPercentageFulfillment() {
+        return percentageFulfillment;
     }
 
-    public void setPercentageFulfillmentBundle(PercentageBundle percentageFulfillmentBundle) {
-        this.percentageFulfillmentBundle = percentageFulfillmentBundle;
+    public void setPercentageFulfillment(String percentageFulfillment) {
+        this.percentageFulfillment = percentageFulfillment;
     }
 
     public int getTotalSmsSent() {
@@ -60,11 +60,11 @@ public class JobPostSummaryResponse {
         this.totalInterviewConducted = totalInterviewConducted;
     }
 
-    public int getCycleTime() {
+    public String getCycleTime() {
         return cycleTime;
     }
 
-    public void setCycleTime(int cycleTime) {
+    public void setCycleTime(String cycleTime) {
         this.cycleTime = cycleTime;
     }
 }

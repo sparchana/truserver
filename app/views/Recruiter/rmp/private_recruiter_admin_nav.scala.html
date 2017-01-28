@@ -36,6 +36,26 @@ nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i {
 </div>
 
 <script>
+    function logoutRecruiter() {
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/logoutRecruiter",
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataLogoutRecruiter
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+
+    function processDataLogoutRecruiter() {
+        window.location = "/recruiter";
+    }
+
     $(document).ready(function () {
         $(".button-collapse").sideNav();
         $(".dropdown-button").dropdown();
