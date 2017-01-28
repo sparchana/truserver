@@ -51,6 +51,7 @@ import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
 import static models.util.Util.generateOtp;
 import static play.mvc.Controller.session;
+import static play.mvc.Results.TODO;
 
 /**
  * Created by batcoder1 on 7/7/16.
@@ -297,8 +298,10 @@ public class RecruiterService {
                 setCreditHistoryValues(existingRecruiter, recruiterSignUpRequest);
 
                 if ((recruiterSignUpRequest.getContactCredits() != null && recruiterSignUpRequest.getContactCredits() > 0) ||
-                        (recruiterSignUpRequest.getInterviewCredits() != null && recruiterSignUpRequest.getInterviewCredits() > 0))
+                        (recruiterSignUpRequest.getInterviewCredits() != null && recruiterSignUpRequest.getInterviewCredits() > 0) ||
+                        (recruiterSignUpRequest.getCtaCredits() != null && recruiterSignUpRequest.getCtaCredits() > 0))
                 {
+                    //TODO CTA Modify Messaging for CTA credits
                     EmailUtil.sendRecruiterCreditTopupMail(existingRecruiter,
                             recruiterSignUpRequest.getContactCredits(),
                             recruiterSignUpRequest.getInterviewCredits());
@@ -361,6 +364,18 @@ public class RecruiterService {
 
             }
         }
+
+        //setting values for cta credits
+        if(addRecruiterRequest.getCtaCredits() != null && addRecruiterRequest.getCtaCredits() != 0){
+            if(addRecruiterRequest.getCtaCredits() > 0){
+                //credit
+                addCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_CTA_CREDIT, addRecruiterRequest.getCtaCredits(), createdBy, addRecruiterRequest.getExpiryDate());
+            } else{
+                //debit
+                debitCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_CTA_CREDIT, addRecruiterRequest.getCtaCredits(), createdBy);
+            }
+        }
+
     }
 
     public static UnlockContactResponse unlockCandidate(RecruiterProfile recruiterProfile, Long candidateId) {
@@ -1024,4 +1039,20 @@ public class RecruiterService {
 
         return Days.daysBetween(dt1, dt2).getDays();
     }
+
+    public static InterviewResponse isCTAAllowed(JobPost jobPost) {
+        InterviewResponse interviewResponse = new InterviewResponse();
+        if (jobPost == null || jobPost.getRecruiterProfile() == null) {
+            // don't show CTA if no recruiter is set for a jobpost
+            interviewResponse.setStatus(ServerConstants.ERROR);
+            return interviewResponse;
+        }
+        if (jobPost.getRecruiterProfile().getCtaCreditCount() > 0) {
+            interviewResponse.setStatus(ServerConstants.CALL_TO_APPLY);
+            return interviewResponse;
+        }
+        interviewResponse.setStatus(ServerConstants.ERROR);
+        return interviewResponse;
+    }
+
 }

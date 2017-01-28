@@ -1,7 +1,6 @@
 package api.http.httpRequest.Recruiter;
 
 import api.http.httpRequest.TruRequest;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import play.Logger;
 
 import java.lang.reflect.Field;
@@ -12,7 +11,6 @@ import java.util.List;
  * Created by dodo on 5/10/16.
  */
 
-@JsonIgnoreProperties(ignoreUnknown=true)
 public class RecruiterLeadRequest extends TruRequest{
     protected Long recruiterLeadId;
     protected Integer recruiterLeadStatus;

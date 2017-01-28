@@ -362,7 +362,10 @@ public class SearchJobService {
                 } else if(response.getStatus() == ServerConstants.INTERVIEW_CLOSED){
                     jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_CLOSED);
                 } else {
-                    jobPost.setApplyBtnStatus(ServerConstants.APPLY);
+                    // Below CTA = Call-To-Apply button
+                    response = RecruiterService.isCTAAllowed(jobPost);
+                    if(response.getStatus() == ServerConstants.CALL_TO_APPLY) jobPost.setApplyBtnStatus(ServerConstants.CALL_TO_APPLY);
+                    else jobPost.setApplyBtnStatus(ServerConstants.APPLY);
                 }
             }
 

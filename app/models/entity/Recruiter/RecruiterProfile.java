@@ -114,6 +114,9 @@ public class RecruiterProfile extends Model {
     @Transient
     private Integer interviewCreditCount = 0;
 
+    @Transient
+    private Integer ctaCreditCount = 0;
+
     @Column(name = "recruiter_access_level", columnDefinition = "int(2) signed not null default 0")
     private int recruiterAccessLevel;
 
@@ -349,5 +352,13 @@ public class RecruiterProfile extends Model {
 
     public void setRecruiterAccessLevel(int recruiterAccessLevel) {
         this.recruiterAccessLevel = recruiterAccessLevel;
+    }
+
+    public Integer getCtaCreditCount() {
+        return creditCount(ServerConstants.RECRUITER_CATEGORY_CTA_CREDIT);
+    }
+
+    public void setCtaCreditCount(Integer ctaCreditCount) {
+        this.ctaCreditCount = ctaCreditCount;
     }
 }

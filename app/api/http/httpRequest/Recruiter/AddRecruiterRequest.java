@@ -21,6 +21,7 @@ public class AddRecruiterRequest {
     private Integer recruiterContactCreditUnitPrice;
     private Integer recruiterCreditMode;
     private Integer contactCredits;
+    private Integer ctaCredits;
     private Integer interviewCredits;
 
     private String companyCode;
@@ -28,6 +29,14 @@ public class AddRecruiterRequest {
     private Integer packId;
     private Integer creditCount;
     private Date expiryDate;
+
+    public Integer getCtaCredits() {
+        return ctaCredits;
+    }
+
+    public void setCtaCredits(Integer ctaCredits) {
+        this.ctaCredits = ctaCredits;
+    }
 
     public String getRecruiterName() {
         return recruiterName;
