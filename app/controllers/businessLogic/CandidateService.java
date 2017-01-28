@@ -22,6 +22,7 @@ import com.amazonaws.services.s3.model.PutObjectResult;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.Query;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
+import com.google.common.base.CharMatcher;
 import controllers.PartnerController;
 import controllers.businessLogic.hirewand.HWHTTPException;
 import controllers.businessLogic.hirewand.HireWandService;
@@ -2479,7 +2480,7 @@ public class CandidateService
 
             if(header != null){
                 while((nextLine = reader.readNext()) != null){
-                    Logger.info("Next line value : "+ toJson(nextLine));
+                    //Logger.info("Next line value : "+ toJson(nextLine));
                     AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
                     List<CandidateSkills> candidateSkills = new ArrayList<>();
                     addSupportCandidateRequest.setCandidateSkills(candidateSkills);
@@ -2497,21 +2498,21 @@ public class CandidateService
 
                     for(int i = 0; i < nextLine.length ; i++){
                         if(!nextLine[i].isEmpty()){
-                            Logger.info("nextLine["+i+"]="+nextLine[i]);
-                            Logger.info("header["+i+"]="+header[i]);
+                            //Logger.info("nextLine["+i+"]="+nextLine[i]);
+                            //Logger.info("header["+i+"]="+header[i]);
                             tempMobile = "";
                             switch (header[i]){
                                 case "Name":
                                     String fName = nextLine[i].split(" ")[0];
                                     String lName = nextLine[i].replace(fName,"").trim();
                                     addSupportCandidateRequest.setCandidateFirstName(fName);
-                                    Logger.info("addSupportCandidateRequest.setCandidateFirstName ="+fName);
+                                    //Logger.info("addSupportCandidateRequest.setCandidateFirstName ="+fName);
                                     addSupportCandidateRequest.setCandidateSecondName(lName);
-                                    Logger.info("addSupportCandidateRequest.setCandidateSecondName ="+lName);
+                                    //Logger.info("addSupportCandidateRequest.setCandidateSecondName ="+lName);
                                     break;
                                 case "Email":
                                     addSupportCandidateRequest.setCandidateEmail(nextLine[i]);
-                                    Logger.info("addSupportCandidateRequest.setCandidateEmail ="+nextLine[i]);
+                                    //Logger.info("addSupportCandidateRequest.setCandidateEmail ="+nextLine[i]);
                                     break;
                                 case "Mobile":
                                     //Logger.info("About to check for "+nextLine[i]);
@@ -2519,12 +2520,14 @@ public class CandidateService
                                     //Logger.info("Candidate.find.where().eq(\"candidatemobile\",FormValidator.convertToIndianMobileFormat(nextLine[i])).findRowCount()"+Candidate.find.where().eq("candidatemobile",FormValidator.convertToIndianMobileFormat(nextLine[i])).findRowCount());
                                     addSupportCandidateRequest.setCandidateMobile(FormValidator.convertToIndianMobileFormat(nextLine[i]));
                                     tempMobile = addSupportCandidateRequest.getCandidateMobile();
-                                    Logger.info("addSupportCandidateRequest.setCandidateMobile ="+addSupportCandidateRequest.getCandidateMobile());
+                                    //Logger.info("addSupportCandidateRequest.setCandidateMobile ="+addSupportCandidateRequest.getCandidateMobile());
                                     break;
                                 case "current salary per month":
                                 case "Salary":
-                                    addSupportCandidateRequest.setCandidateLastWithdrawnSalary(Long.valueOf(nextLine[i],10));
-                                    Logger.info("addSupportCandidateRequest.setCandidateLastWithdrawnSalary ="+addSupportCandidateRequest.getCandidateLastWithdrawnSalary());
+                                    String salary = CharMatcher.digit().retainFrom(nextLine[i]);
+                                    if(salary.isEmpty()) salary = "0";
+                                    addSupportCandidateRequest.setCandidateLastWithdrawnSalary(Long.valueOf(salary,10));
+                                    //Logger.info("addSupportCandidateRequest.setCandidateLastWithdrawnSalary ="+addSupportCandidateRequest.getCandidateLastWithdrawnSalary());
                                     break;
                                 case "Role":
                                     List<JobRole> jobRoleList = JobRole.find.where().ilike("jobname","%"+nextLine[i]+"%").findPagedList(0,3).getList();
@@ -2538,14 +2541,14 @@ public class CandidateService
                                     }
                                     // Default is "Others" --> Id 34
                                     else addSupportCandidateRequest.setCandidateCurrentJobRoleId(34L);
-                                    Logger.info("addSupportCandidateRequest.setCandidateCurrentJobRoleId ="+addSupportCandidateRequest.getCandidateCurrentJobRoleId());
+                                    //Logger.info("addSupportCandidateRequest.setCandidateCurrentJobRoleId ="+addSupportCandidateRequest.getCandidateCurrentJobRoleId());
                                     break;
                                 case "Role Experience (in Years)":
                                 case "Experience":
                                     //check if experience is define as a aplpha-numerical string
                                     if(StringUtils.isNumeric(nextLine[i])){
                                         addSupportCandidateRequest.setCandidateTotalExperience(Integer.valueOf(nextLine[i])*12);
-                                        Logger.info("addSupportCandidateRequest.setCandidateTotalExperience ="+addSupportCandidateRequest.getCandidateTotalExperience());
+                                        //Logger.info("addSupportCandidateRequest.setCandidateTotalExperience ="+addSupportCandidateRequest.getCandidateTotalExperience());
                                     }
                                     break;
                                 case "Languages known":
@@ -2561,7 +2564,7 @@ public class CandidateService
                                     }
                                     if(candidateKnownLanguages.size() > 0) {
                                         addSupportCandidateRequest.setCandidateLanguageKnown(candidateKnownLanguages);
-                                        Logger.info("Count of addSupportCandidateRequest.setCandidateLanguageKnown ="+addSupportCandidateRequest.getCandidateLanguageKnown().size());
+                                        //Logger.info("Count of addSupportCandidateRequest.setCandidateLanguageKnown ="+addSupportCandidateRequest.getCandidateLanguageKnown().size());
                                     }
                                     break;
                                 case "Education":
@@ -2575,7 +2578,7 @@ public class CandidateService
                                     else if(educationString.startsWith("postgraduat")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_PG);}
                                     if(addCandidateEducationRequest.getCandidateEducationLevel() > 0){
                                         addSupportCandidateRequest.setCandidateEducationLevel(addCandidateEducationRequest.getCandidateEducationLevel());
-                                        Logger.info("addSupportCandidateRequest.setCandidateEducationLevel ="+addSupportCandidateRequest.getCandidateEducationLevel());
+                                        //Logger.info("addSupportCandidateRequest.setCandidateEducationLevel ="+addSupportCandidateRequest.getCandidateEducationLevel());
                                     }
                                     break;
                                 case "Company":
@@ -2592,7 +2595,7 @@ public class CandidateService
                                         pastCompany.setCurrent(Boolean.TRUE);
                                         pastCompanyList.add(pastCompany);
                                         addSupportCandidateRequest.setPastCompanyList(pastCompanyList);
-                                        Logger.info("pastCompany.setCompanyName ="+pastCompany.getCompanyName());
+                                        //Logger.info("pastCompany.setCompanyName ="+pastCompany.getCompanyName());
                                     }
                                     break;
                                 case "Gender":
@@ -2621,10 +2624,11 @@ public class CandidateService
                             String partnerId;
                             // determine channel
                             if(session() != null && (session().get("sessionChannel") != null && !session().get("sessionChannel").isEmpty())){
-                                Logger.info("Session : "+ session().get("sessionChannel"));
-                                if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
+                                //Logger.info("Session : "+ session().get("sessionChannel"));
+                                if(Integer.parseInt(session().get("sessionChannel"),10) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
                                     partnerId = session().get("partnerId");
                                     partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
+                                    Logger.info("BulkUploadCandidates: Partner with ID = '"+partnerId+((partner == null)?"' not found":"' found"));
                                     channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
                                 }else{
                                     channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
@@ -2649,7 +2653,7 @@ public class CandidateService
 
                         addSupportCandidateRequest.setCandidateHomeLocality(list.get(0));
 
-                        Logger.info("Add support candidate request : "+ toJson(addSupportCandidateRequest));
+                        Logger.info("Bulk Upload Candidate Request : "+ toJson(addSupportCandidateRequest));
                         CandidateSignUpResponse candidateSignUpResponse = null;
 
                         if(partner == null){
@@ -2657,6 +2661,7 @@ public class CandidateService
                             candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
                                     channel,
                                     ServerConstants.UPDATE_ALL_BY_SUPPORT);
+                            Logger.info("Candidate Created with Id = "+candidateSignUpResponse.getCandidateId());
                         }
                         else {
                             // create partner-owned candidate
@@ -2669,12 +2674,12 @@ public class CandidateService
                                 addSupportCandidateRequest.setLeadSource(leadSource.getLeadSourceId());
                             }
                             candidateSignUpResponse = createCandidateViaPartner(addSupportCandidateRequest, partner, isNew, associationStatus);
+                            Logger.info("Candidate Created with Id = "+candidateSignUpResponse.getCandidateId());
                         }
 
                         // keep count
                         if(candidateSignUpResponse.getCandidateId() > 0) {
                             count++;
-                            Logger.info("Candidate Created with Id = "+candidateSignUpResponse.getCandidateId());
                         }
                     }
                     else if(addSupportCandidateRequest.getCandidateMobile() != null && !addSupportCandidateRequest.getCandidateMobile().isEmpty())
