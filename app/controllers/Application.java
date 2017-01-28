@@ -1359,8 +1359,6 @@ public class Application extends Controller {
             Candidate existingCandidate = CandidateDAO.getById(candidateId);
             if(existingCandidate != null) {
 
-                Logger.info("candidate exists - ");
-
                 // adding session details
                 Auth existingAuth = Auth.find.where().eq("candidateId", candidateId).findUnique();
                 if(existingAuth != null) {

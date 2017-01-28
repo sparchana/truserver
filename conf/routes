@@ -350,9 +350,9 @@ POST        /api/getRelatedJobRole/                                       contro
 POST        /api/deactiveToActive                                         controllers.Application.deactiveToActive()
 
 ## Compute API
-GET         /api/compute/updateAllRelevantJobCategories                    controllers.Application.updateAllRelevantJobCategories()
-POST        /api/compute/updateAllActivityScores                           controllers.Application.updateAllActivityScores()
-POST        /api/compute/verifyAadhar/:candidateMobile                     controllers.OngridController.sendOnGridAadharRequest(candidateMobile: String)
+GET         /api/compute/updateAllRelevantJobCategories                   controllers.Application.updateAllRelevantJobCategories()
+POST        /api/compute/updateAllActivityScores                          controllers.Application.updateAllActivityScores()
+POST        /api/compute/verifyAadhar/:candidateMobile                    controllers.OngridController.sendOnGridAadharRequest(candidateMobile: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /robots.txt                                                   controllers.Assets.at(path="/public", file="robots.txt")
@@ -364,22 +364,22 @@ GET         /favicon.ico                                                  contro
 # Resume Upload
 # ~~~~~~~~~
 
-GET         /showResumeUpload                                               controllers.Application.showResumeUpload()
-POST        /addResume/                                                     controllers.Application.doResumeUpload(candidateId: String ?=null)
-POST        /receive-parsed-resume                                          controllers.Application.receiveParsedResume()
-GET        /fetchResume/                                                    controllers.Application.fetchResume(candidateId: String ?=null)
-GET         /favicon.ico                                                    controllers.Assets.at(path="/public/common/img/", file="icon.png")
+GET         /showResumeUpload                                             controllers.Application.showResumeUpload()
+POST        /addResume/                                                   controllers.Application.doResumeUpload(candidateId: String ?=null)
+POST        /receive-parsed-resume                                        controllers.Application.receiveParsedResume()
+GET         /fetchResume/                                                 controllers.Application.fetchResume(candidateId: String ?=null)
+GET         /favicon.ico                                                  controllers.Assets.at(path="/public/common/img/", file="icon.png")
 #GET        /webjars/*file                                                  controllers.WebJarAssets.at(file)
 
 # Truly Url-Shortner route
 # ~~~~~~~~~
-GET         /truly                                                         controllers.truly.TrulyController.renderGenerator()
-GET         /truly/api/compress                                            controllers.truly.TrulyController.compress(url: String?=null)
-GET         /truly/api/expand                                              controllers.truly.TrulyController.expand(url: String?=null)
-GET         /t/:shortUrl                                                   controllers.truly.TrulyController.index(shortUrl: String)
+GET         /truly                                                        controllers.truly.TrulyController.renderGenerator()
+POST        /truly/api/v1/compress                                        controllers.truly.TrulyController.compress()
+GET         /truly/api/v1/expand                                          controllers.truly.TrulyController.expand(url: String ?=null)
+GET         /t/:shortUrl                                                  controllers.truly.TrulyController.index(shortUrl: String)
 
 
 # Candidate Excel Upload
 # ~~~~~~~~~
-GET         /support/administrator/uploadCandidates                     controllers.Application.uploadCandidates()
-POST        /support/administrator/processCandidates                    controllers.Application.processCandidates()
+GET         /support/administrator/uploadCandidates                       controllers.Application.uploadCandidates()
+POST        /support/administrator/processCandidates                      controllers.Application.processCandidates()

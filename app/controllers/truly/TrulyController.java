@@ -1,17 +1,27 @@
 package controllers.truly;
 
+import api.http.httpRequest.truly.TrulyRequest;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import controllers.security.PartnerInternalSecured;
 import play.Logger;
+import play.api.Play;
+import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
 
-import static play.mvc.Results.badRequest;
-import static play.mvc.Results.ok;
-import static play.mvc.Results.redirect;
+import java.io.IOException;
 
 /**
  * Created by zero on 27/1/17.
  */
-public class TrulyController {
+public class TrulyController extends Controller {
+    private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
 
+    /**
+     * @param shortUrl Responsible for resolving a given short url
+     * @return
+     */
     public static Result index(String shortUrl) {
 
         if(shortUrl == null || shortUrl.trim().isEmpty()) {
@@ -21,6 +31,7 @@ public class TrulyController {
         TrulyService trulyService = new TrulyService();
         String longUrl = trulyService.getLongURL(shortUrl);
 
+        Logger.info("long url : " + longUrl);
         if(longUrl == null) {
             return redirect("/pageNotFound");
         }
@@ -33,24 +44,42 @@ public class TrulyController {
         }
     }
 
-    // TODO add security class for internal support only to generate url
+    @Security.Authenticated(PartnerInternalSecured.class)
     public static Result renderGenerator() {
         return ok(views.html.truly.render());
     }
 
-    public static Result compress(String longUrl) {
+    @Security.Authenticated(PartnerInternalSecured.class)
+    public static Result compress() {
+        JsonNode req = request().body().asJson();
+        ObjectMapper newMapper = new ObjectMapper();
+        TrulyRequest trulyRequest = new TrulyRequest();
+
+        try {
+            trulyRequest = newMapper.readValue(req.toString(), TrulyRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String longUrl = trulyRequest.getLongUrl();
         if(longUrl == null) return badRequest();
 
         TrulyService trulyService = new TrulyService();
 
-        return ok(trulyService.generateShortURL(longUrl));
+        String shortURL = trulyService.generateShortURL(longUrl);
+
+        return ok(shortURL == null ? "error ": shortURL);
     }
 
+    @Security.Authenticated(PartnerInternalSecured.class)
     public static Result expand(String shortUrl) {
         if(shortUrl == null) return badRequest();
 
         TrulyService trulyService = new TrulyService();
 
-        return ok(trulyService.getLongURL(shortUrl));
+        if(trulyService == null) return ok("not found");
+
+        String longURL = trulyService.getLongURL(shortUrl);
+        return ok(longURL == null ? "not found ": longURL);
     }
 }

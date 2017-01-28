@@ -16,8 +16,11 @@
             submitURL: function (long_url) {
                 var promise = new Promise(function(resolve, reject) {
                     var request = new XMLHttpRequest();
+                    var d = {};
+                    d["longUrl"] = long_url;
+                    request.open('POST', '/truly/api/v1/compress');
+                    request.setRequestHeader("Content-Type", "application/json");
 
-                    request.open('GET', '/truly/api/compress?url='+long_url);
                     request.onload = function() {
                         if (request.status == 200) {
                             resolve(request.response); // we got data here, so resolve the Promise
@@ -30,7 +33,7 @@
                         reject(Error('Error fetching data.')); // error occurred, reject the  Promise
                     };
 
-                    request.send(); //send the request
+                    request.send(JSON.stringify(d)); //send the request
                 });
 
                 promise.then(function(data) {
@@ -44,7 +47,7 @@
             shortUrl: function (data) {
                 var shortUrlDiv = document.getElementById('short_url');
                 shortUrlDiv.textContent = data;
-                app._notify("Url shortened successfully")
+                app._notify("link simplified !")
             }
         },
         _notify: function (message) {
@@ -60,8 +63,14 @@
                 return app.validate.url(data);
             },
             url: function (url) {
-                // c.f http://stackoverflow.com/questions/4314741/url-regex-validation
-                var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+                // c.f http://blog.mattheworiordan.com/post/13174566389/url-regular-expression-for-links-with-or-without
+                // var expression = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+                var expression;
+                if(url != null && url.includes("localhost:9000")) {
+                    expression = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/;
+                } else {
+                    expression =  /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+                }
                 var regex = new RegExp(expression);
                 if (!url.match(regex)) {
                     return false;

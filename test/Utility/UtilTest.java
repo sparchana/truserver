@@ -98,7 +98,7 @@ public class UtilTest {
             Application fakeApp = fakeApplication();
             TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
             running(server, () -> {
-                Logger.info("URL: " + Util.generateApplyInShortUrl(this.candidateId, this.jobPostId));
+                Logger.info("URL: " + Util.generateApplyInShortUrl(this.candidateId, this.jobPostId, true));
             });
         }
     }
