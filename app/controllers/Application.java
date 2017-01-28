@@ -2480,8 +2480,8 @@ public class Application extends Controller {
         return ok();
     }
 
-    //@Security.Authenticated(PartnerInternalSecured.class)
-    @Security.Authenticated(PartnerSecured.class)
+    @Security.Authenticated(PartnerInternalSecured.class)
+    //@Security.Authenticated(PartnerSecured.class)
     public static Result uploadCandidates() {
         return ok(views.html.upload_candidate_excel.render());
     }

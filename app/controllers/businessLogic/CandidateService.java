@@ -2674,6 +2674,7 @@ public class CandidateService
                                 addSupportCandidateRequest.setLeadSource(leadSource.getLeadSourceId());
                             }
                             candidateSignUpResponse = createCandidateViaPartner(addSupportCandidateRequest, partner, isNew, associationStatus);
+                            //Logger.info("createCandidateViaPartner.candidateSignUpResponse JSON = "+toJson(candidateSignUpResponse));
                             Logger.info("Candidate Created with Id = "+candidateSignUpResponse.getCandidateId());
                         }
 
