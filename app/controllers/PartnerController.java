@@ -304,8 +304,10 @@ public class PartnerController {
 
                 PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
 
-                //making entry in partnerToCandidateToCompany table
-                partnerToCandidateToCompanyMapping(partner, existingCandidate);
+                if(isPrivatePartner){
+                    //making entry in partnerToCandidateToCompany table
+                    partnerToCandidateToCompanyMapping(partner, existingCandidate);
+                }
             }
         }
 

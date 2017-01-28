@@ -457,6 +457,7 @@ public class PartnerService {
                 partnerToCandidate.savePartnerToCandidate(partnerToCandidate);
             }
 
+            candidateSignUpResponse.setCandidateId(existingCandidate.getCandidateId());
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
         } else {
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
