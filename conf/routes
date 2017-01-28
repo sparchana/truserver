@@ -108,6 +108,7 @@ POST        /submitPreScreen                                              contro
 POST        /confirmInterview/:jpId/:value                                controllers.Application.confirmInterview(jpId : Long, value : Long)
 POST        /partnerConfirmInterview/:cId/:jpId/:value                    controllers.PartnerController.confirmInterview(cId : Long, jpId : Long, value : Long)
 POST        /updateCandidateDetailsViaPreScreen/                          controllers.Application.updateCandidateDetailsViaPreScreen(propertyIdList: String?= null, candidateMobile: String?= null,  jobPostId: java.lang.Long ?= null)
+POST        /updateCandidateDetailViaShortJobApply/                       controllers.Application.updateCandidateDetailsViaShortJobApply()
 POST        /updateFeedback                                               controllers.Application.updateFeedback()
 POST        /getDeActivationMessage                                       controllers.Application.getDeactivationMessage(candidateId: java.lang.Long?= null)
 POST        /updateRecruiterCreditPack                                    controllers.Application.updateRecruiterCreditPack()
@@ -171,7 +172,7 @@ GET         /recruiter/getCandidateInfo/:id                               contro
 
 POST        /showRecruiterLead/:id                                        controllers.RecruiterController.readRecruiterLead(id: Long)
 POST        /getAllJobApplicants/:id                                      controllers.RecruiterController.getAllJobApplicants(id : Long)
-POST        /getAllRecruiterJobPosts                                      controllers.RecruiterController.getAllRecruiterJobPosts
+POST        /getAllRecruiterJobPosts                                      controllers.RecruiterController.getAllRecruiterJobPosts()
 POST        /getRecruiterCredits/:id                                      controllers.RecruiterController.getRecruiterCredits(id : Long)
 POST        /getAllCreditCategory                                         controllers.RecruiterController.getAllCreditCategory()
 POST        /recruiter/unlockCandidateContact/:id                         controllers.RecruiterController.unlockCandidateContact(id : Long)
@@ -211,6 +212,11 @@ GET         /ss/                                                          contro
 POST        /api/search/                                                  controllers.SearchController.search(page: Integer?=null)
 
 
+# Job Apply InShort routes
+#~~~~~~~~~~~~~~~~~~~~
+GET         /apply/inshort/:urlString                                     controllers.Application.renderJobRelatedPages( urlString: String, cid:java.lang.Long ?=null, key:String ?=null)
+GET         /apply/inshort/api/getMissingData                             controllers.Application.getMissingData(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
+
 #new routes
 #~~~~~~~~~~~~~~~~~~~~
 GET         /navBar                                                       controllers.Application.renderPageNavBar()
@@ -218,7 +224,7 @@ GET         /navBarLoggedIn                                               contro
 GET         /footer                                                       controllers.Application.renderPageFooter()
 GET         /jobPostCardView                                              controllers.Application.renderJobPostCards()
 GET         /pageNotFound                                                 controllers.Application.pageNotFound()
-GET         /jobs/:urlString                                              controllers.Application.renderJobRelatedPages( urlString: String)
+GET         /jobs/:urlString                                              controllers.Application.renderJobRelatedPages( urlString: String, cid:java.lang.Long ?=null, key:String ?=null)
 GET         /job/:getJobsPageContentString                                controllers.Application.getJobsPageContent( getJobsPageContentString: String,i:java.lang.Long ?=null)
 
 # Both support and user
@@ -324,6 +330,7 @@ GET         /testNotification                                             contro
 GET         /convertOldData                                               controllers.TestController.convertOldData()
 GET         /testQueue                                                    controllers.TestController.testQueue()
 GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
+GET         /testResponse                                                 controllers.TestController.testApplyInShortResponse()
 
 # Scrap API
 # ~~~~~~~~~~~~~
@@ -348,9 +355,9 @@ POST        /api/getRelatedJobRole/                                       contro
 POST        /api/deactiveToActive                                         controllers.Application.deactiveToActive()
 
 ## Compute API
-GET         /api/compute/updateAllRelevantJobCategories                    controllers.Application.updateAllRelevantJobCategories()
-POST        /api/compute/updateAllActivityScores                           controllers.Application.updateAllActivityScores()
-POST        /api/compute/verifyAadhar/:candidateMobile                     controllers.OngridController.sendOnGridAadharRequest(candidateMobile: String)
+GET         /api/compute/updateAllRelevantJobCategories                   controllers.Application.updateAllRelevantJobCategories()
+POST        /api/compute/updateAllActivityScores                          controllers.Application.updateAllActivityScores()
+POST        /api/compute/verifyAadhar/:candidateMobile                    controllers.OngridController.sendOnGridAadharRequest(candidateMobile: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /robots.txt                                                   controllers.Assets.at(path="/public", file="robots.txt")
@@ -362,14 +369,23 @@ GET         /favicon.ico                                                  contro
 # Resume Upload
 # ~~~~~~~~~
 
-GET         /showResumeUpload                                               controllers.Application.showResumeUpload()
-POST        /addResume/                                                     controllers.Application.doResumeUpload(candidateId: String ?=null)
-POST        /receive-parsed-resume                                          controllers.Application.receiveParsedResume()
-GET         /fetchResume/                                                   controllers.Application.fetchResume(candidateId: String ?=null)
-GET         /favicon.ico                                                    controllers.Assets.at(path="/public/common/img/", file="icon.png")
+GET         /showResumeUpload                                             controllers.Application.showResumeUpload()
+POST        /addResume/                                                   controllers.Application.doResumeUpload(candidateId: String ?=null)
+POST        /receive-parsed-resume                                        controllers.Application.receiveParsedResume()
+GET         /fetchResume/                                                 controllers.Application.fetchResume(candidateId: String ?=null)
+GET         /favicon.ico                                                  controllers.Assets.at(path="/public/common/img/", file="icon.png")
+
 #GET        /webjars/*file                                                  controllers.WebJarAssets.at(file)
+
+# Truly Url-Shortner route
+# ~~~~~~~~~
+GET         /truly                                                        controllers.truly.TrulyController.renderGenerator()
+POST        /truly/api/v1/compress                                        controllers.truly.TrulyController.compress()
+GET         /truly/api/v1/expand                                          controllers.truly.TrulyController.expand(url: String ?=null)
+GET         /t/:shortUrl                                                  controllers.truly.TrulyController.index(shortUrl: String)
+
 
 # Candidate Excel Upload
 # ~~~~~~~~~
-GET         /support/administrator/uploadCandidates                     controllers.Application.uploadCandidates()
-POST        /support/administrator/processCandidates                    controllers.Application.processCandidates()
+GET         /support/administrator/uploadCandidates                       controllers.Application.uploadCandidates()
+POST        /support/administrator/processCandidates                      controllers.Application.processCandidates()

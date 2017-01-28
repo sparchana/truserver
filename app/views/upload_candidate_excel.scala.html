@@ -61,14 +61,11 @@
                                 </center>
                             </div>
                         </div>
-                        <form id="upload_excel" class="form-horizontal" name="upload_excel" enctype="multipart/form-data">
-                            <center>
-                                <label class="mdl-button mdl-js-button mdl-button--raised" id="uploadResumeBtn">Select File to Upload
-                                    <input type="file" name="excelfile" id="excelfile" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" style="display: none">
-                                </label>
-                            <input type="submit" id="uploadBtn" value="Upload" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"/>
-                            </center>
-                        </form>
+                        <center>
+                            <label class="mdl-button mdl-js-button mdl-button--raised btn-file" id="selectCSVBtn">UPLOAD CSV
+                                <input type="file" accept=".csv" id="excelfile" style="display: none" >
+                            </label>
+                        </center>
                     </div>
                 </div>
             </div>
@@ -79,7 +76,11 @@
         </main>
     </div>
     <script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>
-    <script type="text/javascript" src="/assets/support/js/uploadCandidateExcel.js"></script>
+    <script type="text/javascript" src="/assets/support/js/upload_candidate_excel.js"></script>
     <script src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+    <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
 </body>
+    <script>
+        document.getElementById('excelfile').addEventListener('change', uploadCSV, false);
+    </script>
 </html>

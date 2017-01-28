@@ -14,6 +14,7 @@ import api.http.httpResponse.Recruiter.AddRecruiterResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
 import api.http.httpResponse.Recruiter.recruiterAdmin.JobPostSummaryResponse;
+import api.http.httpResponse.Recruiter.recruiterAdmin.PercentageBundle;
 import api.http.httpResponse.Recruiter.recruiterAdmin.RecruiterSummaryResponse;
 import api.http.httpResponse.ResetPasswordResponse;
 import api.http.httpResponse.interview.InterviewResponse;
@@ -21,6 +22,8 @@ import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import dao.*;
+import dao.JobPostDAO;
+import dao.RecruiterCreditHistoryDAO;
 import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
@@ -43,6 +46,7 @@ import org.joda.time.Days;
 import play.Logger;
 
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -586,12 +590,14 @@ public class RecruiterService {
         InterviewResponse interviewResponse = new InterviewResponse();
         if (jobPost == null) {
             interviewResponse.setStatus(ServerConstants.ERROR);
+            interviewResponse.setStatusTitle("ERROR");
             return interviewResponse;
         }
         int validCount = 0;
         if (jobPost.getRecruiterProfile() == null) {
             // don't show interview modal if no recruiter is set for a jobpost
             interviewResponse.setStatus(ServerConstants.INTERVIEW_NOT_REQUIRED);
+            interviewResponse.setStatusTitle("INTERVIEW_NOT_REQUIRED");
             return interviewResponse;
         }
 
@@ -617,6 +623,7 @@ public class RecruiterService {
                 Logger.info("Interview closed for this week");
                 // interview closed
                 interviewResponse.setStatus(ServerConstants.INTERVIEW_CLOSED);
+                interviewResponse.setStatusTitle("INTERVIEW_CLOSED");
                 return interviewResponse;
             }
 
@@ -636,10 +643,12 @@ public class RecruiterService {
 
         if (validCount == 2) {
             interviewResponse.setStatus(ServerConstants.INTERVIEW_REQUIRED);
+            interviewResponse.setStatusTitle("INTERVIEW_REQUIRED");
             return interviewResponse;
         }
 
         interviewResponse.setStatus(ServerConstants.INTERVIEW_NOT_REQUIRED);
+        interviewResponse.setStatusTitle("INTERVIEW_NOT_REQUIRED");
         return interviewResponse;
     }
 
@@ -903,6 +912,7 @@ public class RecruiterService {
             List<JobPost> jobPostList = new ArrayList<>();
             for(JobPost jobPost: recruiterProfile.getJobPosts()) {
                 if(jobPost.getJobPostAccessLevel() != ServerConstants.JOB_POST_TYPE_PRIVATE) continue;
+                if(jobPost.getJobPostStatus().getJobStatusId() != ServerConstants.JOB_STATUS_ACTIVE) continue;
 
                 jobPostList.add(jobPost);
                 jobPostIdList.add(jobPost.getJobPostId());
@@ -913,27 +923,39 @@ public class RecruiterService {
             recruiterSummaryResponse.setRecruiterMobile(recruiterProfile.getRecruiterProfileMobile() +
                     ((recruiterProfile.getRecruiterAlternateMobile() == null) ? "": "/"+recruiterProfile.getRecruiterAlternateMobile()));
 
-            recruiterSummaryResponse.setNoOfJobPosted(recruiterProfile.getJobPosts().size());
+            recruiterSummaryResponse.setNoOfJobPosted(jobPostList.size());
             recruiterSummaryResponse.setTotalCandidatesApplied(computeTotalApplicant(jobPostIdList));
             recruiterSummaryResponse.setTotalInterviewConducted(computeTotalInterviewConducted(jobPostIdList));
             recruiterSummaryResponse.setTotalSelected(computeTotalSelected(jobPostIdList));
-            recruiterSummaryResponse.setPercentageFulfilled(computePercentageFulfilled(jobPostList, recruiterSummaryResponse.getTotalSelected()));
+
+            recruiterSummaryResponse.setPercentageFulfillment(
+                    formatPercentageFulfilled(computePercentageFulfilled(jobPostList, recruiterSummaryResponse.getTotalSelected()))
+                                     );
+
             recruiterSummaryResponseList.add(recruiterSummaryResponse);
         }
 
         return recruiterSummaryResponseList;
     }
 
-    private Float computePercentageFulfilled(List<JobPost> jobPostList, Integer totalSelected) {
-
+    private PercentageBundle computePercentageFulfilled(List<JobPost> jobPostList, Integer totalSelected) {
         int totalVacancy = 0;
         for(JobPost jobPost: jobPostList) {
             if(jobPost.getJobPostVacancies() == null) continue;
 
             totalVacancy += jobPost.getJobPostVacancies();
         }
-        if (totalVacancy == 0 ) return 0F;
-        return ((float) totalSelected*100/totalVacancy);
+        if(totalVacancy == 0) {
+            return null;
+        }
+        float percentage = Float.parseFloat( new DecimalFormat("###.##").format( ((float) totalSelected*100/totalVacancy)));
+        return new PercentageBundle(totalSelected, totalVacancy, percentage);
+    }
+
+    private String formatPercentageFulfilled(PercentageBundle percentageBundle) {
+        if(percentageBundle == null)  return "NA";
+        return percentageBundle.getPercentage()+" % ("+percentageBundle.getSelected() + " out of "+percentageBundle.getTotal() + ")";
+
     }
 
     private int computeTotalSelected(List<Long> jobPostIdList) {
@@ -986,11 +1008,12 @@ public class RecruiterService {
             // for now this uses the jobpost workflow to figure out these info
             jobPostSummaryResponse.setTotalApplicants(computeTotalApplicant(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))));
             jobPostSummaryResponse.setTotalInterviewConducted(computeTotalInterviewConducted(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))));
-            jobPostSummaryResponse.setFulfillmentStatus(computePercentageFulfilled(new ArrayList<>(Arrays.asList(jobPost)),
-                    computeTotalSelected(new ArrayList<>(Arrays.asList(jobPost.getJobPostId())))));
+            jobPostSummaryResponse.setPercentageFulfillment(
+                    formatPercentageFulfilled(computePercentageFulfilled(new ArrayList<>(Arrays.asList(jobPost)),
+                    computeTotalSelected(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))))));
 
             try {
-                jobPostSummaryResponse.setCycleTime(computeCycleTime(jobPost.getJobPostId(), jobPost.getJobPostCreateTimestamp()));
+                jobPostSummaryResponse.setCycleTime(formatCycleTime(computeCycleTime(jobPost.getJobPostId(), jobPost.getJobPostCreateTimestamp())));
             } catch (ParseException e) {
                 e.printStackTrace();
                 Logger.error("unable to parse date for date diff in computeCycleTime");
@@ -1003,6 +1026,13 @@ public class RecruiterService {
         }
 
         return jobPostSummaryResponseList;
+    }
+
+    private String formatCycleTime(int i) {
+        if(i < 0) {
+            return "NA";
+        }
+        return i + " Day(s)";
     }
 
     /**

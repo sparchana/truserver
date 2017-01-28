@@ -12,8 +12,11 @@ import api.http.httpResponse.CandidateExtraData;
 import api.http.httpResponse.CandidateScoreData;
 import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Recruiter.InterviewTodayResponse;
+import api.http.httpResponse.Workflow.InterviewSlotPopulateResponse;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
+import api.http.httpResponse.Workflow.ShortJobApplyResponse;
 import api.http.httpResponse.Workflow.WorkflowResponse;
+import api.http.httpResponse.Workflow.smsJobApplyFlow.LocalityPopulateResponse;
 import api.http.httpResponse.Workflow.smsJobApplyFlow.ShortPSPopulateResponse;
 import api.http.httpResponse.interview.InterviewResponse;
 import com.avaje.ebean.*;
@@ -21,6 +24,12 @@ import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.InteractionService;
 import controllers.businessLogic.MatchingEngineService;
 import controllers.businessLogic.RecruiterService;
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.Query;
+import com.avaje.ebean.RawSql;
+import com.avaje.ebean.RawSqlBuilder;
+import controllers.RecruiterController;
+import controllers.businessLogic.*;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
@@ -1192,7 +1201,52 @@ public class JobPostWorkflowEngine {
         return populateResponse;
     }
 
-    public static ShortPSPopulateResponse getJobPostVsCandidate(Long jobPostId, Long candidateId) {
+    /* new short pre screen apply flow methods - start */
+
+    public static ShortJobApplyResponse getShortJobApplyResponse(Long jobPostId, Long candidateId) {
+        ShortJobApplyResponse applyResponse = new ShortJobApplyResponse(false);
+
+        if(jobPostId == null || candidateId == null) {
+            applyResponse.setStatus(ShortJobApplyResponse.Status.BAD_REQUEST);
+            return applyResponse;
+        }
+
+        JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", candidateId).eq("jobPostId", jobPostId).findUnique();
+
+        if(existingJobApplication != null) {
+            Logger.info("Already applied ");
+            applyResponse.setStatus(ShortJobApplyResponse.Status.ALREADY_APPLIED);
+            return applyResponse;
+        }
+
+        String deActivationMessage = CandidateService.getDeActivationMessage(candidateId);
+        if(deActivationMessage != null) {
+
+            applyResponse.setStatus(ShortJobApplyResponse.Status.CANDIDATE_DEACTIVE);
+            applyResponse.setMessage(deActivationMessage);
+            return applyResponse;
+        }
+
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
+
+        applyResponse.setLocalityPopulateResponse(JobPostWorkflowEngine.getJobLocality(jobPost));
+        applyResponse.setShortPSPopulateResponse(JobPostWorkflowEngine.getJobPostVsCandidate(jobPost, candidateId));
+        applyResponse.setInterviewSlotPopulateResponse(
+                new InterviewSlotPopulateResponse(JobService.getInterviewSlot(jobPost),
+                RecruiterService.isInterviewRequired(jobPost), null));
+
+        RecruiterController.sanitizeJobPostData(jobPost);
+        jobPost.setJobPostToLocalityList(new ArrayList<>());
+        jobPost.setInterviewDetailsList(new ArrayList<>());
+        jobPost.setJobPostAssetRequirements(new ArrayList<>());
+
+        applyResponse.setJobPost(jobPost);
+        applyResponse.setStatus(ShortJobApplyResponse.Status.SUCCESS);
+
+        return applyResponse;
+    }
+
+    public static ShortPSPopulateResponse getJobPostVsCandidate(JobPost jobPost, Long candidateId) {
         ShortPSPopulateResponse response = new ShortPSPopulateResponse();
 
         Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
@@ -1201,20 +1255,24 @@ public class JobPostWorkflowEngine {
             return response;
         }
 
-        JobPost jobPost = JobPostDAO.findById(jobPostId);
-
         if (jobPost == null) {
             response.setStatus(ShortPSPopulateResponse.Status.FAILURE);
             return response;
         }
 
-        response.setJobPostId(jobPostId);
+        response.setJobPostId(jobPost.getJobPostId());
         response.setCandidateId(candidateId);
 
 
         List<PreScreenRequirement> preScreenRequirementList = PreScreenRequirement.find.where()
-                .eq("jobPost.jobPostId", jobPostId).orderBy().asc("category").findList();
+                .eq("jobPost.jobPostId", jobPost.getJobPostId()).orderBy().asc("category").findList();
 
+        if(preScreenRequirementList.size() == 0) {
+
+            response.setStatus(ShortPSPopulateResponse.Status.SUCCESS);
+            response.setVisible(false);
+            return response;
+        }
 
         Map<Integer, List<PreScreenRequirement>> preScreenMap = new HashMap<>();
 
@@ -1226,6 +1284,7 @@ public class JobPostWorkflowEngine {
             preScreenRequirements.add(preScreenRequirement);
             preScreenMap.put(preScreenRequirement.getCategory(), preScreenRequirements);
         }
+        response.setPropertyIdList(new ArrayList<>());
 
         for (Map.Entry<Integer, List<PreScreenRequirement>> entry : preScreenMap.entrySet()) {
             switch (entry.getKey()) {
@@ -1246,6 +1305,11 @@ public class JobPostWorkflowEngine {
                     }
 
                     response.setDocumentList(getDiffList(jobPostReqDocumentList, candidateIdProofList));
+
+                    if(response.getDocumentList().size() > 0) {
+                        response.getPropertyIdList().add(ServerConstants.PROPERTY_TYPE_DOCUMENT);
+                        response.setVisible(true);
+                    }
                     break;
                 case ServerConstants.CATEGORY_LANGUAGE:
                     List<Language> candidateLanguageList = new ArrayList<>();
@@ -1266,6 +1330,10 @@ public class JobPostWorkflowEngine {
 
                     response.setLanguageList(getDiffList(jobPostReqLanguageList, candidateLanguageList));
 
+                    if(response.getLanguageList().size() > 0) {
+                        response.getPropertyIdList().add(ServerConstants.PROPERTY_TYPE_LANGUAGE);
+                        response.setVisible(true);
+                    }
                     break;
                 case ServerConstants.CATEGORY_ASSET:
                     List<Asset> candidateAssetList = new ArrayList<>();
@@ -1284,6 +1352,10 @@ public class JobPostWorkflowEngine {
 
                     response.setAssetList(getDiffList(jobPostReqAssetList, candidateAssetList));
 
+                    if(response.getAssetList().size() > 0) {
+                        response.getPropertyIdList().add(ServerConstants.PROPERTY_TYPE_ASSET_OWNED);
+                        response.setVisible(true);
+                    }
                     break;
 
                 case ServerConstants.CATEGORY_PROFILE:
@@ -1298,10 +1370,28 @@ public class JobPostWorkflowEngine {
             }
 
             response.setStatus(ShortPSPopulateResponse.Status.SUCCESS);
-            response.setInterviewResponse(RecruiterService.isInterviewRequired(jobPost));
         }
 
         return response;
+    }
+
+    public static LocalityPopulateResponse getJobLocality(JobPost jobPost) {
+
+        if(jobPost == null) {
+            return null;
+        }
+
+        Map<Long, String>  localityMap = new LinkedHashMap<>();
+
+        for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()) {
+            localityMap.put(jobPostToLocality.getLocality().getLocalityId(), jobPostToLocality.getLocality().getLocalityName());
+        }
+
+        return new LocalityPopulateResponse(
+                            localityMap,
+                            jobPost.getJobPostTitle(),
+                            jobPost.getJobRole().getJobName(),
+                            jobPost.getCompany().getCompanyName());
     }
 
     public static void setProfileData(Candidate candidate, PreScreenRequirement preScreenRequirement,
@@ -1309,31 +1399,46 @@ public class JobPostWorkflowEngine {
         String key = preScreenRequirement.getProfileRequirement().getProfileRequirementTitle().toLowerCase();
         switch (key) {
             case "age":
-                if( candidate.getCandidateDOB() == null) response.setDobAvailable(false); break;
+                if( candidate.getCandidateDOB() == null){
+                    response.getPropertyIdList().add(PROPERTY_TYPE_MAX_AGE);
+                    response.setDobMissing(true);
+                    response.setVisible(true);
+                }
+                break;
             case "experience":
                 if( candidate.getCandidateTotalExperience() == null) {
+                    response.getPropertyIdList().add(PROPERTY_TYPE_EXPERIENCE);
 
                     List<JobRole> jobRoleList = JobRole.find.all();
                     response.setExperienceResponse(
-                            new ShortPSPopulateResponse.ExperienceResponse(false, jobRoleList));
+                            new ShortPSPopulateResponse.ExperienceResponse(true, jobRoleList));
+                    response.setVisible(true);
                 }
                 break;
             case "education":
                 if( candidate.getCandidateEducation() == null) {
+                    response.getPropertyIdList().add(PROPERTY_TYPE_EDUCATION);
+
                     List<Degree> degreeList = Degree.find.all();
                     List<Education> educationsList = Education.find.all();
 
                     response.setEducationResponse(
-                            new ShortPSPopulateResponse.EducationResponse(false, educationsList, degreeList));
+                            new ShortPSPopulateResponse.EducationResponse(true, educationsList, degreeList));
+                    response.setVisible(true);
                 }
                 break;
             case "gender":
                 if( candidate.getCandidateGender() == null) {
-                    response.setGenerAvailable(false);
+                    response.getPropertyIdList().add(PROPERTY_TYPE_GENDER);
+
+                    response.setGenderMissing(true);
+                    response.setVisible(true);
                 } break;
             case "salary":
                 if( candidate.getCandidateLastWithdrawnSalary() == null) {
-                    response.setSalaryAvailable(false);
+                    response.getPropertyIdList().add(PROPERTY_TYPE_SALARY);
+                    response.setSalaryMissing(true);
+                    response.setVisible(true);
                     break;
                 }
             default: break;
@@ -1356,6 +1461,9 @@ public class JobPostWorkflowEngine {
 
         return list;
     }
+
+        /* new short pre screen apply flow methods - end */
+
 
     public static boolean updatePreScreenAttempt(Long jobPostId, Long candidateId, String callStatus, int channel) {
 

@@ -1,6 +1,5 @@
 package api.http.httpResponse.Workflow.smsJobApplyFlow;
 
-import api.http.httpResponse.interview.InterviewResponse;
 import models.entity.Static.*;
 
 import java.util.ArrayList;
@@ -13,22 +12,24 @@ public class ShortPSPopulateResponse {
 
     /* if any list is empty, that data is not required to be collected in front end
     *  if not null then data needs to be collected in front end */
+    private boolean visible;
     private List<IdProof> documentList;
     private List<Language> languageList;
     private List<Asset> assetList;
 
-    private boolean isDobAvailable;
-    private boolean isGenerAvailable;
-    private boolean isSalaryAvailable;;
+    private boolean isDobMissing;
+    private boolean isGenderMissing;
+    private boolean isSalaryMissing;
 
     private ExperienceResponse experienceResponse;
     private EducationResponse educationResponse;
 
     private Status status;
-    private InterviewResponse interviewResponse;
 
     private Long jobPostId;
     private Long candidateId;
+
+    private List<Integer> propertyIdList;
 
     public ShortPSPopulateResponse() {
 
@@ -38,38 +39,39 @@ public class ShortPSPopulateResponse {
         this.assetList = new ArrayList<>();
 
         // should not be render in front end unless its set false
-        this.isDobAvailable = true;
-        this.isGenerAvailable = true;
-        this.isSalaryAvailable = true;
+        this.isDobMissing = false;
+        this.isGenderMissing = false;
+        this.isSalaryMissing = false;
 
-        this.experienceResponse = new ExperienceResponse(true);
-        this.educationResponse = new EducationResponse(true);
+        this.experienceResponse = new ExperienceResponse(false);
+        this.educationResponse = new EducationResponse(false);
 
         this.status = Status.UNKNOWN;
+        this.visible = false;
     }
 
     /* if not available then use these data to create ui elements */
 
     public static class ExperienceResponse {
 
-        private boolean isExperienceAvailable;
+        private boolean isExperienceMissing;
         private List<JobRole> jobRoleList; // all jobrole
 
-        public ExperienceResponse(boolean isExperienceAvailable) {
-            this.isExperienceAvailable = isExperienceAvailable;
+        public ExperienceResponse(boolean isExperienceMissing) {
+            this.isExperienceMissing = isExperienceMissing;
         }
 
-        public ExperienceResponse(boolean isExperienceAvailable, List<JobRole> jobRoleList) {
-            this.isExperienceAvailable = isExperienceAvailable;
+        public ExperienceResponse(boolean isExperienceMissing, List<JobRole> jobRoleList) {
+            this.isExperienceMissing = isExperienceMissing;
             this.jobRoleList = jobRoleList;
         }
 
-        public boolean isExperienceAvailable() {
-            return isExperienceAvailable;
+        public boolean isExperienceMissing() {
+            return isExperienceMissing;
         }
 
-        public void setExperienceAvailable(boolean experienceAvailable) {
-            isExperienceAvailable = experienceAvailable;
+        public void setExperienceMissing(boolean experienceMissing) {
+            isExperienceMissing = experienceMissing;
         }
 
         public List<JobRole> getJobRoleList() {
@@ -83,29 +85,29 @@ public class ShortPSPopulateResponse {
 
     public static class EducationResponse {
 
-        private boolean isEducationAvailable;
+        private boolean isEducationMissing;
         private List<Education> educationList; // all education
         private List<Degree> degreeList; // all degree
 
-        public EducationResponse(boolean isEducationAvailable) {
-            this.isEducationAvailable = isEducationAvailable;
+        public EducationResponse(boolean isEducationMissing) {
+            this.isEducationMissing = isEducationMissing;
         }
 
-        public EducationResponse(boolean isEducationAvailable,
+        public EducationResponse(boolean isEducationMissing,
                                  List<Education> educationList,
                                  List<Degree> degreeList) {
 
-            this.isEducationAvailable = isEducationAvailable;
+            this.isEducationMissing = isEducationMissing;
             this.educationList = educationList;
             this.degreeList = degreeList;
         }
 
-        public boolean isEducationAvailable() {
-            return isEducationAvailable;
+        public boolean isEducationMissing() {
+            return isEducationMissing;
         }
 
-        public void setEducationAvailable(boolean educationAvailable) {
-            isEducationAvailable = educationAvailable;
+        public void setEducationMissing(boolean educationMissing) {
+            isEducationMissing = educationMissing;
         }
 
         public List<Education> getEducationList() {
@@ -156,28 +158,28 @@ public class ShortPSPopulateResponse {
         this.assetList = assetList;
     }
 
-    public boolean isDobAvailable() {
-        return isDobAvailable;
+    public boolean isDobMissing() {
+        return isDobMissing;
     }
 
-    public void setDobAvailable(boolean dobAvailable) {
-        isDobAvailable = dobAvailable;
+    public void setDobMissing(boolean dobMissing) {
+        isDobMissing = dobMissing;
     }
 
-    public boolean isGenerAvailable() {
-        return isGenerAvailable;
+    public boolean isGenderMissing() {
+        return isGenderMissing;
     }
 
-    public void setGenerAvailable(boolean generAvailable) {
-        isGenerAvailable = generAvailable;
+    public void setGenderMissing(boolean genderMissing) {
+        isGenderMissing = genderMissing;
     }
 
-    public boolean isSalaryAvailable() {
-        return isSalaryAvailable;
+    public boolean isSalaryMissing() {
+        return isSalaryMissing;
     }
 
-    public void setSalaryAvailable(boolean salaryAvailable) {
-        isSalaryAvailable = salaryAvailable;
+    public void setSalaryMissing(boolean salaryMissing) {
+        isSalaryMissing = salaryMissing;
     }
 
     public ExperienceResponse getExperienceResponse() {
@@ -220,11 +222,19 @@ public class ShortPSPopulateResponse {
         this.candidateId = candidateId;
     }
 
-    public InterviewResponse getInterviewResponse() {
-        return interviewResponse;
+    public List<Integer> getPropertyIdList() {
+        return propertyIdList;
     }
 
-    public void setInterviewResponse(InterviewResponse interviewResponse) {
-        this.interviewResponse = interviewResponse;
+    public void setPropertyIdList(List<Integer> propertyIdList) {
+        this.propertyIdList = propertyIdList;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 }

@@ -1,9 +1,11 @@
 package Utility;
 
 import common.TestConstants;
+import models.util.Base62;
 import models.util.Util;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -17,7 +19,7 @@ import java.util.Collection;
 import static play.test.Helpers.*;
 
 /**
- * Created by zero on 25/1/17.
+ * Created by zero on 20/1/17.
  *
  * prod/activator-1.3.9-minimal/bin/activator "test-only Utility.UtilTest"
  *
@@ -28,8 +30,15 @@ public class UtilTest {
     private long id;
     private long startKey;
     private long endKey;
+
+
+    private Long candidateId;
+    private Long jobPostId;
     enum MethodType {
         idToCode,
+        base62,
+        generateShortURL,
+
     }
     private MethodType type;
 
@@ -39,11 +48,16 @@ public class UtilTest {
     }
 
     public UtilTest(MethodType type, long startKey, long endKey) {
-        this.startKey = startKey;
-        this.endKey = endKey;
         this.type = type;
-    }
 
+        if(type == MethodType.idToCode || type == MethodType.base62) {
+            this.startKey = startKey;
+            this.endKey = endKey;
+        } else if (type == MethodType.generateShortURL){
+            this.candidateId = startKey;
+            this.jobPostId = endKey;
+        }
+    }
 
 
     @Parameterized.Parameters
@@ -58,6 +72,35 @@ public class UtilTest {
                 {MethodType.idToCode, 9999990, 10000000},
                 {MethodType.idToCode, 99999990, 100000000},
                 {MethodType.idToCode, 999999990, 1000000000},
+                {MethodType.idToCode, 9999999990L, 10000000000L},
+                {MethodType.idToCode, 99999999990L, 100000000000L},
+                {MethodType.idToCode, 999999999990L, 1000000000000L},
+                {MethodType.idToCode, 9999999999990L, 10000000000000L},
+                {MethodType.idToCode, 99999999999990L, 100000000000000L},
+                {MethodType.idToCode, 999999999999990L, 1000000000000000L},
+                {MethodType.idToCode, 9999999999999990L, 10000000000000000L},
+                {MethodType.idToCode, 99999999999999990L, 100000000000000000L},
+                {MethodType.idToCode, 999999999999999990L, 1000000000000000000L},
+                {MethodType.generateShortURL, 100020118, 925},
+                {MethodType.base62, 1, 10},
+                {MethodType.base62, 90, 100},
+                {MethodType.base62, 990, 1000},
+                {MethodType.base62, 9990, 10000},
+                {MethodType.base62, 99990, 100000},
+                {MethodType.base62, 999990, 1000000},
+                {MethodType.base62, 9999990, 10000000},
+                {MethodType.base62, 99999990, 100000000},
+                {MethodType.base62, 999999990, 1000000000},
+                {MethodType.base62, 9999999990L, 10000000000L},
+                {MethodType.base62, 99999999990L, 100000000000L},
+                {MethodType.base62, 999999999990L, 1000000000000L},
+                {MethodType.base62, 9999999999990L, 10000000000000L},
+                {MethodType.base62, 99999999999990L, 100000000000000L},
+                {MethodType.base62, 999999999999990L, 1000000000000000L},
+                {MethodType.base62, 9999999999999990L, 10000000000000000L},
+                {MethodType.base62, 99999999999999990L, 100000000000000000L},
+                {MethodType.base62, 999999999999999990L, 1000000000000000000L},
+
         });
     }
 
@@ -73,6 +116,34 @@ public class UtilTest {
                     Assert.assertEquals(key, Util.codeToId(code));
 
                 }
+            });
+        }
+    }
+
+    @Test
+    public void base62Test() {
+        if (type == MethodType.base62) {
+            Application fakeApp = fakeApplication();
+            TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
+            running(server, () -> {
+                for(long key = this.startKey; key<= this.endKey; key++){
+                    String code = Base62.fromBase10(key);
+                    Logger.warn("test id #"+key + " code: " + code);
+                    Assert.assertEquals(key, Base62.toBase10(code));
+
+                }
+            });
+        }
+    }
+
+    @Ignore
+    public void testGenerateApplyInShortURL() {
+
+        if (type == MethodType.generateShortURL) {
+            Application fakeApp = fakeApplication();
+            TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
+            running(server, () -> {
+                Logger.info("URL: " + Util.generateApplyInShortUrl(this.candidateId, this.jobPostId, true));
             });
         }
     }
