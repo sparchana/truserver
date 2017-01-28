@@ -369,6 +369,7 @@ POST        /addResume/                                                   contro
 POST        /receive-parsed-resume                                        controllers.Application.receiveParsedResume()
 GET         /fetchResume/                                                 controllers.Application.fetchResume(candidateId: String ?=null)
 GET         /favicon.ico                                                  controllers.Assets.at(path="/public/common/img/", file="icon.png")
+
 #GET        /webjars/*file                                                  controllers.WebJarAssets.at(file)
 
 # Truly Url-Shortner route
