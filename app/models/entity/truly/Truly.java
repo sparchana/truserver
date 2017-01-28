@@ -16,8 +16,8 @@ import java.sql.Timestamp;
 public class Truly extends Model {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "truly_id", columnDefinition = "int unsigned", unique = true)
-    private int trulyId;
+    @Column(name = "truly_id", columnDefinition = "bigint unsigned", unique = true)
+    private long trulyId;
 
     @Column(name = "longUrl", columnDefinition = "text null")
     private String longUrl;
@@ -43,11 +43,11 @@ public class Truly extends Model {
 
     public static Model.Finder<String, Truly> find = new Model.Finder(Truly.class);
 
-    public int getTrulyId() {
+    public long getTrulyId() {
         return trulyId;
     }
 
-    public void setTrulyId(int trulyId) {
+    public void setTrulyId(long trulyId) {
         this.trulyId = trulyId;
     }
 

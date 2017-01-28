@@ -4,8 +4,6 @@ import api.http.httpRequest.truly.TrulyRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.security.PartnerInternalSecured;
-import play.Logger;
-import play.api.Play;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -16,8 +14,6 @@ import java.io.IOException;
  * Created by zero on 27/1/17.
  */
 public class TrulyController extends Controller {
-    private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
-
     /**
      * @param shortUrl Responsible for resolving a given short url
      * @return
@@ -31,7 +27,6 @@ public class TrulyController extends Controller {
         TrulyService trulyService = new TrulyService();
         String longUrl = trulyService.getLongURL(shortUrl);
 
-        Logger.info("long url : " + longUrl);
         if(longUrl == null) {
             return redirect("/pageNotFound");
         }

@@ -23,8 +23,7 @@ public class TrulyService {
     private final String POINT_URL = "/t/";
     public String getLongURL(String shortURL) {
 
-        Logger.info("shortURL: "+ shortURL);
-        int trulyId = getIdFromShortURL(shortURL);
+        long trulyId = getIdFromShortURL(shortURL);
         Truly truly = Truly.find.where().eq("trulyId", trulyId).findUnique();
         if(truly == null){
             return null;
@@ -36,7 +35,7 @@ public class TrulyService {
         return truly.getLongUrl();
     }
 
-    private int getIdFromShortURL(String shortUrl) {
+    private long getIdFromShortURL(String shortUrl) {
         if(shortUrl == null || shortUrl.trim().isEmpty()) return 0;
         if(shortUrl.contains("/t/")) {
             shortUrl = shortUrl.substring(shortUrl.indexOf("/t/")+3);

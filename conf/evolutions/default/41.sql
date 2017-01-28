@@ -2,7 +2,7 @@
 # --- !Ups
 
 create table truly (
-  truly_id                      int unsigned auto_increment not null,
+  truly_id                      bigint unsigned auto_increment not null,
   longurl                       text null,
   shorturl                      varchar(255) null,
   hash                          varchar(255) null,

@@ -50,11 +50,10 @@ public class Util {
     }
 
     public static String idToCode(long id) {
-        // no company id will exceed 2^31 :P
-        return Base36.fromBase10((int) id);
+        return Base36.fromBase10(id);
     }
 
-    public static int codeToId(String code) {
+    public static long codeToId(String code) {
         return Base36.toBase10(code);
     }
 
