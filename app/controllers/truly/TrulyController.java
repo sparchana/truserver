@@ -25,6 +25,7 @@ public class TrulyController {
             return redirect("/pageNotFound");
         }
 
+
         if(longUrl.contains("//")){
             return redirect(longUrl);
         } else {

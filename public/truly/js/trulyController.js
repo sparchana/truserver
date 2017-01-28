@@ -61,8 +61,9 @@
             },
             url: function (url) {
                 // c.f http://stackoverflow.com/questions/4314741/url-regex-validation
-                var re = /^(http[s]?:\/\/){0,1}(www\.){0,1}[a-zA-Z0-9\.\-]+\.[a-zA-Z]{2,5}[\.]{0,1}/;
-                if (!re.test(url)) {
+                var expression = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+                var regex = new RegExp(expression);
+                if (!url.match(regex)) {
                     return false;
                 } else {
                     return true;
