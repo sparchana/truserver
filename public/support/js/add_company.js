@@ -275,7 +275,8 @@ function saveForm(){
                 recruiterEmail: $("#recruiterEmail").val(),
                 recruiterCompany: companyId,
                 contactCredits: contactCredits,
-                interviewCredits: interviewCredits
+                interviewCredits: interviewCredits,
+                recruiterType: $("#recruiterType").val()
             };
         } catch (exception) {
             console.log("exception occured!!" + exception);
