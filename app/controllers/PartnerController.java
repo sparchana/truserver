@@ -25,7 +25,9 @@ import play.mvc.Security;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static play.libs.Json.toJson;
 
@@ -365,6 +367,11 @@ public class PartnerController {
                     candidateList.add(partnerToCandidateToCompany.getPartnerToCandidate().getCandidate());
                 }
 
+                //removing duplicate data from list
+                Set<Candidate> candidateSet = new HashSet<>();
+                candidateSet.addAll(candidateList);
+                candidateList.clear();
+                candidateList.addAll(candidateSet);
 
             } else{
                 partnerToCandidateList = PartnerToCandidate.find.where()

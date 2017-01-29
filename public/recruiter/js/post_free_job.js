@@ -833,6 +833,9 @@ function processDataAddJobPost(returnedData) {
 function processDataForJobPost(returnedData) {
     if(returnedData != "0"){
         jpId = returnedData.jobPostId;
+        if(returnedData.recruiterProfile != null){
+            jpRecruiterId = returnedData.recruiterProfile.recruiterProfileId;
+        }
         if(returnedData.company != null ){
             jpCompanyId = returnedData.company.companyId;
         }
