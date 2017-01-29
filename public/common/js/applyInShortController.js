@@ -140,7 +140,7 @@ var applyInShort = (function ($) {
 
                 $('#card_container').hide();
 
-                appz.do.redirectToDashboard(sec);
+                appz.do.closeWindow(sec);
             },
             applyJobForm: function () {
 
@@ -153,15 +153,15 @@ var applyInShort = (function ($) {
 
                     // already applied
                     if(appz.missingData.statusCode == 5) {
-                        appz.render.messageModal("You have already applied to this Job. Redirecting to dashboard ....", 4000);
+                        appz.render.messageModal("You have already applied to this Job. Closing this window ....", 4000);
                     }
                     // no job with this id
                     else if(appz.missingData.statusCode == 6) {
-                        appz.render.messageModal("Invalid Link. No Job Found. Redirecting to dashboard ....", 4000);
+                        appz.render.messageModal("Invalid Link. No Job Found. Closing this window ....", 4000);
                     }
                     // candidate deactivate
                     else if(appz.missingData.statusCode == 7) {
-                        appz.render.messageModal(appz.missingData.message + ". Redirecting to Dashboard ....", 7000);
+                        appz.render.messageModal(appz.missingData.message + ". Closing this window ....", 7000);
                     }
                     // success | display ui
                     else if(appz.missingData.statusCode == 4){
@@ -1395,12 +1395,12 @@ var applyInShort = (function ($) {
 
                             if(returnedData.statusCode == 3) {
 
-                                $.notify("Application Submitted successfully. Opening Dashboard", 'success');
-                                appz.do.redirectToDashboard(3000);
+                                $.notify("Thanks for applying ! Your will receive interview details in an SMS. Closing this tab..", 'success');
+                                appz.do.closeWindow(3000);
                             } else if(returnedData.statusCode == 4) {
-                                $.notify("Looks like you have already applied to this job. Opening Dashboard", 'error');
+                                $.notify("Looks like you have already applied to this job. Closing this tab..", 'error');
 
-                                appz.do.redirectToDashboard(3000);
+                                appz.do.closeWindow(3000);
 
                             } else {
                                 $.notify("Something went wrong. Please re-check submission!", 'error');
@@ -1813,14 +1813,14 @@ var applyInShort = (function ($) {
                 }
 
             },
-            redirectToDashboard: function (sec) {
+            closeWindow: function (sec) {
                 if(sec ==null) {
                     // dont redirect
                    return;
                 } else {
 
                     setTimeout(function(){
-                        window.location = "/dashboard/appliedJobs/";
+                        window.close();
                     },sec);
                 }
             }
