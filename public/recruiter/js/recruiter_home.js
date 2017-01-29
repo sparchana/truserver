@@ -376,7 +376,14 @@ function processDataRecruiterProfile(returnedData) {
                 privateLabel.textContent = "Private";
                 privateLabel.style = "margin-left: 4px; border-radius: 4px; font-size: 12px; font-weight: bold; padding: 4px; color: white; background: #00a1ff";
                 parent.append(privateLabel);
+            } else if(returnedData.recruiterAccessLevel == 2){
+                var parent = $("#recCompany");
+                var privateLabel = document.createElement("span");
+                privateLabel.textContent = "Super Admin";
+                privateLabel.style = "margin-left: 4px; border-radius: 4px; font-size: 12px; font-weight: bold; padding: 4px; color: white; background: #00a1ff";
+                parent.append(privateLabel);
             }
+
 
         }
 

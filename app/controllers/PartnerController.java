@@ -495,6 +495,7 @@ public class PartnerController {
 
                 PartnerToCandidate partnerToCandidate = PartnerToCandidate.find
                         .where()
+                        .eq("partner_id", partner.getPartnerId())
                         .eq("candidate_candidateid", candidate.getCandidateId())
                         .setMaxRows(1)
                         .findUnique();

@@ -435,12 +435,11 @@ function processDataJobApplications(returnedData) {
             outerRow.appendChild(colChannel);
 
             colChannel.textContent = "N/A";
-            var applicationTimestamp = new Date(workflowObj.appliedOn);
 
             if(workflowObj.applicationChannel == 1){
-                colChannel.textContent = "SMS (on " + validateDateFormat(applicationTimestamp) + ")";
+                colChannel.textContent = "SMS";
             } else if(workflowObj.applicationChannel == 2){
-                colChannel.textContent = "Partner (" + workflowObj.partner.parnterName + " on " + validateDateFormat(applicationTimestamp)+ ")" ;
+                colChannel.textContent = "Partner - " + workflowObj.partner.partnerFirstName;
             } else if(workflowObj.applicationChannel == 3){
                 colChannel.textContent = "TruJobs Support";
             }
@@ -985,6 +984,25 @@ function processDataConfirmedApplication(returnedData) {
             spanCandidateMobile.style = "font-weight: 600;font-size:12px";
             colCandidateMobile.appendChild(spanCandidateMobile);
 
+            var colChannel = document.createElement("div");
+            colChannel.className = 'col s12 m2 l1';
+            colChannel.style = 'margin-top: 8px';
+            outerRow.appendChild(colChannel);
+
+            if(workflowObj.applicationChannel == 1){
+                colChannel.textContent = "SMS";
+            } else if(workflowObj.applicationChannel == 2){
+                colChannel.textContent = "Partner - " + workflowObj.partner.partnerFirstName ;
+            } else if(workflowObj.applicationChannel == 3){
+                colChannel.textContent = "TruJobs Support";
+            }
+
+            var spanChannel = document.createElement("div");
+            spanChannel.className = "col s4 hide-on-med-and-up right-align";
+            spanChannel.textContent= "Channel:";
+            spanChannel.style = "font-weight: 600;font-size:12px;";
+            colChannel.appendChild(spanChannel);
+
             var colInterviewDateAndTime = document.createElement("div");
             colInterviewDateAndTime.className = 'col s12 m2 l3';
             colInterviewDateAndTime.style = 'margin-top: 8px';
@@ -1002,7 +1020,7 @@ function processDataConfirmedApplication(returnedData) {
             colInterviewDateAndTime.appendChild(spanInterviewDate);
 
             var colFeedback = document.createElement("div");
-            colFeedback.className = 'col s12 m2 l4';
+            colFeedback.className = 'col s12 m2 l3';
             colFeedback.style = 'margin-top: 8px';
             outerRow.appendChild(colFeedback);
 
