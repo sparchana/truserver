@@ -22,6 +22,7 @@ public class MatchingCandidateRequest extends WorkflowRequest{
     public Double distanceRadius ;
     public Integer initialValue;
     public Integer sortBy; //1-> latest active, 2-> High to low salary 3-> low to high salary
+    public Boolean showOnlyFreshCandidate; //fresh candidate: those candidate to whom recruiter hasn't sent any sms yet
 
     public Integer getMaxAge() {
         return maxAge;
@@ -150,6 +151,14 @@ public class MatchingCandidateRequest extends WorkflowRequest{
 
     public void setSortBy(Integer sortBy) {
         this.sortBy = sortBy;
+    }
+
+    public Boolean getShowOnlyFreshCandidate() {
+        return showOnlyFreshCandidate;
+    }
+
+    public void setShowOnlyFreshCandidate(Boolean showOnlyFreshCandidate) {
+        this.showOnlyFreshCandidate = showOnlyFreshCandidate;
     }
 }
 
