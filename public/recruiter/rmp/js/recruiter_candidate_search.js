@@ -25,6 +25,7 @@ var jobPostLanguageIdList = [];
 var jobPostDocumentIdList = [];
 var jobPostAssetIdList = [];
 var distanceRadius = 10;
+var showOnlyFreshCandidate = false;
 
 var resultCount = 10;
 
@@ -84,7 +85,8 @@ function requestServerSearchCall(sortBy) {
         jobPostAssetIdList: jobPostAssetIdList,
         distanceRadius: distanceRadius,
         initialValue: counter,
-        sortBy: sortBy
+        sortBy: sortBy,
+        showOnlyFreshCandidate: showOnlyFreshCandidate
     };
 
     try {
@@ -262,10 +264,6 @@ $(document).ready(function(){
         }
     });
 
-    // TODO add url detection => identify jpid => get setters only on first load
-    // then trigger search with those params
-    // below code needs to be modified for this
-
     counter = 0;
     NProgress.start();
     preFillFilter().then(function () {
@@ -284,6 +282,8 @@ $(document).ready(function(){
 
 function renderPreFillFilter(){
     return new Promise(function (resolve, reject) {
+        // default setter for showing all candidates
+        $('#candidate_all').prop('checked', true);
         if(jobPostLanguageIdList!= null && jobPostLanguageIdList.length > 0) {
             jobPostLanguageIdList.forEach(function (id) {
                 $('#lang_'+id).prop('checked', true);
@@ -655,6 +655,7 @@ function resetFilters() {
     $("#filterSalary").val(0);
 
     $("#gender_filter").hide();
+    $("#fresh_candidate_filter").hide();
     $("#experience_filter").hide();
     $("#salary_filter").hide();
     $("#education_filter").hide();
@@ -673,6 +674,7 @@ function resetFilters() {
     jobPostLanguageIdList = [];
     distanceRadius = 10;
     counter = 0;
+    showOnlyFreshCandidate = false;
 
     blockApiTrigger = false;
     endOfResult = false;
@@ -688,6 +690,7 @@ function performSearch() {
     var searchLocality;
     var searchJobRole = null;
     var searchGender = "-1";
+    var searchOnlyFreshCandidate = false;
 
     //locality
     var selectedLocality = $("#searchLocality").val();
@@ -709,6 +712,11 @@ function performSearch() {
     //gender filter
     if($("input[name='filterGender']:checked").val() != null || $("input[name='filterGender']:checked").val() != undefined){
         searchGender = $("input[name='filterGender']:checked").val();
+    }
+
+    //candidate filter based on already sent sms
+    if($("input[name='filterSmsSent']:checked").val() != null || $("input[name='filterSmsSent']:checked").val() != undefined){
+        searchOnlyFreshCandidate = $("input[name='filterSmsSent']:checked").val() == 1;
     }
 
     //education filter
@@ -774,7 +782,8 @@ function performSearch() {
             jobPostAssetIdList: selectedAsset,
             distanceRadius: parseFloat($("#filterDistance").val()),
             initialValue: counter,
-            sortBy: sortByVal
+            sortBy: sortByVal,
+            showOnlyFreshCandidate: searchOnlyFreshCandidate
         };
 
         //setting global variables
@@ -787,6 +796,7 @@ function performSearch() {
         jobPostEducationIdList = selectedEducation;
         jobPostLocalityIdList = searchLocality;
         jobPostLanguageIdList = selectedLanguage;
+        showOnlyFreshCandidate = searchOnlyFreshCandidate;
         jobPostDocumentIdList = selectedDocument;
         jobPostAssetIdList = selectedAsset;
         distanceRadius = parseFloat($("#filterDistance").val());
@@ -875,13 +885,13 @@ function processDataMatchCandidate(returnedData) {
             var d = {
                 candidateIdList: candidateIdList
             };
-            $.ajax({
-                type: "POST",
-                url: "/getCandidateUnlockedData",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(d),
-                success: processDataCandidateData
-            });
+            // $.ajax({
+            //     type: "POST",
+            //     url: "/getCandidateUnlockedData",
+            //     contentType: "application/json; charset=utf-8",
+            //     data: JSON.stringify(d),
+            //     success: processDataCandidateData
+            // });
 
             $("#candidateTools").show();
 
@@ -1114,8 +1124,16 @@ function showFilter() {
 
 //onchange filter to update filter marker
 function updateGenderFilter() {
-    $("input[name=filterGender]:radio").change(function () {
-        $("#gender_filter").show();
+    $("input[name=filterSmsSent]:radio").change(function () {
+        $("#fresh_candidate_filter").show();
+    });
+
+    performSearch();
+}
+//onchange filter to update filter marker
+function updateSentSmsFilter() {
+    $("input[name=filterSmsSent]:radio").change(function () {
+        $("#fresh_candidate_filter").show();
     });
 
     performSearch();

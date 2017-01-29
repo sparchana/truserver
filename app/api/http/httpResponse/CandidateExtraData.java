@@ -31,6 +31,7 @@ public class CandidateExtraData {
     public Double interviewLng;
     public JobPostWorkflowStatus candidateInterviewStatus;
     public RejectReason reason;
+    public Integer totalSmsSent;
 
     public String getAppliedOn() {
         return appliedOn;
@@ -182,5 +183,13 @@ public class CandidateExtraData {
 
     public void setReason(RejectReason reason) {
         this.reason = reason;
+    }
+
+    public Integer getTotalSmsSent() {
+        return totalSmsSent;
+    }
+
+    public void setTotalSmsSent(Integer totalSmsSent) {
+        this.totalSmsSent = totalSmsSent;
     }
 }
