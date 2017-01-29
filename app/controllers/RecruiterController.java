@@ -372,7 +372,7 @@ public class RecruiterController {
         return ok("-1");
     }
 
-    public static Result getCandidateUnlockedData() {
+    public static Result getFetchedCandidateData() {
         if(session().get("recruiterId") != null){
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
             if(recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() >= RECRUITER_ACCESS_LEVEL_PRIVATE){
