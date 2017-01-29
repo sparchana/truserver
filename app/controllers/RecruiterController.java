@@ -893,7 +893,7 @@ public class RecruiterController {
             return badRequest();
         }
 
-        if(recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+        if(recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
             return ok(views.html.Recruiter.rmp.job_post_sms_track.render());
         }
 

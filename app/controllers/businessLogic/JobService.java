@@ -344,7 +344,7 @@ public class JobService {
             newJobPost.setJobPostStatus(jobStatus);
             if(session().get("recruiterId") != null) {
                 RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
-                if (recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+                if (recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
 
                     //setting job status and job post access level as active whn a private recruiter adds a job
 
