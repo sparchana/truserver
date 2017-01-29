@@ -374,7 +374,7 @@ public class RecruiterController {
     public static Result getCandidateUnlockedData() {
         if(session().get("recruiterId") != null){
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
-            if(recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() == RECRUITER_ACCESS_LEVEL_PRIVATE){
+            if(recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() >= RECRUITER_ACCESS_LEVEL_PRIVATE){
                 JsonNode req = request().body().asJson();
                 Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
                 MultipleCandidateActionRequest multipleCandidateActionRequest = new MultipleCandidateActionRequest();
@@ -394,6 +394,7 @@ public class RecruiterController {
                     UnlockContactResponse unlockContactResponse = new UnlockContactResponse();
                     unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
                     unlockContactResponse.setCandidateId(candidate.getCandidateId());
+                    // TODO get a map and then use it here
                     CandidateResume resume = CandidateResume.find.where().eq("CandidateId", candidate.getCandidateId()).findUnique();
                     if(resume != null){
                         unlockContactResponse.setResumeLink(resume.getFilePath());
@@ -903,7 +904,7 @@ public class RecruiterController {
             return badRequest();
         }
 
-        if(recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+        if(recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
             return ok(views.html.Recruiter.rmp.job_post_sms_track.render());
         }
 
