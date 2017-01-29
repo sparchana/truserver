@@ -262,7 +262,6 @@ function renderCandidateTable() {
             "ajax": {
                 "url": "/getMyCandidates",
                 "dataSrc": function (returnedData) {
-                    console.log("Result :"+ JSON.stringify(returnedData));
                     var returned_data = new Array();
                     returnedData.forEach(function (candidate) {
                         returned_data.push({
