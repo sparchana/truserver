@@ -289,9 +289,9 @@ function renderCandidateTable() {
                                 }
                             },
                             'resume':'<div id="resumeLink" style="width:100%" >' +
-                            '<label class="mBtn blue btn-file">UPLOAD'+
+                            '<button class="mBtn blue btn-file" id="viewCandidateBtn">Upload'+
                             '<input type="file" accept=".pdf,.doc,.docx" id="uploadBulkResumeContent" style="display: none">'+
-                            '</label>',
+                            '</button>',
                             'btnView' : '<button type="button" class="mBtn blue" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" >'+ 'View/Edit' +'</button>',
                             'apply' :  function() {
                                 if (statusVal.localeCompare("Active") == 0){
