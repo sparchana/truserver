@@ -13,6 +13,7 @@ function checkPartnerType() {
 }
 
 function processDataSignUpSubmit(returnedData) {
+    console.log(returnedData);
     if(returnedData.status == 1) {
         returnedOtp = returnedData.otp;
 

@@ -94,29 +94,26 @@ public class PartnerService {
                     companyAssociationResponse = checkPrivatePartnerCompanyAssociation(partnerSignUpRequest.getPartnerMobile()
                             , partnerSignUpRequest.getPartnerCompanyId(), true);
 
-                    if(companyAssociationResponse == 1){
-                        if(partnerSignUpRequest.getPartnerName()!= null){
-                            partner.setPartnerFirstName(partnerSignUpRequest.getPartnerName());
-                        }
-                        if(partnerSignUpRequest.getPartnerLastName()!= null){
-                            partner.setPartnerLastName(partnerSignUpRequest.getPartnerLastName());
-                        }
-                        if(partnerSignUpRequest.getPartnerMobile()!= null){
-                            partner.setPartnerMobile(partnerSignUpRequest.getPartnerMobile());
-                        }
-                        resetPartnerTypeAndLocality(partner, partnerSignUpRequest);
-                        partnerSignUpResponse = createNewPartner(partner, lead);
-
-                        interactionType = InteractionConstants.INTERACTION_TYPE_PARTNER_SIGN_UP;
-                        if(!(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE)){
-                            // triggers when partner is self created
-                            triggerOtp(partner, partnerSignUpResponse);
-                            result = InteractionConstants.INTERACTION_RESULT_NEW_PARTNER;
-                            objectAUUId = partner.getPartnerUUId();
-                        }
-                    } else{
-                        partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_EXISTS);
+                    if(partnerSignUpRequest.getPartnerName()!= null){
+                        partner.setPartnerFirstName(partnerSignUpRequest.getPartnerName());
                     }
+                    if(partnerSignUpRequest.getPartnerLastName()!= null){
+                        partner.setPartnerLastName(partnerSignUpRequest.getPartnerLastName());
+                    }
+                    if(partnerSignUpRequest.getPartnerMobile()!= null){
+                        partner.setPartnerMobile(partnerSignUpRequest.getPartnerMobile());
+                    }
+                    resetPartnerTypeAndLocality(partner, partnerSignUpRequest);
+                    partnerSignUpResponse = createNewPartner(partner, lead);
+
+                    interactionType = InteractionConstants.INTERACTION_TYPE_PARTNER_SIGN_UP;
+                    if(!(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE)){
+                        // triggers when partner is self created
+                        triggerOtp(partner, partnerSignUpResponse);
+                        result = InteractionConstants.INTERACTION_RESULT_NEW_PARTNER;
+                        objectAUUId = partner.getPartnerUUId();
+                    }
+
                 } else {
                     PartnerAuth auth = PartnerAuthService.isAuthExists(partner.getPartnerId());
                     companyAssociationResponse = checkPrivatePartnerCompanyAssociation(partnerSignUpRequest.getPartnerMobile()
@@ -203,7 +200,6 @@ public class PartnerService {
             }
         }
         return ServerConstants.PARTNER_NO_COMPANY_ASSOCIATION;
-
     }
 
     public static void associatePrivatePartnerToCompany(Partner partner, String companyCode){

@@ -80,10 +80,14 @@ function processDataPartnerSession(returnedData) {
             $("#openPartner").hide();
             $("#footer_inc").remove();
             $("#privatePartner").show();
-
         } else{
             $("#openPartner").show();
             $("#privatePartner").hide();
+
+            $("#uploadCsvOp").remove();
+            $("#uploadResumeOp").removeClass("col-sm-4").addClass("col-sm-6");
+            $("#addCandidateOp").removeClass("col-sm-4").addClass("col-sm-6");
+
         }
     }
 }
@@ -101,7 +105,6 @@ function processDataUpdateProfile(returnedData) {
 
 
 $(document).ready(function() {
-    checkPartnerLogin()
     //getting all localities
     try {
         $.ajax({
@@ -259,6 +262,7 @@ function renderCandidateTable() {
             "ajax": {
                 "url": "/getMyCandidates",
                 "dataSrc": function (returnedData) {
+                    console.log("Result :"+ JSON.stringify(returnedData));
                     var returned_data = new Array();
                     returnedData.forEach(function (candidate) {
                         returned_data.push({
@@ -285,10 +289,19 @@ function renderCandidateTable() {
                                     return "-";
                                 }
                             },
-                            'resume':'<div id="resumeLink" style="width:100%" >' +
-                            '<label class="mBtn blue btn-file">UPLOAD'+
-                            '<input type="file" accept=".pdf,.doc,.docx" onchange="uploadResume(event)" style="display: none">'+
-                            '</label>',
+                            'resume': function () {
+                                if(candidate.candidateResumeLink == null){
+                                    return '<div id="resumeLink" style="width:100%" >' +
+                                    '<label class="mBtn blue btn-file" style="text-align: center;font-weight:100">UPLOAD'+
+                                    '<input type="file" accept=".pdf,.doc,.docx" onchange="uploadResume(event)" style="display: none">'+
+                                    '</label>'+
+                                    '</div>'
+                                }else{
+                                    return '<div id="resumeLink" style="width:100%" >' +
+                                    '<a href="http://docs.google.com/gview?url='+candidate.candidateResumeLink+'&embedded=true" target="_blank">View</a>'+
+                                    '</div>'
+                                }
+                            },
                             'btnView' : '<button type="button" class="mBtn blue" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" >'+ 'View/Edit' +'</button>',
                             'apply' :  function() {
                                 if (statusVal.localeCompare("Active") == 0){

@@ -25,7 +25,9 @@ import play.mvc.Security;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static play.libs.Json.toJson;
 
@@ -265,13 +267,14 @@ public class PartnerController {
             candidateSignUpResponse.setOtp(0);
             Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
 
-            if(isNewCandidate){ //save a record in partnerToCandidate
-                candidateSignUpResponse =
-                        PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+            candidateSignUpResponse =
+                    PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
 
-                //if the partner is a private partner
-                if(isPrivatePartner){
+            //if the partner is a private partner
+            if(isPrivatePartner){
 
+
+                if(isNewCandidate){ //save a record in partnerToCandidate
                     //auto verifying candidate profile as it is created via private partner
                     Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
                     if(existingAuth != null){
@@ -284,16 +287,17 @@ public class PartnerController {
                         //creating interaction
                         PartnerInteractionService.createInteractionForPartnerVerifyingCandidate(objAUUID, objBUUID, partner.getPartnerFirstName());
                     }
-
-                    existingCandidate.setCandidateAccessLevel(ServerConstants.CANDIDATE_ACCESS_LEVEL_PRIVATE);
-                    existingCandidate.update();
-
-                    //don't send otp
-                    candidateSignUpResponse.setOtp(0);
-                } else{
-                    candidateSignUpResponse.setOtp(PartnerService.sendCandidateVerificationSms(existingCandidate));
                 }
+
+                existingCandidate.setCandidateAccessLevel(ServerConstants.CANDIDATE_ACCESS_LEVEL_PRIVATE);
+                existingCandidate.update();
+
+                //don't send otp
+                candidateSignUpResponse.setOtp(0);
+            } else{
+                candidateSignUpResponse.setOtp(PartnerService.sendCandidateVerificationSms(existingCandidate));
             }
+
 
             //STATUS NO CANDIDATE means its a new candidate, STATUS_CANDIDATE_EXISTS_DIFFERENT_COMPANY means this candidate exists
             // and is associated with other company, hence create an entry in partner to candidate followed by PartnerToCandidateToCompany
@@ -363,6 +367,11 @@ public class PartnerController {
                     candidateList.add(partnerToCandidateToCompany.getPartnerToCandidate().getCandidate());
                 }
 
+                //removing duplicate data from list
+                Set<Candidate> candidateSet = new HashSet<>();
+                candidateSet.addAll(candidateList);
+                candidateList.clear();
+                candidateList.addAll(candidateSet);
 
             } else{
                 partnerToCandidateList = PartnerToCandidate.find.where()
@@ -402,6 +411,7 @@ public class PartnerController {
                         candidate, partner));
                 response.setCandidateAppliedJobs(response.getAppliedJobList().size());
                 response.setCandidateMobile(candidate.getCandidateMobile());
+                response.setCandidateResumeLink(candidate.getCandidateResumeLink());
                 responses.add(response);
             }
             return ok(toJson(responses));
@@ -421,18 +431,23 @@ public class PartnerController {
             if(lead != null) {
                 Candidate candidate = CandidateService.isCandidateExists(lead.getLeadMobile());
                 if(candidate != null){ //checking if the candidate was created by the requested partner
-                    PartnerToCandidate partnerToCandidate = PartnerToCandidate.find
+                    List<PartnerToCandidate> partnerToCandidateList = PartnerToCandidate.find
                             .where()
                             .eq("candidate_candidateid", candidate.getCandidateId())
-                            .setMaxRows(1)
-                            .findUnique();
-                    if(partnerToCandidate != null){
+                            .findList();
+
+                    Boolean allow = false;
+                    for(PartnerToCandidate partnerToCandidate : partnerToCandidateList){
                         if(partnerToCandidate.getPartner().getPartnerId() == partner.getPartnerId()){
-                            return ok(toJson(candidate));
-                        } else{
-                            return ok("-1");
+                            allow = true;
                         }
                     }
+                    if(allow){
+                        return ok(toJson(candidate));
+                    } else{
+                        return ok("-1");
+                    }
+
                 }
             }
         }

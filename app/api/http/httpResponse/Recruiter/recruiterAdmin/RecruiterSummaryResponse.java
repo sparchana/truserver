@@ -11,7 +11,8 @@ public class RecruiterSummaryResponse {
     private Integer totalCandidatesApplied;
     private Integer totalInterviewConducted;
     private Integer totalSelected;
-    private Float percentageFulfilled;
+    private String percentageFulfillment;
+
 
     public String getRecruiterName() {
         return recruiterName;
@@ -61,19 +62,19 @@ public class RecruiterSummaryResponse {
         this.totalSelected = totalSelected;
     }
 
-    public Float getPercentageFulfilled() {
-        return percentageFulfilled;
-    }
-
-    public void setPercentageFulfilled(Float percentageFulfilled) {
-        this.percentageFulfilled = percentageFulfilled;
-    }
-
     public Long getRecruiterId() {
         return recruiterId;
     }
 
     public void setRecruiterId(Long recruiterId) {
         this.recruiterId = recruiterId;
+    }
+
+    public String getPercentageFulfillment() {
+        return percentageFulfillment;
+    }
+
+    public void setPercentageFulfillment(String percentageFulfillment) {
+        this.percentageFulfillment = percentageFulfillment;
     }
 }

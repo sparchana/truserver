@@ -1,6 +1,13 @@
 package models.util;
 
+import controllers.businessLogic.AuthService;
+import controllers.truly.TrulyService;
+import dao.CandidateDAO;
+import dao.JobPostDAO;
+import models.entity.Auth;
+import models.entity.Candidate;
 import models.entity.Company;
+import models.entity.JobPost;
 import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 
@@ -13,6 +20,7 @@ import java.util.Date;
 import java.util.Random;
 
 public class Util {
+
     private Util() {
     }
 
@@ -38,53 +46,14 @@ public class Util {
     }
 
     public static String generateCompanyCode(Company company) {
-//        Boolean shouldRun = true;
-//        String companyCode = "";
-//        String companyName = company.getCompanyName().replaceAll("\\s+","");
-//
-//        String companyId;
-//        if(company.getCompanyId() < 1000){
-//            if(company.getCompanyId() < 100){
-//                if(company.getCompanyId() < 10){
-//                    companyId = "000" + company.getCompanyId();
-//                } else{
-//                    companyId = "00" + company.getCompanyId();
-//                }
-//            } else {
-//                companyId = "0" + company.getCompanyId();
-//            }
-//        } else{
-//            companyId = company.getCompanyId() + "";
-//        }
-//
-//        while(shouldRun){
-//            int randomCode = (int) (Math.random()*90);
-//            if(randomCode < 10){
-//                randomCode += 10;
-//            }
-//
-//            if(companyName.length() > 4){
-//                companyCode = (companyName.substring(0, 4)).toUpperCase() + companyId + randomCode;
-//            } else{
-//                companyCode = (companyName).toUpperCase() + companyId + randomCode;
-//            }
-//
-//            // query heavy
-//            // TODO convert it to use idToCode method, then this check for existing code will not be required
-//            Company existingCompany = CompanyDAO.getCompaniesByCompanyCode(companyCode);
-//            if(existingCompany == null){
-//                shouldRun = false;
-//            }
-//        }
         return genCompanyCode(company);
     }
 
     public static String idToCode(long id) {
-        // no company id will exceed 2^31 :P
-        return Base36.fromBase10((int) id);
+        return Base36.fromBase10(id);
     }
 
-    public static int codeToId(String code) {
+    public static long codeToId(String code) {
         return Base36.toBase10(code);
     }
 
@@ -146,5 +115,43 @@ public class Util {
     public static Double RoundTo2Decimals(Double val) {
         DecimalFormat df2 = new DecimalFormat("##.##");
         return Double.valueOf(df2.format(val));
+    }
+
+    public static String generateApplyInShortUrl(Candidate candidate, JobPost jobPost, Auth auth, boolean isDev){
+        StringBuilder stringBuilder = new StringBuilder();
+        String BASE_URL = isDev ? "http://localhost:9000": "https://trujobs.in";
+
+        if(candidate != null && jobPost != null) {
+            stringBuilder.append(BASE_URL);
+            stringBuilder.append("/apply/inshort/");
+            stringBuilder.append(jobPost.getJobPostTitle().replaceAll("[\\s]","-").toLowerCase());
+            stringBuilder.append("-jobs-in-bangalore-at-");
+            stringBuilder.append(jobPost.getCompany().getCompanyName().replaceAll("[\\s]","-").toLowerCase());
+            stringBuilder.append("-"+jobPost.getJobPostId());
+            stringBuilder.append("?cid="+candidate.getCandidateId());
+            stringBuilder.append("&key="+md5(String.valueOf(auth.getOtp())));
+//            stringBuilder.append("&key="+(auth.getOtp()));
+        }
+
+        // trulyfy this url
+        TrulyService trulyService = new TrulyService();
+
+        return trulyService.generateShortURL(stringBuilder.toString());
+    }
+
+
+    public static String generateApplyInShortUrl(Long candidateId, Long jobPostId, boolean isDev){
+        if(candidateId != null && jobPostId != null) {
+            Candidate candidate = CandidateDAO.getById(candidateId);
+
+            Auth auth = AuthService.isAuthExists(candidateId);
+            auth.setOtp(generateOtp());
+            auth.save();
+
+            JobPost jobPost = JobPostDAO.findById(jobPostId);
+
+            return generateApplyInShortUrl(candidate, jobPost, auth, isDev);
+        }
+        return null;
     }
 }

@@ -493,15 +493,15 @@ public class RecruiterController {
 
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
             Map<?, JobPost> recruiterJobPostMap;
-            if(recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
+            if(recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
                 recruiterJobPostMap = JobPost.find.where()
-                        .eq("CompanyId", recruiterProfile.getCompany().getCompanyId())
                         .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_PRIVATE)
+                        .eq("CompanyId", recruiterProfile.getCompany().getCompanyId())
                         .setMapKey("jobPostId")
                         .findMap();
             } else{
                 recruiterJobPostMap = JobPost.find.where()
-                        .eq("JobRecruiterId", session().get("recruiterId"))
+                        .eq("JobRecruiterId", recruiterProfile.getRecruiterProfileId())
                         .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_OPEN)
                         .setMapKey("jobPostId")
                         .findMap();

@@ -38,7 +38,9 @@
     </script>
 
         <div class="back-banner-recruiter" style="height: 90px"></div>
-        <h5 style="margin: 8px 8px 8px 16px">Recruiter Summary</h5>
+        <h5 style="margin: 8px 8px 8px 16px">Recruiter Summary
+            <a class="waves-effect waves-light btn " id="downloadBtn"><i class="material-icons left">settings</i> Download</a>
+        </h5>
 
         <div style="padding-top: 8%; padding-bottom: 8%" id="loadingIcon">
             <center>
@@ -65,6 +67,7 @@
                 <h6>Looks like your company doesn't have any recruiter yet. </h6>
             </center>
         </div>
+
         <div class="container-fluid" id="recTable" style="display: none">
             <div class="card" id="recruiterSummary">
                 <div class="row hide-on-small-only" id='headerForData'>
@@ -78,14 +81,13 @@
                         <font>No. of Jobs Posted</font>
                     </div>
                     <div class="col s1 l2" id="colHeadDataTable">
-                        <font>Total Applicants</font>
+                        <font>Total Applications</font>
                     </div>
                     <div class="col s1 l2" id="colHeadDataTable">
-                        <p class="truncate" style="margin:0;"><font>Total Interview Conducted</font></p>
-                        <span style="font-size: 12px">(click to view)</span>
+                        <font>Total Interviews</font>
                     </div>
                     <div class="col s1 l2" id="colHeadDataTable">
-                        <font>Total Selected</font>
+                        <font>Total Selections</font>
                     </div>
                     <div class="col s1 l1" id="colHeadDataTable">
                         <font>Percentage fulfilled</font>

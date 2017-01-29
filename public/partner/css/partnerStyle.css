@@ -548,11 +548,11 @@ a:hover{
     color: #003557;
     margin-top:6px;
 }
-#addCandidateColLeft{
+.addCandidateColLeft{
     padding: 2%;
     border-right: 1px solid #26A69A;
 }
-#addCandidateColRight{
+.addCandidateColRight{
     padding: 2%;
 }
 #candidateCreateOptionModalContent{
