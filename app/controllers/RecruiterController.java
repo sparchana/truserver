@@ -395,11 +395,7 @@ public class RecruiterController {
                     UnlockContactResponse unlockContactResponse = new UnlockContactResponse();
                     unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
                     unlockContactResponse.setCandidateId(candidate.getCandidateId());
-                    // TODO get a map and then use it here
-                    CandidateResume resume = CandidateResume.find.where().eq("CandidateId", candidate.getCandidateId()).findUnique();
-                    if(resume != null){
-                        unlockContactResponse.setResumeLink(resume.getFilePath());
-                    }
+                    unlockContactResponse.setResumeLink(candidate.getCandidateResumeLink());
                     responseList.add(unlockContactResponse);
                 }
                 MultipleCandidateContactUnlockResponse response = new MultipleCandidateContactUnlockResponse();
@@ -413,6 +409,7 @@ public class RecruiterController {
     }
 
     public static void checkDeliveryStatus(){
+        Logger.info("Will check sms status after 4 mins");
         new Thread(() -> {
             try{
                 Thread.sleep(240000); //check after 4 minutes
