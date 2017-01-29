@@ -273,6 +273,7 @@ public class JobPostWorkflowEngine {
                                                                                   List<Integer> jobPostDocumentIdList,
                                                                                   List<Integer> jobPostAssetIdList,
                                                                                   Double radius,
+                                                                                  boolean showOnlyFreshCandidate,
                                                                                   boolean isPrivate) {
         List<Integer> minExperienceList = new ArrayList<>();
         List<Integer> maxExperienceList = new ArrayList<>();
@@ -441,14 +442,21 @@ public class JobPostWorkflowEngine {
 
         List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList, radius, true);
 
-        Map<Long, CandidateExtraData> allFeature = computeExtraDataForRecruiterSearchResult(candidateList);
+        Map<Long, CandidateExtraData> allFeature = computeExtraDataForRecruiterSearchResult(candidateList, isPrivate);
 
         if (candidateList.size() != 0) {
             for (Candidate candidate : candidateList) {
+
+                // filter out all candidate to whom recruiter has already sent sms
+                Integer totalSms = allFeature.get(candidate.getCandidateId()).getTotalSmsSent();
+                if(showOnlyFreshCandidate && totalSms != null && totalSms > 0){
+                    continue;
+                }
                 if (CandidateService.getP0FieldsCompletionPercent(candidate) > 0.5) {
                     CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
                     candidateWorkflowData.setCandidate(candidate);
                     candidateWorkflowData.setExtraData(allFeature.get(candidate.getCandidateId()));
+
                     matchedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
                 }
             }
@@ -2294,7 +2302,7 @@ public class JobPostWorkflowEngine {
         return null;
     }
 
-    private static Map<Long, CandidateExtraData> computeExtraDataForRecruiterSearchResult(List<Candidate> candidateList) {
+    private static Map<Long, CandidateExtraData> computeExtraDataForRecruiterSearchResult(List<Candidate> candidateList, boolean isPrivate) {
 
         if (candidateList.size() == 0) return null;
         // candidateId --> featureMap
@@ -2314,6 +2322,19 @@ public class JobPostWorkflowEngine {
                 .setRawSql(getRawSqlForInteraction(candidateListString))
                 .findMap("objectAUUId", String.class);
 
+        // sms count for each candidate
+        List<SmsReport> smsReportList =  SmsReport.find.where().in("CandidateId", candidateIdList).findList();
+        Map<Candidate, List<SmsReport>> smsReportMap = new HashMap<>();
+
+        for(SmsReport report : smsReportList) {
+            List<SmsReport> valueList = smsReportMap.get(report.getCandidate());
+            if( valueList == null) {
+                valueList = new ArrayList<>();
+            }
+            valueList.add(report);
+            smsReportMap.put(report.getCandidate(), valueList);
+        }
+
         for (Candidate candidate : candidateList) {
             CandidateExtraData candidateExtraData = candidateExtraDataMap.get(candidate.getCandidateId());
 
@@ -2324,6 +2345,11 @@ public class JobPostWorkflowEngine {
                 Interaction interactionsOfCandidate = lastActiveInteraction.get(candidate.getCandidateUUId());
                 if (interactionsOfCandidate != null) {
                     candidateExtraData.setLastActive(getDateCluster(interactionsOfCandidate.getCreationTimestamp().getTime()));
+                }
+
+                // sms count
+                if(isPrivate && smsReportMap.size()>0 && smsReportMap.get(candidate) !=null){
+                    candidateExtraData.setTotalSmsSent(smsReportMap.get(candidate).size());
                 }
             }
 

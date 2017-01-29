@@ -322,8 +322,18 @@ public class RecruiterController {
                 if(multipleCandidateActionRequest.getJobPostId() != null) {
                     jobPost = JobPost.find.where().eq("JobPostId", multipleCandidateActionRequest.getJobPostId()).findUnique();
                 }
+
+                // map of all candidate to be used in below loop
+                Map<?, Candidate> existingCandidateMap = Candidate.find
+                                                                  .where()
+                                                                  .in("candidateId", multipleCandidateActionRequest.getCandidateIdList())
+                                                                  .setMapKey("candidateId")
+                                                                  .findMap();
+
+
                 for(Long candidateId : multipleCandidateActionRequest.getCandidateIdList()){
-                    Candidate candidate = Candidate.find.where().eq("CandidateId", candidateId).findUnique();
+                    // remove this from loop and put it in map
+                    Candidate candidate = existingCandidateMap.get(candidateId);
                     if(candidate != null){
 
                         //sending sms
@@ -712,7 +722,7 @@ public class RecruiterController {
         if(session().get("recruiterId") != null) {
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
             if(recruiterProfile != null){
-                boolean isPrivate = recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE;
+                boolean isPrivate = recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE;
                 if (matchingCandidateRequest != null) {
                     Map<Long, CandidateWorkflowData> candidateSearchMap = JobPostWorkflowEngine.getCandidateForRecruiterSearch(
                             matchingCandidateRequest.getMaxAge(),
@@ -727,6 +737,7 @@ public class RecruiterController {
                             matchingCandidateRequest.getJobPostDocumentIdList(),
                             matchingCandidateRequest.getJobPostAssetIdList(),
                             matchingCandidateRequest.getDistanceRadius(),
+                            matchingCandidateRequest.getShowOnlyFreshCandidate() ==  null? false: matchingCandidateRequest.getShowOnlyFreshCandidate(),
                             isPrivate);
 
                     //computing interactionResult values
