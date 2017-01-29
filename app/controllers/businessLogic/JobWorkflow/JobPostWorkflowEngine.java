@@ -19,11 +19,6 @@ import api.http.httpResponse.Workflow.WorkflowResponse;
 import api.http.httpResponse.Workflow.smsJobApplyFlow.LocalityPopulateResponse;
 import api.http.httpResponse.Workflow.smsJobApplyFlow.ShortPSPopulateResponse;
 import api.http.httpResponse.interview.InterviewResponse;
-import com.avaje.ebean.*;
-import controllers.businessLogic.CandidateService;
-import controllers.businessLogic.InteractionService;
-import controllers.businessLogic.MatchingEngineService;
-import controllers.businessLogic.RecruiterService;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.RawSql;
@@ -391,9 +386,16 @@ public class JobPostWorkflowEngine {
 
         // jobpref-jobrole match with jobpost-jobrole
         if (jobRoleId != null) {
+
+            List<Long> jobRoleIdList = new ArrayList<>();
+            jobRoleIdList.add(jobRoleId);
+
+            // adding job role matching for candidates with other category as well
+            jobRoleIdList.add(34L);
+
             query = query.select("*").fetch("jobPreferencesList")
                     .where()
-                    .in("jobPreferencesList.jobRole.jobRoleId", jobRoleId)
+                    .in("jobPreferencesList.jobRole.jobRoleId", jobRoleIdList)
                     .query();
         }
 
