@@ -46,6 +46,7 @@ import org.joda.time.Days;
 import play.Logger;
 
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -252,16 +253,34 @@ public class RecruiterService {
 
                 newRecruiter.setRecruiterLead(lead);
 
-                newRecruiter.save();
-
                 String createdBy = "Not specified";
 
                 if(session().get("sessionUsername") != null){
                     createdBy = "Support: " + session().get("sessionUsername");
                 }
 
-                //assigning free contact unlock credits for the recruiter
-                addCredits(newRecruiter, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, ServerConstants.RECRUITER_FREE_CONTACT_CREDITS, createdBy, recruiterSignUpRequest.getExpiryDate());
+                newRecruiter.save();
+
+                if(recruiterSignUpRequest.getRecruiterType() != null &&
+                        recruiterSignUpRequest.getRecruiterType() > ServerConstants.RECRUITER_ACCESS_LEVEL_OPEN) {
+
+                    newRecruiter.setRecruiterAccessLevel(recruiterSignUpRequest.getRecruiterType());
+                    newRecruiter.update();
+                    
+                    String startDateString = "2020-12-31";
+                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                    Date startDate = null;
+                    try {
+                        startDate = df.parse(startDateString);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    addCredits(newRecruiter, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK, ServerConstants.RECRUITER_DEFAULT_INTERVIEW_CREDITS, createdBy, startDate);
+                } else{
+                    //assigning free contact unlock credits for the recruiter
+                    addCredits(newRecruiter, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, ServerConstants.RECRUITER_FREE_CONTACT_CREDITS, createdBy, recruiterSignUpRequest.getExpiryDate());
+                }
 
                 //setting all the credit values
                 setCreditHistoryValues(newRecruiter, recruiterSignUpRequest);
@@ -555,6 +574,7 @@ public class RecruiterService {
         if(addRecruiterRequest.getRecruiterLinkedinProfile() != null){
             newRecruiter.setRecruiterLinkedinProfile(addRecruiterRequest.getRecruiterLinkedinProfile());
         }
+
         return newRecruiter;
     }
 

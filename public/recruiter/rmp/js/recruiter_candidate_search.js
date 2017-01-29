@@ -885,13 +885,13 @@ function processDataMatchCandidate(returnedData) {
             var d = {
                 candidateIdList: candidateIdList
             };
-            // $.ajax({
-            //     type: "POST",
-            //     url: "/getCandidateUnlockedData",
-            //     contentType: "application/json; charset=utf-8",
-            //     data: JSON.stringify(d),
-            //     success: processDataCandidateData
-            // });
+            $.ajax({
+                type: "POST",
+                url: "/getFetchedCandidateData",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processDataCandidateData
+             });
 
             $("#candidateTools").show();
 

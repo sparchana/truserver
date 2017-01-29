@@ -339,10 +339,25 @@ public class JobService {
         }
 
         if (addJobPostRequest.getJobPostStatusId() != null) {
+
             JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
             newJobPost.setJobPostStatus(jobStatus);
+            if(session().get("recruiterId") != null) {
+                RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
+                if (recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+
+                    //setting job status and job post access level as active whn a private recruiter adds a job
+
+                    newJobPost.setJobPostAccessLevel(ServerConstants.JOB_POST_TYPE_PRIVATE);
+
+                    jobStatus = JobStatus.find.where().eq("jobStatusId", ServerConstants.JOB_STATUS_ACTIVE).findUnique();
+                    newJobPost.setJobPostStatus(jobStatus);
+                }
+            }
 
             if(addJobPostRequest.getJobPostStatusId() == ServerConstants.JOB_STATUS_PAUSED){
+                jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
+                newJobPost.setJobPostStatus(jobStatus);
                 newJobPost.setResumeApplicationDate(addJobPostRequest.getResumeApplicationDate());
 
                 if(newJobPost.getJobPostId() != null){
@@ -409,19 +424,6 @@ public class JobService {
         if (addJobPostRequest.getJobPostRecruiterId() != null) {
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", addJobPostRequest.getJobPostRecruiterId()).findUnique();
             newJobPost.setRecruiterProfile(recruiterProfile);
-        }
-
-        if(session().get("recruiterId") != null) {
-            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
-            if (recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
-
-                //setting job status and job post access level as active whn a private recruiter adds a job
-
-                newJobPost.setJobPostAccessLevel(ServerConstants.JOB_POST_TYPE_PRIVATE);
-
-                JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", ServerConstants.JOB_STATUS_ACTIVE).findUnique();
-                newJobPost.setJobPostStatus(jobStatus);
-            }
         }
         return newJobPost;
     }

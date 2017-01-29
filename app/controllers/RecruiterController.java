@@ -335,6 +335,7 @@ public class RecruiterController {
                     // remove this from loop and put it in map
                     Candidate candidate = existingCandidateMap.get(candidateId);
                     if(candidate != null){
+
                         //sending sms
                         //RMP product sms blast
                         if(multipleCandidateActionRequest.getJobPostId() != null){
@@ -371,7 +372,7 @@ public class RecruiterController {
         return ok("-1");
     }
 
-    public static Result getCandidateUnlockedData() {
+    public static Result getFetchedCandidateData() {
         if(session().get("recruiterId") != null){
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
             if(recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() >= RECRUITER_ACCESS_LEVEL_PRIVATE){
@@ -394,11 +395,7 @@ public class RecruiterController {
                     UnlockContactResponse unlockContactResponse = new UnlockContactResponse();
                     unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
                     unlockContactResponse.setCandidateId(candidate.getCandidateId());
-                    // TODO get a map and then use it here
-                    CandidateResume resume = CandidateResume.find.where().eq("CandidateId", candidate.getCandidateId()).findUnique();
-                    if(resume != null){
-                        unlockContactResponse.setResumeLink(resume.getFilePath());
-                    }
+                    unlockContactResponse.setResumeLink(candidate.getCandidateResumeLink());
                     responseList.add(unlockContactResponse);
                 }
                 MultipleCandidateContactUnlockResponse response = new MultipleCandidateContactUnlockResponse();
@@ -412,6 +409,7 @@ public class RecruiterController {
     }
 
     public static void checkDeliveryStatus(){
+        Logger.info("Will check sms status after 4 mins");
         new Thread(() -> {
             try{
                 Thread.sleep(240000); //check after 4 minutes
@@ -1245,6 +1243,26 @@ public class RecruiterController {
                 for (Map.Entry<Long, CandidateWorkflowData> entry : mapToBeReturned.entrySet()) {
                     sanitizeCandidateData(entry.getValue().getCandidate());
                     jobApplicantList.add(entry.getValue());
+                }
+
+                for (CandidateWorkflowData data: jobApplicantList) {
+                    JobApplication jobApplication = JobApplication.find.where()
+                            .eq("CandidateId", data.getCandidate().getCandidateId())
+                            .eq("JobPostId", jpId)
+                            .findUnique();
+
+                    data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_SUPPORT);
+
+                    if(jobApplication != null){
+                        data.setAppliedOn(jobApplication.getJobApplicationCreateTimeStamp());
+
+                        if(jobApplication.getPartner() != null){
+                            data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_PARTNER);
+                            data.setPartner(jobApplication.getPartner());
+                        } else{
+                            data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_SELF);
+                        }
+                    }
                 }
 
                 ApplicationResponse applicationResponse = new ApplicationResponse();

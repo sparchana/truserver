@@ -800,6 +800,7 @@ function saveJob() {
                 resumeApplicationDate: jobPostResumeDate
             };
 
+            $("#saveEdit").addClass("disabled");
             $.ajax({
                 type: "POST",
                 url: "/recruiter/api/addJobPost",
@@ -830,6 +831,7 @@ function processDataAddJobPost(returnedData) {
             window.location = "/recruiter/allRecruiterJobPosts";
         }, 2500);
     } else{
+        $("#saveEdit").removeClass("disabled");
         notifyError("Something went wrong. Please try again later!");
     }
 }

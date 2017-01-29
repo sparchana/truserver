@@ -1368,9 +1368,7 @@ public class Application extends Controller {
                         Logger.info("Added session for Sms link based login ");
                         AuthService.addSession(existingAuth, existingCandidate);
 
-                        // update auth otp after login
-                        existingAuth.setOtp(Util.generateOtp());
-                        existingAuth.update();
+                        // otp gets updated on post apply
 
                         String jobPostUUId = null;
                         if(urlParameters!= null && urlParameters.getJobPostId() != null) {
@@ -2605,6 +2603,17 @@ public class Application extends Controller {
         }
 
         Candidate candidate = CandidateDAO.getById(request.getCandidateId());
+
+        if(candidate == null) {
+            response.setStatus(PostApplyInShortResponse.Status.BAD_REQUEST);
+            return badRequest(toJson(response));
+        }
+
+        Auth existingAuth = Auth.find.where().eq("candidateId", request.getCandidateId()).findUnique();
+
+        // update auth otp after login
+        existingAuth.setOtp(Util.generateOtp());
+        existingAuth.update();
 
         String deActivationMessage = CandidateService.getDeActivationMessage(candidate);
         if(deActivationMessage != null) {
