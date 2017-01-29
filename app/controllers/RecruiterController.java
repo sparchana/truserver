@@ -325,6 +325,7 @@ public class RecruiterController {
                 for(Long candidateId : multipleCandidateActionRequest.getCandidateIdList()){
                     Candidate candidate = Candidate.find.where().eq("CandidateId", candidateId).findUnique();
                     if(candidate != null){
+
                         //sending sms
                         //RMP product sms blast
                         if(multipleCandidateActionRequest.getJobPostId() != null){
@@ -1233,6 +1234,26 @@ public class RecruiterController {
                 for (Map.Entry<Long, CandidateWorkflowData> entry : mapToBeReturned.entrySet()) {
                     sanitizeCandidateData(entry.getValue().getCandidate());
                     jobApplicantList.add(entry.getValue());
+                }
+
+                for (CandidateWorkflowData data: jobApplicantList) {
+                    JobApplication jobApplication = JobApplication.find.where()
+                            .eq("CandidateId", data.getCandidate().getCandidateId())
+                            .eq("JobPostId", jpId)
+                            .findUnique();
+
+                    data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_SUPPORT);
+
+                    if(jobApplication != null){
+                        data.setAppliedOn(jobApplication.getJobApplicationCreateTimeStamp());
+
+                        if(jobApplication.getPartner() != null){
+                            data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_PARTNER);
+                            data.setPartner(jobApplication.getPartner());
+                        } else{
+                            data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_SELF);
+                        }
+                    }
                 }
 
                 ApplicationResponse applicationResponse = new ApplicationResponse();
