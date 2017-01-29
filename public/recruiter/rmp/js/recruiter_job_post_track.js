@@ -439,7 +439,7 @@ function processDataJobApplications(returnedData) {
             if(workflowObj.applicationChannel == 1){
                 colChannel.textContent = "SMS";
             } else if(workflowObj.applicationChannel == 2){
-                colChannel.textContent = "Partner (" + workflowObj.partner.parnterName ;
+                colChannel.textContent = "Partner - " + workflowObj.partner.partnerFirstName;
             } else if(workflowObj.applicationChannel == 3){
                 colChannel.textContent = "TruJobs Support";
             }
@@ -992,7 +992,7 @@ function processDataConfirmedApplication(returnedData) {
             if(workflowObj.applicationChannel == 1){
                 colChannel.textContent = "SMS";
             } else if(workflowObj.applicationChannel == 2){
-                colChannel.textContent = "Partner (" + workflowObj.partner.parnterName ;
+                colChannel.textContent = "Partner - " + workflowObj.partner.partnerFirstName ;
             } else if(workflowObj.applicationChannel == 3){
                 colChannel.textContent = "TruJobs Support";
             }
