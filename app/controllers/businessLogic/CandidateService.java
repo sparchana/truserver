@@ -2618,7 +2618,7 @@ public class CandidateService
                             addSupportCandidateRequest.getCandidateEmail() == null) break;
 
                     // check if candidate has to be created
-                    if(isNew && addSupportCandidateRequest.getCandidateMobile() != null && !addSupportCandidateRequest.getCandidateMobile().isEmpty()){
+                    if(addSupportCandidateRequest.getCandidateMobile() != null && !addSupportCandidateRequest.getCandidateMobile().isEmpty()){
 
                         // initialize channel
                         if(channel == 0){
@@ -2657,7 +2657,7 @@ public class CandidateService
                         Logger.info("Bulk Upload Candidate Request : "+ toJson(addSupportCandidateRequest));
                         CandidateSignUpResponse candidateSignUpResponse = null;
 
-                        if(partner == null){
+                        if(partner == null && isNew){
                             // create standalone candidate
                             candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
                                     channel,
@@ -2675,11 +2675,12 @@ public class CandidateService
                                 addSupportCandidateRequest.setLeadSource(leadSource.getLeadSourceId());
                             }
                             candidateSignUpResponse = createCandidateViaPartner(addSupportCandidateRequest, partner, isNew, associationStatus);
+                            //Logger.info("createCandidateViaPartner.candidateSignUpResponse JSON = "+toJson(candidateSignUpResponse));
                             Logger.info("Candidate Created with Id = "+candidateSignUpResponse.getCandidateId());
                         }
 
                         // keep count
-                        if(candidateSignUpResponse.getCandidateId() > 0) {
+                        if(isNew && candidateSignUpResponse.getCandidateId() > 0) {
                             count++;
                         }
                     }
