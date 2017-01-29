@@ -1,7 +1,4 @@
 <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/materialDashboard.css">
-<script>
-    document.getElementById('uploadResumeContent').addEventListener('change', uploadResume, false);
-</script>
 <nav class="navbar navbar-fixed-top" style="background: #286ab6" role="navigation">
     <div class="container">
         <div class="navbar-header">
@@ -38,7 +35,7 @@
 <div class="container-fluid" style="display:none">
     <label id="resumeUploadBoxInner">
         <span class="glyphicon glyphicon-open" aria-hidden="true" style="margin-right:10px"></span>Upload Resume
-        <input type="file" accept=".pdf,.doc,.docx" id="uploadResumeContent" style="display: none">
+        <input type="file" accept=".pdf,.doc,.docx" id="uploadResumeContent" onchange="uploadResume(event)" style="display: none">
     </label>
 </div>
 <script>

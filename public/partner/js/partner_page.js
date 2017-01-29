@@ -292,13 +292,13 @@ function renderCandidateTable() {
                                 if(candidate.candidateResumeLink == null){
                                     return '<div id="resumeLink" style="width:100%" >' +
                                     '<label class="mBtn blue btn-file" style="text-align: center;font-weight:100">UPLOAD'+
-                                    '<input type="file" accept=".pdf,.doc,.docx" onchange="uploadResume(event,'+candidate.candidateId+')" style="display: none">'+
+                                    '<input type="file" accept=".pdf,.doc,.docx" onchange="uploadResumeCandidate(event,'+candidate.candidateId+')" style="display: none">'+
                                     '</label>'+
                                     '</div>'
                                 }else{
-                                    return '<div id="resumeLink" style="width:100%" >' +
-                                    '<a href="http://docs.google.com/gview?url='+candidate.candidateResumeLink+'&embedded=true" target="_blank">View</a>'+
-                                    '</div>'
+                                    return '<a href="http://docs.google.com/gview?url='+candidate.candidateResumeLink+'&embedded=true" target="_blank">'+
+                                    '<button type="button" class="mBtn blue" id="viewCandidateResumeBtn" >View</button>'+
+                                    '</a>'
                                 }
                             },
                             'btnView' : '<button type="button" class="mBtn blue" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" >'+ 'View/Edit' +'</button>',
