@@ -104,7 +104,7 @@ public class UtilTest {
         });
     }
 
-    @Test
+    @Ignore
     public void idToCodeTest() {
         if (type == MethodType.idToCode) {
             Application fakeApp = fakeApplication();
@@ -120,7 +120,7 @@ public class UtilTest {
         }
     }
 
-    @Test
+    @Ignore
     public void base62Test() {
         if (type == MethodType.base62) {
             Application fakeApp = fakeApplication();
@@ -136,7 +136,7 @@ public class UtilTest {
         }
     }
 
-    @Ignore
+    @Test
     public void testGenerateApplyInShortURL() {
 
         if (type == MethodType.generateShortURL) {

@@ -816,7 +816,12 @@ function saveJob() {
 
 function processDataAddJobPost(returnedData) {
     if(returnedData.status == 1){
-        notifySuccess("Excellent! We have received your job details. You will receive a notification once the job is made live!");
+        var level = returnedData.jobPost.jobPostAccessLevel;
+        if(level != null && level == 1) {
+            notifySuccess("Excellent! Your job is ready. Find Candidates by clicking on view applications!");
+        } else {
+            notifySuccess("Excellent! We have received your job details. You will receive a notification once the job is made live!");
+        }
         setTimeout(function(){
             window.location = "/recruiter/allRecruiterJobPosts";
         }, 2500);
