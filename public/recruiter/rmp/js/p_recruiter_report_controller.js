@@ -9,7 +9,7 @@ var zapp = (function () {
 
     var zapp = {
         rows : [],
-        csv: ["Id, Recruiter Name, Recruiter, Mobile, No. of Jobs Posted, Total Applications, Total Interviews, Total Selections, Percentage fulfilled"],
+        csv: ["Id, Recruiter Name, Recruiter Mobile, No. of Jobs Posted, Total Applications, Total Interviews, Total Selections, Percentage fulfilled"],
         csvString: "",
 
         method: {
