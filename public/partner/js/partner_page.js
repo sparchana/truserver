@@ -288,10 +288,19 @@ function renderCandidateTable() {
                                     return "-";
                                 }
                             },
-                            'resume':'<div id="resumeLink" style="width:100%" >' +
-                            '<button class="mBtn blue btn-file" id="viewCandidateBtn">Upload'+
-                            '<input type="file" accept=".pdf,.doc,.docx" id="uploadBulkResumeContent" style="display: none">'+
-                            '</button>',
+                            'resume': function () {
+                                if(candidate.candidateResumeLink == null){
+                                    return '<div id="resumeLink" style="width:100%" >' +
+                                    '<label class="mBtn blue btn-file" style="text-align: center;font-weight:100">UPLOAD'+
+                                    '<input type="file" accept=".pdf,.doc,.docx" onchange="uploadResume(event)" style="display: none">'+
+                                    '</label>'+
+                                    '</div>'
+                                }else{
+                                    return '<div id="resumeLink" style="width:100%" >' +
+                                    '<a href="http://docs.google.com/gview?url='+candidate.candidateResumeLink+'&embedded=true" target="_blank">View</a>'+
+                                    '</div>'
+                                }
+                            },
                             'btnView' : '<button type="button" class="mBtn blue" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" >'+ 'View/Edit' +'</button>',
                             'apply' :  function() {
                                 if (statusVal.localeCompare("Active") == 0){
