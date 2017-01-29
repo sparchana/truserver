@@ -407,10 +407,10 @@ public class RecruiterService {
 
                 Boolean unlockCandidate = false;
                 Boolean isPrivateRecruiter = false;
-                if(recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
+                if(recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
                     isPrivateRecruiter = true;
                 }
-                if(recruiterProfile.getContactCreditCount() > 0 || recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
+                if(recruiterProfile.getContactCreditCount() > 0 || recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
                     unlockCandidate = true;
                 }
 
@@ -1008,7 +1008,7 @@ public class RecruiterService {
         if(targetRecruiterId == null || callerRecruiterId == null) return null;
 
         List<JobPostSummaryResponse> jobPostSummaryResponseList = new ArrayList<>();
-        Map<?, JobPost> jobPostMap = JobPostDAO.findMapByRecruiterId(targetRecruiterId, ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE);
+        Map<?, JobPost> jobPostMap = JobPostDAO.findMapByRecruiterId(targetRecruiterId, ServerConstants.JOB_POST_TYPE_PRIVATE);
 
         SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_DDMMYYYY);
 
