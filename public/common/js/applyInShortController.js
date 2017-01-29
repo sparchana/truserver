@@ -215,8 +215,11 @@ var applyInShort = (function ($) {
                 $('#locality_companyNameConfirmation').html(appz.companyName);
 
                 if (localityMap != null) {
-                    var option = $('<option value=0></option>').text("Select Location");
-                    $('#jobLocality').append(option);
+                    /* add select location hint if locality more the one  */
+                    if(Object.keys(localityMap).length > 1){
+                        var option = $('<option value=0></option>').text("Select Location");
+                        $('#jobLocality').append(option);
+                    }
                     for (var value in localityMap) {
                         var id = value;
                         var title = localityMap[value];
@@ -246,8 +249,11 @@ var applyInShort = (function ($) {
                 $('#interviewCompanyName').html(appz.companyName);
 
                 if(slotMap != null) {
-                    var option = $('<option value=0></option>').text("Select Interview slot");
-                    $('#interViewSlot').append(option);
+                    /* add select interview slot hint if slot is more the one  */
+                    if(Object.keys(slopMap).length > 1){
+                        var option = $('<option value=0></option>').text("Select Interview slot");
+                        $('#interViewSlot').append(option);
+                    }
                     for (var value in slotMap) {
                         var date = slotMap[value].interviewDateMillis;
                         var id = date +"_"+slotMap[value].interviewTimeSlot.slotId;
@@ -1395,8 +1401,8 @@ var applyInShort = (function ($) {
 
                             if(returnedData.statusCode == 3) {
 
-                                $.notify("Application Submitted successfully. Opening Dashboard", 'success');
-                                appz.do.redirectToDashboard(3000);
+                                $.notify("Application Submitted successfully. Thank you !!", 'success');
+                                /*appz.do.redirectToDashboard(3000);*/
                             } else if(returnedData.statusCode == 4) {
                                 $.notify("Looks like you have already applied to this job. Opening Dashboard", 'error');
 
@@ -1850,7 +1856,7 @@ var applyInShort = (function ($) {
         appz.do.localityIconChange();
     });
 
-    document.getElementById("jobInterviewHead").addEventListener("click",function () {
+    document.getElementById("jobdetailsHead").addEventListener("click",function () {
         appz.do.detailsIconChange();
     });
 
