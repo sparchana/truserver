@@ -163,7 +163,7 @@ function uploadResumeCandidate(evt,candidateId) {
 }
 function processDataForSingleResume(returnedData) {
     $('#uploadResumeModalProcess').modal('hide');
-
+    console.log("Returned data : "+returnedData.candidateResumeLink);
     if(returnedData != null){
         if(returnedData.status == 1)
         {
@@ -205,6 +205,16 @@ function processDataForSingleResume(returnedData) {
             }, 3000);
             $(".textResponse").hide();
 
+            if(returnedData.candidateResumeLink != null){
+
+                var parent = $("#resumeLink_"+returnedData.candidateId);
+                parent.html("");
+
+                var viewBtn = '<a href="http://docs.google.com/gview?url='+returnedData.candidateResumeLink+'&embedded=true" target="_blank">'+
+                '<button type="button" class="mBtn blue" id="viewCandidateResumeBtn" >View</button>'+
+                '</a>';
+                parent.append(viewBtn);
+            }
         }
         else{
             var parent = $("#uploadResumeModalContent");
