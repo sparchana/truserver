@@ -215,8 +215,11 @@ var applyInShort = (function ($) {
                 $('#locality_companyNameConfirmation').html(appz.companyName);
 
                 if (localityMap != null) {
-                    var option = $('<option value=0></option>').text("Select Location");
-                    $('#jobLocality').append(option);
+                    /* add select location hint if locality more the one  */
+                    if(Object.keys(localityMap).length > 1){
+                        var option = $('<option value=0></option>').text("Select Location");
+                        $('#jobLocality').append(option);
+                    }
                     for (var value in localityMap) {
                         var id = value;
                         var title = localityMap[value];
@@ -246,8 +249,11 @@ var applyInShort = (function ($) {
                 $('#interviewCompanyName').html(appz.companyName);
 
                 if(slotMap != null) {
-                    var option = $('<option value=0></option>').text("Select Interview slot");
-                    $('#interViewSlot').append(option);
+                    /* add select interview slot hint if slot is more the one  */
+                    if(Object.keys(slotMap).length > 1){
+                        var option = $('<option value=0></option>').text("Select Interview slot");
+                        $('#interViewSlot').append(option);
+                    }
                     for (var value in slotMap) {
                         var date = slotMap[value].interviewDateMillis;
                         var id = date +"_"+slotMap[value].interviewTimeSlot.slotId;
@@ -1394,8 +1400,7 @@ var applyInShort = (function ($) {
                             $("#finalSubmitBtn").prop("disabled", true);
 
                             if(returnedData.statusCode == 3) {
-
-                                $.notify("Thanks for applying ! Your will receive interview details in an SMS. Closing this tab..", 'success');
+                                $.notify("Thanks for applying ! Your will receive interview details in an SMS. Closing this window..", 'success');
                                 appz.do.closeWindow(3000);
                             } else if(returnedData.statusCode == 4) {
                                 $.notify("Looks like you have already applied to this job. Closing this tab..", 'error');
@@ -1415,6 +1420,30 @@ var applyInShort = (function ($) {
                     });
                 } catch (exception) {
                     console.log("exception occured!!" + exception);
+                }
+            },
+            interviewIconChange: function () {
+                if($("#jobInterviewPanel").hasClass("in")== true){
+                    $("#interviewCollapsePanelIcon").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+                }
+                else{
+                    $("#interviewCollapsePanelIcon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+                }
+            },
+            localityIconChange: function () {
+                if($("#jobLocalityPanel").hasClass("in")== true){
+                    $("#localityCollapsePanelIcon").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+                }
+                else{
+                    $("#localityCollapsePanelIcon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+                }
+            },
+            detailsIconChange: function () {
+                if($("#missingInfo").hasClass("in")== true){
+                    $("#detailsCollapsePanelIcon").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+                }
+                else{
+                    $("#detailsCollapsePanelIcon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
                 }
             },
             validateSubmit: function () {
@@ -1835,6 +1864,17 @@ var applyInShort = (function ($) {
     // search click listener
     document.getElementById("finalSubmitBtn").addEventListener("click", function () {
         appz.do.validateSubmit();
+    });
+    //
+    document.getElementById("jobInterviewHead").addEventListener("click",function () {
+        appz.do.interviewIconChange();
+    });
+    document.getElementById("jobLocalityHead").addEventListener("click",function () {
+        appz.do.localityIconChange();
+    });
+
+    document.getElementById("jobdetailsHead").addEventListener("click",function () {
+        appz.do.detailsIconChange();
     });
 
     return appz;
