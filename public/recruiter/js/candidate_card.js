@@ -1262,8 +1262,8 @@ function renderIndividualCandidateCard(value, parent, view) {
             sendSelectedSms(value.candidate.candidateId, value.candidate.candidateFirstName);
         };
         smsBtn.style = "margin-top: -1px";
-        if( value.candidate.candidateAccessLevelvalue != null &&
-            value.candidate.candidateAccessLevelvalue == 1 &&
+        if( value.candidate.candidateAccessLevel != null &&
+            value.candidate.candidateAccessLevel == 1 &&
             value.extraData.totalSmsSent != null &&
             value.extraData.totalSmsSent != 0)
         {
