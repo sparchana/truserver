@@ -334,6 +334,7 @@ public class RecruiterController {
                                                                   .findMap();
 
 
+                String commonSMSMessage = multipleCandidateActionRequest.getSmsMessage();
                 for(Long candidateId : multipleCandidateActionRequest.getCandidateIdList()){
                     // remove this from loop and put it in map
                     Candidate candidate = existingCandidateMap.get(candidateId);
@@ -344,7 +345,7 @@ public class RecruiterController {
                         if(multipleCandidateActionRequest.getJobPostId() != null){
                             if(jobPost != null){
                                 multipleCandidateActionRequest.setSmsMessage(
-                                        RecruiterService.modifySMS(multipleCandidateActionRequest.getSmsMessage(),
+                                        RecruiterService.modifySMS(commonSMSMessage,
                                         candidate,
                                         jobPost,
                                         isDevMode)
