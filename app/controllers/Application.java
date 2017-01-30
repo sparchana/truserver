@@ -2374,6 +2374,22 @@ public class Application extends Controller {
                 resumeResponse.setMsg((String) obj.get("msg"));
                 resumeResponse.setStatus((Integer) obj.get("status"));
 
+                if(cId != null){
+
+                    CandidateResumeService resumeService = new CandidateResumeService();
+                    List<Map<String,String>> params = new ArrayList<>();
+                    Map<String,String> param = new HashMap<>();
+                    param.put("candidateid", String.valueOf(cId));
+                    params.add(param);
+                    List<TruResponse> truResponses = resumeService.readByAttribute(params);
+                    if(truResponses !=null && truResponses.size() > 0){
+                        // Found candidate
+                        CandidateResume candidateResume = (CandidateResume) truResponses.get(0).getEntity();
+                        resumeResponse.setCandidateResumeLink(candidateResume.getFilePath());
+                        resumeResponse.setCandidateId(candidateResume.getCandidate().getCandidateId());
+                    }
+                }
+
                 try {
                     resumeResponse.setKey("resume"+i);
                     obj.put("key","Resume_"+i);
@@ -2385,7 +2401,6 @@ public class Application extends Controller {
                 list.add(obj);
             }
         }
-
         Logger.info("list.toString() = "+list.toString());
 
         return ok(toJson(resumeResponse));
