@@ -107,6 +107,10 @@ public class CandidateResume extends Model {
         return CandidateResume.find.where().idIn(ids).setUseCache(Boolean.TRUE).findList();
     }
 
+    public void setCreateTimestamp(Timestamp createTimestamp) {
+        this.createTimestamp = createTimestamp;
+    }
+
     public ExpressionList<CandidateResume> getQuery(){return find.where();}
 
 }

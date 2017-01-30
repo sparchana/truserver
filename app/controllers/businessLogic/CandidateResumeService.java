@@ -7,6 +7,7 @@ import com.avaje.ebean.Model;
 import controllers.TruService;
 import models.entity.Candidate;
 import models.entity.OM.CandidateResume;
+import play.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,12 +66,20 @@ public class CandidateResumeService extends TruService {
         List<Map<String, String>> params = new ArrayList<>();
         Map<String, String> param = new HashMap<>();
 
-        param.put("candidate", candidateId);
+        param.put("CandidateId", candidateId);
         params.add(param);
         List<TruResponse> candidateResumeList = new ArrayList<>();
-        candidateResumeList = readByAttribute(params,"createTimestamp","DESC");
-        if(candidateResumeList.size() > 0) return candidateResumeList.get(0);
-        else return null;
+        Logger.info(getClass().getSimpleName()+".fetchLatestResumeForCandidate: About to call readByAttribute");
+        candidateResumeList = readByAttribute(params,"candidate_resume_id","DESC");
+        if(candidateResumeList.size() > 0) {
+            Logger.info(getClass().getSimpleName()+".fetchLatestResumeForCandidate: Read returned with "+candidateResumeList.size()+" records");
+            return candidateResumeList.get(0);
+        }
+        else {
+            Logger.info(getClass().getSimpleName()+".fetchLatestResumeForCandidate: Read returned with 0 records");
+            TruResponse empty = new TruResponse();
+            return empty;
+        }
     }
 
 }

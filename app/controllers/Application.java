@@ -557,6 +557,7 @@ public class Application extends Controller {
         Lead lead = Lead.find.where().eq("leadId", session().get("leadId")).findUnique();
         if(lead != null) {
             Candidate candidate = CandidateService.isCandidateExists(lead.getLeadMobile());
+            candidate.getCandidateResumeLink();
             if(candidate!=null){
                 return ok(toJson(candidate));
             }
@@ -2478,19 +2479,22 @@ public class Application extends Controller {
 
     public static Result fetchResume(String candidateId) {
 
+/*
         CandidateResumeService resumeService = new CandidateResumeService();
         List<Map<String,String>> params = new ArrayList<>();
         Map<String,String> param = new HashMap<>();
         param.put("candidateid",candidateId);
         params.add(param);
         List<TruResponse> truResponses = resumeService.readByAttribute(params);
-        if(truResponses !=null && truResponses.size() > 0){
+*/
+        //if(truResponses !=null && truResponses.size() > 0){
            // Found candidate
-            CandidateResume candidateResume = (CandidateResume) truResponses.get(0).getEntity();
-            return ok(toJson(candidateResume));
-        }else{
-            return ok();
-        }
+            //CandidateResume candidateResume = (CandidateResume) truResponses.get(0).getEntity();
+        CandidateResumeService resumeService = new CandidateResumeService();
+        CandidateResume candidateResume = (CandidateResume) resumeService.fetchLatestResumeForCandidate(candidateId).getEntity();
+        if(candidateResume != null) return ok(toJson(candidateResume));
+        else{ return ok(); }
+    
     }
 
     public static Result processCandidates() {

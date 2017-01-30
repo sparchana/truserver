@@ -441,7 +441,9 @@ public class RecruiterService {
                     unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
                     unlockContactResponse.setCandidateId(candidate.getCandidateId());
 
-                    CandidateResume resume = CandidateResume.find.where().eq("CandidateId", candidate.getCandidateId()).findUnique();
+                    //CandidateResume resume = CandidateResume.find.where().eq("CandidateId", candidate.getCandidateId()).findUnique();
+                    CandidateResumeService candidateResumeService= new CandidateResumeService();
+                    CandidateResume resume = (CandidateResume) candidateResumeService.fetchLatestResumeForCandidate(Long.toString(candidate.getCandidateId())).getEntity();
                     if(resume != null){
                         unlockContactResponse.setResumeLink(resume.getFilePath());
                     }

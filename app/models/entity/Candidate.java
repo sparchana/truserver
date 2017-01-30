@@ -222,7 +222,7 @@ public class Candidate extends Model {
     private int candidateAccessLevel;
 
     @Transient
-    private String candidateResumeLink = "";
+    private String candidateResumeLink;
 
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
@@ -681,15 +681,17 @@ public class Candidate extends Model {
     public String getCandidateResumeLink() {
         CandidateResumeService candidateResumeService = new CandidateResumeService();
         CandidateResume resume = (CandidateResume) candidateResumeService.fetchLatestResumeForCandidate(Long.toString(this.getCandidateId(),10)).getEntity();
-        //CandidateResume resume = CandidateResume.find.where().eq("CandidateId", this.getCandidateId()).findUnique();
         if(resume != null){
+            //Logger.info("resume FilePath = "+resume.getFilePath());
             return resume.getFilePath();
         } else{
             return null;
         }
     }
 
+/*
     public void setCandidateResumeLink(String candidateResumeLink) {
         this.candidateResumeLink = candidateResumeLink;
     }
+*/
 }

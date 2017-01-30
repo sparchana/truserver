@@ -1452,74 +1452,23 @@ public abstract class TruService {
             for(Map<String,String> each:attrNameValueList){
                 if(each.keySet().size() > 0 && each.values().size() > 0){
                     query.add(eq(each.keySet().toArray()[0].toString(),each.values().toArray()[0].toString()));
-                    if(orderBy != null){
-                        // decide ordering
-                        if(direction == null || direction.toLowerCase() != "asc"){
-                            query.orderBy().desc(orderBy);
-                        }
-                        else query.orderBy().asc(orderBy);
-                    }
                 }
+            }
+            if(orderBy != null){
+                // decide ordering
+                if(direction == null || direction.toLowerCase() != "asc"){ orderBy += " DESC"; }
+                else { orderBy += " ASC"; }
+                //Logger.info(this.getClass().getSimpleName()+".readByAttribute: Order By Set to "+orderBy);
             }
         }
 
-        return createReadResponse((List<Model>) query.findList());
+        if(orderBy != null) return createReadResponse((List<Model>) query.orderBy(orderBy).findList());
+        else return createReadResponse((List<Model>) query.findList());
 
     }
 
     public List<TruResponse> readByAttribute(List<Map<String,String>> attrNameValueList){
-
         return readByAttribute(attrNameValueList, null, null);
-/*
-        if (entity == null) {
-            try {
-                entity = (Model) Class.forName(this.getEntityClassName()).newInstance();
-            } catch (NullPointerException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-                e.printStackTrace();
-                Logger.info("Exception " + e.toString() + " triggered while instantiating " + this.getEntityClassName());
-                return null;
-            }
-        }
-
-        java.lang.reflect.Method method = null;
-
-        ExpressionList<?> query = getQuery();
-        //Logger.info("ExpressionList<?> query = "+query.getClass().getSimpleName());
-
-        if(query != null){
-            for(Map<String,String> each:attrNameValueList){
-                if(each.keySet().size() > 0 && each.values().size() > 0){
-                    query.add(eq(each.keySet().toArray()[0].toString(),each.values().toArray()[0].toString()));
-                }
-            }
-        }
-        return createReadResponse((List<Model>) query.findList());
-*/
-
-/*
-        // Check read method exists
-        try {
-            method = entity.getClass().getMethod("readByAttribute", List.class);
-            //Logger.info("Read "+methodname+" found in "+entity.getClass().getSimpleName());
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-            Logger.info("Method readByAttribute not found in "+entity.getClass().getSimpleName());
-            method = null;
-        }
-
-        if (method != null) {
-            try {
-                entityList = (List<Model>) method.invoke(entity, attrNameValueList);
-                Logger.info(entity.getClass().getSimpleName()+".readByAttribute executed");
-            } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                e.printStackTrace();
-                //Logger.info("Read "+methodname+" could not be executed in "+entity.getClass().getSimpleName()+" Throws "+e.toString());
-            }
-            return createReadResponse(entityList);
-        }
-
-        return null;
-*/
     }
 
     private ExpressionList<Model> getQuery() {
