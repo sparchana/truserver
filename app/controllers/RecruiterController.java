@@ -1114,21 +1114,17 @@ public class RecruiterController {
     }
 
     @Security.Authenticated(RecruiterSecured.class)
-    public static Result getSentSms(long jpId, long index) {
+    public static Result getSentSms(long jpId) {
         JobPost jobPost = JobPostDAO.findById(jpId);
         if(jobPost != null){
             if(checkCompanyJob(jobPost)){
                 SmsReportResponse smsReportResponse = new SmsReportResponse();
 
-                PagedList<SmsReport> pagedList = SmsReport.find
+                List<SmsReport> smsReportList = SmsReport.find
                         .where()
                         .eq("JobPostId", jpId)
                         .orderBy().desc("sms_report_id")
-                        .setFirstRow(Math.toIntExact(index))
-                        .setMaxRows(10)
-                        .findPagedList();
-
-                List<SmsReport> smsReportList = pagedList.getList();
+                        .findList();
 
                 for(SmsReport reports : smsReportList){
                     reports.setCompany(null);
@@ -1149,9 +1145,6 @@ public class RecruiterController {
                 }
 
                 smsReportResponse.setSmsReportList(smsReportList);
-                smsReportResponse.setTotalSms(SmsReport.find.where().eq("JobPostId", jpId).findRowCount());
-
-
                 return ok(toJson(smsReportResponse));
             }
         }
@@ -1159,13 +1152,13 @@ public class RecruiterController {
     }
 
     @Security.Authenticated(RecruiterSecured.class)
-    public static Result getAppliedCandidates(long jpId, long index) {
+    public static Result getAppliedCandidates(long jpId) {
         JobPost jobPost = JobPostDAO.findById(jpId);
         if(jobPost != null){
             if(checkCompanyJob(jobPost)){
 
                 List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllJobApplicationWithinStatusId(jpId,
-                        ServerConstants.JWF_STATUS_SELECTED, ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE, (int) index);
+                        ServerConstants.JWF_STATUS_SELECTED, ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE);
 
                 for(JobPostWorkflow workflow : applicationList){
                     sanitizeCandidateData(workflow.getCandidate());
@@ -1176,10 +1169,18 @@ public class RecruiterController {
                     candidateList.add(jpwf.getCandidate());
                 }
 
-                Integer status = ServerConstants.JWF_STATUS_SELECTED;
+                List<Integer> statusList = new ArrayList<>();
+                statusList.add(ServerConstants.JWF_STATUS_SELECTED);
+                statusList.add(ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED);
+                statusList.add(ServerConstants.JWF_STATUS_PRESCREEN_FAILED);
+                statusList.add(ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED);
+                statusList.add(ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED);
+                statusList.add(ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT);
+                statusList.add(ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE);
+                statusList.add(ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE);
 
                 Map<Long, CandidateWorkflowData> mapToBeReturned =
-                        JobPostWorkflowEngine.getCandidateMap(candidateList, jpId, new ArrayList<>(Collections.singletonList(status)), false);
+                        JobPostWorkflowEngine.getCandidateMap(candidateList, jpId, statusList, false);
 
                 List<CandidateWorkflowData> jobApplicantList = new LinkedList<>();
                 for (Map.Entry<Long, CandidateWorkflowData> entry : mapToBeReturned.entrySet()) {
@@ -1187,6 +1188,7 @@ public class RecruiterController {
                     jobApplicantList.add(entry.getValue());
                 }
 
+                //TODO: convert with map implementation
                 for (CandidateWorkflowData data: jobApplicantList) {
                     JobApplication jobApplication = JobApplication.find.where()
                             .eq("CandidateId", data.getCandidate().getCandidateId())
@@ -1208,8 +1210,6 @@ public class RecruiterController {
                 }
                 ApplicationResponse applicationResponse = new ApplicationResponse();
                 applicationResponse.setApplicationList(jobApplicantList);
-                applicationResponse.setTotalCount(JobPostWorkFlowDAO.getAllJobApplicationWithinStatusIdCount(jpId,
-                        ServerConstants.JWF_STATUS_SELECTED, ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE));
 
                 return ok(toJson(applicationResponse));
             }
@@ -1218,13 +1218,12 @@ public class RecruiterController {
     }
 
     @Security.Authenticated(RecruiterSecured.class)
-    public static Result getConfirmedApplication(long jpId, long index) {
+    public static Result getConfirmedApplication(long jpId) {
         JobPost jobPost = JobPostDAO.findById(jpId);
         if(jobPost != null){
             if(checkCompanyJob(jobPost)){
                 List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllConfirmedApplicationsJobPost(jpId,
-                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED, ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED,
-                        (int) index);
+                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED, ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED);
 
                 for(JobPostWorkflow workflow : applicationList){
                     sanitizeCandidateData(workflow.getCandidate());
@@ -1245,6 +1244,7 @@ public class RecruiterController {
                     jobApplicantList.add(entry.getValue());
                 }
 
+                //TODO: convert with map implementation
                 for (CandidateWorkflowData data: jobApplicantList) {
                     JobApplication jobApplication = JobApplication.find.where()
                             .eq("CandidateId", data.getCandidate().getCandidateId())
@@ -1267,8 +1267,6 @@ public class RecruiterController {
 
                 ApplicationResponse applicationResponse = new ApplicationResponse();
                 applicationResponse.setApplicationList(jobApplicantList);
-                applicationResponse.setTotalCount(JobPostWorkFlowDAO.getAllConfirmedApplicationsJobPostCount(jpId,
-                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED, ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED));
 
                 return ok(toJson(applicationResponse));
             }
