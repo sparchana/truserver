@@ -1253,8 +1253,26 @@ function renderIndividualCandidateCard(value, parent, view) {
                 }
             }
         }
+    } else if(view == view_search_candidate || view == view_unlocked_candidate){
+        var smsBtn = document.createElement("a");
+        smsBtn.className = "waves-effect waves-light customSmsBtn btnGreen";
+        smsBtn.id = value.candidate.candidateId + "_sms_btn";
+        smsBtn.onclick = function () {
+            candidateCardData = value;
+            sendSelectedSms(value.candidate.candidateId, value.candidate.candidateFirstName);
+        };
+        if( value.candidate.candidateAccessLevel != null &&
+            value.candidate.candidateAccessLevel == 1 &&
+            value.extraData.totalSmsSent != null &&
+            value.extraData.totalSmsSent != 0)
+        {
+            smsBtn.textContent = "Re-Send SMS";
+        } else {
+            smsBtn.textContent = "Send SMS";
+        }
+        unlockContactCol.appendChild(smsBtn);
     }
-    
+
     if(view == view_unlocked_candidate){
         showContact = false;
     }
@@ -1434,7 +1452,7 @@ function sendSms(){
     if(urlParams[0] == "?jpId") {
         jpId = parseInt(urlParams[1]);
     }
-    if(checkedCandidateIdList.length > 0){
+        if(checkedCandidateIdList.length > 0){
         $("#sendSms").addClass("disabled");
         var s = {
             candidateIdList: checkedCandidateIdList,
