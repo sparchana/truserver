@@ -2381,6 +2381,7 @@ public class JobPostWorkflowEngine {
     }
 
     public static Result updateInterviewStatus(InterviewStatusRequest interviewStatusRequest, int channel) {
+        Logger.info("Yes herer");
         Candidate candidate = Candidate.find.where().eq("candidateId", interviewStatusRequest.getCandidateId()).findUnique();
         if (candidate != null) {
             int jwStatus = ServerConstants.INTERVIEW_STATUS_ACCEPTED;
