@@ -39,6 +39,8 @@ public class FCMEvent extends NotificationEvent {
         String recipient = this.getRecipient();
 
         String senderKey = Play.application().configuration().getString("fcm.senderKey");
+        boolean shouldSendFCM = Play.application().configuration().getBoolean("outbound.fcm.enabled");
+
         final Sender sender = new Sender(senderKey);
         com.google.android.gcm.server.Result result = null;
 
@@ -50,16 +52,21 @@ public class FCMEvent extends NotificationEvent {
                 .addData("jpId", String.valueOf(jobPostId))
                 .build();
 
-        try {
-            if(isDevMode()){
-                Logger.info("DevMode: No Notification sent. Msg: " + messageText);
-            } else{
-                result = sender.send(message, recipient, 1);
-            }
+        if(shouldSendFCM) {
+            try {
+                if(isDevMode()){
+                    Logger.info("DevMode: No Notification sent. Msg: " + messageText);
+                } else{
+                    result = sender.send(message, recipient, 1);
+                }
 
-        } catch (final IOException e) {
-            e.printStackTrace();
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            Logger.info("Outbound FCM Disabled in .conf file. No Notification sent" + messageText);
         }
+
         return "";
     }
 
