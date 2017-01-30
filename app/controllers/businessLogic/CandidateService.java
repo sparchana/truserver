@@ -1199,11 +1199,14 @@ public class CandidateService
         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
         candidateSignUpResponse.setMinProfile(candidate.getIsMinProfileComplete());
         try {
-            candidate.setCandidateEducation(getCandidateEducation(addCandidateEducationRequest.getCandidateEducationLevel(),
+            CandidateEducation educationRecord = getCandidateEducation(addCandidateEducationRequest.getCandidateEducationLevel(),
                     addCandidateEducationRequest.getCandidateDegree(),
                     addCandidateEducationRequest.getCandidateEducationCompletionStatus(),
-                    addCandidateEducationRequest.getCandidateEducationInstitute(),
-                    candidate));
+                    addCandidateEducationRequest.getCandidateEducationInstitute(),candidate);
+
+            if(educationRecord != null) {
+                candidate.setCandidateEducation(educationRecord);
+            }
         }
         catch(Exception e){
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
@@ -1412,6 +1415,9 @@ public class CandidateService
                                                             String institute,
                                                             Candidate candidate)
     {
+        if(educationLevelId == -1 && degreeId == -1) {
+            return null;
+        }
         CandidateEducation response  = candidate.getCandidateEducation();
         Education education = Education.find.where().eq("educationId", educationLevelId).findUnique();
         Degree degree = Degree.find.where().eq("degreeId", degreeId).findUnique();
