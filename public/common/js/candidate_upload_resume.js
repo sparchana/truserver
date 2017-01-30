@@ -2,49 +2,30 @@
  * Created by hawk on 12/1/17.
  */
 
-function viewDownloadResume(candidateId) {
-    var url = "/fetchResume/?candidateId="+candidateId;
-    try {
-        $.ajax({
-            type: "GET",
-            url: url,
-            data: false,
-            async: true,
-            contentType: false,
-            processData: false,
-            success: processDataForViewResume
-        });
-    } catch(exception) {
-        console.log("Exception Occurred!!" + exception);
-        console.log(new Error().stack);
-    }
+/* render options to view and download candidate resume  */
+function viewDownloadResume(resumeLink) {
+    if(resumeLink != null){
+        $("#resumeUploadBoxInner").hide();
+        var parentView = $("#userViewResume");
+        parentView.html("");
+        var viewLink = document.createElement("a");
+        viewLink.href = "http://docs.google.com/gview?url=" + resumeLink + "&embedded=true";
+        viewLink.target = "_blank";
+        viewLink.id = "viewResume";
+        viewLink.textContent = "View |";
+        parentView.append(viewLink);
 
-}
-function processDataForViewResume(returnedData){
-    if (returnedData.filePath != null) {
-            $("#resumeUploadBoxInner").hide();
-            $("#userViewResume").html("");
-            var parentView = $("#userViewResume");
-            var viewLink = document.createElement("a");
-            viewLink.href = "http://docs.google.com/gview?url=" + returnedData.filePath + "&embedded=true";
-            viewLink.target = "_blank";
-            viewLink.id = "viewResume";
-            viewLink.textContent = "View |";
-            parentView.append(viewLink);
-
-            $("#userViewDownload").html("");
-            var parentDownload = $("#userViewDownload");
-            var downloadLink = document.createElement("a");
-            downloadLink.href = returnedData.filePath;
-            downloadLink.id = "downloadResume";
-            downloadLink.textContent = "Download";
-            parentDownload.append(downloadLink);
-    }
-    else{
-        $("#userViewResume").innerHTML = "No Resume Uploaded Back";
+        var parentDownload = $("#userViewDownload");
+        parentDownload.html("");
+        var downloadLink = document.createElement("a");
+        downloadLink.href = resumeLink;
+        downloadLink.id = "downloadResume";
+        downloadLink.textContent = "Download";
+        parentDownload.append(downloadLink);
     }
 }
 
+/* upload resume by candidate */
 function uploadResume(evt){
     var files = evt.target.files;
     var url = "/addResume/?candidateId="+candidateId;
@@ -76,13 +57,15 @@ function uploadResume(evt){
         notifyError("Invalid Format. Please select a PDF, Doc or Docx format file");
     }
 }
+
+/* process data after resume is uploaded by candidate */
 function processDataForAddResume(returnedData) {
     $('#uploadResumeModalProcess').modal('hide');
     if(returnedData != null){
         if(returnedData.status == 1)
         {
             var parent = $("#uploadResumeModalContent");
-            $('#uploadResumeModalContent').html("");
+            parent.html("");
 
             var resumeRow = document.createElement("div");
             resumeRow.className = "row";
@@ -101,23 +84,31 @@ function processDataForAddResume(returnedData) {
             image.src = "/assets/common/img/resumeUpload.svg";
             image.style = "height:100px";
             resumeColLeft.appendChild(image);
-            
-            var h5 = document.createElement("h5");
-            h5.textContent = "Thanks !! Your resume has been successfully uploaded";
-            resumeColRight.appendChild(h5);
 
-            var h4 = document.createElement("h4");
-            h4.textContent = "You will shortly receive a SMS with your login details";
-            h4.style = "font-weight:600";
-            resumeColRight.appendChild(h4);
+            if(returnedData.candidateId != null ){
+                var h3 = document.createElement("h3");
+                h3.textContent = "Thanks !! Your resume has been successfully uploaded";
+                h3.style = "font-weight:600";
+                resumeColRight.appendChild(h3);
+            }
+            else{
+                var h5 = document.createElement("h5");
+                h5.textContent = "Thanks !! Your resume has been successfully uploaded";
+                resumeColRight.appendChild(h5);
+
+                var h4 = document.createElement("h4");
+                h4.textContent = "You will shortly receive a SMS with your login details";
+                h4.style = "font-weight:600";
+                resumeColRight.appendChild(h4);
+            }
 
             $('#uploadResumeModal').modal('show');
             setTimeout(function(){
                 $('#uploadResumeModal').delay(9000).modal('hide');
             }, 3000);
-            //condition if upload is done without login
-            if(candidateId != null){
-                viewDownloadResume(candidateId);
+
+            if (returnedData.candidateResumeLink != null) {
+                viewDownloadResume(returnedData.candidateResumeLink);
             }
         }
         else{

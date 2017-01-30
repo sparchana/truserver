@@ -103,27 +103,12 @@ $(function() {
 function processDataAndFillMinProfile(returnedData) {
 
     candidateId = returnedData.candidateId;
-    //viewDownloadResume(candidateId);
-    console.log(returnedData);
-    if(returnedData.candidateResumeLink != null){
-        $("#resumeUploadBoxInner").hide();
-        $("#userViewResume").html("");
-        var parentView = $("#userViewResume");
-        var viewLink = document.createElement("a");
-        viewLink.href = "http://docs.google.com/gview?url=" + returnedData.candidateResumeLink + "&embedded=true";
-        viewLink.target = "_blank";
-        viewLink.id = "viewResume";
-        viewLink.textContent = "View |";
-        parentView.append(viewLink);
 
-        $("#userViewDownload").html("");
-        var parentDownload = $("#userViewDownload");
-        var downloadLink = document.createElement("a");
-        downloadLink.href = returnedData.candidateResumeLink;
-        downloadLink.id = "downloadResume";
-        downloadLink.textContent = "Download";
-        parentDownload.append(downloadLink);
+    /* render view and download option for candidate resume */
+    if(returnedData.candidateResumeLink != null){
+        viewDownloadResume(returnedData.candidateResumeLink);
     }
+
     if(returnedData.candidateLastName == "" || returnedData.candidateLastName == null){
         document.getElementById("userName").innerHTML = returnedData.candidateFirstName;
     } else{
