@@ -411,6 +411,7 @@ public class PartnerController {
                         candidate, partner));
                 response.setCandidateAppliedJobs(response.getAppliedJobList().size());
                 response.setCandidateMobile(candidate.getCandidateMobile());
+                response.setCandidateResumeLink(candidate.getCandidateResumeLink());
                 responses.add(response);
             }
             return ok(toJson(responses));

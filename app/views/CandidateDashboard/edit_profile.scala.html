@@ -399,7 +399,7 @@
                                                 <div style="margin: 4px;display: inline-block;float:right">
                                                     <label class="btn btn-default btn-file" id="uploadResumeBtnPostLogin">
                                                         <span class="glyphicon glyphicon-open" aria-hidden="true" style="margin-right:10px"></span> Upload Resume
-                                                        <input type="file" accept=".pdf,.doc,.docx" id="uploadResumeContent" style="display: none">
+                                                        <input type="file" accept=".pdf,.doc,.docx" id="uploadResumeContent" onchange="uploadResume(event)" style="display: none">
                                                     </label>
                                                 </div>
                                         </div>
@@ -593,7 +593,7 @@
         <div id="footer_inc"></div>
 
             <!-- Including Bootstrap -->
-        <script type="text/javascript" src="/assets/common/js/uploadResume.js"></script>
+        <script type="text/javascript" src="/assets/common/js/candidate_upload_resume.js"></script>
         <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="/assets/common/js/validation.js"></script>
         <script type="text/javascript" src="/assets/dashboard/js/dashboard.js"></script>

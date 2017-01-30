@@ -13,11 +13,19 @@ public class PartnerCandidatesResponse {
     public String candidateName;
     public String candidateMobile;
     public String creationTimestamp;
+    public String candidateResumeLink;
     public int candidateStatus;
     public int candidateActiveDeactive;
     public int candidateAppliedJobs;
     public List<JobPostWorkflow> appliedJobList;
 
+    public String getCandidateResumeLink() {
+        return candidateResumeLink;
+    }
+
+    public void setCandidateResumeLink(String candidateResumeLink) {
+        this.candidateResumeLink = candidateResumeLink;
+    }
     public long getLeadId() {
         return leadId;
     }

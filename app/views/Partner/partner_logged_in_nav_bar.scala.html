@@ -17,8 +17,6 @@
     function processDataLogoutPartner() {
         window.location = "/partner";
     }
-    document.getElementById('uploadBulkResumeContent').addEventListener('change', uploadResume, false);
-    document.getElementById('excelfile').addEventListener('change', uploadCSV, false);
 </script>
 
 <nav class="navbar navbar-fixed-top" style="background: #26A69A" role="navigation">
@@ -86,7 +84,7 @@
                         <div class="row" id="addCandidateCant">
                             <center>
                                 <label class="btn btn-default btn-file" id="uploadCSVBtn">UPLOAD CSV
-                                    <input type="file" accept=".csv" id="excelfile" style="display: none" >
+                                    <input type="file" accept=".csv" id="excelfile" style="display: none" onchange="uploadCSV(event)">
                                 </label>
                             </center>
                         </div>
@@ -103,7 +101,7 @@
                         <div class="row" id="addCandidateCant">
                             <center>
                                 <label class="btn btn-default btn-file" id="uploadResumeBtn">UPLOAD RESUMES
-                                    <input type="file" accept=".pdf,.doc,.docx" id="uploadBulkResumeContent" style="display: none" multiple>
+                                    <input type="file" accept=".pdf,.doc,.docx" onchange="uploadBulkResumes(event)" id="uploadBulkResumeContent" style="display: none" multiple>
                                 </label>
                             </center>
                         </div>
