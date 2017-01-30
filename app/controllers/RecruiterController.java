@@ -1165,8 +1165,10 @@ public class RecruiterController {
                 }
 
                 List<Candidate> candidateList = new ArrayList<>();
+                List<Long> candidateIdList = new ArrayList<>();
                 for (JobPostWorkflow jpwf : applicationList) {
                     candidateList.add(jpwf.getCandidate());
+                    candidateIdList.add(jpwf.getCandidate().getCandidateId());
                 }
 
                 List<Integer> statusList = new ArrayList<>();
@@ -1188,26 +1190,23 @@ public class RecruiterController {
                     jobApplicantList.add(entry.getValue());
                 }
 
-                //TODO: convert with map implementation
+                Map<Long, JobApplication> jobApplicationMap = candidateToJobApplicationMapper(jpId, candidateIdList);
+
                 for (CandidateWorkflowData data: jobApplicantList) {
-                    JobApplication jobApplication = JobApplication.find.where()
-                            .eq("CandidateId", data.getCandidate().getCandidateId())
-                            .eq("JobPostId", jpId)
-                            .findUnique();
-
                     data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_SUPPORT);
+                    if(jobApplicationMap.get(data.getCandidate().getCandidateId()) != null){
+                        JobApplication application = jobApplicationMap.get(data.getCandidate().getCandidateId());
+                        data.setAppliedOn(application.getJobApplicationCreateTimeStamp());
 
-                    if(jobApplication != null){
-                        data.setAppliedOn(jobApplication.getJobApplicationCreateTimeStamp());
-
-                        if(jobApplication.getPartner() != null){
+                        if(application.getPartner() != null){
                             data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_PARTNER);
-                            data.setPartner(jobApplication.getPartner());
+                            data.setPartner(application.getPartner());
                         } else{
                             data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_SELF);
                         }
                     }
                 }
+
                 ApplicationResponse applicationResponse = new ApplicationResponse();
                 applicationResponse.setApplicationList(jobApplicantList);
 
@@ -1230,8 +1229,10 @@ public class RecruiterController {
                 }
 
                 List<Candidate> candidateList = new ArrayList<>();
+                List<Long> candidateIdList = new ArrayList<>();
                 for (JobPostWorkflow jpwf : applicationList) {
                     candidateList.add(jpwf.getCandidate());
+                    candidateIdList.add(jpwf.getCandidate().getCandidateId());
                 }
 
                 Integer status = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
@@ -1244,21 +1245,17 @@ public class RecruiterController {
                     jobApplicantList.add(entry.getValue());
                 }
 
-                //TODO: convert with map implementation
+                Map<Long, JobApplication> jobApplicationMap = candidateToJobApplicationMapper(jpId, candidateIdList);
+
                 for (CandidateWorkflowData data: jobApplicantList) {
-                    JobApplication jobApplication = JobApplication.find.where()
-                            .eq("CandidateId", data.getCandidate().getCandidateId())
-                            .eq("JobPostId", jpId)
-                            .findUnique();
-
                     data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_SUPPORT);
+                    if(jobApplicationMap.get(data.getCandidate().getCandidateId()) != null){
+                        JobApplication application = jobApplicationMap.get(data.getCandidate().getCandidateId());
+                        data.setAppliedOn(application.getJobApplicationCreateTimeStamp());
 
-                    if(jobApplication != null){
-                        data.setAppliedOn(jobApplication.getJobApplicationCreateTimeStamp());
-
-                        if(jobApplication.getPartner() != null){
+                        if(application.getPartner() != null){
                             data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_PARTNER);
-                            data.setPartner(jobApplication.getPartner());
+                            data.setPartner(application.getPartner());
                         } else{
                             data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_SELF);
                         }
@@ -1272,6 +1269,26 @@ public class RecruiterController {
             }
         }
         return ok("0");
+    }
+
+    public static Map<Long, JobApplication> candidateToJobApplicationMapper(Long jpId, List<Long> candidateIdList){
+        List<JobApplication> jobApplicationList = JobApplication.find
+                .where()
+                .eq("JobPostId", jpId)
+                .in("CandidateId", candidateIdList)
+                .findList();
+
+        Map<Long, JobApplication> jobApplicationMap = new HashMap<>();
+
+        for(JobApplication jobApplication : jobApplicationList) {
+            if(jobApplicationMap.get(jobApplication.getCandidate().getCandidateId()) == null) {
+                jobApplicationMap.put(jobApplication.getCandidate().getCandidateId(), jobApplication);
+            } else {
+                Logger.info("found multiple job application against one jobpost and one candidate");
+            }
+        }
+
+        return jobApplicationMap;
     }
 
     @Security.Authenticated(RecruiterAdminSecured.class)

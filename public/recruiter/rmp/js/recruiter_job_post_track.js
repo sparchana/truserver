@@ -290,9 +290,6 @@ function tabChange2() {
                                     'applicationStatus' : function() {
                                         var retVal = "-";
                                         if(workflowObj.extraData.workflowStatus != null){
-                                            if(workflowObj.candidate.candidateId == 99985571){
-                                                console.log(workflowObj.extraData.workflowStatus.statusId);
-                                            }
                                             if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_SELECTED){
                                                 retVal = '<div class="mLabel" style="width:100%; color: orange; font-weight: bold">Applied</div>';
                                             } else if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_PRESCREEN_ATTEMPTED){
@@ -310,8 +307,6 @@ function tabChange2() {
                                             } else if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_RESCHEDULE) {
                                                 retVal = '<div class="mLabel" style="width:100%; color: orange; font-weight: bold">Rescheduled</div>';
                                             }
-
-                                            console.log(retVal);
                                         }
 
                                         return retVal;
