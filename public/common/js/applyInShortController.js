@@ -1302,8 +1302,8 @@ var applyInShort = (function ($) {
             },
 
             addmoreCompany: function () {
-                console.log(appz.companyCount);
-                if (appz.companyCount != 0 && appz.companyCount <= 3) {
+                console.log(appz.compyCount);
+                if (appz.companyCount < 3) {
                     appz.companyCount++;
                     var allworkedCompanyDetailsDiv = document.createElement("div");
                     allworkedCompanyDetailsDiv.className = "row";
@@ -1335,11 +1335,12 @@ var applyInShort = (function ($) {
                     addCompanyName.type = ("text");
                     addCompanyName.placeholder = ("Company Name");
                     addCompanyName.id = ("companyName_" + appz.companyCount);
+                    addCompanyName.onchange = applyInShort.validation.enableAddBtn;
                     allCompanyNameCol.appendChild(addCompanyName);
 
                     var addJobRole = document.createElement("input");
                     addJobRole.id = "workedJobRole_" + appz.companyCount;
-                    addJobRole.onchange = applyInShort.aux.enableAddBtn;
+                    addJobRole.onchange = applyInShort.validation.enableAddBtn;
                     allworkedJobRoleCol.appendChild(addJobRole);
 
                     var addCurrentlyWorking = document.createElement("input");
@@ -1348,6 +1349,11 @@ var applyInShort = (function ($) {
                     } else {
                         addCurrentlyWorking.disabled = false;
                     }
+                    addCurrentlyWorking.type = ("radio");
+                    addCurrentlyWorking.style = "margin:0 4%";
+                    addCurrentlyWorking.id = ("addCurrentlyWorking_" + appz.companyCount);
+                    addCurrentlyWorking.name = ("addCurrently_Working");
+                    allWorkedCurrentltyCol.appendChild(addCurrentlyWorking);
 
                     var addMore = document.createElement("button");
                     addMore.className = "form-control";
@@ -1359,13 +1365,7 @@ var applyInShort = (function ($) {
                     addMore.name = "Add";
                     addMore.textContent = "Add Company";
                     addMore.onclick = applyInShort.aux.addmoreCompany;
-
                     allWorkedAddMoreCol.appendChild(addMore);
-                    addCurrentlyWorking.type = ("radio");
-                    addCurrentlyWorking.style = "margin:0 4%";
-                    addCurrentlyWorking.id = ("addCurrentlyWorking_" + appz.companyCount);
-                    addCurrentlyWorking.name = ("addCurrently_Working");
-                    allWorkedCurrentltyCol.appendChild(addCurrentlyWorking);
 
                     var addCurrentlyWorkingLabel = document.createElement("label");
                     addCurrentlyWorkingLabel.textContent = ("Is this your current company");
