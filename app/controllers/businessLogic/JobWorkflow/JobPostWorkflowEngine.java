@@ -442,7 +442,7 @@ public class JobPostWorkflowEngine {
 
         List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList, radius, true);
 
-        Map<Long, CandidateExtraData> allFeature = computeExtraDataForRecruiterSearchResult(candidateList);
+        Map<Long, CandidateExtraData> allFeature = computeExtraDataForRecruiterSearchResult(candidateList, isPrivate);
 
         if (candidateList.size() != 0) {
             for (Candidate candidate : candidateList) {
@@ -2302,7 +2302,7 @@ public class JobPostWorkflowEngine {
         return null;
     }
 
-    private static Map<Long, CandidateExtraData> computeExtraDataForRecruiterSearchResult(List<Candidate> candidateList) {
+    private static Map<Long, CandidateExtraData> computeExtraDataForRecruiterSearchResult(List<Candidate> candidateList, boolean isPrivate) {
 
         if (candidateList.size() == 0) return null;
         // candidateId --> featureMap
@@ -2349,7 +2349,7 @@ public class JobPostWorkflowEngine {
                 }
 
                     // sms count
-                if(smsReportMap.size()>0 && smsReportMap.get(candidate) !=null){
+                if(isPrivate && smsReportMap.size()>0 && smsReportMap.get(candidate) !=null){
                     candidateExtraData.setTotalSmsSent(smsReportMap.get(candidate).size());
                 }
             }
