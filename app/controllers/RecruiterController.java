@@ -49,6 +49,7 @@ import models.util.SmsUtil;
 import notificationService.NotificationEvent;
 import notificationService.SMSEvent;
 import play.Logger;
+import play.api.Play;
 import play.mvc.Result;
 import play.mvc.Security;
 
@@ -71,6 +72,8 @@ import static play.mvc.Results.redirect;
  * Created by dodo on 4/10/16.
  */
 public class RecruiterController {
+    private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
+
     public static Result recruiterIndex() {
         String sessionId = session().get("recruiterId");
         if(sessionId != null){
@@ -340,6 +343,12 @@ public class RecruiterController {
                         //RMP product sms blast
                         if(multipleCandidateActionRequest.getJobPostId() != null){
                             if(jobPost != null){
+                                multipleCandidateActionRequest.setSmsMessage(
+                                        RecruiterService.modifySMS(multipleCandidateActionRequest.getSmsMessage(),
+                                        candidate,
+                                        jobPost,
+                                        isDevMode)
+                                );
                                 NotificationEvent notificationEvent =
                                         new SMSEvent(candidate.getCandidateMobile(),
                                                 multipleCandidateActionRequest.getSmsMessage(),
