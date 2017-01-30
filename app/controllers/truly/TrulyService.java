@@ -2,13 +2,12 @@ package controllers.truly;
 
 import models.entity.truly.Truly;
 import models.util.Base62;
-import play.Logger;
 import play.api.Play;
 
 /**
  * Created by zero on 27/1/17.
  *
- * Non static service class for multiple instantiation and bulk use
+ * Service class with not Static methods, for multiple instantiation and bulk use
  */
 public class TrulyService {
     private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());

@@ -2322,10 +2322,11 @@ public class JobPostWorkflowEngine {
                 .setRawSql(getRawSqlForInteraction(candidateListString))
                 .findMap("objectAUUId", String.class);
 
-        // sms count for each candidate
+            // sms count for each candidate
         List<SmsReport> smsReportList =  SmsReport.find.where().in("CandidateId", candidateIdList).findList();
         Map<Candidate, List<SmsReport>> smsReportMap = new HashMap<>();
 
+            // list to map
         for(SmsReport report : smsReportList) {
             List<SmsReport> valueList = smsReportMap.get(report.getCandidate());
             if( valueList == null) {
@@ -2347,7 +2348,7 @@ public class JobPostWorkflowEngine {
                     candidateExtraData.setLastActive(getDateCluster(interactionsOfCandidate.getCreationTimestamp().getTime()));
                 }
 
-                // sms count
+                    // sms count
                 if(isPrivate && smsReportMap.size()>0 && smsReportMap.get(candidate) !=null){
                     candidateExtraData.setTotalSmsSent(smsReportMap.get(candidate).size());
                 }
@@ -2380,6 +2381,7 @@ public class JobPostWorkflowEngine {
     }
 
     public static Result updateInterviewStatus(InterviewStatusRequest interviewStatusRequest, int channel) {
+        Logger.info("Yes herer");
         Candidate candidate = Candidate.find.where().eq("candidateId", interviewStatusRequest.getCandidateId()).findUnique();
         if (candidate != null) {
             int jwStatus = ServerConstants.INTERVIEW_STATUS_ACCEPTED;

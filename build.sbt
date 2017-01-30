@@ -52,8 +52,6 @@ libraryDependencies += "com.googlecode.json-simple" % "json-simple" % "1.1.1"
 
 libraryDependencies += "commons-validator" % "commons-validator" % "1.5.1"
 
-libraryDependencies += "com.googlecode.json-simple" % "json-simple" % "1.1"
-
 libraryDependencies += "com.google.gcm" % "gcm-server" % "1.0.0"
 
 libraryDependencies += "org.apache.poi" % "poi-ooxml-schemas" % "3.11"

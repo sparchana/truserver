@@ -19,6 +19,10 @@
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_candidate_search.css">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_myjobs.css">
+        <link rel="stylesheet" href="/assets/support/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="/assets/partner/css/responsive.dataTables.min.css">
+        <link rel="stylesheet" href="/assets/partner/css/rowReorder.dataTables.min.css">
+        <link rel="stylesheet" href="/assets/support/css/buttons.dataTables.min.css">
 
         <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
@@ -74,35 +78,20 @@
                     </center>
                 </div>
 
-                <div id="smsReportContainer">
-                    <div class="container-fluid" id="smsReportTable" style="display: none">
-                        <div class="card" id="myJobPost">
-                            <div class="row hide-on-small-only" id='headerForData' style="font-size: 14px">
-                                <div class="col s1 l1" id="colHeadDataTable">
-                                    <font>Date</font>
-                                </div>
-                                <div class="col s2 l2" id="colHeadDataTable">
-                                    <font>Candidate</font>
-                                </div>
-                                <div class="col s2 l2" id="colHeadDataTable">
-                                    <font>Mobile</font>
-                                </div>
-                                <div class="col s1 l1" id="colHeadDataTable">
-                                    <font>SMS Status</font>
-                                </div>
-                                <div class="col s1 l2" id="colHeadDataTable">
-                                    <font>Job Application Status</font>
-                                </div>
-                                <div class="col s1 l4" id="colHeadDataTable">
-                                    <font>SMS Message</font>
-                                </div>
-                            </div>
-                            <div class="allSms"></div>
-                        </div>
-                        <div id="paginationTab" style="float: right; margin-top: 8px">
-                            <span style="margin: 12px 8px 0 0" id="totalSmsReports"></span>
-                        </div>
-                    </div>
+                <div id="smsReportContainer" style="display: none">
+                    <table id="smsReportTable" style="background: white;" class="table table-bordered" cellspacing="0" width="100%">
+                        <thead style="background: #656565; color: white">
+                            <tr>
+                                <th style="font-size: 14px">Date</th>
+                                <th style="font-size: 14px">Candidate Name</th>
+                                <th style="font-size: 14px">Candidate Mobile</th>
+                                <th style="font-size: 14px">SMS Status</th>
+                                <th style="font-size: 14px">Job Status</th>
+                                <th style="font-size: 14px">SMS message</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
 
@@ -114,38 +103,21 @@
                         <h6>Looks like no one has applied to the job!</h6>
                     </center>
                 </div>
-                <div id="trackApplicationContainer">
-                    <div class="container-fluid" id="trackApplicationTable" style="display: none">
-                        <div class="card" id="myJobPost">
-                            <div class="row hide-on-small-only" id='headerForData' style="font-size: 14px">
-                                <div class="col s1 l1" id="colHeadDataTable">
-                                    <font>Application Date</font>
-                                </div>
-                                <div class="col s2 l2" id="colHeadDataTable">
-                                    <font>Candidate</font>
-                                </div>
-                                <div class="col s2 l1" id="colHeadDataTable">
-                                    <font>Mobile</font>
-                                </div>
-                                <div class="col s1 l1" id="colHeadDataTable">
-                                    <font>Channel</font>
-                                </div>
-                                <div class="col s1 l2" id="colHeadDataTable">
-                                    <font>Interview Date & Time</font>
-                                </div>
-                                <div class="col s1 l2" id="colHeadDataTable">
-                                    <font>Application Status</font>
-                                </div>
-                                <div class="col s1 l3" id="colHeadDataTable">
-                                    <font>Action</font>
-                                </div>
-                            </div>
-                            <div class="allApplications"></div>
-                        </div>
-                        <div id="trackPaginationTab" style="float: right; margin-top: 8px">
-                            <span style="margin: 12px 8px 0 0" id="totalTrackingCandidates"></span>
-                        </div>
-                    </div>
+                <div id="trackApplicationContainer" style="display: none">
+                    <table id="trackApplicationTable" style="background: white;" class="table table-bordered" cellspacing="0" width="100%">
+                        <thead style="background: #656565; color: white">
+                            <tr>
+                                <th style="font-size: 14px">Application Date</th>
+                                <th style="font-size: 14px">Candidate Name</th>
+                                <th style="font-size: 14px">Candidate Mobile</th>
+                                <th style="font-size: 14px">Application Status</th>
+                                <th style="font-size: 14px">Application Channel</th>
+                                <th style="font-size: 14px">Interview Date & Time</th>
+                                <th style="font-size: 14px">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
             <div id="confirmedApplications" class="col s12">
@@ -157,35 +129,19 @@
                     </center>
                 </div>
                 <div id="confirmedApplicationContainer">
-                    <div class="container-fluid" id="confirmedApplicationTable" style="display: none">
-                        <div class="card" id="myJobPost">
-                            <div class="row hide-on-small-only" id='headerForData' style="font-size: 14px">
-                                <div class="col s1 l1" id="colHeadDataTable">
-                                    <font>Application Date</font>
-                                </div>
-                                <div class="col s2 l2" id="colHeadDataTable">
-                                    <font>Candidate</font>
-                                </div>
-                                <div class="col s2 l2" id="colHeadDataTable">
-                                    <font>Mobile</font>
-                                </div>
-                                <div class="col s1 l1" id="colHeadDataTable">
-                                    <font>Channel</font>
-                                </div>
-                                <div class="col s1 l3" id="colHeadDataTable">
-                                    <font>Interview Date & Time</font>
-                                </div>
-                                <div class="col s1 l3" id="colHeadDataTable">
-                                    <font>Interview Feedback</font>
-                                </div>
-                            </div>
-                            <div class="allConfirmed"></div>
-                        </div>
-                        <div id="confirmedPaginationTab" style="float: right; margin-top: 8px">
-                            <span style="margin: 12px 8px 0 0" id="totalConfirmedCandidates"></span>
-                        </div>
-                    </div>
-
+                    <table id="confirmedApplicationTable" style="background: white;" class="table table-bordered" cellspacing="0" width="100%">
+                        <thead style="background: #656565; color: white">
+                            <tr>
+                                <th style="font-size: 14px">Application Date</th>
+                                <th style="font-size: 14px">Candidate Name</th>
+                                <th style="font-size: 14px">Candidate Mobile</th>
+                                <th style="font-size: 14px">Application Channel</th>
+                                <th style="font-size: 14px">Interview Date & Time</th>
+                                <th style="font-size: 14px">Interview feedback</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -428,7 +384,14 @@
             $('.recruiter_navbar').load('/recruiterNavbar');
     </script>
     <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/assets/common/js/jquery.twbsPagination.js"></script>
+
+    <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/support/js/datatables.min.js"></script>
+    <script type="text/javascript" src="/assets/partner/js/dataTables.rowReorder.min.js"></script>
+    <script type="text/javascript" src="/assets/partner/js/dataTables.responsive.min.js"></script>
+    <script type="text/javascript" src="/assets/support/js/btnExport/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="/assets/support/js/btnExport/buttons.flash.min.js"></script>
+
     <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
     <script type="text/javascript" src="/assets/common/js/validation.js"></script>
     <script type="text/javascript" src="/assets/common/js/script_constants.js"></script>

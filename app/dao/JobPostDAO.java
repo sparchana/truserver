@@ -33,7 +33,6 @@ public class JobPostDAO {
                 .in("CompanyId", companyIdList)
                 .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
                 .eq("Source", ServerConstants.SOURCE_INTERNAL)
-                .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_PRIVATE)
                 .orderBy().desc("jobPostUpdateTimestamp")
                 .findList();
     }

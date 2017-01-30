@@ -154,4 +154,17 @@ public class Util {
         }
         return null;
     }
+
+    public static String generateApplyInShortUrl(Candidate candidate, JobPost jobPost, boolean isDev){
+        if(candidate != null && jobPost != null) {
+
+            Auth auth = AuthService.isAuthExists(candidate.getCandidateId());
+            auth.setOtp(generateOtp());
+            auth.save();
+
+
+            return generateApplyInShortUrl(candidate, jobPost, auth, isDev);
+        }
+        return null;
+    }
 }

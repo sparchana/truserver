@@ -1076,4 +1076,27 @@ public class RecruiterService {
 
         return Days.daysBetween(dt1, dt2).getDays();
     }
+
+    public static String modifySMS(String smsMessage, Candidate candidate, JobPost jobPost, boolean isDev) {
+        String applyInShortURL = Util.generateApplyInShortUrl(candidate, jobPost, isDev);
+        StringBuilder modifiedSMS = new StringBuilder();
+        if(applyInShortURL != null) {
+
+            modifiedSMS.append("Apply Now --> ");
+            modifiedSMS.append(applyInShortURL);
+            modifiedSMS.append("\n");
+        }
+
+        modifiedSMS.append(smsMessage);
+
+        if(applyInShortURL != null) {
+            modifiedSMS.append("\n");
+
+            modifiedSMS.append("Apply Now --> ");
+            modifiedSMS.append(applyInShortURL);
+            modifiedSMS.append("\n");
+        }
+
+        return modifiedSMS.toString();
+    }
 }

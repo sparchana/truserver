@@ -165,7 +165,7 @@
 }
 
 .pagination>li>a, .pagination>li>span{
-    color:rgb(41, 128, 185);
+    color: rgb(41, 128, 185);
     font-size: 14px;
 }
 .pagination>li>a:hover,

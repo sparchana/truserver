@@ -1262,7 +1262,15 @@ function renderIndividualCandidateCard(value, parent, view) {
             sendSelectedSms(value.candidate.candidateId, value.candidate.candidateFirstName);
         };
         smsBtn.style = "margin-top: -1px";
-        smsBtn.textContent = "Send SMS";
+        if( value.candidate.candidateAccessLevelvalue != null &&
+            value.candidate.candidateAccessLevelvalue == 1 &&
+            value.extraData.totalSmsSent != null &&
+            value.extraData.totalSmsSent != 0)
+        {
+            smsBtn.textContent = "Re-Send SMS";
+        } else {
+            smsBtn.textContent = "Send SMS";
+        }
         unlockContactCol.appendChild(smsBtn);
     }
 
