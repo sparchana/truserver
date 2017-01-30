@@ -5,6 +5,7 @@ import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import controllers.businessLogic.CandidateResumeService;
 import models.entity.OM.*;
 import models.entity.OO.CandidateCurrentJobDetail;
 import models.entity.OO.CandidateEducation;
@@ -678,7 +679,9 @@ public class Candidate extends Model {
     }
 
     public String getCandidateResumeLink() {
-        CandidateResume resume = CandidateResume.find.where().eq("CandidateId", this.getCandidateId()).findUnique();
+        CandidateResumeService candidateResumeService = new CandidateResumeService();
+        CandidateResume resume = (CandidateResume) candidateResumeService.fetchLatestResumeForCandidate(Long.toString(this.getCandidateId(),10)).getEntity();
+        //CandidateResume resume = CandidateResume.find.where().eq("CandidateId", this.getCandidateId()).findUnique();
         if(resume != null){
             return resume.getFilePath();
         } else{

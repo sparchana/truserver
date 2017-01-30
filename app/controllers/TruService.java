@@ -1428,8 +1428,49 @@ public abstract class TruService {
         return m;
     }
 
+    // orderBy = attribute name by which to order the read
+    // direction = 'DESC' for descending, 'ASC' for ascending. Default is descending
+    public List<TruResponse> readByAttribute(List<Map<String,String>> attrNameValueList, String orderBy, String direction) {
+
+        if (entity == null) {
+            try {
+                entity = (Model) Class.forName(this.getEntityClassName()).newInstance();
+            } catch (NullPointerException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+                e.printStackTrace();
+                Logger.info("Exception " + e.toString() + " triggered while instantiating " + this.getEntityClassName());
+                return null;
+            }
+        }
+
+        java.lang.reflect.Method method = null;
+
+        ExpressionList<?> query = getQuery();
+        //Logger.info("ExpressionList<?> query = "+query.getClass().getSimpleName());
+
+        // build query
+        if(query != null){
+            for(Map<String,String> each:attrNameValueList){
+                if(each.keySet().size() > 0 && each.values().size() > 0){
+                    query.add(eq(each.keySet().toArray()[0].toString(),each.values().toArray()[0].toString()));
+                    if(orderBy != null){
+                        // decide ordering
+                        if(direction == null || direction.toLowerCase() != "asc"){
+                            query.orderBy().desc(orderBy);
+                        }
+                        else query.orderBy().asc(orderBy);
+                    }
+                }
+            }
+        }
+
+        return createReadResponse((List<Model>) query.findList());
+
+    }
+
     public List<TruResponse> readByAttribute(List<Map<String,String>> attrNameValueList){
 
+        return readByAttribute(attrNameValueList, null, null);
+/*
         if (entity == null) {
             try {
                 entity = (Model) Class.forName(this.getEntityClassName()).newInstance();
@@ -1453,6 +1494,7 @@ public abstract class TruService {
             }
         }
         return createReadResponse((List<Model>) query.findList());
+*/
 
 /*
         // Check read method exists
