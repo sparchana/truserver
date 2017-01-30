@@ -20,7 +20,7 @@ var applyInShort = (function ($) {
             subDivOne: null,
             subDivTwo: null,
             orderList: null,
-            hintMessage: null, // mot sure if this is requred any longer
+            hintMessage: null,
 
           factory: function () {
               this.parent = $('#missingInfo');
