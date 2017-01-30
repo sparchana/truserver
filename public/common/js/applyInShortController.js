@@ -20,7 +20,7 @@ var applyInShort = (function ($) {
             subDivOne: null,
             subDivTwo: null,
             orderList: null,
-            hintMessage: null, // mot sure if this is requred any longer
+            hintMessage: null,
 
           factory: function () {
               this.parent = $('#missingInfo');
@@ -122,10 +122,7 @@ var applyInShort = (function ($) {
                 $("#customMsg").html(message);
 
                 if(sec != null) {
-                    $('#card_container').hide();
-                    setTimeout(function(){
-                        window.location = "/dashboard";
-                    }, sec);
+                    appz.render.hideContainer();
                 }
             },
             hideContainer: function () {
@@ -136,11 +133,10 @@ var applyInShort = (function ($) {
                 $('#card_container').show();
             },
             hideUI: function(message, sec){
-                $.notify(message, 'error');
+                appz.render.messageModal(message, null);
+                // $.notify(message, 'error');
 
                 $('#card_container').hide();
-
-                appz.do.redirectToDashboard(sec);
             },
             applyJobForm: function () {
 
@@ -153,15 +149,15 @@ var applyInShort = (function ($) {
 
                     // already applied
                     if(appz.missingData.statusCode == 5) {
-                        appz.render.messageModal("You have already applied to this Job. Redirecting to dashboard ....", 4000);
+                        appz.render.messageModal("You have already applied to this Job.", 4000);
                     }
                     // no job with this id
                     else if(appz.missingData.statusCode == 6) {
-                        appz.render.messageModal("Invalid Link. No Job Found. Redirecting to dashboard ....", 4000);
+                        appz.render.messageModal("Invalid Link. No Job Found.", 4000);
                     }
                     // candidate deactivate
                     else if(appz.missingData.statusCode == 7) {
-                        appz.render.messageModal(appz.missingData.message + ". Redirecting to Dashboard ....", 7000);
+                        appz.render.messageModal(appz.missingData.message + ". ", 7000);
                     }
                     // success | display ui
                     else if(appz.missingData.statusCode == 4){
@@ -215,8 +211,11 @@ var applyInShort = (function ($) {
                 $('#locality_companyNameConfirmation').html(appz.companyName);
 
                 if (localityMap != null) {
-                    var option = $('<option value=0></option>').text("Select Location");
-                    $('#jobLocality').append(option);
+                    /* add select location hint if locality more the one  */
+                    if(Object.keys(localityMap).length > 1){
+                        var option = $('<option value=0></option>').text("Select Location");
+                        $('#jobLocality').append(option);
+                    }
                     for (var value in localityMap) {
                         var id = value;
                         var title = localityMap[value];
@@ -246,8 +245,11 @@ var applyInShort = (function ($) {
                 $('#interviewCompanyName').html(appz.companyName);
 
                 if(slotMap != null) {
-                    var option = $('<option value=0></option>').text("Select Interview slot");
-                    $('#interViewSlot').append(option);
+                    /* add select interview slot hint if slot is more the one  */
+                    if(Object.keys(slotMap).length > 1){
+                        var option = $('<option value=0></option>').text("Select Interview slot");
+                        $('#interViewSlot').append(option);
+                    }
                     for (var value in slotMap) {
                         var date = slotMap[value].interviewDateMillis;
                         var id = date +"_"+slotMap[value].interviewTimeSlot.slotId;
@@ -1296,8 +1298,8 @@ var applyInShort = (function ($) {
             },
 
             addmoreCompany: function () {
-                console.log(appz.companyCount);
-                if (appz.companyCount != 0 && appz.companyCount <= 3) {
+                console.log(appz.compyCount);
+                if (appz.companyCount < 3) {
                     appz.companyCount++;
                     var allworkedCompanyDetailsDiv = document.createElement("div");
                     allworkedCompanyDetailsDiv.className = "row";
@@ -1329,11 +1331,12 @@ var applyInShort = (function ($) {
                     addCompanyName.type = ("text");
                     addCompanyName.placeholder = ("Company Name");
                     addCompanyName.id = ("companyName_" + appz.companyCount);
+                    addCompanyName.onchange = applyInShort.validation.enableAddBtn;
                     allCompanyNameCol.appendChild(addCompanyName);
 
                     var addJobRole = document.createElement("input");
                     addJobRole.id = "workedJobRole_" + appz.companyCount;
-                    addJobRole.onchange = applyInShort.aux.enableAddBtn;
+                    addJobRole.onchange = applyInShort.validation.enableAddBtn;
                     allworkedJobRoleCol.appendChild(addJobRole);
 
                     var addCurrentlyWorking = document.createElement("input");
@@ -1342,6 +1345,11 @@ var applyInShort = (function ($) {
                     } else {
                         addCurrentlyWorking.disabled = false;
                     }
+                    addCurrentlyWorking.type = ("radio");
+                    addCurrentlyWorking.style = "margin:0 4%";
+                    addCurrentlyWorking.id = ("addCurrentlyWorking_" + appz.companyCount);
+                    addCurrentlyWorking.name = ("addCurrently_Working");
+                    allWorkedCurrentltyCol.appendChild(addCurrentlyWorking);
 
                     var addMore = document.createElement("button");
                     addMore.className = "form-control";
@@ -1353,13 +1361,7 @@ var applyInShort = (function ($) {
                     addMore.name = "Add";
                     addMore.textContent = "Add Company";
                     addMore.onclick = applyInShort.aux.addmoreCompany;
-
                     allWorkedAddMoreCol.appendChild(addMore);
-                    addCurrentlyWorking.type = ("radio");
-                    addCurrentlyWorking.style = "margin:0 4%";
-                    addCurrentlyWorking.id = ("addCurrentlyWorking_" + appz.companyCount);
-                    addCurrentlyWorking.name = ("addCurrently_Working");
-                    allWorkedCurrentltyCol.appendChild(addCurrentlyWorking);
 
                     var addCurrentlyWorkingLabel = document.createElement("label");
                     addCurrentlyWorkingLabel.textContent = ("Is this your current company");
@@ -1395,13 +1397,13 @@ var applyInShort = (function ($) {
 
                             if(returnedData.statusCode == 3) {
 
-                                $.notify("Application Submitted successfully. Opening Dashboard", 'success');
-                                appz.do.redirectToDashboard(3000);
+                                appz.render.messageModal("Thanks for applying ! Your will receive interview details in an SMS.");
+
+                                appz.do.hideAllInputFields();
                             } else if(returnedData.statusCode == 4) {
-                                $.notify("Looks like you have already applied to this job. Opening Dashboard", 'error');
 
-                                appz.do.redirectToDashboard(3000);
-
+                                appz.render.messageModal("Looks like you have already applied to this job. Closing this tab..");
+                                appz.do.hideAllInputFields();
                             } else {
                                 $.notify("Something went wrong. Please re-check submission!", 'error');
 
@@ -1415,6 +1417,30 @@ var applyInShort = (function ($) {
                     });
                 } catch (exception) {
                     console.log("exception occured!!" + exception);
+                }
+            },
+            interviewIconChange: function () {
+                if($("#jobInterviewPanel").hasClass("in")== true){
+                    $("#interviewCollapsePanelIcon").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+                }
+                else{
+                    $("#interviewCollapsePanelIcon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+                }
+            },
+            localityIconChange: function () {
+                if($("#jobLocalityPanel").hasClass("in")== true){
+                    $("#localityCollapsePanelIcon").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+                }
+                else{
+                    $("#localityCollapsePanelIcon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+                }
+            },
+            detailsIconChange: function () {
+                if($("#missingInfo").hasClass("in")== true){
+                    $("#detailsCollapsePanelIcon").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+                }
+                else{
+                    $("#detailsCollapsePanelIcon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
                 }
             },
             validateSubmit: function () {
@@ -1479,7 +1505,7 @@ var applyInShort = (function ($) {
 
                 console.log(appz.missingData.shortPSPopulateResponse.propertyIdList);
                 $.each(appz.missingData.shortPSPopulateResponse.propertyIdList, function (index, propId) {
-
+                    msg = "";
                     okToSubmit = true;
                     if (propId == 0) {
                         var documentList = [];
@@ -1495,7 +1521,7 @@ var applyInShort = (function ($) {
                                     item["idProofId"] = parseInt(id);
                                     item["idNumber"] = $('input#idProofValue_' + id).val().trim();
                                 } else if (isChecked && !isValid) {
-                                    okToSubmit = false;
+                                    // okToSubmit = false;
                                     // $.notify("Please provide valid document details.", 'error');
                                 }
 
@@ -1509,7 +1535,7 @@ var applyInShort = (function ($) {
                                         message: msg,
                                         submissionStatus: okToSubmit
                                     };
-                                    // okToSubmitList.push(submit);
+                                    okToSubmitList.push(submit);
                                 }
                             });
                         });
@@ -1580,29 +1606,35 @@ var applyInShort = (function ($) {
                         d ["assetIdList"] = assetArrayList;
 
                     } else if (propId == 3) {
+                        var selectedDob =null;
+                        var c_dob= null;
                         // age submission
-                        if($('#dob_day').val() == "Day" || $('#dob_month').val() == "Month" || $('#dob_year').val() == "Year") {
-                            okToSubmit = false;
+                        if($('#dob_day').val() == "Day" && $('#dob_month').val() == "Month" && $('#dob_year').val() == "Year") {
+                            // okToSubmit = false;
+                        } else if($('#dob_day').val() == "Day" || $('#dob_month').val() == "Month" || $('#dob_year').val() == "Year"){
+                             okToSubmit = false;
                         } else{
-                            var selectedDob = $('#dob_year').val() + "-" + $('#dob_month').val() + "-" + $('#dob_day').val();
+                            selectedDob = $('#dob_year').val() + "-" + $('#dob_month').val() + "-" + $('#dob_day').val();
                         }
-                        if(selectedDob == "") {
-                            okToSubmit = false;
-                        }
-                        var c_dob = String(selectedDob);
-                        var selectedDate = new Date(c_dob);
-                        var toDate = new Date();
-                        var pastDate= new Date(toDate.setFullYear(toDate.getFullYear() - 18)); // ex: if current year: 2016 || pastDate: 1998
-                        toDate =  new Date(); //reset toDate to current Date
-                        var zombieYear = new Date(toDate.setFullYear(toDate.getFullYear() - 70)); // ex: if current year: 2016  || zombieYear: 1928
-                        toDate =  new Date(); //reset toDate to current Date
-                        if (selectedDate >= pastDate) {
-                            dobCheck = 0;
-                            okToSubmit = false;
-                        }
-                        if(selectedDate <= zombieYear ) {
-                            dobCheck = 0;
-                            okToSubmit = false;
+                        if(selectedDob == null || selectedDob == "") {
+                            // okToSubmit = false;
+                        } else {
+                            c_dob = String(selectedDob);
+                            var selectedDate = new Date(c_dob);
+                            var toDate = new Date();
+                            var pastDate= new Date(toDate.setFullYear(toDate.getFullYear() - 18)); // ex: if current year: 2016 || pastDate: 1998
+                            toDate =  new Date(); //reset toDate to current Date
+                            var zombieYear = new Date(toDate.setFullYear(toDate.getFullYear() - 70)); // ex: if current year: 2016  || zombieYear: 1928
+                            toDate =  new Date(); //reset toDate to current Date
+                            if (selectedDate >= pastDate) {
+                                dobCheck = 0;
+                                okToSubmit = false;
+                            }
+                            if(selectedDate <= zombieYear ) {
+                                dobCheck = 0;
+                                okToSubmit = false;
+                            }
+
                         }
 
                         d ["candidateDob"] = c_dob;
@@ -1610,34 +1642,43 @@ var applyInShort = (function ($) {
                         msg = "Please provide valid Date of birth";
 
                         if(!okToSubmit){
-                            // $.notify(msg, 'error');
+                            $.notify(msg, 'error');
                             d ["candidateDob"] = null;
                             var submit = {
                                 propId : propId,
                                 message: msg,
                                 submissionStatus: okToSubmit
                             };
-                            // okToSubmitList.push(submit);
+                            okToSubmitList.push(submit);
                         }
                     } else if (propId == 4) {
                         /* calculate total experience in months */
                         if(($('input:radio[name="candidateExperience"]:checked').length == 0)){
-                            okToSubmit = false;
+                            // okToSubmit = false;
                             // $.notify("Please select Fresher/Experienced.", 'error');
                         }
-                        var expMonth;
-                        var expYear;
+                        var expMonth = 0;
+                        var expYear = 0;
                         var totalExp;
 
                         if($('input:radio[name="candidateExperience"]:checked').val() == "0") {
                             totalExp = 0;
                         } else {
-                            expMonth = parseInt($('#candidateTotalExperienceMonth').val());
-                            expYear = parseInt($('#candidateTotalExperienceYear').val());
-                            totalExp = expMonth + (12 * expYear);
+                            if($('#candidateTotalExperienceMonth').val() == "" &&
+                                $('#candidateTotalExperienceYear').val() == "") {
+                                totalExp = null;
+                            } else {
+                                expMonth = $('#candidateTotalExperienceMonth').val();
+                                expYear = $('#candidateTotalExperienceYear').val();
+                                expMonth = parseInt(expMonth == ""? 0 :expMonth);
+                                expYear = parseInt(expYear == ""? 0: expYear);
+
+                                totalExp = expMonth + (12 * expYear);
+                            }
                             var isExpEmpty = ($('#candidateTotalExperienceMonth').val() == 0) && ($('#candidateTotalExperienceYear').val() == 0);
                             if ($('input[id=candidateExp]').is(":checked") && isExpEmpty) {
-                                $.notify("Please provide your total years of experience", 'error');
+                                msg = "Please provide your total years of experience";
+                                $.notify(msg, 'error');
                                 okToSubmit = false;
                             }
                         }
@@ -1645,7 +1686,8 @@ var applyInShort = (function ($) {
                         // are you currently working
                         if ($('input[id=candidateExp]').is(":checked") && $('#currentlyWorking').is(":checked")
                             && !$('input[name=addCurrently_Working]').is(":checked")) {
-                            $.notify("Please provide your current company details and mark appropriately.", 'error');
+                            msg = "Please provide your current company details and mark appropriately.";
+                            $.notify(msg, 'error');
                             okToSubmit = false;
                         }
 
@@ -1691,7 +1733,7 @@ var applyInShort = (function ($) {
                                 message: msg,
                                 submissionStatus: okToSubmit
                             };
-                            // okToSubmitList.push(submit);
+                            okToSubmitList.push(submit);
                         }
 
                     } else if (propId == 5) {
@@ -1704,29 +1746,29 @@ var applyInShort = (function ($) {
                             $('input:radio[name="candidateEducationCompletionStatus"]:checked').val() == null){
                             if(($('#candidateHighestDegree').val()) == "-1" ||
                                 $('#candidateEducationInstitute').val() == "") {
-                                okToSubmit = false;
+                                // okToSubmit = false;
                                 // $.notify("Please provide full education details", 'error');
+                                d ["candidateEducationLevel"] = null;
+                                d ["candidateDegree"] = null;
+                                d ["candidateEducationInstitute"] = null;
+                                d ["candidateEducationCompletionStatus"] = null;
+
 
                             }
                         }
 
                         if(!okToSubmit){
-                            d ["candidateEducationLevel"] = null;
-                            d ["candidateDegree"] = null;
-                            d ["candidateEducationInstitute"] = null;
-                            d ["candidateEducationCompletionStatus"] = null;
-
                             var submit = {
                                 propId : propId,
                                 message: msg,
                                 submissionStatus: okToSubmit
                             };
-                            // okToSubmitList.push(submit);
+                            okToSubmitList.push(submit);
                         }
                     } else if (propId == 6) {
                         d ["candidateGender"] = ($('input:radio[name="gender"]:checked').val());
                         if(($('input:radio[name="gender"]:checked').length == 0)) {
-                            okToSubmit = false;
+                            // okToSubmit = false;
                             // $.notify("Please provide your gender details", 'error');
                         }
                         if(!okToSubmit){
@@ -1736,14 +1778,15 @@ var applyInShort = (function ($) {
                                 message: msg,
                                 submissionStatus: okToSubmit
                             };
-                            // okToSubmitList.push(submit);
+
+                            okToSubmitList.push(submit);
                         }
                     } else if (propId == 7) {
                         var salary = $('#candidateLastWithdrawnSalary').val();
                         if (!isNaN(salary) && parseInt(salary) >= 1000 && parseInt(salary) <= 100000) {
                             d ["candidateLastWithdrawnSalary"] = parseInt($('#candidateLastWithdrawnSalary').val());
                         } else {
-                            okToSubmit = false;
+                            // okToSubmit = false;
                             // $.notify("Please enter a valid 'Last Withdrawn Salary' per month. (Min: 1000, Max: 1,00,000)", 'error');
                             if(!okToSubmit){
                                 d ["candidateLastWithdrawnSalary"] = null;
@@ -1752,13 +1795,13 @@ var applyInShort = (function ($) {
                                     message: "Please enter a valid 'Last Withdrawn Salary' per month. (Min: 1000, Max: 1,00,000)",
                                     submissionStatus: okToSubmit
                                 };
-                                // okToSubmitList.push(submit);
+                                okToSubmitList.push(submit);
                             }
                         }
                     } else if (propId == 8) {
                         var lId = $('#candidateHomeLocality').val();
                         if(lId == null) {
-                            okToSubmit = false;
+                            // okToSubmit = false;
                             d ["candidateHomeLocality"] = null;
                             // $.notify("Please enter a valid Locality", 'error');
                         } else{
@@ -1770,13 +1813,13 @@ var applyInShort = (function ($) {
                                 message: "Please enter a valid Home locality",
                                 submissionStatus: okToSubmit
                             };
-                            // okToSubmitList.push(submit);
+                            okToSubmitList.push(submit);
                         }
                     } else if (propId == 9) {
                         var timeShiftPrefId = $('#candidateTimeShiftPref').val();
                         if(timeShiftPrefId == "-1") {
-                            okToSubmit = false;
                             d ["candidateTimeShiftPref"] = null;
+                            // okToSubmit = false;
                             // $.notify("Please enter a valid time/shift preference (ex: Part time, Full time)", 'error');
                         } else {
                             d ["candidateTimeShiftPref"] = $('#candidateTimeShiftPref').val();
@@ -1787,12 +1830,12 @@ var applyInShort = (function ($) {
                                 message: "Please enter a valid time preference",
                                 submissionStatus: okToSubmit
                             };
-                            // okToSubmitList.push(submit);
+                            okToSubmitList.push(submit);
                         }
                     }
                 });
 
-                console.log(okToSubmitList.length);
+                console.log("OkToSubmit List: " + JSON.stringify(okToSubmitList));
                 if (okToSubmitList.length == 0) {
                     main["updateCandidateDetail"] = d;
                     this.submit(main);
@@ -1813,16 +1856,9 @@ var applyInShort = (function ($) {
                 }
 
             },
-            redirectToDashboard: function (sec) {
-                if(sec ==null) {
-                    // dont redirect
-                   return;
-                } else {
-
-                    setTimeout(function(){
-                        window.location = "/dashboard/appliedJobs/";
-                    },sec);
-                }
+            hideAllInputFields: function () {
+                $("#finalSubmitBtn").prop("disabled", true);
+                appz.render.hideContainer();
             }
         }
 
@@ -1835,6 +1871,17 @@ var applyInShort = (function ($) {
     // search click listener
     document.getElementById("finalSubmitBtn").addEventListener("click", function () {
         appz.do.validateSubmit();
+    });
+    //
+    document.getElementById("jobInterviewHead").addEventListener("click",function () {
+        appz.do.interviewIconChange();
+    });
+    document.getElementById("jobLocalityHead").addEventListener("click",function () {
+        appz.do.localityIconChange();
+    });
+
+    document.getElementById("jobdetailsHead").addEventListener("click",function () {
+        appz.do.detailsIconChange();
     });
 
     return appz;

@@ -81,7 +81,7 @@ public class UtilTest {
                 {MethodType.idToCode, 9999999999999990L, 10000000000000000L},
                 {MethodType.idToCode, 99999999999999990L, 100000000000000000L},
                 {MethodType.idToCode, 999999999999999990L, 1000000000000000000L},
-                {MethodType.generateShortURL, 100020118, 925},
+                {MethodType.generateShortURL, 100020122, 1079},
                 {MethodType.base62, 1, 10},
                 {MethodType.base62, 90, 100},
                 {MethodType.base62, 990, 1000},

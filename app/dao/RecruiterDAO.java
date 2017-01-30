@@ -25,10 +25,6 @@ public class RecruiterDAO {
 
         if(accessLevel == null) {
             accessLevel = 0;
-            return RecruiterProfile.find.where()
-                    .eq("company.companyId", companyId)
-                    .eq("recruiterAccessLevel", accessLevel)
-                    .setMapKey("recruiterProfileId").findMap();
         }
         return RecruiterProfile.find.where()
                     .eq("company.companyId", companyId)

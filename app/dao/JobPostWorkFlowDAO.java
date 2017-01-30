@@ -6,9 +6,7 @@ import com.avaje.ebean.PagedList;
 import com.avaje.ebean.RawSql;
 import com.avaje.ebean.RawSqlBuilder;
 import models.entity.OM.JobPostWorkflow;
-import models.entity.OM.SmsReport;
 import org.apache.commons.lang3.StringUtils;
-import play.Logger;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -507,7 +505,7 @@ public class JobPostWorkFlowDAO {
 
     /**
      *
-     * @return List<JobPostWorkflow>, all the applications withing a given status
+     * @return List<JobPostWorkflow>, all the applications within a given status
      */
 
     public static List<JobPostWorkflow> getAllJobApplicationWithinStatusId(Long jpId, int startStatus, int endStatus) {
@@ -539,7 +537,7 @@ public class JobPostWorkFlowDAO {
 
     /**
      *
-     * @return List<JobPostWorkflow>, all the applications withing a given status
+     * @return List<JobPostWorkflow>, all the applications within a given status
      */
 
     public static List<JobPostWorkflow> getAllConfirmedApplicationsJobPost(Long jpId, int startStatus, int endStatus) {

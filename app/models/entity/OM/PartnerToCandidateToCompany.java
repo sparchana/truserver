@@ -16,8 +16,8 @@ import java.sql.Timestamp;
 public class PartnerToCandidateToCompany extends Model {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "partner_to_candidate_to_company_id", columnDefinition = "bigint signed", unique = true)
-    private Long partnerToCandidateToCompanyId;
+    @Column(name = "partner_to_candidate_to_company_id", columnDefinition = "bigint unsigned", unique = true)
+    private long partnerToCandidateToCompanyId;
 
     @Column(name = "creation_timestamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp creationTimeStamp;
@@ -43,11 +43,11 @@ public class PartnerToCandidateToCompany extends Model {
 
     public static Finder<String, PartnerToCandidateToCompany> find = new Finder(PartnerToCandidateToCompany.class);
 
-    public Long getPartnerToCandidateToCompanyId() {
+    public long getPartnerToCandidateToCompanyId() {
         return partnerToCandidateToCompanyId;
     }
 
-    public void setPartnerToCandidateToCompanyId(Long partnerToCandidateToCompanyId) {
+    public void setPartnerToCandidateToCompanyId(long partnerToCandidateToCompanyId) {
         this.partnerToCandidateToCompanyId = partnerToCandidateToCompanyId;
     }
 

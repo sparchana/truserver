@@ -21,8 +21,8 @@ import java.sql.Timestamp;
 public class SmsReport extends Model {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "sms_report_id", columnDefinition = "int signed", unique = true)
-    private Integer smsReportId;
+    @Column(name = "sms_report_id", columnDefinition = "bigint unsigned", unique = true)
+    private long smsReportId;
 
     @Column(name = "creation_timestamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp creationTimeStamp = new Timestamp(System.currentTimeMillis());
@@ -67,11 +67,11 @@ public class SmsReport extends Model {
         this.creationTimeStamp = new Timestamp(System.currentTimeMillis());
     }
 
-    public Integer getSmsReportId() {
+    public long getSmsReportId() {
         return smsReportId;
     }
 
-    public void setSmsReportId(Integer smsReportId) {
+    public void setSmsReportId(long smsReportId) {
         this.smsReportId = smsReportId;
     }
 
