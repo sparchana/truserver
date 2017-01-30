@@ -69,7 +69,7 @@ public class CandidateResumeService extends TruService {
         param.put("CandidateId", candidateId);
         params.add(param);
         List<TruResponse> candidateResumeList = new ArrayList<>();
-        Logger.info(getClass().getSimpleName()+".fetchLatestResumeForCandidate: About to call readByAttribute");
+        //Logger.info(getClass().getSimpleName()+".fetchLatestResumeForCandidate: About to call readByAttribute");
         candidateResumeList = readByAttribute(params,"candidate_resume_id","DESC");
         if(candidateResumeList.size() > 0) {
             Logger.info(getClass().getSimpleName()+".fetchLatestResumeForCandidate: Read returned with "+candidateResumeList.size()+" records");
