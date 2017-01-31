@@ -1,5 +1,6 @@
 package controllers;
 
+import api.ServerConstants;
 import controllers.scheduler.SchedulerManager;
 import notificationService.NotificationHandler;
 import play.Application;
@@ -17,7 +18,16 @@ public class Global extends GlobalSettings {
         boolean notificationHandlerShouldRun = (play.Play.application().configuration().getBoolean("notification.handler.run"));
         boolean schedulerManagerShouldRun = (play.Play.application().configuration().getBoolean("scheduler.manager.run"));
 
-           //mNotificationHandler class instantiated
+
+        ServerConstants.BASE_URL =
+                play.Play.application().configuration().getInt("base.url.code") == 0 ?
+                        play.Play.application().configuration().getString("base.url.trujobs") : play.Play.application().configuration().getInt("base.url.code") == 1?
+                        play.Play.application().configuration().getString("base.url.trutest") :
+                        play.Play.application().configuration().getString("base.url.localhost");
+
+        Logger.warn("[Conf] Global base url set : " + ServerConstants.BASE_URL);
+
+        //mNotificationHandler class instantiated
         mNotificationHandler = new NotificationHandler();
         SchedulerManager mSchedulerManager = new SchedulerManager();
 

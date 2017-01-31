@@ -442,4 +442,6 @@ public class ServerConstants {
     public static final int APPLICATION_CHANNEL_PARTNER = 2;
     public static final int APPLICATION_CHANNEL_SUPPORT = 3;
 
+
+    public static String BASE_URL = "https://trujobs.in";
 }

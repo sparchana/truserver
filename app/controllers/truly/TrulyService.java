@@ -2,7 +2,8 @@ package controllers.truly;
 
 import models.entity.truly.Truly;
 import models.util.Base62;
-import play.api.Play;
+
+import static api.ServerConstants.BASE_URL;
 
 /**
  * Created by zero on 27/1/17.
@@ -10,13 +11,8 @@ import play.api.Play;
  * Service class with not Static methods, for multiple instantiation and bulk use
  */
 public class TrulyService {
-    private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
-    private String BASE_URL = "http://localhost:9000";
 
     public TrulyService() {
-        if(!isDevMode) {
-            BASE_URL = "https://trujobs.in";
-        }
     }
 
     private final String POINT_URL = "/t/";

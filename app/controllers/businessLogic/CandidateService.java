@@ -58,6 +58,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static api.InteractionConstants.*;
+import static api.ServerConstants.BASE_URL;
 import static controllers.PartnerController.checkCandidateExistence;
 import static controllers.PartnerController.createCandidateViaPartner;
 import static controllers.businessLogic.InteractionService.createInteractionForSignUpCandidateViaAndroid;
@@ -1677,7 +1678,7 @@ public class CandidateService
         try {
             hw.login("avishek@trujobs.in","hirewandswatkats");
             // TODO change this before release
-            hw.setCallback("http://52.89.66.63:9000/receive-parsed-resume");
+            hw.setCallback(BASE_URL+"/receive-parsed-resume");
         } catch (HWHTTPException e) {
             e.printStackTrace();
             try {
