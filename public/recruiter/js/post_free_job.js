@@ -345,6 +345,7 @@ $(document).ready(function () {
         $('#jobPostExperience').tokenize().tokenAdd(5, "Any");
         $('#jobPostEducation').tokenize().tokenAdd(6, "Any");
 
+        $(".copyJobOption").hide();
     }
 
     /* ajax commands to fetch all localities and jobs*/
@@ -514,6 +515,11 @@ $(document).ready(function () {
         }
     });
 });
+
+function copyJob() {
+    jpId = null;
+    saveJob();
+}
 
 function saveJob() {
     var status;
@@ -800,7 +806,8 @@ function saveJob() {
                 resumeApplicationDate: jobPostResumeDate
             };
 
-            $("#saveEdit").addClass("disabled");
+            $(".copyJobOption").addClass("disabled");
+            $(".saveBtn").addClass("disabled");
             $.ajax({
                 type: "POST",
                 url: "/recruiter/api/addJobPost",
@@ -831,7 +838,9 @@ function processDataAddJobPost(returnedData) {
             window.location = "/recruiter/allRecruiterJobPosts";
         }, 2500);
     } else{
-        $("#saveEdit").removeClass("disabled");
+        $(".copyJobOption").removeClass("disabled");
+        $(".saveBtn").removeClass("disabled");
+
         notifyError("Something went wrong. Please try again later!");
     }
 }

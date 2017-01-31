@@ -3,6 +3,7 @@
  */
 
 var organizationLocation = [];
+var organizationType;
 
 $(document).ready(function(){
     checkPartnerLogin();
@@ -51,6 +52,7 @@ function processDataPartnerProfile(returnedData) {
             $("#partnerType").val(returnedData.partnerType.partnerTypeId);
             if(returnedData.partnerType.partnerTypeId == 7){
                 $("#partnerType").prop('disabled', true);
+                $("#partnerTypeDiv").hide();
                 var associatedCompanies = "";
                 var companyList = returnedData.partnerToCompanyList;
                 companyList.forEach(function (company) {
@@ -58,7 +60,7 @@ function processDataPartnerProfile(returnedData) {
                 });
 
                 if(associatedCompanies != ""){
-                    $("#privatePartnerCompanyName").html(associatedCompanies);
+                    $("#privatePartnerCompanyName").html(associatedCompanies.substring(0, (associatedCompanies.length - 2)));
                     $("#privatePartnerCompany").show();
                 }
             }
@@ -96,7 +98,11 @@ function savePartnerProfile() {
     var firstName = $("#partnerFirstName").val();
     var lastName = $("#partnerLastName").val();
     var email = $("#partnerEmail").val();
-    var organizationType = $("#partnerType").val();
+    if($('#partnerType').is(':disabled')){
+        organizationType = 7;
+    } else{
+        organizationType = $("#partnerType").val();
+    }
     var organizationName = $("#organizationName").val();
     var organizationLocality = $("#organizationLocation").val();
 
