@@ -62,6 +62,10 @@ function processDataForCSV(returnedData) {
         $('#uploadResumeModal').modal('show');
         setTimeout(function(){
             $('#uploadResumeModal').modal('hide');
+			if($('#uploadResumeModalProcess').length){
+				// after processing, redirect to "My Candidates" for Partner
+				window.location = "/partner/myCandidates";
+			}
         }, 3000);
     }
     else if(returnedData.totalNumberOfCandidateCreated > 0) {
@@ -84,6 +88,10 @@ function processDataForCSV(returnedData) {
         $('#uploadResumeModal').modal('show');
         setTimeout(function(){
             $('#uploadResumeModal').modal('hide');
+			if($('#uploadResumeModalProcess').length){
+				// after processing, redirect to "My Candidates" for Partner
+				window.location = "/partner/myCandidates";
+			}
         }, 3000);
     }else{
         var data = {message:'Error Uploading!! check csv'};

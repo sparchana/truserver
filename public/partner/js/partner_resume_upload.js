@@ -74,7 +74,6 @@ function processDataForBulkResumes(returnedData) {
             h4.style = "font-weight:600";
             resumeColRight.appendChild(h4);
 
-
             $("#uploadResumeModalContent").show();
             $('#uploadResumeModal').modal('show');
             setTimeout(function(){
