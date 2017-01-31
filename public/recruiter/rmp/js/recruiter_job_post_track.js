@@ -877,3 +877,11 @@ function processDataLogoutRecruiter() {
 function closeFeedbackModal() {
     $("#addFeedback").closeModal();
 }
+
+function closeRescheduleModal() {
+    $("#modalRescheduleSlot").closeModal();
+}
+
+function closeRejectModal() {
+    $("#modalRejectReason").closeModal();
+}

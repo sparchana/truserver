@@ -361,7 +361,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                 viewResume = true;
                 unlockContact(value.candidate.candidateId);
             } else{
-                window.open("http://docs.google.com/gview?url=" + $(this).attr("val") + "&embedded=true");
+                window.open($(this).attr("val"));
             }
         };
         resumeLink.style = "font-size: 14px; font-weight: bold; color: rgb(84, 192, 235); ";
@@ -1261,7 +1261,7 @@ function renderIndividualCandidateCard(value, parent, view) {
             candidateCardData = value;
             sendSelectedSms(value.candidate.candidateId, value.candidate.candidateFirstName);
         };
-        if( value.candidate.candidateAccessLevel != null &&
+        if( value.candidate.candidateAccessLevelvalue != null &&
             value.candidate.candidateAccessLevel == 1 &&
             value.extraData.totalSmsSent != null &&
             value.extraData.totalSmsSent != 0)
