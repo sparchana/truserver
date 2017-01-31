@@ -1162,15 +1162,12 @@ var applyInShort = (function ($) {
                 );
                 promise.then(function () {
                     if (appz.loginStatus == '1') {
-                        $('#nav_bar_inc').load('/navBarLoggedIn');
                         $(".jobApplyBtnV2").show();
                         $("#incentiveSection").hide();
                     } else if (appz.loginStatus == '2') {
-                        $('#nav_bar_inc').load('/partnerNavBarLoggedIn');
                         $(".jobApplyBtnV2").hide();
                         $("#incentiveSection").show();
                     } else {
-                        $('#nav_bar_inc').load('/navBar');
                         $("#incentiveSection").hide();
                     }
                     appz.isNavBarLoaded = true;
