@@ -35,7 +35,7 @@ var applyInShort = (function ($) {
               this.mainDiv.appendChild(this.subDivOne);
 
               this.hintMessage = document.createElement("p");
-              this.hintMessage.textContent = "Please provide following details to apply for this job";
+              this.hintMessage.textContent = "(Optional) Give some more details to apply";
               this.hintMessage.style = "margin:10px 0;font-weight:bold;font-size:18px";
 
               this.subDivOne.appendChild(this.hintMessage);
