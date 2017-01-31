@@ -1745,7 +1745,7 @@ public class CandidateService
 
         try {
 
-            Logger.info("result.get(\"status\")="+result.getString("status"));
+            //Logger.info("result.get(\"status\")="+result.getString("status"));
 
             if(result.getString("status").equalsIgnoreCase("success")){
 
@@ -2510,8 +2510,8 @@ public class CandidateService
                             //Logger.info("nextLine["+i+"]="+nextLine[i]);
                             //Logger.info("header["+i+"]="+header[i]);
                             tempMobile = "";
-                            switch (header[i]){
-                                case "Name":
+                            switch (header[i].toLowerCase().trim()){
+                                case "name":
                                     String fName = nextLine[i].split(" ")[0];
                                     String lName = nextLine[i].replace(fName,"").trim();
                                     addSupportCandidateRequest.setCandidateFirstName(fName);
@@ -2519,11 +2519,11 @@ public class CandidateService
                                     addSupportCandidateRequest.setCandidateSecondName(lName);
                                     //Logger.info("addSupportCandidateRequest.setCandidateSecondName ="+lName);
                                     break;
-                                case "Email":
+                                case "email":
                                     addSupportCandidateRequest.setCandidateEmail(nextLine[i]);
                                     //Logger.info("addSupportCandidateRequest.setCandidateEmail ="+nextLine[i]);
                                     break;
-                                case "Mobile":
+                                case "mobile":
                                     //Logger.info("About to check for "+nextLine[i]);
                                     isNew = ((Candidate.find.where().eq("candidateMobile",FormValidator.convertToIndianMobileFormat(nextLine[i])).findRowCount() > 0)? Boolean.FALSE: Boolean.TRUE);
                                     //Logger.info("Candidate.find.where().eq(\"candidatemobile\",FormValidator.convertToIndianMobileFormat(nextLine[i])).findRowCount()"+Candidate.find.where().eq("candidatemobile",FormValidator.convertToIndianMobileFormat(nextLine[i])).findRowCount());
@@ -2532,13 +2532,13 @@ public class CandidateService
                                     //Logger.info("addSupportCandidateRequest.setCandidateMobile ="+addSupportCandidateRequest.getCandidateMobile());
                                     break;
                                 case "current salary per month":
-                                case "Salary":
+                                case "salary":
                                     String salary = CharMatcher.digit().retainFrom(nextLine[i]);
                                     if(salary.isEmpty()) salary = "0";
                                     addSupportCandidateRequest.setCandidateLastWithdrawnSalary(Long.valueOf(salary,10));
                                     //Logger.info("addSupportCandidateRequest.setCandidateLastWithdrawnSalary ="+addSupportCandidateRequest.getCandidateLastWithdrawnSalary());
                                     break;
-                                case "Role":
+                                case "role":
                                     List<JobRole> jobRoleList = JobRole.find.where().ilike("jobname","%"+nextLine[i]+"%").findPagedList(0,3).getList();
                                     if(jobRoleList != null && jobRoleList.size() > 0){
                                         addSupportCandidateRequest.setCandidateCurrentJobRoleId(jobRoleList.get(0).getJobRoleId());
@@ -2552,15 +2552,16 @@ public class CandidateService
                                     else addSupportCandidateRequest.setCandidateCurrentJobRoleId(34L);
                                     //Logger.info("addSupportCandidateRequest.setCandidateCurrentJobRoleId ="+addSupportCandidateRequest.getCandidateCurrentJobRoleId());
                                     break;
-                                case "Role Experience (in Years)":
-                                case "Experience":
-                                    //check if experience is define as a aplpha-numerical string
+                                case "role experience (in years)":
+                                case "experience":
+                                    //check that experience is a numerical string
                                     if(StringUtils.isNumeric(nextLine[i])){
                                         addSupportCandidateRequest.setCandidateTotalExperience(Integer.valueOf(nextLine[i])*12);
                                         //Logger.info("addSupportCandidateRequest.setCandidateTotalExperience ="+addSupportCandidateRequest.getCandidateTotalExperience());
                                     }
                                     break;
-                                case "Languages known":
+                                case "languages":
+                                case "languages known":
                                     String[] languages = nextLine[i].split(" ");
                                     List<CandidateKnownLanguage> candidateKnownLanguages = new ArrayList<>();
                                     for(String lang:languages){
@@ -2576,13 +2577,13 @@ public class CandidateService
                                         //Logger.info("Count of addSupportCandidateRequest.setCandidateLanguageKnown ="+addSupportCandidateRequest.getCandidateLanguageKnown().size());
                                     }
                                     break;
-                                case "Locality":
+                                case "locality":
                                     Locality locality = Locality.find.where().ilike("localityname","%"+nextLine[i].trim()+"%").setMaxRows(1).findUnique();
                                     if(locality != null){
                                         addSupportCandidateRequest.setCandidateHomeLocality(Math.toIntExact(locality.getLocalityId()));
                                     }
                                     break;
-                                case "Education":
+                                case "education":
                                     String educationString = nextLine[i].toLowerCase();
                                     AddCandidateEducationRequest addCandidateEducationRequest = new AddCandidateEducationRequest();
                                     if(educationString.startsWith("8")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_LT_10TH_ID);}
@@ -2598,7 +2599,7 @@ public class CandidateService
                                     else addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_ANY);
                                     //Logger.info("Education level set to "+addSupportCandidateRequest.getCandidateEducationLevel()+" for mobile "+addSupportCandidateRequest.getCandidateMobile());
                                     break;
-                                case "Company":
+                                case "company":
                                     if(nextLine[i].toLowerCase() != "nil" ||
                                             nextLine[i].toLowerCase() != "no" ||
                                             nextLine[i].toLowerCase() != "any" ||
@@ -2615,7 +2616,7 @@ public class CandidateService
                                         //Logger.info("pastCompany.setCompanyName ="+pastCompany.getCompanyName());
                                     }
                                     break;
-                                case "Gender":
+                                case "gender":
                                     if(nextLine[i].toLowerCase().startsWith("f")) addSupportCandidateRequest.setCandidateGender(ServerConstants.GENDER_FEMALE);
                                     else if (nextLine[i].toLowerCase().startsWith("m")) addSupportCandidateRequest.setCandidateGender(ServerConstants.GENDER_MALE);
                                     break;
@@ -2641,7 +2642,7 @@ public class CandidateService
                             String partnerId;
                             // determine channel
                             if(session() != null && (session().get("sessionChannel") != null && !session().get("sessionChannel").isEmpty())){
-                                //Logger.info("Session : "+ session().get("sessionChannel"));
+                                Logger.info("Session : "+ session().get("sessionChannel"));
                                 if(Integer.parseInt(session().get("sessionChannel"),10) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
                                     partnerId = session().get("partnerId");
                                     partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
@@ -2686,7 +2687,7 @@ public class CandidateService
                                     ServerConstants.UPDATE_ALL_BY_SUPPORT);
                             Logger.info("Candidate Created with Id = "+candidateSignUpResponse.getCandidateId());
                         }
-                        else {
+                        else if(partner != null){
                             // create partner-owned candidate
                             //checking if a candidate can be associated with a partner or not
                             Integer associationStatus = checkCandidateExistence(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));

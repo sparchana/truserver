@@ -2447,11 +2447,14 @@ public class Application extends Controller {
         if(hireWandResponse != null &&
                 hireWandResponse.getStatus()!=null &&
                 hireWandResponse.getStatus().toLowerCase().contains("success")){
+
             // mapped successfully
             Logger.info("Successfully mapped json to hireWandResponse");
+
             // keep a copy of the raw profile string
             hireWandResponse.getProfile().setProfileJSON(StringUtils.join(request().body().asFormUrlEncoded().get("profile"),null));
             Logger.info("hireWandResponse.Profile.ProfileJSON="+hireWandResponse.getProfile().getProfileJSON());
+
             // is this a duplicate?
             if(hireWandResponse.getProfilemergedto() != null) {
                 // if yes, set unique profile id
@@ -2462,7 +2465,7 @@ public class Application extends Controller {
             // ensure external key (PersonId) is filled before calling business logic
             if(!hireWandResponse.getPersonid().isEmpty()){
                 // send for processing
-                Logger.info("Updating resume for HireWand PersonID = "+hireWandResponse.getPersonid());
+                Logger.info("Updating resume for HireWand personid = "+hireWandResponse.getPersonid());
                 JSONObject resp = CandidateService.updateResume(hireWandResponse.getPersonid(), hireWandResponse.getProfile(),hireWandResponse.getDuplicate());
                 Logger.info("resp="+resp.toString());
                 return ok(resp+"");

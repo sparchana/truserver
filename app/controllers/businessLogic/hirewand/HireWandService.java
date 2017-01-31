@@ -105,7 +105,7 @@ public class HireWandService {
                                 paramlist.add(new NameValuePair("callback", (String) params.get("callback")));
                             }
                             else if(callbackurl!=null) {
-                                Logger.info("Preset Callback URL = "+callbackurl);
+                                //Logger.info("Preset Callback URL = "+callbackurl);
                                 paramlist.add(new NameValuePair("callback", callbackurl));
                             }
                             printtype = (String)params.get("prettytype");
