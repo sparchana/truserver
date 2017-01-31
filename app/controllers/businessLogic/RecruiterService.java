@@ -1082,19 +1082,18 @@ public class RecruiterService {
         StringBuilder modifiedSMS = new StringBuilder();
         if(applyInShortURL != null) {
 
-            modifiedSMS.append("Apply Now --> ");
+            modifiedSMS.append("Job Offer! ");
             modifiedSMS.append(applyInShortURL);
-            modifiedSMS.append("\n");
+            modifiedSMS.append("\n\n");
         }
 
         modifiedSMS.append(smsMessage);
 
         if(applyInShortURL != null) {
-            modifiedSMS.append("\n");
+            modifiedSMS.append("\n\n");
 
-            modifiedSMS.append("Apply Now --> ");
+            modifiedSMS.append("Apply Now: ");
             modifiedSMS.append(applyInShortURL);
-            modifiedSMS.append("\n");
         }
 
         return modifiedSMS.toString();
