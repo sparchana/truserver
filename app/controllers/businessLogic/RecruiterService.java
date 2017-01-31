@@ -1077,8 +1077,8 @@ public class RecruiterService {
         return Days.daysBetween(dt1, dt2).getDays();
     }
 
-    public static String modifySMS(String smsMessage, Candidate candidate, JobPost jobPost, boolean isDev) {
-        String applyInShortURL = Util.generateApplyInShortUrl(candidate, jobPost, isDev);
+    public static String modifySMS(String smsMessage, Candidate candidate, JobPost jobPost) {
+        String applyInShortURL = Util.generateApplyInShortUrl(candidate, jobPost);
         StringBuilder modifiedSMS = new StringBuilder();
         if(applyInShortURL != null) {
 

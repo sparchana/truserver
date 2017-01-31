@@ -347,8 +347,7 @@ public class RecruiterController {
                                 multipleCandidateActionRequest.setSmsMessage(
                                         RecruiterService.modifySMS(commonSMSMessage,
                                         candidate,
-                                        jobPost,
-                                        isDevMode)
+                                        jobPost)
                                 );
                                 NotificationEvent notificationEvent =
                                         new SMSEvent(candidate.getCandidateMobile(),
