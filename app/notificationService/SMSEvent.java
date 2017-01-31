@@ -49,6 +49,7 @@ public class SMSEvent extends NotificationEvent {
         String uname = Play.application().configuration().getString("sms.gateway.user");
         String id = Play.application().configuration().getString("sms.gateway.password");
         String sender = Play.application().configuration().getString("sms.gateway.sender");
+        boolean shouldSendSMS = Play.application().configuration().getBoolean("outbound.sms.enabled");
 
         try {
             msg = URLEncoder.encode(msg, "UTF-8");
@@ -65,19 +66,25 @@ public class SMSEvent extends NotificationEvent {
 
         String smsResponse = "";
 
-        if(isDevMode()){
-            Logger.info("DevMode: No sms sent [" + requestString + "]");
-            return "DevMode: No sms sent";
-        } else {
-            try {
-                URL url = new URL(requestString);
-                BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-                smsResponse = br.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
+        if(shouldSendSMS) {
+            if(isDevMode()){
+                Logger.info("DevMode: No sms sent [" + requestString + "]");
+                return "DevMode: No sms sent";
+            } else {
+                try {
+                    URL url = new URL(requestString);
+                    BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+                    smsResponse = br.readLine();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return smsResponse;
             }
-            return smsResponse;
+        } else {
+            Logger.info("Outbound SMS disabled: No sms sent [" + requestString + "]");
+            return "Outbound SMS Disabled. No SMS sent";
         }
+
 
     }
 

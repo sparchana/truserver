@@ -1896,6 +1896,7 @@ public class CandidateService
         List<CandidateKnownLanguage> candidateLanguageKnown = new ArrayList<>();
         addSupportCandidateRequest.setCandidateLanguageKnown(candidateLanguageKnown);
         addSupportCandidateRequest.setDeactivationStatus(Boolean.FALSE);
+        addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_ANY);
 
         if(profile == null) return addSupportCandidateRequest;
         else if (existingCandidate == null){
@@ -2148,7 +2149,7 @@ public class CandidateService
         CandidateResumeService candidateResumeService = new CandidateResumeService();
         List<Map<String, String>> params = new ArrayList<>();
         Map<String, String> param = new HashMap<>();
-        param.put("externalKey",personId);
+        param.put("external_key",personId);
         params.add(param);
         CandidateResume candidateResume = null;
         try{
@@ -2299,7 +2300,7 @@ public class CandidateService
 
                 // determine channel
                 if(session() != null && (session().get("sessionChannel") != null && !session().get("sessionChannel").isEmpty())){
-                    Logger.info("Session : "+ session().get("sessionChannel"));
+                    //Logger.info("Session : "+ session().get("sessionChannel"));
                     if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
                         channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
                         String partnerId = session().get("partnerId");
@@ -2574,12 +2575,18 @@ public class CandidateService
                                         //Logger.info("Count of addSupportCandidateRequest.setCandidateLanguageKnown ="+addSupportCandidateRequest.getCandidateLanguageKnown().size());
                                     }
                                     break;
+                                case "Locality":
+                                    Locality locality = Locality.find.where().ilike("localityname","%"+nextLine[i].trim()+"%").setMaxRows(1).findUnique();
+                                    if(locality != null){
+                                        addSupportCandidateRequest.setCandidateHomeLocality(Math.toIntExact(locality.getLocalityId()));
+                                    }
+                                    break;
                                 case "Education":
                                     String educationString = nextLine[i].toLowerCase();
                                     AddCandidateEducationRequest addCandidateEducationRequest = new AddCandidateEducationRequest();
-                                    if(educationString.startsWith("8th")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_LT_10TH_ID);}
-                                    else if(educationString.startsWith("10th")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_10TH_PASS_ID);}
-                                    else if(educationString.startsWith("12th")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_12TH_PASS_ID);}
+                                    if(educationString.startsWith("8")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_LT_10TH_ID);}
+                                    else if(educationString.startsWith("10")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_10TH_PASS_ID);}
+                                    else if(educationString.startsWith("12")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_12TH_PASS_ID);}
                                     else if(educationString.startsWith("diploma")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_UG);}
                                     else if(educationString.startsWith("graduat")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_UG);}
                                     else if(educationString.startsWith("postgraduat")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_PG);}
@@ -2587,6 +2594,8 @@ public class CandidateService
                                         addSupportCandidateRequest.setCandidateEducationLevel(addCandidateEducationRequest.getCandidateEducationLevel());
                                         //Logger.info("addSupportCandidateRequest.setCandidateEducationLevel ="+addSupportCandidateRequest.getCandidateEducationLevel());
                                     }
+                                    else addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_ANY);
+                                    //Logger.info("Education level set to "+addSupportCandidateRequest.getCandidateEducationLevel()+" for mobile "+addSupportCandidateRequest.getCandidateMobile());
                                     break;
                                 case "Company":
                                     if(nextLine[i].toLowerCase() != "nil" ||
@@ -2635,7 +2644,7 @@ public class CandidateService
                                 if(Integer.parseInt(session().get("sessionChannel"),10) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
                                     partnerId = session().get("partnerId");
                                     partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
-                                    Logger.info("BulkUploadCandidates: Partner with ID = '"+partnerId+((partner == null)?"' not found":"' found"));
+                                    //Logger.info("BulkUploadCandidates: Partner with ID = '"+partnerId+((partner == null)?"' not found":"' found"));
                                     channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
                                 }else{
                                     channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
@@ -2653,12 +2662,18 @@ public class CandidateService
                         // set location to Others (by default) --> Every candidate is expected to have some location
                         // if a partner is available, inherit candidate location from partner
                         list.clear();
-                        if(partner != null && partner.getLocality() != null){
+                        if(addSupportCandidateRequest.getCandidateHomeLocality() == null && partner != null && partner.getLocality() != null){
                             list.add(Math.toIntExact(partner.getLocality().getLocalityId()));
                         }
                         else{list.add(345);}
 
                         addSupportCandidateRequest.setCandidateHomeLocality(list.get(0));
+
+                        // education level check
+                        if(addSupportCandidateRequest.getCandidateEducationLevel() == null || addSupportCandidateRequest.getCandidateEducationLevel() == 0){
+                            // default to any
+                            addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_ANY);
+                        }
 
                         Logger.info("Bulk Upload Candidate Request : "+ toJson(addSupportCandidateRequest));
                         CandidateSignUpResponse candidateSignUpResponse = null;
@@ -2672,7 +2687,7 @@ public class CandidateService
                         }
                         else {
                             // create partner-owned candidate
-                            //checking if a candidate can be associate with a partner or not
+                            //checking if a candidate can be associated with a partner or not
                             Integer associationStatus = checkCandidateExistence(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
                             if(leadSource == null){
                                 leadSource = LeadSource.find.where().eq("leadSourceId", addSupportCandidateRequest.getLeadSource()).findUnique();

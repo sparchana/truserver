@@ -2,8 +2,9 @@ package controllers;
 
 import controllers.scheduler.SchedulerManager;
 import notificationService.NotificationHandler;
-import play.*;
 import play.Application;
+import play.GlobalSettings;
+import play.Logger;
 
 /**
  * Created by dodo on 12/12/16.
@@ -16,7 +17,7 @@ public class Global extends GlobalSettings {
         boolean notificationHandlerShouldRun = (play.Play.application().configuration().getBoolean("notification.handler.run"));
         boolean schedulerManagerShouldRun = (play.Play.application().configuration().getBoolean("scheduler.manager.run"));
 
-        //mNotificationHandler class instantiated
+           //mNotificationHandler class instantiated
         mNotificationHandler = new NotificationHandler();
         SchedulerManager mSchedulerManager = new SchedulerManager();
 
@@ -24,6 +25,8 @@ public class Global extends GlobalSettings {
         if(notificationHandlerShouldRun) {
             Logger.warn("[Conf] Notification Handler started");
             new Thread(mNotificationHandler).start();
+
+            printOutBoundRuleStatus();
 
             if(schedulerManagerShouldRun){
                 Logger.warn("[Conf] Scheduler Manager started");
@@ -51,4 +54,27 @@ public class Global extends GlobalSettings {
     public static void setmNotificationHandler(NotificationHandler mNotificationHandler) {
         Global.mNotificationHandler = mNotificationHandler;
     }
+
+    public static void printOutBoundRuleStatus() {
+        boolean outboundSMS = (play.Play.application().configuration().getBoolean("outbound.sms.enabled"));
+        boolean outboundFCM = (play.Play.application().configuration().getBoolean("outbound.fcm.enabled"));
+        boolean outboundEmail = (play.Play.application().configuration().getBoolean("outbound.email.enabled"));
+
+        if(outboundSMS) {
+            Logger.warn("[Cong] OutBound sms enabled");
+        } else {
+            Logger.warn("[Cong] OutBound sms Disabled");
+        }
+        if(outboundEmail) {
+            Logger.warn("[Cong] OutBound email enabled");
+        } else {
+            Logger.warn("[Cong] OutBound email Disabled");
+        }
+        if(outboundFCM) {
+            Logger.warn("[Cong] OutBound fcm enabled");
+        } else {
+            Logger.warn("[Cong] OutBound fcm Disabled");
+        }
+    }
+
 }
