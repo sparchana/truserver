@@ -350,6 +350,7 @@ function tabChange2() {
 
                             $("#trackApplicationContainer").show();
                         } else{
+                            $("#trackApplicationContainer").hide();
                             $("#noApplications").show();
                         }
                         return returned_data;
@@ -556,15 +557,13 @@ function processDataInterviewStatus(returnedData) {
     if(returnedData == "1"){
         if(globalInterviewStatus == 1){
             notifySuccess("Interview Confirmed"); //accepted
-            tabChange2();
         } else if(globalInterviewStatus == 2){ //rejected by recruiter
             $("#modalRejectReason").closeModal();
             notifySuccess("Interview Rejected");
-            tabChange2();
         } else if(globalInterviewStatus == 3){
             notifySuccess("Interview Rescheduled");
-            tabChange2();
         }
+        tabChange2();
     } else{
         notifyError("Something went wrong. Please try again later. Refreshing page..");
         setTimeout(function(){
