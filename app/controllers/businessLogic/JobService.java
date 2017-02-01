@@ -1366,7 +1366,8 @@ public class JobService {
         int k;
         // for those jobpost in which the auto confirm is marked as checked, we start line up from the next day
         if(jobPost.getReviewApplication() == null || jobPost.getReviewApplication() == ServerConstants.REVIEW_APPLICATION_AUTO){
-            k = 1;
+            // validation for generated time slot is done inside for loop below
+            k = 0;
         } else {
             k = 2;
         }
@@ -1392,9 +1393,15 @@ public class JobService {
                     interviewDateTime.setInterviewTimeSlot(timeSlot);
                     interviewDateTime.setInterviewDateMillis(future.getTime());
 
+
+                    if(!InterviewUtil.checkTimeSlot(future.getTime(), timeSlot)) {
+                        continue;
+                    }
+                    
                     String slotString = getDayVal(future.getDay())+ ", "
                             + future.getDate() + " " + getMonthVal((future.getMonth() + 1))
                             + " (" + details.getInterviewTimeSlot().getInterviewTimeSlotName() + ")" ;
+
 
                     interviewSlotMap.put(slotString, interviewDateTime);
                 }
