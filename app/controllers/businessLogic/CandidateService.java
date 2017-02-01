@@ -23,6 +23,7 @@ import com.avaje.ebean.Expr;
 import com.avaje.ebean.Query;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
 import com.google.common.base.CharMatcher;
+import controllers.PartnerController;
 import controllers.businessLogic.hirewand.HWHTTPException;
 import controllers.businessLogic.hirewand.HireWandService;
 import controllers.businessLogic.hirewand.InvalidRequestException;
@@ -2326,6 +2327,7 @@ public class CandidateService
                     if(partner.getLocality() != null && partner.getLocality().getLocalityId() > 0){
                         addSupportCandidateRequest.setCandidateHomeLocality(Math.toIntExact(partner.getLocality().getLocalityId()));
                     }
+                    Logger.info("Creating candidate with partner association");
                     candidateSignUpResponse = createCandidateViaPartner(addSupportCandidateRequest, partner, isNew, associationStatus);
                 }
 
@@ -2347,7 +2349,7 @@ public class CandidateService
             }
         }
         else {
-            Logger.info("Attempting to update existing candidate ...");
+            Logger.info("Attempting to update resume for existing candidate ...");
             isNew = Boolean.FALSE;
 
             try {
@@ -2364,7 +2366,16 @@ public class CandidateService
             candidateMobile = candidate.getCandidateMobile();
 
             if(partner != null){
-                // this was created by a partner - need to associate
+                Logger.info("Associating partner with existing candidate");
+                // this candidate was created by a partner - need to associate
+                Boolean isPrivatePartner = false;
+                if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+                    isPrivatePartner = true;
+                }
+                //check if a candidate can be associated with a partner or not
+                Integer associationStatus = checkCandidateExistence(partner, FormValidator.convertToIndianMobileFormat(candidate.getCandidateMobile()));
+                // make the association
+                PartnerController.partnerToCandidateAssociation(candidate,partner,isPrivatePartner,Boolean.FALSE,associationStatus);
             }
         }
 
