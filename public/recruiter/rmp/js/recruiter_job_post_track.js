@@ -223,10 +223,14 @@ function tabChange1() {
                                         }
                                     },
                                     'jobStatus' : function() {
-                                        if(smsObject.hasApplied == 0)
-                                            return '<div class="mLabel" style="width:100%" >Not Applied</div>';
-                                        else{
-                                            return '<div class="mLabel" style="width:100%" >Applied</div>';
+                                        if(smsObject.smsType.smsTypeId == 1){
+                                            if(smsObject.hasApplied == 0)
+                                                return '<div class="mLabel" style="width:100%" >Not Applied</div>';
+                                            else{
+                                                return '<div class="mLabel" style="width:100%" >Applied</div>';
+                                            }
+                                        } else{
+                                            return "-";
                                         }
                                     },
                                     'smsText' : '<div class="mLabel" style="width:100%" >'+ smsObject.smsText + '</div>',
