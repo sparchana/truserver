@@ -2272,6 +2272,18 @@ public class CandidateService
         Long candidateId = 0L;
         String candidateName = "";
         String candidateMobile = "";
+        Partner partner = null;
+        int channel = 0;
+
+        // determine channel
+        if(candidateResume.getCreatedBy()!=null && candidateResume.getCreatedBy().toLowerCase().contains("(partner)")) {
+            String partnerId = candidateResume.getCreatedBy().split("\\(")[0];
+            partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
+            channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
+        }
+        else {
+            channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
+        }
 
         // no candidate found... Create
         if(candidate == null) {
@@ -2290,26 +2302,10 @@ public class CandidateService
             if(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()) != null){
                 // create/update candidate
                 candidateMobile = addSupportCandidateRequest.getCandidateMobile();
-                Logger.info("About to call CandidateService.createCandidateProfile");
+                //Logger.info("About to call CandidateService.createCandidateProfile");
 
                 CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
-
-                int channel = 0;
-                Partner partner = null;
                 LeadSource leadSource = null;
-
-                // determine channel
-                if(session() != null && (session().get("sessionChannel") != null && !session().get("sessionChannel").isEmpty())){
-                    //Logger.info("Session : "+ session().get("sessionChannel"));
-                    if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
-                        channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
-                        String partnerId = session().get("partnerId");
-                        if(partnerId != null){partner = Partner.find.where().eq("partner_id", partnerId).findUnique();}
-                    }else{
-                        channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
-                    }
-                }
-                else {channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;}
 
                 if(partner == null){
                     // candidate self creation (i.e. 1 click resume upload) is treated as "support" since the create API does not allow full candidate creation with channel = self
@@ -2365,6 +2361,10 @@ public class CandidateService
             candidateId = candidate.getCandidateId();
             candidateName = candidate.getCandidateFirstName();
             candidateMobile = candidate.getCandidateMobile();
+
+            if(partner != null){
+                // this was created by a partner - need to associate
+            }
         }
 
         Logger.info("New/Updated candidateId ="+candidateId);
@@ -2438,8 +2438,10 @@ public class CandidateService
 
         // was this resume uploaded by a partner?
         if(candidateResume.getCreatedBy().toLowerCase().contains("(partner)")){
-            String partnerId = candidateResume.getCreatedBy().split("\\(")[0];
-            Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
+            if(partner == null){
+                String partnerId = candidateResume.getCreatedBy().split("\\(")[0];
+                partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
+            }
 
             try {
                 // is there any resume that was uploaded AFTER this resume by this partner?
