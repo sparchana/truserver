@@ -1261,13 +1261,15 @@ function renderIndividualCandidateCard(value, parent, view) {
             candidateCardData = value;
             sendSelectedSms(value.candidate.candidateId, value.candidate.candidateFirstName);
         };
-        if( value.candidate.candidateAccessLevelvalue != null &&
+        if( value.candidate.candidateAccessLevel != null &&
             value.candidate.candidateAccessLevel == 1 &&
             value.extraData.totalSmsSent != null &&
             value.extraData.totalSmsSent != 0)
         {
+            smsBtn.className = "waves-effect waves-light customSmsBtn btnBlue";
             smsBtn.textContent = "Re-Send SMS";
         } else {
+            smsBtn.className = "waves-effect waves-light customSmsBtn btnGreen";
             smsBtn.textContent = "Send SMS";
         }
         unlockContactCol.appendChild(smsBtn);
@@ -1457,7 +1459,8 @@ function sendSms(){
         var s = {
             candidateIdList: checkedCandidateIdList,
             smsMessage :$("#smsText").val(),
-            jobPostId :jpId
+            jobPostId :jpId,
+            smsType :1
         };
         $.ajax({
             type: "POST",

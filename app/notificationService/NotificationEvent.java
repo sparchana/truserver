@@ -4,6 +4,7 @@ import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
 import models.entity.Recruiter.RecruiterProfile;
+import models.entity.Static.SmsType;
 
 /**
  * Created by dodo on 8/12/16.
@@ -18,6 +19,7 @@ public abstract class NotificationEvent {
     private Company company;
     private Candidate candidate;
     private JobPost jobPost;
+    private SmsType smsType;
 
     abstract String send();
 
@@ -67,5 +69,13 @@ public abstract class NotificationEvent {
 
     public void setJobPost(JobPost jobPost) {
         this.jobPost = jobPost;
+    }
+
+    public SmsType getSmsType() {
+        return smsType;
+    }
+
+    public void setSmsType(SmsType smsType) {
+        this.smsType = smsType;
     }
 }

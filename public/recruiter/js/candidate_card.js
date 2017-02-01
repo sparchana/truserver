@@ -1439,7 +1439,8 @@ function sendSms(){
         var s = {
             candidateIdList: checkedCandidateIdList,
             smsMessage :$("#smsText").val(),
-            jobPostId :jpId
+            jobPostId :jpId,
+            smsType :1
         };
         $.ajax({
             type: "POST",
