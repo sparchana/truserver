@@ -1377,14 +1377,15 @@ public class JobService {
                     interviewDateTime.setInterviewDateMillis(future.getTime());
 
 
+                    if(!InterviewUtil.checkTimeSlot(future.getTime(), timeSlot)) {
+                        continue;
+                    }
+                    
                     String slotString = getDayVal(future.getDay())+ ", "
                             + future.getDate() + " " + getMonthVal((future.getMonth() + 1))
                             + " (" + details.getInterviewTimeSlot().getInterviewTimeSlotName() + ")" ;
 
 
-                    if(!InterviewUtil.checkTimeSlot(future.getTime(), timeSlot)) {
-                        continue;
-                    }
                     interviewSlotMap.put(slotString, interviewDateTime);
                 }
             }
