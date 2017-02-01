@@ -1123,7 +1123,7 @@ public class RecruiterController {
     }
 
     @Security.Authenticated(RecruiterSecured.class)
-    public static Result getSentSms(long jpId) {
+    public static Result getSentSms(Long jpId) {
         JobPost jobPost = JobPostDAO.findById(jpId);
         if(jobPost != null){
             if(checkCompanyJob(jobPost)){
@@ -1161,7 +1161,7 @@ public class RecruiterController {
     }
 
     @Security.Authenticated(RecruiterSecured.class)
-    public static Result getAppliedCandidates(long jpId) {
+    public static Result getAppliedCandidates(Long jpId) {
         JobPost jobPost = JobPostDAO.findById(jpId);
         if(jobPost != null){
             if(checkCompanyJob(jobPost)){
@@ -1226,7 +1226,7 @@ public class RecruiterController {
     }
 
     @Security.Authenticated(RecruiterSecured.class)
-    public static Result getConfirmedApplication(long jpId) {
+    public static Result getConfirmedApplication(Long jpId) {
         JobPost jobPost = JobPostDAO.findById(jpId);
         if(jobPost != null){
             if(checkCompanyJob(jobPost)){
@@ -1311,6 +1311,7 @@ public class RecruiterController {
         return ok();
     }
 
+    @Security.Authenticated(RecruiterAdminSecured.class)
     public static Result jobPostSummary(Long recruiterId, Long jpId) {
         if(recruiterId == null) {
             return badRequest();

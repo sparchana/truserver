@@ -1261,7 +1261,7 @@ function renderIndividualCandidateCard(value, parent, view) {
             candidateCardData = value;
             sendSelectedSms(value.candidate.candidateId, value.candidate.candidateFirstName);
         };
-        if( value.candidate.candidateAccessLevelvalue != null &&
+        if( value.candidate.candidateAccessLevel != null &&
             value.candidate.candidateAccessLevel == 1 &&
             value.extraData.totalSmsSent != null &&
             value.extraData.totalSmsSent != 0)
