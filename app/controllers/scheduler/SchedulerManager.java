@@ -68,6 +68,10 @@ public class SchedulerManager implements Runnable {
         int mWeeklyProfileCompletionMin = (play.Play.application().configuration().getInt("schedulertask.weekly.profilecompletion.notifier.start.min"));
         int mWeeklyProfileCompletionSec = (play.Play.application().configuration().getInt("schedulertask.weekly.profilecompletion.notifier.start.sec"));
 
+        int mSODJobPostActivationStartHr = (play.Play.application().configuration().getInt("schedulertask.sod.jobpost.activation.start.hr"));
+        int mSODJobPostActivationStartMin = (play.Play.application().configuration().getInt("schedulertask.sod.jobpost.activation.start.min"));
+        int mSODJobPostActivationStartSec = (play.Play.application().configuration().getInt("schedulertask.sod.jobpost.activation.start.sec"));
+
         long eodMailDelay = computeDelay(mEODMailTaskStartHr, mEODMailTaskStartMin , mEODMailTaskStartSec);
         long ndiMailDelay = computeDelay(mEODNextDayInterviewTaskStartHr, mEODNextDayInterviewStartMin , mEODNextDayInterviewStartSec);
         long aadhaarVerificationDelay = computeDelay(mEODAadhaarTaskStartHr, mEODAadhaarTaskStartMin , mEODAadhaarTaskStartSec);
@@ -77,6 +81,7 @@ public class SchedulerManager implements Runnable {
         long sodActivationDelay = computeDelay(mSODCandidateActivationStartHr, mSODCandidateActivationStartMin, mSODCandidateActivationStartSec);
 
         long rateUsPostInterviewDelay = computeDelay(mEODRateUsPostInterviewHr, mEODRateUsPostInterviewMin , mEODRateUsPostInterviewSec);
+        long reActivateJobPostDelay = computeDelay(mSODJobPostActivationStartHr, mSODJobPostActivationStartMin , mSODJobPostActivationStartSec);
 
         long sdiDelay = computeDelayForSDI(sameDayInterviewAlertEventPeriod);
 
@@ -109,6 +114,8 @@ public class SchedulerManager implements Runnable {
         createSODCandidateActivationEvent(sodActivationDelay);
 
         createEODCreditDebitAndExpireInterviewCredit(aadhaarVerificationDelay);
+
+        createSODActivateJobPostEvent(reActivateJobPostDelay);
     }
 
     public void createSameDayInterviewAlertEvent(int periodInHr, long delay) {
@@ -202,6 +209,14 @@ public class SchedulerManager implements Runnable {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         EODDebitCreditInterviewCreditTask eODDebitCreditInterviewCreditTask = new EODDebitCreditInterviewCreditTask(classLoader);
         timer.schedule(eODDebitCreditInterviewCreditTask, delay, oneDay);
+    }
+
+    private void createSODActivateJobPostEvent(long delay){
+        Logger.info("Re-activate paused job post task");
+
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        SODJobPostActivateTask sODJobPostActivateTask = new SODJobPostActivateTask(classLoader);
+        timer.schedule(sODJobPostActivateTask, delay, oneDay);
     }
 
     public static void saveNewSchedulerStats(Timestamp startTime, SchedulerType schedulerType,

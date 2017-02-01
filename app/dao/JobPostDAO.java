@@ -55,4 +55,20 @@ public class JobPostDAO {
                 .findList();
 
     }
+
+    public static List<JobPost> getAllPausedJobsResumingToday() {
+
+        String jobPostQueryBuilder = "select jobpostid, jobstatus, resume_application_date from jobpost" +
+                " where jobstatus = " + ServerConstants.JOB_STATUS_PAUSED + " and DATE(resume_application_date) = curdate();";
+
+        RawSql rawSql = RawSqlBuilder.parse(jobPostQueryBuilder)
+                .columnMapping("jobpostid", "jobPostId")
+                .columnMapping("jobstatus", "jobPostStatus.jobStatusId")
+                .columnMapping("resume_application_date", "resumeApplicationDate")
+                .create();
+
+        return Ebean.find(JobPost.class)
+                .setRawSql(rawSql)
+                .findList();
+    }
 }
