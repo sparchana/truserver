@@ -185,8 +185,8 @@
 .pagination>.active>a:focus,
 .pagination>.active>span:focus{
     z-index:0;
-    background-color: rgba(0, 159, 219, 0.99);
-    border-color: rgba(0, 159, 219, 0.99);
+    background-color: rgb(85, 179, 208);
+    border-color: rgb(85, 179, 208);
 }
 
 .viewCandidateModal{

@@ -14,26 +14,239 @@ $(document).scroll(function(){
 });
 
 $(document).ready(function(){
-    checkRecruiterLogin();
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getAllRecruiterJobPosts",
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataGenerateJobPostView,
-            error: function (jqXHR, exception) {
-                $("#somethingWentWrong").show();
-                $("#loadingIcon").hide();
-            }
+    $("#loadingIcon").show();
+    try{
+        var table = $("table#postedJobTable").DataTable({
+            "ajax": {
+               "type":"POST",
+                "url":"/getAllRecruiterJobPosts",
+                "dataSrc": function (returnedData) {
+                        $("#loadingIcon").hide();
+                        if(returnedData == "0"){
+                            console.log("Data not receive");
+                            logoutRecruiter();
+                        } else{
+                            var postedJobList = returnedData;
+                            var returned_data  = new Array();
+                            if(postedJobList.length > 0){
+                                $("#postedJobTable").show();
+                                postedJobList.forEach(function (jobPost) {
+                                    returned_data.push({
+                                        'datePosted': function() {
+                                            var postedOn = new Date(jobPost.jobPost.jobPostCreateTimestamp);
+                                            var dateValue = ('0' + postedOn.getDate()).slice(-2) + '-' + getMonthVal((postedOn.getMonth() + 1)) + '-' + postedOn.getFullYear()
+                                            return '<div class="mLabel" style="width:100%" >' + dateValue + '</div>'
+                                        },
+                                        'jobTitle':'<div class="mLabel" style="width:100%">'+jobPost.jobPost.jobPostTitle+' </div>',
+                                        'recruiterName':function () {
+                                            if(jobPost.jobPost.recruiterProfile !=null){
+                                                return '<div class="mLabel" style="width:100%">'+ jobPost.jobPost.recruiterProfile.recruiterProfileName +' </div>'
+                                            }else{
+                                                return '<div class="mLabel" style="width:100%"> Recruiter </div>'
+                                            }
+                                        },
+                                        'location': function () {
+                                            var localities = "";
+                                            var locationList = jobPost.jobPost.jobPostToLocalityList;
 
+                                            locationList.forEach(function (locality) {
+                                                localities += locality.locality.localityName + ", ";
+                                            });
+
+                                            return '<div class="mLabel" style="width:100%">'+localities.substring(0, localities.length - 2)+'</div>';
+                                        },
+                                        'salary': function () {
+
+                                            if(jobPost.jobPost.jobPostMaxSalary == 0 || jobPost.jobPost.jobPostMaxSalary == null){
+
+                                                return '<div class="mLabel" style="width:100%"> ₹ '+ rupeeFormatSalary(jobPost.jobPost.jobPostMinSalary)+'</div>'
+                                                ;
+                                            } else{
+                                                return '<div class="mLabel" style="width:100%"> ₹ '+ rupeeFormatSalary(jobPost.jobPost.jobPostMinSalary) + ' - ₹ ' + rupeeFormatSalary(jobPost.jobPost.jobPostMaxSalary)+'</div>';
+                                            }
+                                        },
+                                        'track': function () {
+                                            if (jobPost.pendingCount > 0 && jobPost.upcomingCount > 0) {
+
+                                                return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>'+
+                                                    '<div style="width:100%;font-size:11px">' + jobPost.upcomingCount + ' Upcoming</div>'+
+                                                    '<div style="width:100%;font-size:11px">' + jobPost.pendingCount + ' Action Required</div>';
+
+                                            } else {
+                                                if(jobPost.upcomingCount > 0 && jobPost.pendingCount == 0 ){
+
+                                                    return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>'+
+                                                        '<div style="width:100%;font-size:11px">' + jobPost.upcomingCount + ' Upcoming</div>';
+
+                                                } else if(jobPost.upcomingCount == 0 && jobPost.pendingCount > 0 ){
+
+                                                    return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>'+
+                                                        '<div style="width:100%;font-size:11px">' + jobPost.pendingCount + ' Action Required</div>';
+
+                                                } else{
+                                                    return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>';
+                                                }
+                                            }
+                                        },
+                                        'status': function () {
+                                             jobPostApplicationStatus(jobPost);
+                                            return '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>'
+                                            },
+                                        'editJob':'<button type="button" class="mBtn" style="width: 94%" onclick="openJobPost(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Edit</button>',
+                                        'candidates':'<button type="button" class="mBtn" style="width: 94%" onclick="openCandidateView('+jobPost.jobPost.jobPostId+')" id="viewCandidateBtn" >Find</button>'
+                                    })
+                                });
+                            }else{
+                                $("#noJobs").show();
+                            }
+                            return returned_data
+                        }
+                    }
+                },
+            "deferRender":true,
+            "columns": [
+                { "data": "datePosted" },
+                { "data": "jobTitle" },
+                { "data": "recruiterName" },
+                { "data": "location" },
+                { "data": "salary" },
+                { "data": "track" },
+                { "data": "status" },
+                { "data": "editJob" },
+                { "data": "candidates" },
+            ],
+            "order": [[2, "desc"]],
+            responsive: true,
+            "destroy": true,
+            "dom":'Bfrtip',
+            "buttons": [
+                'copy','csv','excel'
+            ]
         });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
+    } catch (exception){
+        console.log("exception occured !!" + exception);
     }
 });
+
+function jobPostApplicationStatus(jobPost) {
+    var parent = $("#jobPostStatusDiv_"+jobPost.jobPost.jobPostId);
+    parent.html("");
+
+    var colJobStatus = document.createElement("div");
+    parent.append(colJobStatus);
+
+    var br = document.createElement("br");
+
+    var pauseDiv = document.createElement("div");
+    pauseDiv.style = "display: inline-block; margin: 0 2px 0 2px";
+
+    var pauseIconImg = document.createElement("img");
+    pauseIconImg.id = jobPost.jobPost.jobPostId + "_pause";
+    pauseIconImg.src = "/assets/recruiter/img/icons/pause.svg";
+    pauseIconImg.style = "cursor: pointer; text-decoration: none; margin: 4px";
+    pauseIconImg.setAttribute('height', '18px');
+    pauseIconImg.className = "tooltipped";
+    pauseIconImg.setAttribute("data-postiton", "top");
+    pauseIconImg.setAttribute("data-delay", "50");
+    pauseIconImg.setAttribute("data-tooltip", "Pause Interviews");
+    pauseIconImg.onclick = function () {
+        jobPostObj = jobPost.jobPost;
+        openPauseInterviewModal();
+    };
+
+    pauseDiv.appendChild(pauseIconImg);
+    pauseDiv.appendChild(br);
+
+    var optionName = document.createElement("span");
+    optionName.style = "font-size: 11px;";
+    optionName.textContent = "Pause";
+    pauseDiv.appendChild(optionName);
+
+    var resumeDiv = document.createElement("div");
+    resumeDiv.style = "display: inline-block; margin: 0 2px 0 2px";
+
+    var resumeIconImg = document.createElement("img");
+    resumeIconImg.src = "/assets/recruiter/img/icons/resume.svg";
+    resumeIconImg.id = jobPost.jobPost.jobPostId + "_resume";
+    resumeIconImg.style = "cursor: pointer; text-decoration: none; margin: 4px";
+    resumeIconImg.setAttribute('height', '18px');
+    resumeIconImg.className = "tooltipped";
+    resumeIconImg.setAttribute("data-postiton", "top");
+    resumeIconImg.setAttribute("data-delay", "50");
+    resumeIconImg.setAttribute("data-tooltip", "Resume Interviews");
+    resumeIconImg.onclick = function () {
+        jobPostObj = jobPost.jobPost;
+        resumeJobApplication();
+    };
+
+    resumeDiv.appendChild(resumeIconImg);
+    br = document.createElement("br");
+    resumeDiv.appendChild(br);
+
+    optionName = document.createElement("span");
+    optionName.style = "font-size: 11px";
+    optionName.textContent = "Resume";
+    resumeDiv.appendChild(optionName);
+
+
+    var stopDiv = document.createElement("div");
+    stopDiv.style = "display: inline-block; margin: 0 2px 0 2px";
+
+    var stopIconImg = document.createElement("img");
+    stopIconImg.src = "/assets/recruiter/img/icons/stop.svg";
+    stopIconImg.id = jobPost.jobPost.jobPostId + "_stop";
+    stopIconImg.style = "cursor: pointer; text-decoration: none; margin: 4px";
+    stopIconImg.setAttribute('height', '18px');
+    stopIconImg.className = "tooltipped";
+    stopIconImg.setAttribute("data-postiton", "top");
+    stopIconImg.setAttribute("data-delay", "50");
+    stopIconImg.setAttribute("data-tooltip", "Close job applications");
+    stopIconImg.onclick = function () {
+        jobPostObj = jobPost.jobPost;
+        stopJobApplication();
+    };
+
+
+    stopDiv.appendChild(stopIconImg);
+    br = document.createElement("br");
+    stopDiv.appendChild(br);
+
+    optionName = document.createElement("span");
+    optionName.style = "font-size: 11px";
+    optionName.textContent = "Close";
+    stopDiv.appendChild(optionName);
+
+    var statusName = document.createElement("div");
+    colJobStatus.appendChild(statusName);
+
+    if(jobPost.jobPost.jobPostStatus != null){
+        if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_NEW){
+            statusName.textContent = "Under review";
+            statusName.style = "color: orange; margin-bottom: 2px; text-align: center;font-weight:bold";
+
+            colJobStatus.appendChild(stopDiv);
+
+        } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_ACTIVE){
+            statusName.textContent = "Active";
+            statusName.style = "color: #69CF37; margin-bottom: 2px; text-align: center;font-weight:bold";
+
+            colJobStatus.appendChild(pauseDiv);
+            colJobStatus.appendChild(stopDiv);
+
+        } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_PAUSED){
+            statusName.style = "color: orange; margin-bottom: 2px; text-align: center;font-weight:bold";
+            statusName.textContent = jobPost.jobPost.jobPostStatus.jobStatusName;
+
+            colJobStatus.appendChild(resumeDiv);
+            colJobStatus.appendChild(stopDiv);
+
+        } else{
+            statusName.textContent = jobPost.jobPost.jobPostStatus.jobStatusName;
+        }
+    } else{
+        statusName.textContent = "Not specified";
+    }
+}
 
 function checkRecruiterLogin() {
     try {
@@ -53,288 +266,6 @@ function checkRecruiterLogin() {
 function processDataRecruiterSession(returnedData) {
     if(returnedData == 0){
         logoutRecruiter();
-    }
-}
-
-function processDataGenerateJobPostView(returnedData) {
-    if(returnedData == "0"){
-        logoutRecruiter();
-    } else{
-        $("#jobTable").show();
-        var jobPostList = returnedData;
-        var parent = $('.myJobsRecruiter');
-        if(Object.keys(jobPostList).length){
-            jobPostList.reverse();
-            jobPostList.forEach(function (jobPost) {
-
-                var mainDiv =  document.createElement("div");
-                parent.append(mainDiv);
-
-                var outerRow = document.createElement("div");
-                outerRow.className = 'row';
-                outerRow.id="outerBoxMain";
-                outerRow.style="font-size: 12px";
-                mainDiv.appendChild(outerRow);
-
-                var colDatePost = document.createElement("div");
-                colDatePost.className = 'col s12 m1 l1';
-                colDatePost.style = 'margin-top:8px';
-                outerRow.appendChild(colDatePost);
-
-                var postedOn = new Date(jobPost.jobPost.jobPostCreateTimestamp);
-                colDatePost.textContent = ('0' + postedOn.getDate()).slice(-2) + '-' + getMonthVal((postedOn.getMonth()+1)) + '-' + postedOn.getFullYear()
-
-                var spanPostedOn  = document.createElement("div");
-                spanPostedOn.className = "col s4 hide-on-med-and-up right-align";
-                spanPostedOn.textContent= "Date Posted :";
-                spanPostedOn.style = "font-weight: 600;font-size:12px";
-                colDatePost.appendChild(spanPostedOn);
-
-                var colJobPost = document.createElement("div");
-                colJobPost.className = 'col s12 m2 l2';
-                colJobPost.style = 'margin-top:8px';
-                colJobPost.textContent = jobPost.jobPost.jobPostTitle;
-                outerRow.appendChild(colJobPost);
-
-                var spanJobTitle  = document.createElement("div");
-                spanJobTitle.className = "col s4 hide-on-med-and-up right-align";
-                spanJobTitle.textContent= "Title :";
-                spanJobTitle.style = "font-weight: 600;font-size:12px";
-                colJobPost.appendChild(spanJobTitle);
-
-                var localities = "";
-                var locationList = jobPost.jobPost.jobPostToLocalityList;
-
-                locationList.forEach(function (locality) {
-                    localities += locality.locality.localityName + ", ";
-                });
-
-                var colJobLocation = document.createElement("div");
-                colJobLocation.className = 'col s12 m2 l2';
-                colJobLocation.style = 'margin-top:8px';
-                colJobLocation.textContent = localities.substring(0, localities.length - 2);
-                outerRow.appendChild(colJobLocation);
-
-                var spanJobLocality  = document.createElement("div");
-                spanJobLocality.className = "col s4  hide-on-med-and-up right-align";
-                spanJobLocality.textContent= "Location :";
-                spanJobLocality.style = "font-weight: 600;font-size:12px";
-                colJobLocation.appendChild(spanJobLocality);
-
-                var colJobSalary = document.createElement("div");
-                colJobSalary.className = 'col s12 m1 l1';
-                colJobSalary.style = 'margin-top:8px';
-                outerRow.appendChild(colJobSalary);
-
-                if(jobPost.jobPost.jobPostMaxSalary == 0 || jobPost.jobPost.jobPostMaxSalary == null){
-                    colJobSalary.textContent = "₹" + rupeeFormatSalary(jobPost.jobPost.jobPostMinSalary);
-                } else{
-                    colJobSalary.textContent = "₹" + rupeeFormatSalary(jobPost.jobPost.jobPostMinSalary) + " - ₹" + rupeeFormatSalary(jobPost.jobPost.jobPostMaxSalary);
-                }
-
-                var spanSalary  = document.createElement("div");
-                spanSalary.className = "col s4 hide-on-med-and-up right-align";
-                spanSalary.textContent= "Salary :";
-                spanSalary.style = "font-weight: 600;font-size:12px";
-                colJobSalary.appendChild(spanSalary);
-
-                var colTrackView = document.createElement("div");
-                colTrackView.className = 'col s12 m1 l2';
-                colTrackView.style = "text-align:center";
-                outerRow.appendChild(colTrackView);
-
-                var trackViewBtn = document.createElement('button');
-                trackViewBtn.className = 'waves-effect waves-blue-grey lighten-5 btn-flat';
-                trackViewBtn.style = 'color:#1976d2; padding:0 6px 0 6px; font-size:12px;';
-                trackViewBtn.textContent='Track Applications';
-
-                trackViewBtn.onclick = function () {
-                    openJobPosttrackView(jobPost.jobPost.jobPostId);
-                };
-                colTrackView.appendChild(trackViewBtn);
-
-                var newApplication = document.createElement('div');
-                newApplication.style = "margin-top: 4px";
-                newApplication.className = "newCounter";
-                colTrackView.appendChild(newApplication);
-
-                var upcomingCounter = document.createElement('div');
-                upcomingCounter.style = "margin-top: 4px";
-                upcomingCounter.className = "newCounter";
-                colTrackView.appendChild(upcomingCounter);
-
-                if(jobPost.pendingCount > 0){
-                    newApplication.textContent = " (" + jobPost.pendingCount + " Action Required)";
-                }
-                if(jobPost.upcomingCount > 0){
-                    upcomingCounter.textContent = " (" + jobPost.upcomingCount + " Upcoming)";
-                }
-
-                var colJobStatus = document.createElement("div");
-                colJobStatus.className = 'col s12 m1 l2';
-                colJobStatus.style = 'margin-top: 8px';
-                outerRow.appendChild(colJobStatus);
-
-                var br = document.createElement("br");
-
-                var spanStatus  = document.createElement("div");
-                spanStatus.className = "col s4 hide-on-med-and-up right-align";
-                spanStatus.textContent= "Status :";
-                spanStatus.style = "font-weight: 600;font-size:12px";
-                colJobStatus.appendChild(spanStatus);
-
-                var pauseDiv = document.createElement("div");
-                pauseDiv.style = "display: inline-block; margin: 0 2px 0 2px";
-
-                var pauseIconImg = document.createElement("img");
-                pauseIconImg.id = jobPost.jobPost.jobPostId + "_pause";
-                pauseIconImg.src = "/assets/recruiter/img/icons/pause.svg";
-                pauseIconImg.style = "cursor: pointer; text-decoration: none; margin: 4px";
-                pauseIconImg.setAttribute('height', '24px');
-                pauseIconImg.className = "tooltipped";
-                pauseIconImg.setAttribute("data-postiton", "top");
-                pauseIconImg.setAttribute("data-delay", "50");
-                pauseIconImg.setAttribute("data-tooltip", "Pause Interviews");
-                pauseIconImg.onclick = function () {
-                    jobPostObj = jobPost.jobPost;
-                    openPauseInterviewModal();
-                };
-
-                pauseDiv.appendChild(pauseIconImg);
-                br = document.createElement("br");
-                pauseDiv.appendChild(br);
-
-                var optionName = document.createElement("span");
-                optionName.style = "font-size: 11px";
-                optionName.textContent = "Pause Job";
-                pauseDiv.appendChild(optionName);
-
-                var resumeDiv = document.createElement("div");
-                resumeDiv.style = "display: inline-block; margin: 0 2px 0 2px";
-
-                var resumeIconImg = document.createElement("img");
-                resumeIconImg.src = "/assets/recruiter/img/icons/resume.svg";
-                resumeIconImg.id = jobPost.jobPost.jobPostId + "_resume";
-                resumeIconImg.style = "cursor: pointer; text-decoration: none; margin: 4px";
-                resumeIconImg.setAttribute('height', '24px');
-                resumeIconImg.className = "tooltipped";
-                resumeIconImg.setAttribute("data-postiton", "top");
-                resumeIconImg.setAttribute("data-delay", "50");
-                resumeIconImg.setAttribute("data-tooltip", "Resume Interviews");
-                resumeIconImg.onclick = function () {
-                    jobPostObj = jobPost.jobPost;
-                    resumeJobApplication();
-                };
-
-                resumeDiv.appendChild(resumeIconImg);
-                br = document.createElement("br");
-                resumeDiv.appendChild(br);
-
-                optionName = document.createElement("span");
-                optionName.style = "font-size: 11px";
-                optionName.textContent = "Resume Job";
-                resumeDiv.appendChild(optionName);
-
-
-                var stopDiv = document.createElement("div");
-                stopDiv.style = "display: inline-block; margin: 0 2px 0 2px";
-
-                var stopIconImg = document.createElement("img");
-                stopIconImg.src = "/assets/recruiter/img/icons/stop.svg";
-                stopIconImg.id = jobPost.jobPost.jobPostId + "_stop";
-                stopIconImg.style = "cursor: pointer; text-decoration: none; margin: 4px";
-                stopIconImg.setAttribute('height', '24px');
-                stopIconImg.className = "tooltipped";
-                stopIconImg.setAttribute("data-postiton", "top");
-                stopIconImg.setAttribute("data-delay", "50");
-                stopIconImg.setAttribute("data-tooltip", "Close job applications");
-                stopIconImg.onclick = function () {
-                    jobPostObj = jobPost.jobPost;
-                    stopJobApplication();
-                };
-
-
-                stopDiv.appendChild(stopIconImg);
-                br = document.createElement("br");
-                stopDiv.appendChild(br);
-
-                optionName = document.createElement("span");
-                optionName.style = "font-size: 11px";
-                optionName.textContent = "Close Job";
-                stopDiv.appendChild(optionName);
-
-                var statusName = document.createElement("div");
-                colJobStatus.appendChild(statusName);
-
-                if(jobPost.jobPost.jobPostStatus != null){
-                    if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_NEW){
-                        statusName.textContent = "Under review";
-                        statusName.style = "color: #F4A407; margin-bottom: 2px; text-align: center";
-
-                        colJobStatus.appendChild(stopDiv);
-
-                    } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_ACTIVE){
-                        statusName.textContent = "Active";
-                        statusName.style = "color: #69CF37; margin-bottom: 2px; text-align: center";
-
-                        colJobStatus.appendChild(pauseDiv);
-                        colJobStatus.appendChild(stopDiv);
-
-                    } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_PAUSED){
-                        statusName.textContent = jobPost.jobPost.jobPostStatus.jobStatusName;
-
-                        colJobStatus.appendChild(resumeDiv);
-                        colJobStatus.appendChild(stopDiv);
-
-                    } else{
-                        statusName.textContent = jobPost.jobPost.jobPostStatus.jobStatusName;
-                    }
-                } else{
-                    statusName.textContent = "Not specified";
-                }
-
-                var colEditView = document.createElement("div");
-                colEditView.className = 'col s12 m1 l1';
-                colEditView.style = "text-align:center";
-                outerRow.appendChild(colEditView);
-
-                var editViewBtn = document.createElement('button');
-                editViewBtn.className = 'waves-effect waves-blue-grey lighten-5 btn-flat';
-                editViewBtn.style = 'color:#1976d2; padding:0 6px 0 6px; font-size:12px;';
-                editViewBtn.textContent='Edit Job';
-
-                editViewBtn.onclick = function () {
-                    openJobPost(jobPost.jobPost.jobPostId);
-                };
-                colEditView.appendChild(editViewBtn);
-
-                // adding col for view Candidate
-                var colCandidateView = document.createElement("div");
-                colCandidateView.className = 'col s12 m1 l1';
-                colCandidateView.style = "text-align:center";
-                outerRow.appendChild(colCandidateView);
-
-                var candidateViewBtn = document.createElement('button');
-                candidateViewBtn.className = 'waves-effect waves-blue-grey lighten-5 btn-flat';
-                candidateViewBtn.style = 'color:#1976d2; padding:0 6px 0 6px; font-size:12px;';
-                candidateViewBtn.textContent='Find Candidates';
-
-                candidateViewBtn.onclick = function () {
-                    openCandidateView(jobPost.jobPost.jobPostId);
-                };
-                colCandidateView.appendChild(candidateViewBtn);
-
-                var hr = document.createElement('hr');
-                hr.style='margin:2px 1%';
-                mainDiv.appendChild(hr);
-            });
-
-            $('.tooltipped').tooltip({delay: 50});
-        } else{
-            $("#noJobs").show();
-            $("#jobTable").hide();
-        }
-        $("#loadingIcon").hide();
     }
 }
 

@@ -18,6 +18,12 @@
         <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_myjobs.css">
+        <link rel="stylesheet" type="text/css" href="/assets/partner/css/materialButton.css">
+
+        <link rel="stylesheet" href="/assets/support/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="/assets/partner/css/responsive.dataTables.min.css">
+        <link rel="stylesheet" href="/assets/partner/css/rowReorder.dataTables.min.css">
+        <link rel="stylesheet" href="/assets/support/css/buttons.dataTables.min.css">
 
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
@@ -31,6 +37,11 @@
         <meta name="theme-color" content="#000000">
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     </head>
+    <style>
+        #postedJobTable_filter > label > input[type=search]{
+            height: 25px;
+        }
+    </style>
     <body>
         <div class="recruiter_navbar"></div>
         <script>
@@ -38,7 +49,7 @@
     </script>
 
         <div class="back-banner-recruiter" style="height: 90px"></div>
-        <h5 style="margin: 8px 8px 8px 16px">Your Posted Jobs</h5>
+        <h5 style="margin: 8px 8px 8px 16px">Posted Jobs</h5>
 
         <div style="padding-top: 8%; padding-bottom: 8%" id="loadingIcon">
             <center>
@@ -58,7 +69,26 @@
             </center>
         </div>
 
-        <div id="noJobs" style="padding: 120px 6% 120px 6%; display: none">
+        <div id="container-fluid" style="padding:1% 2%;margin-bottom: 50px">
+            <table id="postedJobTable" style="background: white;" class="table table-bordered" cellspacing="0" width="100%">
+                <thead style="background: #656565; color: white">
+                    <tr>
+                        <th style="font-size: 14px">Posted On</th>
+                        <th style="font-size: 14px">Job Title</th>
+                        <th style="font-size: 14px">Recruiter</th>
+                        <th style="font-size: 14px">Location(s)</th>
+                        <th style="font-size: 14px">Salary</th>
+                        <th style="font-size: 14px">Track</th>
+                        <th style="font-size: 14px">Status</th>
+                        <th style="font-size: 14px">Edit Job</th>
+                        <th style="font-size: 14px">Candidates</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        @*<div id="noJobs" style="padding: 120px 6% 120px 6%; display: none">
             <center>
                 <img src="/assets/recruiter/img/empty_box.svg" width="116px">
                 <h5>No Jobs Found!</h5>
@@ -66,7 +96,7 @@
             </center>
         </div>
         <div class="container-fluid" id="jobTable" style="display: none">
-            <div class="card" id="myJobPost">
+            *@@*<div class="card" id="myJobPost">
                 <div class="row hide-on-small-only" id='headerForData' style="font-size: 14px">
                     <div class="col s1 l1" id="colHeadDataTable">
                         <font>Date Posted</font>
@@ -95,8 +125,8 @@
                 </div>
                 <div class="myJobsRecruiter">
             </div>
-            </div>
-        </div>
+            </div>*@@*
+        </div>*@
 
             <!-- pause interview modal -->
         <div id="pauseInterviewModal" class="modal" style="background: transparent; box-shadow: none">
@@ -152,7 +182,15 @@
     </body>
 
     <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="/assets/support/js/datatables.min.js"></script>
+    <script type="text/javascript" src="/assets/partner/js/dataTables.rowReorder.min.js"></script>
+    <script type="text/javascript" src="/assets/partner/js/dataTables.responsive.min.js"></script>
+    <script type="text/javascript" src="/assets/support/js/btnExport/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="/assets/support/js/btnExport/buttons.flash.min.js"></script>
+
     <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
+
     <script type="text/javascript" src="/assets/common/js/validation.js"></script>
     <script type="text/javascript" src="/assets/common/js/script_constants.js"></script>
     <script type="text/javascript" src="/assets/common/js/jobpost_workflow_constants.js"></script>
