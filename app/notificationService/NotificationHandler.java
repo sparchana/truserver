@@ -38,6 +38,7 @@ public class NotificationHandler implements Runnable {
                     smsReport.setCompany(notificationEvent.getCompany());
                     smsReport.setSmsText(notificationEvent.getMessage());
                     smsReport.setSmsSchedulerId(response);
+                    smsReport.setSmsType(notificationEvent.getSmsType());
                     smsReport.setSmsDeliveryStatus(SmsDeliveryStatus.find.where().eq("status_id", SMS_STATUS_PENDING).findUnique());
 
                     Logger.info("Creating entry in SMS report table");

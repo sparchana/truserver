@@ -4,6 +4,7 @@ import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
 import models.entity.Recruiter.RecruiterProfile;
+import models.entity.Static.SmsType;
 import play.Logger;
 import play.Play;
 
@@ -29,7 +30,7 @@ public class SMSEvent extends NotificationEvent {
     }
 
     public SMSEvent(String recipient, String message, Company company
-            , RecruiterProfile recruiterProfile, JobPost jobPost, Candidate candidate)
+            , RecruiterProfile recruiterProfile, JobPost jobPost, Candidate candidate, SmsType smsType)
     {
         this.setMessage(message);
         this.setRecipient(recipient);
@@ -37,6 +38,7 @@ public class SMSEvent extends NotificationEvent {
         this.setCompany(company);
         this.setCandidate(candidate);
         this.setRecruiterProfile(recruiterProfile);
+        this.setSmsType(smsType);
     }
 
     @Override

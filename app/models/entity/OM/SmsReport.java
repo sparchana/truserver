@@ -8,6 +8,7 @@ import models.entity.Company;
 import models.entity.JobPost;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.SmsDeliveryStatus;
+import models.entity.Static.SmsType;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -57,6 +58,11 @@ public class SmsReport extends Model {
     @JsonManagedReference
     @JoinColumn(name = "SmsDeliveryStatus")
     private SmsDeliveryStatus smsDeliveryStatus;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "SmsType")
+    private SmsType smsType;
 
     @Transient
     private Integer hasApplied = 0;
@@ -159,5 +165,13 @@ public class SmsReport extends Model {
         } else{
             return 0;
         }
+    }
+
+    public SmsType getSmsType() {
+        return smsType;
+    }
+
+    public void setSmsType(SmsType smsType) {
+        this.smsType = smsType;
     }
 }

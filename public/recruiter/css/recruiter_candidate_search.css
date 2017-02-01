@@ -173,6 +173,9 @@ body{
       }
 }
 
+.selectedRow{
+    background: #acbad4;
+}
 .customBtn{
     cursor: pointer;
     background: transparent;
