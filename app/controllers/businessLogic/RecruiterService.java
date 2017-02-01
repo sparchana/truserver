@@ -908,10 +908,22 @@ public class RecruiterService {
         return newHistory;
     }
 
-    public List<RecruiterSummaryResponse> getRecruiterSummary(Long companyId, Long callerRecruiterId) {
+    public List<RecruiterSummaryResponse> getRecruiterSummary(Long companyId, Long callerRecruiterId, String from, String to) {
 
         if(callerRecruiterId == null) {
             return new ArrayList<>();
+        }
+
+        final SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
+        Date fromDate = null;
+        Date toDate = null;
+        if(from != null && to != null) {
+            try {
+                fromDate = sdf.parse(from);
+                toDate = sdf.parse(to);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
 
         if(companyId == null) {
@@ -936,6 +948,13 @@ public class RecruiterService {
                 if(jobPost.getJobPostAccessLevel() != ServerConstants.JOB_POST_TYPE_PRIVATE) continue;
                 if(jobPost.getJobPostStatus().getJobStatusId() != ServerConstants.JOB_STATUS_ACTIVE) continue;
 
+                if(fromDate != null && toDate != null) {
+                    if( jobPost.getJobPostCreateTimestamp().before(fromDate)
+                            || jobPost.getJobPostCreateTimestamp().after(toDate) )
+                    {
+                        continue;
+                    }
+                }
                 jobPostList.add(jobPost);
                 jobPostIdList.add(jobPost.getJobPostId());
             }
@@ -946,9 +965,9 @@ public class RecruiterService {
                     ((recruiterProfile.getRecruiterAlternateMobile() == null) ? "": "/"+recruiterProfile.getRecruiterAlternateMobile()));
 
             recruiterSummaryResponse.setNoOfJobPosted(jobPostList.size());
-            recruiterSummaryResponse.setTotalCandidatesApplied(computeTotalApplicant(jobPostIdList));
-            recruiterSummaryResponse.setTotalInterviewConducted(computeTotalInterviewConducted(jobPostIdList));
-            recruiterSummaryResponse.setTotalSelected(computeTotalSelected(jobPostIdList));
+            recruiterSummaryResponse.setTotalCandidatesApplied(computeTotalApplicant(jobPostIdList, fromDate, toDate));
+            recruiterSummaryResponse.setTotalInterviewConducted(computeTotalInterviewConducted(jobPostIdList,  fromDate, toDate));
+            recruiterSummaryResponse.setTotalSelected(computeTotalSelected(jobPostIdList, fromDate, toDate));
 
             recruiterSummaryResponse.setPercentageFulfillment(
                     formatPercentageFulfilled(computePercentageFulfilled(jobPostList, recruiterSummaryResponse.getTotalSelected()))
@@ -988,6 +1007,29 @@ public class RecruiterService {
         return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList).size();
     }
 
+    private int computeTotalSelected(List<Long> jobPostIdList, Date fromDate, Date toDate) {
+        if(fromDate == null || toDate == null) {
+            return computeTotalSelected(jobPostIdList);
+        }
+
+        List<Integer> statusList = new ArrayList<>();
+
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED);
+
+        return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList, fromDate, toDate).size();
+    }
+
+    private int computeTotalApplicant(List<Long> jobPostIdList, Date fromDate, Date toDate ) {
+        if(fromDate == null || toDate == null ){
+            return computeTotalApplicant(jobPostIdList);
+        }
+
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(ServerConstants.JWF_STATUS_SELECTED);
+
+        return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList, fromDate, toDate).size();
+    }
+
     private int computeTotalApplicant(List<Long> jobPostIdList) {
         List<Integer> statusList = new ArrayList<>();
         statusList.add(ServerConstants.JWF_STATUS_SELECTED);
@@ -1004,6 +1046,21 @@ public class RecruiterService {
         statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW);
 
         return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList).size();
+    }
+
+    private int computeTotalInterviewConducted(List<Long> jobPostIdList, Date fromDate, Date toDate) {
+        if(fromDate == null || toDate == null) {
+            return computeTotalInterviewConducted(jobPostIdList);
+        }
+
+        List<Integer> statusList = new ArrayList<>();
+
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED);
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_REJECTED);
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED);
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW);
+
+        return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList, fromDate, toDate).size();
     }
 
     public List<JobPostSummaryResponse> getAllJobPostPerRecruiterSummary(Long targetRecruiterId, Long callerRecruiterId) {
