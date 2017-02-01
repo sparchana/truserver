@@ -9,7 +9,7 @@ var zapp = (function () {
 
     var zapp = {
         rows : [],
-        csv: ["Job Title, Job Posted On, Fulfilment status, Total SMS Sent, Total Applications, Total Interviews, Cycle Time"],
+        csv: ["Id, Job Title, Job Posted On, Fulfilment status, Total SMS Sent, Total Applications, Total Interviews, Cycle Time"],
         csvString: "",
         recruiterId: null,
         method: {
@@ -64,8 +64,14 @@ var zapp = (function () {
                     // column #1
                     var colJobTitle = document.createElement("div");
                     colJobTitle.className = 'col s12 l1';
-                    colJobTitle.textContent= response.jobTitle;
-                    colJobTitle.style = 'margin-top:8px';
+
+                        var aTag  = document.createElement("a");
+                        var linkText = document.createTextNode(response.jobTitle);
+                        aTag.appendChild(linkText);
+                        aTag.href = "/recruiter/jobPostTrack/"+  response.jobPostId;
+                        colJobTitle.style = 'margin-top:8px';
+
+                    colJobTitle.appendChild(aTag);
                     outerRow.appendChild(colJobTitle);
 
                     // column #2
