@@ -641,7 +641,15 @@ public class RecruiterController {
         jobPost.setPricingPlanType(null);
         jobPost.setJobRole(null);
         jobPost.setCompany(null);
-        jobPost.setRecruiterProfile(null);
+
+        RecruiterProfile oldRec = jobPost.getRecruiterProfile();
+        oldRec.setJobPost(null);
+        oldRec.setRecruiterCreditHistoryList(null);
+        oldRec.setRecruiterLead(null);
+        oldRec.setRecruiterAuth(null);
+        oldRec.setRecruiterToCandidateUnlockedList(null);
+
+        jobPost.setRecruiterProfile(oldRec);
         jobPost.setJobPostLanguageRequirements(null);
         jobPost.setJobPostDocumentRequirements(null);
     }
