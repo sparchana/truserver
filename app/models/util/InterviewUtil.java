@@ -99,7 +99,6 @@ public class InterviewUtil {
             // if date's are not same then this is a valid timeSlot
             return true;
         }
-        Logger.info("time:" + rightNow.get(Calendar.HOUR_OF_DAY));
         switch (timeSlot.getSlotId()){
             case 1:
                 // 10 AM to 1PM
