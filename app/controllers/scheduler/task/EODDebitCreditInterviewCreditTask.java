@@ -182,7 +182,9 @@ public class EODDebitCreditInterviewCreditTask extends TimerTask {
         Map<RecruiterProfile, Integer> recruiterToCreditCountMap = new HashMap<RecruiterProfile, Integer>();
 
         for(JobPostWorkflow jobPostWorkflow : jobPostWorkflowList){
-            if(jobPostWorkflow.getJobPost().getRecruiterProfile() != null){
+            if(jobPostWorkflow.getJobPost().getRecruiterProfile() != null && jobPostWorkflow.getJobPost().getJobPostAccessLevel() == 0){
+                //only open recruiters
+
                 RecruiterProfile recruiterProfile = jobPostWorkflow.getJobPost().getRecruiterProfile();
 
                 Integer count = recruiterToCreditCountMap.get(recruiterProfile);

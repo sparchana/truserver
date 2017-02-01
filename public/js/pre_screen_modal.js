@@ -1669,7 +1669,7 @@ function processPostPreScreenResponse(response, candidateId, jobPostId, isSuppor
             location.reload();
         }, 2000);
     } else if(response.status == INTERVIEW_REQUIRED){
-        notifyError("Submitted successfully. Please select Interview Slot.", 'success');
+        nfy("Submitted successfully. Please select Interview Slot.", 'success');
         initInterviewModal(candidateId, jobPostId, isSupport);
     } else {
         notifyError("Error! Something Went wrong please try again.", 'danger')
@@ -1782,3 +1782,7 @@ function notifyError(msg, type) {
     });
 };
 
+
+function nfy(msg, style) {
+    $.notify(msg, style);
+}

@@ -23,7 +23,6 @@ import com.avaje.ebean.Expr;
 import com.avaje.ebean.Query;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
 import com.google.common.base.CharMatcher;
-import controllers.PartnerController;
 import controllers.businessLogic.hirewand.HWHTTPException;
 import controllers.businessLogic.hirewand.HireWandService;
 import controllers.businessLogic.hirewand.InvalidRequestException;
@@ -59,6 +58,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static api.InteractionConstants.*;
+import static api.ServerConstants.BASE_URL;
 import static controllers.PartnerController.checkCandidateExistence;
 import static controllers.PartnerController.createCandidateViaPartner;
 import static controllers.businessLogic.InteractionService.createInteractionForSignUpCandidateViaAndroid;
@@ -1677,7 +1677,8 @@ public class CandidateService
         HireWandService hw = HireWandService.get();
         try {
             hw.login("avishek@trujobs.in","hirewandswatkats");
-            hw.setCallback("http://trujobs.in/receive-parsed-resume");
+            // TODO change this before release
+            hw.setCallback(BASE_URL+"/receive-parsed-resume");
         } catch (HWHTTPException e) {
             e.printStackTrace();
             try {

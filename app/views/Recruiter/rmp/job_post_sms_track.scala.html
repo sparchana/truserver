@@ -24,7 +24,7 @@
         <link rel="stylesheet" href="/assets/partner/css/rowReorder.dataTables.min.css">
         <link rel="stylesheet" href="/assets/support/css/buttons.dataTables.min.css">
 
-        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
         <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
         <meta name="theme-color" content="#000000">
@@ -86,6 +86,7 @@
                                 <th style="font-size: 14px">Candidate Name</th>
                                 <th style="font-size: 14px">Candidate Mobile</th>
                                 <th style="font-size: 14px">SMS Status</th>
+                                <th style="font-size: 14px">SMS Type</th>
                                 <th style="font-size: 14px">Job Status</th>
                                 <th style="font-size: 14px">SMS message</th>
                             </tr>
@@ -346,6 +347,41 @@
 
         <div id="candidateInfoModal" class="modal viewCandidateModal">
             <div class="modal-content" id="candidateInfoModal"></div>
+        </div>
+
+            <!-- Send SMS to candidate modal -->
+        <div id="sendSmsModal" class="modal" style="background: transparent; box-shadow: none">
+            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeSmsModal()"></div>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+                <center><font style="color: #fff"><h5>Send SMS to candidates!</h5></font></center>
+            </div>
+            <div style="background: #ffffff; padding: 14px">
+                <center>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            You are sending SMS to the following candidates:
+                            <div id="candidateNameList" style="font-weight: bold; text-align: left"></div>
+                            <div id="totalCount" style="font-weight: bold; margin-top: 4px; font-size: 12px"></div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <textarea onkeyup="checkSmsText()" id="smsText" class="materialize-textarea" maxlength="160" length="160" placeholder="(Example: Telecaller openings at ABC company. Salary upto Rs 25,000. Day shift, cab facility available. Call 9999999999 now to apply!)">
+                            </textarea>
+
+                            <label for="smsText">SMS Message</label>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 8px"  id="sendSms" class="waves-effect waves-light ascentGreen lighten-1 btn disabled" data-toggle="collapse" onclick="sendSms()">
+                        <font style="color: #fff;
+                            font-weight: 400"><b>Send SMS</b></font>
+                    </div>
+                    <div style="margin: 8px; color: #0f9d58; display: none" id="successSmsMsg">SMS Sent!</div>
+                </center>
+            </div>
         </div>
 
         <!--Footer start-->

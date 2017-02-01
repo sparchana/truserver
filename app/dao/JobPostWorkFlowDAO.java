@@ -2,7 +2,6 @@ package dao;
 
 import api.ServerConstants;
 import com.avaje.ebean.Ebean;
-import com.avaje.ebean.PagedList;
 import com.avaje.ebean.RawSql;
 import com.avaje.ebean.RawSqlBuilder;
 import models.entity.OM.JobPostWorkflow;
@@ -573,5 +572,13 @@ public class JobPostWorkFlowDAO {
                 .eq("jobPost.jobPostId", jobPostId)
                 .eq("status_id", ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED)
                 .orderBy("job_post_workflow_id").setMaxRows(1).findUnique();
+    }
+
+
+    public static List<JobPostWorkflow> findAllJobSelection(Long jobPostId) {
+        return JobPostWorkflow.find.where()
+                .eq("jobPost.jobPostId", jobPostId)
+                .eq("status_id", ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED)
+                .orderBy("job_post_workflow_id").findList();
     }
 }

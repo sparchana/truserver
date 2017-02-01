@@ -187,14 +187,10 @@ function processDataForSingleResume(returnedData) {
             image.style = "height:100px";
             resumeColLeft.appendChild(image);
 
-            var h5 = document.createElement("h5");
+            var h5 = document.createElement("h4");
             h5.textContent = "Thanks !! Resume has been successfully uploaded";
+            h5.style = "font-weight:600;padding-top:4%";
             resumeColRight.appendChild(h5);
-
-            var h4 = document.createElement("h4");
-            h4.textContent = "You will shortly receive a SMS with more details";
-            h4.style = "font-weight:600";
-            resumeColRight.appendChild(h4);
 
 
             $("#uploadResumeModalContent").show();

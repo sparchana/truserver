@@ -12,6 +12,7 @@ var allTimeSlots = [];
 var allReason = [];
 
 var notSelectedReason = [];
+var selectedCandidateList = [];
 
 function preformTabChange(tabId) {
     hideTab1();
@@ -98,6 +99,10 @@ $(document).ready(function(){
         } else{
             $("#rescheduleInterviewDateBtn").hide();
         }
+    });
+
+    $('table#confirmedApplicationTable tbody').on( 'click', 'tr', function () {
+        $(this).toggleClass('selectedRow');
     });
 });
 
@@ -204,7 +209,18 @@ function tabChange1() {
                                         } else {
                                             return "-";
                                         }
-                                        return "-";
+                                    },'smsType' : function() {
+                                        if (smsObject.smsType != null){
+                                            if(smsObject.smsType.smsTypeId == 1){
+                                                return '<div class="mLabel" style="width:100%;">Job Apply</div>';
+                                            } else if(smsObject.smsType.smsTypeId == 2){
+                                                return '<div class="mLabel" style="width:100%;">Interview SMS</div>';
+                                            } else{
+                                                return '<div class="mLabel" style="width:100%;">-</div>';
+                                            }
+                                        } else {
+                                            return "-";
+                                        }
                                     },
                                     'jobStatus' : function() {
                                         if(smsObject.hasApplied == 0)
@@ -212,7 +228,6 @@ function tabChange1() {
                                         else{
                                             return '<div class="mLabel" style="width:100%" >Applied</div>';
                                         }
-                                        return "-";
                                     },
                                     'smsText' : '<div class="mLabel" style="width:100%" >'+ smsObject.smsText + '</div>',
                                 })
@@ -231,6 +246,7 @@ function tabChange1() {
                 { "data": "candidateName" },
                 { "data": "candidateMobile" },
                 { "data": "smsStatus" },
+                { "data": "smsType" },
                 { "data": "jobStatus" },
                 { "data": "smsText" }
             ],
@@ -350,6 +366,7 @@ function tabChange2() {
 
                             $("#trackApplicationContainer").show();
                         } else{
+                            $("#trackApplicationContainer").hide();
                             $("#noApplications").show();
                         }
                         return returned_data;
@@ -440,6 +457,7 @@ function tabChange3() {
                             var returned_data = new Array();
                             applicationList.forEach(function (workflowObj) {
                                 returned_data.push({
+                                    'candidateId' : workflowObj.candidate.candidateId,
                                     'date' : function() {
                                         var postedOn = new Date(workflowObj.extraData.creationTimestamp);
                                         var dateVal = ('0' + postedOn.getDate()).slice(-2) + '-' + getMonthVal((postedOn.getMonth()+1)) + '-' + postedOn.getFullYear()
@@ -496,7 +514,7 @@ function tabChange3() {
                     }
                 }
             },
-
+            "rowId": "candidateId",
             "deferRender": true,
             "columns": [
                 { "data": "date" },
@@ -514,6 +532,28 @@ function tabChange3() {
             "destroy": true,
             "dom": 'Bfrtip',
             "buttons": [
+                {
+                    text: 'Send SMS',
+                    action: function ( e, dt, node, config ) {
+                        if(table.rows('.selectedRow').data().length == 0){
+                            notifyError("Please select at least 1 candidate");
+                            return;
+                        }
+
+                        var selectedCandidateIds = table.rows('.selectedRow').ids();
+                        var arrayLength = selectedCandidateIds.length;
+                        selectedCandidateList = [];
+                        for (var i = 0; i < arrayLength; i++) {
+                            selectedCandidateList.push(parseInt(selectedCandidateIds[i]));
+                        }
+
+                        $("#smsText").val('');
+                        $("#totalCount").html("Total " + selectedCandidateList.length + " Candidates");
+                        $("#sendSmsModal").openModal();
+
+                        notifySuccess( table.rows('.selectedRow').data().length +' row(s) selected' );
+                    }
+                },
                 'copy', 'csv', 'excel'
             ]
         });
@@ -556,15 +596,13 @@ function processDataInterviewStatus(returnedData) {
     if(returnedData == "1"){
         if(globalInterviewStatus == 1){
             notifySuccess("Interview Confirmed"); //accepted
-            tabChange2();
         } else if(globalInterviewStatus == 2){ //rejected by recruiter
             $("#modalRejectReason").closeModal();
             notifySuccess("Interview Rejected");
-            tabChange2();
         } else if(globalInterviewStatus == 3){
             notifySuccess("Interview Rescheduled");
-            tabChange2();
         }
+        tabChange2();
     } else{
         notifyError("Something went wrong. Please try again later. Refreshing page..");
         setTimeout(function(){
@@ -750,6 +788,45 @@ function confirmAddFeedback() {
     }
 }
 
+function sendSms(){
+    var urlParams = window.location.search.split('=');
+    var jpId = null;
+    if(urlParams[0] == "?jpId") {
+        jpId = parseInt(urlParams[1]);
+    }
+    if(selectedCandidateList.length > 0){
+        $("#sendSms").addClass("disabled");
+        var s = {
+            candidateIdList: selectedCandidateList,
+            smsMessage :$("#smsText").val(),
+            jobPostId :jobPostId,
+            smsType :2
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/bulkSendSms",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(s),
+            success: processDataBulkSms
+        });
+    } else{
+        notifyError("Please select atleast 1 candidate to send SMS");
+    }
+}
+
+function processDataBulkSms(returnedData) {
+    if(returnedData == '1'){
+        notifySuccess("SMS sent successfully to " + selectedCandidateList.length + " candidates!");
+        $("#sendSmsModal").closeModal();
+    } else if(returnedData == '-1'){
+        logoutRecruiter();
+    } else{
+        $("#sendSms").removeClass("disabled");
+        notifyError("Something went wrong. Please try again later");
+    }
+}
+
 function processDataUpdateFeedBack(returnedData) {
     if(returnedData == 1){
         tabChange3();
@@ -876,4 +953,12 @@ function processDataLogoutRecruiter() {
 
 function closeFeedbackModal() {
     $("#addFeedback").closeModal();
+}
+
+function closeRescheduleModal() {
+    $("#modalRescheduleSlot").closeModal();
+}
+
+function closeRejectModal() {
+    $("#modalRejectReason").closeModal();
 }

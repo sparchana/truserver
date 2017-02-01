@@ -45,6 +45,7 @@ import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
 import models.entity.Static.SmsDeliveryStatus;
+import models.entity.Static.SmsType;
 import models.util.SmsUtil;
 import notificationService.NotificationEvent;
 import notificationService.SMSEvent;
@@ -326,13 +327,19 @@ public class RecruiterController {
                     jobPost = JobPost.find.where().eq("JobPostId", multipleCandidateActionRequest.getJobPostId()).findUnique();
                 }
 
+                SmsType smsType = null;
+                if(multipleCandidateActionRequest.getSmsType() != null){
+                    smsType = SmsType.find.where().eq("sms_type_id", multipleCandidateActionRequest.getSmsType()).findUnique();
+                    if(smsType == null){
+                        Logger.info("Sms type static table is empty!");
+                    }
+                }
                 // map of all candidate to be used in below loop
                 Map<?, Candidate> existingCandidateMap = Candidate.find
-                                                                  .where()
-                                                                  .in("candidateId", multipleCandidateActionRequest.getCandidateIdList())
-                                                                  .setMapKey("candidateId")
-                                                                  .findMap();
-
+                      .where()
+                      .in("candidateId", multipleCandidateActionRequest.getCandidateIdList())
+                      .setMapKey("candidateId")
+                      .findMap();
 
                 String commonSMSMessage = multipleCandidateActionRequest.getSmsMessage();
                 for(Long candidateId : multipleCandidateActionRequest.getCandidateIdList()){
@@ -344,19 +351,21 @@ public class RecruiterController {
                         //RMP product sms blast
                         if(multipleCandidateActionRequest.getJobPostId() != null){
                             if(jobPost != null){
-                                multipleCandidateActionRequest.setSmsMessage(
-                                        RecruiterService.modifySMS(commonSMSMessage,
-                                        candidate,
-                                        jobPost,
-                                        isDevMode)
-                                );
+                                if(multipleCandidateActionRequest.getSmsType() == 1){
+                                    multipleCandidateActionRequest.setSmsMessage(
+                                            RecruiterService.modifySMS(commonSMSMessage,
+                                                    candidate,
+                                                    jobPost)
+                                    );
+                                }
                                 NotificationEvent notificationEvent =
                                         new SMSEvent(candidate.getCandidateMobile(),
                                                 multipleCandidateActionRequest.getSmsMessage(),
                                                 recruiterProfile.getCompany(),
                                                 recruiterProfile,
                                                 jobPost,
-                                                candidate);
+                                                candidate,
+                                                smsType);
 
                                 Global.getmNotificationHandler().addToQueue(notificationEvent);
 
@@ -422,47 +431,48 @@ public class RecruiterController {
         Logger.info("Will check sms status after 4 mins");
         new Thread(() -> {
             try{
+                Logger.info("Going to sleep");
                 Thread.sleep(240000); //check after 4 minutes
+                SmsDeliveryStatus status = SmsDeliveryStatus.find.where().eq("status_id", SMS_STATUS_PENDING).findUnique();
+                Boolean reRun = false;
+                if(status != null){
+                    for(SmsReport report : SmsReportDAO.getAllSMSByStatus(status)){
+                        String response = SmsUtil.checkDeliveryReport(report.getSmsSchedulerId());
+                        response = response.substring(13, response.length() -4);
+                        Logger.info("Pinnacle Response :" + response);
+
+                        Integer statusId;
+                        if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_DELIVERED))){
+                            statusId = SMS_STATUS_DELIVERED;
+                        } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_UNDELIVERED))){
+                            statusId = SMS_STATUS_UNDELIVERED;
+                        } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_EXPIRED))){
+                            statusId = SMS_STATUS_EXPIRED;
+                        } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_DND))){
+                            statusId = SMS_STATUS_DND;
+                        } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_PENDING))){
+                            statusId = SMS_STATUS_PENDING;
+                            reRun = true;
+                        } else{
+                            statusId = SMS_STATUS_FAILED;
+                        }
+
+                        report.setSmsDeliveryStatus(SmsDeliveryStatus.find.where().eq("status_id", statusId).findUnique());
+                        report.update();
+                    }
+
+                    if(reRun){
+                        Logger.info("Re running the method since some");
+                        checkDeliveryStatus();
+                    }
+
+                } else{
+                    Logger.info("Sms delivery status static table empty");
+                }
             } catch(InterruptedException e){
                 Logger.info("exception: " + e);
             }
 
-            SmsDeliveryStatus status = SmsDeliveryStatus.find.where().eq("status_id", SMS_STATUS_PENDING).findUnique();
-            Boolean reRun = false;
-            if(status != null){
-                for(SmsReport report : SmsReportDAO.getAllSMSByStatus(status)){
-                    String response = SmsUtil.checkDeliveryReport(report.getSmsSchedulerId());
-                    response = response.substring(13, response.length() -4);
-                    Logger.info("Pinnacle Response :" + response);
-
-                    Integer statusId;
-                    if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_DELIVERED))){
-                        statusId = SMS_STATUS_DELIVERED;
-                    } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_UNDELIVERED))){
-                        statusId = SMS_STATUS_UNDELIVERED;
-                    } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_EXPIRED))){
-                        statusId = SMS_STATUS_EXPIRED;
-                    } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_DND))){
-                        statusId = SMS_STATUS_DND;
-                    } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_PENDING))){
-                        statusId = SMS_STATUS_PENDING;
-                        reRun = true;
-                    } else{
-                        statusId = SMS_STATUS_FAILED;
-                    }
-
-                    report.setSmsDeliveryStatus(SmsDeliveryStatus.find.where().eq("status_id", statusId).findUnique());
-                    report.update();
-                }
-
-                if(reRun){
-                    Logger.info("Re running the method since some");
-                    checkDeliveryStatus();
-                }
-
-            } else{
-                Logger.info("Sms delivery status static table empty");
-            }
 
         }).start();
     }
@@ -1124,7 +1134,7 @@ public class RecruiterController {
     }
 
     @Security.Authenticated(RecruiterSecured.class)
-    public static Result getSentSms(long jpId) {
+    public static Result getSentSms(Long jpId) {
         JobPost jobPost = JobPostDAO.findById(jpId);
         if(jobPost != null){
             if(checkCompanyJob(jobPost)){
@@ -1162,7 +1172,7 @@ public class RecruiterController {
     }
 
     @Security.Authenticated(RecruiterSecured.class)
-    public static Result getAppliedCandidates(long jpId) {
+    public static Result getAppliedCandidates(Long jpId) {
         JobPost jobPost = JobPostDAO.findById(jpId);
         if(jobPost != null){
             if(checkCompanyJob(jobPost)){
@@ -1227,7 +1237,7 @@ public class RecruiterController {
     }
 
     @Security.Authenticated(RecruiterSecured.class)
-    public static Result getConfirmedApplication(long jpId) {
+    public static Result getConfirmedApplication(Long jpId) {
         JobPost jobPost = JobPostDAO.findById(jpId);
         if(jobPost != null){
             if(checkCompanyJob(jobPost)){
@@ -1312,6 +1322,7 @@ public class RecruiterController {
         return ok();
     }
 
+    @Security.Authenticated(RecruiterAdminSecured.class)
     public static Result jobPostSummary(Long recruiterId, Long jpId) {
         if(recruiterId == null) {
             return badRequest();

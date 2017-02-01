@@ -1021,8 +1021,10 @@ public class RecruiterService {
 
             if(jobPost == null) continue;
 
+            String jobTitle = jobPost.getJobPostTitle() + " ("+jobPost.getJobPostStatus().getJobStatusName()+")";
             // forming individual responses again each jobpost
-            jobPostSummaryResponse.setJobTitle(jobPost.getJobPostTitle());
+            jobPostSummaryResponse.setJobPostId(jobPost.getJobPostId());
+            jobPostSummaryResponse.setJobTitle(jobTitle);
             jobPostSummaryResponse.setJobPostedOn(sdf.format(jobPost.getJobPostCreateTimestamp()));
 
             // not using the jobpost.getapplication since support matching doesn't goes here
@@ -1035,10 +1037,10 @@ public class RecruiterService {
                     computeTotalSelected(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))))));
 
             try {
-                jobPostSummaryResponse.setCycleTime(formatCycleTime(computeCycleTime(jobPost.getJobPostId(), jobPost.getJobPostCreateTimestamp())));
+                jobPostSummaryResponse.setCycleTime(formatCycleTime(computeAvgCycleTime(jobPost.getJobPostId(), jobPost.getJobPostCreateTimestamp())));
             } catch (ParseException e) {
                 e.printStackTrace();
-                Logger.error("unable to parse date for date diff in computeCycleTime");
+                Logger.error("unable to parse date for date diff in computeAvgCycleTime");
             }
             // TODO move this to map and then use it here
             jobPostSummaryResponse.setTotalSmsSent(SmsReportDAO.getTotalSMSByRecruiterNJobPost(targetRecruiterId, jobPost.getJobPostId()));
@@ -1050,7 +1052,7 @@ public class RecruiterService {
         return jobPostSummaryResponseList;
     }
 
-    private String formatCycleTime(int i) {
+    private String formatCycleTime(float i) {
         if(i < 0) {
             return "NA";
         }
@@ -1063,22 +1065,30 @@ public class RecruiterService {
      * @return no of days between jobPosted on and first candidate got selected
      * @throws ParseException
      */
-    private int computeCycleTime(Long jobPostId, Timestamp jobPostedOn) throws ParseException {
+    private float computeAvgCycleTime(Long jobPostId, Timestamp jobPostedOn) throws ParseException {
         // first selection data - job posted date
 
-        JobPostWorkflow jobPostWorkflow = JobPostWorkFlowDAO.findFirstJobSelection(jobPostId);
+        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkFlowDAO.findAllJobSelection(jobPostId);
 
-        if(jobPostWorkflow == null) {
+        if(jobPostWorkflowList.size() == 0) {
             return -1;
         }
-        DateTime dt1 = new DateTime(jobPostedOn.getTime());
-        DateTime dt2 = new DateTime(jobPostWorkflow.getCreationTimestamp().getTime());
+        int totalSize = jobPostWorkflowList.size();
+        float totalDays = 0;
 
-        return Days.daysBetween(dt1, dt2).getDays();
+        for(JobPostWorkflow jobPostWorkflow : jobPostWorkflowList) {
+            DateTime dt1 = new DateTime(jobPostedOn.getTime());
+            DateTime dt2 = new DateTime(jobPostWorkflow.getCreationTimestamp().getTime());
+
+            totalDays += Days.daysBetween(dt1, dt2).getDays();
+        }
+
+
+        return totalDays/totalSize;
     }
 
-    public static String modifySMS(String smsMessage, Candidate candidate, JobPost jobPost, boolean isDev) {
-        String applyInShortURL = Util.generateApplyInShortUrl(candidate, jobPost, isDev);
+    public static String modifySMS(String smsMessage, Candidate candidate, JobPost jobPost) {
+        String applyInShortURL = Util.generateApplyInShortUrl(candidate, jobPost);
         StringBuilder modifiedSMS = new StringBuilder();
         if(applyInShortURL != null) {
 
