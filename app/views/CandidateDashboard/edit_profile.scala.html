@@ -66,7 +66,7 @@
                         <span class="icon-bar" style="border: 1px solid #fff;"></span>
 
                     </button>
-                    <div itemscope itemtype ="http://schema.org/logo">
+                    <div itemscope itemtype ="https://schema.org/logo">
                         <a class="navbar-brand" href="#"><img id="navLogo" itemprop="Brand" src="/assets/common/img/logo-main.gif" alt="TruJobs Logo" height="32px"></a>
                         <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" style="padding: 0px">
                             <img id="playStoreLogoNavBar" src="/assets/common/img/download_btn.png" alt="PlayStore Logo" height="26px"></a>
@@ -399,7 +399,7 @@
                                                 <div style="margin: 4px;display: inline-block;float:right">
                                                     <label class="btn btn-default btn-file" id="uploadResumeBtnPostLogin">
                                                         <span class="glyphicon glyphicon-open" aria-hidden="true" style="margin-right:10px"></span> Upload Resume
-                                                        <input type="file" accept="application/pdf,application/msword" id="uploadResumeContent" style="display: none">
+                                                        <input type="file" accept=".pdf,.doc,.docx" id="uploadResumeContent" onchange="uploadResume(event)" style="display: none">
                                                     </label>
                                                 </div>
                                         </div>
@@ -593,7 +593,7 @@
         <div id="footer_inc"></div>
 
             <!-- Including Bootstrap -->
-        <script type="text/javascript" src="/assets/common/js/uploadResume.js"></script>
+        <script type="text/javascript" src="/assets/common/js/candidate_upload_resume.js"></script>
         <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="/assets/common/js/validation.js"></script>
         <script type="text/javascript" src="/assets/dashboard/js/dashboard.js"></script>

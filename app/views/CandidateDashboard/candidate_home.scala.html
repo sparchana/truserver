@@ -88,7 +88,7 @@
                         <span class="icon-bar" style="border: 1px solid #fff;"></span>
 
                     </button>
-                    <div itemscope itemtype ="http://schema.org/logo">
+                    <div itemscope itemtype ="https://schema.org/logo">
                         <a class="navbar-brand" href="#"><img id="navLogo" itemprop="Brand" src="/assets/common/img/logo-main.gif" alt="TruJobs Logo" height="32px"></a>
                         <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" style="padding: 0px">
                             <img id="playStoreLogoNavBar" src="/assets/common/img/download_btn.png" alt="PlayStore Logo" height="54%"></a>
@@ -340,7 +340,7 @@
         <div class="container-fluid">
             <label id="resumeUploadBoxInner">
                 <span class="glyphicon glyphicon-open" aria-hidden="true" style="margin-right:10px"></span>Upload Resume
-                <input type="file" accept="application/pdf,application/msword" id="uploadResumeContent" style="display: none">
+                <input type="file" accept=".pdf,.doc,.docx" id="uploadResumeContent" onchange="uploadResume(event)" style="display: none">
             </label>
         </div>
 
@@ -348,7 +348,7 @@
         <script type="text/javascript" src="/assets/partner/js/notify.min.js"></script>
         <script type="text/javascript" src="/assets/common/js/apply_job.js"></script>
         <script type="text/javascript" src="/assets/common/js/all_job_role_footer.js"></script>
-        <script type="text/javascript" src="/assets/common/js/uploadResume.js"></script>
+        <script type="text/javascript" src="/assets/common/js/candidate_upload_resume.js"></script>
 
             <!-- Job card module -->
         <script type="text/javascript" src="/assets/support/js/bootstrap-notify.min.js"></script>

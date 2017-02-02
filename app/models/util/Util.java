@@ -1,5 +1,14 @@
 package models.util;
 
+import controllers.businessLogic.AuthService;
+import controllers.truly.TrulyService;
+import dao.CandidateDAO;
+import dao.JobPostDAO;
+import models.entity.Auth;
+import models.entity.Candidate;
+import models.entity.Company;
+import models.entity.JobPost;
+import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 
 import java.math.BigInteger;
@@ -10,7 +19,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
+import static api.ServerConstants.BASE_URL;
+
 public class Util {
+
     private Util() {
     }
 
@@ -18,6 +30,8 @@ public class Util {
     public static final String ACTION_UPDATE = "U";
     public static final String ACTION_DELETE = "D";
     public static final String ACTION_READ = "R";
+    public static final int COMPANY_NAME_KEY_LENGTH = 3;
+    public static final int COMPANY_CODE_LENGTH = 8;
 
     public static long randomLong() {
         long random = new Random().nextLong();
@@ -31,6 +45,31 @@ public class Util {
     public static int generateOtp() {
         int otpCode = (int) ((Math.random()*9000)+1000);
         return otpCode;
+    }
+
+    public static String generateCompanyCode(Company company) {
+        return genCompanyCode(company);
+    }
+
+    public static String idToCode(long id) {
+        return Base36.fromBase10(id);
+    }
+
+    public static long codeToId(String code) {
+        return Base36.toBase10(code);
+    }
+
+    public static String genCompanyCode(Company company) {
+        String companyName = company.getCompanyName().replaceAll("[^A-Za-z]","");
+        if(companyName.length() > COMPANY_NAME_KEY_LENGTH) {
+            companyName = (companyName.substring(0, COMPANY_NAME_KEY_LENGTH)).toUpperCase();
+        } else {
+            companyName =  companyName.toUpperCase();
+        }
+        String code = idToCode(company.getCompanyId());
+        // return company code, decide the no of trailing zeros need to be added to make the total length 8
+        String formatted = StringUtils.leftPad(code, COMPANY_CODE_LENGTH - companyName.length(), "0");
+        return companyName + formatted;
     }
 
     public static int randomInt() {
@@ -78,5 +117,55 @@ public class Util {
     public static Double RoundTo2Decimals(Double val) {
         DecimalFormat df2 = new DecimalFormat("##.##");
         return Double.valueOf(df2.format(val));
+    }
+
+    public static String generateApplyInShortUrl(Candidate candidate, JobPost jobPost, Auth auth){
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if(candidate != null && jobPost != null) {
+            stringBuilder.append(BASE_URL);
+            stringBuilder.append("/apply/inshort/");
+            stringBuilder.append(jobPost.getJobPostTitle().replaceAll("[\\s]","-").toLowerCase());
+            stringBuilder.append("-jobs-in-bangalore-at-");
+            stringBuilder.append(jobPost.getCompany().getCompanyName().replaceAll("[\\s]","-").toLowerCase());
+            stringBuilder.append("-"+jobPost.getJobPostId());
+            stringBuilder.append("?cid="+candidate.getCandidateId());
+            stringBuilder.append("&key="+md5(String.valueOf(auth.getOtp())));
+//            stringBuilder.append("&key="+(auth.getOtp()));
+        }
+
+        // trulyfy this url
+        TrulyService trulyService = new TrulyService();
+
+        return trulyService.generateShortURL(stringBuilder.toString());
+    }
+
+
+    public static String generateApplyInShortUrl(Long candidateId, Long jobPostId){
+        if(candidateId != null && jobPostId != null) {
+            Candidate candidate = CandidateDAO.getById(candidateId);
+
+            Auth auth = AuthService.isAuthExists(candidateId);
+            auth.setOtp(generateOtp());
+            auth.save();
+
+            JobPost jobPost = JobPostDAO.findById(jobPostId);
+
+            return generateApplyInShortUrl(candidate, jobPost, auth);
+        }
+        return null;
+    }
+
+    public static String generateApplyInShortUrl(Candidate candidate, JobPost jobPost){
+        if(candidate != null && jobPost != null) {
+
+            Auth auth = AuthService.isAuthExists(candidate.getCandidateId());
+            auth.setOtp(generateOtp());
+            auth.save();
+
+
+            return generateApplyInShortUrl(candidate, jobPost, auth);
+        }
+        return null;
     }
 }

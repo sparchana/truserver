@@ -88,13 +88,36 @@ var cardModule = (function ($) {
                     jobBodyCol.id = "jobBody";
                     rowDiv.appendChild(jobBodyCol);
 
+
                     var jobTitle = document.createElement("h4");
                     jobTitle.textContent = jobPost.jobPostTitle;
+                    jobTitle.onclick = function () {
+                        var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
+                        jobPostBreak = jobPostBreak.toLowerCase();
+                        var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
+                        jobCompany = jobCompany.toLowerCase();
+                        try {
+                            window.location.href = "/jobs/" + jobPostBreak + "-jobs-in-bengaluru-at-" + jobCompany + "-" + jobPost.jobPostId;
+                        } catch (exception) {
+                            console.log("exception occured!!" + exception);
+                        }
+                    };
                     jobBodyCol.appendChild(jobTitle);
 
                     var jobCompany= document.createElement("p");
                     jobCompany.textContent = jobPost.jobRole.jobName + " Job | "+ jobPost.company.companyName;
                     jobCompany.style = "color:rgba(0, 159, 219, 0.99);font-weight:600";
+                    jobCompany.onclick = function () {
+                        var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
+                        jobPostBreak = jobPostBreak.toLowerCase();
+                        var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
+                        jobCompany = jobCompany.toLowerCase();
+                        try {
+                            window.location.href = "/jobs/" + jobPostBreak + "-jobs-in-bengaluru-at-" + jobCompany + "-" + jobPost.jobPostId;
+                        } catch (exception) {
+                            console.log("exception occured!!" + exception);
+                        }
+                    };
                     jobBodyCol.appendChild(jobCompany);
 
 
@@ -135,7 +158,7 @@ var cardModule = (function ($) {
                     jobBodyDetailsFirst.appendChild(bodyCol);
 
                     var subDivHint = document.createElement("div");
-                    subDivHint.className = "row";
+                    subDivHint.className = "row hidden-xs";
                     subDivHint.id = "hintTextProp";
                     subDivHint.textContent = "Salary";
                     bodyCol.appendChild(subDivHint);
@@ -146,7 +169,7 @@ var cardModule = (function ($) {
                     bodyCol.appendChild(subRowForData);
 
                     var salaryIconDiv = document.createElement("div");
-                    salaryIconDiv.className="col-xs-2";
+                    salaryIconDiv.className="col-sm-2 hidden-xs";
                     salaryIconDiv.id="iconsProp";
                     subRowForData.appendChild(salaryIconDiv);
 
@@ -156,12 +179,19 @@ var cardModule = (function ($) {
                     salaryIconDiv.appendChild(salaryIcon);
 
                     var salaryDataDiv = document.createElement("div");
-                    salaryDataDiv.className="col-xs-10";
+                    salaryDataDiv.className="col-xs-12 col-sm-10";
                     salaryDataDiv.id="textContentProp";
                     subRowForData.appendChild(salaryDataDiv);
 
+                    var subDivHint = document.createElement("div");
+                    subDivHint.className = "col-xs-4 hidden-sm hidden-md hidden-lg";
+                    subDivHint.id = "hintTextPropM";
+                    subDivHint.textContent = "Salary";
+                    salaryDataDiv.appendChild(subDivHint);
+
                     var salaryDiv = document.createElement("div");
                     salaryDiv.style = "display: inline-block";
+
                     if (jobPost.jobPostMaxSalary == "0" || jobPost.jobPostMaxSalary == null) {
                         salaryDiv.textContent = rupeeFormatForSalary(jobPost.jobPostMinSalary) + " monthly";
                     } else {
@@ -177,7 +207,7 @@ var cardModule = (function ($) {
                     jobBodyDetailsSecond.appendChild(bodyCol);
 
                     var subDivHint = document.createElement("div");
-                    subDivHint.className = "row";
+                    subDivHint.className = "row hidden-xs";
                     subDivHint.id = "hintTextProp";
                     subDivHint.textContent = "Experience";
                     bodyCol.appendChild(subDivHint);
@@ -188,7 +218,7 @@ var cardModule = (function ($) {
                     bodyCol.appendChild(subRowForData);
 
                     var expIconDiv = document.createElement("div");
-                    expIconDiv.className="col-xs-2";
+                    expIconDiv.className="col-sm-2 hidden-xs";
                     expIconDiv.id="iconsProp";
                     subRowForData.appendChild(expIconDiv);
 
@@ -198,9 +228,15 @@ var cardModule = (function ($) {
                     expIconDiv.appendChild(expIcon);
 
                     var expDataDiv = document.createElement("div");
-                    expDataDiv.className="col-xs-10";
+                    expDataDiv.className="col-xs-12 col-sm-10";
                     expDataDiv.id="textContentProp";
                     subRowForData.appendChild(expDataDiv);
+
+                    var subDivHint = document.createElement("div");
+                    subDivHint.className = "col-xs-4 hidden-sm hidden-md hidden-lg";
+                    subDivHint.id = "hintTextPropM";
+                    subDivHint.textContent = "Experience";
+                    expDataDiv.appendChild(subDivHint);
 
                     var expDiv = document.createElement("div");
                     expDiv.style = "display: inline-block;";
@@ -215,7 +251,7 @@ var cardModule = (function ($) {
                     jobBodyDetailsFirst.appendChild(genderCol);
 
                     var subDivHint = document.createElement("div");
-                    subDivHint.className = "row";
+                    subDivHint.className = "row hidden-xs";
                     subDivHint.id = "hintTextProp";
                     subDivHint.textContent = "Gender";
                     genderCol.appendChild(subDivHint);
@@ -226,7 +262,7 @@ var cardModule = (function ($) {
                     genderCol.appendChild(subRowForData);
 
                     var genderIconDiv = document.createElement("div");
-                    genderIconDiv.className="col-xs-2";
+                    genderIconDiv.className="col-sm-2 hidden-xs";
                     genderIconDiv.id="iconsProp";
                     subRowForData.appendChild(genderIconDiv);
 
@@ -236,9 +272,15 @@ var cardModule = (function ($) {
                     genderIconDiv.appendChild(genderIcon);
 
                     var genderDataDiv = document.createElement("div");
-                    genderDataDiv.className="col-xs-10";
+                    genderDataDiv.className="col-xs-12 col-sm-10";
                     genderDataDiv.id="textContentProp";
                     subRowForData.appendChild(genderDataDiv);
+
+                    var subDivHint = document.createElement("div");
+                    subDivHint.className = "col-xs-4 hidden-sm hidden-md hidden-lg";
+                    subDivHint.id = "hintTextPropM";
+                    subDivHint.textContent = "Gender";
+                    genderDataDiv.appendChild(subDivHint);
 
                     var genderDiv = document.createElement("div");
                     genderDiv.style = "display: inline-block";
@@ -253,7 +295,7 @@ var cardModule = (function ($) {
                     jobBodyDetailsSecond.appendChild(bodyColEdu);
 
                     var subDivHint = document.createElement("div");
-                    subDivHint.className = "row";
+                    subDivHint.className = "row hidden-xs";
                     subDivHint.id = "hintTextProp";
                     subDivHint.textContent = "Education";
                     bodyColEdu.appendChild(subDivHint);
@@ -265,7 +307,7 @@ var cardModule = (function ($) {
 
                     var eduIconDiv = document.createElement("div");
                     eduIconDiv.id="iconsProp";
-                    eduIconDiv.className = "col-xs-2";
+                    eduIconDiv.className = "col-sm-2 hidden-xs";
                     jobBodySubRowEdu.appendChild(eduIconDiv);
 
                     var eduIcon = document.createElement("img");
@@ -274,9 +316,15 @@ var cardModule = (function ($) {
                     eduIconDiv.appendChild(eduIcon);
 
                     var eduDataDiv = document.createElement("div");
-                    eduDataDiv.className="col-xs-10";
+                    eduDataDiv.className="col-xs-12 col-sm-10";
                     eduDataDiv.id="textContentProp";
                     jobBodySubRowEdu.appendChild(eduDataDiv);
+
+                    var subDivHint = document.createElement("div");
+                    subDivHint.className = "col-xs-4 hidden-sm hidden-md hidden-lg";
+                    subDivHint.id = "hintTextPropM";
+                    subDivHint.textContent = "Education";
+                    eduDataDiv.appendChild(subDivHint);
 
                     var EducationDiv = document.createElement("div");
                     EducationDiv.style = "display: inline-block";
@@ -291,7 +339,7 @@ var cardModule = (function ($) {
                     jobBodyDetailsSecond.appendChild(ageCol);
 
                     var subDivHint = document.createElement("div");
-                    subDivHint.className = "row";
+                    subDivHint.className = "row hidden-xs";
                     subDivHint.id = "hintTextProp";
                     subDivHint.textContent = "Max Age";
                     ageCol.appendChild(subDivHint);
@@ -302,7 +350,7 @@ var cardModule = (function ($) {
                     ageCol.appendChild(subRowForData);
 
                     var ageIconDiv = document.createElement("div");
-                    ageIconDiv.className="col-xs-2";
+                    ageIconDiv.className="col-sm-2 hidden-xs";
                     ageIconDiv.id="iconsProp";
                     subRowForData.appendChild(ageIconDiv);
 
@@ -312,9 +360,15 @@ var cardModule = (function ($) {
                     ageIconDiv.appendChild(ageIcon);
 
                     var ageDataDiv = document.createElement("div");
-                    ageDataDiv.className="col-xs-10";
+                    ageDataDiv.className="col-xs-12 col-sm-10";
                     ageDataDiv.id="textContentProp";
                     subRowForData.appendChild(ageDataDiv);
+
+                    var subDivHint = document.createElement("div");
+                    subDivHint.className = "col-xs-4 hidden-sm hidden-md hidden-lg";
+                    subDivHint.id = "hintTextPropM";
+                    subDivHint.textContent = "Max Age";
+                    ageDataDiv.appendChild(subDivHint);
 
                     var ageDiv = document.createElement("div");
                     ageDiv.style = "display: inline-block";
@@ -329,7 +383,7 @@ var cardModule = (function ($) {
                     jobBodyDetailsFirst.appendChild(bodyColLocation);
 
                     var subDivHint = document.createElement("div");
-                    subDivHint.className = "row";
+                    subDivHint.className = "row hidden-xs";
                     subDivHint.id = "hintTextProp";
                     subDivHint.textContent = "Location";
                     bodyColLocation.appendChild(subDivHint);
@@ -341,7 +395,7 @@ var cardModule = (function ($) {
 
                     var locationIconDiv = document.createElement("div");
                     locationIconDiv.id="iconsProp";
-                    locationIconDiv.className = "col-xs-2";
+                    locationIconDiv.className = "col-sm-2 hidden-xs";
                     subRowForData.appendChild(locationIconDiv);
 
                     var locationIcon = document.createElement("img");
@@ -350,9 +404,15 @@ var cardModule = (function ($) {
                     locationIconDiv.appendChild(locationIcon);
 
                     var locationDataDiv = document.createElement("div");
-                    locationDataDiv.className="col-xs-10";
+                    locationDataDiv.className="col-xs-12 col-sm-10";
                     locationDataDiv.id="textContentProp";
                     subRowForData.appendChild(locationDataDiv);
+
+                    var subDivHint = document.createElement("div");
+                    subDivHint.className = "col-xs-4 hidden-sm hidden-md hidden-md hidden-lg";
+                    subDivHint.id = "hintTextPropM";
+                    subDivHint.textContent = "Location";
+                    locationDataDiv.appendChild(subDivHint);
                     
                     var locDiv = document.createElement("div");
                     locDiv.style = "display: inline-block";
@@ -401,7 +461,7 @@ var cardModule = (function ($) {
 
                     var reopenRow = document.createElement("div");
                     reopenRow.className = "row";
-                    reopenRow.style = "margin-top:10px;float:right";
+                    reopenRow.id = "reopenTextProp";
 
                     var nextMonday = new Date();
                     nextMonday.setDate(nextMonday.getDate() + (1 + 7 - nextMonday.getDay()) % 7);
@@ -422,9 +482,14 @@ var cardModule = (function ($) {
 
                     //!*  more button *!/
                     var jobMoreCol = document.createElement("div");
-                    jobMoreCol.className = "col-sm-2";
+                    jobMoreCol.className = "col-sm-2 hidden-xs";
                     jobMoreCol.id = "jobMore";
                     rowDiv.appendChild(jobMoreCol);
+
+                    var jobApplyCol = document.createElement("div");
+                    jobApplyCol.className = " col-xs-12 hidden-sm hidden-md hidden-lg";
+                    jobApplyCol.id = "jobMore";
+                    rowDiv.appendChild(jobApplyCol);
 
                     // vacancies div
                     var vacanciesDiv = document.createElement("div");
@@ -462,7 +527,7 @@ var cardModule = (function ($) {
                             applyJobText = "Already Applied";
                             applyBtn.disabled =  true;
                             applyBtn.style = "background:#ffa726";
-                        }else if(jobPost.applyBtnStatus == 5) {
+                        } else if(jobPost.applyBtnStatus == 5) {
                             applyJobText = "Application Closed";
                             applyBtn.disabled =  true;
                             applyBtn.style = "background:#ffa726";
@@ -472,7 +537,12 @@ var cardModule = (function ($) {
                         applyJobText = "Apply";
                     }
                     applyBtn.textContent = applyJobText;
-                    applyBtnRow.appendChild(applyBtn);
+                    var w = window.innerWidth;
+                    if( w > 786){
+                        applyBtnRow.appendChild(applyBtn);
+                    } else{
+                        jobApplyCol.appendChild(applyBtn);
+                    }
                     applyBtnDiv.appendChild(applyBtnRow);
                     if(jobPost.applyBtnStatus == 5){
                         applyBtnDiv.appendChild(reopenRow);

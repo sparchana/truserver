@@ -38,6 +38,8 @@ public class EmailEvent extends NotificationEvent {
     public String send() {
         this.isDevMode = play.api.Play.isDev(play.api.Play.current()) || play.api.Play.isTest(play.api.Play.current());
 
+        boolean shouldSendEmail = Play.application().configuration().getBoolean("outbound.email.enabled");
+
         String message = this.getMessage();
         String recipient = this.getRecipient();
         if(recipient == null || recipient.trim().isEmpty() ){
@@ -62,13 +64,17 @@ public class EmailEvent extends NotificationEvent {
                 email.setContent(message, "text/html; charset=utf-8");
                 email.setFrom("recruiter.support@trujobs.in", "Trujobs Recruiter");
                 email.setSubject(getMySubject());
-                if(isDevMode()){
-                    Logger.info("DevMode: No Email sent [Subject] " + mySubject + " [Message] " + message + " [Recipient] " + recipient);
+                if(shouldSendEmail){
+                    if(isDevMode()){
+                        Logger.info("DevMode: No Email sent [Subject] " + mySubject + " [Message] " + message + " [Recipient] " + recipient);
+                    } else {
+                        Logger.info("Sending email to " + recipient);
+                        email.addTo(recipient);
+                        email.setBcc(devEmailIdList);
+                        email.send();
+                    }
                 } else {
-                    Logger.info("Sending email to " + recipient);
-                    email.addTo(recipient);
-                    email.setBcc(devEmailIdList);
-                    email.send();
+                    Logger.info("Outbound Email Disabled: No Email sent [Subject] " + mySubject + " [Message] " + message + " [Recipient] " + recipient);
                 }
             } catch (EmailException e) {
                 Logger.info("couldn't send mail for mailId: " + recipient);

@@ -2,10 +2,14 @@
  * Created by dodo on 20/12/16.
  */
 
+var viewResume = false;
 var view_search_candidate = 1;
 var view_unlocked_candidate = 2;
 var view_applied_candidate = 3;
 var view_tracking_candidate = 4;
+var view_candidate_info = 5;
+
+var resumeDiv = null;
 
 /* variables, flags and lists for applied candidate use case */
 var pendingParent = $("#pendingCandidateContainer");
@@ -239,6 +243,22 @@ function renderIndividualCandidateCard(value, parent, view) {
     candidateCardRowColOne.style = "padding: 8px; margin-top: 8px";
     candidateCardRow.appendChild(candidateCardRowColOne);
 
+    if(view == view_search_candidate || view == view_unlocked_candidate){
+        var candidateCheckbox = document.createElement("input");
+        candidateCheckbox.type = "checkbox";
+        candidateCheckbox.name = "candidate_cb";
+        candidateCheckbox.value = value.candidate.candidateId + "_" + value.candidate.candidateFirstName;
+        candidateCheckbox.class = "filled-in";
+        candidateCheckbox.id = "candidate_cb_" + value.candidate.candidateId;
+
+        var cbLabel = document.createElement("label");
+        cbLabel.textContent = ".";
+        cbLabel.style = "color: transparent";
+        cbLabel.setAttribute("for", "candidate_cb_" + value.candidate.candidateId);
+        candidateCardRowColOne.appendChild(candidateCheckbox);
+        candidateCardRowColOne.appendChild(cbLabel);
+    }
+
     var userAvatar = document.createElement("img");
     userAvatar.className = "tooltipped";
     userAvatar.style = "margin: -6px 8px 0 -6px; cursor: pointer; text-decoration: none";
@@ -246,6 +266,9 @@ function renderIndividualCandidateCard(value, parent, view) {
     userAvatar.setAttribute("data-delay", "50");
 
     userAvatar.setAttribute('height', '36px');
+    userAvatar.src = "/assets/recruiter/img/icons/user.svg";
+    userAvatar.setAttribute("data-tooltip", "Not Specified");
+
     if(value.candidate.candidateGender != null){
         if(value.candidate.candidateGender == 0){
             userAvatar.src = "/assets/recruiter/img/icons/male.svg";
@@ -255,10 +278,11 @@ function renderIndividualCandidateCard(value, parent, view) {
             userAvatar.setAttribute("data-tooltip", "Female");
         } else{
             userAvatar.src = "/assets/recruiter/img/icons/user.svg";
-            userAvatar.setAttribute("data-tooltip", "Male");
+            userAvatar.setAttribute("data-tooltip", "Not Specified");
         }
     }
 
+    var resumeLink = document.createElement("a");
     candidateCardRowColOne.appendChild(userAvatar);
 
     //candidate name container
@@ -315,7 +339,39 @@ function renderIndividualCandidateCard(value, parent, view) {
     var candidateExperience = document.createElement("font");
     candidateExperience.style = "font-size: 14px";
     candidateExperience.textContent = ", " + expVal;
-    candidateCardRowColOne.appendChild(candidateExperience);
+
+    if(value.candidate.candidateResumeLink != null){
+        var resumeIcon = document.createElement("img");
+        resumeIcon.src = "/assets/recruiter/img/icons/cv.svg";
+        resumeIcon.style = "margin: 0 4px 2px 6px;";
+        resumeIcon.setAttribute('height', '24px');
+
+        resumeLink = document.createElement("a");
+        if(view == view_search_candidate || view == view_applied_candidate || view == view_tracking_candidate){
+            resumeLink.setAttribute("val", "0");
+        } else{
+            resumeLink.setAttribute("val", "http://docs.google.com/gview?url=" + value.candidate.candidateResumeLink + "&embedded=true");
+        }
+
+        resumeLink.textContent = "View Resume";
+        resumeLink.id = "candidate_resume_" + value.candidate.candidateId;
+        resumeLink.onclick = function () {
+            resumeDiv = resumeLink;
+            if($(this).attr("val") == "0"){
+                viewResume = true;
+                unlockContact(value.candidate.candidateId);
+            } else{
+                window.open("http://docs.google.com/gview?url=" + $(this).attr("val") + "&embedded=true");
+            }
+        };
+        resumeLink.style = "font-size: 14px; font-weight: bold; color: rgb(84, 192, 235); ";
+
+        candidateCardRowColOne.appendChild(candidateExperience);
+
+        candidateCardRowColOne.appendChild(resumeIcon);
+        candidateCardRowColOne.appendChild(resumeLink);
+    }
+
 
     if(view == view_tracking_candidate || view == view_applied_candidate){
         //match score col
@@ -540,7 +596,7 @@ function renderIndividualCandidateCard(value, parent, view) {
         pastCompanyList.forEach(function (jobHistory){
             companyList += jobHistory.candidatePastCompany + ", ";
         });
-        currentCompanyVal.textContent = companyList.substring(0, (companyList.length - 2));
+        currentCompanyVal.textContent = toTitleCase(companyList.substring(0, (companyList.length - 2)));
     } else{
         currentCompanyVal.textContent = "Not specified";
     }
@@ -1029,46 +1085,50 @@ function renderIndividualCandidateCard(value, parent, view) {
     candidateCardRowColOne.style = "text-align: left";
     unlockDivRow.appendChild(candidateCardRowColOne);
 
-    inlineBlockDiv = document.createElement("div");
-    inlineBlockDiv.style = "display: inline-block; margin: 0px 4px 4px 0;";
-    candidateCardRowColOne.appendChild(inlineBlockDiv);
+    if(value.createTimestamp != null) {
+        inlineBlockDiv = document.createElement("div");
+        inlineBlockDiv.style = "display: inline-block; margin: 0px 4px 4px 0;";
+        candidateCardRowColOne.appendChild(inlineBlockDiv);
 
-    iconImg = document.createElement("img");
-    iconImg.src = "/assets/recruiter/img/icons/clock.svg";
-    iconImg.style = "margin-top: -4px";
-    iconImg.setAttribute('height', '18px');
-    inlineBlockDiv.appendChild(iconImg);
+        iconImg = document.createElement("img");
+        iconImg.src = "/assets/recruiter/img/icons/clock.svg";
+        iconImg.style = "margin-top: -4px";
+        iconImg.setAttribute('height', '18px');
+        inlineBlockDiv.appendChild(iconImg);
 
-    inlineBlockDiv = document.createElement("div");
-    inlineBlockDiv.style = "display: inline-block;";
-    candidateCardRowColOne.appendChild(inlineBlockDiv);
+        inlineBlockDiv = document.createElement("div");
+        inlineBlockDiv.style = "display: inline-block;";
+        candidateCardRowColOne.appendChild(inlineBlockDiv);
 
-    innerInlineBlockDiv = document.createElement("div");
-    innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 10px";
-    if(view == view_unlocked_candidate){
-        innerInlineBlockDiv.textContent = "Candidate unlocked on";
-    } else{
-        innerInlineBlockDiv.textContent = "Last Active";
-    }
-    inlineBlockDiv.appendChild(innerInlineBlockDiv);
-
-    //candidate last active container
-    var candidateCardRowColTwoFont = document.createElement("font");
-
-    candidateCardRowColTwoFont.setAttribute("size", "3");
-    candidateCardRowColTwoFont.style = "font-size: 12px; color: black; margin-left: 4px";
-
-    if(view == view_unlocked_candidate){
-        var postedOn = new Date(value.createTimestamp);
-        candidateCardRowColTwoFont.textContent = "Unlocked on: " + ('0' + postedOn.getDate()).slice(-2) + '-' + getMonthVal((postedOn.getMonth()+1)) + '-' + postedOn.getFullYear();
-        candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
-    } else {
-        if(value.extraData.lastActive != null){
-            candidateCardRowColTwoFont.textContent = value.extraData.lastActive.lastActiveValueName;
+        innerInlineBlockDiv = document.createElement("div");
+        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 10px";
+        if (view == view_unlocked_candidate) {
+            innerInlineBlockDiv.textContent = "Candidate unlocked on";
+        } else {
+            innerInlineBlockDiv.textContent = "Last Active";
         }
-    }
+        inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
-    inlineBlockDiv.appendChild(candidateCardRowColTwoFont);
+        //candidate last active container
+        var candidateCardRowColTwoFont = document.createElement("font");
+
+        candidateCardRowColTwoFont.setAttribute("size", "3");
+        candidateCardRowColTwoFont.style = "font-size: 12px; color: black; margin-left: 4px";
+
+        if (view == view_unlocked_candidate) {
+            if (value.createTimestamp != null) {
+                var postedOn = new Date(value.createTimestamp);
+                candidateCardRowColTwoFont.textContent = "Unlocked on: " + ('0' + postedOn.getDate()).slice(-2) + '-' + getMonthVal((postedOn.getMonth() + 1)) + '-' + postedOn.getFullYear();
+                candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
+            }
+        } else {
+            if (value.extraData.lastActive != null) {
+                candidateCardRowColTwoFont.textContent = value.extraData.lastActive.lastActiveValueName;
+            }
+        }
+
+        inlineBlockDiv.appendChild(candidateCardRowColTwoFont);
+    }
 
     // candidate interview status
     var candidateCurrentStatus = document.createElement("div");
@@ -1184,7 +1244,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                         feedbackBtn.className = "customFeedbackBtn feedbackVal";
                         feedbackBtn.onclick = function () {
                             candidateCardData = value;
-                            openFeedbackModal(value.candidate.candidateId);
+                            openFeedbackModal();
                         };
                         feedbackBtn.textContent = "Add Feedback";
                         feedbackBtn.style = "font-size: 12px; background: rgb(46, 200, 102)";
@@ -1194,9 +1254,13 @@ function renderIndividualCandidateCard(value, parent, view) {
             }
         }
     }
-
+    
     if(view == view_unlocked_candidate){
         showContact = false;
+    }
+
+    if(view == view_candidate_info){
+        showContact = true;
     }
 
     //unlock candidate div
@@ -1212,7 +1276,7 @@ function renderIndividualCandidateCard(value, parent, view) {
         unlockCandidateBtn.style = "margin-top: -1px";
 
         unlockCandidateBtn.className = "waves-effect waves-light customUnlockBtn";
-    } else if(view == view_unlocked_candidate){
+    } else if(view == view_unlocked_candidate || view == view_candidate_info) {
         unlockCandidateBtn.className = "contactUnlocked right";
         unlockCandidateBtn.style = "margin-right: 8px";
     }
@@ -1227,10 +1291,188 @@ function renderIndividualCandidateCard(value, parent, view) {
             unlockCandidateBtn.className = "contactUnlocked right";
             unlockCandidateBtn.style = "margin-right: 8px";
             candidateUnlockFont.textContent = value.candidate.candidateMobile;
+            resumeLink.setAttribute("val", "http://docs.google.com/gview?url=" + value.candidate.candidateResumeLink + "&embedded=true");
         }
-    } else if(view == view_unlocked_candidate){
+    } else if(view == view_unlocked_candidate || view == view_candidate_info){
         candidateUnlockFont.textContent = value.candidate.candidateMobile;
     }
     candidateUnlockFont.style = "font-weight: bold; font-size: 12px";
     unlockCandidateBtn.appendChild(candidateUnlockFont);
+}
+
+//candidate actions common methods
+
+var checkedCandidateIdList = [];
+var checkedCandidateNameList = [];
+
+function selectCheckedCandidates() {
+    checkedCandidateIdList = [];
+    checkedCandidateNameList = [];
+    $('#candidateResultContainer input:checked').each(function() {
+        var val = this.value;
+        var valArray = val.split("_");
+        checkedCandidateIdList.push(parseInt(valArray[0]));
+        checkedCandidateNameList.push(valArray[1]);
+    });
+
+    if(checkedCandidateIdList.length > 0){
+        $("#smsText").val('');
+        $("#totalCount").html("Total " + checkedCandidateNameList.length + " Candidates");
+        $("#sendSmsModal").openModal();
+    } else{
+        notifyError("Please select at least 1 candidate to send SMS");
+    }
+}
+
+function sendSelectedSms(candidateId, candidateName) {
+    checkedCandidateIdList = [];
+    checkedCandidateNameList = [];
+
+    checkedCandidateIdList.push(candidateId);
+    checkedCandidateNameList.push(candidateName);
+
+    if(checkedCandidateIdList.length > 0){
+        $("#smsText").val('');
+        $("#totalCount").html("Total " + checkedCandidateNameList.length + " Candidates");
+        $("#sendSmsModal").openModal();
+    } else{
+        notifyError("Please select at least 1 candidate to send SMS");
+    }
+}
+
+function uncheckAll() {
+    $('#candidateResultContainer').find('input[type=checkbox]:checked').removeAttr('checked');
+}
+
+function checkAll() {
+    uncheckAll();
+    $("#candidateResultContainer").find('input[type=checkbox]').each(function () {
+        this.checked = true;
+    });
+}
+
+function selectCheckedCandidatesToUnlock() {
+    checkedCandidateIdList = [];
+    checkedCandidateNameList = [];
+    $('#candidateResultContainer input:checked').each(function() {
+        var val = this.value;
+        var valArray = val.split("_");
+        checkedCandidateIdList.push(parseInt(valArray[0]));
+        checkedCandidateNameList.push(valArray[1]);
+    });
+
+    if(checkedCandidateIdList.length > 0){
+        if(checkedCandidateIdList.length > contactCredits){
+            notifyError("You can unlock " + contactCredits + " candidates only.");
+        } else{
+            $("#totalUnlockCount").html("You are unlocking " + checkedCandidateNameList.length + " candidate's contact. A total of " +
+                checkedCandidateNameList.length + " contact unlock credits will be debited from your account. Please confirm");
+            $("#unlockCandidateModal").openModal();
+        }
+    } else{
+        notifyError("Please select at least 1 candidate to unlock contact");
+    }
+}
+
+function confirmUnlock() {
+    if(checkedCandidateIdList.length > contactCredits){
+        notifyError("You can unlock " + contactCredits + " candidates only.");
+    } else{
+        var s = {
+            candidateIdList: checkedCandidateIdList
+        };
+        $.ajax({
+            type: "POST",
+            url: "/bulkUnlockCandidate",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(s),
+            success: processDataBulkUnlock
+        });
+    }
+}
+
+function processDataBulkUnlock(returnedData){
+    if(returnedData != "-1"){
+        var count = 0;
+        var unlockedCandidateList = returnedData.unlockContactResponseList;
+        unlockedCandidateList.forEach(function (unlockedCandidate) {
+            if(unlockedCandidate.status == 1){
+                try {
+                    count++;
+                    $("#candidate_" + unlockedCandidate.candidateId).html(unlockedCandidate.candidateMobile);
+                    $("#unlock_candidate_" + unlockedCandidate.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 customUnlockBtn").addClass("contactUnlocked right").removeAttr('onclick');
+                } catch (err){}
+            }
+        });
+
+        contactCredits = returnedData.contactCreditCount;
+        $("#remainingContactCredits").html(returnedData.recruiterContactCreditsLeft);
+        $("#remainingContactCreditsMobile").html(returnedData.recruiterContactCreditsLeft);
+        $("#remainingInterviewCredits").html(returnedData.recruiterInterviewCreditsLeft);
+        $("#remainingInterviewCreditsMobile").html(returnedData.recruiterInterviewCreditsLeft);
+
+        notifySuccess("Successfully unlocked " + count + " candidate's contact information!");
+
+        $("#unlockCandidateModal").closeModal();
+    } else{
+        //session not available
+        logoutRecruiter();
+    }
+}
+
+function checkSmsText(){
+    if($("#smsText").val() == ""){
+        $("#sendSms").removeClass("disabled").addClass("disabled");
+    } else{
+        $("#sendSms").removeClass("disabled");
+    }
+}
+
+function sendSms(){
+    var urlParams = window.location.search.split('=');
+    var jpId = null;
+    if(urlParams[0] == "?jpId") {
+        jpId = parseInt(urlParams[1]);
+    }
+    if(checkedCandidateIdList.length > 0){
+        $("#sendSms").addClass("disabled");
+        var s = {
+            candidateIdList: checkedCandidateIdList,
+            smsMessage :$("#smsText").val(),
+            jobPostId :jpId,
+            smsType :1
+        };
+        $.ajax({
+            type: "POST",
+            url: "/bulkSendSms",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(s),
+            success: processDataBulkSms
+        });
+    } else{
+        notifyError("Please select atleast 1 candidate to send SMS");
+    }
+}
+
+function processDataBulkSms(returnedData) {
+    if(returnedData == '1'){
+        checkedCandidateIdList.forEach(function (candidateId) {
+            $("#" + candidateId + "_sms_btn").removeClass("btnGreen").addClass("btnBlue").css("font-size", "12px").html("Resend SMS");
+        });
+        notifySuccess("SMS sent successfully to " + checkedCandidateNameList.length + " candidates!");
+        $("#sendSmsModal").closeModal();
+    } else if(returnedData == '-1'){
+        logoutRecruiter();
+    } else{
+        $("#sendSms").removeClass("disabled");
+        notifyError("Something went wrong. Please try again later");
+    }
+}
+
+function closeSmsModal() {
+    $("#sendSmsModal").closeModal();
+}
+
+function closeUnlockModal() {
+    $("#unlockCandidateModal").closeModal();
 }

@@ -14,6 +14,7 @@ public class UnlockContactResponse {
     public int status;
     public String candidateMobile;
     public Long candidateId;
+    public String resumeLink;
 
     public int getStatus() {
         return status;
@@ -37,5 +38,13 @@ public class UnlockContactResponse {
 
     public void setCandidateId(Long candidateId) {
         this.candidateId = candidateId;
+    }
+
+    public String getResumeLink() {
+        return resumeLink;
+    }
+
+    public void setResumeLink(String resumeLink) {
+        this.resumeLink = resumeLink;
     }
 }

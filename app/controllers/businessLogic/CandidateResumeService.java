@@ -7,6 +7,11 @@ import com.avaje.ebean.Model;
 import controllers.TruService;
 import models.entity.Candidate;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Created by User on 24-12-2016.
  */
@@ -54,4 +59,25 @@ public class CandidateResumeService extends TruService {
     public TruResponse delete(TruRequest request) {
         return super.delete(request);
     }
+
+    public TruResponse fetchLatestResumeForCandidate(String candidateId) {
+        List<Map<String, String>> params = new ArrayList<>();
+        Map<String, String> param = new HashMap<>();
+
+        param.put("CandidateId", candidateId);
+        params.add(param);
+        List<TruResponse> candidateResumeList = new ArrayList<>();
+        //Logger.info(getClass().getSimpleName()+".fetchLatestResumeForCandidate: About to call readByAttribute");
+        candidateResumeList = readByAttribute(params,"candidate_resume_id","DESC");
+        if(candidateResumeList.size() > 0) {
+//            Logger.info(getClass().getSimpleName()+".fetchLatestResumeForCandidate: Read returned with "+candidateResumeList.size()+" records");
+            return candidateResumeList.get(0);
+        }
+        else {
+//            Logger.info(getClass().getSimpleName()+".fetchLatestResumeForCandidate: Read returned with 0 records");
+            TruResponse empty = new TruResponse();
+            return empty;
+        }
+    }
+
 }

@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Recruiter | TruJobs - Post jobs and hire the right candidates</title>
+
+        <meta name="keywords" content="hire driver, hire fresher, hire candidate sites, job posting, hire sales candidate, hire beautician,
+        hire, hire receptionist, hire office admin, hire office assistant,
+        hire plumber, hire teacher, hire entry level candidate,
+        hire delivery boys, hire call center executives, hire BPO, hire kpo, hire hire hire , hire data entry candidate, hire back office candidate,
+        hire receptionist, hire beautician, hire experienced candidate, hire in Bangalore, hire cashier, hire entry level candidate, hire freshers,
+        hire plumber, hire electrician, hire accountants, hire in bangalore">
+
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+
+            <!-- Bootstrap Core CSS -->
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_candidate_search.css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
+        <link rel="stylesheet" href="/assets/support/css/nprogress.css">
+
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+
+        <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
+        <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
+        <script type="text/javascript" src="/assets/recruiter/rmp/js/candidate_card.js"></script>
+        <script type="text/javascript" src="/assets/recruiter/rmp/js/recruiter_candidate_search.js"></script>
+
+        <style>
+        #nprogress .bar{
+            background: #2ec866;
+        }
+        #nprogress .spinner-icon{
+            border-top-color: #2ec866;
+            border-left-color: #2ec866;
+        }
+        </style>
+        <script>
+            $(document).ready(function () {
+                $('select').material_select();
+            });
+        </script>
+        <meta name="theme-color" content="#000000">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+    <body>
+        <div class="recruiter_navbar"></div>
+        <div id="fixed-tools" class="floatingTools" >
+            <div class="container" style="padding: 0">
+                <div class="row" style="margin: 0">
+                    <div class="col s12 l3"></div>
+                    <div class="col s12 l9">
+                        <input type="checkbox" class="filled-in" id="select_all_floating" />
+                        <label for="select_all_floating" style="margin: 0 4px 0 14px; font-size: 1px; color: transparent">.</label>
+
+                        <div class="waves-effect waves-light customBtn btnGreen" onclick="selectCheckedCandidates()" style="margin-left: -8px">
+                            <font style="font-weight: bold; font-size: 12px;" >Send SMS</font>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            $('.recruiter_navbar').load('/recruiterNavbar');
+        </script>
+
+
+        <div class="row hide-on-med-and-up" id="creditViewMobile" style="display: none;">
+            <div class="col s12 ">
+                <div class="row" style="margin: 0;">
+                    <span style="font-size: 18px; font-weight: bold">Credits Balance</span>
+                    </div>
+                <div class="row" style="margin: 0;">
+                    <div class="col s4" style="padding: 0;">
+                            <img src="/assets/recruiter/img/coin.svg" width="12px" style="margin-top: -4px">
+                            <span>Contact: <b><div style="display: inline-block" id="remainingContactCredits">0</div></b></span>
+                    </div>
+                    <div class="col s4" style="padding: 0;">
+                            <img src="/assets/recruiter/img/coin.svg" width="12px" style="margin-top: -4px">
+                            <span>Interview: <b><div style="display: inline-block" id="remainingInterviewCredits">0</div></b></span>
+                    </div>
+                    <div class="col s4 right-align" id="creditModalBtn">
+                        <a class="waves-effect waves-light orange lighten-1 btn right" data-toggle="collapse" onclick="openCreditModal()"><font size="1" style="color: #fff;font-weight: 400"><b>Buy Credits</b></font></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="creditView" class="col s12 hide-on-small-only" style="display: none;">
+            <span style="font-size: 18px; font-weight: bold">Credits Balance</span>
+            <div style="margin: 4px">
+                <img src="/assets/recruiter/img/coin.svg" width="24px">
+                <span>Contact Unlock: <b><div style="display: inline-block" id="remainingContactCreditsMobile">0</div></b></span>
+            </div>
+            <div style="margin: 4px">
+                <img src="/assets/recruiter/img/coin.svg" width="24px">
+                <span>Interview Unlock: <b><div style="display: inline-block" id="remainingInterviewCreditsMobile">0</div></b></span>
+            </div>
+            <a class="waves-effect waves-light orange lighten-1 btn right" data-toggle="collapse" onclick="openCreditModal()"><font style="color: #fff;
+                font-weight: 400"><b>Buy Credits</b></font></a>
+        </div>
+
+        <div id="fixedButton" style="display: none;">
+            <div>
+                Go to top
+            </div>
+            <img src="/assets/recruiter/img/icons/top.svg" width="48px" style="display: block;" onclick="scrollToTop()"/>
+        </div>
+
+        <!--Search bar start-->
+        <div class="container-fluid back-banner-candidate">
+            <div class="container" style="padding: 0;" id="searchBoxContainer">
+                <div class="row">
+                    <h6 style="font-weight:600; color: #fff; margin-top: 24px; font-size: 22px">Candidate Search</h6>
+                </div>
+                <div class="row" style="margin-top: -16px">
+                    <div class="card col s12 l12" style="margin: 0;padding: 0">
+                        <div class="card-content col s12 l12" style="margin: 0;padding: 12px 1%">
+                            <div class="col s12 l5" id="searchBox">
+                                <select id="searchJobRole" class="tokenCustomInput tokenize-sample"></select>
+                                <script type="text/javascript">
+                                    $('#searchJobRole').tokenize({
+                                        displayDropdownOnFocus: true,
+                                        placeholder: "Job Role",
+                                        newElements: true,
+                                        nbDropdownElements: 1000,
+                                        maxElements: 1,
+                                        onAddToken: function (value, text) {
+                                            validateJobRoleVal(value, text);
+                                        }
+                                    });
+                                </script>
+                            </div>
+                            <div class="col s12 l5" id="searchBox">
+                                <select id="searchLocality" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                                <script type="text/javascript">
+                                    $('#searchLocality').tokenize({
+                                        displayDropdownOnFocus: true,
+                                        placeholder: "Locality",
+                                        newElements: true,
+                                        nbDropdownElements: 5000,
+                                        onAddToken: function (value, text) {
+                                            validateLocationVal(value, text);
+                                        }
+                                    });
+                                </script>
+                            </div>
+                            <div class="col s12 l2" style="margin-top: 4px">
+                                <a class="waves-effect waves-light ascentGreen lighten-1 btn right" id="searchBtn" data-toggle="collapse" onclick="performSearch()" data-target="#filterDetail"><font style="color: #fff;
+                                    font-weight: 400"><b>Search</b></font>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <!--Search bar ends-->
+        <div class="container-fluid hide-on-med-and-up" style="padding: 1%;">
+            <div class="row">
+                <div class="col s6">
+                    <div class="waves-effect waves-light btn" id="sortByMobileViewBtn" onclick="showSort()" style="padding: 0 9px; width: 100%;">Sort By</div>
+                </div>
+                <div class="col s6">
+                    <div class="waves-effect waves-light btn" id="filterMobileViewBtn" onclick="showFilter()" style="padding: 0 9px; width: 100%;">Filter</div>
+                </div>
+            </div>
+        </div>
+            <!-- Details container -->
+        <div class="container" style="padding: 0">
+            <div class="row">
+                <!-- Sort & Filter -->
+                <div class="col s12 l3">
+                    <div id="sortMainBox">
+                    <div class="card-content">
+                        <font size="4">Sort by</font>
+                    </div>
+                    <ul class="collapsible" data-collapsible="expandable">
+                        <li>
+                            <div class="collapsible-header active"><i class="material-icons">repeat</i>
+                                Sort by</div>
+                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                <div>
+                                    <input name="sortBy" type="radio" value="0" id="sortByMinSalary" />
+                                    <label style="font-size: 12px" for="sortByMinSalary">Salary (Low to High)</label>
+                                </div>
+                                <div>
+                                    <input name="sortBy" type="radio" value="1" id="sortByMaxSalary" />
+                                    <label style="font-size: 12px" for="sortByMaxSalary">Salary (High to Low)</label>
+                                </div>
+                                <div>
+                                    <input name="sortBy" type="radio" value="2" id="latestActive" />
+                                    <label style="font-size: 12px" for="latestActive">Last Active (Newest to oldest)</label>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    </div>
+                    <div>
+                        <div id="filterMainBox">
+                            <div class="card-content">
+                                <font size="4">Filters</font>
+                                <div class="waves-effect waves-light orange lighten-1" onclick="resetFilters()" style="padding: 4px 8px 4px 8px;
+                                    float: right; display: inline-block; border-radius: 4px;">
+                                    <font style="color: #fff;font-weight: 400; font-size: 12px"><b>
+                                        <center>
+                                            RESET FILTERS
+                                        </center>
+                                    </b></font>
+                                </div>
+                            </div>
+                            <div class="card-content" style="padding: 0">
+                            <div class="row">
+                                <div class="col s12 l12">
+                                    <ul class="collapsible" data-collapsible="expandable">
+                                        <li>
+                                            <div class="collapsible-header active">
+
+                                                <i class="material-icons">toc</i>
+                                                Already Sent SMS
+                                                <span style="float: right; display: none" id="fresh_candidate_filter">
+                                                    <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                </span>
+                                            </div>
+
+                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                                <div>
+                                                    <input name="filterSmsSent" type="radio" onchange="updateSentSmsFilter()" value="0" id="candidate_all" />
+                                                    <label style="font-size: 12px" for="candidate_all">All</label>
+                                                </div>
+                                                <div>
+                                                    <input name="filterSmsSent" type="radio" onchange="updateSentSmsFilter()" value="1" id="candidate_fresh" />
+                                                    <label style="font-size: 12px" for="candidate_fresh">Exclude Already Sent</label>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header active">
+                                                <img src="/assets/recruiter/img/icons/gender.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                Gender
+                                                <span style="float: right; display: none" id="gender_filter">
+                                                    <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                </span>
+                                            </div>
+
+                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                                <div>
+                                                    <input name="filterGender" type="radio" onchange="updateGenderFilter()" value="0" id="gender_0" />
+                                                    <label style="font-size: 12px" for="gender_0">Male</label>
+                                                </div>
+                                                <div>
+                                                    <input name="filterGender" type="radio" onchange="updateGenderFilter()" value="1" id="gender_1" />
+                                                    <label style="font-size: 12px" for="gender_1">Female</label>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header active">
+                                                <img src="/assets/recruiter/img/icons/exp.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                Experience
+                                                <span style="float: right; display: none" id="experience_filter">
+                                                    <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                </span>
+                                            </div>
+                                            <div class="collapsible-body" id="experienceFilterDiv" style="padding: 8px 18px 8px 18px"></div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header active"><i class="material-icons">place</i>
+                                                Distance
+                                                <span style="float: right" id="distance_filter">
+                                                    <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                </span>
+                                            </div>
+                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                                <div>
+                                                    <center>
+                                                        <div style="font-size: 12px; font-weight: 600;" id="distanceRadius">
+                                                            <b>Within 10kms</b>
+                                                        </div>
+                                                    </center>
+                                                </div>
+                                                <div class="range-field">
+                                                    <input type="range" id="filterDistance" min="0" max="30" value="10" onchange="updateSliderVal(this)" />
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header active">
+                                                <img src="/assets/recruiter/img/icons/salary.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                Max Salary
+                                                <span style="float: right; display: none" id="salary_filter">
+                                                    <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                </span>
+                                            </div>
+                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                                <div>
+                                                    <center>
+                                                        <div style="font-size: 12px; font-weight: 600;" id="maxSalaryVal">
+                                                            <b>Max Salary: Not Specified</b>
+                                                        </div>
+                                                    </center>
+                                                </div>
+                                                <div class="range-field">
+                                                    <input type="range" id="filterSalary" value="0" min="0" max="40000" onchange="updateSalarySliderVal(this)" />
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header active">
+                                                <img src="/assets/recruiter/img/icons/education.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                Education
+                                                <span style="float: right; display: none" id="education_filter">
+                                                    <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                </span>
+                                            </div>
+                                            <div class="collapsible-body" id="educationFilterDiv" style="padding: 8px 18px 8px 18px"></div>
+
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header active ">
+                                                <img src="/assets/recruiter/img/icons/language.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                Language
+                                                <span style="float: right; display: none" id="language_filter">
+                                                    <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                </span>
+                                            </div>
+
+                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px" id="languageFilterDiv"></div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header active ">
+                                                <img src="/assets/recruiter/img/icons/language.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                Document
+                                                <span style="float: right; display: none" id="document_filter">
+                                                    <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                </span>
+                                            </div>
+
+                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px" id="documentFilterDiv"></div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header active ">
+                                                <img src="/assets/recruiter/img/icons/language.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                Asset
+                                                <span style="float: right; display: none" id="asset_filter">
+                                                    <img src="/assets/dashboard/img/save.svg" width="20px">
+                                                </span>
+                                            </div>
+
+                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px" id="assetFilterDiv"></div>
+                                        </li>
+                                    </ul>
+
+                                    <div class="row">
+                                        <div class="col s8 l7" style="padding-right: 4px;"></div>
+                                        <div class="col s4 l5" style="padding-left: 0; margin: 0">
+                                            <center>
+                                                <div class="waves-effect waves-light orange lighten-1 btn" onclick="resetFilters()" style="padding: 0 9px; width: 100%; display: inline-block">
+                                                    <font style="color: #fff;font-weight: 400; font-size: 12px"><b>
+                                                        <center>
+                                                            Reset Filters
+                                                        </center>
+                                                    </b></font>
+                                                </div>
+                                            </center>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                    <!-- Candidate Details -->
+                <div class="col s12 l9">
+                    <div id="candidateTools" style="display: none">
+                        <input type="checkbox" class="filled-in" id="select_all" />
+                        <label for="select_all" style="margin: 0 4px 0 14px; font-size: 1px; color: transparent">.</label>
+
+                        <div class="waves-effect waves-light customBtn btnGreen" onclick="selectCheckedCandidates()" style="margin-left: -8px">
+                            <font style="font-weight: bold; font-size: 12px;" >Send SMS</font>
+                        </div>
+                    </div>
+                    <div id="candidateResultContainer"></div>
+                    <div id="searchJobPanel">
+                        <center>
+                            <img src="/assets/recruiter/img/search_candidate.svg" width="96px">
+                            <h5>Welcome to candidate search page.</h5>
+                            <h6>Search among 40000+ candidates</h6>
+                        </center>
+
+                    </div>
+
+                    <div style="display: none; padding-top: 6%" id="loadingIcon">
+                        <center>
+                            <h6>Searching Candidates</h6>
+                            <div class="spinner">
+                                <div class="double-bounce1"></div>
+                                <div class="double-bounce2"></div>
+                            </div>
+                        </center>
+                    </div>
+
+                    <div id="somethingWentWrong" style="display:none; padding: 40px 6% 40px 6%">
+                        <center>
+                            <img src="/assets/recruiter/img/warning.svg" width="116px">
+                            <h5>Something went wrong!</h5>
+                            <h6>Looks like something went wrong in between. Try to refresh the page or try loading after sometime!</h6>
+                        </center>
+                    </div>
+
+                    <div id="noCandidateDiv" style="padding: 120px 6% 0 6%; display: none">
+                        <center>
+                            <img src="/assets/recruiter/img/empty_box.svg" width="96px">
+                            <h5>No Candidates found!</h5>
+                            <h6>Looks like there are no candidates matching your search. Please edit search/filter options and try again</h6>
+                        </center>
+                    </div>
+                    <div id="endOfResultsDiv" style="padding: 20px 6% 0 6%; display: none">
+                        <center>
+                            <img src="/assets/recruiter/img/empty_box.svg" width="96px">
+                            <h5>That's all we have for now!</h5>
+                            <h6>Showing all the candidates according to your filter preferences</h6>
+                        </center>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="container">
+
+        </div>
+            <!--Footer start-->
+        <footer class="page-footer" style="background-color: #424242;">
+            <div class="container">
+                <div class="row" style="margin: 0">
+                    <div class="col l6 s12">
+                        <h5 class="white-text">Hire in Bangalore</h5>
+                    </div>
+                    <div class="col l4 offset-l2 s12">
+                        <h5 class="white-text">Get in touch</h5>
+                        <ul>
+                            <li><a class="grey-text text-lighten-3" href="#!">Write us at: info@@trujobs.in</a></li>
+                            <li><a class="grey-text text-lighten-3" href="#!">Have queries? Talk to us at 8880007799</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row" style="margin: 0">
+                    <img src="/assets/recruiter/img/skyline_small.svg" width="100%">
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <div class="container">
+            © 2016 Trujobs.in | Bengaluru, India. All Right Reserved. Privacy Policy
+                </div>
+            </div>
+        </footer>
+
+            <!-- Modal buy credit Structure -->
+        <div id="modalBuyCredits" class="modal" style="background: transparent; box-shadow: none">
+            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeCreditModal()"></div>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+                <center><font style="color: #fff"><h5>Top up now and get access to more candidates!</h5></font></center>
+            </div>
+            <div id="modalBuyCreditInnerBox">
+                <center>
+                    <div class="row">
+                        <div class="col s6 l6">
+                            <div class="packCol">
+                                <img src="/assets/recruiter/img/coin.svg">
+                                <div>Buy contact unlocks</div>
+                                <br>
+                                <input style="width: 100%" placeholder="No. of Contact credits" id="contactCreditAmount" type="number" class="validate">
+                            </div>
+                        </div>
+                        <div class="col s6 l6">
+                            <div class="packCol">
+                                <img src="/assets/recruiter/img/coin.svg">
+                                <div>Buy interview unlocks</div>
+                                <br>
+                                <input style="width: 100%" placeholder="No. of Interview credits" id="interviewCreditAmount" type="number" class="validate">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="requestCredits" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="submitCredits()"><font style="color: #fff;
+                        font-weight: 400"><b>Buy Credits Now!</b></font></div>
+                    <div style="margin: 8px; color: #0f9d58; display: none" id="successMsg">Thanks! We have received your request to buy more credits. Our business team will contact you within 24hrs</div>
+                </center>
+            </div>
+        </div>
+
+            <!-- Send SMS to candidate modal -->
+        <div id="sendSmsModal" class="modal" style="background: transparent; box-shadow: none">
+            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeSmsModal()"></div>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+                <center><font style="color: #fff"><h5>Send SMS to candidates!</h5></font></center>
+            </div>
+            <div style="background: #ffffff; padding: 14px">
+                <center>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            You are sending SMS to the following candidates:
+                            <div id="candidateNameList" style="font-weight: bold; text-align: left"></div>
+                            <div id="totalCount" style="font-weight: bold; margin-top: 4px; font-size: 12px"></div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <textarea onkeyup="checkSmsText()" id="smsText" class="materialize-textarea" maxlength="160" length="160" placeholder="(Example: Telecaller openings at ABC company. Salary upto Rs 25,000. Day shift, cab facility available. Call 9999999999 now to apply!)">
+                            </textarea>
+
+                            <label for="smsText">SMS Message</label>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 8px"  id="sendSms" class="waves-effect waves-light ascentGreen lighten-1 btn disabled" data-toggle="collapse" onclick="sendSms()">
+                        <font style="color: #fff;
+                            font-weight: 400"><b>Send SMS</b></font>
+                    </div>
+                    <div style="margin: 8px; color: #0f9d58; display: none" id="successSmsMsg">SMS Sent!</div>
+                </center>
+            </div>
+        </div>
+
+            <!-- unlock candidate modal -->
+        <div id="unlockCandidateModal" class="modal" style="background: transparent; box-shadow: none">
+            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeUnlockModal()"></div>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+                <center><font style="color: #fff"><h5>Multiple Candidate Contact Unlock!</h5></font></center>
+            </div>
+            <div style="background: #ffffff; padding: 14px">
+                <center>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <div id="totalUnlockCount" style="font-weight: bold;"></div>
+
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 8px" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="confirmUnlock()">
+                        <font style="color: #fff; font-weight: 400"><b>Unlock Now!</b></font>
+                    </div>
+                </center>
+            </div>
+        </div>
+
+    </body>
+    <script>
+        $(window).resize(function(){
+            var width = $(window).width();
+            if(width < 780){
+                $("#editBtn").removeClass("btn-large").addClass("btn-small");
+            } else{
+                $("#editBtn").removeClass("btn-small").addClass("btn-large");
+            }
+        });
+    </script>
+    <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
+    <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+    <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/recruiter_notifier.js"></script>
+</html>

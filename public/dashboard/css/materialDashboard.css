@@ -302,6 +302,7 @@ div.inblockDiv{
 }
 
 .tabItem{
+    border-bottom: 4px solid rgb(238, 235, 244);
     color: #39393b;
     padding: 12px;
     cursor: pointer;
@@ -310,15 +311,13 @@ div.inblockDiv{
 .activeTab{
     color: rgba(8, 65, 99, 0.67);
     font-weight: bold;
-    border-bottom: 2px solid rgba(8, 65, 99, 0.67);
+    border-bottom: 4px solid rgb(62, 90, 106);
 }
 
 .headerRibbon{
-    border-radius: 4px;
     font-weight: bold;
     font-size: 16px;
     color: white;
-    margin-top: 8px;
     background: rgba(8, 65, 99, 0.67);
 }
 
