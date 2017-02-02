@@ -23,6 +23,7 @@ function processDataApplyJob(returnedData, jobPostId, candidateId, isPartner) {
     // enabling apply btn in partner
     try{
         $("#applyButton").addClass("jobApplyBtnModal").removeClass("jobApplied").prop('disabled',false).html("Apply");
+        document.getElementById('apply_btn_' + jobPostId).style.pointerEvents = 'auto';
     } catch (e){}
 
     if(returnedData.status == 1) {
@@ -49,6 +50,8 @@ function processDataApplyJob(returnedData, jobPostId, candidateId, isPartner) {
         try{
             $(".jobApplyBtnV2").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
             $('.jobApplyBtnV2').attr('onclick','').unbind('click');
+
+            document.getElementById('apply_btn_' + jobPostId).style.pointerEvents = 'none';
         } catch(err){
             console.log(err);
         }

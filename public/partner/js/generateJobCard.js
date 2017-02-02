@@ -1481,7 +1481,6 @@ function processDataAllJobPosts(returnedData) {
                     if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_REQUIRED) {
                         applyJobText = "Book Interview";
                     } else if(jobPost.applyBtnStatus == CTA_BTN_DEACTIVE){
-                        console.log("cta deactivated");
                         applyJobText = "Apply";
                         applyBtn.style = "background:#ffa726";
                         applyBtn.onclick = function () {
@@ -1490,7 +1489,7 @@ function processDataAllJobPosts(returnedData) {
                     } else if(jobPost.applyBtnStatus == CTA_BTN_ALREADY_APPLIED) {
                         applyJobText = "Applied";
                         applyBtn.disabled =  true;
-                        applyBtn.style = "cursor: default; background: #ffa726";
+                        applyBtn.style = "cursor: default; background: #f4cb6c; box-shadow: none";
                     } else if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_CLOSED) {
                         applyJobText = "Application closed";
                         applyBtn.disabled =  true;
