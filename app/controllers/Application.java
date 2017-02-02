@@ -2696,4 +2696,8 @@ public class Application extends Controller {
         }
         return ok("Done");
     }
-}
+
+    public static Result doQuickApply(String candidateId) throws org.json.JSONException {
+    }
+
+    }
