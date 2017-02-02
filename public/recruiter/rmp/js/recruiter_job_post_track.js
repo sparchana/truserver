@@ -300,6 +300,7 @@ function tabChange2() {
                         if(applicationList.length > 0) {
                             applicationList.forEach(function (workflowObj) {
                                 returned_data.push({
+                                    'candidateId' : workflowObj.candidate.candidateId,
                                     'date' : function() {
                                         var postedOn = new Date(workflowObj.extraData.creationTimestamp);
                                         var dateVal = ('0' + postedOn.getDate()).slice(-2) + '-' + getMonthVal((postedOn.getMonth()+1)) + '-' + postedOn.getFullYear()
@@ -355,7 +356,7 @@ function tabChange2() {
                                     'action' : function() {
                                         var actionBtn = '-';
                                         if(workflowObj.extraData.workflowStatus != null && workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED){
-                                            actionBtn = '<div class="mLabel"  style="width:100%" >'
+                                            actionBtn = '<div class="mLabel" id="candidate_action_'+ workflowObj.candidate.candidateId +'"  style="width:100%" >'
                                                 + '<span class="customBtn btnGreen" onclick="acceptAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId  + ');" >Accept</span>'
                                                 + '<span class="customBtn btnRed" onclick="rejectAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId  + ');" >Reject</span>'
                                                 + '<span class="customBtn btnOrange" onclick="rescheduleAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId  + ');">Reschedule</span>'
@@ -377,7 +378,7 @@ function tabChange2() {
                     }
                 }
             },
-
+            "rowId": "candidateId",
             "deferRender": true,
             "columns": [
                 { "data": "date" },
@@ -599,14 +600,18 @@ function processDataInterviewStatus(returnedData) {
     $("#modalRescheduleSlot").closeModal();
     if(returnedData == "1"){
         if(globalInterviewStatus == 1){
+            $("#" + globalCandidateId).remove();
             notifySuccess("Interview Confirmed"); //accepted
         } else if(globalInterviewStatus == 2){ //rejected by recruiter
+            $("#candidate_action_" + globalCandidateId).html('');
+            $("#candidate_action_" + globalCandidateId).html("Rejected");
             $("#modalRejectReason").closeModal();
             notifySuccess("Interview Rejected");
         } else if(globalInterviewStatus == 3){
             notifySuccess("Interview Rescheduled");
+            $("#candidate_action_" + globalCandidateId).html('');
+            $("#candidate_action_" + globalCandidateId).html("Rescheduled");
         }
-        tabChange2();
     } else{
         notifyError("Something went wrong. Please try again later. Refreshing page..");
         setTimeout(function(){

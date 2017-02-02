@@ -431,7 +431,7 @@ public class RecruiterController {
         Logger.info("Will check sms status after 10 seconds");
         new Thread(() -> {
             try{
-                Thread.sleep(10000); //check after 20 seconds
+                Thread.sleep(10000); //check after 10 seconds
                 Logger.info("Starting sms delivery status check");
                 SmsDeliveryStatus status = SmsDeliveryStatus.find.where().eq("status_id", SMS_STATUS_PENDING).findUnique();
                 Boolean reRun = false;

@@ -234,11 +234,15 @@ function jobPostApplicationStatus(jobPost) {
             colJobStatus.appendChild(stopDiv);
 
         } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_PAUSED){
+            statusName.textContent = "Paused";
             statusName.style = "color: orange; margin-bottom: 2px; text-align: center;font-weight:bold";
-            statusName.textContent = jobPost.jobPost.jobPostStatus.jobStatusName;
 
             colJobStatus.appendChild(resumeDiv);
             colJobStatus.appendChild(stopDiv);
+
+        } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_CLOSED){
+            statusName.textContent = "Closed";
+            statusName.style = "color: red; margin-bottom: 2px; text-align: center;font-weight:bold";
 
         } else{
             statusName.textContent = jobPost.jobPost.jobPostStatus.jobStatusName;
@@ -291,12 +295,14 @@ function openPauseInterviewModal() {
 function resumeJobApplication() {
     document.getElementById(jobPostObj.jobPostId + '_resume').style.pointerEvents = 'none';
 
+    jobPostObj.jobPostStatus.jobStatusId = JOB_STATUS_ACTIVE;
     changeJobStatus(JOB_STATUS_NEW, null);
 }
 
 function stopJobApplication() {
     document.getElementById(jobPostObj.jobPostId + '_stop').style.pointerEvents = 'none';
 
+    jobPostObj.jobPostStatus.jobStatusId = JOB_STATUS_CLOSED;
     changeJobStatus(JOB_STATUS_CLOSED, null);
 }
 
@@ -313,6 +319,7 @@ function confirmPauseAction() {
         } else{
             var jobPostResumeDate = selectedDate.getFullYear() + "-" + (selectedDate.getMonth() + 1) + "-" + selectedDate.getDate();
             document.getElementById(jobPostObj.jobPostId + '_pause').style.pointerEvents = 'none';
+            jobPostObj.jobPostStatus.jobStatusId = JOB_STATUS_PAUSED;
             changeJobStatus(JOB_STATUS_PAUSED, jobPostResumeDate);
         }
     }
@@ -341,13 +348,19 @@ function changeJobStatus(jobStatus, jobPostResumeDate) {
 function processDataAddJobPost(returnedData) {
     if(returnedData.status == 2 ){
         $("#pauseInterviewModal").closeModal();
+        var customObj = {
+            jobPost: jobPostObj
+        };
+        jobPostApplicationStatus(customObj);
         notifySuccess("Job Status updated successfully!");
     } else{
         notifyError("Something went wrong. Please try again later!");
     }
+/*
     setTimeout(function(){
         window.location = "/recruiter/allRecruiterJobPosts";
     }, 2500);
+*/
 }
 
 function closePauseModal() {
