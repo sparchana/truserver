@@ -538,7 +538,7 @@ var cardModule = (function ($) {
                     }
                     applyBtn.textContent = applyJobText;
                     var w = window.innerWidth;
-                    if( w > 786){
+                    if( w > 786 ){
                         applyBtnRow.appendChild(applyBtn);
                     } else{
                         jobApplyCol.appendChild(applyBtn);
@@ -548,7 +548,9 @@ var cardModule = (function ($) {
                         applyBtnDiv.appendChild(reopenRow);
                     }
                     applyBtn.onclick = function () {
-                        var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
+                        cardModule.method.genRecruiterContactModal(jobPost.recruiterProfile.recruiterProfileName,jobPost.recruiterProfile.recruiterProfileMobile);
+
+                        /*var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
                         jobPostBreak = jobPostBreak.toLowerCase();
                         var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
                         jobCompany = jobCompany.toLowerCase();
@@ -556,7 +558,7 @@ var cardModule = (function ($) {
                             window.location.href = "/jobs/" + jobPostBreak + "-jobs-in-bengaluru-at-" + jobCompany + "-" + jobPost.jobPostId;
                         } catch (exception) {
                             console.log("exception occured!!" + exception);
-                        }
+                        }*/
                     };
 
                     if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != 4){
@@ -597,9 +599,125 @@ var cardModule = (function ($) {
                     },
                     function (xhr, state, error) {
                     });
+            },
+            genRecruiterContactModal:function (recruiterName,recruiterNumber) {
+                var splitMobileNumber = recruiterNumber.split("");
+
+                $("#recruiterModal").html("");
+                var parent = $("#recruiterModal");
+
+                var recruiterContactModal = document.createElement("div");
+                recruiterContactModal.className = "modal fade";
+                recruiterContactModal.id = "recruiterContact";
+                recruiterContactModal.role = "dailog";
+                parent.append(recruiterContactModal);
+
+                var recruiterContactModalDialog = document.createElement("div");
+                recruiterContactModalDialog.className = "modal-dialog";
+                recruiterContactModal.appendChild(recruiterContactModalDialog);
+
+                var recruiterContactModalContent = document.createElement("div");
+                recruiterContactModalContent.className = "modal-content";
+                recruiterContactModalDialog.appendChild(recruiterContactModalContent);
+
+                var recruiterContactModalBody = document.createElement("div");
+                recruiterContactModalBody.className = "modal-body";
+                recruiterContactModalBody.style = "padding:0";
+                recruiterContactModalContent.appendChild(recruiterContactModalBody);
+
+                var modalHeadingText = document.createElement("h5");
+                modalHeadingText.style ="text-align:center";
+                modalHeadingText.textContent ="Contact recruiter ("+recruiterName+") and go !!";
+                recruiterContactModalBody.appendChild(modalHeadingText);
+
+                var hr = document.createElement("hr");
+                recruiterContactModalBody.appendChild(hr);
+
+                var recruiterContactMainDiv = document.createElement("div");
+                recruiterContactMainDiv.className = "row";
+                recruiterContactMainDiv.id = "contactRecruiter";
+                recruiterContactMainDiv.style = "margin-top: 0; margin-right: 2%; margin-left: 2%";
+                recruiterContactModalBody.appendChild(recruiterContactMainDiv);
+
+                var candidateName = document.createElement("input");
+                candidateName.className= "form-control input-md";
+                candidateName.id = "candidateNameRecruiterContactModal";
+                candidateName.style = "margin:5px 0";
+                candidateName.type = "type";
+                candidateName.placeholder = "Your name (e.g. Ankit Singh)";
+                recruiterContactMainDiv.appendChild(candidateName);
+
+                var candidateMobile = document.createElement("input");
+                candidateMobile.className= "form-control input-md";
+                candidateMobile.id = "candidateMobileRecruiterContactModal";
+                candidateMobile.type = "type";
+                candidateMobile.style = "margin:5px 0";
+                candidateMobile.setAttribute("maxlength","10");
+                candidateMobile.placeholder = "Your 10 digit mobile(e.g. 9998887770)";
+                recruiterContactMainDiv.appendChild(candidateMobile);
+
+                var submitButton = document.createElement("button");
+                submitButton.className = "btn btn-default";
+                submitButton.id = "recruiterContactModalBtn";
+                submitButton.style = "margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%";
+                submitButton.type = "button";
+                submitButton.textContent = "Call : XXXXXXX"+splitMobileNumber[splitMobileNumber.length-3]+splitMobileNumber[splitMobileNumber.length-2]+splitMobileNumber[splitMobileNumber.length-1];
+                submitButton.onclick = function(){
+                        var candidateName = $("#candidateNameRecruiterContactModal").val();
+                        var candidateMobile = $("#candidateMobileRecruiterContactModal").val();
+                        if(cardModule.validate.candidateName(candidateName) && cardModule.validate.candidateMobile(candidateMobile)){
+                            /*try{
+                             $.ajax({
+                             type:"",
+                             url:"",
+                             contentType:"application/json",
+                             data:JSON.stringify(d),
+                             success:function (returnedData) {
+                             submitButton.textContent = recruiterNumber;
+                             }
+                             });
+                             } catch(exception){
+                             console.log("Expcetion occured !! " + exception);
+                             }*/
+                            var w = window.innerWidth;
+                            if( w > 786){
+                                document.location.href = "tel:"+recruiterNumber;
+                            } else{
+                                submitButton.textContent = "Call : "+recruiterNumber;
+                            }
+
+                        }
+
+                };
+                recruiterContactMainDiv.appendChild(submitButton);
+                $("#recruiterContact").modal("show");
             }
         },
         validate: {
+            candidateMobile:function(phone){
+                var res = validateMobile(phone);
+                var validationResult = true;
+                if(res == 0){
+                    alert("Enter a valid mobile number");
+                    validationResult = false;
+                } else if(res == 1){
+                    alert("Enter 10 digit mobile number");
+                    validationResult = false;
+                }
+
+                return validationResult;
+            },
+            candidateName:function (firstName) {
+                var firstNameCheck = validateName(firstName);
+                var validationResult = true;
+                switch(firstNameCheck){
+                    case 0: alert("Name contains number. Please Enter a valid  name"); validationResult = false; break;
+                    case 2: alert("Name cannot be blank spaces. Enter a valid  name"); validationResult = false; break;
+                    case 3: alert("Name contains special symbols. Enter a valid  name"); validationResult = false; break;
+                    case 4: alert("Please enter your first name"); validationResult = false; break;
+                }
+            return validationResult;
+            },
             education: function (education) {
                 if(education != null ){
                     return education.educationName;
