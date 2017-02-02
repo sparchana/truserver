@@ -113,7 +113,6 @@ POST        /updateFeedback                                               contro
 POST        /getDeActivationMessage                                       controllers.Application.getDeactivationMessage(candidateId: java.lang.Long?= null)
 POST        /updateRecruiterCreditPack                                    controllers.Application.updateRecruiterCreditPack()
 POST        /expireCreditPack                                             controllers.Application.expireCreditPack()
-GET         /generateCompanyCode                                          controllers.Application.generateCompanyCode()
 
 # partner routes
 #~~~~~~~~~~~~~~~~~~~~
@@ -321,17 +320,18 @@ POST        /updateStatusCandidate/:jpId/:value/:reason                   contro
 
 # Test API
 # ~~~~~~~~~~~~~
-GET         /resolveLatLng/:latlng                                        controllers.TrudroidController.mResolveLatLng(latlng: String)
-GET         /support/api/testMatchingCandidate/:jpId                      controllers.TestController.testMatchingCandidate(jpId: Long)
-GET         /api/test/testValidator/                                      controllers.TestController.testValidator(methodId: Integer ?=null, methodValue: String ?=null)
-GET         /api/test/testScheduler/                                      controllers.TestController.testScheduler()
+GET         /generateCompanyCode                                          controllers.Application.generateCompanyCode()
+# GET         /resolveLatLng/:latlng                                        controllers.TrudroidController.mResolveLatLng(latlng: String)
+# GET         /support/api/testMatchingCandidate/:jpId                      controllers.TestController.testMatchingCandidate(jpId: Long)
+# GET         /api/test/testValidator/                                      controllers.TestController.testValidator(methodId: Integer ?=null, methodValue: String ?=null)
+# GET         /api/test/testScheduler/                                      controllers.TestController.testScheduler()
 
-GET         /testNotification                                             controllers.TestController.testnotification()
-GET         /checkSmsDelivery                                             controllers.TestController.checkSmsDelivery()
-GET         /convertOldData                                               controllers.TestController.convertOldData()
-GET         /testQueue                                                    controllers.TestController.testQueue()
-GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
-GET         /testResponse                                                 controllers.TestController.testApplyInShortResponse()
+# GET         /testNotification                                             controllers.TestController.testnotification()
+# GET         /checkSmsDelivery                                             controllers.TestController.checkSmsDelivery()
+# GET         /convertOldData                                               controllers.TestController.convertOldData()
+# GET         /testQueue                                                    controllers.TestController.testQueue()
+# GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
+# GET         /testResponse                                                 controllers.TestController.testApplyInShortResponse()
 
 # Scrap API
 # ~~~~~~~~~~~~~

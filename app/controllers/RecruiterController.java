@@ -460,7 +460,7 @@ public class RecruiterController {
                                 statusId = SMS_STATUS_FAILED;
                             }
 
-                            report.setSmsDeliveryStatus(SmsDeliveryStatus.find.where().eq("status_id", statusId).findUnique());
+                            report.setSmsDeliveryStatus(SmsDeliveryStatus.find.where().eq("status_id", statusId).setUseQueryCache(true).findUnique());
                             report.update();
                         }
                     }
