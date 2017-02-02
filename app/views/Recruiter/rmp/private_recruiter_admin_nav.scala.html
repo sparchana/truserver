@@ -60,4 +60,13 @@ nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i {
         $(".button-collapse").sideNav();
         $(".dropdown-button").dropdown();
     });
+
+    $(document).scroll(function(){
+        if ($(this).scrollTop() > 30) {
+            $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
+        }
+        else{
+            $('nav').css({"background": "transparent"});
+        }
+    });
 </script>

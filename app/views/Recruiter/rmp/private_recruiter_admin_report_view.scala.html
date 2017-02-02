@@ -19,28 +19,39 @@
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_myjobs.css">
 
+
+
+        <link rel="stylesheet" href="/assets/support/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="/assets/partner/css/responsive.dataTables.min.css">
+        <link rel="stylesheet" href="/assets/partner/css/rowReorder.dataTables.min.css">
+        <link rel="stylesheet" href="/assets/support/css/buttons.dataTables.min.css">
+
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
 
         <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
 
-        <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
-        <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
 
+        <link rel="stylesheet" type="text/css" href="/assets/support/css/daterangepicker.css">
 
         <meta name="theme-color" content="#000000">
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     </head>
     <body>
         <div class="recruiter_navbar"></div>
-        <script>
-            $('.recruiter_navbar').load('/recruiterNavbar');
-    </script>
+
 
         <div class="back-banner-recruiter" style="height: 90px"></div>
-        <h5 style="margin: 8px 8px 8px 16px">Recruiter Summary
-            <a class="waves-effect waves-light btn " id="downloadBtn">Download CSV</a>
-        </h5>
+        <div class="row">
+                <h5 style="margin: 8px 8px 8px 16px; display: inline-block; ">Recruiter Summary | </h5>
+                <h6 style="display: inline-block;">Select Date range:
+                    <input type="text" name="datefilter" value="" class="form-control" style="display: inline-block;
+                        width: 240px">
+                    <i class="glyphicon glyphicon-calendar fa fa-calendar" style="margin-left: -24px"></i>
+                </h6>
+        </div>
+
+
+
 
         <div style="padding-top: 8%; padding-bottom: 8%" id="loadingIcon">
             <center>
@@ -68,33 +79,23 @@
             </center>
         </div>
 
-        <div class="container-fluid" id="recTable" style="display: none">
-            <div class="card" id="recruiterSummary">
-                <div class="row hide-on-small-only" id='headerForData'>
-                    <div class="col s1 l1" id="colHeadDataTable">
-                        <font>Recruiter</font>
-                    </div>
-                    <div class="col s2 l2" id="colHeadDataTable">
-                        <font>Recruiter Mobile</font>
-                    </div>
-                    <div class="col s2 l2" id="colHeadDataTable">
-                        <font>No. of Active Jobs</font>
-                    </div>
-                    <div class="col s1 l2" id="colHeadDataTable">
-                        <font>Total Applications</font>
-                    </div>
-                    <div class="col s1 l2" id="colHeadDataTable">
-                        <font>Total Interviews</font>
-                    </div>
-                    <div class="col s1 l2" id="colHeadDataTable">
-                        <font>Total Selections</font>
-                    </div>
-                    <div class="col s1 l1 tooltipped" data-position="top" data-delay="50" data-tooltip="Total Selected/Total Vacancy" id="colHeadDataTable">
-                        <font>%age fulfilled</font>
-                    </div>
-                </div>
-                <div id="recruiterTable">
-            </div>
+        <div class="row">
+            <div id="recruiterTableContainer" style="display: none" class="col s12">
+                <table id="recruiterTable" style="background: white;" class="table table-bordered" cellspacing="0" width="100%">
+                    <thead style="background: #656565;
+                        color: white">
+                        <tr>
+                            <th style="font-size: 14px">Recruiter</th>
+                            <th style="font-size: 14px">Recruiter Mobile</th>
+                            <th style="font-size: 14px">No. of Active Jobs</th>
+                            <th style="font-size: 14px">Total Applications</th>
+                            <th style="font-size: 14px">Total Interviews</th>
+                            <th style="font-size: 14px">Total Selections</th>
+                            <th style="font-size: 14px" data-tooltip="Total Selected/Total Vacancy" >%age fulfilled</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
         </div>
 
@@ -127,10 +128,28 @@
         </footer>
     </body>
 
+    <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
+
+    <script>
+            $('.recruiter_navbar').load('/recruiterNavbar');
+    </script>
+
     <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+
+
+    <script type="text/javascript" src="/assets/support/js/datatables.min.js"></script>
+    <script type="text/javascript" src="/assets/partner/js/dataTables.rowReorder.min.js"></script>
+    <script type="text/javascript" src="/assets/partner/js/dataTables.responsive.min.js"></script>
+    <script type="text/javascript" src="/assets/support/js/btnExport/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="/assets/support/js/btnExport/buttons.flash.min.js"></script>
+
     <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
     <script type="text/javascript" src="/assets/common/js/validation.js"></script>
     <script type="text/javascript" src="/assets/common/js/script_constants.js"></script>
     <script type="text/javascript" src="/assets/common/js/jobpost_workflow_constants.js"></script>
+
+    <script type="text/javascript" src="/assets/support/js/Moment.js"></script>
+    <script type="text/javascript" src="/assets/support/js/daterangepicker.js"></script>
+
     <script type="text/javascript" src="/assets/recruiter/rmp/js/p_recruiter_report_controller.js"></script>
 </html>
