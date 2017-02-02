@@ -472,7 +472,12 @@ function checkInstitute() {
 function processDataAndFillAllFields(returnedData) {
     candidateInformation = returnedData;
     candidateId = returnedData.candidateId;
-    viewDownloadResume(candidateId);
+
+    /* render view and download option for candidate resume */
+    if(returnedData.candidateResumeLink !=null){
+        viewDownloadResume(returnedData.candidateResumeLink);
+    }
+
     $("#jobCount").html(Object.keys(candidateInformation.jobApplicationList).length);
 
     try{

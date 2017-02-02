@@ -1,5 +1,10 @@
 package notificationService;
 
+import models.entity.Candidate;
+import models.entity.Company;
+import models.entity.JobPost;
+import models.entity.Recruiter.RecruiterProfile;
+import models.entity.Static.SmsType;
 import play.Logger;
 import play.Play;
 
@@ -20,6 +25,20 @@ public class SMSEvent extends NotificationEvent {
     public SMSEvent(String recipient, String message) {
         this.setMessage(message);
         this.setRecipient(recipient);
+
+        Logger.info("[SMS Event] smsTo: " + recipient + " - Msg: " + message);
+    }
+
+    public SMSEvent(String recipient, String message, Company company
+            , RecruiterProfile recruiterProfile, JobPost jobPost, Candidate candidate, SmsType smsType)
+    {
+        this.setMessage(message);
+        this.setRecipient(recipient);
+        this.setJobPost(jobPost);
+        this.setCompany(company);
+        this.setCandidate(candidate);
+        this.setRecruiterProfile(recruiterProfile);
+        this.setSmsType(smsType);
     }
 
     @Override
@@ -32,6 +51,7 @@ public class SMSEvent extends NotificationEvent {
         String uname = Play.application().configuration().getString("sms.gateway.user");
         String id = Play.application().configuration().getString("sms.gateway.password");
         String sender = Play.application().configuration().getString("sms.gateway.sender");
+        boolean shouldSendSMS = Play.application().configuration().getBoolean("outbound.sms.enabled");
 
         try {
             msg = URLEncoder.encode(msg, "UTF-8");
@@ -48,19 +68,25 @@ public class SMSEvent extends NotificationEvent {
 
         String smsResponse = "";
 
-        if(isDevMode()){
-            Logger.info("DevMode: No sms sent [" + requestString + "]");
-            return "DevMode: No sms sent";
-        } else {
-            try {
-                URL url = new URL(requestString);
-                BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-                smsResponse = br.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
+        if(shouldSendSMS) {
+            if(isDevMode()){
+                Logger.info("DevMode: No sms sent [" + requestString + "]");
+                return "DevMode: No sms sent";
+            } else {
+                try {
+                    URL url = new URL(requestString);
+                    BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+                    smsResponse = br.readLine();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return smsResponse;
             }
-            return smsResponse;
+        } else {
+            Logger.info("Outbound SMS disabled: No sms sent [" + requestString + "]");
+            return "Outbound SMS Disabled. No SMS sent";
         }
+
 
     }
 

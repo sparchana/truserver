@@ -1637,7 +1637,7 @@ function submitPreScreen() {
                     okToSubmit = false;
                     $.notify("Please provide all known languages", 'error');
                 }*/
-                if(!okToSubmit){
+                if(!okToSubmit) {
                     var submit = {
                         propId : propId,
                         message: msg,

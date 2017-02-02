@@ -17,7 +17,6 @@
     function processDataLogoutPartner() {
         window.location = "/partner";
     }
-    document.getElementById('uploadBulkResumeContent').addEventListener('change', uploadResume, false);
 </script>
 
 <nav class="navbar navbar-fixed-top" style="background: #26A69A" role="navigation">
@@ -30,7 +29,7 @@
         <span class="icon-bar" style="border: 1px solid #fff;"></span>
 
       </button>
-      <div itemscope itemtype ="http://schema.org/logo">
+      <div itemscope itemtype ="https://schema.org/logo">
         <a class="navbar-brand" href="/partner/home">
             <img id="navLogo" itemprop="Brand" src="/assets/common/img/trujobs-partner.png" alt="TruJobs Logo" style="padding: 0px"></a>
       </div>
@@ -69,11 +68,29 @@
     </div>
 </div>
     <!-- Add candidate Option Modal -->
-    <div class ="modal fade bs-example-modal-md" id="candidateCreateOptionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-        <div class="modal-dialog modal-md" id="candidateCreateOptionModalDialog" role="document">
+    <div class ="modal fade bs-example-modal-lg" id="candidateCreateOptionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" id="candidateCreateOptionModalDialog" role="document">
             <div class="modal-content" id="candidateCreateOptionModalContent">
                 <div class="row">
-                    <div class="col-sm-6" id="addCandidateColLeft">
+
+                    <div class="col-sm-4 addCandidateColLeft" id="uploadCsvOp">
+                        <div class="row" style="margin-bottom:5px">
+                            <img src="/assets/partner/img/csv.svg" height="100px">
+                        </div>
+                        <div class="row" style="padding:6% 2%;margin:0;height: 60px">
+                            <font>Upload CSV File</font>
+                            <br>
+                        </div>
+                        <div class="row" id="addCandidateCant">
+                            <center>
+                                <label class="btn btn-default btn-file" id="uploadCSVBtn">UPLOAD CSV
+                                    <input type="file" accept=".csv" id="excelfile" style="display: none" onchange="uploadCSV(event)">
+                                </label>
+                            </center>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4 addCandidateColLeft" id="uploadResumeOp">
                         <div class="row" style="margin-bottom:5px">
                             <img src="/assets/partner/img/bulk.svg" height="100px">
                         </div>
@@ -83,13 +100,14 @@
                         </div>
                         <div class="row" id="addCandidateCant">
                             <center>
-                                <label class="btn btn-default btn-file" id="uploadResumeBtn">UPLOAD RESUME
-                                    <input type="file" accept=".pdf,.doc,.docx" id="uploadBulkResumeContent" style="display: none" multiple>
+                                <label class="btn btn-default btn-file" id="uploadResumeBtn">UPLOAD RESUMES
+                                    <input type="file" accept=".pdf,.doc,.docx" onchange="uploadBulkResumes(event)" id="uploadBulkResumeContent" style="display: none" multiple>
                                 </label>
                             </center>
                         </div>
                     </div>
-                    <div class="col-sm-6" id="addCandidateColRight">
+
+                    <div class="col-sm-4 addCandidateColRight" id="addCandidateOp">
                         <div class="row" style="margin-bottom:5px">
                             <img src="/assets/partner/img/single.svg" height="100px">
                         </div>
@@ -122,8 +140,8 @@
     </div>
     <div class ="modal fade bs-example-modal-md" id="uploadResumeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog modal-md" id="uploadResumeModalDialog" role="document">
-            <div class="modal-content" id="uploadResumeModalContent">
-            </div>
+            <div class="modal-content" id="uploadResumeModalContent"></div>
+            <div class="modal-content textResponse"></div>
         </div>
     </div>
 

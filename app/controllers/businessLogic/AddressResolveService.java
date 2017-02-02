@@ -580,7 +580,6 @@ public class AddressResolveService {
         }
         return executeUrl(sb.toString());
     }
-
     public static String resolveLocalityFor(Double latitude, Double longitude) {
         setLatLngGlobally(latitude, longitude);
         List<String> nearByAddressList = new ArrayList<>();

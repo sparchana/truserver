@@ -16,6 +16,8 @@ public class PartnerSignUpRequest {
     private Integer partnerType;
     private Integer partnerLocality;
 
+    private String partnerCompanyId;
+
     //for setting password
     private String partnerPassword;
     private String partnerAuthMobile;
@@ -75,5 +77,13 @@ public class PartnerSignUpRequest {
 
     public void setPartnerLocality(Integer partnerLocality) {
         this.partnerLocality = partnerLocality;
+    }
+
+    public String getPartnerCompanyId() {
+        return partnerCompanyId;
+    }
+
+    public void setPartnerCompanyId(String partnerCompanyId) {
+        this.partnerCompanyId = partnerCompanyId;
     }
 }

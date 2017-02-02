@@ -5,6 +5,7 @@ import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.CreatedTimestamp;
 import com.avaje.ebean.annotation.WhoCreated;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.Recruiter.RecruiterLead;
 
@@ -38,7 +39,7 @@ public class CandidateResume extends Model {
     private String createdBy;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonManagedReference
     @JoinColumn(name = "CandidateId", referencedColumnName = "candidateId")
     private Candidate candidate;
 
@@ -104,6 +105,10 @@ public class CandidateResume extends Model {
 
     public List<CandidateResume> readById(List<Long> ids) {
         return CandidateResume.find.where().idIn(ids).setUseCache(Boolean.TRUE).findList();
+    }
+
+    public void setCreateTimestamp(Timestamp createTimestamp) {
+        this.createTimestamp = createTimestamp;
     }
 
     public ExpressionList<CandidateResume> getQuery(){return find.where();}

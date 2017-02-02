@@ -23,9 +23,13 @@ public class AddRecruiterRequest {
     private Integer contactCredits;
     private Integer interviewCredits;
 
+    private String companyCode;
+
     private Integer packId;
     private Integer creditCount;
     private Date expiryDate;
+
+    private Integer recruiterType;
 
     public String getRecruiterName() {
         return recruiterName;
@@ -177,5 +181,21 @@ public class AddRecruiterRequest {
 
     public void setCreditCount(Integer creditCount) {
         this.creditCount = creditCount;
+    }
+
+    public String getCompanyCode() {
+        return companyCode;
+    }
+
+    public void setCompanyCode(String companyCode) {
+        this.companyCode = companyCode;
+    }
+
+    public Integer getRecruiterType() {
+        return recruiterType;
+    }
+
+    public void setRecruiterType(Integer recruiterType) {
+        this.recruiterType = recruiterType;
     }
 }

@@ -78,12 +78,19 @@
                                 <input id="partnerLastName" placeholder="Last name" type="text" maxLength="49" class="form-control input-md candidateSecondNameMain" >
                             </div>
                         </div>
-                        <div div class="row">
+                        <div class="row">
                             <div class="col-sm-12">
                                 <input id="partnerMobile" style="margin-top: 8px" placeholder="What is your mobile no.?" name="partnerMobile" type="text" maxlength="10" class="form-control input-md" >
                             </div>
                         </div>
-                        <select id="partnerType" class="selectDropdown" style="width: 100%; height: 34px; margin-top: 8px"></select>
+                        <select id="partnerType" class="selectDropdown" onchange="checkPartnerType()" style="width: 100%; height: 34px; margin-top: 8px"></select>
+
+                        <div class="row" style="display: none" id="companyIdDiv">
+                            <div class="col-sm-12">
+                                <input id="privatePartnerCompanyId" style="margin-top: 8px" placeholder="Enter Company ID" type="text" maxlength="10" class="form-control input-md" >
+                            </div>
+                        </div>
+
                         <div style="margin-top: 8px">
                             <input type="text" id="partnerLocality" style="margin-top: 8px">
                         </div>

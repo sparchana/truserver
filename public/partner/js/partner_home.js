@@ -64,6 +64,14 @@ function processDataPartnerProfile(returnedData) {
         //partner company type
         if(returnedData.partnerType != null){
             $("#organizationType").html(returnedData.partnerType.partnerTypeName);
+            if(returnedData.partnerType.partnerTypeId == 7){
+                var associatedCompanies = "";
+                var companyList = returnedData.partnerToCompanyList;
+                companyList.forEach(function (company) {
+                    associatedCompanies += company.company.companyName + ", ";
+                });
+                $("#organizationType").html("Private Partner (" + associatedCompanies.substring(0, associatedCompanies.length - 2)  + ")");
+            }
         }
 
         //partner company location

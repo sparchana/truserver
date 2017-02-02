@@ -152,7 +152,7 @@ function customDataSuccess(data){
     var content = "";
     data.forEach(function (logo) {
         var img = logo;
-        content += "<img width='150px' height='50px' src=\"" +img+ "\">"
+        content += "<img width='150px' height='50px' class='lazy' src=\"" +img+ "\">"
     });
     $("#hiringCompanyLogo").html(content);
 
@@ -254,7 +254,8 @@ function processDataAllJobPosts(returnedData) {
         var jobImageSrc = document.createElement("img");
         jobImageSrc.id = "jobImageSrc";
         jobImage.appendChild(jobImageSrc);
-        $("#jobImageSrc").attr('src', '/assets/common/img/empty-search.svg');
+        $("#jobImageSrc").attr('src', '/assets/recruiter/img/empty_box.svg');
+        $("#jobImageSrc").attr('width', '96px');
 
         var jobMsgLine1 = document.createElement("div");
         jobMsgLine1.id = "jobMsgLine1";
