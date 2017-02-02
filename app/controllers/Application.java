@@ -31,6 +31,7 @@ import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.Assessment.AssessmentService;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import controllers.businessLogic.hirewand.HireWandService;
 import controllers.security.*;
 import dao.CandidateDAO;
 import dao.CompanyDAO;

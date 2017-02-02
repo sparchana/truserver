@@ -370,7 +370,6 @@ GET         /favicon.ico                                                  contro
 # Resume Upload
 # ~~~~~~~~~
 
-GET         /showResumeUpload                                             controllers.Application.showResumeUpload()
 POST        /addResume/                                                   controllers.Application.doResumeUpload(candidateId: String ?=null)
 POST        /receive-parsed-resume                                        controllers.Application.receiveParsedResume()
 GET         /fetchResume/                                                 controllers.Application.fetchResume(candidateId: String ?=null)

@@ -1857,6 +1857,14 @@ public class CandidateService
                         return responseJson;
                     }
 
+                    // flush pending response queue(s) - if any
+                    HireWandResponse hireWandResponse = HireWandService.popResponseQueue(personId);
+                    if(hireWandResponse != null){
+                        // there IS some response which is waiting to be processed. Go for it..
+                        CandidateService.updateResume(hireWandResponse.getPersonid(),hireWandResponse.getProfile(),hireWandResponse.getDuplicate());
+                    }
+                    else Logger.info("No pending responses found in the queue for personid = "+personId);
+
                 }
 
             }
@@ -2163,7 +2171,11 @@ public class CandidateService
                 responseJson.put("candidateExists",Boolean.FALSE);
                 responseJson.put("alreadyParsed",Boolean.FALSE);
                 responseJson.put("status","Fail");
-                responseJson.put("msg","Could not read candidate resume with externalKey = "+personId);
+                responseJson.put("msg","Could not read candidate resume with externalKey = "+personId+". Queuing for later retry...");
+
+                // add to queue --> Maybe HW responded before the upload request was processed. The upload request will flush this Q
+                HireWandService.pushResponseQueue(personId, profile, duplicate);
+
                 return responseJson;
             } catch (JSONException ee) {
                 ee.printStackTrace();
