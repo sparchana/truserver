@@ -83,11 +83,6 @@ function processDataPartnerSession(returnedData) {
         } else{
             $("#openPartner").show();
             $("#privatePartner").hide();
-
-            $("#uploadCsvOp").remove();
-            $("#uploadResumeOp").removeClass("col-sm-4").addClass("col-sm-6");
-            $("#addCandidateOp").removeClass("col-sm-4").addClass("col-sm-6");
-
         }
     }
 }

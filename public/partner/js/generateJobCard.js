@@ -1041,6 +1041,7 @@ function confirmCandidateStatusUpdate(notGoingReason){
     }
 }
 
+/*
 function confirmInterview(jpId, status) {
     globalJpId = jpId;
     globalInterviewStatus = status;
@@ -1057,8 +1058,9 @@ function confirmInterview(jpId, status) {
         console.log("exception occured!!" + exception.stack);
     }
 }
+*/
 
-function processDataConfirmInterview(returnedData) {
+/*function processDataConfirmInterview(returnedData) {
     if(returnedData != 0){
         $("#interview_status_val_" + globalJpId).remove();
         var divInterviewStatus = document.createElement("span");
@@ -1094,10 +1096,11 @@ function processDataConfirmInterview(returnedData) {
 
         $("#interview_status_div_" + globalJpId).append(divInterviewStatus);
         $("#interview_status_div_" + globalJpId).append(dir);
+        getAllAppliedJobs();
     } else{
         alert("Something went wrong. Please try again later");
     }
-}
+}*/
 
 
 function confirmUpdateStatusNotGoing(){
@@ -1489,7 +1492,7 @@ function processDataAllJobPosts(returnedData) {
                     } else if(jobPost.applyBtnStatus == CTA_BTN_ALREADY_APPLIED) {
                         applyJobText = "Applied";
                         applyBtn.disabled =  true;
-                        applyBtn.style = "cursor: default; background: #f4cb6c; box-shadow: none";
+                        applyBtn.style = "cursor: default; background: #f4cb6c";
                     } else if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_CLOSED) {
                         applyJobText = "Application closed";
                         applyBtn.disabled =  true;
@@ -2392,6 +2395,7 @@ function processDataConfirmInterview(returnedData) {
             divInterviewStatus.textContent = "Interview recjected by Candidate/Partner";
         }
 
+        getAllAppliedJobs();
         $("#status_" + globalJpId).append(divInterviewStatus);
     } else{
         alert("Something went wrong. Please try after sometime")
