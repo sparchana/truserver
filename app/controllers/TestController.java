@@ -75,6 +75,12 @@ public class TestController extends Controller{
 
     }
 
+    public static Result checkSmsDelivery(){
+        RecruiterController.checkDeliveryStatus();
+        return ok("Null token!");
+
+    }
+
     public static Result testQueue() {
         for(int i =0; i<5; ++i){
             NotificationEvent notificationEvent = new SMSEvent("+918971739586", "Test Queue message " + i);

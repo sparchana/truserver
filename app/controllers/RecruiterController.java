@@ -428,37 +428,42 @@ public class RecruiterController {
     }
 
     public static void checkDeliveryStatus(){
-        Logger.info("Will check sms status after 4 mins");
+        Logger.info("Will check sms status after 20 seconds");
         new Thread(() -> {
             try{
                 Logger.info("Going to sleep");
-                Thread.sleep(240000); //check after 4 minutes
+                Thread.sleep(20000); //check after 20 seconds
+                Logger.info("Starting sms delivery status check");
                 SmsDeliveryStatus status = SmsDeliveryStatus.find.where().eq("status_id", SMS_STATUS_PENDING).findUnique();
                 Boolean reRun = false;
                 if(status != null){
-                    for(SmsReport report : SmsReportDAO.getAllSMSByStatus(status)){
+                    List<SmsReport> smsReportList = SmsReportDAO.getAllSMSByStatus(status);
+                    Logger.info("Checking " + smsReportList.size() + " sms's report");
+                    for(SmsReport report : smsReportList){
                         String response = SmsUtil.checkDeliveryReport(report.getSmsSchedulerId());
-                        response = response.substring(13, response.length() -4);
-                        Logger.info("Pinnacle Response :" + response);
+                        if(response != null){
+                            response = response.substring(13, response.length() -4);
+                            Logger.info("Pinnacle Response :" + response);
 
-                        Integer statusId;
-                        if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_DELIVERED))){
-                            statusId = SMS_STATUS_DELIVERED;
-                        } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_UNDELIVERED))){
-                            statusId = SMS_STATUS_UNDELIVERED;
-                        } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_EXPIRED))){
-                            statusId = SMS_STATUS_EXPIRED;
-                        } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_DND))){
-                            statusId = SMS_STATUS_DND;
-                        } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_PENDING))){
-                            statusId = SMS_STATUS_PENDING;
-                            reRun = true;
-                        } else{
-                            statusId = SMS_STATUS_FAILED;
+                            Integer statusId;
+                            if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_DELIVERED))){
+                                statusId = SMS_STATUS_DELIVERED;
+                            } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_UNDELIVERED))){
+                                statusId = SMS_STATUS_UNDELIVERED;
+                            } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_EXPIRED))){
+                                statusId = SMS_STATUS_EXPIRED;
+                            } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_DND))){
+                                statusId = SMS_STATUS_DND;
+                            } else if(Objects.equals(response, SMS_DELIVERY_RESPONSE.get(SMS_STATUS_PENDING))){
+                                statusId = SMS_STATUS_PENDING;
+                                reRun = true;
+                            } else{
+                                statusId = SMS_STATUS_FAILED;
+                            }
+
+                            report.setSmsDeliveryStatus(SmsDeliveryStatus.find.where().eq("status_id", statusId).findUnique());
+                            report.update();
                         }
-
-                        report.setSmsDeliveryStatus(SmsDeliveryStatus.find.where().eq("status_id", statusId).findUnique());
-                        report.update();
                     }
 
                     if(reRun){
