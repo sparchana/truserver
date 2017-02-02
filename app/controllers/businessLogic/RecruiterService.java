@@ -917,7 +917,8 @@ public class RecruiterService {
         final SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
         Date fromDate = null;
         Date toDate = null;
-        if(from != null && to != null) {
+        if(from != null && to != null
+                && !from.equalsIgnoreCase("null") && !to.equalsIgnoreCase("null")) {
             try {
                 fromDate = sdf.parse(from);
                 toDate = sdf.parse(to);
