@@ -915,13 +915,13 @@ public class RecruiterService {
         }
 
         final SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
-        Date fromDate = null;
-        Date toDate = null;
+        Date startDate = null;
+        Date endDate = null;
         if(from != null && to != null
                 && !from.equalsIgnoreCase("null") && !to.equalsIgnoreCase("null")) {
             try {
-                fromDate = sdf.parse(from);
-                toDate = sdf.parse(to);
+                startDate = sdf.parse(from);
+                endDate = sdf.parse(to);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -949,9 +949,8 @@ public class RecruiterService {
                 if(jobPost.getJobPostAccessLevel() != ServerConstants.JOB_POST_TYPE_PRIVATE) continue;
                 if(jobPost.getJobPostStatus().getJobStatusId() != ServerConstants.JOB_STATUS_ACTIVE) continue;
 
-                if(fromDate != null && toDate != null) {
-                    if( jobPost.getJobPostCreateTimestamp().before(fromDate)
-                            || jobPost.getJobPostCreateTimestamp().after(toDate) )
+                if(startDate != null && endDate != null) {
+                    if( jobPost.getJobPostCreateTimestamp().after(endDate) )
                     {
                         continue;
                     }
@@ -966,9 +965,9 @@ public class RecruiterService {
                     ((recruiterProfile.getRecruiterAlternateMobile() == null) ? "": "/"+recruiterProfile.getRecruiterAlternateMobile()));
 
             recruiterSummaryResponse.setNoOfJobPosted(jobPostList.size());
-            recruiterSummaryResponse.setTotalCandidatesApplied(computeTotalApplicant(jobPostIdList, fromDate, toDate));
-            recruiterSummaryResponse.setTotalInterviewConducted(computeTotalInterviewConducted(jobPostIdList,  fromDate, toDate));
-            recruiterSummaryResponse.setTotalSelected(computeTotalSelected(jobPostIdList, fromDate, toDate));
+            recruiterSummaryResponse.setTotalCandidatesApplied(computeTotalApplicant(jobPostIdList, startDate, endDate));
+            recruiterSummaryResponse.setTotalInterviewConducted(computeTotalInterviewConducted(jobPostIdList,  startDate, endDate));
+            recruiterSummaryResponse.setTotalSelected(computeTotalSelected(jobPostIdList, startDate, endDate));
 
             recruiterSummaryResponse.setPercentageFulfillment(
                     formatPercentageFulfilled(computePercentageFulfilled(jobPostList, recruiterSummaryResponse.getTotalSelected()))

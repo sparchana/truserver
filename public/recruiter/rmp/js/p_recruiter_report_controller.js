@@ -39,7 +39,8 @@ var zapp = (function () {
                     autoUpdateInput: false,
                     locale: {
                         cancelLabel: 'Clear'
-                    }
+                    },
+                    maxDate: moment()
                 });
             },
             recruiterDataTable: function () {
