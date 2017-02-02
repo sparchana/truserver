@@ -8,6 +8,7 @@ import models.entity.OM.JobPostWorkflow;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -256,6 +257,27 @@ public class JobPostWorkFlowDAO {
                 .findList();
     }
 
+
+
+    public static List<JobPostWorkflow> getRecords(List<Long> jobPostIdList, List<Integer> statusList, Date fromDate, Date toDate) {
+        final SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
+
+        if(toDate !=null && fromDate != null) {
+
+            String to = sdf.format(toDate);
+            String from = sdf.format(fromDate);
+
+            // entry should lie b/w the date range
+            
+                return JobPostWorkflow.find.where()
+                        .in("jobPost.jobPostId", jobPostIdList)
+                        .in("status_id", statusList)
+                        .ge("creationTimestamp", from)
+                        .le("creationTimestamp", to)
+                        .findList();
+        }
+        return new ArrayList<>();
+    }
 
     public static List<JobPostWorkflow> getRecords(long jobPostId, int status, String startDate, String endDate) {
         return JobPostWorkflow.find.where()

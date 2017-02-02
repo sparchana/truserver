@@ -1320,12 +1320,12 @@ public class RecruiterController {
     }
 
     @Security.Authenticated(RecruiterAdminSecured.class)
-    public static Result recruiterSummary(Long recruiterId) {
+    public static Result recruiterSummary(Long recruiterId, String from , String to) {
 
         RecruiterService recruiterService = new RecruiterService();
         if(recruiterId == null) {
             // return summary for all recruiter
-            return ok(toJson(recruiterService.getRecruiterSummary(null, Long.valueOf(session().get("recruiterId")))));
+            return ok(toJson(recruiterService.getRecruiterSummary(null, Long.valueOf(session().get("recruiterId")), from, to)));
         }
         return ok();
     }
