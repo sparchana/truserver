@@ -88,7 +88,7 @@ function processDataForAddResume(returnedData) {
             if(returnedData.candidateId != null ){
                 var h3 = document.createElement("h3");
                 h3.textContent = "Thanks !! Your resume has been successfully uploaded";
-                h3.style = "font-weight:600";
+                h3.style = "margin-top:10px";
                 resumeColRight.appendChild(h3);
             }
             else{
