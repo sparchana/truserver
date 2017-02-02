@@ -1,103 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <title>Unlocked Candidates | TruJobs - Post jobs and hire the right candidates</title>
+    <head>
+        <meta charset="UTF-8">
+        <title>Unlocked Candidates | TruJobs - Post jobs and hire the right candidates</title>
 
-    <meta name="keywords" content="hire driver, hire fresher, hire candidate sites, job posting, hire sales candidate, hire beautician,
+        <meta name="keywords" content="hire driver, hire fresher, hire candidate sites, job posting, hire sales candidate, hire beautician,
         hire, hire receptionist, hire office admin, hire office assistant,
         hire plumber, hire teacher, hire entry level candidate,
         hire delivery boys, hire call center executives, hire BPO, hire kpo, hire hire hire , hire data entry candidate, hire back office canididate,
         hire receptionist, hire beautician, hire experienced candidate, hire in Bangalore, hire cashier, hire entry level candidate, hire freshers,
         hire plumber, hire electrician, hire accountants, hire in bangalore">
 
-    <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
 
-      <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
-    <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
-    <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_candidate_search.css">
-    <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_myjobs.css">
+            <!-- Bootstrap Core CSS -->
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_candidate_search.css">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_myjobs.css">
 
-    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-    <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
 
-    <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
+        <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
 
-    <meta name="theme-color" content="#000000">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  </head>
-  <body>
-    <div class="recruiter_navbar"></div>
-    <script>
+        <meta name="theme-color" content="#000000">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+    <body>
+        <div class="recruiter_navbar"></div>
+        <script>
             $('.recruiter_navbar').load('/recruiterNavbar');
     </script>
 
-    <div class="back-banner-recruiter-applied-candidate"></div>
-    <div class="container" id="headingUnlockCandidate">
-      Your Unlocked Candidates
-    </div>
-
-    <div style="padding-top: 4%; padding-bottom: 8%" id="loadingIcon">
-      <center>
-        <h6>Fetching your unlocked Candidates</h6>
-        <div class="spinner">
-          <div class="double-bounce1"></div>
-          <div class="double-bounce2"></div>
+        <div class="back-banner-recruiter-applied-candidate"></div>
+        <div class="container" id="headingUnlockCandidate">
+            Your Unlocked Candidates
         </div>
-      </center>
-    </div>
 
-
-    <div id="noCandidate" style="padding: 120px 6% 120px 6%; display: none">
-      <center>
-        <img src="/assets/recruiter/img/empty_box.svg" width="116px">
-        <h5>No unlocked candidate!</h5>
-        <h6>Looks like you have not unlocked any candidates. <a href="/recruiter/candidateSearch">Search</a> now and get access to 40000+ candidates!</h6>
-      </center>
-    </div>
-    <div id="candidateSection" class="container">
-      <div id="candidateContainer">
-      </div>
-    </div>
-
-      <!--Footer start-->
-    <footer class="page-footer" style="background-color: #424242;">
-      <div class="container">
-        <div class="row" style="margin: 0">
-          <div class="col l6 s12">
-            <h5 class="white-text">Hire in Bangalore</h5>
-            <p class="grey-text text-lighten-4">Connect With Us On<img src="/assets/recruiter/img/fbmain.svg" id="fbLogo" style="margin-left: 2%;
-              width: 6%"></p>
-          </div>
-          <div class="col l4 offset-l2 s12">
-            <h5 class="white-text">Get in touch</h5>
-            <ul>
-              <li><a class="grey-text text-lighten-3" href="#!">Write us at: info@@trujobs.in</a></li>
-              <li><a class="grey-text text-lighten-3" href="#!">Have queries? Talk to us at 8880007799</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-      <div class="container-fluid">
-        <div class="row" style="margin: 0">
-          <img src="/assets/recruiter/img/skyline_small.svg" width="100%">
-        </div>
-      </div>
-      <div class="footer-copyright">
         <div class="container">
-            © 2016 Trujobs.in | Bengaluru, India. All Right Reserved. Privacy Policy
-        </div>
-      </div>
-    </footer>
-  </body>
+            <div id="candidateTools" style="display: none; margin-top: 8px">
+                <input type="checkbox" class="filled-in" id="select_all" />
+                <label for="select_all" style="margin: 0 4px 0 14px;
+                    font-size: 1px;
+                    color: transparent">.</label>
 
-  <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
-  <script type="text/javascript" src="/assets/common/js/validation.js"></script>
-  <script type="text/javascript" src="/assets/recruiter/js/candidate_card.js"></script>
-  <script type="text/javascript" src="/assets/recruiter/js/recruiter_unlocked_candidates.js"></script>
-  <script type="text/javascript" src="/assets/recruiter/js/recruiter_notifier.js"></script>
+                <div class="waves-effect waves-light customBtn btnGreen" onclick="selectCheckedCandidates()" style="margin-left: -8px">
+                    <font style="font-weight: bold;
+                        font-size: 12px;" >Send SMS</font>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div style="padding-top: 4%;
+            padding-bottom: 8%" id="loadingIcon">
+            <center>
+                <h6>Fetching your unlocked Candidates</h6>
+                <div class="spinner">
+                    <div class="double-bounce1"></div>
+                    <div class="double-bounce2"></div>
+                </div>
+            </center>
+        </div>
+
+
+        <div id="noCandidate" style="padding: 120px 6% 120px 6%;
+            display: none">
+            <center>
+                <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                <h5>No unlocked candidate!</h5>
+                <h6>Looks like you have not unlocked any candidates. <a href="/recruiter/candidateSearch">Search</a> now and get access to 40000+ candidates!</h6>
+            </center>
+        </div>
+        <div id="candidateSection" class="container">
+            <div id="candidateResultContainer"></div>
+        </div>
+
+            <!-- Send SMS to candidate modal -->
+        <div id="sendSmsModal" class="modal" style="background: transparent; box-shadow: none">
+            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeSmsModal()"></div>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+                <center><font style="color: #fff"><h5>Send SMS to candidates!</h5></font></center>
+            </div>
+            <div style="background: #ffffff; padding: 14px">
+                <center>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            You are sending SMS to the following candidates:
+                            <div id="candidateNameList" style="font-weight: bold; text-align: left"></div>
+                            <div id="totalCount" style="font-weight: bold; margin-top: 4px; font-size: 12px"></div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <textarea onkeyup="checkSmsText()" id="smsText" class="materialize-textarea" maxlength="160" length="160" placeholder="(Example: Telecaller openings at ABC company. Salary upto Rs 25,000. Day shift, cab facility available. Call 9999999999 now to apply!)">
+                            </textarea>
+
+                            <label for="smsText">SMS Message</label>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 8px"  id="sendSms" class="waves-effect waves-light ascentGreen lighten-1 btn disabled" data-toggle="collapse" onclick="sendSms()">
+                        <font style="color: #fff;
+                            font-weight: 400"><b>Send SMS</b></font>
+                    </div>
+                    <div style="margin: 8px; color: #0f9d58; display: none" id="successSmsMsg">SMS Sent!</div>
+                </center>
+            </div>
+        </div>
+
+
+        <!--Footer start-->
+        <footer class="page-footer" style="background-color: #424242;">
+            <div class="container">
+                <div class="row" style="margin: 0">
+                    <div class="col l6 s12">
+                        <h5 class="white-text">Hire in Bangalore</h5>
+                    </div>
+                    <div class="col l4 offset-l2 s12">
+                        <h5 class="white-text">Get in touch</h5>
+                        <ul>
+                            <li><a class="grey-text text-lighten-3" href="#!">Write us at: info@@trujobs.in</a></li>
+                            <li><a class="grey-text text-lighten-3" href="#!">Have queries? Talk to us at 8880007799</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row" style="margin: 0">
+                    <img src="/assets/recruiter/img/skyline_small.svg" width="100%">
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <div class="container">
+            © 2016 Trujobs.in | Bengaluru, India. All Right Reserved. Privacy Policy
+                </div>
+            </div>
+        </footer>
+    </body>
+
+    <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
+    <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/candidate_card.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/recruiter_unlocked_candidates.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/recruiter_notifier.js"></script>
 </html>

@@ -885,6 +885,11 @@ hr{
     color: #9f9f9f;
     font-size: 12px;
 }
+#hintTextPropM{
+    color: #9f9f9f;
+    font-size: 14px;
+    font-weight: bold;
+}
 #iconsProp{
     padding-right:0;
     margin-top:2px;
@@ -916,7 +921,17 @@ hr{
     text-align:left;
     padding-top:10px
 }
+#reopenTextProp{
+    margin-top:10px;
+    float:right;
+    margin:10px
+}
 @media screen and (max-width: 768px) {
+    #reopenTextProp{
+        margin-top:10px;
+        float:none;
+        margin:10px
+    }
     #resumeColMsgFail{
         text-align:center;
         padding-top:0;
@@ -1116,9 +1131,9 @@ hr{
     }
 
     #jobBodyDetails {
-        padding-top: 4%;
-        padding-left: 10%;
-        padding-right: 10%;
+        padding-top: 0;
+        padding-left: 0;
+        padding-right: 0;
         text-align: left;
     }
 

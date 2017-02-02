@@ -4,7 +4,7 @@ package api.http.httpResponse.interview;
  * Created by zero on 2/12/16.
  */
 public class InterviewResponse {
-    public int status; // 2 is required ServerConstants.INTERVIEW_REQUIRED
+    public int status;
     public String statusTitle;
 
     public int getStatus() {

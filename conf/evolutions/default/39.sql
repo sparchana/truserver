@@ -65,7 +65,6 @@ create table candidate_resume (
 alter table candidate_resume add constraint fk_candidate_resume_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
 create index ix_candidate_resume_candidateid on candidate_resume (candidateid);
 
-
 # --- !Downs
 
 alter table recruiter_lead drop foreign key fk_recruiter_lead_company_lead_id;

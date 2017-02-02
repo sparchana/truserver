@@ -7,6 +7,7 @@ var jobPostInfo;
 
 var jpTitle;
 var compName;
+var isPartnerVal;
 function processJobPostInterviewSlot(returnedData, isSupport) {
 
     jobPostInfo = returnedData.jobPost;
@@ -48,8 +49,8 @@ function processJobPostInterviewSlot(returnedData, isSupport) {
     if (returnedData.interviewSlotMap!= null && Object.keys(returnedData.interviewSlotMap).length > 0) {
         //slots
         $('#interViewSlot').html('');
-        var defaultOption = $('<option value="-1"></option>').text("Select Time Slot");
-        $('#interViewSlot').append(defaultOption);
+
+
 
         $.each( returnedData.interviewSlotMap, function( key, value ) {
             var slotValue = value.interviewDateMillis +"_"+value.interviewTimeSlot.slotId;
@@ -151,7 +152,8 @@ function checkSlotAvailability(x, interviewDays) {
 }
 
 
-function initInterviewModal(candidateId, jobPostId, isSupport) {
+function initInterviewModal(candidateId, jobPostId, isSupport, isPartner) {
+    isPartnerVal = isPartner;
     console.log("interview Modal init");
     var htmlBodyContent = ''+
         '<div id="confirmationMsg">'+
@@ -202,23 +204,27 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
         animate: true,
         onEscape: function() {
             $('body').removeClass('open-interview-selector-modal');
-            nfy("Submitted successfully. Refreshing page.", 'success');
+            if(isPartnerVal == false || isPartnerVal == null ){
+                nfy("Submitted successfully. Refreshing page.", 'success');
 
-            setTimeout(function () {
-                if(window.location.pathname == "/dashboard/appliedJobs/"){
-                    window.location.href = "/dashboard/appliedJobs/";
-                } else {
-                    location.reload();
-                }
-                // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
-            }, 2000);
+                setTimeout(function () {
+                    if(window.location.pathname == "/dashboard/appliedJobs/"){
+                        window.location.href = "/dashboard/appliedJobs/";
+                    } else {
+                        location.reload();
+                    }
+                    // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
+                }, 2000);
+            } else{
+                nfy("Submitted successfully.", 'success');
+            }
         },
         buttons: {
             "Submit": {
                 id:"interviewModalBtn",
                 className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent interview-selector-submit",
                 callback: function () {
-                    $(".btn.interview-selector-submit").prop('disabled', true);
+                    /*$(".btn.interview-selector-submit").prop('disabled', true);*/
                     finalInterviewSlotSubmission(candidateId, jobPostId);
                 }
             }
@@ -226,17 +232,17 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
     });
     interviewDialog.attr("id", "interview-selector-modal");
 
-    $("#interViewSlot").change(function (){
+    /*$("#interViewSlot").click(function (){
         if($("#interViewSlot").val() != -1){
             $(".btn.interview-selector-submit").prop('disabled', false);
             $(".btn.interview-selector-submit").css({'background-color':'#09ac58','color':'#ffffff'});
         } else {
             $(".btn.interview-selector-submit").prop('disabled', true);
         }
-    });
-
+    });*/
+    $(".btn.interview-selector-submit").css({'background-color':'#09ac58','color':'#ffffff'});
     $('#interview-slot-selector-modal div.modal-body').attr('style', 'overflow: visible !important');
-    $('.btn.interview-selector-submit').prop('disabled', true);
+    /*$('.btn.interview-selector-submit').prop('disabled', true);*/
     $('body').removeClass('modal-open').removeClass('open-interview-selector-modal').addClass('open-interview-selector-modal');
 }
 
@@ -298,15 +304,19 @@ function processInterviewSubmissionResponse(returnData) {
 
             $("#confirmationModal").modal("show");
         } else {
+            if(isPartnerVal == false || isPartnerVal == null ){
+                nfy("Submitted successfully. Refreshing page.", 'success');
 
-            nfy("Interview Submitted successfully. Refreshing ..", 'success');
-            setTimeout(function () {
-                if(window.location.pathname == "/dashboard/appliedJobs/"){
-                    window.location.href = "/dashboard/appliedJobs/";
-                } else {
-                    location.reload();
-                }
-            }, 2000);
+                setTimeout(function () {
+                    if(window.location.pathname == "/dashboard/appliedJobs/"){
+                        window.location.href = "/dashboard/appliedJobs/";
+                    } else {
+                        location.reload();
+                    }
+                }, 2000);
+            } else{
+                nfy("Submitted successfully.", 'success');
+            }
         }
 
     } else {

@@ -3,6 +3,7 @@
  */
 
 var organizationLocation = [];
+var organizationType;
 
 $(document).ready(function(){
     checkPartnerLogin();
@@ -23,6 +24,7 @@ $(document).ready(function(){
 
 
 function processDataPartnerProfile(returnedData) {
+    $("select#partnerType option[value='7']").remove();
     if(returnedData != null){
         //name
         if(returnedData.partnerFirstName != null){
@@ -35,7 +37,6 @@ function processDataPartnerProfile(returnedData) {
         if(returnedData.partnerMobile != null){
             $("#partnerMobile").val(returnedData.partnerMobile);
         }
-
         //email
         if(returnedData.partnerEmail != null){
             $("#partnerEmail").val(returnedData.partnerEmail);
@@ -49,6 +50,20 @@ function processDataPartnerProfile(returnedData) {
         //partner company type
         if(returnedData.partnerType != null){
             $("#partnerType").val(returnedData.partnerType.partnerTypeId);
+            if(returnedData.partnerType.partnerTypeId == 7){
+                $("#partnerType").prop('disabled', true);
+                $("#partnerTypeDiv").hide();
+                var associatedCompanies = "";
+                var companyList = returnedData.partnerToCompanyList;
+                companyList.forEach(function (company) {
+                    associatedCompanies += company.company.companyName + ", ";
+                });
+
+                if(associatedCompanies != ""){
+                    $("#privatePartnerCompanyName").html(associatedCompanies.substring(0, (associatedCompanies.length - 2)));
+                    $("#privatePartnerCompany").show();
+                }
+            }
         }
 
         //partner company location
@@ -83,7 +98,11 @@ function savePartnerProfile() {
     var firstName = $("#partnerFirstName").val();
     var lastName = $("#partnerLastName").val();
     var email = $("#partnerEmail").val();
-    var organizationType = $("#partnerType").val();
+    if($('#partnerType').is(':disabled')){
+        organizationType = 7;
+    } else{
+        organizationType = $("#partnerType").val();
+    }
     var organizationName = $("#organizationName").val();
     var organizationLocality = $("#organizationLocation").val();
 

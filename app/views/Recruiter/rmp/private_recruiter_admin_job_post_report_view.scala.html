@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Job Post Summary Report| TruJobs - Post jobs and hire the right candidates</title>
+
+        <meta name="keywords" content="hire driver, hire fresher, hire candidate sites, job posting, hire sales candidate, hire beautician,
+        hire, hire receptionist, hire office admin, hire office assistant,
+        hire plumber, hire teacher, hire entry level candidate,
+        hire delivery boys, hire call center executives, hire BPO, hire kpo, hire hire hire , hire data entry candidate, hire back office canididate,
+        hire receptionist, hire beautician, hire experienced candidate, hire in Bangalore, hire cashier, hire entry level candidate, hire freshers,
+        hire plumber, hire electrician, hire accountants, hire in bangalore">
+
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+
+            <!-- Bootstrap Core CSS -->
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_myjobs.css">
+
+
+        <link rel="stylesheet" href="/assets/support/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="/assets/partner/css/responsive.dataTables.min.css">
+        <link rel="stylesheet" href="/assets/partner/css/rowReorder.dataTables.min.css">
+        <link rel="stylesheet" href="/assets/support/css/buttons.dataTables.min.css">
+
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+
+        <meta name="theme-color" content="#000000">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+    <body>
+        <div class="recruiter_navbar"></div>
+
+        <div class="back-banner-recruiter" style="height: 90px"></div>
+        <h5 style="margin: 8px 8px 8px 16px">Jobs Summary</h5>
+
+
+        <div style="padding-top: 8%; padding-bottom: 8%" id="loadingIcon">
+            <center>
+                <h6>Fetching recruiters</h6>
+                <div class="spinner">
+                    <div class="double-bounce1"></div>
+                    <div class="double-bounce2"></div>
+                </div>
+            </center>
+        </div>
+
+        <div id="somethingWentWrong" style="display:none; padding: 40px 6% 40px 6%">
+            <center>
+                <img src="/assets/recruiter/img/warning.svg" width="116px">
+                <h5>Something went wrong!</h5>
+                <h6>Looks like something went wrong in between. Try to refresh the page or try loading after sometime!</h6>
+            </center>
+        </div>
+
+        <div id="noJobs" style="padding: 120px 6% 120px 6%; display: none">
+            <center>
+                <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                <h5>No Jobs Found!</h5>
+                <h6>Looks like your company doesn't have any recruiter yet. </h6>
+            </center>
+        </div>
+
+        <div class="row">
+            <div id="jobPostTableContainer" style="display: none" class="col s12">
+                <table id="jobPostTable" style="background: white;" class="table table-bordered" cellspacing="0" width="100%">
+                    <thead style="background: #656565;
+                        color: white">
+                        <tr>
+                            <th style="font-size: 14px">Job Title</th>
+                            <th style="font-size: 14px">Job Posted On</th>
+                            <th style="font-size: 14px" data-tooltip="Total Selected/Total Vacancy">Fulfilment status</th>
+                            <th style="font-size: 14px">Total SMS Sent</th>
+                            <th style="font-size: 14px">Total Applications</th>
+                            <th style="font-size: 14px">Total Interviews</th>
+                            <th style="font-size: 14px" data-tooltip="Avg of Selection Dates " >Cycle Time</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+
+
+            <!--Footer start-->
+        <footer class="page-footer" style="background-color: #424242;">
+            <div class="container">
+                <div class="row" style="margin: 0">
+                    <div class="col l6 s6">
+                        <h5 class="white-text">Hire in Bangalore</h5>
+                    </div>
+                    <div class="col l4 offset-l2 s6">
+                        <h5 class="white-text">Get in touch</h5>
+                        <ul>
+                            <li><a class="grey-text text-lighten-3" href="#">Write us at: info@@trujobs.in</a></li>
+                            <li><a class="grey-text text-lighten-3" href="#">Have queries? Talk to us at 8880007799</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row" style="margin: 0">
+                    <img src="/assets/recruiter/img/skyline_small.svg" width="100%">
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <div class="container">
+            © 2016 Trujobs.in | Bengaluru, India. All Right Reserved. Privacy Policy
+                </div>
+            </div>
+        </footer>
+    </body>
+
+
+    <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
+    <script>
+            $('.recruiter_navbar').load('/recruiterNavbar');
+    </script>
+
+    <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+
+
+    <script type="text/javascript" src="/assets/support/js/datatables.min.js"></script>
+    <script type="text/javascript" src="/assets/partner/js/dataTables.rowReorder.min.js"></script>
+    <script type="text/javascript" src="/assets/partner/js/dataTables.responsive.min.js"></script>
+    <script type="text/javascript" src="/assets/support/js/btnExport/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="/assets/support/js/btnExport/buttons.flash.min.js"></script>
+
+    <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
+    <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+    <script type="text/javascript" src="/assets/common/js/script_constants.js"></script>
+    <script type="text/javascript" src="/assets/common/js/jobpost_workflow_constants.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/rmp/js/p_recruiter_job_post_report_controller.js"></script>
+</html>
