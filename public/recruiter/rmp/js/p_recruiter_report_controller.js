@@ -34,7 +34,6 @@ var zapp = (function () {
         },
         render: {
             dateTimeRange: function () {
-                console.log("date time inititated");
                 //initiating range picker
                 $('input[name="datefilter"]').daterangepicker({
                     autoUpdateInput: false,
