@@ -6,8 +6,6 @@ import api.http.httpResponse.TruResponse;
 import com.avaje.ebean.Model;
 import controllers.TruService;
 import models.entity.Candidate;
-import models.entity.OM.CandidateResume;
-import play.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,11 +70,11 @@ public class CandidateResumeService extends TruService {
         //Logger.info(getClass().getSimpleName()+".fetchLatestResumeForCandidate: About to call readByAttribute");
         candidateResumeList = readByAttribute(params,"candidate_resume_id","DESC");
         if(candidateResumeList.size() > 0) {
-            Logger.info(getClass().getSimpleName()+".fetchLatestResumeForCandidate: Read returned with "+candidateResumeList.size()+" records");
+//            Logger.info(getClass().getSimpleName()+".fetchLatestResumeForCandidate: Read returned with "+candidateResumeList.size()+" records");
             return candidateResumeList.get(0);
         }
         else {
-            Logger.info(getClass().getSimpleName()+".fetchLatestResumeForCandidate: Read returned with 0 records");
+//            Logger.info(getClass().getSimpleName()+".fetchLatestResumeForCandidate: Read returned with 0 records");
             TruResponse empty = new TruResponse();
             return empty;
         }
