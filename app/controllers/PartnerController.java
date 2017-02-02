@@ -252,7 +252,9 @@ public class PartnerController {
     public static CandidateSignUpResponse createCandidateViaPartner(AddSupportCandidateRequest addSupportCandidateRequest,
                                                                     Partner partner,
                                                                     Boolean isNewCandidate,
-                                                                    Integer associationStatus){
+                                                                    Integer associationStatus,
+                                                                    Boolean autoVerify) {
+
         Boolean isPrivatePartner = false;
         if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
             isPrivatePartner = true;
@@ -267,22 +269,34 @@ public class PartnerController {
             candidateSignUpResponse.setOtp(0);
             Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
 
-            candidateSignUpResponse = partnerToCandidateAssociation(existingCandidate, partner, isPrivatePartner, isNewCandidate, associationStatus);
+            candidateSignUpResponse = partnerToCandidateAssociation(existingCandidate, partner, isPrivatePartner, isNewCandidate, associationStatus, autoVerify);
         }
 
         return candidateSignUpResponse;
-
     }
 
-    public static CandidateSignUpResponse partnerToCandidateAssociation(Candidate existingCandidate, Partner partner, Boolean isPrivatePartner, Boolean isNewCandidate, Integer associationStatus){
+    public static CandidateSignUpResponse createCandidateViaPartner(AddSupportCandidateRequest addSupportCandidateRequest,
+                                                                    Partner partner,
+                                                                    Boolean isNewCandidate,
+                                                                    Integer associationStatus){
+
+        return createCandidateViaPartner(addSupportCandidateRequest, partner, isNewCandidate, associationStatus, false);
+    }
+
+    public static CandidateSignUpResponse partnerToCandidateAssociation(Candidate existingCandidate,
+                                                                        Partner partner,
+                                                                        Boolean isPrivatePartner,
+                                                                        Boolean isNewCandidate,
+                                                                        Integer associationStatus,
+                                                                        Boolean autoVerify)
+    {
         CandidateSignUpResponse candidateSignUpResponse =
                 PartnerService.createPartnerToCandidateMapping(partner, existingCandidate.getCandidateMobile());
 
         //if the partner is a private partner
-        if(isPrivatePartner){
+        if(isPrivatePartner || autoVerify){
 
-
-            if(isNewCandidate){ //save a record in partnerToCandidate
+            if(isNewCandidate){
                 //auto verifying candidate profile as it is created via private partner
                 Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
                 if(existingAuth != null){
@@ -297,8 +311,10 @@ public class PartnerController {
                 }
             }
 
-            existingCandidate.setCandidateAccessLevel(ServerConstants.CANDIDATE_ACCESS_LEVEL_PRIVATE);
-            existingCandidate.update();
+            if(isPrivatePartner){
+                existingCandidate.setCandidateAccessLevel(ServerConstants.CANDIDATE_ACCESS_LEVEL_PRIVATE);
+                existingCandidate.update();
+            }
 
             //don't send otp
             candidateSignUpResponse.setOtp(0);
@@ -323,6 +339,10 @@ public class PartnerController {
         }
 
         return candidateSignUpResponse;
+
+    }
+    public static CandidateSignUpResponse partnerToCandidateAssociation(Candidate existingCandidate, Partner partner, Boolean isPrivatePartner, Boolean isNewCandidate, Integer associationStatus){
+        return partnerToCandidateAssociation(existingCandidate, partner, isPrivatePartner, isNewCandidate, associationStatus, false);
     }
 
     public static void partnerToCandidateToCompanyMapping(Partner partner, Candidate candidate){

@@ -2722,7 +2722,7 @@ public class CandidateService
                             if(leadSource != null){
                                 addSupportCandidateRequest.setLeadSource(leadSource.getLeadSourceId());
                             }
-                            candidateSignUpResponse = createCandidateViaPartner(addSupportCandidateRequest, partner, isNew, associationStatus);
+                            candidateSignUpResponse = createCandidateViaPartner(addSupportCandidateRequest, partner, isNew, associationStatus, true); //setting auto verify candidate as true
                             //Logger.info("createCandidateViaPartner.candidateSignUpResponse JSON = "+toJson(candidateSignUpResponse));
                             Logger.info("Candidate Created with Id = "+candidateSignUpResponse.getCandidateId());
                         }
