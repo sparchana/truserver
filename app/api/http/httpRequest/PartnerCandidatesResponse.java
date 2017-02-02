@@ -1,5 +1,9 @@
 package api.http.httpRequest;
 
+import models.entity.OM.JobPostWorkflow;
+
+import java.util.List;
+
 /**
  * Created by adarsh on 15/9/16.
  */
@@ -9,10 +13,19 @@ public class PartnerCandidatesResponse {
     public String candidateName;
     public String candidateMobile;
     public String creationTimestamp;
+    public String candidateResumeLink;
     public int candidateStatus;
     public int candidateActiveDeactive;
     public int candidateAppliedJobs;
+    public List<JobPostWorkflow> appliedJobList;
 
+    public String getCandidateResumeLink() {
+        return candidateResumeLink;
+    }
+
+    public void setCandidateResumeLink(String candidateResumeLink) {
+        this.candidateResumeLink = candidateResumeLink;
+    }
     public long getLeadId() {
         return leadId;
     }
@@ -75,5 +88,13 @@ public class PartnerCandidatesResponse {
 
     public void setCandidateAppliedJobs(int candidateAppliedJobs) {
         this.candidateAppliedJobs = candidateAppliedJobs;
+    }
+
+    public List<JobPostWorkflow> getAppliedJobList() {
+        return appliedJobList;
+    }
+
+    public void setAppliedJobList(List<JobPostWorkflow> appliedJobList) {
+        this.appliedJobList = appliedJobList;
     }
 }

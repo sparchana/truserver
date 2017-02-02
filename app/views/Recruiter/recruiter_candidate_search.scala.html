@@ -18,7 +18,7 @@
         <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_candidate_search.css">
-        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
         <link rel="stylesheet" href="/assets/support/css/nprogress.css">
 
@@ -48,6 +48,22 @@
     </head>
     <body>
         <div class="recruiter_navbar"></div>
+        <div id="fixed-tools" class="floatingTools" >
+            <div class="container" style="padding: 0">
+                <div class="row" style="margin: 0">
+                    <div class="col s12 l3"></div>
+                    <div class="col s12 l9">
+                        <input type="checkbox" class="filled-in" id="select_all_floating" />
+                        <label for="select_all_floating" style="margin: 0 4px 0 14px; font-size: 1px; color: transparent">.</label>
+
+                        <div class="waves-effect waves-light customBtn btnBlue" onclick="selectCheckedCandidatesToUnlock()">
+                            <font style="font-weight: bold; font-size: 12px;" >Unlock Candidate(s)</font>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script>
             $('.recruiter_navbar').load('/recruiterNavbar');
         </script>
@@ -310,7 +326,6 @@
 
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -319,6 +334,15 @@
                 </div>
                     <!-- Candidate Details -->
                 <div class="col s12 l9">
+                    <div id="candidateTools" style="display: none">
+                        <input type="checkbox" class="filled-in" id="select_all" />
+                        <label for="select_all" style="margin: 0 4px 0 14px; font-size: 1px; color: transparent">.</label>
+
+                        <div class="waves-effect waves-light customBtn btnBlue" onclick="selectCheckedCandidatesToUnlock()">
+                            <font style="font-weight: bold; font-size: 12px;" >Unlock Candidate(s)</font>
+                        </div>
+
+                    </div>
                     <div id="candidateResultContainer"></div>
                     <div id="searchJobPanel">
                         <center>
@@ -374,8 +398,6 @@
                 <div class="row" style="margin: 0">
                     <div class="col l6 s12">
                         <h5 class="white-text">Hire in Bangalore</h5>
-                        <p class="grey-text text-lighten-4">Connect With Us On<img src="/assets/recruiter/img/fbmain.svg" id="fbLogo" style="margin-left: 2%;
-                            width: 6%"> </p>
                     </div>
                     <div class="col l4 offset-l2 s12">
                         <h5 class="white-text">Get in touch</h5>
@@ -430,6 +452,64 @@
                 </center>
             </div>
         </div>
+
+        <!-- Send SMS to candidate modal -->
+        <div id="sendSmsModal" class="modal" style="background: transparent; box-shadow: none">
+            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeSmsModal()"></div>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+                <center><font style="color: #fff"><h5>Send SMS to candidates!</h5></font></center>
+            </div>
+            <div style="background: #ffffff; padding: 14px">
+                <center>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            You are sending SMS to the following candidates:
+                            <div id="candidateNameList" style="font-weight: bold; text-align: left"></div>
+                            <div id="totalCount" style="font-weight: bold; margin-top: 4px; font-size: 12px"></div>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <textarea onkeyup="checkSmsText()" id="smsText" class="materialize-textarea" maxlength="160" length="160" placeholder="(Example: Telecaller openings at ABC company. Salary upto Rs 25,000. Day shift, cab facility available. Call 9999999999 now to apply!)">
+                            </textarea>
+
+                            <label for="smsText">SMS Message</label>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 8px"  id="sendSms" class="waves-effect waves-light ascentGreen lighten-1 btn disabled" data-toggle="collapse" onclick="sendSms()">
+                        <font style="color: #fff;
+                        font-weight: 400"><b>Send SMS</b></font>
+                    </div>
+                    <div style="margin: 8px; color: #0f9d58; display: none" id="successSmsMsg">SMS Sent!</div>
+                </center>
+            </div>
+        </div>
+
+        <!-- unlock candidate modal -->
+        <div id="unlockCandidateModal" class="modal" style="background: transparent; box-shadow: none">
+            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeUnlockModal()"></div>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+                <center><font style="color: #fff"><h5>Multiple Candidate Contact Unlock!</h5></font></center>
+            </div>
+            <div style="background: #ffffff; padding: 14px">
+                <center>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <div id="totalUnlockCount" style="font-weight: bold;"></div>
+
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 8px" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="confirmUnlock()">
+                        <font style="color: #fff; font-weight: 400"><b>Unlock Now!</b></font>
+                    </div>
+                </center>
+            </div>
+        </div>
+
     </body>
     <script>
         $(window).resize(function(){

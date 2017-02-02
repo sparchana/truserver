@@ -1,5 +1,9 @@
 package models.util;
 
+import api.http.httpResponse.interview.InterviewTimeSlot;
+import play.Logger;
+
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -45,6 +49,7 @@ public class InterviewUtil {
     }
 
     public static boolean checkSlotAvailability(Date x, String interviewDays) {
+
         if(x.getDay() == 1 && interviewDays.charAt(0) == '1') { //monday
             return true;
         } else if(x.getDay() == 2 && interviewDays.charAt(1) == '1') { //tue
@@ -60,6 +65,7 @@ public class InterviewUtil {
         } else if(x.getDay() == 0 && interviewDays.charAt(6) == '1') { //sun
             return true;
         } else {
+
             return  false;
         }
     }
@@ -78,5 +84,44 @@ public class InterviewUtil {
             interviewDays = modifiedInterviewDays;
         }
         return interviewDays;
+    }
+
+    public static boolean checkTimeSlot(long date, InterviewTimeSlot timeSlot) {
+        Calendar rightNow = Calendar.getInstance();
+        Date now = rightNow.getTime();
+        Date future = new Date(date);
+
+        if(timeSlot == null){
+            return false;
+        }
+
+        if(!(now.getDate() == future.getDate())){
+            // if date's are not same then this is a valid timeSlot
+            return true;
+        }
+        switch (timeSlot.getSlotId()){
+            case 1:
+                // 10 AM to 1PM
+                if(rightNow.get(Calendar.HOUR_OF_DAY) >= 13){
+                    return false;
+                }
+                break;
+            case 2:
+                // 1 PM to 4PM
+                if(rightNow.get(Calendar.HOUR_OF_DAY) >= 16){
+                    return false;
+                }
+                break;
+            case 3:
+                // 4 PM to 6PM
+                if(rightNow.get(Calendar.HOUR_OF_DAY) >= 18){
+                    return false;
+                }
+                break;
+            default:
+                break;
+        }
+
+        return true;
     }
 }

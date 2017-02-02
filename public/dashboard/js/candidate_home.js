@@ -103,6 +103,12 @@ $(function() {
 function processDataAndFillMinProfile(returnedData) {
 
     candidateId = returnedData.candidateId;
+
+    /* render view and download option for candidate resume */
+    if(returnedData.candidateResumeLink != null){
+        viewDownloadResume(returnedData.candidateResumeLink);
+    }
+
     if(returnedData.candidateLastName == "" || returnedData.candidateLastName == null){
         document.getElementById("userName").innerHTML = returnedData.candidateFirstName;
     } else{

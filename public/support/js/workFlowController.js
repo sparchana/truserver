@@ -890,8 +890,8 @@ $(function () {
                 jobPostEducationIdList: app.jpEducationIdList,
                 jobPostLocalityIdList: app.jpLocalityIdList,
                 jobPostLanguageIdList: app.jpLanguageIdList,
-                jobPostDocumentList: app.jpDocumentIdList,
-                jobPostAssetList: app.jpAssetIdList,
+                jobPostDocumentIdList: app.jpDocumentIdList,
+                jobPostAssetIdList: app.jpAssetIdList,
                 distanceRadius: parseInt($('#radiusValue').text())
             };
 

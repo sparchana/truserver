@@ -8,7 +8,7 @@ import models.entity.OM.JobPostWorkflow;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -247,6 +247,36 @@ public class JobPostWorkFlowDAO {
                 .eq("jobPost.jobPostId", jobPostId)
                 .in("status_id", statusList)
                 .findList();
+    }
+
+
+    public static List<JobPostWorkflow> getRecords(List<Long> jobPostIdList, List<Integer> statusList) {
+        return JobPostWorkflow.find.where()
+                .in("jobPost.jobPostId", jobPostIdList)
+                .in("status_id", statusList)
+                .findList();
+    }
+
+
+
+    public static List<JobPostWorkflow> getRecords(List<Long> jobPostIdList, List<Integer> statusList, Date fromDate, Date toDate) {
+        final SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
+
+        if(toDate !=null && fromDate != null) {
+
+            String to = sdf.format(toDate);
+            String from = sdf.format(fromDate);
+
+            // entry should lie b/w the date range
+            
+                return JobPostWorkflow.find.where()
+                        .in("jobPost.jobPostId", jobPostIdList)
+                        .in("status_id", statusList)
+                        .ge("creationTimestamp", from)
+                        .le("creationTimestamp", to)
+                        .findList();
+        }
+        return new ArrayList<>();
     }
 
     public static List<JobPostWorkflow> getRecords(long jobPostId, int status, String startDate, String endDate) {
@@ -494,4 +524,83 @@ public class JobPostWorkFlowDAO {
                 .findList();
     }
 
+    /**
+     *
+     * @return List<JobPostWorkflow>, all the applications within a given status
+     */
+
+    public static List<JobPostWorkflow> getAllJobApplicationWithinStatusId(Long jpId, int startStatus, int endStatus) {
+        String workFlowQueryBuilder = " select createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
+                " job_post_id, status_id from job_post_workflow i " +
+                " where i.job_post_id = " + jpId +
+                " and status_id >= " + startStatus +
+                " and status_id <= " + endStatus +
+                " and job_post_workflow_id = " +
+                " (select max(job_post_workflow_id) from job_post_workflow " +
+                        "       where i.candidate_id = job_post_workflow.candidate_id " +
+                        "       and i.job_post_id = job_post_workflow.job_post_id) " +
+                " order by job_post_workflow_id desc";
+
+        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder)
+                .columnMapping("creation_timestamp", "creationTimestamp")
+                .columnMapping("job_post_id", "jobPost.jobPostId")
+                .columnMapping("status_id", "status.statusId")
+                .columnMapping("candidate_id", "candidate.candidateId")
+                .columnMapping("createdby", "createdBy")
+                .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
+                .create();
+
+        return Ebean.find(JobPostWorkflow.class)
+                .setRawSql(rawSql)
+                .orderBy().desc("job_post_workflow_id")
+                .findList();
     }
+
+    /**
+     *
+     * @return List<JobPostWorkflow>, all the applications within a given status
+     */
+
+    public static List<JobPostWorkflow> getAllConfirmedApplicationsJobPost(Long jpId, int startStatus, int endStatus) {
+        String workFlowQueryBuilder = " select createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
+                " job_post_id, status_id from job_post_workflow i " +
+                " where i.job_post_id = " + jpId +
+                " and status_id >= " + startStatus +
+                " and status_id <= " + endStatus +
+                " and job_post_workflow_id = " +
+                " (select max(job_post_workflow_id) from job_post_workflow " +
+                        "       where i.candidate_id = job_post_workflow.candidate_id " +
+                        "       and i.job_post_id = job_post_workflow.job_post_id) " +
+                " order by scheduled_interview_date desc";
+
+        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder)
+                .columnMapping("creation_timestamp", "creationTimestamp")
+                .columnMapping("job_post_id", "jobPost.jobPostId")
+                .columnMapping("status_id", "status.statusId")
+                .columnMapping("candidate_id", "candidate.candidateId")
+                .columnMapping("createdby", "createdBy")
+                .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
+                .create();
+
+        return Ebean.find(JobPostWorkflow.class)
+                .setRawSql(rawSql)
+                .orderBy().desc("scheduled_interview_date")
+                .findList();
+
+    }
+
+    public static JobPostWorkflow findFirstJobSelection(Long jobPostId) {
+        return JobPostWorkflow.find.where()
+                .eq("jobPost.jobPostId", jobPostId)
+                .eq("status_id", ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED)
+                .orderBy("job_post_workflow_id").setMaxRows(1).findUnique();
+    }
+
+
+    public static List<JobPostWorkflow> findAllJobSelection(Long jobPostId) {
+        return JobPostWorkflow.find.where()
+                .eq("jobPost.jobPostId", jobPostId)
+                .eq("status_id", ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED)
+                .orderBy("job_post_workflow_id").findList();
+    }
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+
+<form id="resumeUploadForm">
+    <input type="file" multiple id="resumes" name="resumes">
+    <input type="number" id="candidateId" name="candidateId">
+    <br><div id="list"></div>
+</form>
+
+@*<script>
+
+  function handleFileSelect(evt) {
+
+    console.log("entered handleFileSelect" + JSON.stringify(evt));
+    // FileList object
+    var files = evt.target.files;
+    console.log("Files :" + JSON.stringify(files));
+    var url = "/addResume/";
+   // console.log("candidateId.val()= "+$('#candidateId').val());
+   // if($('#candidateId').val() > 0) url += "?candidateId="+Number($('#candidateId').val()).toString();
+   // console.log("url= "+url);
+
+    var output = [];
+    var data = new FormData();
+
+    // files is a FileList of File objects. List some properties.
+    for (var i = 0, f; f = files[i]; i++) {
+      output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                  f.size, ' bytes, last modified: ',
+                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                  '</li>');
+
+	  data.append('resume'+(i+1),f);
+	  //console.log("resume(i+1)= "+'resume'+(i+1));
+        console.log("Data : "+ JSON.stringify(data));
+    }
+
+	        try {
+	            $.ajax({
+	                type: "POST",
+	                url: url,
+	                data: data,
+	                async: true,
+	                cache: false,
+	                contentType: false,
+	                processData: false,
+	                success: processDataForAddResume
+	            });
+	        } catch(exception) {
+	            console.log("Exception Occurred!!" + exception);
+	            console.log(new Error().stack);
+	        }
+    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+  }
+
+  function processDataForAddResume(r){ console.log("r="+r); }
+
+  document.getElementById('resumes').addEventListener('change', handleFileSelect, false);
+
+</script>*@
+</body>
+</html>

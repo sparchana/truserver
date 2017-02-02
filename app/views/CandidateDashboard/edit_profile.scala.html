@@ -66,7 +66,7 @@
                         <span class="icon-bar" style="border: 1px solid #fff;"></span>
 
                     </button>
-                    <div itemscope itemtype ="http://schema.org/logo">
+                    <div itemscope itemtype ="https://schema.org/logo">
                         <a class="navbar-brand" href="#"><img id="navLogo" itemprop="Brand" src="/assets/common/img/logo-main.gif" alt="TruJobs Logo" height="32px"></a>
                         <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" style="padding: 0px">
                             <img id="playStoreLogoNavBar" src="/assets/common/img/download_btn.png" alt="PlayStore Logo" height="26px"></a>
@@ -388,6 +388,22 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row" style="margin-top: 8px" id="resumeContainer">
+                                        <div class="col-sm-3"><h5>Resume</h5></div>
+                                        <div class="col-sm-5">
+                                                <div id="userViewResume" style="margin: 8px 4px 4px 4px;display: inline-block">
+                                                    No Resume Uploaded
+                                                </div>
+                                                <div id="userViewDownload" style="margin: 4px;display: inline-block">
+                                                </div>
+                                                <div style="margin: 4px;display: inline-block;float:right">
+                                                    <label class="btn btn-default btn-file" id="uploadResumeBtnPostLogin">
+                                                        <span class="glyphicon glyphicon-open" aria-hidden="true" style="margin-right:10px"></span> Upload Resume
+                                                        <input type="file" accept=".pdf,.doc,.docx" id="uploadResumeContent" onchange="uploadResume(event)" style="display: none">
+                                                    </label>
+                                                </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <br>
                                     <!-- next/save btn -->
@@ -556,10 +572,28 @@
                     </div>
                 </div>
         </div>
-
+        <div class ="modal fade bs-example-modal-md" id="uploadResumeModalProcess" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog modal-md" id="uploadResumeModalDialog" role="document">
+                <div class="modal-content" id="uploadResumeModalProcessContent">
+                    <center id="resumeUpload">
+                        <svg viewBox="0 0 32 32" width="42" height="42">
+                            <circle id="loadingSpinnerResume" cx="16" cy="16" r="14" fill="none"></circle>
+                        </svg>
+                    </center>
+                    <h4>Processing Your Resume...</h4>
+                </div>
+            </div>
+        </div>
+        <div class ="modal fade bs-example-modal-md" id="uploadResumeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog modal-md" id="uploadResumeModalDialog" role="document">
+                <div class="modal-content" id="uploadResumeModalContent">
+        </div>
+            </div>
+        </div>
         <div id="footer_inc"></div>
 
             <!-- Including Bootstrap -->
+        <script type="text/javascript" src="/assets/common/js/candidate_upload_resume.js"></script>
         <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="/assets/common/js/validation.js"></script>
         <script type="text/javascript" src="/assets/dashboard/js/dashboard.js"></script>

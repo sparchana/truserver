@@ -4,6 +4,7 @@
 <script type="text/javascript" src="/assets/common/js/validation.js"></script>
 <script type="text/javascript" src="/assets/common/js/login.js"></script>
 <script>
+    var candidateId;
     function renderShowJobsPage(){
         try {
             /*window.location.href = "/jobs/" +"jobs-in-bangalore";*/
@@ -23,7 +24,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <div itemscope itemtype ="http://schema.org/logo">
+                <div itemscope itemtype ="https://schema.org/logo">
                     <a class="navbar-brand" href="/">
                         <img id="navLogo" itemprop="Brand" src="/assets/common/img/logo-color.gif" alt="TruJobs Logo"></a>
                     <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" style="padding: 0px">
@@ -60,8 +61,23 @@
             <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-body" id="model_size">
+                <h4 style="font-weight: bold"><center><font color="#0B4063">Sign Up to Apply Jobs</font></center></h4>
+                <div id="uploadResumeContainer" style="margin:0 2%">
+                    <center>
+                        <label class="btn btn-default btn-file" id="uploadResumeBtn">Sign Up With Resume - One Click
+                            <input type="file" accept=".pdf,.doc,.docx" id="uploadResumeContent" onchange="uploadResume(event)" style="display: none">
+                        </label>
+                    </center>
+                </div>
+                <center>
+                    <div style="margin-top:20px">
+                        <hr>
+                        <div style="color:#000;background: #fff;width: 120px;height: 30px;margin-top:-16px">
+                            <p><font style="font-size: 12px">Or fill below details</font></p>
+                        </div>
+                    </div>
+                </center>
                 <form id="form_signup_candidate_modal"  style="margin-top: 0; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
-                    <h4 style="font-weight: bold"><center><font color="#0B4063">Sign Up to Apply Jobs</font></center></h4>
                     <div class="row" id="firstNameLastName">
                         <div class="col-sm-6" style="padding: 0 4px 0 16px">
                             <input id="candidateFirstNameModal" placeholder="First name" type="text" maxLength="49" class="form-control input-md">
@@ -109,6 +125,13 @@
 
                     <button type="submit" id="registerBtnSubmitModal" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
                         <!-- Text input-->
+                    <div class="row" style="margin: 0">
+                        <p style="padding-top:5px;margin:0;font-size: 12px"><span style="float: left;text-align: left">I agree to <a href='/privacy'>T & C</a></span>
+                            <span style="float:right;text-align: right">Already Registered<br>
+                                <a href='#' data-toggle="modal" data-target="#myLoginModal" onClick="openLogin()">Sign In Here</a>
+                            </span>
+                        </p>
+                    </div>
                 </form>
             </div>
         </div>
@@ -273,3 +296,25 @@
         </div>
     </div>
 </div>
+
+<div class ="modal fade bs-example-modal-md" id="uploadResumeModalProcess" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-md" id="uploadResumeModalDialog" role="document">
+        <div class="modal-content" id="uploadResumeModalProcessContent">
+            <center id="resumeUpload">
+                <svg viewBox="0 0 32 32" width="42" height="42">
+                    <circle id="loadingSpinnerResume" cx="16" cy="16" r="14" fill="none"></circle>
+                </svg>
+            </center>
+            <h4>Processing Your Resume...</h4>
+        </div>
+    </div>
+</div>
+<div class ="modal fade bs-example-modal-md" id="uploadResumeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-md" id="uploadResumeModalDialog" role="document">
+        <div class="modal-content" id="uploadResumeModalContent">
+        </div>
+    </div>
+</div>
+<a href ="#" class="registerBox" data-toggle="modal" data-target="#mySignUpModal" onClick="openSignUp()">
+    <div class="row" id="registerBoxInner"><font size="3" style="color: #fff">Apply Now</font></div>
+</a>

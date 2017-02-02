@@ -27,24 +27,6 @@
 .jobApplyBtn2:hover{
     background: linear-gradient(to left, #00a132, #019048);
 }
-
-.modal{
-    display: none;
-    overflow: hidden;
-    position: fixed;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    z-index: 1040;
-    -webkit-overflow-scrolling: touch;
-    outline: 0;
-    background-color: transparent;
-    padding: 0;
-    max-height: inherit;
-    width: auto;
-    margin: auto;
-}
 #searchMainContainer{
     z-index: 99;
     position: relative;
@@ -380,7 +362,7 @@ label{
     }
     .jobApplyBtn2{
         padding: 2%;
-        margin: 5px;
+        margin: 0;
         width: 100%;
     }
     #searchBarDivMain {

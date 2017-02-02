@@ -150,6 +150,16 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+
+    $('#is_private_recruiter').change(function() {
+        if($('#is_private_recruiter').prop('checked')){
+            $("#privateRecruiter").show(200);
+            $("#openRecruiter").hide(200);
+        } else{
+            $("#privateRecruiter").hide(200);
+            $("#openRecruiter").show(200);
+        }
+    });
 });
 
 $(window).load(function() {

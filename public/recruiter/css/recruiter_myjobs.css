@@ -129,7 +129,7 @@
 }
 
 .customUnlockBtn{
-    background: #2aae5e;
+    background: #2ec866;
     font-weight: bold;
     margin-right: 8px;
     color: white;
@@ -158,7 +158,50 @@
     height: 240px;
 }
 
+.pagination{
+    margin-top: -4px;
+    float: right;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.pagination>li>a, .pagination>li>span{
+    color: rgb(41, 128, 185);
+    font-size: 14px;
+}
+.pagination>li>a:hover,
+.pagination>li>span:hover,
+.pagination>li>a:focus,
+.pagination>li>span:focus{
+    color: #5d5d5d;
+    background: #fff;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12);
+    transition: opacity 0.5s ease-in-out;
+}
+
+.pagination>.active>a,
+.pagination>.active>span,
+.pagination>.active>a:hover,
+.pagination>.active>span:hover,
+.pagination>.active>a:focus,
+.pagination>.active>span:focus{
+    z-index:0;
+    background-color: rgb(85, 179, 208);
+    border-color: rgb(85, 179, 208);
+}
+
+.viewCandidateModal{
+    background: none;
+    box-shadow: none;
+    width: 70%;
+    height: 40%;
+    top: 0;
+}
+
 @media screen and (max-width:1000px){
+    .viewCandidateModal{
+        width: 90%;
+        height: auto;
+    }
 
     #tab1, #tab2, #tab3, #tab4{
         font-size: 9px;

@@ -5,6 +5,7 @@ import api.ServerConstants;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.PartnerSignUpResponse;
 import models.entity.*;
+import models.entity.OM.PartnerToCompany;
 import models.entity.Static.CandidateProfileStatus;
 import models.entity.Static.PartnerProfileStatus;
 import models.util.SmsUtil;
@@ -95,6 +96,15 @@ public class PartnerAuthService {
 
                 partnerSignUpResponse.setPartnerMobile(existingPartner.getPartnerMobile());
             }
+
+            if(session().get("partnerToCompanyId") != null){
+                PartnerToCompany partnerToCompany = PartnerToCompany.find.where().eq("partner_to_company_id", session().get("partnerToCompanyId")).findUnique();
+                if(partnerToCompany != null){
+                    partnerToCompany.setVerification_status(ServerConstants.PARTNER_TO_COMPANY_VERIFIED);
+                    partnerToCompany.update();
+                }
+            }
+
             Logger.info("Auth Save Successful");
         }
         else {
@@ -105,6 +115,7 @@ public class PartnerAuthService {
     }
 
     public static void addSession(PartnerAuth existingAuth, Partner partner){
+        Logger.info("setting partner session values");
         session().put("sessionId", existingAuth.getAuthSessionId());
         session().put("sessionUsername", "PID-"+String.valueOf(partner.getPartnerId()));
         session().put("partnerId", String.valueOf(partner.getPartnerId()));

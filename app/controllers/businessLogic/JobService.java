@@ -10,6 +10,7 @@ import api.http.httpResponse.AddJobPostResponse;
 import api.http.httpResponse.ApplyJobResponse;
 import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
+import api.http.httpResponse.interview.InterviewDateTime;
 import api.http.httpResponse.interview.InterviewResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Model;
@@ -24,7 +25,9 @@ import models.entity.OM.*;
 import models.entity.Partner;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
+import models.entity.Static.InterviewTimeSlot;
 import models.util.EmailUtil;
+import models.util.InterviewUtil;
 import models.util.NotificationUtil;
 import models.util.SmsUtil;
 import play.Logger;
@@ -39,6 +42,8 @@ import java.util.*;
 import static api.InteractionConstants.*;
 import static controllers.businessLogic.InteractionService.createInteractionForNewJobPost;
 import static models.util.EmailUtil.sendRecruiterJobPostLiveEmail;
+import static models.util.InterviewUtil.getDayVal;
+import static models.util.InterviewUtil.getMonthVal;
 import static models.util.SmsUtil.sendRecruiterFreeJobPostingSms;
 import static models.util.SmsUtil.sendRecruiterJobPostActivationSms;
 import static play.mvc.Controller.session;
@@ -62,6 +67,8 @@ public class JobService {
         Integer objAType;
         Integer interactionType;
         boolean isSendJobActivationAlert = false;
+
+        /* TODO add validation for critical incoming data like localityList etc */
 
         JobPost existingJobPost = JobPostDAO.findById(addJobPostRequest.getJobPostId());
         if(existingJobPost == null){
@@ -332,10 +339,25 @@ public class JobService {
         }
 
         if (addJobPostRequest.getJobPostStatusId() != null) {
+
             JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
             newJobPost.setJobPostStatus(jobStatus);
+            if(session().get("recruiterId") != null) {
+                RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
+                if (recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+
+                    //setting job status and job post access level as active whn a private recruiter adds a job
+
+                    newJobPost.setJobPostAccessLevel(ServerConstants.JOB_POST_TYPE_PRIVATE);
+
+                    jobStatus = JobStatus.find.where().eq("jobStatusId", ServerConstants.JOB_STATUS_ACTIVE).findUnique();
+                    newJobPost.setJobPostStatus(jobStatus);
+                }
+            }
 
             if(addJobPostRequest.getJobPostStatusId() == ServerConstants.JOB_STATUS_PAUSED){
+                jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
+                newJobPost.setJobPostStatus(jobStatus);
                 newJobPost.setResumeApplicationDate(addJobPostRequest.getResumeApplicationDate());
 
                 if(newJobPost.getJobPostId() != null){
@@ -357,6 +379,9 @@ public class JobService {
             }
 
             if(addJobPostRequest.getJobPostStatusId() == ServerConstants.JOB_STATUS_CLOSED){
+                jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
+                newJobPost.setJobPostStatus(jobStatus);
+
                 Calendar now = Calendar.getInstance();
                 Date today = now.getTime();
 
@@ -403,7 +428,6 @@ public class JobService {
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", addJobPostRequest.getJobPostRecruiterId()).findUnique();
             newJobPost.setRecruiterProfile(recruiterProfile);
         }
-
         return newJobPost;
     }
 
@@ -701,13 +725,13 @@ public class JobService {
         return languageRequirementList;
     }
 
-    private static List<JobPostDocumentRequirement> getJobPostDocumentRequirement(List<Long> jobPostDocumentList, JobPost newJobPost) {
+    private static List<JobPostDocumentRequirement> getJobPostDocumentRequirement(List<Long> jobPostDocumentIdList, JobPost newJobPost) {
 
         List<JobPostDocumentRequirement> jobPostDocumentRequirementList = new ArrayList<>();
-        if(jobPostDocumentList == null || jobPostDocumentList.size() == 0) {
+        if(jobPostDocumentIdList == null || jobPostDocumentIdList.size() == 0) {
             return jobPostDocumentRequirementList;
         }
-        List<IdProof> idProofList = IdProof.find.where().in("IdProofId", jobPostDocumentList).findList();
+        List<IdProof> idProofList = IdProof.find.where().in("IdProofId", jobPostDocumentIdList).findList();
         for(IdProof idProof: idProofList){
             JobPostDocumentRequirement jobPostDocumentRequirement = new JobPostDocumentRequirement();
             jobPostDocumentRequirement.setIdProof(idProof);
@@ -734,13 +758,13 @@ public class JobService {
     }
 
     public static ApplyJobResponse applyJob(ApplyJobRequest applyJobRequest,
-                                            int channelType)
+                                            int channelType, int interactionType)
             throws IOException, JSONException
     {
         Logger.info("checking user and jobId: " + applyJobRequest.getCandidateMobile() + " + " + applyJobRequest.getJobId());
         ApplyJobResponse applyJobResponse = new ApplyJobResponse();
         Candidate existingCandidate = CandidateService.isCandidateExists(applyJobRequest.getCandidateMobile());
-        if(existingCandidate != null){
+        if(existingCandidate != null) {
             JobPost existingJobPost = JobPostDAO.findById(Long.valueOf(applyJobRequest.getJobId()));
             Boolean limitJobApplication = false;
 
@@ -778,7 +802,7 @@ public class JobService {
                 JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).eq("jobPostId", applyJobRequest.getJobId()).findUnique();
                 if(existingJobApplication == null){
 
-                    if(existingJobPost.getRecruiterProfile() != null){
+                    if(existingJobPost.getRecruiterProfile() != null) {
                         if((existingJobPost.getRecruiterProfile().getContactCreditCount() == 0) &&
                                 (existingJobPost.getRecruiterProfile().getInterviewCreditCount() == 0)){
 
@@ -860,7 +884,8 @@ public class JobService {
                             InteractionService.createInteractionForJobApplicationViaWebsite(
                                     existingCandidate.getCandidateUUId(),
                                     existingJobPost.getJobPostUUId(),
-                                    interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName()
+                                    interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName(),
+                                    interactionType
                             );
                         } else{
                             InteractionService.createInteractionForJobApplicationViaAndroid(
@@ -1325,5 +1350,66 @@ public class JobService {
                     NotificationUtil.sendJobAlertNotificationToCandidate(jobPost, candidateList.get(i), hasCredit);
             }
         }
+    }
+
+    public static Map<String, InterviewDateTime> getInterviewSlot(JobPost jobPost) {
+
+        if(jobPost == null){
+            return null;
+        }
+
+        Map<String, InterviewDateTime> interviewSlotMap = new LinkedHashMap<>();
+        // get today's date
+        Calendar newCalendar = Calendar.getInstance();
+        newCalendar.get(Calendar.YEAR);
+        newCalendar.get(Calendar.MONTH);
+        newCalendar.get(Calendar.DAY_OF_MONTH);
+        Date today = newCalendar.getTime();
+
+        int k;
+        // for those jobpost in which the auto confirm is marked as checked, we start line up from the next day
+        if(jobPost.getReviewApplication() == null || jobPost.getReviewApplication() == ServerConstants.REVIEW_APPLICATION_AUTO){
+            // validation for generated time slot is done inside for loop below
+            k = 0;
+        } else {
+            k = 2;
+        }
+        // generate interview slots for next 3 days
+        for (; k < 8; ++k) {
+
+            Calendar c = Calendar.getInstance();
+            c.setTime(today);
+            c.add(Calendar.DATE, k);
+            Date future = c.getTime();
+
+            for (InterviewDetails details : jobPost.getInterviewDetailsList()) {
+                /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
+                String interviewDays = InterviewUtil.fixPrecedingZero(Integer.toBinaryString(details.getInterviewDays()));
+
+                if (InterviewUtil.checkSlotAvailability(future, interviewDays)) {
+
+                    api.http.httpResponse.interview.InterviewTimeSlot timeSlot = new api.http.httpResponse.interview.InterviewTimeSlot();
+                    timeSlot.setSlotId(details.getInterviewTimeSlot().getInterviewTimeSlotId());
+                    timeSlot.setSlotTitle(details.getInterviewTimeSlot().getInterviewTimeSlotName());
+
+                    api.http.httpResponse.interview.InterviewDateTime interviewDateTime = new api.http.httpResponse.interview.InterviewDateTime();
+                    interviewDateTime.setInterviewTimeSlot(timeSlot);
+                    interviewDateTime.setInterviewDateMillis(future.getTime());
+
+
+                    if(!InterviewUtil.checkTimeSlot(future.getTime(), timeSlot)) {
+                        continue;
+                    }
+                    
+                    String slotString = getDayVal(future.getDay())+ ", "
+                            + future.getDate() + " " + getMonthVal((future.getMonth() + 1))
+                            + " (" + details.getInterviewTimeSlot().getInterviewTimeSlotName() + ")" ;
+
+
+                    interviewSlotMap.put(slotString, interviewDateTime);
+                }
+            }
+        }
+        return interviewSlotMap;
     }
 }

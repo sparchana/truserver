@@ -497,17 +497,37 @@ function processPreScreenData(returnedData) {
     var mainDiv = document.createElement("div");
     mainDiv.className = "row";
     parent.append(mainDiv);
+
     var subDivOne = document.createElement("div");
     subDivOne.className = "col-sm-12";
+    subDivOne.setAttribute("data-toggle","collapse");
+    subDivOne.setAttribute("href","#jobDetailsInfoFillCol");
     mainDiv.appendChild(subDivOne);
+
     var hintMessage = document.createElement("p");
     hintMessage.textContent = "Please provide following details to apply for this job";
-    hintMessage.style = "margin:0;font-weight:bold;font-size:18px";
+    hintMessage.id = "panelHeader";
+    hintMessage.onclick = function () {
+        if($("#jobDetailsInfoFillCol").hasClass("in") == true){
+            $("#collapseIcon").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+        }else{
+            $("#collapseIcon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+        }
+    }
     subDivOne.appendChild(hintMessage);
+
+    var spanIcon = document.createElement("span");
+    spanIcon.className = "glyphicon glyphicon-chevron-up pull-right";
+    spanIcon.id = "collapseIcon";
+    spanIcon.setAttribute("aria-hidden",true);
+    hintMessage.appendChild(spanIcon);
+
     var subDivTwo = document.createElement("div");
     subDivTwo.style = "padding:0 4%";
-    subDivTwo.className = "col-sm-12";
+    subDivTwo.id = "jobDetailsInfoFillCol";
+    subDivTwo.className = "col-sm-12 panel-collapse collapse in";
     mainDiv.appendChild(subDivTwo);
+
     var orderList = document.createElement("ol");
     orderList.className = "list-group";
     subDivTwo.appendChild(orderList);
@@ -1617,7 +1637,7 @@ function submitPreScreen() {
                     okToSubmit = false;
                     $.notify("Please provide all known languages", 'error');
                 }*/
-                if(!okToSubmit){
+                if(!okToSubmit) {
                     var submit = {
                         propId : propId,
                         message: msg,
