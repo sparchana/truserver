@@ -38,8 +38,10 @@ var zapp = (function () {
                 $('input[name="datefilter"]').daterangepicker({
                     autoUpdateInput: false,
                     locale: {
-                        cancelLabel: 'Clear'
-                    }
+                        cancelLabel: 'Clear',
+                        format: 'DD-MM-YYYY'
+                    },
+                    maxDate: moment()
                 });
             },
             recruiterDataTable: function () {
@@ -115,7 +117,7 @@ var zapp = (function () {
     // date time picker listener
 
     $('input[name="datefilter"]').on('apply.daterangepicker', function(ev, picker) {
-        $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+        $(this).val(picker.startDate.format('DD-MM-YYYY') + ' - ' + picker.endDate.format('DD-MM-YYYY'));
         zapp.startDate = picker.startDate.format('YYYY-MM-DD');
         zapp.endDate = picker.endDate.format('YYYY-MM-DD');
 
