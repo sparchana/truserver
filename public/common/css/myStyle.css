@@ -218,6 +218,11 @@ a:hover, a:focus{
     background: linear-gradient(to left, rgba(0, 159, 219, 0.99), rgb(2, 123, 179));
     color: white;
 }
+#recruiterContactModalBtn{
+    border: none;
+    background: linear-gradient(to left, rgba(0, 159, 219, 0.99), rgb(2, 123, 179));
+    color: white;
+}
 #registerBtnSubmitModal{
     background: linear-gradient(to left, rgba(0, 159, 219, 0.99), rgb(2, 123, 179));
     border-color:#0065a4 ;
