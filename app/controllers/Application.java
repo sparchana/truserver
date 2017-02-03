@@ -2486,7 +2486,6 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(PartnerInternalSecured.class)
-    //@Security.Authenticated(PartnerSecured.class)
     public static Result uploadCandidates() {
         return ok(views.html.upload_candidate_excel.render());
     }
@@ -2510,7 +2509,7 @@ public class Application extends Controller {
         else{ return ok(); }
     
     }
-
+    @Security.Authenticated(PartnerInternalSecured.class)
     public static Result processCandidates() {
         Http.MultipartFormData body = request().body().asMultipartFormData();
         Http.MultipartFormData.FilePart excel = body.getFile("file");
