@@ -37,7 +37,7 @@ var approvalCount = 0;
 
 // Method to generate individual candidate card
 function renderIndividualCandidateCard(value, parent, view) {
-    console.log("Candidate recrive ----------------"+ JSON.stringify(value));
+
     showContact = false;
     showFeedback = false;
 
@@ -291,14 +291,6 @@ function renderIndividualCandidateCard(value, parent, view) {
     candidateCardRowColOneFont.style = "font-size: 18px; font-weight: bold";
     candidateCardRowColOneFont.textContent = toTitleCase(value.candidate.candidateFullName);
     candidateCardRowColOne.appendChild(candidateCardRowColOneFont);
-
-    if(value.candidate.idProofReferenceList.onGridVerificationStatus == null){
-        var validateAadhar = document.createElement("img");
-        validateAadhar.src = "/assets/recruiter/img/icons/female.svg";
-        validateAadhar.style = "margin:0 10px 8px 10px";
-        validateAadhar.setAttribute('height', '12px');
-        candidateCardRowColOne.appendChild(validateAadhar);
-    }
 
     var ageVal;
     if (value.candidate.candidateDOB != null) {
