@@ -16,6 +16,8 @@ import models.entity.*;
 import models.entity.OM.PartnerToCandidate;
 import models.entity.OM.PartnerToCandidateToCompany;
 import models.entity.OM.PartnerToCompany;
+import models.entity.Recruiter.RecruiterAuth;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.LeadSource;
 import models.entity.Static.PartnerType;
 import play.Logger;
@@ -29,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static controllers.businessLogic.Recruiter.RecruiterAuthService.addSession;
 import static play.libs.Json.toJson;
 
 import static play.mvc.Controller.request;
@@ -560,6 +563,58 @@ public static Result checkExistingCompany(String CompanyCode) {
         }
         return ok("0");
 
+    }
+
+    @Security.Authenticated(PartnerSecured.class)
+    public static Result checkPrivatePartnerRecruiterAccount() {
+        if(session().get("partnerId") != null){
+            Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+            if(partner != null && partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+                List<Integer> recruiterTypeList = new ArrayList<>();
+                recruiterTypeList.add(ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE);
+                recruiterTypeList.add(ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE_ADMIN);
+
+                Integer recCount = RecruiterProfile.find.where()
+                        .eq("RecruiterProfileMobile", partner.getPartnerMobile())
+                        .in("recruiter_access_level", recruiterTypeList)
+                        .findRowCount();
+
+                if(recCount > 0){
+                    //exists
+                    return ok("1");
+                }
+            }
+        }
+        return ok("0");
+    }
+
+    @Security.Authenticated(PartnerSecured.class)
+    public static Result switchToRecruiter() {
+        if(session().get("partnerId") != null){
+            Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+            if(partner != null && partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+                List<Integer> recruiterTypeList = new ArrayList<>();
+                recruiterTypeList.add(ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE);
+                recruiterTypeList.add(ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE_ADMIN);
+
+                RecruiterProfile existingRecruiter = RecruiterProfile.find.where()
+                    .eq("RecruiterProfileMobile", partner.getPartnerMobile())
+                    .in("recruiter_access_level", recruiterTypeList)
+                    .findUnique();
+
+                if(existingRecruiter != null){
+                    //clearing session for partner
+                    FlashSessionController.clearSessionExceptFlash();
+
+                    RecruiterAuth recruiterAuth = RecruiterAuth.find.where().eq("recruiter_id",
+                            existingRecruiter.getRecruiterProfileId()).findUnique();
+
+                    addSession(recruiterAuth, existingRecruiter);
+                    return ok("1");
+                }
+            }
+        }
+        return ok("0");
     }
 
     public static Result getCandidateMatchingJobs(long id) {
