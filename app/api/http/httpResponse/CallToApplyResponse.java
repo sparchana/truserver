@@ -13,6 +13,7 @@ public class CallToApplyResponse {
     public int status;
     public String recruiterName;
     public String recruiterMobile;
+    public ApplyJobResponse response;
 
     public String getMessage() {
         return message;
@@ -44,5 +45,13 @@ public class CallToApplyResponse {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public ApplyJobResponse getResponse() {
+        return response;
+    }
+
+    public void setResponse(ApplyJobResponse response) {
+        this.response = response;
     }
 }

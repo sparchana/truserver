@@ -4,13 +4,11 @@ import api.GoogleSheetHttpRequest;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
+import api.http.httpRequest.AddCandidateRequest;
 import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpRequest.ApplyJobBasicRequest;
 import api.http.httpRequest.ApplyJobRequest;
-import api.http.httpResponse.AddJobPostResponse;
-import api.http.httpResponse.ApplyJobResponse;
-import api.http.httpResponse.CallToApplyResponse;
-import api.http.httpResponse.CandidateWorkflowData;
+import api.http.httpResponse.*;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import api.http.httpResponse.interview.InterviewDateTime;
 import api.http.httpResponse.interview.InterviewResponse;
@@ -20,11 +18,8 @@ import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerConstants;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
-import models.entity.Candidate;
-import models.entity.Company;
-import models.entity.JobPost;
+import models.entity.*;
 import models.entity.OM.*;
-import models.entity.Partner;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
 import models.util.EmailUtil;
@@ -1432,10 +1427,9 @@ public class JobService {
             return callToApplyResponse;
         }
 
-        if( applyJobRequest.getJobId() == null
-                || JobPostDAO.findById(applyJobRequest.getJobId()) == null)
+        JobPost jobPost = applyJobRequest.getJobId() == null ? null : JobPostDAO.findById(applyJobRequest.getJobId());
+        if( jobPost == null)
         {
-
             callToApplyResponse.setMessage("Invalid Params");
             callToApplyResponse.setStatus(CallToApplyResponse.STATUS_INVALID_PARAMS);
             return callToApplyResponse;
@@ -1451,16 +1445,75 @@ public class JobService {
 
         Candidate candidate = CandidateService.isCandidateExists(candidateMobile);
 
+        AddCandidateRequest addCandidateRequest = new AddCandidateRequest();
+        addCandidateRequest.setCandidateMobile(candidateMobile);
+        addCandidateRequest.setCandidateFirstName(applyJobRequest.getCandidateName());
+
         if( candidate == null) {
             // TODO code to create this loose candidate will come here
-        } else {
-            // TODO other simple modification to that candidate will happen here
+            addCandidateRequest.setLeadSource(ServerConstants.LEAD_SOURCE_CALL_TO_APPLY_WEBSITE);
+
+            List<Integer> candidateJobPref = new ArrayList<>();
+            candidateJobPref.add(Math.toIntExact(jobPost.getJobRole().getJobRoleId()));
+            addCandidateRequest.setCandidateJobPref(candidateJobPref);
+
+            if(jobPost.getJobPostToLocalityList().size() > 1) {
+                // setting locality other ---- 345
+                addCandidateRequest.setCandidateHomeLocality(345);
+            }
+
+            addCandidateRequest.setCandidateHomeLocality(
+                                Math.toIntExact(jobPost.getJobPostToLocalityList()
+                                                       .get(0)
+                                                       .getLocality()
+                                                       .getLocalityId()));
+
+
+        } else if(candidate.getLead().getLeadSource().getLeadSourceId() == ServerConstants.LEAD_SOURCE_CALL_TO_APPLY_WEBSITE){
+
+            if(candidate.getLocality().getLocalityId() == 345
+                    && jobPost.getJobPostToLocalityList().size() == 1){
+
+                addCandidateRequest.setCandidateHomeLocality(
+                        Math.toIntExact(jobPost.getJobPostToLocalityList()
+                                .get(0)
+                                .getLocality()
+                                .getLocalityId()));
+            }
+
+            if(candidate.getJobPreferencesList().size() == 3) {
+                candidate.getJobPreferencesList().remove(0);
+            }
+
+            List<Integer> candidateJobPref = new ArrayList<>();
+            for(JobPreference jobPreference : candidate.getJobPreferencesList()) {
+                candidateJobPref.add(Math.toIntExact(jobPreference.getJobRole().getJobRoleId()));
+            }
+
+            candidateJobPref.add(Math.toIntExact(jobPost.getJobRole().getJobRoleId()));
+            addCandidateRequest.setCandidateJobPref(candidateJobPref);
         }
 
-        // TODO code to push this candidate to apply flow will come here
-        // TODO code to deduct the new credit will come here + response formation here with rec mobile and name
+            // create/update candidate
+        CandidateSignUpResponse response = CandidateService.createCandidateProfile(addCandidateRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE, ServerConstants.UPDATE_BASIC_PROFILE);
 
+        if(response != null) {
+            if(response.getStatus() == CandidateSignUpResponse.STATUS_SUCCESS) {
+                try {
+                    ApplyJobResponse applyJobResponse = applyJob((ApplyJobRequest) applyJobRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE, InteractionConstants.INTERACTION_TYPE_APPLY_JOB_VIA_CALL_TO_APPLY);
 
+                    callToApplyResponse.setResponse(applyJobResponse);
+
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
+                // TODO code to deduct the new credit will come here + response formation here with rec mobile and name
+            }
+        } else {
+            callToApplyResponse.setMessage("Error creating/updating candidate");
+            callToApplyResponse.setStatus(CallToApplyResponse.STATUS_FAILED);
+        }
+        
         return callToApplyResponse;
     }
 
