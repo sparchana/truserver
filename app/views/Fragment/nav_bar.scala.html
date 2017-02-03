@@ -13,7 +13,6 @@
             console.log("exception occured!!" + exception);
         }
     }
-    document.getElementById('uploadResumeContent').addEventListener('change', uploadResume, false);
 </script>
 
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -25,7 +24,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <div itemscope itemtype ="http://schema.org/logo">
+                <div itemscope itemtype ="https://schema.org/logo">
                     <a class="navbar-brand" href="/">
                         <img id="navLogo" itemprop="Brand" src="/assets/common/img/logo-color.gif" alt="TruJobs Logo"></a>
                     <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" style="padding: 0px">
@@ -66,7 +65,7 @@
                 <div id="uploadResumeContainer" style="margin:0 2%">
                     <center>
                         <label class="btn btn-default btn-file" id="uploadResumeBtn">Sign Up With Resume - One Click
-                            <input type="file" accept=".pdf,.doc,.docx" id="uploadResumeContent" style="display: none">
+                            <input type="file" accept=".pdf,.doc,.docx" id="uploadResumeContent" onchange="uploadResume(event)" style="display: none">
                         </label>
                     </center>
                 </div>

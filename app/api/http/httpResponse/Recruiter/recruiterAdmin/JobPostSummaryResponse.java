@@ -4,13 +4,14 @@ package api.http.httpResponse.Recruiter.recruiterAdmin;
  * Created by zero on 24/1/17.
  */
 public class JobPostSummaryResponse {
+    private Long jobPostId;
     private String jobTitle;
     private String jobPostedOn;
-    private float fulfillmentStatus;
+    private String percentageFulfillment;
     private int totalSmsSent;
     private int totalApplicants;
     private int totalInterviewConducted;
-    private int cycleTime;
+    private String cycleTime;
 
     public String getJobTitle() {
         return jobTitle;
@@ -28,12 +29,12 @@ public class JobPostSummaryResponse {
         this.jobPostedOn = jobPostedOn;
     }
 
-    public float getFulfillmentStatus() {
-        return fulfillmentStatus;
+    public String getPercentageFulfillment() {
+        return percentageFulfillment;
     }
 
-    public void setFulfillmentStatus(float fulfillmentStatus) {
-        this.fulfillmentStatus = fulfillmentStatus;
+    public void setPercentageFulfillment(String percentageFulfillment) {
+        this.percentageFulfillment = percentageFulfillment;
     }
 
     public int getTotalSmsSent() {
@@ -60,11 +61,19 @@ public class JobPostSummaryResponse {
         this.totalInterviewConducted = totalInterviewConducted;
     }
 
-    public int getCycleTime() {
+    public String getCycleTime() {
         return cycleTime;
     }
 
-    public void setCycleTime(int cycleTime) {
+    public void setCycleTime(String cycleTime) {
         this.cycleTime = cycleTime;
+    }
+
+    public Long getJobPostId() {
+        return jobPostId;
+    }
+
+    public void setJobPostId(Long jobPostId) {
+        this.jobPostId = jobPostId;
     }
 }

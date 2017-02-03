@@ -173,7 +173,11 @@ body{
       }
 }
 
+.selectedRow{
+    background: #acbad4;
+}
 .customBtn{
+    cursor: pointer;
     background: transparent;
     font-weight: bold;
     margin-right: 4px;
@@ -192,6 +196,16 @@ body{
     background: #2aae5e;
 }
 
+.btnRed{
+    color: white;
+    background: #f75d40;
+}
+
+.btnOrange{
+    color: white;
+    background: #ffc040;
+}
+
 .btnBlue{
     color: white;
     background: #3d76ae;
@@ -207,8 +221,9 @@ body{
 }
 
 .customSmsBtn{
+    font-size: 12px;
     font-weight: bold;
-    margin-right: 8px;
+    margin-right: 6px;
     color: white;
     padding: 6px 12px 6px 12px;
     border-radius: 3px;

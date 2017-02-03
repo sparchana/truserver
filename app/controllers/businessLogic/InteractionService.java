@@ -57,13 +57,13 @@ public class InteractionService {
         }
     }
 
-    public static void createInteractionForJobApplicationViaWebsite(String objectAUUId, String objectBUUId, String result) {
+    public static void createInteractionForJobApplicationViaWebsite(String objectAUUId, String objectBUUId, String result, int interactionType) {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 objectBUUId,
                 ServerConstants.OBJECT_TYPE_JOB_POST,
-                InteractionConstants.INTERACTION_TYPE_APPLIED_JOB,
+                interactionType,
                 result,
                 INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_WEBSITE
@@ -426,6 +426,21 @@ public class InteractionService {
                 InteractionConstants.INTERACTION_TYPE_SEARCH,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
+                INTERACTION_CREATED_SELF,
+                INTERACTION_CHANNEL_CANDIDATE_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
+    public static void createInteractionForApplyInShort(String objectAUUId, String objectBUUId) {
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                objectBUUId,
+                ServerConstants.OBJECT_TYPE_JOB_POST,
+                InteractionConstants.INTERACTION_TYPE_TRIED_JOB_APPLY_IN_SHORT,
+                InteractionConstants.INTERACTION_NOTE_BLANK,
+                INTERACTION_TYPE_MAP.get(InteractionConstants.INTERACTION_TYPE_TRIED_JOB_APPLY_IN_SHORT),
                 INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_WEBSITE
         );

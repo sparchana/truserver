@@ -19,7 +19,6 @@ nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i {
                     <li class="profileNav"><a href="/recruiter/profile">Profile</a></li>
                     <li class="jobNav"><a href="/recruiter/allRecruiterJobPosts">View Application(s)<div class="newNotification" id="pendingApproval" style="display: none"></div></a></li>
                     <li class="postJobNav"><a href="/recruiter/jobPost/0">Post Job</a></li>
-                    <li class="unlockNav"><a href="/recruiter/unlockedCandidates">Unlocked Candidates</a></li>
                     <li><a onclick="logoutRecruiter()">Logout</a></li>
                 </ul>
             </div>
@@ -30,12 +29,6 @@ nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i {
                 <li class="profileNavMobile"><a href="/recruiter/profile">Profile</a></li>
                 <li class="jobNavMobile"><a href="/recruiter/allRecruiterJobPosts">View Application(s)<div class="newNotification" id="pendingApprovalMobile"></div></a></li>
                 <li class="postJobNavMobile"><a href="/recruiter/jobPost/0">Post Job</a></li>
-                <li><a class="dropdown-button" data-hover="true" data-beloworigin="true" data-activates="candidateDropDownMobile">Candidates</a>
-                    <ul id="candidateDropDownMobile" class="dropdown-content">
-                        <li class="searchNavMobile"><a href="/recruiter/candidateSearch">Search Candidates</a></li>
-                        <li class="unlockNavMobile"><a href="/recruiter/unlockedCandidates">View Unlocked Candidates</a></li>
-                    </ul>
-                </li>
                 <li><a onclick="logoutRecruiter()">Logout</a></li>
             </ul>
         </div>
@@ -43,8 +36,37 @@ nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i {
 </div>
 
 <script>
+    function logoutRecruiter() {
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/logoutRecruiter",
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataLogoutRecruiter
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+
+    function processDataLogoutRecruiter() {
+        window.location = "/recruiter";
+    }
+
     $(document).ready(function () {
         $(".button-collapse").sideNav();
         $(".dropdown-button").dropdown();
+    });
+
+    $(document).scroll(function(){
+        if ($(this).scrollTop() > 30) {
+            $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
+        }
+        else{
+            $('nav').css({"background": "transparent"});
+        }
     });
 </script>

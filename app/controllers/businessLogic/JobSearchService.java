@@ -534,6 +534,7 @@ public class JobSearchService {
         query = query.where().eq("source", source).query();
 
         //checking if job post is private or not
+
         query = query.where().eq("job_post_access_level", jobPostAccessLevel).query();
 
         query = query.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).query();

@@ -51,7 +51,13 @@ function renderDashboard() {
                                 return creationDate;
                             },
                             'company': '<a href="'+"/companyDetails/"+jobPost.company.companyId+'" id="'+jobPost.company.companyId+'" style="cursor:pointer;" target="_blank">'+jobPost.company.companyName+'</a>',
-                            'jobTitle': jobPost.jobPostTitle,
+                            'jobTitle': function () {
+                                if(jobPost.jobPostAccessLevel == 1){
+                                    return "[PRIVATE JOB] " + jobPost.jobPostTitle;
+                                } else{
+                                    return jobPost.jobPostTitle;
+                                }
+                            },
                             'jobSalary' : function () {
                                 if(jobPost.jobPostMaxSalary != 0 && jobPost.jobPostMaxSalary != null){
                                     return ((jobPost.jobPostMinSalary != null) ? "₹" + jobPost.jobPostMinSalary : "0") + " - ₹" + ((jobPost.jobPostMaxSalary != null) ? jobPost.jobPostMaxSalary : "0");

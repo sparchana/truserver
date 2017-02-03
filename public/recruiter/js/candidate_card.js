@@ -1253,19 +1253,8 @@ function renderIndividualCandidateCard(value, parent, view) {
                 }
             }
         }
-    } else if(view == view_search_candidate || view == view_unlocked_candidate){
-        var smsBtn = document.createElement("a");
-        smsBtn.className = "waves-effect waves-light customSmsBtn btnGreen";
-        smsBtn.id = value.candidate.candidateId + "_sms_btn";
-        smsBtn.onclick = function () {
-            candidateCardData = value;
-            sendSelectedSms(value.candidate.candidateId, value.candidate.candidateFirstName);
-        };
-        smsBtn.style = "margin-top: -1px";
-        smsBtn.textContent = "Send SMS";
-        unlockContactCol.appendChild(smsBtn);
     }
-
+    
     if(view == view_unlocked_candidate){
         showContact = false;
     }
@@ -1445,12 +1434,13 @@ function sendSms(){
     if(urlParams[0] == "?jpId") {
         jpId = parseInt(urlParams[1]);
     }
-        if(checkedCandidateIdList.length > 0){
+    if(checkedCandidateIdList.length > 0){
         $("#sendSms").addClass("disabled");
         var s = {
             candidateIdList: checkedCandidateIdList,
             smsMessage :$("#smsText").val(),
-            jobPostId :jpId
+            jobPostId :jpId,
+            smsType :1
         };
         $.ajax({
             type: "POST",
@@ -1467,7 +1457,7 @@ function sendSms(){
 function processDataBulkSms(returnedData) {
     if(returnedData == '1'){
         checkedCandidateIdList.forEach(function (candidateId) {
-            $("#" + candidateId + "_sms_btn").removeClass("btnGreen").addClass("btnBlue").html("Resend SMS");
+            $("#" + candidateId + "_sms_btn").removeClass("btnGreen").addClass("btnBlue").css("font-size", "12px").html("Resend SMS");
         });
         notifySuccess("SMS sent successfully to " + checkedCandidateNameList.length + " candidates!");
         $("#sendSmsModal").closeModal();

@@ -409,7 +409,7 @@ public class TrudroidController {
 
             //conversion from proto to http request object
             api.http.httpRequest.ApplyJobRequest applyJobRequest = new api.http.httpRequest.ApplyJobRequest();
-            applyJobRequest.setJobId(Math.toIntExact(pApplyJobRequest.getJobPostId()));
+            applyJobRequest.setJobId(pApplyJobRequest.getJobPostId());
             applyJobRequest.setLocalityId(Math.toIntExact(pApplyJobRequest.getLocalityId()));
             applyJobRequest.setPartner(false);
             applyJobRequest.setScheduledInterviewDate(null);
@@ -418,7 +418,7 @@ public class TrudroidController {
             applyJobRequest.setAppVersionCode(pApplyJobRequest.getAppVersionCode());
 
             //applying job
-            api.http.httpResponse.ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID);
+            api.http.httpResponse.ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID, InteractionConstants.INTERACTION_TYPE_APPLIED_JOB);
 
             //setting status response
             if(applyJobResponse.getStatus() == api.http.httpResponse.ApplyJobResponse.STATUS_APPLICATION_LIMIT_REACHED){ //TODO: change these status values in APK

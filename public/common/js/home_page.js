@@ -152,7 +152,7 @@ function customDataSuccess(data){
     var content = "";
     data.forEach(function (logo) {
         var img = logo;
-        content += "<img width='150px' height='50px' class='lazy' data-original=\"" +img+ "\">"
+        content += "<img width='150px' height='50px' class='lazy' src=\"" +img+ "\">"
     });
     $("#hiringCompanyLogo").html(content);
 

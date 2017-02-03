@@ -9,6 +9,8 @@ var zapp = (function () {
 
     var zapp = {
         rows : [],
+        csv: ["Id, Job Title, Job Posted On, Fulfilment status, Total SMS Sent, Total Applications, Total Interviews, Cycle Time"],
+        csvString: "",
         recruiterId: null,
         method: {
             init: function () {
@@ -19,93 +21,85 @@ var zapp = (function () {
             },
             setRecruiterId: function () {
                 zapp.recruiterId = parseInt(window.location.search.split("&")[1].split("=")[1]);
+            },
+            generateCSVString: function () {
+                var json = zapp.rows;
+                var fields = Object.keys(json[0]);
+                var replacer = function(key, value) { return value === null ? '' : value };
+                var csv = json.map(function(row){
+                    return fields.map(function(fieldName){
+                        return JSON.stringify(row[fieldName], replacer)
+                    }).join(',')
+                });
+                csv.unshift(zapp.csv[0]); // add header column
+                zapp.csvString = csv.join('\r\n');
             }
         },
         render: {
-            jobPostTable: function () {
-                $("#jpTable").show();
-                $("#loadingIcon").hide();
+            jobPostDataTable: function () {
+                try {
+                    var table = $('table#jobPostTable').DataTable({
+                        "ajax": {
+                            "type": "GET",
+                            "url": '/recruiter/api/summary/jobpost/'+zapp.recruiterId,
+                            "dataSrc": function (returnedData) {
 
-                var parent = $('#jobPostTable');
-                zapp.rows.forEach(function (response) {
+                                zapp.rows = returnedData;
 
-                    var mainDiv =  document.createElement("div");
-                    parent.append(mainDiv);
+                                $("#jobPostTable").show();
+                                $("#jobPostTableContainer").show();
+                                $("#loadingIcon").hide();
 
-                    var outerRow = document.createElement("div");
-                    outerRow.className = 'row';
-                    outerRow.id="outerBoxMain";
-                    mainDiv.appendChild(outerRow);
+                                var returned_data = [];
 
-                    // column #1
-                    var colJobTitle = document.createElement("div");
-                    colJobTitle.className = 'col s12 l1';
-                    colJobTitle.textContent= response.jobTitle;
-                    colJobTitle.style = 'margin-top:8px';
-                    outerRow.appendChild(colJobTitle);
+                                zapp.rows.forEach(function (response) {
 
-                    // column #2
-                    var colPostedOn = document.createElement("div");
-                    colPostedOn.className = 'col s12 l2';
-                    colPostedOn.style = 'margin-top:8px';
-                    colPostedOn.textContent = response.jobPostedOn;
-                    outerRow.appendChild(colPostedOn);
+                                    returned_data.push({
+                                        'jobTitle': function () {
+                                            return '<div class="mLabel" style="width:100%"><a href="/recruiter/jobPostTrack/'+response.jobPostId + '">'+response.jobTitle+'</div>';
+                                        },
+                                        'jobPostedOn': response.jobPostedOn,
+                                        'fulfillment': response.percentageFulfillment,
+                                        'totalSMS': response.totalSmsSent,
+                                        'totalApplication': response.totalApplicants,
+                                        'totalInterview': response.totalInterviewConducted,
+                                        'cycleTime': response.cycleTime
+                                    });
+                                });
 
-                    // column #3
-                    var colFulfillmentStatus = document.createElement("div");
-                    colFulfillmentStatus.className = 'col s12 l2';
-                    colFulfillmentStatus.style = 'margin-top:8px';
-                    colFulfillmentStatus.textContent = response.fulfillmentStatus + " %";
-                    outerRow.appendChild(colFulfillmentStatus);
+                                return returned_data;
+                            }
+                        },
+                        "deferRender": true,
+                        "columns": [
+                            { "data": "jobTitle" },
+                            { "data": "jobPostedOn" },
+                            { "data": "fulfillment" },
+                            { "data": "totalSMS" },
+                            { "data": "totalApplication" },
+                            { "data": "totalInterview" },
+                            { "data": "cycleTime" }
 
-                    // column #4
-                    var colTotalSmsSent  = document.createElement("div");
-                    colTotalSmsSent.className = "col s12 l2";
-                    colTotalSmsSent.textContent= response.totalSmsSent;
-                    colTotalSmsSent.style = "font-weight: 600;font-size:12px";
-                    outerRow.appendChild(colTotalSmsSent);
-
-                    // column #5
-                    var colTotalApplicants = document.createElement("div");
-                    colTotalApplicants.className = "col s12 l2";
-                    colTotalApplicants.textContent= response.totalApplicants;
-                    colTotalApplicants.style = "font-weight: 600;font-size:12px";
-                    outerRow.appendChild(colTotalApplicants);
-
-                    // column #6
-                    var colTotalInterviewConducted = document.createElement("div");
-                    colTotalInterviewConducted.className = "col s12 l2";
-                    colTotalInterviewConducted.textContent= response.totalInterviewConducted;
-                    colTotalInterviewConducted.style = "font-weight: 600;font-size:12px";
-                    outerRow.appendChild(colTotalInterviewConducted);
-
-                    // column #7
-                    var colCycleTime = document.createElement("div");
-                    colCycleTime.className = "col s12 l1";
-                    if(response.cycleTime < 0) {
-                        colCycleTime.textContent = "NA";
-                    } else {
-                        colCycleTime.textContent = response.cycleTime + " Day(s)";
-                    }
-                    colCycleTime.style = "font-weight: 600;font-size:12px";
-                    outerRow.appendChild(colCycleTime);
-
-                });
+                        ],
+                        "language": {
+                            "emptyTable": "No Job Post found!"
+                        },
+                        "order": [[1, "desc"]],
+                        responsive: true,
+                        "destroy": true,
+                        "dom": 'Bfrtip',
+                        "buttons": [
+                            'copy', 'csv', 'excel'
+                        ]
+                    });
+                } catch (exception) {
+                    console.log("exception occured!!" + exception);
+                }
             }
         },
         get: {
             allJobPosts: function () {
-                $.ajax({
-                    url: '/recruiter/api/summary/jobpost/'+zapp.recruiterId,
-                    type: 'GET',
-                    dataType: 'json'
-                }).success(function (returnedData) {
-                    zapp.rows = returnedData;
-                    zapp.render.jobPostTable();
-                }).error(function (jqXHR, exception) {
-                    $("#somethingWentWrong").show();
-                    $("#loadingIcon").hide();
-                });
+                zapp.render.jobPostDataTable();
             }
         }
     };

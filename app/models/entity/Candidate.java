@@ -5,6 +5,7 @@ import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import controllers.businessLogic.CandidateResumeService;
 import models.entity.OM.*;
 import models.entity.OO.CandidateCurrentJobDetail;
 import models.entity.OO.CandidateEducation;
@@ -221,7 +222,7 @@ public class Candidate extends Model {
     private int candidateAccessLevel;
 
     @Transient
-    private String candidateResumeLink = "";
+    private String candidateResumeLink;
 
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
@@ -678,15 +679,19 @@ public class Candidate extends Model {
     }
 
     public String getCandidateResumeLink() {
-        CandidateResume resume = CandidateResume.find.where().eq("CandidateId", this.getCandidateId()).findUnique();
+        CandidateResumeService candidateResumeService = new CandidateResumeService();
+        CandidateResume resume = (CandidateResume) candidateResumeService.fetchLatestResumeForCandidate(Long.toString(this.getCandidateId(),10)).getEntity();
         if(resume != null){
+            //Logger.info("resume FilePath = "+resume.getFilePath());
             return resume.getFilePath();
         } else{
             return null;
         }
     }
 
+/*
     public void setCandidateResumeLink(String candidateResumeLink) {
         this.candidateResumeLink = candidateResumeLink;
     }
+*/
 }

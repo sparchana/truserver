@@ -25,6 +25,7 @@ import models.entity.OM.*;
 import models.entity.Partner;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
+import models.entity.Static.InterviewTimeSlot;
 import models.util.EmailUtil;
 import models.util.InterviewUtil;
 import models.util.NotificationUtil;
@@ -338,10 +339,25 @@ public class JobService {
         }
 
         if (addJobPostRequest.getJobPostStatusId() != null) {
+
             JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
             newJobPost.setJobPostStatus(jobStatus);
+            if(session().get("recruiterId") != null) {
+                RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
+                if (recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
+
+                    //setting job status and job post access level as active whn a private recruiter adds a job
+
+                    newJobPost.setJobPostAccessLevel(ServerConstants.JOB_POST_TYPE_PRIVATE);
+
+                    jobStatus = JobStatus.find.where().eq("jobStatusId", ServerConstants.JOB_STATUS_ACTIVE).findUnique();
+                    newJobPost.setJobPostStatus(jobStatus);
+                }
+            }
 
             if(addJobPostRequest.getJobPostStatusId() == ServerConstants.JOB_STATUS_PAUSED){
+                jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
+                newJobPost.setJobPostStatus(jobStatus);
                 newJobPost.setResumeApplicationDate(addJobPostRequest.getResumeApplicationDate());
 
                 if(newJobPost.getJobPostId() != null){
@@ -363,6 +379,9 @@ public class JobService {
             }
 
             if(addJobPostRequest.getJobPostStatusId() == ServerConstants.JOB_STATUS_CLOSED){
+                jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
+                newJobPost.setJobPostStatus(jobStatus);
+
                 Calendar now = Calendar.getInstance();
                 Date today = now.getTime();
 
@@ -408,19 +427,6 @@ public class JobService {
         if (addJobPostRequest.getJobPostRecruiterId() != null) {
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", addJobPostRequest.getJobPostRecruiterId()).findUnique();
             newJobPost.setRecruiterProfile(recruiterProfile);
-        }
-
-        if(session().get("recruiterId") != null) {
-            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
-            if (recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE) {
-
-                //setting job status and job post access level as active whn a private recruiter adds a job
-
-                newJobPost.setJobPostAccessLevel(ServerConstants.JOB_POST_TYPE_PRIVATE);
-
-                JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", ServerConstants.JOB_STATUS_ACTIVE).findUnique();
-                newJobPost.setJobPostStatus(jobStatus);
-            }
         }
         return newJobPost;
     }
@@ -752,13 +758,13 @@ public class JobService {
     }
 
     public static ApplyJobResponse applyJob(ApplyJobRequest applyJobRequest,
-                                            int channelType)
+                                            int channelType, int interactionType)
             throws IOException, JSONException
     {
         Logger.info("checking user and jobId: " + applyJobRequest.getCandidateMobile() + " + " + applyJobRequest.getJobId());
         ApplyJobResponse applyJobResponse = new ApplyJobResponse();
         Candidate existingCandidate = CandidateService.isCandidateExists(applyJobRequest.getCandidateMobile());
-        if(existingCandidate != null){
+        if(existingCandidate != null) {
             JobPost existingJobPost = JobPostDAO.findById(Long.valueOf(applyJobRequest.getJobId()));
             Boolean limitJobApplication = false;
 
@@ -796,7 +802,7 @@ public class JobService {
                 JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).eq("jobPostId", applyJobRequest.getJobId()).findUnique();
                 if(existingJobApplication == null){
 
-                    if(existingJobPost.getRecruiterProfile() != null){
+                    if(existingJobPost.getRecruiterProfile() != null) {
                         if((existingJobPost.getRecruiterProfile().getContactCreditCount() == 0) &&
                                 (existingJobPost.getRecruiterProfile().getInterviewCreditCount() == 0)){
 
@@ -878,7 +884,8 @@ public class JobService {
                             InteractionService.createInteractionForJobApplicationViaWebsite(
                                     existingCandidate.getCandidateUUId(),
                                     existingJobPost.getJobPostUUId(),
-                                    interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName()
+                                    interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName(),
+                                    interactionType
                             );
                         } else{
                             InteractionService.createInteractionForJobApplicationViaAndroid(
@@ -1362,7 +1369,8 @@ public class JobService {
         int k;
         // for those jobpost in which the auto confirm is marked as checked, we start line up from the next day
         if(jobPost.getReviewApplication() == null || jobPost.getReviewApplication() == ServerConstants.REVIEW_APPLICATION_AUTO){
-            k = 1;
+            // validation for generated time slot is done inside for loop below
+            k = 0;
         } else {
             k = 2;
         }
@@ -1378,7 +1386,6 @@ public class JobService {
                 /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
                 String interviewDays = InterviewUtil.fixPrecedingZero(Integer.toBinaryString(details.getInterviewDays()));
 
-
                 if (InterviewUtil.checkSlotAvailability(future, interviewDays)) {
 
                     api.http.httpResponse.interview.InterviewTimeSlot timeSlot = new api.http.httpResponse.interview.InterviewTimeSlot();
@@ -1389,9 +1396,15 @@ public class JobService {
                     interviewDateTime.setInterviewTimeSlot(timeSlot);
                     interviewDateTime.setInterviewDateMillis(future.getTime());
 
+
+                    if(!InterviewUtil.checkTimeSlot(future.getTime(), timeSlot)) {
+                        continue;
+                    }
+                    
                     String slotString = getDayVal(future.getDay())+ ", "
                             + future.getDate() + " " + getMonthVal((future.getMonth() + 1))
                             + " (" + details.getInterviewTimeSlot().getInterviewTimeSlotName() + ")" ;
+
 
                     interviewSlotMap.put(slotString, interviewDateTime);
                 }

@@ -8,6 +8,7 @@ import models.entity.Company;
 import models.entity.JobPost;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.SmsDeliveryStatus;
+import models.entity.Static.SmsType;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -21,8 +22,8 @@ import java.sql.Timestamp;
 public class SmsReport extends Model {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "sms_report_id", columnDefinition = "int signed", unique = true)
-    private Integer smsReportId;
+    @Column(name = "sms_report_id", columnDefinition = "bigint unsigned", unique = true)
+    private long smsReportId;
 
     @Column(name = "creation_timestamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp creationTimeStamp = new Timestamp(System.currentTimeMillis());
@@ -58,6 +59,11 @@ public class SmsReport extends Model {
     @JoinColumn(name = "SmsDeliveryStatus")
     private SmsDeliveryStatus smsDeliveryStatus;
 
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "SmsType")
+    private SmsType smsType;
+
     @Transient
     private Integer hasApplied = 0;
 
@@ -67,11 +73,11 @@ public class SmsReport extends Model {
         this.creationTimeStamp = new Timestamp(System.currentTimeMillis());
     }
 
-    public Integer getSmsReportId() {
+    public long getSmsReportId() {
         return smsReportId;
     }
 
-    public void setSmsReportId(Integer smsReportId) {
+    public void setSmsReportId(long smsReportId) {
         this.smsReportId = smsReportId;
     }
 
@@ -159,5 +165,13 @@ public class SmsReport extends Model {
         } else{
             return 0;
         }
+    }
+
+    public SmsType getSmsType() {
+        return smsType;
+    }
+
+    public void setSmsType(SmsType smsType) {
+        this.smsType = smsType;
     }
 }

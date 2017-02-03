@@ -17,7 +17,7 @@
         <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
-        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
 
         <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
@@ -37,6 +37,7 @@
         <div style="justify-content: center;align-items: center; margin-top: -360px">
             <div class="container recruiterHomeMainCard" >
                 <h5 style="margin-left:20px">Welcome!</h5>
+                <h6 style="margin-left:20px; display: none" id="companyCode"></h6>
                 <a href="/recruiter/profile" id="editBtn" class="btn-floating btn-large waves-effect waves-light red" style="margin-top: -22px; float: right"><i class="material-icons">mode_edit</i></a>
                 <hr>
                 <div class="row">
@@ -187,7 +188,7 @@
         </div>
 
 
-        <div class="container recruiterHomeHighlightCard" >
+        <div class="container recruiterHomeHighlightCard" id="recruiterHighlights" style="display: none;">
                 <div class="row" style="text-align: center;margin: 0">
                     <h5 style="padding:1%">Highlights</h5>
                     <center><div class="materialDash"></div></center>
@@ -359,8 +360,6 @@
                 <div class="row" style="margin: 0">
                     <div class="col l6 s12">
                         <h5 class="white-text">Hire in Bangalore</h5>
-                        <p class="grey-text text-lighten-4">Connect With Us On<img src="/assets/recruiter/img/fbmain.svg" id="fbLogo" style="margin-left: 2%;
-                            width: 6%"></p>
                     </div>
                     <div class="col l4 offset-l2 s12">
                         <h5 class="white-text">Get in touch</h5>

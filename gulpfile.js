@@ -60,7 +60,8 @@ jsOrder = {
     preScreenCandidate: paths.commonJs+"pre_screen_candidate.js",
     searchController: paths.searchJs+"searchController.js",
     searchImitator: paths.searchJs+"searchImitator.js",
-    jobCardModule: paths.commonJs+"jobCardModule.js"
+    jobCardModule: paths.commonJs+"jobCardModule.js",
+    applyInShort: paths.commonJs+"applyInShortController.js"
 };
 
 cssOrder = {
@@ -194,11 +195,19 @@ gulp.task('jobCardModuleScript', function() {
         .pipe(gulpif(argv.prod, stripDebug()))
         .pipe(gulp.dest('./public/build/scripts/'));
 });
+// jobCardModule JS minify
+gulp.task('applyInShortScript', function() {
+    gulp.src([jsOrder.applyInShort])
+        .pipe(concat('applyInShortController.min.js'))
+        .pipe(gulpif(argv.prod, uglify(), beautify()))
+        .pipe(gulpif(argv.prod, stripDebug()))
+        .pipe(gulp.dest('./public/build/scripts/'));
+});
 
 // default gulp task
 gulp.task('default', ['clean', 'scripts', 'styles', 'supportScripts', 'supportStyles', 'datatableBundleScript',
     'datatableBundleStyle', 'supportSearchControllerScript', 'workFlowControllerScript', 'preScreenCandidateScript',
-    'searchControllerScript', 'searchImitatorScript', 'jobCardModuleScript'], function() {
+    'searchControllerScript', 'searchImitatorScript', 'jobCardModuleScript', 'applyInShortScript'], function() {
     // watch for CSS changes
     gulp.watch(paths.css+'*.css', function() {
         gulp.run('styles');
@@ -240,6 +249,10 @@ gulp.task('default', ['clean', 'scripts', 'styles', 'supportScripts', 'supportSt
     // watch for jobCardModule solo js changes
     gulp.watch(jsOrder.jobCardModule, function() {
         gulp.run('jobCardModuleScript');
+    });
+    // watch for applyInShortScript solo js changes
+    gulp.watch(jsOrder.applyInShort, function() {
+        gulp.run('applyInShortScript');
     });
 });
 

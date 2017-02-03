@@ -107,7 +107,7 @@ public class RecruiterAuthService {
                             existingRecruiter.getRecruiterProfileMobile());
 
                     recruiterSignUpResponse.setFirstTime(ServerConstants.RECRUITER_FIRST_TIME);
-                } else{
+                } else {
                     String startDateString = "2020-12-31";
                     DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
                     Date startDate = null;

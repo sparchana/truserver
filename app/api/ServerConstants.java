@@ -424,7 +424,7 @@ public class ServerConstants {
 
     // candidate Access Level
     public static final int CANDIDATE_ACCESS_LEVEL_OPEN = 0;
-    public static final int CANDIDATE_ACCESS_LEVEL_PRIVATE = 0; // TODO change it to 1 after testing
+    public static final int CANDIDATE_ACCESS_LEVEL_PRIVATE = 1;
 
     public static final int PARTNER_TO_COMPANY_VERIFIED = 1;
 
@@ -444,4 +444,6 @@ public class ServerConstants {
     public static final int APPLICATION_CHANNEL_PARTNER = 2;
     public static final int APPLICATION_CHANNEL_SUPPORT = 3;
 
+
+    public static String BASE_URL = "https://trujobs.in";
 }

@@ -1,6 +1,7 @@
 package controllers;
 
 import api.ServerConstants;
+import api.http.httpResponse.Workflow.smsJobApplyFlow.PostApplyInShortResponse;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerManager;
 import dao.SmsReportDAO;
@@ -74,6 +75,12 @@ public class TestController extends Controller{
 
     }
 
+    public static Result checkSmsDelivery(){
+        RecruiterController.checkDeliveryStatus();
+        return ok("Null token!");
+
+    }
+
     public static Result testQueue() {
         for(int i =0; i<5; ++i){
             NotificationEvent notificationEvent = new SMSEvent("+918971739586", "Test Queue message " + i);
@@ -85,7 +92,14 @@ public class TestController extends Controller{
     }
 
     public static Result testNewPS(Long jobPostId, Long candidateId) {
-        return ok(toJson(JobPostWorkflowEngine.getJobPostVsCandidate(jobPostId, candidateId)));
+
+        return ok(toJson(JobPostWorkflowEngine.getShortJobApplyResponse(jobPostId, candidateId)));
+    }
+
+    public static Result testApplyInShortResponse() {
+        PostApplyInShortResponse response = new PostApplyInShortResponse();
+        response.setStatus(PostApplyInShortResponse.Status.BAD_PARAMS);
+        return ok(toJson(response));
     }
 
     public static Result convertOldData() {

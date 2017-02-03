@@ -13,7 +13,7 @@ create table sms_delivery_status (
 );
 
 create table sms_report (
-  sms_report_id                 int signed auto_increment not null,
+  sms_report_id                 bigint unsigned auto_increment not null,
   creation_timestamp            timestamp not null default current_timestamp,
   sms_text                      text null,
   sms_scheduler_id              text null,
@@ -41,7 +41,7 @@ alter table sms_report add constraint fk_sms_report_smsdeliverystatus foreign ke
 create index ix_sms_report_smsdeliverystatus on sms_report (smsdeliverystatus);
 
 create table partner_to_company (
-  partner_to_company_id         bigint signed auto_increment not null,
+  partner_to_company_id         bigint unsigned auto_increment not null,
   creation_timestamp            timestamp not null default current_timestamp,
   partner_id                    bigint signed,
   companyid                     bigint signed,
@@ -62,11 +62,11 @@ alter table recruiterprofile add column recruiter_access_level int(2) signed not
 alter table candidate add column candidate_access_level int(2) signed not null DEFAULT 0;
 
 create table partner_to_candidate_to_company (
-  partner_to_candidate_to_company_id bigint signed auto_increment not null,
+  partner_to_candidate_to_company_id bigint unsigned auto_increment not null,
   creation_timestamp            timestamp not null default current_timestamp,
   partner_id                    bigint signed,
   partner_to_candidate_id       bigint signed,
-  partner_to_company_id         bigint signed,
+  partner_to_company_id         bigint unsigned,
   constraint pk_partner_to_candidate_to_company primary key (partner_to_candidate_to_company_id)
 );
 

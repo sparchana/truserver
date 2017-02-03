@@ -347,12 +347,17 @@ function processDataRecruiterSession(returnedData) {
             $("#creditViewMobile").show();
             $("#recruiterMsg").show();
             $("#recruiterHIW").show();
+            $("#recruiterHighlights").show();
+            $("#companyCode").hide();
         } else{
 
+            $("#companyCode").show();
+            $("#companyCode").html("Company Unique Code : " + returnedData.company.companyCode);
             $("#creditView").hide();
             $("#creditViewMobile").hide();
             $("#recruiterMsg").hide();
             $("#recruiterHIW").hide();
+            $("#recruiterHighlights").hide();
         }
     }
 }
@@ -371,7 +376,14 @@ function processDataRecruiterProfile(returnedData) {
                 privateLabel.textContent = "Private";
                 privateLabel.style = "margin-left: 4px; border-radius: 4px; font-size: 12px; font-weight: bold; padding: 4px; color: white; background: #00a1ff";
                 parent.append(privateLabel);
+            } else if(returnedData.recruiterAccessLevel == 2){
+                var parent = $("#recCompany");
+                var privateLabel = document.createElement("span");
+                privateLabel.textContent = "Admin";
+                privateLabel.style = "margin-left: 4px; border-radius: 4px; font-size: 12px; font-weight: bold; padding: 4px; color: white; background: #00a1ff";
+                parent.append(privateLabel);
             }
+
 
         }
 

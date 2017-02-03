@@ -1528,7 +1528,7 @@ function processPreScreenContent(returnedData, customD, isSupport) {
 
             if(returnedData.isInterviewRequired) {
                 bootbox.hideAll();
-                initInterviewModal(returnedData.candidateId, returnedData.jobPostId, false);
+                initInterviewModal(returnedData.candidateId, returnedData.jobPostId, false, true);
             }
             return;
         } else {
@@ -1539,14 +1539,14 @@ function processPreScreenContent(returnedData, customD, isSupport) {
     if(returnedData != null && !returnedData.visible && !isSupport){
         notifyError("Please complete Job Application form", 'success');
         bootbox.hideAll();
-        initInterviewModal(returnedData.candidateId, returnedData.jobPostId, false);
+        initInterviewModal(returnedData.candidateId, returnedData.jobPostId, false, true);
         return;
     }
 
     if(returnedData != null){
         if(returnedData.elementList.length == 0){
             bootbox.hideAll();
-            initInterviewModal(returnedData.candidateId, returnedData.jobPostId, false);
+            initInterviewModal(returnedData.candidateId, returnedData.jobPostId, false, true);
             return;
         }
         // if(returnedData == "OK" || returnedData == "NA" ) {
@@ -1669,8 +1669,8 @@ function processPostPreScreenResponse(response, candidateId, jobPostId, isSuppor
             location.reload();
         }, 2000);
     } else if(response.status == INTERVIEW_REQUIRED){
-        notifyError("Submitted successfully. Please select Interview Slot.", 'success');
-        initInterviewModal(candidateId, jobPostId, isSupport);
+        nfy("Submitted successfully. Please select Interview Slot.", 'success');
+        initInterviewModal(candidateId, jobPostId, isSupport, true);
     } else {
         notifyError("Error! Something Went wrong please try again.", 'danger')
     }
@@ -1782,3 +1782,7 @@ function notifyError(msg, type) {
     });
 };
 
+
+function nfy(msg, style) {
+    $.notify(msg, style);
+}

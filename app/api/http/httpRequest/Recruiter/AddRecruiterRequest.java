@@ -37,6 +37,7 @@ public class AddRecruiterRequest {
     public void setCtaCredits(Integer ctaCredits) {
         this.ctaCredits = ctaCredits;
     }
+    private Integer recruiterType;
 
     public String getRecruiterName() {
         return recruiterName;
@@ -196,5 +197,13 @@ public class AddRecruiterRequest {
 
     public void setCompanyCode(String companyCode) {
         this.companyCode = companyCode;
+    }
+
+    public Integer getRecruiterType() {
+        return recruiterType;
+    }
+
+    public void setRecruiterType(Integer recruiterType) {
+        this.recruiterType = recruiterType;
     }
 }

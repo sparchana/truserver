@@ -1,5 +1,7 @@
 package api.http.httpResponse.hirewand;
 
+import models.entity.OM.CandidateResume;
+
 /**
  * Created by hawk on 14/1/17.
  */
@@ -8,6 +10,8 @@ public class UploadResumeResponse {
     Integer status;
     String msg;
     String key;
+    String candidateResumeLink;
+    Long candidateId;
 
     public String getResume() {
         return resume;
@@ -39,5 +43,21 @@ public class UploadResumeResponse {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getCandidateResumeLink() {
+        return candidateResumeLink;
+    }
+
+    public void setCandidateResumeLink(String candidateResumeLink) {
+        this.candidateResumeLink = candidateResumeLink;
+    }
+
+    public Long getCandidateId() {
+        return candidateId;
+    }
+
+    public void setCandidateId(Long candidateId) {
+        this.candidateId = candidateId;
     }
 }

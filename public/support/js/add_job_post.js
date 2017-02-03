@@ -12,58 +12,14 @@ var addressBuildingNo;
 
 function processDataAddJobPost(returnedData) {
     if(returnedData.status == 1){
-        var jobPostLocalities = "";
-        var jobPostSalary = "";
-        var localities = returnedData.jobPost.jobPostToLocalityList;
-        localities.forEach(function (locality) {
-            jobPostLocalities += locality.locality.localityName + ", ";
-        });
-
-        if(returnedData.jobPost.jobPostMaxSalary == 0){
-            jobPostSalary = returnedData.jobPost.jobPostMinSalary;
-        } else{
-            jobPostSalary = returnedData.jobPost.jobPostMinSalary + " - " + returnedData.jobPost.jobPostMaxSalary;
-        }
-
-        var timeShift = "";
-        var pricingPlan = "";
-        if(returnedData.jobPost.jobPostShift != null){
-            timeShift = returnedData.jobPost.jobPostShift.timeShiftName;
-        }
-        if(returnedData.jobPost.pricingPlanType != null){
-            pricingPlan = returnedData.jobPost.pricingPlanType.pricingPlanTypeName;
-        }
-        try {
-            $.ajax({
-                url: returnedData.formUrl,
-                data: {
-                    "entry.790894440": returnedData.jobPost.jobPostId, //jobId
-                    "entry.682057856": returnedData.jobPost.company.companyName,
-                    "entry.121610050": returnedData.jobPost.jobRole.jobName,
-                    "entry.349225135": returnedData.jobPost.recruiterProfile.recruiterProfileName,
-                    "entry.243172250": returnedData.jobPost.recruiterProfile.recruiterProfileMobile,
-                    "entry.1348583202": returnedData.jobPost.recruiterProfile.recruiterProfileEmail,
-                    "entry.499293401": jobPostLocalities,
-                    "entry.1169285578": jobPostSalary,
-                    "entry.156865881": returnedData.jobPost.jobPostIncentives,
-                    "entry.518884370": timeShift,
-                    "entry.1610465251": returnedData.jobPost.jobPostDescription,
-                    "entry.839049104": returnedData.jobPost.jobPostMinRequirement,
-                    "entry.988939191": returnedData.jobPost.jobPostAddress,
-                    "entry.731772103": returnedData.jobPost.jobPostVacancies,
-                    "entry.599645579": pricingPlan
-                },
-                type: "POST",
-                dataType: "xml"
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
-        }
         notifyError("Job Post Created Successfully. Closing this window...", 'success');
         setTimeout(function(){ window.close()}, 2000);
-    } else{
+    } else if(returnedData.status == 2){
         notifyError("Job Post Updated Successfully. Closing this window...", 'success');
         setTimeout(function(){window.close()}, 2000);
+    } else{
+        $('#saveButton').prop('disabled', false);
+        notifyError("Something went wrong. Please try again later", 'success');
     }
 }
 
@@ -481,12 +437,18 @@ $(function() {
                     jobPostAddressLandmark: addressLandmark,
                     resumeApplicationDate: jobPostResumeDate
                 };
+
+                $('#saveButton').prop('disabled', true);
                 $.ajax({
                     type: "POST",
                     url: "/addJobPost",
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(d),
-                    success: processDataAddJobPost
+                    success: processDataAddJobPost,
+                    error: function (jqXHR, exception) {
+                        $('#saveButton').prop('disabled', false);
+                        notifyError("Something went wrong. Please try again later", 'danger');
+                    }
                 });
             } catch (exception) {
                 console.log("exception occured!!" + exception);

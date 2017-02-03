@@ -548,11 +548,11 @@ a:hover{
     color: #003557;
     margin-top:6px;
 }
-#addCandidateColLeft{
+.addCandidateColLeft{
     padding: 2%;
     border-right: 1px solid #26A69A;
 }
-#addCandidateColRight{
+.addCandidateColRight{
     padding: 2%;
 }
 #candidateCreateOptionModalContent{
@@ -563,7 +563,7 @@ a:hover{
 #addCandidateCant{
     padding: 2% 8%;
 }
-#uploadResumeBtn,#addCandidateBtn{
+#uploadCSVBtn,#uploadResumeBtn,#addCandidateBtn{
     width: 100%;
     border: 1px solid #00897b;
     color: #fff;
@@ -572,7 +572,7 @@ a:hover{
 #candidateCreateOptionModalDialog{
     margin-top:10%;
 }
-#uploadResumeModalContent,#uploadResumeModalProcessContent{
+.textResponse,#uploadResumeModalContent,#uploadResumeModalProcessContent{
     padding:2%;
     margin-top:10%;
     background: rgb(61, 179, 158);
