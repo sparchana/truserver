@@ -113,7 +113,6 @@ POST        /updateFeedback                                               contro
 POST        /getDeActivationMessage                                       controllers.Application.getDeactivationMessage(candidateId: java.lang.Long?= null)
 POST        /updateRecruiterCreditPack                                    controllers.Application.updateRecruiterCreditPack()
 POST        /expireCreditPack                                             controllers.Application.expireCreditPack()
-GET         /generateCompanyCode                                          controllers.Application.generateCompanyCode()
 
 # partner routes
 #~~~~~~~~~~~~~~~~~~~~
@@ -201,7 +200,7 @@ POST        /getFetchedCandidateData                                      contro
 
 # Recruiter SuperAdmin API
 # ~~~~~~~~~~~~~
-GET         /recruiter/api/summary/recruiter                              controllers.RecruiterController.recruiterSummary(rid: java.lang.Long ?=null)
+GET         /recruiter/api/summary/recruiter                              controllers.RecruiterController.recruiterSummary(rid: java.lang.Long ?=null, from: String ?= null, to: String ?= null)
 GET         /recruiter/api/summary/jobpost/:recruiterId                   controllers.RecruiterController.jobPostSummary(recruiterId: java.lang.Long, jpId: java.lang.Long ?=null)
 GET         /recruiter/report/                                            controllers.RecruiterController.renderReportPage(summary: String ?= null, rid: java.lang.Long ?= null)
 
@@ -321,16 +320,18 @@ POST        /updateStatusCandidate/:jpId/:value/:reason                   contro
 
 # Test API
 # ~~~~~~~~~~~~~
-GET         /resolveLatLng/:latlng                                        controllers.TrudroidController.mResolveLatLng(latlng: String)
-GET         /support/api/testMatchingCandidate/:jpId                      controllers.TestController.testMatchingCandidate(jpId: Long)
-GET         /api/test/testValidator/                                      controllers.TestController.testValidator(methodId: Integer ?=null, methodValue: String ?=null)
-GET         /api/test/testScheduler/                                      controllers.TestController.testScheduler()
+GET         /generateCompanyCode                                          controllers.Application.generateCompanyCode()
+# GET         /resolveLatLng/:latlng                                        controllers.TrudroidController.mResolveLatLng(latlng: String)
+# GET         /support/api/testMatchingCandidate/:jpId                      controllers.TestController.testMatchingCandidate(jpId: Long)
+# GET         /api/test/testValidator/                                      controllers.TestController.testValidator(methodId: Integer ?=null, methodValue: String ?=null)
+# GET         /api/test/testScheduler/                                      controllers.TestController.testScheduler()
 
-GET         /testNotification                                             controllers.TestController.testnotification()
-GET         /convertOldData                                               controllers.TestController.convertOldData()
-GET         /testQueue                                                    controllers.TestController.testQueue()
-GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
-GET         /testResponse                                                 controllers.TestController.testApplyInShortResponse()
+# GET         /testNotification                                             controllers.TestController.testnotification()
+# GET         /checkSmsDelivery                                             controllers.TestController.checkSmsDelivery()
+# GET         /convertOldData                                               controllers.TestController.convertOldData()
+# GET         /testQueue                                                    controllers.TestController.testQueue()
+# GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
+# GET         /testResponse                                                 controllers.TestController.testApplyInShortResponse()
 
 # Scrap API
 # ~~~~~~~~~~~~~
@@ -369,7 +370,6 @@ GET         /favicon.ico                                                  contro
 # Resume Upload
 # ~~~~~~~~~
 
-GET         /showResumeUpload                                             controllers.Application.showResumeUpload()
 POST        /addResume/                                                   controllers.Application.doResumeUpload(candidateId: String ?=null)
 POST        /receive-parsed-resume                                        controllers.Application.receiveParsedResume()
 GET         /fetchResume/                                                 controllers.Application.fetchResume(candidateId: String ?=null)
@@ -387,5 +387,9 @@ GET         /t/:shortUrl                                                  contro
 
 # Candidate Excel Upload
 # ~~~~~~~~~
-GET         /support/administrator/uploadCandidates                       controllers.Application.uploadCandidates()
-POST        /support/administrator/processCandidates                      controllers.Application.processCandidates()
+GET         /support/administrator/uploadCandidates                         controllers.Application.uploadCandidates()
+POST        /support/administrator/processCandidates                        controllers.Application.processCandidates()
+
+# Candidate Call-To-Apply Route
+# ~~~~~~~~~
+POST        /quickApply/                                                    controllers.Application.doQuickApply()

@@ -4,6 +4,7 @@ package api.http.httpResponse.Recruiter.recruiterAdmin;
  * Created by zero on 24/1/17.
  */
 public class JobPostSummaryResponse {
+    private Long jobPostId;
     private String jobTitle;
     private String jobPostedOn;
     private String percentageFulfillment;
@@ -66,5 +67,13 @@ public class JobPostSummaryResponse {
 
     public void setCycleTime(String cycleTime) {
         this.cycleTime = cycleTime;
+    }
+
+    public Long getJobPostId() {
+        return jobPostId;
+    }
+
+    public void setJobPostId(Long jobPostId) {
+        this.jobPostId = jobPostId;
     }
 }

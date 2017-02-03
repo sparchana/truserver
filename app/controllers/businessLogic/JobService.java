@@ -379,6 +379,9 @@ public class JobService {
             }
 
             if(addJobPostRequest.getJobPostStatusId() == ServerConstants.JOB_STATUS_CLOSED){
+                jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
+                newJobPost.setJobPostStatus(jobStatus);
+
                 Calendar now = Calendar.getInstance();
                 Date today = now.getTime();
 
@@ -1409,4 +1412,10 @@ public class JobService {
         }
         return interviewSlotMap;
     }
+
+    public static ApplyJobResponse callToApply(ApplyJobRequest applyJobRequest){
+
+        return null;
+    }
+
 }

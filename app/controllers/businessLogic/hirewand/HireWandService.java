@@ -1,14 +1,12 @@
 package controllers.businessLogic.hirewand;
 
-import java.util.List;
+import java.util.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 
+import api.http.httpResponse.hirewand.HireWandResponse;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.NameValuePair;
@@ -29,6 +27,8 @@ public class HireWandService {
 
     static HireWandService _this = null;
     static String emailaddress = null, userpassword = null, authkey = null, callbackurl = null;
+    // queue that is used to store all responses that need to be re-processed
+    static private List<HireWandResponse> responseQueue = new ArrayList<>();
 
     public JSONParser parser = new JSONParser(); // parses hirewand api response
     private HttpClient httpclient = new HttpClient();
@@ -294,87 +294,45 @@ public class HireWandService {
         }
     }
 
+    public static Boolean pushResponseQueue(String personId, HireWandResponse.Profile profile, Boolean duplicate){
+        if(personId!= null && profile!= null){
 
-/*
-    public static void main(String[] args) throws Exception {
-        HashMap paramMap = new HashMap();
-        try{
-            HireWandService hw = HireWandService.get(); // getting instance of User class
-			*/
-/* ------- Log into Hirewand as user -------*//*
+            //if an entry already exists, update it
+            Boolean exists = Boolean.FALSE;
+            for(HireWandResponse each:responseQueue){
+                if(Objects.equals(each.getPersonid(), personId)){
+                    each.setProfile(profile);
+                    each.setDuplicate(duplicate);
+                    exists = Boolean.TRUE;
+                    break;
+                }
+            }
 
-            hw.login("shashank@hirewand.com","hire123");
-	
-			*/
-/* ------- Set a callback for all the request to hirewand -------*//*
+            if(!exists){
+                // else create a new entry
+                HireWandResponse hireWandResponse = new HireWandResponse();
+                hireWandResponse.setPersonid(personId);
+                hireWandResponse.setProfile(profile);
+                hireWandResponse.setDuplicate(duplicate);
+                responseQueue.add(hireWandResponse);
+            }
 
-            //hw.setCallback("Publically accessible callback url"); // if you have different callback for every resume, callback can be sent in paramMap to call function,
-            // example paramMap.put("callback","Publically accessible callback url");
-
-            File file = new File("C:/Users/Shashank Shekhar/Documents/Resume_Shashank.doc"); // file object of resume
-            InputStream stream = new FileInputStream(file); // stream of resume
-			
-			*/
-/* ------- Create a HashMap with all the parameters to be send i.e Resume's filename, Stream of resume & callback (if required)*//*
-
-            paramMap.put("filename","Resume_Shashank.doc");
-            paramMap.put("resume",stream);
-			
-			*/
-/* ------- Upload resume to hirewand -------*//*
-
-            String resp = hw.call("upload",paramMap);
-			
-			*/
-/* ------- Print the response from hirewand -------*//*
-
-            System.out.println (new JSONParser().parse(resp)); // reading response received
-            return;
-			*/
-/* SAMPLE RESPONSE FROM HIREWAND ON SUCCESS
-			 * {
-			 *    status : 'success',
-			 *    message : 'file uploaded successfully',
-			 *    personid : '56adas6d5a4sda56das5d6' // unique hirewand id for resume (mapping to internal key is recommended)
-			 * }		 
-			 * 
-			 * SAMPLE RESPONSE FROM HIREWAND ON FAILURE
-			 * {
-			 *    status : 'fail',
-			 *    message : Reason for failure,
-			 * }	
-			 * *//*
-
-			
-			*/
-/* ------- Get profiles list --------*//*
-
-//				HashMap profilesParamMap = new HashMap();
-//				profilesParamMap.put("size", 50);
-//				profilesParamMap.put("since", 1456830717016L); // adding UpdateDateMS of the last profile received
-//				List profiles = hw.call_list("profiles", profilesParamMap);
-//				for(Object profile : profiles){ //iterating over the result set
-//					System.out.println(profile);
-//				}
-			
-			
-			*/
-/* UpdateDateMS inside each profile can be used to get next batch of profiles *//*
-
+            return Boolean.TRUE;
         }
-        catch(InvalidRequestException e){
-            System.out.println(e.getMessage());
-            System.out.println(e.getCode());
-        }
-        catch(HWHTTPException e){
-            System.out.println(e.getMessage());
-            System.out.println(e.getCode());
-        }
-        catch(Exception e){
-            System.out.print("Exception");
-            e.printStackTrace();
-        }
+        return Boolean.FALSE;
     }
-*/
+
+    public static HireWandResponse popResponseQueue(String personId){
+        ListIterator<HireWandResponse> iter = responseQueue.listIterator();
+        HireWandResponse temp = new HireWandResponse();
+        while(iter.hasNext()){
+            temp = iter.next();
+            if(Objects.equals(temp.getPersonid(), personId)){
+                iter.remove();
+                return temp;
+            }
+        }
+        return null;
+    }
 
 }

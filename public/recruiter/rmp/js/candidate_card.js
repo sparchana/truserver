@@ -361,7 +361,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                 viewResume = true;
                 unlockContact(value.candidate.candidateId);
             } else{
-                window.open("http://docs.google.com/gview?url=" + $(this).attr("val") + "&embedded=true");
+                window.open($(this).attr("val"));
             }
         };
         resumeLink.style = "font-size: 14px; font-weight: bold; color: rgb(84, 192, 235); ";
@@ -1266,8 +1266,10 @@ function renderIndividualCandidateCard(value, parent, view) {
             value.extraData.totalSmsSent != null &&
             value.extraData.totalSmsSent != 0)
         {
+            smsBtn.className = "waves-effect waves-light customSmsBtn btnBlue";
             smsBtn.textContent = "Re-Send SMS";
         } else {
+            smsBtn.className = "waves-effect waves-light customSmsBtn btnGreen";
             smsBtn.textContent = "Send SMS";
         }
         unlockContactCol.appendChild(smsBtn);
@@ -1457,7 +1459,8 @@ function sendSms(){
         var s = {
             candidateIdList: checkedCandidateIdList,
             smsMessage :$("#smsText").val(),
-            jobPostId :jpId
+            jobPostId :jpId,
+            smsType :1
         };
         $.ajax({
             type: "POST",

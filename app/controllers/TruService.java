@@ -1487,7 +1487,7 @@ public abstract class TruService {
 
         if (method != null) {
             try {
-                Logger.info(entity.getClass().getSimpleName()+".getQuery executed");
+//                Logger.info(entity.getClass().getSimpleName()+".getQuery executed");
                 return (ExpressionList<Model>) method.invoke(entity);
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                 e.printStackTrace();

@@ -23,6 +23,7 @@ import com.avaje.ebean.Expr;
 import com.avaje.ebean.Query;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
 import com.google.common.base.CharMatcher;
+import controllers.PartnerController;
 import controllers.businessLogic.hirewand.HWHTTPException;
 import controllers.businessLogic.hirewand.HireWandService;
 import controllers.businessLogic.hirewand.InvalidRequestException;
@@ -1856,6 +1857,14 @@ public class CandidateService
                         return responseJson;
                     }
 
+                    // flush pending response queue(s) - if any
+                    HireWandResponse hireWandResponse = HireWandService.popResponseQueue(personId);
+                    if(hireWandResponse != null){
+                        // there IS some response which is waiting to be processed. Go for it..
+                        CandidateService.updateResume(hireWandResponse.getPersonid(),hireWandResponse.getProfile(),hireWandResponse.getDuplicate());
+                    }
+                    else Logger.info("No pending responses found in the queue for personid = "+personId);
+
                 }
 
             }
@@ -2162,7 +2171,11 @@ public class CandidateService
                 responseJson.put("candidateExists",Boolean.FALSE);
                 responseJson.put("alreadyParsed",Boolean.FALSE);
                 responseJson.put("status","Fail");
-                responseJson.put("msg","Could not read candidate resume with externalKey = "+personId);
+                responseJson.put("msg","Could not read candidate resume with externalKey = "+personId+". Queuing for later retry...");
+
+                // add to queue --> Maybe HW responded before the upload request was processed. The upload request will flush this Q
+                HireWandService.pushResponseQueue(personId, profile, duplicate);
+
                 return responseJson;
             } catch (JSONException ee) {
                 ee.printStackTrace();
@@ -2273,6 +2286,18 @@ public class CandidateService
         Long candidateId = 0L;
         String candidateName = "";
         String candidateMobile = "";
+        Partner partner = null;
+        int channel = 0;
+
+        // determine channel
+        if(candidateResume.getCreatedBy()!=null && candidateResume.getCreatedBy().toLowerCase().contains("(partner)")) {
+            String partnerId = candidateResume.getCreatedBy().split("\\(")[0];
+            partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
+            channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
+        }
+        else {
+            channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
+        }
 
         // no candidate found... Create
         if(candidate == null) {
@@ -2291,26 +2316,10 @@ public class CandidateService
             if(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()) != null){
                 // create/update candidate
                 candidateMobile = addSupportCandidateRequest.getCandidateMobile();
-                Logger.info("About to call CandidateService.createCandidateProfile");
+                //Logger.info("About to call CandidateService.createCandidateProfile");
 
                 CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
-
-                int channel = 0;
-                Partner partner = null;
                 LeadSource leadSource = null;
-
-                // determine channel
-                if(session() != null && (session().get("sessionChannel") != null && !session().get("sessionChannel").isEmpty())){
-                    //Logger.info("Session : "+ session().get("sessionChannel"));
-                    if(Integer.getInteger(session().get("sessionChannel")) == InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE){
-                        channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
-                        String partnerId = session().get("partnerId");
-                        if(partnerId != null){partner = Partner.find.where().eq("partner_id", partnerId).findUnique();}
-                    }else{
-                        channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
-                    }
-                }
-                else {channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;}
 
                 if(partner == null){
                     // candidate self creation (i.e. 1 click resume upload) is treated as "support" since the create API does not allow full candidate creation with channel = self
@@ -2330,6 +2339,7 @@ public class CandidateService
                     if(partner.getLocality() != null && partner.getLocality().getLocalityId() > 0){
                         addSupportCandidateRequest.setCandidateHomeLocality(Math.toIntExact(partner.getLocality().getLocalityId()));
                     }
+                    Logger.info("Creating candidate with partner association");
                     candidateSignUpResponse = createCandidateViaPartner(addSupportCandidateRequest, partner, isNew, associationStatus);
                 }
 
@@ -2351,7 +2361,7 @@ public class CandidateService
             }
         }
         else {
-            Logger.info("Attempting to update existing candidate ...");
+            Logger.info("Attempting to update resume for existing candidate ...");
             isNew = Boolean.FALSE;
 
             try {
@@ -2366,6 +2376,19 @@ public class CandidateService
             candidateId = candidate.getCandidateId();
             candidateName = candidate.getCandidateFirstName();
             candidateMobile = candidate.getCandidateMobile();
+
+            if(partner != null){
+                Logger.info("Associating partner with existing candidate");
+                // this candidate was created by a partner - need to associate
+                Boolean isPrivatePartner = false;
+                if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+                    isPrivatePartner = true;
+                }
+                //check if a candidate can be associated with a partner or not
+                Integer associationStatus = checkCandidateExistence(partner, FormValidator.convertToIndianMobileFormat(candidate.getCandidateMobile()));
+                // make the association
+                PartnerController.partnerToCandidateAssociation(candidate,partner,isPrivatePartner,Boolean.FALSE,associationStatus);
+            }
         }
 
         Logger.info("New/Updated candidateId ="+candidateId);
@@ -2439,8 +2462,10 @@ public class CandidateService
 
         // was this resume uploaded by a partner?
         if(candidateResume.getCreatedBy().toLowerCase().contains("(partner)")){
-            String partnerId = candidateResume.getCreatedBy().split("\\(")[0];
-            Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
+            if(partner == null){
+                String partnerId = candidateResume.getCreatedBy().split("\\(")[0];
+                partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
+            }
 
             try {
                 // is there any resume that was uploaded AFTER this resume by this partner?
@@ -2697,7 +2722,7 @@ public class CandidateService
                             if(leadSource != null){
                                 addSupportCandidateRequest.setLeadSource(leadSource.getLeadSourceId());
                             }
-                            candidateSignUpResponse = createCandidateViaPartner(addSupportCandidateRequest, partner, isNew, associationStatus);
+                            candidateSignUpResponse = createCandidateViaPartner(addSupportCandidateRequest, partner, isNew, associationStatus, true); //setting auto verify candidate as true
                             //Logger.info("createCandidateViaPartner.candidateSignUpResponse JSON = "+toJson(candidateSignUpResponse));
                             Logger.info("Candidate Created with Id = "+candidateSignUpResponse.getCandidateId());
                         }

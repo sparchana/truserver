@@ -7,6 +7,7 @@ var jobPostInfo;
 
 var jpTitle;
 var compName;
+var isPartnerVal;
 function processJobPostInterviewSlot(returnedData, isSupport) {
 
     jobPostInfo = returnedData.jobPost;
@@ -151,7 +152,8 @@ function checkSlotAvailability(x, interviewDays) {
 }
 
 
-function initInterviewModal(candidateId, jobPostId, isSupport) {
+function initInterviewModal(candidateId, jobPostId, isSupport, isPartner) {
+    isPartnerVal = isPartner;
     console.log("interview Modal init");
     var htmlBodyContent = ''+
         '<div id="confirmationMsg">'+
@@ -202,16 +204,20 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
         animate: true,
         onEscape: function() {
             $('body').removeClass('open-interview-selector-modal');
-            nfy("Submitted successfully. Refreshing page.", 'success');
+            if(isPartnerVal == false || isPartnerVal == null ){
+                nfy("Submitted successfully. Refreshing page.", 'success');
 
-            setTimeout(function () {
-                if(window.location.pathname == "/dashboard/appliedJobs/"){
-                    window.location.href = "/dashboard/appliedJobs/";
-                } else {
-                    location.reload();
-                }
-                // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
-            }, 2000);
+                setTimeout(function () {
+                    if(window.location.pathname == "/dashboard/appliedJobs/"){
+                        window.location.href = "/dashboard/appliedJobs/";
+                    } else {
+                        location.reload();
+                    }
+                    // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
+                }, 2000);
+            } else{
+                nfy("Submitted successfully.", 'success');
+            }
         },
         buttons: {
             "Submit": {
@@ -298,15 +304,19 @@ function processInterviewSubmissionResponse(returnData) {
 
             $("#confirmationModal").modal("show");
         } else {
+            if(isPartnerVal == false || isPartnerVal == null ){
+                nfy("Submitted successfully. Refreshing page.", 'success');
 
-            nfy("Interview Submitted successfully. Refreshing ..", 'success');
-            setTimeout(function () {
-                if(window.location.pathname == "/dashboard/appliedJobs/"){
-                    window.location.href = "/dashboard/appliedJobs/";
-                } else {
-                    location.reload();
-                }
-            }, 2000);
+                setTimeout(function () {
+                    if(window.location.pathname == "/dashboard/appliedJobs/"){
+                        window.location.href = "/dashboard/appliedJobs/";
+                    } else {
+                        location.reload();
+                    }
+                }, 2000);
+            } else{
+                nfy("Submitted successfully.", 'success');
+            }
         }
 
     } else {

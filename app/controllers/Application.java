@@ -31,6 +31,7 @@ import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.Assessment.AssessmentService;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import controllers.businessLogic.hirewand.HireWandService;
 import controllers.security.*;
 import dao.CandidateDAO;
 import dao.CompanyDAO;
@@ -2378,17 +2379,12 @@ public class Application extends Controller {
                 if(cId != null){
 
                     CandidateResumeService resumeService = new CandidateResumeService();
-                    List<Map<String,String>> params = new ArrayList<>();
-                    Map<String,String> param = new HashMap<>();
-                    param.put("candidateid", String.valueOf(cId));
-                    params.add(param);
-                    List<TruResponse> truResponses = resumeService.readByAttribute(params);
-                    if(truResponses !=null && truResponses.size() > 0){
                         // Found candidate
-                        CandidateResume candidateResume = (CandidateResume) truResponses.get(0).getEntity();
-                        resumeResponse.setCandidateResumeLink(candidateResume.getFilePath());
-                        resumeResponse.setCandidateId(candidateResume.getCandidate().getCandidateId());
-                    }
+                        CandidateResume candidateResume = (CandidateResume) resumeService.fetchLatestResumeForCandidate(String.valueOf(cId)).getEntity();
+                        if(candidateResume !=null){
+                            resumeResponse.setCandidateResumeLink(candidateResume.getFilePath());
+                            resumeResponse.setCandidateId(candidateResume.getCandidate().getCandidateId());
+                        }
                 }
 
                 try {
@@ -2792,4 +2788,19 @@ public class Application extends Controller {
         }
         return ok("Done");
     }
+
+    public static Result doQuickApply() throws org.json.JSONException {
+
+        JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+        ApplyJobRequest applyJobRequest = new ApplyJobRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            applyJobRequest = newMapper.readValue(req.toString(), ApplyJobRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(JobService.callToApply(applyJobRequest)));
+    }
+
 }

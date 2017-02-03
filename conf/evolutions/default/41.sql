@@ -1,4 +1,3 @@
-
 # --- !Ups
 
 create table truly (
@@ -13,7 +12,22 @@ create table truly (
   constraint pk_truly primary key (truly_id)
 );
 
+create table sms_type (
+  sms_type_id                   int signed auto_increment not null,
+  type_name                     varchar(50) null,
+  constraint pk_sms_type primary key (sms_type_id)
+);
+
+alter table sms_report add column smstype int signed;
+
+alter table sms_report add constraint fk_sms_report_smstype foreign key (smstype) references sms_type (sms_type_id) on delete restrict on update restrict;
+create index ix_sms_report_smstype on sms_report (smstype);
 
 # --- !Downs
 
+alter table sms_report drop foreign key fk_sms_report_smstype;
+drop index ix_sms_report_smstype on sms_report;
+
+alter table sms_report drop column smstype;
 drop table if exists truly;
+drop table if exists sms_type;

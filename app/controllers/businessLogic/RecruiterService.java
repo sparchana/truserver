@@ -56,6 +56,7 @@ import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
 import static models.util.Util.generateOtp;
 import static play.mvc.Controller.session;
+import static play.mvc.Results.TODO;
 
 /**
  * Created by batcoder1 on 7/7/16.
@@ -320,8 +321,10 @@ public class RecruiterService {
                 setCreditHistoryValues(existingRecruiter, recruiterSignUpRequest);
 
                 if ((recruiterSignUpRequest.getContactCredits() != null && recruiterSignUpRequest.getContactCredits() > 0) ||
-                        (recruiterSignUpRequest.getInterviewCredits() != null && recruiterSignUpRequest.getInterviewCredits() > 0))
+                        (recruiterSignUpRequest.getInterviewCredits() != null && recruiterSignUpRequest.getInterviewCredits() > 0) ||
+                        (recruiterSignUpRequest.getCtaCredits() != null && recruiterSignUpRequest.getCtaCredits() > 0))
                 {
+                    //TODO CTA Modify Messaging for CTA credits
                     EmailUtil.sendRecruiterCreditTopupMail(existingRecruiter,
                             recruiterSignUpRequest.getContactCredits(),
                             recruiterSignUpRequest.getInterviewCredits());
@@ -384,6 +387,18 @@ public class RecruiterService {
 
             }
         }
+
+        //setting values for cta credits
+        if(addRecruiterRequest.getCtaCredits() != null && addRecruiterRequest.getCtaCredits() != 0){
+            if(addRecruiterRequest.getCtaCredits() > 0){
+                //credit
+                addCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_CTA_CREDIT, addRecruiterRequest.getCtaCredits(), createdBy, addRecruiterRequest.getExpiryDate());
+            } else{
+                //debit
+                debitCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_CTA_CREDIT, addRecruiterRequest.getCtaCredits(), createdBy);
+            }
+        }
+
     }
 
     public static UnlockContactResponse unlockCandidate(RecruiterProfile recruiterProfile, Long candidateId) {
@@ -908,10 +923,23 @@ public class RecruiterService {
         return newHistory;
     }
 
-    public List<RecruiterSummaryResponse> getRecruiterSummary(Long companyId, Long callerRecruiterId) {
+    public List<RecruiterSummaryResponse> getRecruiterSummary(Long companyId, Long callerRecruiterId, String from, String to) {
 
         if(callerRecruiterId == null) {
             return new ArrayList<>();
+        }
+
+        final SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
+        Date startDate = null;
+        Date endDate = null;
+        if(from != null && to != null
+                && !from.equalsIgnoreCase("null") && !to.equalsIgnoreCase("null")) {
+            try {
+                startDate = sdf.parse(from);
+                endDate = sdf.parse(to);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
 
         if(companyId == null) {
@@ -936,6 +964,12 @@ public class RecruiterService {
                 if(jobPost.getJobPostAccessLevel() != ServerConstants.JOB_POST_TYPE_PRIVATE) continue;
                 if(jobPost.getJobPostStatus().getJobStatusId() != ServerConstants.JOB_STATUS_ACTIVE) continue;
 
+                if(startDate != null && endDate != null) {
+                    if( jobPost.getJobPostCreateTimestamp().after(endDate) )
+                    {
+                        continue;
+                    }
+                }
                 jobPostList.add(jobPost);
                 jobPostIdList.add(jobPost.getJobPostId());
             }
@@ -946,9 +980,9 @@ public class RecruiterService {
                     ((recruiterProfile.getRecruiterAlternateMobile() == null) ? "": "/"+recruiterProfile.getRecruiterAlternateMobile()));
 
             recruiterSummaryResponse.setNoOfJobPosted(jobPostList.size());
-            recruiterSummaryResponse.setTotalCandidatesApplied(computeTotalApplicant(jobPostIdList));
-            recruiterSummaryResponse.setTotalInterviewConducted(computeTotalInterviewConducted(jobPostIdList));
-            recruiterSummaryResponse.setTotalSelected(computeTotalSelected(jobPostIdList));
+            recruiterSummaryResponse.setTotalCandidatesApplied(computeTotalApplicant(jobPostIdList, startDate, endDate));
+            recruiterSummaryResponse.setTotalInterviewConducted(computeTotalInterviewConducted(jobPostIdList,  startDate, endDate));
+            recruiterSummaryResponse.setTotalSelected(computeTotalSelected(jobPostIdList, startDate, endDate));
 
             recruiterSummaryResponse.setPercentageFulfillment(
                     formatPercentageFulfilled(computePercentageFulfilled(jobPostList, recruiterSummaryResponse.getTotalSelected()))
@@ -988,6 +1022,29 @@ public class RecruiterService {
         return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList).size();
     }
 
+    private int computeTotalSelected(List<Long> jobPostIdList, Date fromDate, Date toDate) {
+        if(fromDate == null || toDate == null) {
+            return computeTotalSelected(jobPostIdList);
+        }
+
+        List<Integer> statusList = new ArrayList<>();
+
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED);
+
+        return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList, fromDate, toDate).size();
+    }
+
+    private int computeTotalApplicant(List<Long> jobPostIdList, Date fromDate, Date toDate ) {
+        if(fromDate == null || toDate == null ){
+            return computeTotalApplicant(jobPostIdList);
+        }
+
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(ServerConstants.JWF_STATUS_SELECTED);
+
+        return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList, fromDate, toDate).size();
+    }
+
     private int computeTotalApplicant(List<Long> jobPostIdList) {
         List<Integer> statusList = new ArrayList<>();
         statusList.add(ServerConstants.JWF_STATUS_SELECTED);
@@ -1006,6 +1063,21 @@ public class RecruiterService {
         return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList).size();
     }
 
+    private int computeTotalInterviewConducted(List<Long> jobPostIdList, Date fromDate, Date toDate) {
+        if(fromDate == null || toDate == null) {
+            return computeTotalInterviewConducted(jobPostIdList);
+        }
+
+        List<Integer> statusList = new ArrayList<>();
+
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED);
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_REJECTED);
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED);
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW);
+
+        return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList, fromDate, toDate).size();
+    }
+
     public List<JobPostSummaryResponse> getAllJobPostPerRecruiterSummary(Long targetRecruiterId, Long callerRecruiterId) {
         if(targetRecruiterId == null || callerRecruiterId == null) return null;
 
@@ -1021,8 +1093,10 @@ public class RecruiterService {
 
             if(jobPost == null) continue;
 
+            String jobTitle = jobPost.getJobPostTitle() + " ("+jobPost.getJobPostStatus().getJobStatusName()+")";
             // forming individual responses again each jobpost
-            jobPostSummaryResponse.setJobTitle(jobPost.getJobPostTitle());
+            jobPostSummaryResponse.setJobPostId(jobPost.getJobPostId());
+            jobPostSummaryResponse.setJobTitle(jobTitle);
             jobPostSummaryResponse.setJobPostedOn(sdf.format(jobPost.getJobPostCreateTimestamp()));
 
             // not using the jobpost.getapplication since support matching doesn't goes here
@@ -1035,10 +1109,10 @@ public class RecruiterService {
                     computeTotalSelected(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))))));
 
             try {
-                jobPostSummaryResponse.setCycleTime(formatCycleTime(computeCycleTime(jobPost.getJobPostId(), jobPost.getJobPostCreateTimestamp())));
+                jobPostSummaryResponse.setCycleTime(formatCycleTime(computeAvgCycleTime(jobPost.getJobPostId(), jobPost.getJobPostCreateTimestamp())));
             } catch (ParseException e) {
                 e.printStackTrace();
-                Logger.error("unable to parse date for date diff in computeCycleTime");
+                Logger.error("unable to parse date for date diff in computeAvgCycleTime");
             }
             // TODO move this to map and then use it here
             jobPostSummaryResponse.setTotalSmsSent(SmsReportDAO.getTotalSMSByRecruiterNJobPost(targetRecruiterId, jobPost.getJobPostId()));
@@ -1050,7 +1124,7 @@ public class RecruiterService {
         return jobPostSummaryResponseList;
     }
 
-    private String formatCycleTime(int i) {
+    private String formatCycleTime(float i) {
         if(i < 0) {
             return "NA";
         }
@@ -1063,22 +1137,30 @@ public class RecruiterService {
      * @return no of days between jobPosted on and first candidate got selected
      * @throws ParseException
      */
-    private int computeCycleTime(Long jobPostId, Timestamp jobPostedOn) throws ParseException {
+    private float computeAvgCycleTime(Long jobPostId, Timestamp jobPostedOn) throws ParseException {
         // first selection data - job posted date
 
-        JobPostWorkflow jobPostWorkflow = JobPostWorkFlowDAO.findFirstJobSelection(jobPostId);
+        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkFlowDAO.findAllJobSelection(jobPostId);
 
-        if(jobPostWorkflow == null) {
+        if(jobPostWorkflowList.size() == 0) {
             return -1;
         }
-        DateTime dt1 = new DateTime(jobPostedOn.getTime());
-        DateTime dt2 = new DateTime(jobPostWorkflow.getCreationTimestamp().getTime());
+        int totalSize = jobPostWorkflowList.size();
+        float totalDays = 0;
 
-        return Days.daysBetween(dt1, dt2).getDays();
+        for(JobPostWorkflow jobPostWorkflow : jobPostWorkflowList) {
+            DateTime dt1 = new DateTime(jobPostedOn.getTime());
+            DateTime dt2 = new DateTime(jobPostWorkflow.getCreationTimestamp().getTime());
+
+            totalDays += Days.daysBetween(dt1, dt2).getDays();
+        }
+
+
+        return totalDays/totalSize;
     }
 
-    public static String modifySMS(String smsMessage, Candidate candidate, JobPost jobPost, boolean isDev) {
-        String applyInShortURL = Util.generateApplyInShortUrl(candidate, jobPost, isDev);
+    public static String modifySMS(String smsMessage, Candidate candidate, JobPost jobPost) {
+        String applyInShortURL = Util.generateApplyInShortUrl(candidate, jobPost);
         StringBuilder modifiedSMS = new StringBuilder();
         if(applyInShortURL != null) {
 
@@ -1098,4 +1180,20 @@ public class RecruiterService {
 
         return modifiedSMS.toString();
     }
+
+    public static InterviewResponse isCTAAllowed(JobPost jobPost) {
+        InterviewResponse interviewResponse = new InterviewResponse();
+        if (jobPost == null || jobPost.getRecruiterProfile() == null) {
+            // don't show CTA if no recruiter is set for a jobpost
+            interviewResponse.setStatus(ServerConstants.ERROR);
+            return interviewResponse;
+        }
+        if (jobPost.getRecruiterProfile().getCtaCreditCount() > 0) {
+            interviewResponse.setStatus(ServerConstants.CALL_TO_APPLY);
+            return interviewResponse;
+        }
+        interviewResponse.setStatus(ServerConstants.ERROR);
+        return interviewResponse;
+    }
+
 }

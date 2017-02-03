@@ -19,6 +19,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
+import static api.ServerConstants.BASE_URL;
+
 public class Util {
 
     private Util() {
@@ -117,9 +119,8 @@ public class Util {
         return Double.valueOf(df2.format(val));
     }
 
-    public static String generateApplyInShortUrl(Candidate candidate, JobPost jobPost, Auth auth, boolean isDev){
+    public static String generateApplyInShortUrl(Candidate candidate, JobPost jobPost, Auth auth){
         StringBuilder stringBuilder = new StringBuilder();
-        String BASE_URL = isDev ? "http://localhost:9000": "https://trujobs.in";
 
         if(candidate != null && jobPost != null) {
             stringBuilder.append(BASE_URL);
@@ -140,7 +141,7 @@ public class Util {
     }
 
 
-    public static String generateApplyInShortUrl(Long candidateId, Long jobPostId, boolean isDev){
+    public static String generateApplyInShortUrl(Long candidateId, Long jobPostId){
         if(candidateId != null && jobPostId != null) {
             Candidate candidate = CandidateDAO.getById(candidateId);
 
@@ -150,12 +151,12 @@ public class Util {
 
             JobPost jobPost = JobPostDAO.findById(jobPostId);
 
-            return generateApplyInShortUrl(candidate, jobPost, auth, isDev);
+            return generateApplyInShortUrl(candidate, jobPost, auth);
         }
         return null;
     }
 
-    public static String generateApplyInShortUrl(Candidate candidate, JobPost jobPost, boolean isDev){
+    public static String generateApplyInShortUrl(Candidate candidate, JobPost jobPost){
         if(candidate != null && jobPost != null) {
 
             Auth auth = AuthService.isAuthExists(candidate.getCandidateId());
@@ -163,7 +164,7 @@ public class Util {
             auth.save();
 
 
-            return generateApplyInShortUrl(candidate, jobPost, auth, isDev);
+            return generateApplyInShortUrl(candidate, jobPost, auth);
         }
         return null;
     }

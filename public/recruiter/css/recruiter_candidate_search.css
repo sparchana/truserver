@@ -173,7 +173,11 @@ body{
       }
 }
 
+.selectedRow{
+    background: #acbad4;
+}
 .customBtn{
+    cursor: pointer;
     background: transparent;
     font-weight: bold;
     margin-right: 4px;
