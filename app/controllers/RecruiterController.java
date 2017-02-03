@@ -434,7 +434,7 @@ public class RecruiterController {
                 SmsDeliveryStatus status = SmsDeliveryStatus.find.where().eq("status_id", SMS_STATUS_PENDING).findUnique();
                 Boolean reRun = false;
                 if(status != null){
-                    List<SmsReport> smsReportList = SmsReportDAO.getAllSMSByStatus(status);
+                    List<SmsReport> smsReportList = SmsReportDAO.getAllSMSByStatusSinceLastOneDay(status);
                     Logger.info("Checking " + smsReportList.size() + " sms's report");
                     for(SmsReport report : smsReportList){
                         String response = SmsUtil.checkDeliveryReport(report.getSmsSchedulerId());
@@ -1382,15 +1382,19 @@ public class RecruiterController {
         if(session().get("recruiterId") != null){
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
             if(recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
-                Integer partnerCount = Partner.find.where()
+                Partner partner = Partner.find.where()
                         .eq("partner_mobile", recruiterProfile.getRecruiterProfileMobile())
                         .eq("partner_type", ServerConstants.PARTNER_TYPE_PRIVATE)
-                        .findRowCount();
+                        .findUnique();
 
-                if(partnerCount > 0){
-                    //exists
-                    return ok("1");
+                if(partner != null){
+                    PartnerAuth existingAuth = PartnerAuth.find.where().eq("partner_id", partner.getPartnerId()).findUnique();
+
+                    if(existingAuth != null){
+                        return ok("1");
+                    }
                 }
+
             }
         }
         return ok("0");
@@ -1407,13 +1411,15 @@ public class RecruiterController {
                         .findUnique();
 
                 if(existingPartner != null){
-                    //clearing session for recruiter
-                    FlashSessionController.clearSessionExceptFlash();
-
                     PartnerAuth existingAuth = PartnerAuth.find.where().eq("partner_id", existingPartner.getPartnerId()).findUnique();
 
-                    PartnerAuthService.addSession(existingAuth, existingPartner);
-                    return ok("1");
+                    if(existingAuth != null){
+                        //clearing session for recruiter
+                        FlashSessionController.clearSessionExceptFlash();
+
+                        PartnerAuthService.addSession(existingAuth, existingPartner);
+                        return ok("1");
+                    }
                 }
             }
         }

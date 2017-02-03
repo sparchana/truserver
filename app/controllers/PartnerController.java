@@ -12,6 +12,7 @@ import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.PartnerSecured;
 import controllers.security.FlashSessionController;
 import dao.JobPostDAO;
+import dao.PartnerToCandidateToCompanyDAO;
 import models.entity.*;
 import models.entity.OM.PartnerToCandidate;
 import models.entity.OM.PartnerToCandidateToCompany;
@@ -204,10 +205,7 @@ public class PartnerController {
             }
 
             //to check partner to candidate pool
-            PartnerToCandidateToCompany partnerToCandidateToCompany = PartnerToCandidateToCompany.find.where()
-                    .eq("partnerToCandidate.candidate.candidateId", candidate.getCandidateId())
-                    .in("partnerToCompany.company.companyId", companyIdList)
-                    .findUnique();
+            PartnerToCandidateToCompany partnerToCandidateToCompany = PartnerToCandidateToCompanyDAO.getPartnerCreatedCandidateById(candidate, companyIdList);
 
             if(partnerToCandidateToCompany == null){
                 response = ServerConstants.STATUS_CANDIDATE_EXISTS_DIFFERENT_COMPANY;
@@ -388,9 +386,7 @@ public class PartnerController {
             List<Candidate> candidateList = new ArrayList<>();
 
             if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
-                partnerToCandidateToCompanyList = PartnerToCandidateToCompany.find.where()
-                        .eq("partner_id", partner.getPartnerId())
-                        .findList();
+                partnerToCandidateToCompanyList = PartnerToCandidateToCompanyDAO.getPartnerCreatedCandidateList(partner);
 
                 for(PartnerToCandidateToCompany partnerToCandidateToCompany : partnerToCandidateToCompanyList) {
                     candidateList.add(partnerToCandidateToCompany.getPartnerToCandidate().getCandidate());
@@ -543,8 +539,8 @@ public class PartnerController {
     }
 
 public static Result checkExistingCompany(String CompanyCode) {
-    Company company = Company.find.where().eq("CompanyCode", CompanyCode).findUnique();
-    if(company != null){
+    Integer companyCount = Company.find.where().eq("CompanyCode", CompanyCode).findRowCount();
+    if(companyCount > 0){
         return ok("1");
     } else{
         return ok("0");
@@ -574,13 +570,15 @@ public static Result checkExistingCompany(String CompanyCode) {
                 recruiterTypeList.add(ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE);
                 recruiterTypeList.add(ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE_ADMIN);
 
-                Integer recCount = RecruiterProfile.find.where()
+                RecruiterProfile recruiterProfile = RecruiterProfile.find.where()
                         .eq("RecruiterProfileMobile", partner.getPartnerMobile())
                         .in("recruiter_access_level", recruiterTypeList)
-                        .findRowCount();
+                        .findUnique();
 
-                if(recCount > 0){
-                    //exists
+                RecruiterAuth recruiterAuth = RecruiterAuth.find.where().eq("recruiter_id",
+                        recruiterProfile.getRecruiterProfileId()).findUnique();
+
+                if(recruiterAuth != null){
                     return ok("1");
                 }
             }
@@ -603,14 +601,16 @@ public static Result checkExistingCompany(String CompanyCode) {
                     .findUnique();
 
                 if(existingRecruiter != null){
-                    //clearing session for partner
-                    FlashSessionController.clearSessionExceptFlash();
 
                     RecruiterAuth recruiterAuth = RecruiterAuth.find.where().eq("recruiter_id",
                             existingRecruiter.getRecruiterProfileId()).findUnique();
 
-                    addSession(recruiterAuth, existingRecruiter);
-                    return ok("1");
+                    if(recruiterAuth != null){
+                        //clearing session for partner
+                        FlashSessionController.clearSessionExceptFlash();
+                        addSession(recruiterAuth, existingRecruiter);
+                        return ok("1");
+                    }
                 }
             }
         }
