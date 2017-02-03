@@ -2697,7 +2697,18 @@ public class Application extends Controller {
         return ok("Done");
     }
 
-    public static Result doQuickApply(String candidateId) throws org.json.JSONException {
+    public static Result doQuickApply() throws org.json.JSONException {
+
+        JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+        ApplyJobRequest applyJobRequest = new ApplyJobRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            applyJobRequest = newMapper.readValue(req.toString(), ApplyJobRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(JobService.callToApply(applyJobRequest)));
     }
 
-    }
+}

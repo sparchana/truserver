@@ -376,4 +376,4 @@ POST        /support/administrator/processCandidates                        cont
 
 # Candidate Call-To-Apply Route
 # ~~~~~~~~~
-POST        /quickApply/                                                    controllers.Application.doQuickApply(candidateId: String ?=null)
+POST        /quickApply/                                                    controllers.Application.doQuickApply()

@@ -1399,4 +1399,9 @@ public class JobService {
         }
         return interviewSlotMap;
     }
+
+    public static ApplyJobResponse callToApply(ApplyJobRequest applyJobRequest){
+
+    }
+
 }
