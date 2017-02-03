@@ -5,9 +5,11 @@ import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.AddJobPostRequest;
+import api.http.httpRequest.ApplyJobBasicRequest;
 import api.http.httpRequest.ApplyJobRequest;
 import api.http.httpResponse.AddJobPostResponse;
 import api.http.httpResponse.ApplyJobResponse;
+import api.http.httpResponse.CallToApplyResponse;
 import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import api.http.httpResponse.interview.InterviewDateTime;
@@ -25,7 +27,6 @@ import models.entity.OM.*;
 import models.entity.Partner;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
-import models.entity.Static.InterviewTimeSlot;
 import models.util.EmailUtil;
 import models.util.InterviewUtil;
 import models.util.NotificationUtil;
@@ -1413,9 +1414,54 @@ public class JobService {
         return interviewSlotMap;
     }
 
-    public static ApplyJobResponse callToApply(ApplyJobRequest applyJobRequest){
+    /**
+     *
+     * API accepts only a name and a mobile number, fetch/create(leadSource: LooseCandidate)
+     * a candidate then push it to apply flow,
+     *
+     *
+     * @param applyJobRequest
+     * @return ApplyJobResponse
+     */
+    public static CallToApplyResponse callToApply(ApplyJobBasicRequest applyJobRequest){
+        CallToApplyResponse callToApplyResponse = new CallToApplyResponse();
 
-        return null;
+        if( applyJobRequest == null){
+            callToApplyResponse.setMessage("Invalid Params");
+            callToApplyResponse.setStatus(CallToApplyResponse.STATUS_INVALID_PARAMS);
+            return callToApplyResponse;
+        }
+
+        if( applyJobRequest.getJobId() == null
+                || JobPostDAO.findById(applyJobRequest.getJobId()) == null)
+        {
+
+            callToApplyResponse.setMessage("Invalid Params");
+            callToApplyResponse.setStatus(CallToApplyResponse.STATUS_INVALID_PARAMS);
+            return callToApplyResponse;
+        }
+
+        String candidateMobile = FormValidator.convertToIndianMobileFormat(applyJobRequest.getCandidateMobile());
+
+        if( candidateMobile == null) {
+            callToApplyResponse.setMessage("Invalid Params");
+            callToApplyResponse.setStatus(CallToApplyResponse.STATUS_INVALID_PARAMS);
+            return callToApplyResponse;
+        }
+
+        Candidate candidate = CandidateService.isCandidateExists(candidateMobile);
+
+        if( candidate == null) {
+            // TODO code to create this loose candidate will come here
+        } else {
+            // TODO other simple modification to that candidate will happen here
+        }
+
+        // TODO code to push this candidate to apply flow will come here
+        // TODO code to deduct the new credit will come here + response formation here with rec mobile and name
+
+
+        return callToApplyResponse;
     }
 
 }
