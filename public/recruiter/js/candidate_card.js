@@ -295,7 +295,7 @@ function renderIndividualCandidateCard(value, parent, view) {
     if(value.candidate.idProofReferenceList.onGridVerificationStatus == null){
         var validateAadhar = document.createElement("img");
         validateAadhar.src = "/assets/recruiter/img/icons/female.svg";
-        validateAadhar.style = "margin:0 10px 8px 10px";jo
+        validateAadhar.style = "margin:0 10px 8px 10px";
         validateAadhar.setAttribute('height', '12px');
         candidateCardRowColOne.appendChild(validateAadhar);
     }

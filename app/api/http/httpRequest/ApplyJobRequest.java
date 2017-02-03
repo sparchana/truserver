@@ -10,7 +10,7 @@ import java.util.Date;
 public class ApplyJobRequest {
     public String candidateMobile ;
     public Long jobId;
-    public Integer +;
+    public Integer localityId;
     public Boolean isPartner;
 
     public Integer timeSlot;
