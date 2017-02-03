@@ -345,6 +345,7 @@ $(document).ready(function () {
         $('#jobPostExperience').tokenize().tokenAdd(5, "Any");
         $('#jobPostEducation').tokenize().tokenAdd(6, "Any");
 
+        $(".copyJobOption").hide();
     }
 
     /* ajax commands to fetch all localities and jobs*/
@@ -514,6 +515,11 @@ $(document).ready(function () {
         }
     });
 });
+
+function copyJob() {
+    jpId = null;
+    saveJob();
+}
 
 function saveJob() {
     var status;
@@ -800,6 +806,8 @@ function saveJob() {
                 resumeApplicationDate: jobPostResumeDate
             };
 
+            $(".copyJobOption").addClass("disabled");
+            $(".saveBtn").addClass("disabled");
             $.ajax({
                 type: "POST",
                 url: "/recruiter/api/addJobPost",
@@ -815,7 +823,12 @@ function saveJob() {
 
 function processDataAddJobPost(returnedData) {
     if(returnedData.status == 1){
-        notifySuccess("Excellent! We have received your job details. You will receive a notification once the job is made live!");
+        var level = returnedData.jobPost.jobPostAccessLevel;
+        if(level != null && level == 1) {
+            notifySuccess("Excellent! Your job is ready. Find Candidates by clicking on view applications!");
+        } else {
+            notifySuccess("Excellent! We have received your job details. You will receive a notification once the job is made live!");
+        }
         setTimeout(function(){
             window.location = "/recruiter/allRecruiterJobPosts";
         }, 2500);
@@ -825,6 +838,9 @@ function processDataAddJobPost(returnedData) {
             window.location = "/recruiter/allRecruiterJobPosts";
         }, 2500);
     } else{
+        $(".copyJobOption").removeClass("disabled");
+        $(".saveBtn").removeClass("disabled");
+
         notifyError("Something went wrong. Please try again later!");
     }
 }
@@ -833,6 +849,9 @@ function processDataAddJobPost(returnedData) {
 function processDataForJobPost(returnedData) {
     if(returnedData != "0"){
         jpId = returnedData.jobPostId;
+        if(returnedData.recruiterProfile != null){
+            jpRecruiterId = returnedData.recruiterProfile.recruiterProfileId;
+        }
         if(returnedData.company != null ){
             jpCompanyId = returnedData.company.companyId;
         }

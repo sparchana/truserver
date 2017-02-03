@@ -12,6 +12,8 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.UUID;
 
+import static play.libs.Json.toJson;
+
 /**
  * Created by zero on 23/4/16.
  */
@@ -87,7 +89,7 @@ public class Lead extends Model {
 
     }
     public static void addLead(Lead lead) {
-        Logger.info("inside addLead model member method ");
+        Logger.info("inside addLead model member method mobile: " + lead);
         lead.save();
     }
 

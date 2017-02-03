@@ -198,7 +198,7 @@ public class SmsUtil {
     }
 
     public static void sendOtpToPartnerCreatedCandidate(int otp, String mobile) {
-        String msg = "Hi. You have been registered by on TruJobs for job search. Provide OTP: " + otp + " to complete registration. Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+        String msg = "Hi. You have been registered on TruJobs for job search. Provide OTP: " + otp + " to complete registration. Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
         addSmsToNotificationQueue(mobile, msg);
     }
 
@@ -211,6 +211,11 @@ public class SmsUtil {
     public static void sendJobApplicationSmsToPartner(String candidateFirstName, String jobPostTitle, String companyName, String partnerMobile, String localityName, String partnerFirstName) {
         String msg = "Hi " + partnerFirstName + ", you have applied to " + jobPostTitle + " job at " + companyName + " @" + localityName + " for your candidate - " + candidateFirstName +". To know more about status of Applications, call us at +91 8880007799. www.trujobs.in";
         addSmsToNotificationQueue(partnerMobile, msg);
+    }
+
+    public static void resumeUploadStatusToPartner(String name ,String mobile) {
+        String msg = "Hi "+ name +", resumes that you uploaded have been converted to candidate(s). Go to 'My Candidate' section and schedule interviews for them.";
+        addSmsToNotificationQueue(mobile, msg);
     }
 
     public static void sendRecruiterOTPSms(int otp, String mobile) {
@@ -235,7 +240,7 @@ public class SmsUtil {
 
     public static void sendRecruiterWelcomeSmsForSelfSignup(String name, String mobile)
     {
-        String msg = "Hi " + name + ", Your TruJobs business account is now setup and we have added 5 FREE candidate contact credits to your account! "
+        String msg = "Hi " + name + ", Your TruJobs business account is now setup and we have added " + ServerConstants.RECRUITER_FREE_CONTACT_CREDITS + " FREE candidate contact credits to your account! "
                 + ". Log on to www.trujobs.in/recruiter to access thousands of verified candidate profiles!!!";
 
         addSmsToNotificationQueue(mobile, msg);
@@ -563,15 +568,27 @@ public class SmsUtil {
 
 
     public static void sendSelectedSmsToCandidate(JobPostWorkflow jobApplication) {
-        String msg = "Hi " + jobApplication.getCandidate().getCandidateFirstName() + ", Congratulations! You have been selected for the job: " + jobApplication.getJobPost().getJobPostTitle()
-                + " at " + jobApplication.getJobPost().getCompany().getCompanyName() + ". The recruiter will contact you for further details. You can contact TruJobs at 8880007799 for any queries. www.trujobs.in. Download Trujobs app at http://bit.ly/2d7zDqR";
-        addSmsToNotificationQueue(jobApplication.getCandidate().getCandidateMobile(), msg);
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Hi " + jobApplication.getCandidate().getCandidateFirstName() + ", Congratulations! You have been selected for the job: " + jobApplication.getJobPost().getJobPostTitle()
+                + " at " + jobApplication.getJobPost().getCompany().getCompanyName() + ". ");
+        if(jobApplication.getJobPost().getJobPostAccessLevel() == ServerConstants.JOB_POST_TYPE_PRIVATE) {
+            stringBuilder.append("Please contact " + jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileName() + " at " + jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileMobile());
+        } else {
+            stringBuilder.append("The recruiter will contact you for further details. You can contact TruJobs at 8880007799 for any queries. www.trujobs.in. Download Trujobs app at http://bit.ly/2d7zDqR");
+        }
+        addSmsToNotificationQueue(jobApplication.getCandidate().getCandidateMobile(), stringBuilder.toString());
     }
 
     public static void sendRejectedSmsToCandidate(JobPostWorkflow jobApplication) {
-        String msg = "Hi " + jobApplication.getCandidate().getCandidateFirstName() + ", Unfortunately the recruiter has rejected your application for the job: " + jobApplication.getJobPost().getJobPostTitle()
-                + " at " + jobApplication.getJobPost().getCompany().getCompanyName() + ". You can contact TruJobs at 8880007799 for any queries. www.trujobs.in. Download Trujobs app at http://bit.ly/2d7zDqR";
-        addSmsToNotificationQueue(jobApplication.getCandidate().getCandidateMobile(), msg);
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Hi " + jobApplication.getCandidate().getCandidateFirstName() + ", Unfortunately the recruiter has rejected your application for the job: " + jobApplication.getJobPost().getJobPostTitle()
+                + " at " + jobApplication.getJobPost().getCompany().getCompanyName() + ". ");
+        if(!(jobApplication.getJobPost().getJobPostAccessLevel() == ServerConstants.JOB_POST_TYPE_PRIVATE)) {
+            stringBuilder.append("The recruiter will contact you for further details. You can contact TruJobs at 8880007799 for any queries. www.trujobs.in. Download Trujobs app at http://bit.ly/2d7zDqR");
+
+        }
+
+        addSmsToNotificationQueue(jobApplication.getCandidate().getCandidateMobile(), stringBuilder.toString());
     }
 
     public static void sendJobAlertSmsToCandidate(JobPost jobPost, Candidate candidate, Boolean hasCredits) {

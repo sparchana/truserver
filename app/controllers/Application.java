@@ -10,10 +10,15 @@ import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlot
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.SelectedCandidateRequest;
+import api.http.httpRequest.Workflow.applyInshort.ApplyInShortRequest;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
+import api.http.httpResponse.hirewand.HireWandResponse;
+import api.http.httpResponse.hirewand.UploadResumeResponse;
+import api.http.httpResponse.Workflow.smsJobApplyFlow.PostApplyInShortResponse;
 import api.http.httpResponse.Workflow.InterviewSlotPopulateResponse;
 import api.http.httpResponse.interview.InterviewResponse;
+import api.http.httpResponse.Recruiter.JobPostFilterResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
@@ -26,6 +31,7 @@ import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.Assessment.AssessmentService;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import controllers.businessLogic.hirewand.HireWandService;
 import controllers.security.*;
 import dao.CandidateDAO;
 import dao.CompanyDAO;
@@ -34,15 +40,20 @@ import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
 import models.entity.*;
 import models.entity.Intelligence.RelatedJobRole;
+import models.entity.OM.CandidateResume;
 import models.entity.OM.JobApplication;
 import models.entity.OM.JobPreference;
 import models.entity.OM.JobToSkill;
+import models.entity.OM.*;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
 import models.util.ParseCSV;
 import models.util.SmsUtil;
 import models.util.UrlValidatorUtil;
 import models.util.Util;
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
+import org.json.simple.JSONArray;
 import play.Logger;
 import play.api.Play;
 import play.data.Form;
@@ -60,7 +71,9 @@ import java.util.stream.Collectors;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static api.InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
+import static api.InteractionConstants.INTERACTION_TYPE_MAP;
 import static com.avaje.ebean.Expr.eq;
+import static controllers.PartnerController.checkCandidateExistence;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
@@ -70,7 +83,7 @@ public class Application extends Controller {
     public static Result index() {
         String sessionId = session().get("sessionId");
         /**
-        * TODO need to change this, modify old partnerSecured to take new partnertFlow into consideration and properly annonate rest of the api end-points
+        * TODO need to change this, modify old partnerSecured to take new partnerFlow into consideration and properly annotate rest of the api end-points
         * */
         if(sessionId != null){
             String partnerId = session().get("partnerId");
@@ -274,7 +287,7 @@ public class Application extends Controller {
         if(session().get("sessionChannel") != null || !session().get("sessionChannel").isEmpty()){
             Integer channelId = Integer.parseInt(session().get("sessionChannel"));
             int channelType = channelId == null ? InteractionConstants.INTERACTION_CHANNEL_UNKNOWN : channelId;
-            return ok(toJson(JobService.applyJob(applyJobRequest, channelType)));
+            return ok(toJson(JobService.applyJob(applyJobRequest, channelType, InteractionConstants.INTERACTION_TYPE_APPLIED_JOB)));
         } else {
             return badRequest();
         }
@@ -545,6 +558,7 @@ public class Application extends Controller {
         Lead lead = Lead.find.where().eq("leadId", session().get("leadId")).findUnique();
         if(lead != null) {
             Candidate candidate = CandidateService.isCandidateExists(lead.getLeadMobile());
+            candidate.getCandidateResumeLink();
             if(candidate!=null){
                 return ok(toJson(candidate));
             }
@@ -555,13 +569,13 @@ public class Application extends Controller {
     /* this method is used by support */
     @Security.Authenticated(PartnerInternalSecured.class)
     public static Result getCandidateInfo(long leadId) {
-            Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
-            if(lead != null) {
-                Candidate candidate = CandidateService.isCandidateExists(lead.getLeadMobile());
-                if(candidate!=null){
-                    return ok(toJson(candidate));
-                }
+        Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
+        if(lead != null) {
+            Candidate candidate = CandidateService.isCandidateExists(lead.getLeadMobile());
+            if(candidate!=null){
+                return ok(toJson(candidate));
             }
+        }
         return ok("0");
     }
 
@@ -643,11 +657,11 @@ public class Application extends Controller {
                 for (JobToSkill dbItem: jobToSkillList){
                     flag = 0;
                     for(JobToSkill item: response){
-                            if(item.getSkill().getSkillId() == dbItem.getSkill().getSkillId()){
-                                flag = 1;
-                                break;
-                            }
+                        if(item.getSkill().getSkillId() == dbItem.getSkill().getSkillId()){
+                            flag = 1;
+                            break;
                         }
+                    }
                     if(flag == 0){
                         response.add(dbItem);
                     }
@@ -871,6 +885,20 @@ public class Application extends Controller {
         return ok(toJson(JobSearchService.getAllActiveJobsPaginated(index)));
     }
 
+    public static Result getPartnerViewJobs(Long index) {
+        String sessionPartnerId = session().get("partnerId");
+        if(sessionPartnerId != null){
+            Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+            if(partner != null) {
+                if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+//                    return ok(toJson(JobSearchService.getAllPrivateJobsOfCompany(index, partner.getCompany())));
+                }
+            }
+        }
+
+        return ok(toJson(JobSearchService.getAllActiveJobsPaginated(index)));
+    }
+
     public static Result getAllHotJobPosts(Long index) {
         return ok(toJson(JobSearchService.getAllHotJobsPaginated(index)));
     }
@@ -878,9 +906,9 @@ public class Application extends Controller {
     @Security.Authenticated(Secured.class)
     public static Result getAllJobPosts() {
         List<JobPost> jobPosts = JobPost.find.where()
-                                             .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
-                                             .orderBy().desc("jobPostUpdateTimestamp")
-                                             .findList();
+                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
+                .orderBy().desc("jobPostUpdateTimestamp")
+                .findList();
 
         // get all jobpost uuids
         List<String> jobpostUUIDs = new ArrayList<>();
@@ -1239,6 +1267,19 @@ public class Application extends Controller {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result ifCandidateExists(String mobile) {
+        if(session().get("partnerId") != null){
+            Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+            if(partner != null && partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+                //its a private partner
+                Integer associationStatus = checkCandidateExistence(partner, FormValidator.convertToIndianMobileFormat(mobile));
+                if(associationStatus == ServerConstants.STATUS_NO_CANDIDATE ||
+                        associationStatus == ServerConstants.STATUS_CANDIDATE_EXISTS_DIFFERENT_COMPANY){
+                    return ok("0");
+                } else{
+                    return ok("1");
+                }
+            }
+        }
         if(mobile != null){
             mobile = FormValidator.convertToIndianMobileFormat(mobile);
             Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
@@ -1307,27 +1348,44 @@ public class Application extends Controller {
 
     public static Result renderJobPostCards() { return ok(views.html.Fragment.hot_jobs_card_view.render());}
     public static Result pageNotFound() { return ok(views.html.page_not_found.render());}
+
     public static Result renderJobRelatedPages(String urlString, Long candidateId, String key){
+
+        UrlValidatorUtil urlValidatorUtil = new UrlValidatorUtil();
+        UrlParameters urlParameters = urlValidatorUtil.parseURL(urlString);
+
+
+        boolean redirectToApplyInShort = false;
         if(candidateId != null && key != null) {
             boolean invalidParams = false;
             Candidate existingCandidate = CandidateDAO.getById(candidateId);
             if(existingCandidate != null) {
 
-                Logger.info("candidate exists");
-
                 // adding session details
                 Auth existingAuth = Auth.find.where().eq("candidateId", candidateId).findUnique();
                 if(existingAuth != null) {
-                    Logger.info("auth exists");
-                    // boolean isKeyValid = key.equals(Util.md5(existingAuth.getOtp() + ""));
-                    boolean isKeyValid = key.equals((existingAuth.getOtp() + ""));
+
+                    boolean isKeyValid = key.equals(Util.md5(existingAuth.getOtp() + ""));
                     if (isKeyValid ) {
-                        Logger.info("Added session for Sms link based loggin ");
+                        Logger.info("Added session for Sms link based login ");
                         AuthService.addSession(existingAuth, existingCandidate);
-                        // update auth otp after login
-                        // TODO in front end clear location.search , after loading
-                        existingAuth.setOtp(Util.generateOtp());
-                        existingAuth.update();
+
+                        // otp gets updated on post apply
+
+                        String jobPostUUId = null;
+                        if(urlParameters!= null && urlParameters.getJobPostId() != null) {
+                            JobPost jobPost = JobPostDAO.findById(urlParameters.getJobPostId());
+                            if(jobPost != null){
+                                jobPostUUId = jobPost.getJobPostUUId();
+                            }
+                        }
+
+                        // create interaction for this event of candidate applying through this channel
+                        InteractionService.createInteractionForApplyInShort(
+                                existingCandidate.getCandidateUUId(),
+                                jobPostUUId);
+
+                        redirectToApplyInShort = true;
                     } else {
                         invalidParams = true;
                     }
@@ -1343,50 +1401,46 @@ public class Application extends Controller {
                 return redirect("/pageNotFound");
             }
         }
-        UrlValidatorUtil urlValidatorUtil = new UrlValidatorUtil();
-        UrlParameters urlParameters = urlValidatorUtil.parseURL(urlString);
 
-        if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION_COMPANY_WITH_JOB_POST_ID) {
+        if (urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION_COMPANY_WITH_JOB_POST_ID) {
             String jobLocation = urlParameters.getJobLocation();
             String jobCompany = urlParameters.getJobCompany();
             String jobPostTile = urlParameters.getJobPostTitle();
             Long jobPostId = urlParameters.getJobPostId();
-            return ok(views.html.Fragment.posted_job_details.render(jobLocation,jobCompany,jobPostTile,jobPostId));
+
+            if(redirectToApplyInShort) {
+                return ok(views.html.Fragment.apply_job_in_short.render(jobLocation, jobCompany, jobPostTile, jobPostId));
+            } else {
+                return ok(views.html.Fragment.posted_job_details.render(jobLocation, jobCompany, jobPostTile, jobPostId));
             }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION_COMPANY) {
-                //return ok("All Post");
-                return ok(views.html.page_not_found.render());
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_COMPANY) {
-                //return ok("Job Post at Company");
-                return ok(views.html.page_not_found.render());
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION) {
-               return ok(views.html.Fragment.job_role_page.render(urlParameters.getJobRoleName(),
-                       urlParameters.getJobRoleId()));
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_LOCATION_COMPANY) {
-                //return ok("All Jobs in Location at Company");
-                return ok(views.html.page_not_found.render());
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_COMPANY) {
-                return ok(views.html.page_not_found.render());
-                //return ok("All Jobs at Company");
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_LOCATION) {
-                return ok(views.html.Fragment.show_all_jobs_page.render());
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_WITH_JOB_ROLE_ID) {
-                String jobRoleName = urlParameters.getJobRoleName();
-                Long jobRoleId = urlParameters.getJobRoleId();
-                return ok(views.html.Fragment.job_role_page.render(jobRoleName,jobRoleId));
-            }
-            else if(urlParameters.getUrlType() == UrlParameters.TYPE.INVALID_REQUEST){
-                return ok(views.html.page_not_found.render());
-            }
+        } else if (urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION_COMPANY) {
+            //return ok("All Post");
+            return ok(views.html.page_not_found.render());
+        } else if (urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_COMPANY) {
+            //return ok("Job Post at Company");
+            return ok(views.html.page_not_found.render());
+        } else if (urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_JOB_ROLE_LOCATION) {
+            return ok(views.html.Fragment.job_role_page.render(urlParameters.getJobRoleName(),
+                    urlParameters.getJobRoleId()));
+        } else if (urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_LOCATION_COMPANY) {
+            //return ok("All Jobs in Location at Company");
+            return ok(views.html.page_not_found.render());
+        } else if (urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_COMPANY) {
+            return ok(views.html.page_not_found.render());
+            //return ok("All Jobs at Company");
+        } else if (urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_LOCATION) {
+            return ok(views.html.Fragment.show_all_jobs_page.render());
+        } else if (urlParameters.getUrlType() == UrlParameters.TYPE.TYPE_ALL_JOBS_WITH_JOB_ROLE_ID) {
+            String jobRoleName = urlParameters.getJobRoleName();
+            Long jobRoleId = urlParameters.getJobRoleId();
+            return ok(views.html.Fragment.job_role_page.render(jobRoleName, jobRoleId));
+        } else if (urlParameters.getUrlType() == UrlParameters.TYPE.INVALID_REQUEST) {
+            return ok(views.html.page_not_found.render());
+        }
 
         return ok(views.html.page_not_found.render());
     }
+
 
     public static Result getJobsPageContent(String urlString,Long index) {
 
@@ -1711,8 +1765,8 @@ public class Application extends Controller {
                     matchingCandidateRequest.getJobPostEducationIdList(),
                     matchingCandidateRequest.getJobPostLocalityIdList(),
                     matchingCandidateRequest.getJobPostLanguageIdList(),
-                    matchingCandidateRequest.getJobPostDocumentList(),
-                    matchingCandidateRequest.getJobPostAssetList(),
+                    matchingCandidateRequest.getJobPostDocumentIdList(),
+                    matchingCandidateRequest.getJobPostAssetIdList(),
                     matchingCandidateRequest.getDistanceRadius())));
         }
         return badRequest();
@@ -1847,8 +1901,8 @@ public class Application extends Controller {
             idProofList.add(jobRoleToDocument.getIdProof());
 
             // remove duplicates from the common list
-           if (commonIdProofList.contains(jobRoleToDocument.getIdProof())) {
-               commonIdProofList.remove(jobRoleToDocument.getIdProof());
+            if (commonIdProofList.contains(jobRoleToDocument.getIdProof())) {
+                commonIdProofList.remove(jobRoleToDocument.getIdProof());
             }
         }
 
@@ -1995,7 +2049,7 @@ public class Application extends Controller {
         // unable to use switch-case, issue with ordinal value
         // return candidate Detail + container element
         if (ServerConstants.PROPERTY_TYPE_DOCUMENT == propertyId) {
-          return  ok(toJson(candidate.getIdProofReferenceList() != null ? candidate.getIdProofReferenceList(): new ArrayList<>()));
+            return  ok(toJson(candidate.getIdProofReferenceList() != null ? candidate.getIdProofReferenceList(): new ArrayList<>()));
         } else if (ServerConstants.PROPERTY_TYPE_LANGUAGE == propertyId) {
             return  ok(toJson(candidate.getLanguageKnownList() != null ? candidate.getLanguageKnownList(): new ArrayList<>()));
         } else if (ServerConstants.PROPERTY_TYPE_ASSET_OWNED == propertyId) {
@@ -2219,8 +2273,12 @@ public class Application extends Controller {
     @Security.Authenticated(SecuredUser.class)
     public static Result updateCandidateDetailsViaPreScreen(String propertyIdList, String candidateMobile, Long jobPostId) throws IOException {
         List<String> propertyIds = Arrays.asList(propertyIdList.split("\\s*,\\s*"));
+        List<Integer> propIdList = new ArrayList<>();
         if(propertyIdList == null || candidateMobile == null) {
             badRequest("Empty Values!");
+        }
+        for(String propId: propertyIds) {
+            propIdList.add(Integer.parseInt(propId));
         }
         if(candidateMobile !=null){
             Candidate candidate = CandidateService.isCandidateExists(candidateMobile);
@@ -2240,72 +2298,10 @@ public class Application extends Controller {
             newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
             UpdateCandidateDetail updateCandidateDetail = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateDetail.class);
-
             boolean isVerifyAadhaar = false;
 
-            for(String propId: propertyIds){
-                if (propId == null || propId.isEmpty()) continue;
-                Integer propertyId = Integer.parseInt(propId);
-                if (ServerConstants.PROPERTY_TYPE_DOCUMENT == propertyId) {
-                    UpdateCandidateDocument updateCandidateDocument = new UpdateCandidateDocument();
-                    updateCandidateDocument.setIdProofWithIdNumberList(updateCandidateDetail.getIdProofWithIdNumberList());
-                    isVerifyAadhaar = CandidateService.updateCandidateDocument(candidate, updateCandidateDocument);
-                } else if (ServerConstants.PROPERTY_TYPE_LANGUAGE == propertyId) {
+            isVerifyAadhaar = CandidateService.updateCandidateDetail(propIdList, candidate, updateCandidateDetail);
 
-                    UpdateCandidateLanguageKnown updateCandidateLanguageKnown = new UpdateCandidateLanguageKnown();
-
-                    updateCandidateLanguageKnown.setCandidateKnownLanguageList(updateCandidateDetail.getCandidateKnownLanguageList());
-                    CandidateService.updateCandidateLanguageKnown(candidate, updateCandidateLanguageKnown);
-                } else if (ServerConstants.PROPERTY_TYPE_ASSET_OWNED == propertyId) {
-                    UpdateCandidateAsset updateCandidateAsset = new UpdateCandidateAsset();
-                    updateCandidateAsset.setAssetIdList(updateCandidateDetail.getAssetIdList());
-
-                    CandidateService.updateCandidateAssetOwned(candidate, updateCandidateAsset);
-                } else if (ServerConstants.PROPERTY_TYPE_MAX_AGE == propertyId) {
-                    UpdateCandidateDob updateCandidateDob = new UpdateCandidateDob();
-
-                    updateCandidateDob.setCandidateDob(updateCandidateDetail.getCandidateDob());
-                    CandidateService.updateCandidateDOB(candidate, updateCandidateDob);
-                } else if (ServerConstants.PROPERTY_TYPE_EXPERIENCE == propertyId) {
-                    UpdateCandidateWorkExperience updateCandidateWorkExperience = new UpdateCandidateWorkExperience();
-
-                    updateCandidateWorkExperience.setCandidateTotalExperience(updateCandidateDetail.getCandidateTotalExperience());
-                    updateCandidateWorkExperience.setCandidateIsEmployed(updateCandidateDetail.getCandidateIsEmployed());
-                    updateCandidateWorkExperience.setExtraDetailAvailable(updateCandidateDetail.getExtraDetailAvailable());
-                    updateCandidateWorkExperience.setPastCompanyList(updateCandidateDetail.getPastCompanyList());
-
-                    CandidateService.updateCandidateWorkExperience(candidate, updateCandidateWorkExperience);
-                } else if (ServerConstants.PROPERTY_TYPE_EDUCATION == propertyId) {
-                    UpdateCandidateEducation updateCandidateEducation= new UpdateCandidateEducation();
-
-                    updateCandidateEducation.setCandidateDegree(updateCandidateDetail.getCandidateDegree());
-                    updateCandidateEducation.setCandidateEducationCompletionStatus(updateCandidateDetail.getCandidateEducationCompletionStatus());
-                    updateCandidateEducation.setCandidateEducationInstitute(updateCandidateDetail.getCandidateEducationInstitute());
-                    updateCandidateEducation.setCandidateEducationLevel(updateCandidateDetail.getCandidateEducationLevel());
-
-                    CandidateService.updateCandidateEducation(candidate, updateCandidateEducation);
-                } else if (ServerConstants.PROPERTY_TYPE_GENDER == propertyId) {
-                    UpdateCandidateGender updateCandidateGender = new UpdateCandidateGender();
-
-                    updateCandidateGender.setCandidateGender(updateCandidateDetail.getCandidateGender());
-                    CandidateService.updateCandidateGender(candidate, updateCandidateGender);
-                } else if (ServerConstants.PROPERTY_TYPE_SALARY == propertyId) {
-                    UpdateCandidateLastWithdrawnSalary lastWithdrawnSalary = new UpdateCandidateLastWithdrawnSalary();
-
-                    lastWithdrawnSalary.setCandidateLastWithdrawnSalary(updateCandidateDetail.getCandidateLastWithdrawnSalary());
-                    CandidateService.updateCandidateLastWithdrawnSalary(candidate, lastWithdrawnSalary);
-                } else if (ServerConstants.PROPERTY_TYPE_LOCALITY == propertyId) {
-                    UpdateCandidateHomeLocality updateCandidateHomeLocality = new UpdateCandidateHomeLocality();
-
-                    updateCandidateHomeLocality.setCandidateHomeLocality(updateCandidateDetail.getCandidateHomeLocality());
-                    CandidateService.updateCandidateHomeLocality(candidate, updateCandidateHomeLocality);
-                } else if (ServerConstants.PROPERTY_TYPE_WORK_SHIFT == propertyId) {
-                    UpdateCandidateTimeShiftPreference timeShiftPreference= new UpdateCandidateTimeShiftPreference();
-
-                    timeShiftPreference.setCandidateTimeShiftPref(updateCandidateDetail.getCandidateTimeShiftPref());
-                    CandidateService.updateCandidateWorkshift(candidate, timeShiftPreference);
-                }
-            }
 
             if (isVerifyAadhaar) {
                 CandidateService.verifyAadhaar(candidateMobile);
@@ -2334,24 +2330,211 @@ public class Application extends Controller {
         return ok(toJson(JobPostWorkflowEngine.updateFeedback(addFeedbackRequest, Integer.valueOf(session().get("sessionChannel")))));
     }
 
+    public static Result showResumeUpload() {
+        return ok(views.html.resumeUpload.render());
+    }
+
+
+    public static Result doResumeUpload(String candidateId) throws org.json.JSONException {
+
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+
+        UploadResumeResponse resumeResponse = new UploadResumeResponse();
+        int i = 0;
+        JSONArray list = new JSONArray();
+
+        while(Boolean.TRUE){
+            i++;
+            Http.MultipartFormData.FilePart resume = body.getFile("resume"+i);
+            Logger.info("Fetching file against key --> resume"+i);
+
+            if(resume == null) {
+                Logger.info("Could not fetch file against key --> resume"+i);
+                break;
+            }
+
+            Long cId = 0L;
+            if(candidateId != null) {
+                Logger.info("candidateId = "+ candidateId);
+                try{
+                    cId = Long.parseLong(candidateId, 10);
+                } catch (NumberFormatException e){
+                    Logger.info("Could not convert "+candidateId+" to Long. Throws "+ e.getMessage());
+                }
+                Logger.info("cId = "+ cId);
+            }
+            else Logger.info("candidateId is null");
+
+            if (resume != null) {
+                String fileName = resume.getFilename();
+                Logger.info("fileName="+fileName);
+                File file = (File) resume.getFile();
+                Logger.info("Uploading! " + file);
+                JSONObject obj = CandidateService.uploadResume(file, fileName, cId);
+
+                resumeResponse.setResume((String) obj.get("resume"));
+                resumeResponse.setMsg((String) obj.get("msg"));
+                resumeResponse.setStatus((Integer) obj.get("status"));
+
+                if(cId != null){
+
+                    CandidateResumeService resumeService = new CandidateResumeService();
+                        // Found candidate
+                        CandidateResume candidateResume = (CandidateResume) resumeService.fetchLatestResumeForCandidate(String.valueOf(cId)).getEntity();
+                        if(candidateResume !=null){
+                            resumeResponse.setCandidateResumeLink(candidateResume.getFilePath());
+                            resumeResponse.setCandidateId(candidateResume.getCandidate().getCandidateId());
+                        }
+                }
+
+                try {
+                    resumeResponse.setKey("resume"+i);
+                    obj.put("key","Resume_"+i);
+                } catch (org.json.JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Logger.info("obj.toString() ="+obj.toString());
+                list.add(obj);
+            }
+        }
+        Logger.info("list.toString() = "+list.toString());
+
+        return ok(toJson(resumeResponse));
+
+    }
+
+    public static Result receiveParsedResume() {
+        //Logger.info("Entered receiveParsedResume");
+        //Logger.info("request.asFormUrlEncoded().keySet().size()="+request().body().asFormUrlEncoded().keySet().size());
+
+        // build json string
+        String json = "{";
+        for(String key:request().body().asFormUrlEncoded().keySet()){
+            json += "\""+key+"\":";
+            switch(key){
+                case "profilemergedto":
+                case "personid":
+                case "status":
+                case "message":
+                case "type":
+                    json += "\""+StringUtils.join(request().body().asFormUrlEncoded().get(key),"")+"\"";
+                    break;
+                default:
+                    json += StringUtils.join(request().body().asFormUrlEncoded().get(key),"");
+            }
+            json += ",";
+        }
+        json = StringUtils.removeEnd(json,",");
+        json += "}";
+
+        Logger.info("json = "+json);
+
+        HireWandResponse hireWandResponse = null;
+        // try to map it to HireWandResponse
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            hireWandResponse = newMapper.readValue(json, HireWandResponse.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Logger.info("Error while mapping from request to HireWandResponse"+e.getMessage());
+            return internalServerError();
+        }
+        if(hireWandResponse != null &&
+                hireWandResponse.getStatus()!=null &&
+                hireWandResponse.getStatus().toLowerCase().contains("success")){
+
+            // mapped successfully
+            Logger.info("Successfully mapped json to hireWandResponse");
+
+            // keep a copy of the raw profile string
+            hireWandResponse.getProfile().setProfileJSON(StringUtils.join(request().body().asFormUrlEncoded().get("profile"),null));
+            Logger.info("hireWandResponse.Profile.ProfileJSON="+hireWandResponse.getProfile().getProfileJSON());
+
+            // is this a duplicate?
+            if(hireWandResponse.getProfilemergedto() != null) {
+                // if yes, set unique profile id
+                hireWandResponse.getProfile().setProfilemergedto(hireWandResponse.getProfilemergedto());
+                Logger.info("hireWandResponse.getProfile().getProfilemergedto="+hireWandResponse.getProfile().getProfilemergedto());
+            }
+
+            // ensure external key (PersonId) is filled before calling business logic
+            if(!hireWandResponse.getPersonid().isEmpty()){
+                // send for processing
+                Logger.info("Updating resume for HireWand personid = "+hireWandResponse.getPersonid());
+                JSONObject resp = CandidateService.updateResume(hireWandResponse.getPersonid(), hireWandResponse.getProfile(),hireWandResponse.getDuplicate());
+                Logger.info("resp="+resp.toString());
+                return ok(resp+"");
+            }
+            else {
+                Logger.info("Hirewand callback invoked with empty PersonID");
+                return badRequest();
+            }
+        }
+        else{
+            if(hireWandResponse == null){
+                Logger.info("Failed to map json to hireWandResponse");
+                return internalServerError();
+            }
+            else if (hireWandResponse.getStatus()!=null &&
+                    !hireWandResponse.getStatus().toLowerCase().contains("success")){
+                Logger.info("hireWandResponse returned status = "+hireWandResponse.getStatus());
+                return ok();
+            }
+        }
+        return ok();
+    }
+
+    @Security.Authenticated(PartnerInternalSecured.class)
+    //@Security.Authenticated(PartnerSecured.class)
+    public static Result uploadCandidates() {
+        return ok(views.html.upload_candidate_excel.render());
+    }
+
+    public static Result fetchResume(String candidateId) {
+
+/*
+        CandidateResumeService resumeService = new CandidateResumeService();
+        List<Map<String,String>> params = new ArrayList<>();
+        Map<String,String> param = new HashMap<>();
+        param.put("candidateid",candidateId);
+        params.add(param);
+        List<TruResponse> truResponses = resumeService.readByAttribute(params);
+*/
+        //if(truResponses !=null && truResponses.size() > 0){
+           // Found candidate
+            //CandidateResume candidateResume = (CandidateResume) truResponses.get(0).getEntity();
+        CandidateResumeService resumeService = new CandidateResumeService();
+        CandidateResume candidateResume = (CandidateResume) resumeService.fetchLatestResumeForCandidate(candidateId).getEntity();
+        if(candidateResume != null) return ok(toJson(candidateResume));
+        else{ return ok(); }
+    
+    }
+
+    public static Result processCandidates() {
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart excel = body.getFile("file");
+        if (excel != null) {
+            String fileName = excel.getFilename();
+            Logger.info("fileName=" + fileName);
+            File file = (File) excel.getFile();
+            Logger.info("Uploading " + file);
+            BulkUploadResponse bulkUploadResponse = CandidateService.bulkUploadCandidates(file,fileName);
+            return ok(toJson(bulkUploadResponse));
+        }
+        else{
+            return internalServerError("Bulk upload failed due to an internal error");
+        }
+    }
+
     public static Result getDeactivationMessage(Long candidateId) {
         DeActivationStatusResponse response = new DeActivationStatusResponse();
 
         if(candidateId == null && session().get("candidateId")!= null) {
             candidateId = Long.valueOf(session().get("candidateId"));
         }
-        if (candidateId != null) {
-            Candidate candidate = CandidateDAO.getById(candidateId);
+        response.setDeActivationMessage(CandidateService.getDeActivationMessage(candidateId));
 
-            if (candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE) {
-                String message =
-                       SmsUtil.getDeactivationMessage(candidate.getCandidateFullName(), candidate.getCandidateStatusDetail().getStatusExpiryDate());
-
-                response.setDeActivationMessage(message);
-                Logger.info("de Activation is available");
-                return ok(toJson(response));
-            }
-        }
         return ok(toJson(response));
     }
 
@@ -2401,23 +2584,208 @@ public class Application extends Controller {
 
     }
 
+    public static Result getMissingData(Long jobPostId, Long candidateId) {
+
+        return ok(toJson(JobPostWorkflowEngine.getShortJobApplyResponse(jobPostId, candidateId)));
+    }
+
+    public static Result updateCandidateDetailsViaShortJobApply() throws IOException, JSONException {
+        JsonNode updateCandidateDetailJSON = request().body().asJson();
+
+        PostApplyInShortResponse response = new PostApplyInShortResponse();
+
+        Logger.info("Apply In Short | Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + updateCandidateDetailJSON);
+
+        if(updateCandidateDetailJSON == null){
+            return badRequest();
+        }
+
+        ObjectMapper newMapper = new ObjectMapper();
+        // since jsonReq has single/multiple values in array
+        newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+        ApplyInShortRequest request = newMapper.readValue(updateCandidateDetailJSON.toString(), ApplyInShortRequest.class);
+
+        boolean isVerifyAadhaar;
+
+        if(request == null) {
+            response.setStatus(PostApplyInShortResponse.Status.BAD_REQUEST);
+            return badRequest(toJson(response));
+        }
+
+        if(request.getCandidateId() == null || request.getCandidateId() < 1 || request.getJobPostId() == null
+                || request.getJobPostId() < 1) {
+
+            response.setStatus(PostApplyInShortResponse.Status.BAD_PARAMS);
+            return badRequest(toJson(response));
+        }
+
+        Candidate candidate = CandidateDAO.getById(request.getCandidateId());
+
+        if(candidate == null) {
+            response.setStatus(PostApplyInShortResponse.Status.BAD_REQUEST);
+            return badRequest(toJson(response));
+        }
+
+        Auth existingAuth = Auth.find.where().eq("candidateId", request.getCandidateId()).findUnique();
+
+        // update auth otp after login
+        existingAuth.setOtp(Util.generateOtp());
+        existingAuth.update();
+
+        String deActivationMessage = CandidateService.getDeActivationMessage(candidate);
+        if(deActivationMessage != null) {
+
+            response.setStatus(PostApplyInShortResponse.Status.CANDIDATE_DEACTIVE);
+            response.setMessage(deActivationMessage);
+            return badRequest(toJson(response));
+        }
+
+        // #1. update locality
+        ApplyJobRequest applyJobRequest = new ApplyJobRequest();
+        applyJobRequest.setJobId(request.getJobPostId());
+        applyJobRequest.setLocalityId(request.getLocalityId());
+        applyJobRequest.setCandidateMobile(candidate.getCandidateMobile());
+        applyJobRequest.setPartner(false);
+        applyJobRequest.setAppVersionCode(0);
+
+        Integer channelId = Integer.parseInt(session().get("sessionChannel"));
+        int channelType = channelId == null ? InteractionConstants.INTERACTION_CHANNEL_UNKNOWN : channelId;
+        ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, channelType, InteractionConstants.INTERACTION_TYPE_APPLIED_JOB_IN_SHORT);
+
+        if(applyJobResponse.getStatus() == ApplyJobResponse.STATUS_EXISTS){
+            response.setStatus(PostApplyInShortResponse.Status.ALREADY_APPLIED);
+        }
+
+        // #2. update candidate interview detail
+        if(request.getTimeSlotId() != null && request.getDateInMillis()!= null){
+            AddCandidateInterviewSlotDetail interviewSlotDetail = new AddCandidateInterviewSlotDetail();
+
+            interviewSlotDetail.setScheduledInterviewDate(new Date(request.getDateInMillis()));
+            interviewSlotDetail.setTimeSlot(request.getTimeSlotId());
+
+            JobPostWorkflowEngine.updateCandidateInterviewDetail(candidate.getCandidateId(), request.getJobPostId(), interviewSlotDetail,  channelType);
+        }
+
+        // #3. update candidate info
+        isVerifyAadhaar = CandidateService.updateCandidateDetail(request.getPropertyIdList(), candidate, request.getUpdateCandidateDetail());
+
+        if (isVerifyAadhaar) {
+            CandidateService.verifyAadhaar(candidate.getCandidateMobile());
+        }
+
+
+        response.setStatus(PostApplyInShortResponse.Status.SUCCESS);
+        return  ok(toJson(response));
+    }
     public static Result getInterviewSlots(Long jobPostId) {
-        if(jobPostId == null) {
+        if (jobPostId == null) {
             return badRequest();
         }
 
         JobPost jobPost = JobPostDAO.findById(jobPostId);
 
-        if(jobPost == null ){
+        if (jobPost == null) {
             return badRequest();
         }
 
         InterviewResponse interviewResponse = RecruiterService.isInterviewRequired(jobPost);
 
         InterviewSlotPopulateResponse response =
-                        new InterviewSlotPopulateResponse(
-                                JobService.getInterviewSlot(jobPost), interviewResponse, jobPost);
+                new InterviewSlotPopulateResponse(
+                        JobService.getInterviewSlot(jobPost), interviewResponse, jobPost);
 
         return ok(toJson(response));
+    }
+
+    /**
+     *
+     * @param jobPostId
+     * @return
+     *
+     *  This class provides minimal jobp post data required to fill filters of
+     * private recruiter 'search candidate page'
+     *
+     */
+    public static Result getJobPostFilterData(Long jobPostId) {
+        if(jobPostId == null)
+            return badRequest();
+
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
+
+        if(jobPost == null)
+            return badRequest();
+
+        JobPostFilterResponse response = new JobPostFilterResponse();
+
+        response.setJobPostId(jobPost.getJobPostId());
+        response.setGender(jobPost.getGender());
+        response.setMaxSalary(jobPost.getJobPostMaxSalary());
+        response.setJobPostJobRoleId(jobPost.getJobRole().getJobRoleId());
+        response.setJobPostJobRoleTitle(jobPost.getJobRole().getJobName());
+        // add document
+        if(jobPost.getJobPostDocumentRequirements() != null
+                && jobPost.getJobPostDocumentRequirements().size() > 0) {
+            response.setJobPostDocumentIdList(new ArrayList<>());
+            for(JobPostDocumentRequirement documentRequirement : jobPost.getJobPostDocumentRequirements()){
+                response.getJobPostDocumentIdList().add( documentRequirement.getIdProof().getIdProofId());
+            }
+        }
+
+        // add asset
+        if(jobPost.getJobPostAssetRequirements() != null
+                && jobPost.getJobPostAssetRequirements().size() > 0) {
+            response.setJobPostAssetIdList(new ArrayList<>());
+            for(JobPostAssetRequirement assetRequirement : jobPost.getJobPostAssetRequirements()){
+                response.getJobPostAssetIdList().add(assetRequirement.getAsset().getAssetId());
+            }
+        }
+
+
+        // add language
+        if(jobPost.getJobPostLanguageRequirements() != null
+                && jobPost.getJobPostLanguageRequirements().size() > 0) {
+            response.setJobPostLanguageIdList(new ArrayList<>());
+            for(JobPostLanguageRequirement languageRequirement : jobPost.getJobPostLanguageRequirements()){
+                response.getJobPostLanguageIdList().add( languageRequirement.getLanguage().getLanguageId());
+            }
+        }
+
+        // add locality
+        if(jobPost.getJobPostToLocalityList() != null
+                && jobPost.getJobPostToLocalityList().size() > 0) {
+            response.setJobPostLocalityIdList(new ArrayList<>());
+            response.setJobPostLocalityList(new ArrayList<>());
+            for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
+                response.getJobPostLocalityIdList().add( jobPostToLocality.getLocality().getLocalityId());
+                response.getJobPostLocalityList().add(
+                        new JobPostFilterResponse.LocalityIdName(
+                            jobPostToLocality.getLocality().getLocalityId(),
+                            jobPostToLocality.getLocality().getLocalityName())
+                        );
+            }
+        }
+
+        // add experience
+        if(jobPost.getJobPostExperience() != null) {
+            response.setJobPostExperienceId(jobPost.getJobPostExperience().getExperienceId());
+        }
+
+        // add education
+        if(jobPost.getJobPostEducation() != null) {
+            response.setJobPostEducationId(jobPost.getJobPostEducation().getEducationId());
+        }
+
+
+        return ok(toJson(response));
+    }
+
+    public static Result generateCompanyCode() {
+        List<Company> companyList = CompanyDAO.getCompaniesWithoutCompanyCode();
+        for (Company company : companyList) {
+            company.setCompanyCode(Util.generateCompanyCode(company));
+            company.update();
+        }
+        return ok("Done");
     }
 }

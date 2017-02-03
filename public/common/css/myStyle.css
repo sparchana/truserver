@@ -228,6 +228,14 @@ a:hover, a:focus{
     background: linear-gradient(to left, rgba(0, 159, 219, 0.99), rgb(2, 123, 179));
     color: white;
 }
+#uploadResumeBtn{
+    padding:3% 8%;
+    width: 100%;
+    background:#fff;
+    border:1px solid rgba(0, 159, 219, 0.99);
+    color: rgb(2, 123, 179);
+    font-weight: bold;
+}
 
 .modal .modal-dialog {
     width: 25%;
@@ -554,7 +562,25 @@ hr{
     height: 65%;
     margin-top:4%;
 }
-
+#uploadResumeModalContent,#uploadResumeModalProcessContent{
+    background: rgb(84, 192, 235);
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+}
+#uploadResumeModalDialog{
+    margin-top: 12%;
+    width: 40%;
+}
+#loadingSpinnerResume{
+    box-sizing: border-box;
+    stroke: #fff;
+    stroke-width: 3px;
+    -webkit-transform-origin: 50%;
+    transform-origin: 50%;
+    -webkit-animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+    animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+}
 @media screen and (max-width: 280px) {
     .panel{
         padding: 0px;
@@ -627,7 +653,6 @@ hr{
     border-right: 1px solid #f4eef2;
     background: #ffffff;
 }
-
 
 #jobRoleNoBorder:hover, #jobRoleRight:hover, #jobRoleBottom:hover{
     background: #ffffff;
@@ -747,9 +772,6 @@ hr{
     box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16),0 0 0 1px rgba(0,0,0,0.08);
     transition: box-shadow 200ms cubic-bezier(0.4, 0.0, 0.2, 1);
 }
-#searchBarMainCol{
-
-}
 #inputMainField{
     border-bottom-left-radius:2px;
     border-top-left-radius:2px;
@@ -863,6 +885,11 @@ hr{
     color: #9f9f9f;
     font-size: 12px;
 }
+#hintTextPropM{
+    color: #9f9f9f;
+    font-size: 14px;
+    font-weight: bold;
+}
 #iconsProp{
     padding-right:0;
     margin-top:2px;
@@ -879,7 +906,44 @@ hr{
 #searchBtnCol{
     padding: 0;
 }
+#jobRoleName{
+    font-size: 14px;
+    color: #003557;
+    margin-top:6px;
+}
+#resumeColMsgFail{
+    color:#000;
+    text-align:left;
+    padding-top:12px
+}
+#resumeColMsgSuccess{
+    color:#000;
+    text-align:left;
+    padding-top:10px
+}
+#reopenTextProp{
+    margin-top:10px;
+    float:right;
+    margin:10px
+}
 @media screen and (max-width: 768px) {
+    #reopenTextProp{
+        margin-top:10px;
+        float:none;
+        margin:10px
+    }
+    #resumeColMsgFail{
+        text-align:center;
+        padding-top:0;
+    }
+    #resumeColMsgSuccess{
+        text-align:center;
+        padding-top:0;
+    }
+    #uploadResumeModalDialog{
+        margin-top: 20%;
+        width: 90%;
+    }
     #postedDate{
         text-align:center;
     }
@@ -978,7 +1042,7 @@ hr{
         text-align: center;
     }
     #jobRoleName{
-        font-size: 11px;
+        font-size: 10px;
         color: #000000;
     }
     #jobRoleNameFooter{
@@ -1067,9 +1131,9 @@ hr{
     }
 
     #jobBodyDetails {
-        padding-top: 4%;
-        padding-left: 10%;
-        padding-right: 10%;
+        padding-top: 0;
+        padding-left: 0;
+        padding-right: 0;
         text-align: left;
     }
 
@@ -1121,7 +1185,8 @@ hr{
         width: 98%;
     }
 
-    #candidateFirstNameModal {
+    #candidateFirstName
+    {
         width: 96%;
     }
 
@@ -1199,7 +1264,7 @@ hr{
         height:50px;
     }
     .registerBox{
-        background-color: #0288d1;;
+        background-color: #0288d1;
         border-radius:0px;
         border: 0px;
         width:100%;

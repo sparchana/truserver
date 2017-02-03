@@ -5,6 +5,7 @@
 var jobPostId;
 var todayDay;
 var globalCandidateId;
+var recruiterLevel;
 
 var notSelectedReason = [];
 
@@ -159,6 +160,12 @@ function processDataUnlockedCandidates(returnedData) {
         try {
             $("#candidate_" + unlockedCandidate.candidate.candidateId).html(unlockedCandidate.candidate.candidateMobile);
             $("#unlock_candidate_" + unlockedCandidate.candidate.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 customUnlockBtn").addClass("contactUnlocked right").removeAttr('onclick');
+
+            var link = unlockedCandidate.candidate.candidateResumeLink;
+            if(link != null){
+                $("#candidate_resume_" + unlockedCandidate.candidate.candidateId).attr("val", "http://docs.google.com/gview?url=" + link + "&embedded=true");
+            }
+
         } catch (err){}
     });
 }
@@ -195,17 +202,35 @@ function processDataForJobApplications(returnedData) {
             }
         });
 
-        try {
+        if(recruiterLevel > 0){
+            var candidateIdList = [];
+            candidateList.forEach(function (candidate) {
+                candidateIdList.push(candidate.candidate.candidateId);
+            });
+
+            var d = {
+                candidateIdList: candidateIdList
+            };
             $.ajax({
                 type: "POST",
-                url: "/recruiter/api/getUnlockedCandidates/",
-                async: true,
-                contentType: false,
-                data: false,
-                success: processDataUnlockedCandidates
+                url: "/getFetchedCandidateData",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processDataCandidateData
             });
-        } catch (exception) {
-            console.log("exception occured!!" + exception.stack);
+        } else{
+            try {
+                $.ajax({
+                    type: "POST",
+                    url: "/recruiter/api/getUnlockedCandidates/",
+                    async: true,
+                    contentType: false,
+                    data: false,
+                    success: processDataUnlockedCandidates
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception.stack);
+            }
         }
 
         if(candidateCount == 0){
@@ -217,6 +242,21 @@ function processDataForJobApplications(returnedData) {
     } else {
         logoutRecruiter();
     }
+}
+
+function processDataCandidateData(returnedData) {
+    var candidateList = returnedData.unlockContactResponseList;
+    candidateList.forEach(function (unlockedCandidate){
+        try {
+            $("#candidate_" + unlockedCandidate.candidateId).html(unlockedCandidate.candidateMobile);
+            $("#unlock_candidate_" + unlockedCandidate.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 customUnlockBtn").addClass("contactUnlocked right").removeAttr('onclick');
+            var link = unlockedCandidate.resumeLink;
+            if(link != null){
+                $("#candidate_resume_" + unlockedCandidate.candidateId).attr("val", "http://docs.google.com/gview?url=" + link + "&embedded=true");
+            }
+        } catch (err){}
+    });
+
 }
 
 
@@ -382,6 +422,8 @@ function checkRecruiterLogin() {
 function processDataRecruiterSession(returnedData) {
     if(returnedData == 0){
         logoutRecruiter();
+    } else {
+        recruiterLevel = returnedData.recruiterAccessLevel;
     }
 }
 

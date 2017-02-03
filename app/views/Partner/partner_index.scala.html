@@ -54,19 +54,7 @@
     <div id="sectionHeader">
         <div class="container">
         <div class="row" style="margin-right: 0; margin-left: 0;padding-top: 1%">
-            @*<div class="col-md-4 hidden-xs" style="padding: 0; margin-top:0">
-                <div id="partnerStats">
-                    <div id="statBody" style="text-align: left">
-                        <img src="/assets/common/img/star.svg" height="42px" style="margin-left: -20%; margin-top: -20%">
-                        <div id="statItem">1000+ Job Openings</div>
-                        <div id="statItem">50+ Companies</div>
-                        <div id="statItem">30+ Job Roles</div>
-                        <div id="statItem">Partner Now and Help Your Candidates!</div>
-                    </div>
-                </div>
-            </div>*@
-
-            <div class="col-md-4 col-sm-6">
+            <div class="col-md-4 col-sm-6 col-xs-12">
                 <div class="leadBox">
                     <form id="partner_signup_form" style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="partner_signup_form" >
                         <h4 style="font-weight: bold">Partner Registration</h4>
@@ -78,12 +66,19 @@
                                 <input id="partnerLastName" placeholder="Last name" type="text" maxLength="49" class="form-control input-md candidateSecondNameMain" >
                             </div>
                         </div>
-                        <div div class="row">
+                        <div class="row">
                             <div class="col-sm-12">
                                 <input id="partnerMobile" style="margin-top: 8px" placeholder="What is your mobile no.?" name="partnerMobile" type="text" maxlength="10" class="form-control input-md" >
                             </div>
                         </div>
-                        <select id="partnerType" class="selectDropdown" style="width: 100%; height: 34px; margin-top: 8px"></select>
+                        <select id="partnerType" class="selectDropdown" onchange="checkPartnerType()" style="width: 100%; height: 34px; margin-top: 8px"></select>
+
+                        <div class="row" style="display: none" id="companyIdDiv">
+                            <div class="col-sm-12">
+                                <input id="privatePartnerCompanyId" style="margin-top: 8px" placeholder="Enter Company ID" type="text" maxlength="10" class="form-control input-md" >
+                            </div>
+                        </div>
+
                         <div style="margin-top: 8px">
                             <input type="text" id="partnerLocality" style="margin-top: 8px">
                         </div>
@@ -100,12 +95,12 @@
                     </div>
                 </div>
             </div>
-        <div class="col-md-5 col-sm-6">
-            <div id="partnerHeaderText">
-                <h1 style="letter-spacing: 2px; margin: 14px;"><b><font size="5">Welcome to TruJobs Partner Zone</font></b></h1>
-                <h1 style="letter-spacing: 2px; margin: 14px;"><b><font size="4">Register. Add Candidates. Earn money</font></b></h1>
+            <div class="col-md-5 col-sm-6 col-xs-12">
+                <div id="partnerHeaderText">
+                    <h1 style="letter-spacing: 2px; margin: 14px;"><b><font size="5">Welcome to TruJobs Partner Zone</font></b></h1>
+                    <h1 style="letter-spacing: 2px; margin: 14px;"><b><font size="4">Register. Add Candidates. Earn money</font></b></h1>
+                </div>
             </div>
-        </div>
 
         </div>
     </div>

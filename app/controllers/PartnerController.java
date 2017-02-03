@@ -10,13 +10,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.PartnerSecured;
-import controllers.security.SecuredUser;
 import controllers.security.FlashSessionController;
 import dao.JobPostDAO;
-import dao.JobPostWorkFlowDAO;
 import models.entity.*;
-import models.entity.OM.JobApplication;
 import models.entity.OM.PartnerToCandidate;
+import models.entity.OM.PartnerToCandidateToCompany;
+import models.entity.OM.PartnerToCompany;
 import models.entity.Static.LeadSource;
 import models.entity.Static.PartnerType;
 import play.Logger;
@@ -26,7 +25,9 @@ import play.mvc.Security;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static play.libs.Json.toJson;
 
@@ -147,7 +148,8 @@ public class PartnerController {
     public static Result checkPartnerSession() {
         String sessionPartnerId = session().get("partnerId");
         if(sessionPartnerId != null){
-            return ok("1");
+            Partner partner = Partner.find.where().eq("partner_id", sessionPartnerId).findUnique();
+            return ok(toJson(partner));
         } else{
             return ok("0");
         }
@@ -183,6 +185,37 @@ public class PartnerController {
         }
     }
 
+    public static Integer checkCandidateExistence(Partner partner, String mobile){
+        Integer response = ServerConstants.STATUS_NO_CANDIDATE;
+        Candidate candidate = Candidate.find.where().eq("CandidateMobile", mobile).findUnique();
+        if(candidate != null){
+
+            //candidate exists! getting partnerToCompany list
+            List<PartnerToCompany> companyList = PartnerToCompany.find.where()
+                    .eq("partner_id", partner.getPartnerId())
+                    .findList();
+
+            List<Long> companyIdList = new ArrayList<>();
+            for(PartnerToCompany company : companyList){
+                companyIdList.add(company.getCompany().getCompanyId());
+            }
+
+            //to check partner to candidate pool
+            PartnerToCandidateToCompany partnerToCandidateToCompany = PartnerToCandidateToCompany.find.where()
+                    .eq("partnerToCandidate.candidate.candidateId", candidate.getCandidateId())
+                    .in("partnerToCompany.company.companyId", companyIdList)
+                    .findUnique();
+
+            if(partnerToCandidateToCompany == null){
+                response = ServerConstants.STATUS_CANDIDATE_EXISTS_DIFFERENT_COMPANY;
+            } else{
+                response = ServerConstants.STATUS_CANDIDATE_EXISTS_SAME_COMPANY;
+            }
+        }
+
+        return response;
+    }
+
     public static Result partnerCreateCandidateSubmit() {
         JsonNode req = request().body().asJson();
         AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
@@ -194,33 +227,146 @@ public class PartnerController {
         }
         Logger.info("Req JSON : " + req);
         Boolean isNewCandidate = false;
+
+        String partnerId = session().get("partnerId");
+        Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
+
+        //checking if a candidate can be associate with a partner or not
+        Integer associationStatus = checkCandidateExistence(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
         Candidate candidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
         if(candidate == null){
             isNewCandidate = true; //checking if the candidate exists
         }
-        String partnerId = session().get("partnerId");
-        Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
         if(partner != null){
             LeadSource leadSource = LeadSource.find.where().eq("leadSourceId", addSupportCandidateRequest.getLeadSource()).findUnique();
             if(leadSource != null){
                 addSupportCandidateRequest.setLeadSource(leadSource.getLeadSourceId());
             }
-            CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                    InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE,
-                    ServerConstants.UPDATE_ALL_BY_SUPPORT);
-            if(candidateSignUpResponse.getStatus() == CandidateSignUpResponse.STATUS_SUCCESS){
-                if(isNewCandidate){ //save a record in partnerToCandidate
-                    candidateSignUpResponse =
-                            PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
-                    Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
-                    candidateSignUpResponse.setOtp(PartnerService.sendCandidateVerificationSms(existingCandidate));
-                } else{
-                    candidateSignUpResponse.setOtp(0);
-                }
-            }
-            return ok(toJson(candidateSignUpResponse));
+
+            return ok(toJson(createCandidateViaPartner(addSupportCandidateRequest, partner, isNewCandidate, associationStatus)));
         } else{
             return ok("-1");
+        }
+    }
+
+    public static CandidateSignUpResponse createCandidateViaPartner(AddSupportCandidateRequest addSupportCandidateRequest,
+                                                                    Partner partner,
+                                                                    Boolean isNewCandidate,
+                                                                    Integer associationStatus,
+                                                                    Boolean autoVerify) {
+
+        Boolean isPrivatePartner = false;
+        if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+            isPrivatePartner = true;
+        }
+
+        CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
+                InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE,
+                ServerConstants.UPDATE_ALL_BY_SUPPORT);
+
+        if(candidateSignUpResponse.getStatus() == CandidateSignUpResponse.STATUS_SUCCESS){
+
+            candidateSignUpResponse.setOtp(0);
+            Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+
+            candidateSignUpResponse = partnerToCandidateAssociation(existingCandidate, partner, isPrivatePartner, isNewCandidate, associationStatus, autoVerify);
+        }
+
+        return candidateSignUpResponse;
+    }
+
+    public static CandidateSignUpResponse createCandidateViaPartner(AddSupportCandidateRequest addSupportCandidateRequest,
+                                                                    Partner partner,
+                                                                    Boolean isNewCandidate,
+                                                                    Integer associationStatus){
+
+        return createCandidateViaPartner(addSupportCandidateRequest, partner, isNewCandidate, associationStatus, false);
+    }
+
+    public static CandidateSignUpResponse partnerToCandidateAssociation(Candidate existingCandidate,
+                                                                        Partner partner,
+                                                                        Boolean isPrivatePartner,
+                                                                        Boolean isNewCandidate,
+                                                                        Integer associationStatus,
+                                                                        Boolean autoVerify)
+    {
+        CandidateSignUpResponse candidateSignUpResponse =
+                PartnerService.createPartnerToCandidateMapping(partner, existingCandidate.getCandidateMobile());
+
+        //if the partner is a private partner
+        if(isPrivatePartner || autoVerify){
+
+            if(isNewCandidate){
+                //auto verifying candidate profile as it is created via private partner
+                Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
+                if(existingAuth != null){
+                    existingAuth.setAuthStatus(ServerConstants.CANDIDATE_STATUS_VERIFIED);
+                    existingAuth.update();
+                    CandidateService.sendDummyAuthForCandidateByPartner(existingCandidate);
+                    String objAUUID = existingCandidate.getCandidateUUId();
+                    String objBUUID = partner.getPartnerUUId();
+
+                    //creating interaction
+                    PartnerInteractionService.createInteractionForPartnerVerifyingCandidate(objAUUID, objBUUID, partner.getPartnerFirstName());
+                }
+            }
+
+            if(isPrivatePartner){
+                existingCandidate.setCandidateAccessLevel(ServerConstants.CANDIDATE_ACCESS_LEVEL_PRIVATE);
+                existingCandidate.update();
+            }
+
+            //don't send otp
+            candidateSignUpResponse.setOtp(0);
+        } else{
+            candidateSignUpResponse.setOtp(PartnerService.sendCandidateVerificationSms(existingCandidate));
+        }
+
+
+        //STATUS NO CANDIDATE means its a new candidate, STATUS_CANDIDATE_EXISTS_DIFFERENT_COMPANY means this candidate exists
+        // and is associated with other company, hence create an entry in partner to candidate followed by PartnerToCandidateToCompany
+
+        if(associationStatus == ServerConstants.STATUS_NO_CANDIDATE
+                || associationStatus == ServerConstants.STATUS_CANDIDATE_EXISTS_DIFFERENT_COMPANY)
+        {
+
+            PartnerService.createPartnerToCandidateMapping(partner, existingCandidate.getCandidateMobile());
+
+            if(isPrivatePartner){
+                //making entry in partnerToCandidateToCompany table
+                partnerToCandidateToCompanyMapping(partner, existingCandidate);
+            }
+        }
+
+        return candidateSignUpResponse;
+
+    }
+    public static CandidateSignUpResponse partnerToCandidateAssociation(Candidate existingCandidate, Partner partner, Boolean isPrivatePartner, Boolean isNewCandidate, Integer associationStatus){
+        return partnerToCandidateAssociation(existingCandidate, partner, isPrivatePartner, isNewCandidate, associationStatus, false);
+    }
+
+    public static void partnerToCandidateToCompanyMapping(Partner partner, Candidate candidate){
+        PartnerToCandidate partnerToCandidate = PartnerToCandidate.find.where()
+                .eq("partner_id", partner.getPartnerId())
+                .eq("candidate_candidateId", candidate.getCandidateId())
+                .findUnique();
+
+        List<PartnerToCompany> partnerToCompanyList = PartnerToCompany.find.where()
+                .eq("partner_id", partner.getPartnerId())
+                .eq("verification_status", ServerConstants.PARTNER_TO_COMPANY_VERIFIED)
+                .findList();
+
+        if(partnerToCandidate != null){
+            Logger.info("Making entry in partnerToCandidateToCompany table");
+            for(PartnerToCompany partnerToCompany : partnerToCompanyList){
+                PartnerToCandidateToCompany partnerToCandidateToCompany = new PartnerToCandidateToCompany();
+                partnerToCandidateToCompany.setPartner(partner);
+                partnerToCandidateToCompany.setPartnerToCandidate(partnerToCandidate);
+                partnerToCandidateToCompany.setPartnerToCompany(partnerToCompany);
+                partnerToCandidateToCompany.save();
+            }
+        } else{
+            Logger.info("Error in making entry in partnerToCandidateToCompany as the candidate is not associated with the partner");
         }
     }
 
@@ -233,36 +379,65 @@ public class PartnerController {
     public static Result getMyCandidates(){
         Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
         if(partner != null){
-            List<PartnerToCandidate> partnerToCandidateList = PartnerToCandidate.find.where()
-                    .eq("partner_id", partner.getPartnerId())
-                    .orderBy("partner_to_candidate_create_timestamp desc")
-                    .findList();
+
+            List<PartnerToCandidate> partnerToCandidateList = new ArrayList<>();
+            List<PartnerToCandidateToCompany> partnerToCandidateToCompanyList = new ArrayList<>();
+            List<Candidate> candidateList = new ArrayList<>();
+
+            if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+                partnerToCandidateToCompanyList = PartnerToCandidateToCompany.find.where()
+                        .eq("partner_id", partner.getPartnerId())
+                        .findList();
+
+                for(PartnerToCandidateToCompany partnerToCandidateToCompany : partnerToCandidateToCompanyList) {
+                    candidateList.add(partnerToCandidateToCompany.getPartnerToCandidate().getCandidate());
+                }
+
+                //removing duplicate data from list
+                Set<Candidate> candidateSet = new HashSet<>();
+                candidateSet.addAll(candidateList);
+                candidateList.clear();
+                candidateList.addAll(candidateSet);
+
+            } else{
+                partnerToCandidateList = PartnerToCandidate.find.where()
+                        .eq("partner_id", partner.getPartnerId())
+                        .orderBy("partner_to_candidate_create_timestamp desc")
+                        .findList();
+
+                for(PartnerToCandidate partnerToCandidate : partnerToCandidateList) {
+                    candidateList.add(partnerToCandidate.getCandidate());
+                }
+            }
+
             ArrayList<PartnerCandidatesResponse> responses = new ArrayList<>();
 
             SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
 
-            for(PartnerToCandidate partnerToCandidate : partnerToCandidateList) {
+            for(Candidate candidate : candidateList) {
                 PartnerCandidatesResponse response = new PartnerCandidatesResponse();
 
-                response.setCandidateId(partnerToCandidate.getCandidate().getCandidateId());
-                response.setCreationTimestamp(sfd.format(partnerToCandidate.getCandidate().getCandidateCreateTimestamp()));
-                response.setLeadId(partnerToCandidate.getCandidate().getLead().getLeadId());
-                if(partnerToCandidate.getCandidate().getCandidateFirstName() != null){
-                    response.setCandidateName(partnerToCandidate.getCandidate().getCandidateFirstName());
-                    if(partnerToCandidate.getCandidate().getCandidateLastName() != null){
-                        response.setCandidateName(partnerToCandidate.getCandidate().getCandidateFirstName() + " " + partnerToCandidate.getCandidate().getCandidateLastName());
+                response.setCandidateId(candidate.getCandidateId());
+                response.setCreationTimestamp(sfd.format(candidate.getCandidateCreateTimestamp()));
+                response.setLeadId(candidate.getLead().getLeadId());
+                if(candidate.getCandidateFirstName() != null){
+                    response.setCandidateName(candidate.getCandidateFirstName());
+                    if(candidate.getCandidateLastName() != null){
+                        response.setCandidateName(candidate.getCandidateFirstName() + " " + candidate.getCandidateLastName());
                     }
                 }
-                Auth auth = Auth.find.where().eq("candidateId", partnerToCandidate.getCandidate().getCandidateId()).findUnique();
+                Auth auth = Auth.find.where().eq("candidateId", candidate.getCandidateId()).findUnique();
                 if(auth != null){
                     response.setCandidateStatus(auth.getAuthStatus());
                     if(auth.getAuthStatus() == ServerConstants.CANDIDATE_STATUS_VERIFIED){
-                        response.setCandidateActiveDeactive(partnerToCandidate.getCandidate().getCandidateprofilestatus().getProfileStatusId());
+                        response.setCandidateActiveDeactive(candidate.getCandidateprofilestatus().getProfileStatusId());
                     }
                 }
-                response.setCandidateAppliedJobs(JobPostWorkflowEngine.getPartnerAppliedJobsForCandidate(
-                        partnerToCandidate.getCandidate(), partner).size());
-                response.setCandidateMobile(partnerToCandidate.getCandidate().getCandidateMobile());
+                response.setAppliedJobList(JobPostWorkflowEngine.getPartnerAppliedJobsForCandidate(
+                        candidate, partner));
+                response.setCandidateAppliedJobs(response.getAppliedJobList().size());
+                response.setCandidateMobile(candidate.getCandidateMobile());
+                response.setCandidateResumeLink(candidate.getCandidateResumeLink());
                 responses.add(response);
             }
             return ok(toJson(responses));
@@ -282,17 +457,23 @@ public class PartnerController {
             if(lead != null) {
                 Candidate candidate = CandidateService.isCandidateExists(lead.getLeadMobile());
                 if(candidate != null){ //checking if the candidate was created by the requested partner
-                    PartnerToCandidate partnerToCandidate = PartnerToCandidate.find
+                    List<PartnerToCandidate> partnerToCandidateList = PartnerToCandidate.find
                             .where()
                             .eq("candidate_candidateid", candidate.getCandidateId())
-                            .findUnique();
-                    if(partnerToCandidate != null){
+                            .findList();
+
+                    Boolean allow = false;
+                    for(PartnerToCandidate partnerToCandidate : partnerToCandidateList){
                         if(partnerToCandidate.getPartner().getPartnerId() == partner.getPartnerId()){
-                            return ok(toJson(candidate));
-                        } else{
-                            return ok("-1");
+                            allow = true;
                         }
                     }
+                    if(allow){
+                        return ok(toJson(candidate));
+                    } else{
+                        return ok("-1");
+                    }
+
                 }
             }
         }
@@ -338,10 +519,14 @@ public class PartnerController {
         if(partner != null){ //checking if partner is logged in or not
             Candidate candidate = Candidate.find.where().eq("candidateId", id).findUnique(); //getting candidate profile from db
             if(candidate != null){ //checking if the candidate was created by the requested partner
+
                 PartnerToCandidate partnerToCandidate = PartnerToCandidate.find
                         .where()
+                        .eq("partner_id", partner.getPartnerId())
                         .eq("candidate_candidateid", candidate.getCandidateId())
+                        .setMaxRows(1)
                         .findUnique();
+
                 if(partnerToCandidate != null){
                     if(partnerToCandidate.getPartner().getPartnerId() == partner.getPartnerId()){
                         return ok(toJson(candidate));
@@ -353,6 +538,15 @@ public class PartnerController {
         }
         return ok("0");
     }
+
+public static Result checkExistingCompany(String CompanyCode) {
+    Company company = Company.find.where().eq("CompanyCode", CompanyCode).findUnique();
+    if(company != null){
+        return ok("1");
+    } else{
+        return ok("0");
+    }
+}
 
     @Security.Authenticated(PartnerSecured.class)
     public static Result getAppliedJobsByPartnerForCandidate(long id) {
@@ -371,13 +565,35 @@ public class PartnerController {
     public static Result getCandidateMatchingJobs(long id) {
         Candidate existingCandidate = Candidate.find.where().eq("candidateId", id).findUnique();
         if(existingCandidate != null){
-            List<JobPost> matchingJobList = JobSearchService
-                    .getAllJobsForCandidate(FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()));
+            List<JobPost> matchingJobList = new ArrayList<>();
+            if (session().get("partnerId") != null) {
+                Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+                if(partner != null){
+                    if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+
+                        //fetching all the private jobs posted by the recruiter of the given company
+                        List<PartnerToCompany> partnerToCompanyList = PartnerToCompany.find.where()
+                                .eq("partner_id", partner.getPartnerId())
+                                .findList();
+
+                        List<Long> companyIdList = new ArrayList<>();
+                        for(PartnerToCompany partnerToCompany : partnerToCompanyList){
+                            companyIdList.add(partnerToCompany.getCompany().getCompanyId());
+                        }
+                        matchingJobList = JobPostDAO.getAllActiveHotNonPrivateJobsPostOfCompany(companyIdList);
+                    } else{
+                        matchingJobList = JobSearchService
+                                .getAllJobsForCandidate(FormValidator.convertToIndianMobileFormat(
+                                        existingCandidate.getCandidateMobile()), ServerConstants.JOB_POST_TYPE_OPEN);
+                    }
+                }
+            }
 
             SearchJobService.computeCTA(matchingJobList, id);
             return ok(toJson(matchingJobList));
+
         }
-        return ok("ok");
+        return ok("0");
     }
 
     public static Result getJobPostInfoViaPartner(long jobPostId, long candidateId) {

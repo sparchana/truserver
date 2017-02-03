@@ -1,8 +1,9 @@
 package models.util;
 
-import api.ServerConstants;
+import api.http.httpResponse.interview.InterviewTimeSlot;
+import play.Logger;
 
-import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -83,5 +84,44 @@ public class InterviewUtil {
             interviewDays = modifiedInterviewDays;
         }
         return interviewDays;
+    }
+
+    public static boolean checkTimeSlot(long date, InterviewTimeSlot timeSlot) {
+        Calendar rightNow = Calendar.getInstance();
+        Date now = rightNow.getTime();
+        Date future = new Date(date);
+
+        if(timeSlot == null){
+            return false;
+        }
+
+        if(!(now.getDate() == future.getDate())){
+            // if date's are not same then this is a valid timeSlot
+            return true;
+        }
+        switch (timeSlot.getSlotId()){
+            case 1:
+                // 10 AM to 1PM
+                if(rightNow.get(Calendar.HOUR_OF_DAY) >= 13){
+                    return false;
+                }
+                break;
+            case 2:
+                // 1 PM to 4PM
+                if(rightNow.get(Calendar.HOUR_OF_DAY) >= 16){
+                    return false;
+                }
+                break;
+            case 3:
+                // 4 PM to 6PM
+                if(rightNow.get(Calendar.HOUR_OF_DAY) >= 18){
+                    return false;
+                }
+                break;
+            default:
+                break;
+        }
+
+        return true;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Created by batcoder1 on 4/6/16.
  */
-
+var candidateId;
 var skillMap = [];
 var languageMap = [];
 var localityArray = [];
@@ -471,6 +471,13 @@ function checkInstitute() {
 
 function processDataAndFillAllFields(returnedData) {
     candidateInformation = returnedData;
+    candidateId = returnedData.candidateId;
+
+    /* render view and download option for candidate resume */
+    if(returnedData.candidateResumeLink !=null){
+        viewDownloadResume(returnedData.candidateResumeLink);
+    }
+
     $("#jobCount").html(Object.keys(candidateInformation.jobApplicationList).length);
 
     try{

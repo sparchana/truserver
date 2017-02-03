@@ -309,3 +309,24 @@ function validatePAN(panNumber) {
         return true;
     }
 }
+
+function validateDateFormat(dateVal) {
+    var day;
+    var month;
+    var year;
+
+    day = dateVal.getDate() + "";
+
+    if(day.length < 2){
+        day = "0" + day;
+    }
+
+    month = (dateVal.getMonth() + 1) + "";
+    if(month.length < 2){
+        month = "0" + month;
+    }
+
+    year = dateVal.getFullYear() + "";
+
+    return day + "-" + month + "-" + year;
+}
