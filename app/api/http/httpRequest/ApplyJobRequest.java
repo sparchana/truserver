@@ -5,8 +5,11 @@ import java.util.Date;
 /**
  * Created by batcoder1 on 17/6/16.
  */
-public class ApplyJobRequest extends ApplyJobBasicRequest{
+public class ApplyJobRequest {
     public String candidateId;
+    public String candidateMobile;
+    public String candidateName;
+    public Long jobId;
 
     public Integer localityId;
     public Boolean isPartner;
@@ -63,5 +66,30 @@ public class ApplyJobRequest extends ApplyJobBasicRequest{
 
     public void setAppVersionCode(int appVersionCode) {
         this.appVersionCode = appVersionCode;
+    }
+
+
+    public String getCandidateMobile() {
+        return candidateMobile;
+    }
+
+    public void setCandidateMobile(String candidateMobile) {
+        this.candidateMobile = candidateMobile;
+    }
+
+    public String getCandidateName() {
+        return candidateName;
+    }
+
+    public void setCandidateName(String candidateName) {
+        this.candidateName = candidateName;
+    }
+
+    public Long getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(Long jobId) {
+        this.jobId = jobId;
     }
 }

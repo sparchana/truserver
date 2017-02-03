@@ -6,9 +6,11 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.AddCandidateRequest;
 import api.http.httpRequest.AddJobPostRequest;
-import api.http.httpRequest.ApplyJobBasicRequest;
 import api.http.httpRequest.ApplyJobRequest;
-import api.http.httpResponse.*;
+import api.http.httpResponse.AddJobPostResponse;
+import api.http.httpResponse.ApplyJobResponse;
+import api.http.httpResponse.CallToApplyResponse;
+import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import api.http.httpResponse.interview.InterviewDateTime;
 import api.http.httpResponse.interview.InterviewResponse;
@@ -18,8 +20,11 @@ import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerConstants;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
-import models.entity.*;
+import models.entity.Candidate;
+import models.entity.Company;
+import models.entity.JobPost;
 import models.entity.OM.*;
+import models.entity.Partner;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
 import models.util.EmailUtil;
@@ -855,7 +860,7 @@ public class JobService {
 
                         String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB;
                         Partner partner = null;
-                        if(applyJobRequest.getPartner()){
+                        if(applyJobRequest.getPartner()!= null && applyJobRequest.getPartner()){
                             // this job is being applied by a partner for a candidate, hence we need to get partner Id in the job Application table
                             partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
                             if(partner != null){
@@ -1418,7 +1423,7 @@ public class JobService {
      * @param applyJobRequest
      * @return ApplyJobResponse
      */
-    public static CallToApplyResponse callToApply(ApplyJobBasicRequest applyJobRequest){
+    public static CallToApplyResponse callToApply(ApplyJobRequest applyJobRequest){
         CallToApplyResponse callToApplyResponse = new CallToApplyResponse();
 
         if( applyJobRequest == null){
@@ -1448,10 +1453,7 @@ public class JobService {
         AddCandidateRequest addCandidateRequest = new AddCandidateRequest();
         addCandidateRequest.setCandidateMobile(candidateMobile);
         addCandidateRequest.setCandidateFirstName(applyJobRequest.getCandidateName());
-
-        boolean shouldCreate = false;
         if( candidate == null) {
-            // TODO code to create this loose candidate will come here
             addCandidateRequest.setLeadSource(ServerConstants.LEAD_SOURCE_CALL_TO_APPLY_WEBSITE);
 
             List<Integer> candidateJobPref = new ArrayList<>();
@@ -1517,13 +1519,19 @@ public class JobService {
             if(shouldUpdate) candidate.update();
         }
 
+
+        // prep apply date
+        applyJobRequest.setLocalityId(Math.toIntExact(jobPost.getJobPostToLocalityList().get(0).getLocality().getLocalityId()));
+
         // push this candidate to apply flow
 
         try {
-            ApplyJobResponse applyJobResponse = applyJob((ApplyJobRequest) applyJobRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE, InteractionConstants.INTERACTION_TYPE_APPLY_JOB_VIA_CALL_TO_APPLY);
+            ApplyJobResponse applyJobResponse = applyJob(applyJobRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE, InteractionConstants.INTERACTION_TYPE_APPLY_JOB_VIA_CALL_TO_APPLY);
 
             callToApplyResponse.setResponse(applyJobResponse);
-
+            callToApplyResponse.setMessage("Successfully Applied !");
+            callToApplyResponse.setStatus(CallToApplyResponse.STATUS_SUCCESS);
+            
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
