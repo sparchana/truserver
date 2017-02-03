@@ -1449,6 +1449,7 @@ public class JobService {
         addCandidateRequest.setCandidateMobile(candidateMobile);
         addCandidateRequest.setCandidateFirstName(applyJobRequest.getCandidateName());
 
+        boolean shouldCreate = false;
         if( candidate == null) {
             // TODO code to create this loose candidate will come here
             addCandidateRequest.setLeadSource(ServerConstants.LEAD_SOURCE_CALL_TO_APPLY_WEBSITE);
@@ -1460,60 +1461,74 @@ public class JobService {
             if(jobPost.getJobPostToLocalityList().size() > 1) {
                 // setting locality other ---- 345
                 addCandidateRequest.setCandidateHomeLocality(345);
-            }
-
-            addCandidateRequest.setCandidateHomeLocality(
-                                Math.toIntExact(jobPost.getJobPostToLocalityList()
-                                                       .get(0)
-                                                       .getLocality()
-                                                       .getLocalityId()));
-
-
-        } else if(candidate.getLead().getLeadSource().getLeadSourceId() == ServerConstants.LEAD_SOURCE_CALL_TO_APPLY_WEBSITE){
-
-            if(candidate.getLocality().getLocalityId() == 345
-                    && jobPost.getJobPostToLocalityList().size() == 1){
-
+            } else {
                 addCandidateRequest.setCandidateHomeLocality(
                         Math.toIntExact(jobPost.getJobPostToLocalityList()
                                 .get(0)
                                 .getLocality()
                                 .getLocalityId()));
+
             }
+            CandidateService.createCandidateProfile(addCandidateRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE, ServerConstants.UPDATE_BASIC_PROFILE);
 
-            if(candidate.getJobPreferencesList().size() == 3) {
-                candidate.getJobPreferencesList().remove(0);
-            }
-
-            List<Integer> candidateJobPref = new ArrayList<>();
-            for(JobPreference jobPreference : candidate.getJobPreferencesList()) {
-                candidateJobPref.add(Math.toIntExact(jobPreference.getJobRole().getJobRoleId()));
-            }
-
-            candidateJobPref.add(Math.toIntExact(jobPost.getJobRole().getJobRoleId()));
-            addCandidateRequest.setCandidateJobPref(candidateJobPref);
-        }
-
-            // create/update candidate
-        CandidateSignUpResponse response = CandidateService.createCandidateProfile(addCandidateRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE, ServerConstants.UPDATE_BASIC_PROFILE);
-
-        if(response != null) {
-            if(response.getStatus() == CandidateSignUpResponse.STATUS_SUCCESS) {
-                try {
-                    ApplyJobResponse applyJobResponse = applyJob((ApplyJobRequest) applyJobRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE, InteractionConstants.INTERACTION_TYPE_APPLY_JOB_VIA_CALL_TO_APPLY);
-
-                    callToApplyResponse.setResponse(applyJobResponse);
-
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
-                }
-                // TODO code to deduct the new credit will come here + response formation here with rec mobile and name
-            }
         } else {
-            callToApplyResponse.setMessage("Error creating/updating candidate");
-            callToApplyResponse.setStatus(CallToApplyResponse.STATUS_FAILED);
+            // direct update candidate, if required
+            boolean shouldUpdate = false;
+            // set locality if candidate locality is prev set to other
+            if(candidate.getLocality() == null
+                    || candidate.getLocality().getLocalityId() == 345
+                    && jobPost.getJobPostToLocalityList().size() == 1)
+            {
+
+                candidate.setLocality(
+                        jobPost.getJobPostToLocalityList()
+                                .get(0)
+                                .getLocality());
+
+                shouldUpdate = true;
+            }
+
+            // we will append but not rotate job preference
+            // update if job pref is not there and job pref is other
+
+            Map<Long, Long> candidateJobPrefMap = new HashMap<>();
+            if(candidate.getJobPreferencesList().size()<3){
+                List<JobPreference> candidateJobPref = candidate.getJobPreferencesList();
+
+                for (JobPreference jobPreference : candidate.getJobPreferencesList()) {
+                    Long jobRoleId = candidateJobPrefMap.get(jobPreference.getJobRole().getJobRoleId());
+                    if(jobRoleId == null) {
+                        candidateJobPrefMap.put(jobPreference.getJobRole().getJobRoleId(), jobPreference.getJobRole().getJobRoleId());
+                    }
+                }
+
+                for(JobPreference jobPreference : candidate.getJobPreferencesList()) {
+                    if(candidateJobPrefMap.get(jobPreference.getJobRole().getJobRoleId()) == null){
+                        JobPreference jobPref = new JobPreference();
+                        jobPref.setCandidate(candidate);
+                        jobPref.setJobRole(jobPreference.getJobRole());
+
+                        candidateJobPref.add(jobPref);
+                        shouldUpdate = true;
+                    }
+                }
+            }
+
+            if(shouldUpdate) candidate.update();
         }
-        
+
+        // push this candidate to apply flow
+
+        try {
+            ApplyJobResponse applyJobResponse = applyJob((ApplyJobRequest) applyJobRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE, InteractionConstants.INTERACTION_TYPE_APPLY_JOB_VIA_CALL_TO_APPLY);
+
+            callToApplyResponse.setResponse(applyJobResponse);
+
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        // TODO code to deduct the new credit will come here + response formation here with rec mobile and name
+
         return callToApplyResponse;
     }
 
