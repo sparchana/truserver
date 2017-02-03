@@ -1531,7 +1531,7 @@ public class JobService {
             callToApplyResponse.setResponse(applyJobResponse);
             callToApplyResponse.setMessage("Successfully Applied !");
             callToApplyResponse.setStatus(CallToApplyResponse.STATUS_SUCCESS);
-            
+
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }

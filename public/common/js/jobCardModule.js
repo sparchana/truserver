@@ -683,13 +683,16 @@ var cardModule = (function ($) {
                                 }
                             ).then(function (returnedData) {
                                     if (returnedData != null) {
-                                        console.log("apply response: " + JSON.stringify(returnedData));
                                         var w = window.innerWidth;
-                                        if (w > 786) {
+                                        if (w < 786) {
                                             document.location.href = "tel:" + recruiterNumber;
-                                        } else {
-                                            submitButton.textContent = "Call : " + recruiterNumber;
                                         }
+                                        submitButton.disable = true;
+                                        submitButton.textContent = "Call : " + recruiterNumber;
+                                        submitButton.onclick = function () {
+                                            return false;
+                                        };
+
                                     } else {
                                     }
                                 },
