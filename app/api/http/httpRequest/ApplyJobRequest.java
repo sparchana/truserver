@@ -12,7 +12,7 @@ public class ApplyJobRequest {
     public String candidateName;
     public String candidateId;
 
-    public Integer jobId;
+    public Long jobId;
     public Integer localityId;
     public Boolean isPartner;
 
