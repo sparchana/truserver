@@ -2789,7 +2789,7 @@ public class Application extends Controller {
         return ok("Done");
     }
 
-    public static Result doQuickApply() throws org.json.JSONException {
+    public static Result doQuickApply() {
 
         JsonNode req = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );

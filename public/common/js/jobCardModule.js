@@ -413,7 +413,7 @@ var cardModule = (function ($) {
                     subDivHint.id = "hintTextPropM";
                     subDivHint.textContent = "Location";
                     locationDataDiv.appendChild(subDivHint);
-                    
+
                     var locDiv = document.createElement("div");
                     locDiv.style = "display: inline-block";
                     locDiv.textContent = _localities;
@@ -548,7 +548,10 @@ var cardModule = (function ($) {
                         applyBtnDiv.appendChild(reopenRow);
                     }
                     applyBtn.onclick = function () {
-                        cardModule.method.genRecruiterContactModal(jobPost.recruiterProfile.recruiterProfileName,jobPost.recruiterProfile.recruiterProfileMobile);
+                        cardModule.method.genRecruiterContactModal(
+                            jobPost.recruiterProfile.recruiterProfileName,
+                            jobPost.recruiterProfile.recruiterProfileMobile,
+                            jobPost.jobPostId);
 
                         /*var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
                         jobPostBreak = jobPostBreak.toLowerCase();
@@ -600,7 +603,7 @@ var cardModule = (function ($) {
                     function (xhr, state, error) {
                     });
             },
-            genRecruiterContactModal:function (recruiterName,recruiterNumber) {
+            genRecruiterContactModal: function (recruiterName, recruiterNumber, jobPostId) {
                 var splitMobileNumber = recruiterNumber.split("");
 
                 $("#recruiterModal").html("");
@@ -662,32 +665,40 @@ var cardModule = (function ($) {
                 submitButton.style = "margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%";
                 submitButton.type = "button";
                 submitButton.textContent = "Call : XXXXXXX"+splitMobileNumber[splitMobileNumber.length-3]+splitMobileNumber[splitMobileNumber.length-2]+splitMobileNumber[splitMobileNumber.length-1];
-                submitButton.onclick = function(){
+                submitButton.onclick = function() {
                         var candidateName = $("#candidateNameRecruiterContactModal").val();
                         var candidateMobile = $("#candidateMobileRecruiterContactModal").val();
+
                         if(cardModule.validate.candidateName(candidateName) && cardModule.validate.candidateMobile(candidateMobile)){
-                            /*try{
-                             $.ajax({
-                             type:"",
-                             url:"",
-                             contentType:"application/json",
-                             data:JSON.stringify(d),
-                             success:function (returnedData) {
-                             submitButton.textContent = recruiterNumber;
-                             }
-                             });
-                             } catch(exception){
-                             console.log("Expcetion occured !! " + exception);
-                             }*/
-                            var w = window.innerWidth;
-                            if( w > 786){
-                                document.location.href = "tel:"+recruiterNumber;
-                            } else{
-                                submitButton.textContent = "Call : "+recruiterNumber;
-                            }
+                            var d = {
+                                candidateMobile:  candidateMobile,
+                                candidateName: candidateName,
+                                jobId: jobPostId
+                            };
 
+                            $.ajax({
+                                    type: 'POST', url: '/quickApply/',
+                                    contentType: "application/json; charset=utf-8",
+                                    data: JSON.stringify(d)
+                                }
+                            ).then(function (returnedData) {
+                                    if (returnedData != null) {
+                                        var w = window.innerWidth;
+                                        if (w < 786) {
+                                            document.location.href = "tel:" + recruiterNumber;
+                                        }
+                                        submitButton.disable = true;
+                                        submitButton.textContent = "Call : " + recruiterNumber;
+                                        submitButton.onclick = function () {
+                                            return false;
+                                        };
+
+                                    } else {
+                                    }
+                                },
+                                function (xhr, state, error) {
+                                });
                         }
-
                 };
                 recruiterContactMainDiv.appendChild(submitButton);
                 $("#recruiterContact").modal("show");

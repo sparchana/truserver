@@ -1,18 +1,16 @@
 package api.http.httpRequest;
 
-import api.http.FormValidator;
-
 import java.util.Date;
 
 /**
  * Created by batcoder1 on 17/6/16.
  */
 public class ApplyJobRequest {
+    public String candidateId;
     public String candidateMobile;
     public String candidateName;
-    public String candidateId;
-
     public Long jobId;
+
     public Integer localityId;
     public Boolean isPartner;
 
@@ -30,36 +28,12 @@ public class ApplyJobRequest {
         this.candidateId = candidateId;
     }
 
-    public String getCandidateName() {
-        return candidateName;
-    }
-
-    public void setCandidateName(String candidateName) {
-        this.candidateName = candidateName;
-    }
-
-    public String getCandidateMobile() {
-        return candidateMobile;
-    }
-
-    public void setCandidateMobile(String candidateMobile) {
-        this.candidateMobile = FormValidator.convertToIndianMobileFormat(candidateMobile);
-    }
-
     public Integer getLocalityId() {
         return localityId;
     }
 
     public void setLocalityId(Integer localityId) {
         this.localityId = localityId;
-    }
-
-    public Long getJobId() {
-        return jobId;
-    }
-
-    public void setJobId(Long jobId) {
-        this.jobId = jobId;
     }
 
     public Boolean getPartner() {
@@ -92,5 +66,30 @@ public class ApplyJobRequest {
 
     public void setAppVersionCode(int appVersionCode) {
         this.appVersionCode = appVersionCode;
+    }
+
+
+    public String getCandidateMobile() {
+        return candidateMobile;
+    }
+
+    public void setCandidateMobile(String candidateMobile) {
+        this.candidateMobile = candidateMobile;
+    }
+
+    public String getCandidateName() {
+        return candidateName;
+    }
+
+    public void setCandidateName(String candidateName) {
+        this.candidateName = candidateName;
+    }
+
+    public Long getJobId() {
+        return jobId;
+    }
+
+    public void setJobId(Long jobId) {
+        this.jobId = jobId;
     }
 }
