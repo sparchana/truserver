@@ -1,80 +1,33 @@
 package api.http.httpResponse.Recruiter.recruiterAdmin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by zero on 24/1/17.
  */
 public class RecruiterSummaryResponse {
-    private Long recruiterId;
-    private String recruiterName;
-    private String recruiterMobile;
-    private Integer noOfJobPosted;
-    private Integer totalCandidatesApplied;
-    private Integer totalInterviewConducted;
-    private Integer totalSelected;
-    private String percentageFulfillment;
+   public String companyName;
+    public List<RecruiterSummary> recruiterSummaryList;
 
-
-    public String getRecruiterName() {
-        return recruiterName;
+    public RecruiterSummaryResponse() {
+        this.companyName = "";
+        this.recruiterSummaryList = new ArrayList<>();
     }
 
-    public void setRecruiterName(String recruiterName) {
-        this.recruiterName = recruiterName;
+    public String getCompanyName() {
+        return companyName;
     }
 
-    public String getRecruiterMobile() {
-        return recruiterMobile;
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 
-    public void setRecruiterMobile(String recruiterMobile) {
-        this.recruiterMobile = recruiterMobile;
+    public List<RecruiterSummary> getRecruiterSummaryList() {
+        return recruiterSummaryList;
     }
 
-    public Integer getNoOfJobPosted() {
-        return noOfJobPosted;
-    }
-
-    public void setNoOfJobPosted(Integer noOfJobPosted) {
-        this.noOfJobPosted = noOfJobPosted;
-    }
-
-    public Integer getTotalCandidatesApplied() {
-        return totalCandidatesApplied;
-    }
-
-    public void setTotalCandidatesApplied(Integer totalCandidatesApplied) {
-        this.totalCandidatesApplied = totalCandidatesApplied;
-    }
-
-    public Integer getTotalInterviewConducted() {
-        return totalInterviewConducted;
-    }
-
-    public void setTotalInterviewConducted(Integer totalInterviewConducted) {
-        this.totalInterviewConducted = totalInterviewConducted;
-    }
-
-    public Integer getTotalSelected() {
-        return totalSelected;
-    }
-
-    public void setTotalSelected(Integer totalSelected) {
-        this.totalSelected = totalSelected;
-    }
-
-    public Long getRecruiterId() {
-        return recruiterId;
-    }
-
-    public void setRecruiterId(Long recruiterId) {
-        this.recruiterId = recruiterId;
-    }
-
-    public String getPercentageFulfillment() {
-        return percentageFulfillment;
-    }
-
-    public void setPercentageFulfillment(String percentageFulfillment) {
-        this.percentageFulfillment = percentageFulfillment;
+    public void setRecruiterSummaryList(List<RecruiterSummary> recruiterSummaryList) {
+        this.recruiterSummaryList = recruiterSummaryList;
     }
 }

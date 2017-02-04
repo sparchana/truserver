@@ -9,6 +9,7 @@ var zapp = (function () {
 
     var zapp = {
         rows : [],
+        recruiterName: "",
         csv: ["Id, Job Title, Job Posted On, Fulfilment status, Total SMS Sent, Total Applications, Total Interviews, Cycle Time"],
         csvString: "",
         recruiterId: null,
@@ -44,7 +45,10 @@ var zapp = (function () {
                             "url": '/recruiter/api/summary/jobpost/'+zapp.recruiterId,
                             "dataSrc": function (returnedData) {
 
-                                zapp.rows = returnedData;
+                                zapp.recruiterName = returnedData.recruiterName;
+                                zapp.rows = returnedData.jobPostSummaryList;
+
+                                $('#recruiterName').text(zapp.recruiterName);
 
                                 $("#jobPostTable").show();
                                 $("#jobPostTableContainer").show();

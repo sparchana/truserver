@@ -2407,7 +2407,7 @@ public class JobPostWorkflowEngine {
                         }
                     }
                     candidateExtraData.setCompanyList(companyIdNameList);
-                } 
+                }
             }
 
             candidateExtraDataMap.put(candidate.getCandidateId(), candidateExtraData);
