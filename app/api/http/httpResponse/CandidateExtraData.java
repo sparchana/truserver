@@ -7,6 +7,7 @@ import models.entity.Static.RejectReason;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by zero on 10/10/16.
@@ -32,6 +33,36 @@ public class CandidateExtraData {
     public JobPostWorkflowStatus candidateInterviewStatus;
     public RejectReason reason;
     public Integer totalSmsSent;
+    public List<CompanyIdName> companyList;
+
+    public static class CompanyIdName {
+        public Long companyId;
+        public String companyName;
+
+        public CompanyIdName() {
+        }
+
+        public CompanyIdName(Long companyId, String companyName) {
+            this.companyId = companyId;
+            this.companyName = companyName;
+        }
+
+        public Long getCompanyId() {
+            return companyId;
+        }
+
+        public void setCompanyId(Long companyId) {
+            this.companyId = companyId;
+        }
+
+        public String getCompanyName() {
+            return companyName;
+        }
+
+        public void setCompanyName(String companyName) {
+            this.companyName = companyName;
+        }
+    }
 
     public String getAppliedOn() {
         return appliedOn;
@@ -191,5 +222,13 @@ public class CandidateExtraData {
 
     public void setTotalSmsSent(Integer totalSmsSent) {
         this.totalSmsSent = totalSmsSent;
+    }
+
+    public List<CompanyIdName> getCompanyList() {
+        return companyList;
+    }
+
+    public void setCompanyList(List<CompanyIdName> companyList) {
+        this.companyList = companyList;
     }
 }
