@@ -575,11 +575,13 @@ public static Result checkExistingCompany(String CompanyCode) {
                         .in("recruiter_access_level", recruiterTypeList)
                         .findUnique();
 
-                RecruiterAuth recruiterAuth = RecruiterAuth.find.where().eq("recruiter_id",
-                        recruiterProfile.getRecruiterProfileId()).findUnique();
+                if(recruiterProfile != null){
+                    RecruiterAuth recruiterAuth = RecruiterAuth.find.where().eq("recruiter_id",
+                            recruiterProfile.getRecruiterProfileId()).findUnique();
 
-                if(recruiterAuth != null){
-                    return ok("1");
+                    if(recruiterAuth != null){
+                        return ok("1");
+                    }
                 }
             }
         }
