@@ -775,8 +775,10 @@ public class RecruiterController {
                             matchingCandidateRequest.getJobPostDocumentIdList(),
                             matchingCandidateRequest.getJobPostAssetIdList(),
                             matchingCandidateRequest.getDistanceRadius(),
+                            matchingCandidateRequest.getJobPostId(),
                             matchingCandidateRequest.getShowOnlyFreshCandidate() ==  null? false: matchingCandidateRequest.getShowOnlyFreshCandidate(),
-                            isPrivate);
+                            isPrivate,
+                            recruiterProfile);
 
                     //computing interactionResult values
                     String result = "Search Candidate. Total Candidates found: " + candidateSearchMap.size() +
