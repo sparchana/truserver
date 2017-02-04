@@ -632,6 +632,11 @@ function processDataForHotJobPost(returnedData) {
                 }
 
                 $("#reopenDate").html("Will reopen on " + day + "-" + month + "-" + nextMonday.getFullYear());
+            } else if(returnedData.applyBtnStatus == CTA_BTN_CALL_TO_APPLY){
+                applyBtn.html("Call");
+                applyBtn.onclick = function(){
+
+                };
             }
         }
 
