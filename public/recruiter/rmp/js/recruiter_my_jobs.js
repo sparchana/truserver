@@ -29,7 +29,6 @@ $(document).ready(function(){
                             var postedJobList = returnedData;
                             var returned_data  = new Array();
                             if(postedJobList.length > 0){
-                                $("#postedJobTable").show();
                                 postedJobList.forEach(function (jobPost) {
                                     returned_data.push({
                                         'datePosted': function() {
@@ -96,6 +95,7 @@ $(document).ready(function(){
                                         'candidates':'<button type="button" class="mBtn" style="width: 94%" onclick="openCandidateView('+jobPost.jobPost.jobPostId+')" id="viewCandidateBtn" >Find</button>'
                                     })
                                 });
+                                $(".postedJobTableDiv").show();
                             }else{
                                 $("#noJobs").show();
                             }
