@@ -2719,6 +2719,7 @@ public class Application extends Controller {
         JobPostFilterResponse response = new JobPostFilterResponse();
 
         response.setJobPostId(jobPost.getJobPostId());
+        response.setJobPostTitle(jobPost.getJobPostTitle());
         response.setGender(jobPost.getGender());
         response.setMaxSalary(jobPost.getJobPostMaxSalary());
         response.setJobPostJobRoleId(jobPost.getJobRole().getJobRoleId());
