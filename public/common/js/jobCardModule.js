@@ -525,17 +525,18 @@ var cardModule = (function ($) {
                     if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != 4){
                         if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_REQUIRED) {
                             applyJobText = "Book Interview";
-                        } else if(jobPost.applyBtnStatus == 3) {
+                            applyBtn.style = "background:#039be5;font-weight:bold";
+                        } else if(jobPost.applyBtnStatus == CTA_BTN_ALREADY_APPLIED) {
                             applyJobText = "Already Applied";
                             applyBtn.disabled =  true;
-                            applyBtn.style = "background:#ffa726";
-                        } else if(jobPost.applyBtnStatus == 5) {
+                            applyBtn.style = "background:#ffa726;font-weight:bold";
+                        } else if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_CLOSED) {
                             applyJobText = "Application Closed";
                             applyBtn.disabled =  true;
-                            applyBtn.style = "background:#ffa726";
-                        }else if(jobPost.applyBtnStatus == 7) {
-                            applyJobText = "Call";
-                            applyBtn.style = "background:#ffa726";
+                            applyBtn.style = "background:#ffa726;font-weight:bold";
+                        }else if(jobPost.applyBtnStatus == CTA_BTN_CALL_TO_APPLY) {
+                            applyJobText = "CALL";
+                            applyBtn.style = "background:#00e676";
                         }
 
                     } else {
@@ -549,6 +550,7 @@ var cardModule = (function ($) {
                         jobApplyCol.appendChild(applyBtn);
                     }
                     applyBtnDiv.appendChild(applyBtnRow);
+
                     if(jobPost.applyBtnStatus == 5){
                         applyBtnDiv.appendChild(reopenRow);
                     }
@@ -594,6 +596,15 @@ var cardModule = (function ($) {
                         applyJobText = "Apply";
                     }*/
                     applyBtn.textContent = applyJobText;
+                    if(jobPost.applyBtnStatus == CTA_BTN_CALL_TO_APPLY){
+
+                        var icon = document.createElement("span");
+                        icon.className = "glyphicon glyphicon-earphone";
+                        icon.setAttribute("aria-hidden","true");
+                        icon.style = "padding:2%;margin-left:10px";
+                        applyBtn.appendChild(icon);
+
+                    }
                 });
             },
             getDeActivateMessage: function () {
