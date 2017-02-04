@@ -459,16 +459,18 @@ public class JobPostWorkflowEngine {
                     // filter out candidate who don't belong to this recruiter
                     List<CandidateExtraData.CompanyIdName> companyList = allFeature.get(candidate.getCandidateId()).getCompanyList();
                     if(companyList == null|| companyList.size() == 0){
-
                         // all private recruiter will have candidates with company association
                         continue;
+
                     } else {
-                        Logger.info("company list size: " + companyList.size());
-                        for(CandidateExtraData.CompanyIdName companyIdName : companyList){
-                            if(companyIdName.getCompanyId() != recruiterProfile.getCompany().getCompanyId()){
-                                // don't showing candidate of different company
-                                continue;
+                        boolean shouldAdd = false;
+                        for(CandidateExtraData.CompanyIdName companyIdName: companyList) {
+                            if(Objects.equals(companyIdName.getCompanyId(), recruiterProfile.getCompany().getCompanyId())) {
+                                shouldAdd = true;
                             }
+                        }
+                        if(!shouldAdd){
+                            continue;
                         }
                     }
                 }
