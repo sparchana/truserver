@@ -418,7 +418,7 @@ public class TrudroidController {
             applyJobRequest.setAppVersionCode(pApplyJobRequest.getAppVersionCode());
 
             //applying job
-            api.http.httpResponse.ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID, InteractionConstants.INTERACTION_TYPE_APPLIED_JOB);
+            api.http.httpResponse.ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID, InteractionConstants.INTERACTION_TYPE_APPLIED_JOB, true);
 
             //setting status response
             if(applyJobResponse.getStatus() == api.http.httpResponse.ApplyJobResponse.STATUS_APPLICATION_LIMIT_REACHED){ //TODO: change these status values in APK

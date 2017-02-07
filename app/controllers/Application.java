@@ -287,7 +287,7 @@ public class Application extends Controller {
         if(session().get("sessionChannel") != null || !session().get("sessionChannel").isEmpty()){
             Integer channelId = Integer.parseInt(session().get("sessionChannel"));
             int channelType = channelId == null ? InteractionConstants.INTERACTION_CHANNEL_UNKNOWN : channelId;
-            return ok(toJson(JobService.applyJob(applyJobRequest, channelType, InteractionConstants.INTERACTION_TYPE_APPLIED_JOB)));
+            return ok(toJson(JobService.applyJob(applyJobRequest, channelType, InteractionConstants.INTERACTION_TYPE_APPLIED_JOB, true)));
         } else {
             return badRequest();
         }
@@ -1658,6 +1658,7 @@ public class Application extends Controller {
                     FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()));
 
             SearchJobService.computeCTA(matchingJobList, id);
+            SearchJobService.removeSensitiveDetail(matchingJobList);
 
             return ok(toJson(matchingJobList));
         }
@@ -2651,7 +2652,7 @@ public class Application extends Controller {
 
         Integer channelId = Integer.parseInt(session().get("sessionChannel"));
         int channelType = channelId == null ? InteractionConstants.INTERACTION_CHANNEL_UNKNOWN : channelId;
-        ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, channelType, InteractionConstants.INTERACTION_TYPE_APPLIED_JOB_IN_SHORT);
+        ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, channelType, InteractionConstants.INTERACTION_TYPE_APPLIED_JOB_IN_SHORT, true);
 
         if(applyJobResponse.getStatus() == ApplyJobResponse.STATUS_EXISTS){
             response.setStatus(PostApplyInShortResponse.Status.ALREADY_APPLIED);
@@ -2788,4 +2789,19 @@ public class Application extends Controller {
         }
         return ok("Done");
     }
+
+    public static Result doQuickApply() {
+
+        JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+        ApplyJobRequest applyJobRequest = new ApplyJobRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            applyJobRequest = newMapper.readValue(req.toString(), ApplyJobRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(JobService.callToApply(applyJobRequest)));
+    }
+
 }

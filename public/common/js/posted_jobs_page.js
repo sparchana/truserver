@@ -598,11 +598,14 @@ function processDataForHotJobPost(returnedData) {
             $(".posted_jobs_company_details").hide();
             $("div#aboutCompanyTitle").hide();
         }
-
+        var applyBtn = $(".jobApplyBtnV2");
         if(returnedData.applyBtnStatus != null && returnedData.applyBtnStatus != CTA_BTN_APPLY){
-            var applyBtn = $(".jobApplyBtnV2");
             if(returnedData.applyBtnStatus == CTA_BTN_INTERVIEW_REQUIRED) {
                 applyBtn.html("Book Interview");
+                applyBtn.css({"background":"#039be5","font-weight":"bold"});
+                applyBtn.on('click',function(){
+                    applyJobBtnAction();
+                });
             } else if(returnedData.applyBtnStatus == CTA_BTN_DEACTIVE){
                 applyBtn.html("Apply");
                 applyBtn.css("background", "#ffa726");
@@ -632,9 +635,27 @@ function processDataForHotJobPost(returnedData) {
                 }
 
                 $("#reopenDate").html("Will reopen on " + day + "-" + month + "-" + nextMonday.getFullYear());
+            } else if(returnedData.applyBtnStatus == CTA_BTN_CALL_TO_APPLY){
+                applyBtn.html("CALL");
+                applyBtn.css({"background":"#00e676","font-weight":"bold"});
+                applyBtn.on('click',function () {
+                    cardModule.method.genRecruiterContactModal(returnedData.recruiterProfile.recruiterProfileName,
+                        returnedData.recruiterProfile.recruiterProfileMobile,
+                        jobId);
+                });
+
+                var icon = document.createElement("span");
+                icon.className = "glyphicon glyphicon-earphone";
+                icon.setAttribute("aria-hidden","true");
+                icon.style = "padding:2%;margin-left:10px";
+                applyBtn.append(icon);
             }
         }
-
+        else{
+            applyBtn.on('click',function(){
+                applyJobBtnAction();
+            });
+        }
         try {
             $.ajax({
                 type: "GET",

@@ -183,6 +183,7 @@ public class InteractionConstants {
 
     public static final int INTERACTION_TYPE_TRIED_JOB_APPLY_IN_SHORT = 69;
     public static final int INTERACTION_TYPE_APPLIED_JOB_IN_SHORT = 70;
+    public static final int INTERACTION_TYPE_APPLY_JOB_VIA_CALL_TO_APPLY = 71;
 
     public static final Map<Integer, String> INTERACTION_CHANNEL_MAP = new HashMap<>();
 
@@ -255,6 +256,7 @@ public class InteractionConstants {
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED, "Existing Partner tried Sign Up. Already a Partner");
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_TRIED_JOB_APPLY_IN_SHORT, "Tried to Apply Via ApplyInShort URL");
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_APPLIED_JOB_IN_SHORT, "Applied to job Via ApplyInShort");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_APPLY_JOB_VIA_CALL_TO_APPLY, "Applied to job Via call to apply");
 
         //channel map
         INTERACTION_CHANNEL_MAP.put(INTERACTION_CHANNEL_CANDIDATE_WEBSITE, "Candidate via Website");
