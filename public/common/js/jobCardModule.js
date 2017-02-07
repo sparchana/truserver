@@ -11,8 +11,7 @@
  * Pass a parent div to which needs JobCard appended
  *
  */
-
-
+var candidateMobileNo = localStorage.getItem("mobile");
 var cardModule = (function ($) {
     'use strict';
 
@@ -536,11 +535,12 @@ var cardModule = (function ($) {
                             applyBtn.style = "background:#ffa726;font-weight:bold";
                         }else if(jobPost.applyBtnStatus == CTA_BTN_CALL_TO_APPLY) {
                             applyJobText = "CALL";
-                            applyBtn.style = "background:#00e676";
+                            applyBtn.style = "background:#00e676;font-weight:bold";
                         }
 
                     } else {
                         applyJobText = "Apply";
+                        applyBtn.style = "background:#00c853";
                     }
                     applyBtn.textContent = applyJobText;
                     var w = window.innerWidth;
@@ -660,8 +660,7 @@ var cardModule = (function ($) {
                 recruiterContactMainDiv.id = "contactRecruiter";
                 recruiterContactMainDiv.style = "margin-top: 0; margin-right: 2%; margin-left: 2%";
                 recruiterContactModalBody.appendChild(recruiterContactMainDiv);
-
-                if(candidateId == null){
+                if(candidateMobileNo == null){
                     var candidateName = document.createElement("input");
                     candidateName.className= "form-control input-md";
                     candidateName.id = "candidateNameRecruiterContactModal";
@@ -686,22 +685,21 @@ var cardModule = (function ($) {
                 submitButton.id = "recruiterContactModalBtn";
                 submitButton.style = "margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%;font-weight:bold";
                 submitButton.type = "button";
-                submitButton.textContent = "Call : XXXXXXX"+splitMobileNumber[splitMobileNumber.length-3]+splitMobileNumber[splitMobileNumber.length-2]+splitMobileNumber[splitMobileNumber.length-1];
+                submitButton.textContent = "Call : XXXX-XXX-"+splitMobileNumber[splitMobileNumber.length-3]+splitMobileNumber[splitMobileNumber.length-2]+splitMobileNumber[splitMobileNumber.length-1];
                 submitButton.onclick = function() {
-
+                    submitButton.setAttribute("disabled","true");
                     var candidateName;
-                    var candidateMobile
 
-                        if(candidateId == null) {
+                        if(candidateMobileNo == null) {
                             candidateName = $("#candidateNameRecruiterContactModal").val();
-                            candidateMobile = $("#candidateMobileRecruiterContactModal").val();
+                            candidateMobileNo = $("#candidateMobileRecruiterContactModal").val();
                         } else{
                             candidateName = localStorage.getItem("name");
-                            candidateMobile = (localStorage.getItem("mobile")).slice(3) ;
+                            candidateMobileNo = (localStorage.getItem("mobile")).slice(3) ;
                         }
-                        if(cardModule.validate.candidateName(candidateName) && cardModule.validate.candidateMobile(candidateMobile)){
+                        if(cardModule.validate.candidateName(candidateName) && cardModule.validate.candidateMobile(candidateMobileNo)){
                             var d = {
-                                candidateMobile:  candidateMobile,
+                                candidateMobile:  candidateMobileNo,
                                 candidateName: candidateName,
                                 jobId: jobPostId
                             };
@@ -722,7 +720,7 @@ var cardModule = (function ($) {
                                                 document.location.href = "tel:" + recruiterNumber;
                                             }
 
-                                            notifyMsg(cardModule.applicationSuccess,'success');
+                                            /*notifyMsg(cardModule.applicationSuccess,'success');*/
 
                                         } else{
                                             notifyMsg(cardModule.applicationFail,'danger');

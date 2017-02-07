@@ -13,6 +13,7 @@ import models.entity.JobPost;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.OM.JobPreference;
 import models.entity.OM.LanguageKnown;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.Education;
 import models.entity.Static.Experience;
 import models.entity.Static.Language;
@@ -382,8 +383,14 @@ public class SearchJobService {
 
     public void removeSensitiveDetail(List<JobPost> jobPostList) {
 
-        for(JobPost jobPost: jobPostList){
-            jobPost.setRecruiterProfile(null);
+        for (JobPost jobPost : jobPostList) {
+            RecruiterProfile recruiterProfileShell = new RecruiterProfile();
+
+            recruiterProfileShell.setRecruiterProfileId(jobPost.getRecruiterProfile().getRecruiterProfileId());
+            recruiterProfileShell.setRecruiterProfileName(jobPost.getRecruiterProfile().getRecruiterProfileName());
+            recruiterProfileShell.setRecruiterProfileMobile(jobPost.getRecruiterProfile().getRecruiterProfileMobile());
+
+            jobPost.setRecruiterProfile(recruiterProfileShell);
         }
     }
 }
