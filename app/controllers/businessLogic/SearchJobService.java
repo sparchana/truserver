@@ -397,7 +397,6 @@ public class SearchJobService {
             subMobile = subMobile.substring(subMobile.length() - 4, subMobile.length() - 1);
             recruiterProfileShell.setRecruiterProfileMobile(subMobile);
 
-            System.out.print(String.valueOf(toJson(recruiterProfileShell)));
             jobPost.setRecruiterProfile(recruiterProfileShell);
         }
     }
