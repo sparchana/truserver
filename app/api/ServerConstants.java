@@ -40,6 +40,11 @@ public class ServerConstants {
     public static final int CANDIDATE_STATUS_NOT_VERIFIED = 0;
     public static final int CANDIDATE_STATUS_VERIFIED= 1;
 
+    public static final int PARTNER_TYPE_PRIVATE = 7;
+
+    public static final int JOB_POST_TYPE_OPEN = 0;
+    public static final int JOB_POST_TYPE_PRIVATE = 1;
+
     public static final int PARTNER_STATUS_NOT_VERIFIED = 0;
     public static final int PARTNER_STATUS_VERIFIED= 1;
 
@@ -67,6 +72,9 @@ public class ServerConstants {
 
     public static final int JOB_STATUS_NEW= 1;
     public static final int JOB_STATUS_ACTIVE= 2;
+    public static final int JOB_STATUS_DEACTIVATED= 3;
+    public static final int JOB_STATUS_CLOSED= 4;
+    public static final int JOB_STATUS_PAUSED= 5;
 
     public static final int OBJECT_TYPE_PRESCREEN_ATTEMPT= 10;
     public static final int OBJECT_TYPE_JOB_POST_WORKFLOW= 11;
@@ -81,15 +89,20 @@ public class ServerConstants {
     public static final int LEAD_SOURCE_UNKNOWN = 1; // 1 is unknown
 
     public static final int LEAD_SOURCE_WEBSITE = 2;
+    public static final int LEAD_SOURCE_CALL_TO_APPLY_WEBSITE = 26;
 
     public static final String LEAD_INTEREST_UNKNOWN = "Unknown";
 
     public static final String LOGO_UPLOAD_SUFFIX = "/";
     public static final String AWS_S3_BUCKET_NAME = "trujobs.in";
     public static final String AWS_S3_COMPANY_LOGO_FOLDER = "companyLogos";
+    public static final String AWS_S3_CANDIDATE_RESUME_FOLDER = "candidateResumes";
 
     public static final int CANDIDATE_STATE_ACTIVE = 1;
     public static final int CANDIDATE_STATE_DEACTIVE = 2;
+
+    public static final int CANDIDATE_IS_PRIVATE = 1;
+    public static final int CANDIDATE_IS_NOT_PRIVATE = 0;
 
     public static final int PARTNER_STATE_ACTIVE = 1;
     public static final int PARTNER_STATE_DEACTIVE = 2;
@@ -173,8 +186,9 @@ public class ServerConstants {
 
 
     /* Various App version */
-    public static int CURRENT_APP_VERSION_CODE = 5;
-    public static int DEACTIVATION_APP_VERSION_CODE = 5;
+    public static int CURRENT_APP_VERSION_CODE = 8;
+    public static int DEACTIVATION_APP_VERSION_CODE = 8;
+    public static int APP_NEW_LOGIN_STATUS_VERSION_CODE = 8;
 
     static {
         devTeamMobile = new HashMap<String, String>();
@@ -311,8 +325,10 @@ public class ServerConstants {
     // Recruiter constants
     public static int RECRUITER_CATEGORY_CONTACT_UNLOCK = 1;
     public static int RECRUITER_CATEGORY_INTERVIEW_UNLOCK = 2;
+    public static int RECRUITER_CATEGORY_CTA_CREDIT = 3;
 
     public static int RECRUITER_FREE_CONTACT_CREDITS = 3;
+    public static int RECRUITER_DEFAULT_INTERVIEW_CREDITS = 99999999;
 
     // pre screen front end ui ids
 
@@ -337,10 +353,11 @@ public class ServerConstants {
     public static final int ERROR = 0;
     public static final int INTERVIEW_NOT_REQUIRED = 1; // "OK"
     public static final int INTERVIEW_REQUIRED = 2;     // "INTERVIEW"
-    public static final int ALREADY_APPLIED = 3;     // "JOB POST ALREADY APPLIED"
-    public static final int APPLY = 4;     // "JOB POST ALREADY APPLIED"
-    public static final int INTERVIEW_CLOSED = 5;     // "INTERVIEW CLOSED FOR THE WEEK"
-    public static final int DEACTIVE = 6;     // "CANDIDATE DEACTIVATED"
+    public static final int ALREADY_APPLIED = 3;        // "JOB POST ALREADY APPLIED"
+    public static final int APPLY = 4;                  // "JOB POST ALREADY APPLIED"
+    public static final int INTERVIEW_CLOSED = 5;       // "INTERVIEW CLOSED FOR THE WEEK"
+    public static final int DEACTIVE = 6;               // "CANDIDATE DEACTIVATED"
+    public static final int CALL_TO_APPLY = 7;          // "CALL TO APPLY"
 
     // rescheduled Interview status
     public static final int RESCHEULED_INTERVIEW_STATUS_ACCEPTED = 1;
@@ -377,6 +394,57 @@ public class ServerConstants {
 
     public static final String CREATED_BY = "Candidate";
 
+    /* upload resume */
+    public  static final int UPLOAD_RESUME_SUCCESS_STATUS = 1;
+    public  static final int UPLOAD_RESUME_FAIL_STATUS = 0;
     //reason type
     public static final int FREE_JOB_APPLICATION_DEFAULT_LIMIT_IN_A_WEEK = 7;
+
+    //sms delivery status
+    public static final int SMS_STATUS_PENDING = 1;
+    public static final int SMS_STATUS_DELIVERED = 2;
+    public static final int SMS_STATUS_UNDELIVERED = 3;
+    public static final int SMS_STATUS_EXPIRED = 4;
+    public static final int SMS_STATUS_DND = 5;
+    public static final int SMS_STATUS_FAILED = 6;
+
+    public static final Map<Integer, String> SMS_DELIVERY_RESPONSE = new HashMap<>();
+    static {
+        SMS_DELIVERY_RESPONSE.put(SMS_STATUS_PENDING, "PENDING");
+        SMS_DELIVERY_RESPONSE.put(SMS_STATUS_DELIVERED, "DELIVRD");
+        SMS_DELIVERY_RESPONSE.put(SMS_STATUS_UNDELIVERED, "UNDELIV");
+        SMS_DELIVERY_RESPONSE.put(SMS_STATUS_EXPIRED, "EXPIRED");
+        SMS_DELIVERY_RESPONSE.put(SMS_STATUS_DND, "NCPR");
+    }
+
+
+    // recruiter Access Level
+    public static final Integer RECRUITER_ACCESS_LEVEL_OPEN = 0;
+    public static final Integer RECRUITER_ACCESS_LEVEL_PRIVATE = 1;
+    public static final Integer RECRUITER_ACCESS_LEVEL_PRIVATE_ADMIN = 2;
+
+    // candidate Access Level
+    public static final int CANDIDATE_ACCESS_LEVEL_OPEN = 0;
+    public static final int CANDIDATE_ACCESS_LEVEL_PRIVATE = 1;
+
+    public static final int PARTNER_TO_COMPANY_VERIFIED = 1;
+
+    // private signup company association status
+    public static final int PARTNER_NO_COMPANY_ASSOCIATION = 0;
+    public static final int PARTNER_NEED_COMPANY_ASSOCIATION = 1;
+    public static final int PARTNER_COMPANY_ASSOCIATION_ALREADY_EXISTS = 2;
+
+    // private partner candidate status check
+    public static final int STATUS_NO_CANDIDATE = 0;
+    public static final int STATUS_CANDIDATE_EXISTS = 1;
+    public static final int STATUS_CANDIDATE_EXISTS_DIFFERENT_COMPANY = 2;
+    public static final int STATUS_CANDIDATE_EXISTS_SAME_COMPANY = 3;
+
+    //job application channel
+    public static final int APPLICATION_CHANNEL_SELF = 1;
+    public static final int APPLICATION_CHANNEL_PARTNER = 2;
+    public static final int APPLICATION_CHANNEL_SUPPORT = 3;
+
+
+    public static String BASE_URL = "https://trujobs.in";
 }

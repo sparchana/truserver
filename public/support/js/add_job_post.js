@@ -12,58 +12,14 @@ var addressBuildingNo;
 
 function processDataAddJobPost(returnedData) {
     if(returnedData.status == 1){
-        var jobPostLocalities = "";
-        var jobPostSalary = "";
-        var localities = returnedData.jobPost.jobPostToLocalityList;
-        localities.forEach(function (locality) {
-            jobPostLocalities += locality.locality.localityName + ", ";
-        });
-
-        if(returnedData.jobPost.jobPostMaxSalary == 0){
-            jobPostSalary = returnedData.jobPost.jobPostMinSalary;
-        } else{
-            jobPostSalary = returnedData.jobPost.jobPostMinSalary + " - " + returnedData.jobPost.jobPostMaxSalary;
-        }
-
-        var timeShift = "";
-        var pricingPlan = "";
-        if(returnedData.jobPost.jobPostShift != null){
-            timeShift = returnedData.jobPost.jobPostShift.timeShiftName;
-        }
-        if(returnedData.jobPost.pricingPlanType != null){
-            pricingPlan = returnedData.jobPost.pricingPlanType.pricingPlanTypeName;
-        }
-        try {
-            $.ajax({
-                url: returnedData.formUrl,
-                data: {
-                    "entry.790894440": returnedData.jobPost.jobPostId, //jobId
-                    "entry.682057856": returnedData.jobPost.company.companyName,
-                    "entry.121610050": returnedData.jobPost.jobRole.jobName,
-                    "entry.349225135": returnedData.jobPost.recruiterProfile.recruiterProfileName,
-                    "entry.243172250": returnedData.jobPost.recruiterProfile.recruiterProfileMobile,
-                    "entry.1348583202": returnedData.jobPost.recruiterProfile.recruiterProfileEmail,
-                    "entry.499293401": jobPostLocalities,
-                    "entry.1169285578": jobPostSalary,
-                    "entry.156865881": returnedData.jobPost.jobPostIncentives,
-                    "entry.518884370": timeShift,
-                    "entry.1610465251": returnedData.jobPost.jobPostDescription,
-                    "entry.839049104": returnedData.jobPost.jobPostMinRequirement,
-                    "entry.988939191": returnedData.jobPost.jobPostAddress,
-                    "entry.731772103": returnedData.jobPost.jobPostVacancies,
-                    "entry.599645579": pricingPlan
-                },
-                type: "POST",
-                dataType: "xml"
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
-        }
         notifyError("Job Post Created Successfully. Closing this window...", 'success');
         setTimeout(function(){ window.close()}, 2000);
-    } else{
+    } else if(returnedData.status == 2){
         notifyError("Job Post Updated Successfully. Closing this window...", 'success');
         setTimeout(function(){window.close()}, 2000);
+    } else{
+        $('#saveButton').prop('disabled', false);
+        notifyError("Something went wrong. Please try again later", 'success');
     }
 }
 
@@ -120,7 +76,8 @@ function closeCreditModal() {
 $(function() {
     $("#job_post_form").submit(function(eventObj) {
         eventObj.preventDefault();
-        if(($("#jobPostRecruiter").val() == "" || $("#jobPostRecruiter").val() == "-1" || $("#jobPostRecruiter").val() == null) && $("#recruiterSection").is(':visible') == true){
+        status = 1;
+        if(($("#jobPostRecruiter").val() == "" || $("#jobPostRecruiter").val() == -1 || $("#jobPostRecruiter").val() == null) && $("#recruiterSection").is(':visible') == true){
             var status = 1;
             var recruiterName = validateName($("#recruiterName").val());
             var recruiterMobile = validateMobile($("#recruiterMobile").val());
@@ -171,7 +128,12 @@ $(function() {
                     success: processDataAddRecruiterAndUpdateRecId
                 });
             }
+        } else if($("#recruiterSection").is(':visible') == false && ($("#jobPostRecruiter").val() == "" || $("#jobPostRecruiter").val() == -1 || $("#jobPostRecruiter").val() == null) == true){
+            notifyError("Please select a recruiter", 'danger');
+            $("#jobPostRecruiter").addClass('selectDropdownInvalid').removeClass('selectDropdown');
+            status = 0;
         }
+
         var timeSlotCount = 0;
         var interviewDayCount = 0;
         $('#interviewTimeSlot input:checkbox').each(function () {
@@ -203,13 +165,13 @@ $(function() {
         var partnerJoiningIncentiveVal = parseInt($("#partnerJoiningIncentive").val());
 
         var jobPostLocalities = [];
-        status = 1;
         var locality = $('#jobPostLocalities').val().split(",");
+
         if($("#jobPostCompany").val() == ""){
             notifyError("Please enter Job Post Company", 'danger');
             $("#jobPostCompany").addClass('selectDropdownInvalid').removeClass('selectDropdown');
             status = 0;
-        } else if($("#jobPostRecruiter").val() == "" && $("#jobPostRecruiter").val() == "-1" && recId <= 0){
+        } else if($("#jobPostRecruiter").val() == "" || $("#jobPostRecruiter").val() == -1 || recId < 0){
             notifyError("Please select a recruiter", 'danger');
             $("#jobPostCompany").addClass('selectDropdown').removeClass('selectDropdownInvalid');
             $("#jobPostRecruiter").addClass('selectDropdownInvalid').removeClass('selectDropdown');
@@ -267,6 +229,7 @@ $(function() {
             notifyError("Please enter Job Post Experience required", 'danger');
             status = 0;
         }
+
         if(interviewDayCount > 0 && timeSlotCount == 0){
             $("#jobPostExperience").removeClass('invalid');
             notifyError("Please select interview time slot", 'danger');
@@ -316,7 +279,7 @@ $(function() {
                 scrollTo("#jdRequirementPanel");
             }
         }
-        
+
         //checking partner incentives
         if (partnerInterviewIncentiveVal < 0) {
             notifyError("Partner interview incentive cannot be negative", 'danger');
@@ -351,6 +314,9 @@ $(function() {
             slotArray.push(parseInt(slotId));
         }).get();
 
+        var pauseApplication = $('#jobPostStatus').val();
+        var jobPostResumeDate = "";
+
 
         if(interviewDays == "0000000"){
             notifyError("Please specify interview days", 'danger');
@@ -366,9 +332,24 @@ $(function() {
             notifyError("Please enter interview address", "danger");
             status = 0;
             $('#interviewAddress').val('');
+        } else if((pauseApplication == 5) && $("#resume_date").val() == ""){
+            notifyError("Please select application resume date", "danger");
+            status = 0;
+        } else if((pauseApplication == 5) && $("#resume_date").val() != ""){
+            var selectedDate = new Date($("#resume_date").val());
+            var todaysDate = new Date();
+
+            if(selectedDate < todaysDate){
+                notifyError("Please select a date greater than today", "danger");
+                status = 0;
+            } else{
+                jobStatusId = 5;
+                jobPostResumeDate = selectedDate.getFullYear() + "-" + (selectedDate.getMonth() + 1) + "-" + selectedDate.getDate();
+            }
         }
 
         if(status == 1){
+            console.log(recId);
             if($("#jobPostRecruiter").val() != "" && $("#jobPostRecruiter").val() != null && $("#jobPostRecruiter").val() != undefined){
                 recId = $("#jobPostRecruiter").val();
             }
@@ -453,14 +434,21 @@ $(function() {
                     jobPostInterviewLocationLng: interviewLng,
                     reviewApplications: reviewApplication,
                     jobPostAddressBuildingNo: addressBuildingNo,
-                    jobPostAddressLandmark: addressLandmark
+                    jobPostAddressLandmark: addressLandmark,
+                    resumeApplicationDate: jobPostResumeDate
                 };
+
+                $('#saveButton').prop('disabled', true);
                 $.ajax({
                     type: "POST",
                     url: "/addJobPost",
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(d),
-                    success: processDataAddJobPost
+                    success: processDataAddJobPost,
+                    error: function (jqXHR, exception) {
+                        $('#saveButton').prop('disabled', false);
+                        notifyError("Something went wrong. Please try again later", 'danger');
+                    }
                 });
             } catch (exception) {
                 console.log("exception occured!!" + exception);

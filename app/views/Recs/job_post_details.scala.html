@@ -1,5 +1,5 @@
 <!Doctype html>
-<html lang="en" xmlns="http://www.w3.org/1999/html">
+<html lang="en" xmlns="https://www.w3.org/1999/html">
     <head>
         <meta charset="UTF-8">
         <title>Job Post Details - Support | Trujobs.in</title>
@@ -28,12 +28,14 @@
         <script type="text/javascript" src="@routes.Assets.versioned("support/js/jquery-1.11.1.min.js")"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("common/js/jquery.tokeninput.js")"></script>
 
+        <script type="text/javascript" src="@routes.Assets.versioned("common/js/script_constants.js")"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("support/js/pace.min.js")"></script>
         <link rel="stylesheet" href="@routes.Assets.versioned("support/css/pace-dataloader.css")">
         <script type="text/javascript" src="@routes.Assets.versioned("support/js/add_job_post.js")"></script>
 
         <script type="text/javascript" src='http://maps.google.com/maps/api/js?key=AIzaSyCKHf7GijuzKW84Ggz0fFWWHD0y9_onUhg&sensor=false&libraries=places'></script>
         <script src="@routes.Assets.versioned("recruiter/js/locationpicker.jquery.min.js")"></script>
+
 
         <script type="text/javascript">
             $(function () {
@@ -80,6 +82,7 @@
                             <div class="row" style="margin-top: 4px">
                                 <div class="col-sm-3"><h5>Select Recruiter?:<font color="red">*</font> </h5></div>
                                 <div class="col-sm-9">
+                                    <div style="padding: 4px; font-size: 12px; color: red; display: none" id="changedRecruiter"></div>
                                     <select id="jobPostRecruiter" class="selectDropdown"></select>
                                     <div style="padding: 8px;
                                         margin: 6px;
@@ -456,10 +459,20 @@
                                     <select id="jobPostStatus" class="selectDropdown"></select>
                                 </div>
                             </div>
+
+                            <div class="row resumeDate" style="margin-top: 32px; display: none">
+                                <div class="col-sm-3" >
+                                    <h5>Resume application(s) from?</h5>
+                                </div>
+                                <div class="col-sm-2" style="margin-top: 4px">
+                                    <input type="date" id="resume_date" class="datepicker">
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                     <br> <br>
-                    <button class="btn btn-default">Save</button>
+                    <button id="saveButton" class="btn btn-default">Save</button>
                 </form>
                 <br>
             </div>

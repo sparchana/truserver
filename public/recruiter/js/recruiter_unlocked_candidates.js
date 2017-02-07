@@ -31,11 +31,21 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    $("#select_all").change(function() {
+        if(this.checked) {
+            checkAll();
+        } else{
+            uncheckAll();
+        }
+    });
+
 });
 
 function processDataForUnlockedCandidates(returnedData) {
+    console.log("data : "+ JSON.stringify(returnedData));
     if(Object.keys(returnedData).length > 0){
-        var parent = $("#candidateContainer");
+        $("#candidateTools").show();
+        var parent = $("#candidateResultContainer");
         if(returnedData != "0"){
             returnedData.reverse();
 
@@ -47,6 +57,7 @@ function processDataForUnlockedCandidates(returnedData) {
             $('.tooltipped').tooltip({delay: 50});
         }
     } else{
+        $("#candidateTools").hide();
         $("#noCandidate").show();
         $("#candidateSection").hide();
     }

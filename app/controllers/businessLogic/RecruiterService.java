@@ -13,36 +13,45 @@ import api.http.httpResponse.Recruiter.AddCreditResponse;
 import api.http.httpResponse.Recruiter.AddRecruiterResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
+import api.http.httpResponse.Recruiter.recruiterAdmin.*;
 import api.http.httpResponse.ResetPasswordResponse;
 import api.http.httpResponse.interview.InterviewResponse;
-import com.avaje.ebeaninternal.server.lib.util.Str;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
-import dao.JobPostDAO;
-import dao.RecruiterCreditHistoryDAO;
+import dao.*;
+import models.entity.Candidate;
+import models.entity.Company;
+import models.entity.JobPost;
+import models.entity.OM.CandidateResume;
 import models.entity.OM.InterviewDetails;
+import models.entity.OM.JobPostWorkflow;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterLead;
 import models.entity.Recruiter.RecruiterProfile;
-import models.entity.*;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.Recruiter.Static.RecruiterStatus;
+import models.entity.RecruiterCreditHistory;
+import models.entity.Static.JobStatus;
 import models.util.EmailUtil;
 import models.util.SmsUtil;
 import models.util.Util;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 import play.Logger;
-import play.mvc.Result;
 
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
 import static models.util.Util.generateOtp;
-import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
-import static play.mvc.Results.ok;
 
 /**
  * Created by batcoder1 on 7/7/16.
@@ -121,18 +130,29 @@ public class RecruiterService {
 
         if(recruiterProfile == null) {
 
-            //checking if company exists or not
-            Company existingCompany = Company.find.where().eq("companyId", recruiterSignUpRequest.getRecruiterCompany()).findUnique();
-            if(existingCompany == null) {
-                AddCompanyResponse addCompanyResponse;
-                AddCompanyRequest addCompanyRequest = new AddCompanyRequest();
-                addCompanyRequest.setCompanyName(recruiterSignUpRequest.getRecruiterCompanyName());
-                addCompanyRequest.setCompanyLogo(ServerConstants.DEFAULT_COMPANY_LOGO);
-                addCompanyRequest.setCompanyStatus(1);
-                addCompanyResponse = CompanyService.addCompany(addCompanyRequest);
+            Company existingCompany = null;
+            if(recruiterSignUpRequest.getCompanyCode() == null){
+                //checking if company exists or not
+                existingCompany = Company.find.where().eq("companyId", recruiterSignUpRequest.getRecruiterCompany()).findUnique();
+                if(existingCompany == null) {
+                    AddCompanyResponse addCompanyResponse;
+                    AddCompanyRequest addCompanyRequest = new AddCompanyRequest();
+                    addCompanyRequest.setCompanyName(recruiterSignUpRequest.getRecruiterCompanyName());
+                    addCompanyRequest.setCompanyLogo(ServerConstants.DEFAULT_COMPANY_LOGO);
+                    addCompanyRequest.setCompanyStatus(1);
+                    addCompanyResponse = CompanyService.addCompany(addCompanyRequest);
 
-                existingCompany = Company.find.where().eq("companyId", addCompanyResponse.getCompanyId()).findUnique();
-                if(existingCompany == null){
+                    existingCompany = Company.find.where().eq("companyId", addCompanyResponse.getCompanyId()).findUnique();
+                    if(existingCompany == null){
+                        recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.getStatusFailure());
+                        return recruiterSignUpResponse;
+                    }
+                }
+            } else{
+                existingCompany = Company.find.where().eq("CompanyCode", recruiterSignUpRequest.getCompanyCode()).findUnique();
+                if(existingCompany != null){
+                    newRecruiter.setRecruiterAccessLevel(ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE);
+                } else{
                     recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.getStatusFailure());
                     return recruiterSignUpResponse;
                 }
@@ -229,16 +249,34 @@ public class RecruiterService {
 
                 newRecruiter.setRecruiterLead(lead);
 
-                newRecruiter.save();
-
                 String createdBy = "Not specified";
 
                 if(session().get("sessionUsername") != null){
                     createdBy = "Support: " + session().get("sessionUsername");
                 }
 
-                //assigning free contact unlock credits for the recruiter
-                addCredits(newRecruiter, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, ServerConstants.RECRUITER_FREE_CONTACT_CREDITS, createdBy, recruiterSignUpRequest.getExpiryDate());
+                newRecruiter.save();
+
+                if(recruiterSignUpRequest.getRecruiterType() != null &&
+                        recruiterSignUpRequest.getRecruiterType() > ServerConstants.RECRUITER_ACCESS_LEVEL_OPEN) {
+
+                    newRecruiter.setRecruiterAccessLevel(recruiterSignUpRequest.getRecruiterType());
+                    newRecruiter.update();
+                    
+                    String startDateString = "2020-12-31";
+                    DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                    Date startDate = null;
+                    try {
+                        startDate = df.parse(startDateString);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    addCredits(newRecruiter, ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK, ServerConstants.RECRUITER_DEFAULT_INTERVIEW_CREDITS, createdBy, startDate);
+                } else{
+                    //assigning free contact unlock credits for the recruiter
+                    addCredits(newRecruiter, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, ServerConstants.RECRUITER_FREE_CONTACT_CREDITS, createdBy, recruiterSignUpRequest.getExpiryDate());
+                }
 
                 //setting all the credit values
                 setCreditHistoryValues(newRecruiter, recruiterSignUpRequest);
@@ -278,8 +316,10 @@ public class RecruiterService {
                 setCreditHistoryValues(existingRecruiter, recruiterSignUpRequest);
 
                 if ((recruiterSignUpRequest.getContactCredits() != null && recruiterSignUpRequest.getContactCredits() > 0) ||
-                        (recruiterSignUpRequest.getInterviewCredits() != null && recruiterSignUpRequest.getInterviewCredits() > 0))
+                        (recruiterSignUpRequest.getInterviewCredits() != null && recruiterSignUpRequest.getInterviewCredits() > 0) ||
+                        (recruiterSignUpRequest.getCtaCredits() != null && recruiterSignUpRequest.getCtaCredits() > 0))
                 {
+                    //TODO CTA Modify Messaging for CTA credits
                     EmailUtil.sendRecruiterCreditTopupMail(existingRecruiter,
                             recruiterSignUpRequest.getContactCredits(),
                             recruiterSignUpRequest.getInterviewCredits());
@@ -342,9 +382,21 @@ public class RecruiterService {
 
             }
         }
+
+        //setting values for cta credits
+        if(addRecruiterRequest.getCtaCredits() != null && addRecruiterRequest.getCtaCredits() != 0){
+            if(addRecruiterRequest.getCtaCredits() > 0){
+                //credit
+                addCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_CTA_CREDIT, addRecruiterRequest.getCtaCredits(), createdBy, addRecruiterRequest.getExpiryDate());
+            } else{
+                //debit
+                debitCredits(existingRecruiter, ServerConstants.RECRUITER_CATEGORY_CTA_CREDIT, addRecruiterRequest.getCtaCredits(), createdBy);
+            }
+        }
+
     }
 
-    public static Result unlockCandidate(RecruiterProfile recruiterProfile, Long candidateId) {
+    public static UnlockContactResponse unlockCandidate(RecruiterProfile recruiterProfile, Long candidateId) {
         UnlockContactResponse unlockContactResponse = new UnlockContactResponse();
         Candidate candidate = Candidate.find.where().eq("CandidateId", candidateId).findUnique();
         if(candidate != null){
@@ -363,34 +415,50 @@ public class RecruiterService {
                 // this candidate has not been unlocked by the recruiter, hence unlock it
                 Logger.info("Recruiter with mobile no: " + recruiterProfile.getRecruiterProfileMobile() + " is unlocking candidate with mobile: " + candidate.getCandidateMobile());
 
-                if(recruiterProfile.getContactCreditCount() > 0){
+                Boolean unlockCandidate = false;
+                Boolean isPrivateRecruiter = false;
+                if(recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
+                    isPrivateRecruiter = true;
+                }
+                if(recruiterProfile.getContactCreditCount() > 0 || recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
+                    unlockCandidate = true;
+                }
 
+                if(unlockCandidate){
 
-                    //recruiter has contact credits
-                    debitCredits(recruiterProfile, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, -1, createdBy);
+                    if(!isPrivateRecruiter){
+                        //recruiter has contact credits
+                        debitCredits(recruiterProfile, ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK, -1, createdBy);
 
-                    RecruiterToCandidateUnlocked recruiterToCandidateUnlocked = new RecruiterToCandidateUnlocked();
+                        RecruiterToCandidateUnlocked recruiterToCandidateUnlocked = new RecruiterToCandidateUnlocked();
 
-                    recruiterToCandidateUnlocked.setRecruiterProfile(recruiterProfile);
-                    recruiterToCandidateUnlocked.setCandidate(candidate);
+                        recruiterToCandidateUnlocked.setRecruiterProfile(recruiterProfile);
+                        recruiterToCandidateUnlocked.setCandidate(candidate);
 
-                    //saving unlocked candidate
-                    recruiterToCandidateUnlocked.save();
+                        //saving unlocked candidate
+                        recruiterToCandidateUnlocked.save();
 
-                    //adding interaction
-                    String objAUuid = candidate.getCandidateUUId();
-                    String objBUuid = recruiterProfile.getRecruiterProfileUUId();
-                    createInteractionForRecruiterUnlockCandidateContact(objAUuid, objBUuid);
+                        //adding interaction
+                        String objAUuid = candidate.getCandidateUUId();
+                        String objBUuid = recruiterProfile.getRecruiterProfileUUId();
+                        createInteractionForRecruiterUnlockCandidateContact(objAUuid, objBUuid);
 
+                        // Send sms to candidate that a recruiter has unlocked their profile
+                        SmsUtil.sendCandidateUnlockSms(recruiterProfile.getCompany().getCompanyName(),
+                                recruiterProfile.getRecruiterProfileName(), candidate.getCandidateMobile(), candidate.getCandidateFirstName());
+                    }
                     unlockContactResponse.setStatus(UnlockContactResponse.STATUS_SUCCESS);
                     unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
                     unlockContactResponse.setCandidateId(candidate.getCandidateId());
 
-                    // Send sms to candidate that a recruiter has unlocked their profile
-                    SmsUtil.sendCandidateUnlockSms(recruiterProfile.getCompany().getCompanyName(),
-                            recruiterProfile.getRecruiterProfileName(), candidate.getCandidateMobile(), candidate.getCandidateFirstName());
+                    //CandidateResume resume = CandidateResume.find.where().eq("CandidateId", candidate.getCandidateId()).findUnique();
+                    CandidateResumeService candidateResumeService= new CandidateResumeService();
+                    CandidateResume resume = (CandidateResume) candidateResumeService.fetchLatestResumeForCandidate(Long.toString(candidate.getCandidateId())).getEntity();
+                    if(resume != null){
+                        unlockContactResponse.setResumeLink(resume.getFilePath());
+                    }
 
-                    return ok(toJson(unlockContactResponse));
+                    return unlockContactResponse;
 
                 } else{
 
@@ -398,7 +466,7 @@ public class RecruiterService {
                     unlockContactResponse.setStatus(UnlockContactResponse.STATUS_NO_CREDITS);
                     unlockContactResponse.setCandidateMobile(null);
                     unlockContactResponse.setCandidateId(null);
-                    return ok(toJson(unlockContactResponse));
+                    return unlockContactResponse;
 
                 }
 
@@ -406,14 +474,19 @@ public class RecruiterService {
                 unlockContactResponse.setStatus(UnlockContactResponse.STATUS_ALREADY_UNLOCKED);
                 unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
                 unlockContactResponse.setCandidateId(candidate.getCandidateId());
-                return ok(toJson(unlockContactResponse));
+                CandidateResume resume = CandidateResume.find.where().eq("CandidateId", candidate.getCandidateId()).findUnique();
+                if(resume != null){
+                    unlockContactResponse.setResumeLink(resume.getFilePath());
+                }
+
+                return unlockContactResponse;
             }
         }
         Logger.info("Recruiter with mobile no: " + recruiterProfile.getRecruiterProfileMobile() + " does not have credits to unlock candidate");
         unlockContactResponse.setStatus(UnlockContactResponse.STATUS_FAILURE);
         unlockContactResponse.setCandidateMobile(null);
         unlockContactResponse.setCandidateId(null);
-        return ok(toJson(unlockContactResponse));
+        return unlockContactResponse;
     }
 
     public static AddCreditResponse requestCreditForRecruiter(AddCreditRequest addCreditRequest){
@@ -474,6 +547,26 @@ public class RecruiterService {
 
     private static RecruiterProfile getAndSetRecruiterValues(AddRecruiterRequest addRecruiterRequest, RecruiterProfile newRecruiter, Company existingCompany){
         if(existingCompany != null){
+
+            //if a recruiter is switching to a new company, close all the previous jobs associated with the recruiter
+            if(newRecruiter.getCompany() != null && newRecruiter.getRecruiterProfileId() != null){
+                if(!Objects.equals(newRecruiter.getCompany().getCompanyId(), existingCompany.getCompanyId())){
+
+                    //TODO: RE-association of credits on company change
+                    JobStatus statusClosed = JobStatus.find.where().eq("JobStatusId", ServerConstants.JOB_STATUS_CLOSED).findUnique();
+                    List<JobPost> recruiterJobPostList = JobPost.find.where().eq("JobRecruiterId", newRecruiter.getRecruiterProfileId()).findList();
+                    for(JobPost jobPost : recruiterJobPostList){
+                        jobPost.setJobPostStatus(statusClosed);
+                        jobPost.update();
+                    }
+
+                    //send sms to recruiter to notify company change
+                    SmsUtil.sendCompanyChangeSmsToRecruiter(newRecruiter, newRecruiter.getCompany().getCompanyName(),
+                            existingCompany.getCompanyName());
+                }
+            }
+
+            //assigning new company
             newRecruiter.setRecCompany(existingCompany);
         }
         if(addRecruiterRequest.getRecruiterName() != null){
@@ -493,6 +586,7 @@ public class RecruiterService {
         if(addRecruiterRequest.getRecruiterLinkedinProfile() != null){
             newRecruiter.setRecruiterLinkedinProfile(addRecruiterRequest.getRecruiterLinkedinProfile());
         }
+
         return newRecruiter;
     }
 
@@ -528,12 +622,14 @@ public class RecruiterService {
         InterviewResponse interviewResponse = new InterviewResponse();
         if (jobPost == null) {
             interviewResponse.setStatus(ServerConstants.ERROR);
+            interviewResponse.setStatusTitle("ERROR");
             return interviewResponse;
         }
         int validCount = 0;
         if (jobPost.getRecruiterProfile() == null) {
             // don't show interview modal if no recruiter is set for a jobpost
             interviewResponse.setStatus(ServerConstants.INTERVIEW_NOT_REQUIRED);
+            interviewResponse.setStatusTitle("INTERVIEW_NOT_REQUIRED");
             return interviewResponse;
         }
 
@@ -559,6 +655,7 @@ public class RecruiterService {
                 Logger.info("Interview closed for this week");
                 // interview closed
                 interviewResponse.setStatus(ServerConstants.INTERVIEW_CLOSED);
+                interviewResponse.setStatusTitle("INTERVIEW_CLOSED");
                 return interviewResponse;
             }
 
@@ -578,10 +675,12 @@ public class RecruiterService {
 
         if (validCount == 2) {
             interviewResponse.setStatus(ServerConstants.INTERVIEW_REQUIRED);
+            interviewResponse.setStatusTitle("INTERVIEW_REQUIRED");
             return interviewResponse;
         }
 
         interviewResponse.setStatus(ServerConstants.INTERVIEW_NOT_REQUIRED);
+        interviewResponse.setStatusTitle("INTERVIEW_NOT_REQUIRED");
         return interviewResponse;
     }
 
@@ -761,6 +860,9 @@ public class RecruiterService {
     public static AddRecruiterResponse expireCreditPack(AddRecruiterRequest addRecruiterRequest) {
         AddRecruiterResponse addRecruiterResponse = new AddRecruiterResponse();
 
+        Calendar cal = Calendar.getInstance();
+        Date expiryDate = cal.getTime();
+
         RecruiterProfile recruiterProfile = RecruiterProfile.find.where()
                 .eq("RecruiterProfileMobile", FormValidator.convertToIndianMobileFormat(addRecruiterRequest.getRecruiterMobile()))
                 .findUnique();
@@ -776,6 +878,7 @@ public class RecruiterService {
                 newHistory.setCreditIsExpired(true);
                 newHistory.setLatest(true);
                 newHistory.setUnits(0);
+                newHistory.setExpiryDate(expiryDate);
 
                 //updating the old pack's isLatest value
                 history.setLatest(false);
@@ -814,4 +917,287 @@ public class RecruiterService {
 
         return newHistory;
     }
+
+    public RecruiterSummaryResponse getRecruiterSummary(Long companyId, Long callerRecruiterId, String from, String to) {
+
+        if(callerRecruiterId == null) {
+            return new RecruiterSummaryResponse();
+        }
+
+        RecruiterSummaryResponse response = new RecruiterSummaryResponse();
+
+        final SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
+        Date startDate = null;
+        Date endDate = null;
+        if(from != null && to != null
+                && !from.equalsIgnoreCase("null") && !to.equalsIgnoreCase("null")) {
+            try {
+                startDate = sdf.parse(from);
+                endDate = sdf.parse(to);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(companyId == null) {
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", callerRecruiterId).findUnique();
+            if(recruiterProfile == null || recruiterProfile.getCompany() == null) {
+                return new RecruiterSummaryResponse();
+            }
+            companyId = recruiterProfile.getCompany().getCompanyId();
+            response.setCompanyName(recruiterProfile.getCompany().getCompanyName());
+        }
+
+        List<RecruiterSummary> recruiterSummaryList = new ArrayList<>();
+        Map<?, RecruiterProfile> recruiterProfileMap = RecruiterDAO.findMapByCompanyId(companyId, ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE);
+
+        for(Map.Entry entry: recruiterProfileMap.entrySet()) {
+
+            RecruiterSummary recruiterSummary = new RecruiterSummary();
+            RecruiterProfile recruiterProfile = (RecruiterProfile) entry.getValue();
+
+            List<Long> jobPostIdList = new ArrayList<>();
+            List<JobPost> jobPostList = new ArrayList<>();
+            for(JobPost jobPost: recruiterProfile.getJobPosts()) {
+                if(jobPost.getJobPostAccessLevel() != ServerConstants.JOB_POST_TYPE_PRIVATE) continue;
+                if(jobPost.getJobPostStatus().getJobStatusId() != ServerConstants.JOB_STATUS_ACTIVE) continue;
+
+                if(startDate != null && endDate != null) {
+                    if( jobPost.getJobPostCreateTimestamp().after(endDate) )
+                    {
+                        continue;
+                    }
+                }
+                jobPostList.add(jobPost);
+                jobPostIdList.add(jobPost.getJobPostId());
+            }
+
+            recruiterSummary.setRecruiterId(recruiterProfile.getRecruiterProfileId());
+            recruiterSummary.setRecruiterName(recruiterProfile.getRecruiterProfileName());
+            recruiterSummary.setRecruiterMobile(recruiterProfile.getRecruiterProfileMobile() +
+                    ((recruiterProfile.getRecruiterAlternateMobile() == null) ? "": "/"+recruiterProfile.getRecruiterAlternateMobile()));
+
+            recruiterSummary.setNoOfJobPosted(jobPostList.size());
+            recruiterSummary.setTotalCandidatesApplied(computeTotalApplicant(jobPostIdList, startDate, endDate));
+            recruiterSummary.setTotalInterviewConducted(computeTotalInterviewConducted(jobPostIdList,  startDate, endDate));
+            recruiterSummary.setTotalSelected(computeTotalSelected(jobPostIdList, startDate, endDate));
+
+            recruiterSummary.setPercentageFulfillment(
+                    formatPercentageFulfilled(computePercentageFulfilled(jobPostList, recruiterSummary.getTotalSelected()))
+                                     );
+
+            recruiterSummaryList.add(recruiterSummary);
+        }
+
+        response.setRecruiterSummaryList(recruiterSummaryList);
+        return response;
+    }
+
+    private PercentageBundle computePercentageFulfilled(List<JobPost> jobPostList, Integer totalSelected) {
+        int totalVacancy = 0;
+        for(JobPost jobPost: jobPostList) {
+            if(jobPost.getJobPostVacancies() == null) continue;
+
+            totalVacancy += jobPost.getJobPostVacancies();
+        }
+        if(totalVacancy == 0) {
+            return null;
+        }
+        float percentage = Float.parseFloat( new DecimalFormat("###.##").format( ((float) totalSelected*100/totalVacancy)));
+        return new PercentageBundle(totalSelected, totalVacancy, percentage);
+    }
+
+    private String formatPercentageFulfilled(PercentageBundle percentageBundle) {
+        if(percentageBundle == null)  return "NA";
+        return percentageBundle.getPercentage()+" % ("+percentageBundle.getSelected() + " out of "+percentageBundle.getTotal() + ")";
+
+    }
+
+    private int computeTotalSelected(List<Long> jobPostIdList) {
+        List<Integer> statusList = new ArrayList<>();
+
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED);
+
+        return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList).size();
+    }
+
+    private int computeTotalSelected(List<Long> jobPostIdList, Date fromDate, Date toDate) {
+        if(fromDate == null || toDate == null) {
+            return computeTotalSelected(jobPostIdList);
+        }
+
+        List<Integer> statusList = new ArrayList<>();
+
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED);
+
+        return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList, fromDate, toDate).size();
+    }
+
+    private int computeTotalApplicant(List<Long> jobPostIdList, Date fromDate, Date toDate ) {
+        if(fromDate == null || toDate == null ){
+            return computeTotalApplicant(jobPostIdList);
+        }
+
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(ServerConstants.JWF_STATUS_SELECTED);
+
+        return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList, fromDate, toDate).size();
+    }
+
+    private int computeTotalApplicant(List<Long> jobPostIdList) {
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(ServerConstants.JWF_STATUS_SELECTED);
+
+        return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList).size();
+    }
+
+    private int computeTotalInterviewConducted(List<Long> jobPostIdList) {
+        List<Integer> statusList = new ArrayList<>();
+
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED);
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_REJECTED);
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED);
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW);
+
+        return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList).size();
+    }
+
+    private int computeTotalInterviewConducted(List<Long> jobPostIdList, Date fromDate, Date toDate) {
+        if(fromDate == null || toDate == null) {
+            return computeTotalInterviewConducted(jobPostIdList);
+        }
+
+        List<Integer> statusList = new ArrayList<>();
+
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED);
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_REJECTED);
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED);
+        statusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW);
+
+        return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList, fromDate, toDate).size();
+    }
+
+    public JobPostSummaryResponse getAllJobPostPerRecruiterSummary(Long targetRecruiterId, Long callerRecruiterId) {
+        if(targetRecruiterId == null || callerRecruiterId == null) return new JobPostSummaryResponse();
+
+        JobPostSummaryResponse response = new JobPostSummaryResponse();
+
+        List<JobPostSummary> jobPostSummaryList = new ArrayList<>();
+        Map<?, JobPost> jobPostMap = JobPostDAO.findMapByRecruiterId(targetRecruiterId, ServerConstants.JOB_POST_TYPE_PRIVATE);
+
+        SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_DDMMYYYY);
+
+        for(Map.Entry entry: jobPostMap.entrySet()) {
+
+            JobPostSummary jobPostSummary = new JobPostSummary();
+            JobPost jobPost = (JobPost) entry.getValue();
+
+            if(jobPost == null) continue;
+            if(response.getRecruiterName().isEmpty()){
+                response.setRecruiterName(jobPost.getRecruiterProfile().getRecruiterProfileName());
+            }
+            String jobTitle = jobPost.getJobPostTitle() + " ("+jobPost.getJobPostStatus().getJobStatusName()+")";
+            // forming individual responses again each jobpost
+            jobPostSummary.setJobPostId(jobPost.getJobPostId());
+            jobPostSummary.setJobTitle(jobTitle);
+            jobPostSummary.setJobPostedOn(sdf.format(jobPost.getJobPostCreateTimestamp()));
+
+            // not using the jobpost.getapplication since support matching doesn't goes here
+            // need to clarify if support can interact with private flow or not
+            // for now this uses the jobpost workflow to figure out these info
+            jobPostSummary.setTotalApplicants(computeTotalApplicant(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))));
+            jobPostSummary.setTotalInterviewConducted(computeTotalInterviewConducted(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))));
+            jobPostSummary.setPercentageFulfillment(
+                    formatPercentageFulfilled(computePercentageFulfilled(new ArrayList<>(Arrays.asList(jobPost)),
+                    computeTotalSelected(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))))));
+
+            try {
+                jobPostSummary.setCycleTime(formatCycleTime(computeAvgCycleTime(jobPost.getJobPostId(), jobPost.getJobPostCreateTimestamp())));
+            } catch (ParseException e) {
+                e.printStackTrace();
+                Logger.error("unable to parse date for date diff in computeAvgCycleTime");
+            }
+            // TODO move this to map and then use it here
+            jobPostSummary.setTotalSmsSent(SmsReportDAO.getTotalSMSByRecruiterNJobPost(targetRecruiterId, jobPost.getJobPostId()));
+
+            // adding it to the list
+            jobPostSummaryList.add(jobPostSummary);
+        }
+
+        response.setJobPostSummaryList(jobPostSummaryList);
+        return response;
+    }
+
+    private String formatCycleTime(float i) {
+        if(i < 0) {
+            return "NA";
+        }
+        return i + " Day(s)";
+    }
+
+    /**
+     * @param jobPostId
+     * @param jobPostedOn
+     * @return no of days between jobPosted on and first candidate got selected
+     * @throws ParseException
+     */
+    private float computeAvgCycleTime(Long jobPostId, Timestamp jobPostedOn) throws ParseException {
+        // first selection data - job posted date
+
+        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkFlowDAO.findAllJobSelection(jobPostId);
+
+        if(jobPostWorkflowList.size() == 0) {
+            return -1;
+        }
+        int totalSize = jobPostWorkflowList.size();
+        float totalDays = 0;
+
+        for(JobPostWorkflow jobPostWorkflow : jobPostWorkflowList) {
+            DateTime dt1 = new DateTime(jobPostedOn.getTime());
+            DateTime dt2 = new DateTime(jobPostWorkflow.getCreationTimestamp().getTime());
+
+            totalDays += Days.daysBetween(dt1, dt2).getDays();
+        }
+
+
+        return totalDays/totalSize;
+    }
+
+    public static String modifySMS(String smsMessage, Candidate candidate, JobPost jobPost) {
+        String applyInShortURL = Util.generateApplyInShortUrl(candidate, jobPost);
+        StringBuilder modifiedSMS = new StringBuilder();
+        if(applyInShortURL != null) {
+
+            modifiedSMS.append("Job Offer! ");
+            modifiedSMS.append(applyInShortURL);
+            modifiedSMS.append("\n\n");
+        }
+
+        modifiedSMS.append(smsMessage);
+
+        if(applyInShortURL != null) {
+            modifiedSMS.append("\n\n");
+
+            modifiedSMS.append("Apply Now: ");
+            modifiedSMS.append(applyInShortURL);
+        }
+
+        return modifiedSMS.toString();
+    }
+
+    public static InterviewResponse isCTAAllowed(JobPost jobPost) {
+        InterviewResponse interviewResponse = new InterviewResponse();
+        if (jobPost == null || jobPost.getRecruiterProfile() == null) {
+            // don't show CTA if no recruiter is set for a jobpost
+            interviewResponse.setStatus(ServerConstants.ERROR);
+            return interviewResponse;
+        }
+        if (jobPost.getRecruiterProfile().getCtaCreditCount() > 0) {
+            interviewResponse.setStatus(ServerConstants.CALL_TO_APPLY);
+            return interviewResponse;
+        }
+        interviewResponse.setStatus(ServerConstants.ERROR);
+        return interviewResponse;
+    }
+
 }

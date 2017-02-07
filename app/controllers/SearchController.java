@@ -57,8 +57,8 @@ public class SearchController extends Controller {
         }
 
         // job role name match
-        ExpressionList<JobRole> jobroleEL = JobRole.find.where();
-        Junction<JobRole> jobRoleJunction = jobroleEL.disjunction();
+        ExpressionList<JobRole> jobRoleEL = JobRole.find.where();
+        Junction<JobRole> jobRoleJunction = jobRoleEL.disjunction();
         for(String keyword : keywordList) {
             if(keyword.replace(" ", "").trim().isEmpty()){
                 continue;
@@ -68,7 +68,7 @@ public class SearchController extends Controller {
         jobRoleJunction.endJunction();
 
         // extract string from  the list
-        for(JobRole jobRole:  jobroleEL.findList()){
+        for(JobRole jobRole:  jobRoleEL.findList()){
             suggestionMap.putIfAbsent(jobRole.getJobName(), jobRole.getJobName());
         }
 

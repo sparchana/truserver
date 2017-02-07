@@ -23,11 +23,11 @@
         <meta name="theme-color" content="#26A69A">
         <script type="text/javascript" src="@routes.Assets.versioned("common/js/jquery-1.12.4.js")"></script>
         @*<script type="text/javascript" src="@routes.Assets.versioned("common/js/jquery.min_1_12_0.js")"></script>*@
+        <script type="text/javascript" src="@routes.Assets.versioned("common/js/bootstrap.min.js")"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("support/js/datatables.min.js")"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("partner/js/dataTables.rowReorder.min.js")"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("partner/js/dataTables.responsive.min.js")"></script>
 
-        <script type="text/javascript" src="@routes.Assets.versioned("common/js/bootstrap.min.js")"></script>
         <link rel="icon" type="image/png" href="@routes.Assets.versioned("common/img/icon.png")">
 
         <link rel="stylesheet" href="@routes.Assets.versioned("common/css/token-input-facebook.css")" type="text/css" />
@@ -75,6 +75,7 @@
                             <th style="font-size: 14px">Candidate Creation Date</th>
                             <th style="font-size: 14px">Status</th>
                             <th style="font-size: 14px">Profile</th>
+                            <th style="font-size: 14px">Resume</th>
                             <th style="font-size: 14px">Jobs</th>
                             <th style="font-size: 14px">Applied</th>
                         </tr>
@@ -89,9 +90,10 @@
 
         <script>
             $(document).ready(function () {
+                checkPartnerLogin();
                 $('#footer_inc').load('/footer');
             });
-    </script>
+        </script>
             <!-- Facebook Pixel Code -->
         <script>
             !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -120,5 +122,7 @@
         </script>
 
         <script type="text/javascript" src="@routes.Assets.versioned("common/js/all_job_role_footer.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("partner/js/partner_resume_upload.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("support/js/upload_candidate_excel.js")"></script>
     </body>
 </html>

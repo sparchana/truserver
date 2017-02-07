@@ -13,15 +13,17 @@ import models.entity.JobPost;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.OM.JobPreference;
 import models.entity.OM.LanguageKnown;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.Education;
 import models.entity.Static.Experience;
 import models.entity.Static.Language;
 import models.entity.Static.Locality;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
-import play.Logger;
 
 import java.util.*;
+
+import static play.libs.Json.toJson;
 
 /**
  * Created by zero on 24/12/16.
@@ -169,7 +171,8 @@ public class SearchJobService {
                             true,
                             null,
                             request.getPage(),
-                            request.getFilterParamRequest());
+                            request.getFilterParamRequest(),
+                            ServerConstants.JOB_POST_TYPE_OPEN);
         } else {
             jobPostResponse = JobSearchService
                     .queryAndReturnJobPosts(searchParamsResponse.getSearchKeywords(),
@@ -180,7 +183,8 @@ public class SearchJobService {
                             true,
                             null,
                             request.getPage(),
-                            request.getFilterParamRequest());
+                            request.getFilterParamRequest(),
+                            ServerConstants.JOB_POST_TYPE_OPEN);
         }
 
         if (languageList.isEmpty()
@@ -360,7 +364,10 @@ public class SearchJobService {
                 } else if(response.getStatus() == ServerConstants.INTERVIEW_CLOSED){
                     jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_CLOSED);
                 } else {
-                    jobPost.setApplyBtnStatus(ServerConstants.APPLY);
+                    // Below CTA = Call-To-Apply button
+                    response = RecruiterService.isCTAAllowed(jobPost);
+                    if(response.getStatus() == ServerConstants.CALL_TO_APPLY) jobPost.setApplyBtnStatus(ServerConstants.CALL_TO_APPLY);
+                    else jobPost.setApplyBtnStatus(ServerConstants.APPLY);
                 }
             }
 
@@ -375,10 +382,23 @@ public class SearchJobService {
     }
 
 
-    public void removeSensitiveDetail(List<JobPost> jobPostList) {
+    public static void removeSensitiveDetail(List<JobPost> jobPostList) {
 
-        for(JobPost jobPost: jobPostList){
-            jobPost.setRecruiterProfile(null);
+        for (JobPost jobPost : jobPostList) {
+            RecruiterProfile recruiterProfileShell = new RecruiterProfile();
+
+            recruiterProfileShell.setRecruiterProfileId(jobPost.getRecruiterProfile().getRecruiterProfileId());
+            recruiterProfileShell.setRecruiterProfileUUId(jobPost.getRecruiterProfile().getRecruiterProfileUUId());
+            recruiterProfileShell.setRecruiterProfileCreateTimestamp(jobPost.getRecruiterProfile().getRecruiterProfileCreateTimestamp());
+            recruiterProfileShell.setRecruiterProfileName(jobPost.getRecruiterProfile().getRecruiterProfileName());
+
+            // sending only last 4 digits of recruiter mobile
+            String subMobile = jobPost.getRecruiterProfile().getRecruiterProfileMobile();
+            subMobile = subMobile.substring(subMobile.length() - 4, subMobile.length() - 1);
+            recruiterProfileShell.setRecruiterProfileMobile(subMobile);
+
+            System.out.print(String.valueOf(toJson(recruiterProfileShell)));
+            jobPost.setRecruiterProfile(recruiterProfileShell);
         }
     }
 }

@@ -19,7 +19,6 @@
         <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("recruiter/css/recruiter_home.css")">
         <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("recruiter/css/jquery.tokenize.css")" />
-
         <link rel="icon" type="image/png" href="@routes.Assets.versioned("common/img/icon.png")">
 
         <script type="text/javascript" src="@routes.Assets.versioned("common/js/jquery-1.12.4.js")"></script>
@@ -212,14 +211,36 @@
             </div>
         </div>
 
-            <!--Footer start-->
+        <!-- change company confirmation modal -->
+        <div id="confirmationModal" class="modal" style="background: transparent; box-shadow: none">
+            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeConfirmModal()"></div>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+                <center><font style="color: #fff"><h5>You are changing your Company!</h5></font></center>
+            </div>
+            <div style="background: #fff; padding: 12px">
+                <center>
+                    <h6 id="confirmationMsg"></h6>
+
+                    <div class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="performEditProfileTask()">
+                        <font style="color: #fff;
+                            font-weight: 400"><b>I agree</b></font>
+                    </div>
+
+                    <div class="waves-effect waves-light grey lighten-1 btn" data-toggle="collapse" onclick="closeConfirmModal()" style="margin-left: 8px">
+                        <font style="color: #fff;
+                            font-weight: 400"><b>Back</b></font>
+                    </div>
+                </center>
+            </div>
+        </div>
+
+
+        <!--Footer start-->
         <footer class="page-footer" style="background-color: #424242;">
             <div class="container">
                 <div class="row" style="margin: 0">
                     <div class="col l6 s12">
                         <h5 class="white-text">Hire in Bangalore</h5>
-                        <p class="grey-text text-lighten-4">Connect With Us On<img src="/assets/recruiter/img/fbmain.svg" id="fbLogo" style="margin-left: 2%;
-                            width: 6%"> </p>
                     </div>
                     <div class="col l4 offset-l2 s12">
                         <h5 class="white-text">Get in touch</h5>

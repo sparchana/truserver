@@ -7,9 +7,11 @@ var jobPostInfo;
 
 var jpTitle;
 var compName;
+var isPartnerVal;
 function processJobPostInterviewSlot(returnedData, isSupport) {
 
-    if(returnedData.interviewDetailsList == null || returnedData.interviewDetailsList.length == 0) {
+    jobPostInfo = returnedData.jobPost;
+    if(jobPostInfo.interviewDetailsList == null || jobPostInfo.interviewDetailsList.length == 0) {
         $('body').removeClass('open-interview-selector-modal');
         bootbox.hideAll();
 
@@ -38,80 +40,32 @@ function processJobPostInterviewSlot(returnedData, isSupport) {
         return;
     }
 
-    jobPostInfo = returnedData;
-
     // document.getElementById("applyJobCandidateName").innerHTML = candidateInfo.candidateFirstName;
-    jpTitle = returnedData.jobPostTitle;
-    compName = returnedData.company.companyName;
-    $("#jobTitle").html(returnedData.jobPostTitle);
-    $("#compName").html(returnedData.company.companyName);
-    var i;
-    /*$('#jobLocality').html('');
-    var defaultOption = $('<option value="-1"></option>').text("Select Preferred Location");
-    $('#jobLocality').append(defaultOption);
-    var jobLocality = returnedData.jobPostToLocalityList;
-    jobLocality.forEach(function (locality) {
-        var item = {};
-        item ["id"] = locality.locality.localityId;
-        item ["name"] = " " + locality.locality.localityName;
-        jobLocalityArray.push(item);
-        var option = $('<option value=' + locality.locality.localityId + '></option>').text(locality.locality.localityName);
-        $('#jobLocality').append(option);
-    });*/
-    if (Object.keys(returnedData.interviewDetailsList).length > 0) {
+    jpTitle = jobPostInfo.jobPostTitle;
+    compName = jobPostInfo.company.companyName;
+    $("#jobTitle").html(jobPostInfo.jobPostTitle);
+    $("#compName").html(jobPostInfo.company.companyName);
+
+    if (returnedData.interviewSlotMap!= null && Object.keys(returnedData.interviewSlotMap).length > 0) {
         //slots
         $('#interViewSlot').html('');
-        var defaultOption = $('<option value="-1"></option>').text("Select Time Slot");
-        $('#interViewSlot').append(defaultOption);
 
-        var interviewDetailsList = returnedData.interviewDetailsList;
-        if (interviewDetailsList[0].interviewDays != null) {
-            var interviewDays = interviewDetailsList[0].interviewDays.toString(2); // binary format
 
-            /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
-            if (interviewDays.length != 7) {
-                x = 7 - interviewDays.length;
-                var modifiedInterviewDays = "";
 
-                for (i = 0; i < x; i++) {
-                    modifiedInterviewDays += "0";
-                }
+        $.each( returnedData.interviewSlotMap, function( key, value ) {
+            var slotValue = value.interviewDateMillis +"_"+value.interviewTimeSlot.slotId;
+            var defaultOption = $('<option value="'+slotValue+'"></option>').text(key);
+            $('#interViewSlot').append(defaultOption);
+        });
 
-                modifiedInterviewDays += interviewDays;
-                interviewDays = modifiedInterviewDays;
-            }
-        }
-        //slots
-        var today = new Date();
-        if(isSupport) {
-            i =1;
-        } else {
-            // for those jobpost in which the auto confirm is marked as checked or is null, we start line up from the next day
-            if(returnedData.reviewApplication == null || returnedData.reviewApplication == 1){
-                i =1;
-            } else{
-                i =2;
-            }
-
-        }
-        var endDate = i + 3;
-        for (; i < endDate; i++) {
-            // 0 - > sun 1 -> mon ...
-            var x = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
-            if (checkSlotAvailability(x, interviewDays)) {
-                interviewDetailsList.forEach(function (timeSlot) {
-                    var dateSlotSelectedId = x.getFullYear() + "-" + (x.getMonth() + 1) + "-" + x.getDate() + "_" + timeSlot.interviewTimeSlot.interviewTimeSlotId;
-                    var option = $('<option value="' + dateSlotSelectedId + '"></option>').text(getDayVal(x.getDay()) + ", " + x.getDate() + " " + getMonthVal((x.getMonth() + 1)) + " (" + timeSlot.interviewTimeSlot.interviewTimeSlotName + ")");
-                    $('#interViewSlot').append(option);
-                });
-            }
-        }
+        // loop into this interviewSlotMap
         $('#interViewSection').show();
     } else{
         $('#interViewSection').hide();
     }
 }
 
+/* TODO remove below mentions 3 methods */
 function getDayVal(month){
     switch(month) {
         case 0:
@@ -198,7 +152,8 @@ function checkSlotAvailability(x, interviewDays) {
 }
 
 
-function initInterviewModal(candidateId, jobPostId, isSupport) {
+function initInterviewModal(candidateId, jobPostId, isSupport, isPartner) {
+    isPartnerVal = isPartner;
     console.log("interview Modal init");
     var htmlBodyContent = ''+
         '<div id="confirmationMsg">'+
@@ -227,7 +182,7 @@ function initInterviewModal(candidateId, jobPostId, isSupport) {
     try {
         $.ajax({
             type: "POST",
-            url: "/getJobPostInfo/" + jobPostId + "/0",
+            url: "/getInterviewSlots/" + jobPostId,
             data: false,
             contentType: false,
             processData: false,
@@ -249,23 +204,27 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
         animate: true,
         onEscape: function() {
             $('body').removeClass('open-interview-selector-modal');
-            nfy("Submitted successfully. Refreshing page.", 'success');
+            if(isPartnerVal == false || isPartnerVal == null ){
+                nfy("Submitted successfully. Refreshing page.", 'success');
 
-            setTimeout(function () {
-                if(window.location.pathname == "/dashboard/appliedJobs/"){
-                    window.location.href = "/dashboard/appliedJobs/";
-                } else {
-                    location.reload();
-                }
-                // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
-            }, 2000);
+                setTimeout(function () {
+                    if(window.location.pathname == "/dashboard/appliedJobs/"){
+                        window.location.href = "/dashboard/appliedJobs/";
+                    } else {
+                        location.reload();
+                    }
+                    // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
+                }, 2000);
+            } else{
+                nfy("Submitted successfully.", 'success');
+            }
         },
         buttons: {
             "Submit": {
                 id:"interviewModalBtn",
                 className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent interview-selector-submit",
                 callback: function () {
-                    $(".btn.interview-selector-submit").prop('disabled', true);
+                    /*$(".btn.interview-selector-submit").prop('disabled', true);*/
                     finalInterviewSlotSubmission(candidateId, jobPostId);
                 }
             }
@@ -273,17 +232,17 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
     });
     interviewDialog.attr("id", "interview-selector-modal");
 
-    $("#interViewSlot").change(function (){
+    /*$("#interViewSlot").click(function (){
         if($("#interViewSlot").val() != -1){
             $(".btn.interview-selector-submit").prop('disabled', false);
             $(".btn.interview-selector-submit").css({'background-color':'#09ac58','color':'#ffffff'});
         } else {
             $(".btn.interview-selector-submit").prop('disabled', true);
         }
-    });
-
+    });*/
+    $(".btn.interview-selector-submit").css({'background-color':'#09ac58','color':'#ffffff'});
     $('#interview-slot-selector-modal div.modal-body').attr('style', 'overflow: visible !important');
-    $('.btn.interview-selector-submit').prop('disabled', true);
+    /*$('.btn.interview-selector-submit').prop('disabled', true);*/
     $('body').removeClass('modal-open').removeClass('open-interview-selector-modal').addClass('open-interview-selector-modal');
 }
 
@@ -295,7 +254,7 @@ function finalInterviewSlotSubmission(candidateId, jobPostId) {
 
         var d = {
             timeSlot: prefTimeSlot,
-            scheduledInterviewDate: scheduledInterviewDate
+            scheduledInterviewDateInMillis: parseInt(scheduledInterviewDate)
         };
         var base_api_url ="/support/api/updateCandidateInterviewDetail/";
         if(base_api_url == null || jobPostId == null) {
@@ -345,15 +304,19 @@ function processInterviewSubmissionResponse(returnData) {
 
             $("#confirmationModal").modal("show");
         } else {
+            if(isPartnerVal == false || isPartnerVal == null ){
+                nfy("Submitted successfully. Refreshing page.", 'success');
 
-            nfy("Interview Submitted successfully. Refreshing ..", 'success');
-            setTimeout(function () {
-                if(window.location.pathname == "/dashboard/appliedJobs/"){
-                    window.location.href = "/dashboard/appliedJobs/";
-                } else {
-                    location.reload();
-                }
-            }, 2000);
+                setTimeout(function () {
+                    if(window.location.pathname == "/dashboard/appliedJobs/"){
+                        window.location.href = "/dashboard/appliedJobs/";
+                    } else {
+                        location.reload();
+                    }
+                }, 2000);
+            } else{
+                nfy("Submitted successfully.", 'success');
+            }
         }
 
     } else {

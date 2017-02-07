@@ -51,7 +51,13 @@ function renderDashboard() {
                                 return creationDate;
                             },
                             'company': '<a href="'+"/companyDetails/"+jobPost.company.companyId+'" id="'+jobPost.company.companyId+'" style="cursor:pointer;" target="_blank">'+jobPost.company.companyName+'</a>',
-                            'jobTitle': jobPost.jobPostTitle,
+                            'jobTitle': function () {
+                                if(jobPost.jobPostAccessLevel == 1){
+                                    return "[PRIVATE JOB] " + jobPost.jobPostTitle;
+                                } else{
+                                    return jobPost.jobPostTitle;
+                                }
+                            },
                             'jobSalary' : function () {
                                 if(jobPost.jobPostMaxSalary != 0 && jobPost.jobPostMaxSalary != null){
                                     return ((jobPost.jobPostMinSalary != null) ? "₹" + jobPost.jobPostMinSalary : "0") + " - ₹" + ((jobPost.jobPostMaxSalary != null) ? jobPost.jobPostMaxSalary : "0");
@@ -61,7 +67,12 @@ function renderDashboard() {
                             },
                             'jobRecruiter': function () {
                                 if(jobPost.recruiterProfile != null){
-                                    return '<a href="'+"/recruiterDetails/"+jobPost.recruiterProfile.recruiterProfileId+'" id="'+jobPost.recruiterProfile.recruiterProfileId+'" style="cursor:pointer;" target="_blank">'+jobPost.recruiterProfile.recruiterProfileName+'</a>';
+                                    var extraMsg = "";
+                                    if(jobPost.company.companyId != jobPost.recruiterProfile.company.companyId){
+                                        extraMsg = "(Recruiter changed company to : " + jobPost.recruiterProfile.company.companyName + ") ";
+                                    }
+                                    return '<a href="'+"/recruiterDetails/"+jobPost.recruiterProfile.recruiterProfileId+'" id="'+jobPost.recruiterProfile.recruiterProfileId+'" style="cursor:pointer;" target="_blank">'
+                                        + jobPost.recruiterProfile.recruiterProfileName + " " + extraMsg + '</a>';
                                 } else{
                                     return " - ";
                                 }
@@ -291,6 +302,7 @@ function getAllCompany() {
                                 return creationDate;
                             },
                             'companyName': company.companyName,
+                            'companyCode': company.companyCode,
                             'companyWebsite' : ((company.companyWebsite != null) ? '<a href="'+"http://"+company.companyWebsite+'" style="cursor:pointer;" target="_blank">'+company.companyWebsite+'</a>' : ""),
                             'companyAddress' : ((company.companyAddress != null) ? company.companyAddress : ""),
                             'companyType' : ((company.compType != null) ? company.compType.companyTypeName : ""),
@@ -305,6 +317,7 @@ function getAllCompany() {
                 { "data": "companyId" },
                 { "data": "companyCreationTimestamp" },
                 { "data": "companyName" },
+                { "data": "companyCode" },
                 { "data": "companyWebsite" },
                 { "data": "companyAddress" },
                 { "data": "companyType" },

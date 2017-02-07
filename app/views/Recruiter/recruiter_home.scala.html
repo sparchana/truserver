@@ -14,12 +14,11 @@
         <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
 
             <!-- Bootstrap Core CSS -->
-        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("common/css/bootstrap.min.css")">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("common/css/materialize.css")">
         <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("recruiter/css/recruiter_home.css")">
         <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("recruiter/css/jquery.tokenize.css")" />
-
         <link rel="icon" type="image/png" href="@routes.Assets.versioned("common/img/icon.png")">
 
         <script type="text/javascript" src="@routes.Assets.versioned("common/js/jquery-1.12.4.js")"></script>
@@ -34,17 +33,25 @@
             $('.recruiter_navbar').load('/recruiterNavbar');
         </script>
         <div class="back-banner"></div>
-        <div style="justify-content: center;align-items: center; margin-top: -360px">
+        <div style="justify-content: center;
+            align-items: center;
+            margin-top: -360px">
             <div class="container recruiterHomeMainCard" >
-                <h5 style="margin-left:20px">Welcome!</h5>
-                <a href="/recruiter/profile" id="editBtn" class="btn-floating btn-large waves-effect waves-light red" style="margin-top: -22px; float: right"><i class="material-icons">mode_edit</i></a>
+                <h5 style="margin-left: 20px">Welcome!</h5>
+                <h6 style="margin-left: 20px;
+                    display: none" id="companyCode"></h6>
+                <a href="/recruiter/profile" id="editBtn" class="btn-floating btn-large waves-effect waves-light red" style="margin-top: -22px;
+                    float: right"><i class="material-icons">mode_edit</i></a>
                 <hr>
                 <div class="row">
-                    <div class="col s12 l3" style="display: flex;justify-content: center;align-items: center;">
+                    <div class="col s12 l3" style="display: flex;
+                        justify-content: center;
+                        align-items: center;">
                         <div style="text-align: center">
                             <img src="/assets/dashboard/img/userMale.svg" id="userImgRecruiter">
                             <br>
-                            <div id="recName" style="font-size: 18px; font-weight: bold">Not Specified</div>
+                            <div id="recName" style="font-size: 18px;
+                                font-weight: bold">Not Specified</div>
                             <h6 id="recMobile" >Not Specified</h6>
                         </div>
                     </div>
@@ -52,41 +59,60 @@
                     <div class="col s12 l9">
                         <div class="row">
                             <div class="col-sm-6" style="margin-top: 4px">
-                                <div style="display : inline-block; margin: 4px;">
+                                <div style="display: inline-block;
+                                    margin: 4px;">
                                     <img src="/assets/recruiter/img/icons/envelope.svg" height="24px;" style="margin-top: -4px">
                                 </div>
                                 <div style="display: inline-block;">
-                                    <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Email</div>
-                                    <div id="recEmail" style="margin-left: 4px; display: inline-block">Not Specified</div>
+                                    <div style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 11px">Email</div>
+                                    <div id="recEmail" style="margin-left: 4px;
+                                        display: inline-block">Not Specified</div>
                                 </div>
                             </div>
                             <div class="col-sm-6" >
-                                <div style="display : inline-block; margin: 4px;">
+                                <div style="display: inline-block;
+                                    margin: 4px;">
                                     <img src="/assets/recruiter/img/icons/linkedin-logo.svg" height="24px;" style="margin-top: -4px">
                                 </div>
-                                <div style="display: inline-block; margin-top: 4px">
-                                    <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Linkedin Profile</div>
-                                    <div id="recLinkedin" style="margin: 4px; display: inline-block">Not Specified</div>
+                                <div style="display: inline-block;
+                                    margin-top: 4px">
+                                    <div style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 11px">Linkedin Profile</div>
+                                    <div id="recLinkedin" style="margin: 4px;
+                                        display: inline-block">Not Specified</div>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-sm-6" style="margin-top: 4px">
-                                <div style="display : inline-block; margin: 4px;">
+                                <div style="display: inline-block;
+                                    margin: 4px;">
                                     <img src="/assets/recruiter/img/icons/building.svg" height="24px;" style="margin-top: -4px">
                                 </div>
-                                <div style="display: inline-block; margin-top: 4px">
-                                    <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Company</div>
-                                    <div id="recCompany" style="margin-left: 4px; display: inline-block">Not Specified</div>
+                                <div style="display: inline-block;
+                                    margin-top: 4px">
+                                    <div style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 11px">Company</div>
+                                    <div id="recCompany" style="margin-left: 4px;
+                                        display: inline-block">Not Specified</div>
                                 </div>
                             </div>
                             <div class="col-sm-6" >
-                                <div style="display : inline-block; margin: 4px;">
+                                <div style="display: inline-block;
+                                    margin: 4px;">
                                     <img src="/assets/recruiter/img/icons/internet.svg" height="24px;" style="margin-top: -4px">
                                 </div>
-                                <div style="display: inline-block; margin-top: 4px" style="margin-top: 6px">
-                                    <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Company Website</div>
-                                    <div id="recCompanyWebsite" style="margin: 4px; display: inline-block">Not Specified</div>
+                                <div style="display: inline-block;
+                                    margin-top: 4px" style="margin-top: 6px">
+                                    <div style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 11px">Company Website</div>
+                                    <div id="recCompanyWebsite" style="margin: 4px;
+                                        display: inline-block">Not Specified</div>
                                 </div>
                             </div>
                         </div>
@@ -96,24 +122,31 @@
             </div>
         </div>
 
-        <div class="container recruiterHomeMessgeBox">
-            <div class="row" style="text-align: center;margin:0">
+        <div class="container recruiterHomeMessgeBox" id="recruiterMsg" style="display: none">
+            <div class="row" style="text-align: center;
+                margin: 0">
                 <div class="col s12 m2" id="creditCardIcon">
                     <img src="/assets/recruiter/img/green/card.svg">
                 </div>
                 <div class="col s12 m10" id="hasCredit">
-                   <font size="3">Awesome! You have <b id="contactCreditCount">0</b> contact unlock credits! <a href="/recruiter/jobPost/0"><span id="startNoDiv"> Post your job </span></a>and start <a href="/recruiter/candidateSearch"><span id="startNoDiv"> contacting candidates</span></a></font> now!
+                    <font size="3">Awesome! You have <b id="contactCreditCount">0</b>
+                        contact unlock credits! <a href="/recruiter/jobPost/0"><span id="startNoDiv"> Post your job </span></a>
+                        and start <a href="/recruiter/candidateSearch"><span id="startNoDiv"> contacting candidates</span></a></font>
+                    now!
                 </div>
 
                 <div class="col s12 m10" id="hasNoCredit">
                     <font size="3">
-                        You are two clicks away from getting access to thousands of verified candidates!<a id="startNoDiv" onclick="openCreditModal()">&nbsp;Buy credits, </a><a href="/recruiter/jobPost/0"><span id="startNoDiv"> Post your job </span></a>and start <a href="/recruiter/candidateSearch"><span id="startNoDiv"> contacting candidates</span></a> now!
+                        You are two clicks away from getting access to thousands of verified candidates!<a id="startNoDiv" onclick="openCreditModal()">&nbsp;Buy credits, </a> <a href="/recruiter/jobPost/0"><span id="startNoDiv"> Post your job </span></a>
+                        and start <a href="/recruiter/candidateSearch"><span id="startNoDiv"> contacting candidates</span></a>
+                        now!
                     </font>
                 </div>
             </div>
         </div>
 
-        <div class="container recruiterHomeMessgeBox" style="text-align: left; padding: 16px">
+        <div class="container recruiterHomeMessgeBox" style="text-align: left;
+            padding: 16px">
             <center style="margin-bottom: 24px">
                 <h5>Interviews Today</h5>
                 <div class="materialDash"></div>
@@ -129,7 +162,8 @@
                 </center>
             </div>
 
-            <div id="noInterviews" style="display:none; padding: 40px 6% 40px 6%">
+            <div id="noInterviews" style="display: none;
+                padding: 40px 6% 40px 6%">
                 <center>
                     <img src="/assets/recruiter/img/empty_box.svg" width="116px">
                     <h5>No Interview(s) today!</h5>
@@ -137,7 +171,8 @@
                 </center>
             </div>
 
-            <div id="somethingWentWrong" style="display:none; padding: 40px 6% 40px 6%">
+            <div id="somethingWentWrong" style="display: none;
+                padding: 40px 6% 40px 6%">
                 <center>
                     <img src="/assets/recruiter/img/warning.svg" width="116px">
                     <h5>Something went wrong!</h5>
@@ -164,7 +199,8 @@
             <div id="today_interview"></div>
         </div>
 
-        <div class="container recruiterHomeNoBackBox"style="text-align: center;margin-bottom:12px">
+        <div class="container recruiterHomeNoBackBox" id="recruiterHIW" style="text-align: center;
+            margin-bottom: 12px">
             <h5>How it works</h5>
             <center><div class="materialDash"></div></center>
             <div class="row">
@@ -187,40 +223,44 @@
         </div>
 
 
-        <div class="container recruiterHomeHighlightCard" >
-                <div class="row" style="text-align: center;margin: 0">
-                    <h5 style="padding:1%">Highlights</h5>
-                    <center><div class="materialDash"></div></center>
-                    <div class="col l6 s12" style="padding: 2%;margin-top: 20px">
-                        <div class="row">
-                            <img class="responsive-img" src="/assets/recruiter/img/candidate.svg" style="height: 70px;">
-                        </div>
-                        <div class="row" style="margin: 2px">
-                            <b><div style="font-size: 20px">40000+</div></b>
-                        </div>
-                        <div class="row" style="margin: 1px;
-                            font-weight: 600;">
-                            <div style="font-size: 18px">Candidates</div>
-                        </div>
+        <div class="container recruiterHomeHighlightCard" id="recruiterHighlights" style="display: none;">
+            <div class="row" style="text-align: center;
+                margin: 0">
+                <h5 style="padding: 1%">Highlights</h5>
+                <center><div class="materialDash"></div></center>
+                <div class="col l6 s12" style="padding: 2%;
+                    margin-top: 20px">
+                    <div class="row">
+                        <img class="responsive-img" src="/assets/recruiter/img/candidate.svg" style="height: 70px;">
                     </div>
-                    <div class="col l6 s12" style="padding: 2%; margin-top: 20px">
-                        <div class="row">
-                            <img class="responsive-img" src="/assets/recruiter/img/suitcase.svg" style="height: 70px;">
-                        </div>
-                        <div class="row" style="margin: 2px">
-                            <b><div style="font-size: 20px">35+</div></b>
-                        </div>
-                        <div class="row" style="font-weight: 600;">
-                            <div style="font-size: 18px">Job roles</div>
-                        </div>
+                    <div class="row" style="margin: 2px">
+                        <b><div style="font-size: 20px">40000+</div></b>
+                    </div>
+                    <div class="row" style="margin: 1px;
+                        font-weight: 600;">
+                        <div style="font-size: 18px">Candidates</div>
+                    </div>
+                </div>
+                <div class="col l6 s12" style="padding: 2%;
+                    margin-top: 20px">
+                    <div class="row">
+                        <img class="responsive-img" src="/assets/recruiter/img/suitcase.svg" style="height: 70px;">
+                    </div>
+                    <div class="row" style="margin: 2px">
+                        <b><div style="font-size: 20px">35+</div></b>
+                    </div>
+                    <div class="row" style="font-weight: 600;">
+                        <div style="font-size: 18px">Job roles</div>
                     </div>
                 </div>
             </div>
+        </div>
 
-        <div class="row hide-on-med-and-up" id="creditViewMobile">
+        <div class="row hide-on-med-and-up" id="creditViewMobile" style="display: none">
             <div class="col s12 ">
                 <div class="row" style="margin: 0;">
-                    <span style="font-size: 18px; font-weight: bold">Credits Balance</span>
+                    <span style="font-size: 18px;
+                        font-weight: bold">Credits Balance</span>
                 </div>
                 <div class="row" style="margin: 0;">
                     <div class="col s4" style="padding: 0;">
@@ -232,14 +272,17 @@
                         <span>Interview: <b><div style="display: inline-block" id="remainingInterviewCredits">0</div></b></span>
                     </div>
                     <div class="col s4 right-align" id="creditModalBtn">
-                        <a class="waves-effect waves-light orange lighten-1 btn right" data-toggle="collapse" onclick="openCreditModal()"><font size="1" style="color: #fff;font-weight: 400"><b>Buy Credits</b></font></a>
+                        <a class="waves-effect waves-light orange lighten-1 btn right" data-toggle="collapse" onclick="openCreditModal()"><font size="1" style="color: #fff;
+                            font-weight: 400"><b>Buy Credits</b></font>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="creditView" class="col s12 hide-on-small-only">
-            <span style="font-size: 18px; font-weight: bold">Credits Balance</span>
+        <div id="creditView" class="col s12 hide-on-small-only" style="display: none">
+            <span style="font-size: 18px;
+                font-weight: bold">Credits Balance</span>
             <div style="margin: 4px">
                 <img src="/assets/recruiter/img/coin.svg" width="24px">
                 <span>Contact Unlock: <b><div style="display: inline-block" id="remainingContactCreditsMobile">0</div></b></span>
@@ -249,17 +292,23 @@
                 <span>Interview Unlock: <b><div style="display: inline-block" id="remainingInterviewCreditsMobile">0</div></b></span>
             </div>
             <a class="waves-effect waves-light orange lighten-1 btn right" data-toggle="collapse" onclick="openCreditModal()"><font style="color: #fff;
-                font-weight: 400"><b>Buy Credits</b></font></a>
+                font-weight: 400"><b>Buy Credits</b></font>
+            </a>
         </div>
 
 
-        <!-- Modal buy credit Structure -->
-        <div id="modalBuyCredits" class="modal" style="background: transparent; box-shadow: none">
-            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeCreditModal()"></div>
-            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+            <!-- Modal buy credit Structure -->
+        <div id="modalBuyCredits" class="modal" style="background: transparent;
+            box-shadow: none">
+            <div style="float: right;
+                padding: 12px;
+                cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeCreditModal()"></div>
+            <div style="background: rgba(0, 0, 0, 0.75);
+                padding: 4%">
                 <center><font style="color: #fff"><h5>Top up now and get access to more candidates!</h5></font></center>
             </div>
-            <div id="openCreditModal" style="background: #fff; padding: 12px">
+            <div id="openCreditModal" style="background: #fff;
+                padding: 12px">
                 <center>
                     <div class="row">
                         <div class="col s6 l6">
@@ -280,27 +329,37 @@
                         </div>
                     </div>
                     <div id="requestCredits" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="submitCredits()"><font style="color: #fff;
-                        font-weight: 400"><b>Buy Credits Now!</b></font></div>
-                    <div style="margin: 8px; color: #0f9d58; display: none" id="successMsg">Thanks! We have received your request to buy more credits. Our business team will contact you within 24hrs</div>
+                        font-weight: 400"><b>Buy Credits Now!</b></font>
+                    </div>
+                    <div style="margin: 8px;
+                        color: #0f9d58;
+                        display: none" id="successMsg">Thanks! We have received your request to buy more credits. Our business team will contact you within 24hrs</div>
                 </center>
             </div>
         </div>
 
             <!-- feedback credit Structure -->
-        <div id="addFeedback" class="modal" style="background: transparent; box-shadow: none">
-            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeFeedbackModal()"></div>
-            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+        <div id="addFeedback" class="modal" style="background: transparent;
+            box-shadow: none">
+            <div style="float: right;
+                padding: 12px;
+                cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeFeedbackModal()"></div>
+            <div style="background: rgba(0, 0, 0, 0.75);
+                padding: 4%">
                 <center><font style="color: #fff"><h5>Interview Feedback!</h5></font></center>
             </div>
-            <div style="background: #fff; padding: 12px">
+            <div style="background: #fff;
+                padding: 12px">
                 <center>
                     <div class="row">
                         <div class="col s12 l12">
                             <br>
                             <img src="/assets/recruiter/img/feedback.svg" width="70px">
-                            <div class="row" style="margin-top: 12px; margin-bottom: 0">
+                            <div class="row" style="margin-top: 12px;
+                                margin-bottom: 0">
                                 <div class="col-sm-6">
-                                    <h6 style="text-align: right; margin-top: 28px">Please select a feedback result:</h6>
+                                    <h6 style="text-align: right;
+                                        margin-top: 28px">Please select a feedback result:</h6>
                                 </div>
                                 <div class="input-field col s12 l6">
                                     <select id="feedbackOption" class="selectDropdown">
@@ -311,20 +370,23 @@
                                         <option value="4">Candidate not qualified</option>
                                     </select>
                                     <style>
-                                    select{
+                                    select {
                                         display: inline-block;
                                     }
                                     </style>
                                 </div>
                             </div>
-                            <div class="row" id="otherReason" style="margin-top: 12px; margin-bottom: 0; display: none">
+                            <div class="row" id="otherReason" style="margin-top: 12px;
+                                margin-bottom: 0;
+                                display: none">
                                 <div class="col-sm-6">
-                                    <h6 style="text-align: right; margin-top: 28px">Please select a reason:</h6>
+                                    <h6 style="text-align: right;
+                                        margin-top: 28px">Please select a reason:</h6>
                                 </div>
                                 <div class="input-field col s12 l6">
                                     <select id="reasonVal" class="selectDropdown"></select>
                                     <style>
-                                    select{
+                                    select {
                                         display: inline-block;
                                     }
                                     </style>
@@ -353,14 +415,12 @@
             </div>
         </div>
 
-        <!--Footer start-->
+            <!--Footer start-->
         <footer class="page-footer" style="background-color: #424242;">
             <div class="container">
                 <div class="row" style="margin: 0">
                     <div class="col l6 s12">
                         <h5 class="white-text">Hire in Bangalore</h5>
-                        <p class="grey-text text-lighten-4">Connect With Us On<img src="/assets/recruiter/img/fbmain.svg" id="fbLogo" style="margin-left: 2%;
-                            width: 6%"></p>
                     </div>
                     <div class="col l4 offset-l2 s12">
                         <h5 class="white-text">Get in touch</h5>
@@ -383,35 +443,55 @@
             </div>
         </footer>
     </body>
-    <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
+    <script type="text/javascript" src="@routes.Assets.versioned("common/js/bootstrap.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.versioned("common/js/materialize.js")"></script>
     <script type="text/javascript" src="@routes.Assets.versioned("common/js/validation.js")"></script>
     <script type="text/javascript" src="@routes.Assets.versioned("common/js/jobpost_workflow_constants.js")"></script>
     <script type="text/javascript" src="@routes.Assets.versioned("recruiter/js/recruiter_home.js")"></script>
 
         <!-- Facebook Pixel Code -->
     <script>
-    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-            n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-        n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-        t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-            document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    !function (f, b, e, v, n, t, s) {
+        if (f.fbq)return;
+        n = f.fbq = function () {
+            n.callMethod ?
+                    n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+        };
+        if (!f._fbq)f._fbq = n;
+        n.push = n;
+        n.loaded = !0;
+        n.version = '2.0';
+        n.queue = [];
+        t = b.createElement(e);
+        t.async = !0;
+        t.src = v;
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s)
+    }(window,
+            document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
 
     fbq('init', '535139956654403');
     fbq('track', "PageView");
 </script>
     <noscript>
-        <img height="1" width="1" style="display:none"
+        <img height="1" width="1" style="display: none"
         src="https://www.facebook.com/tr?id=535139956654403&ev=PageView&noscript=1"/>
     </noscript>
         <!-- End Facebook Pixel Code -->
 
         <!--  google page view -->
     <script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
     ga('create', 'UA-77156203-1', 'auto');
     ga('send', 'pageview');
 </script>

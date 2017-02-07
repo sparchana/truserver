@@ -203,7 +203,7 @@
                         </div>
                         <div class="col-sm-2" id="jobApplyBtnId">
                             <div style="display: inline-block;">
-                                <button class="jobApplyBtnV2" style="float: right" onclick="applyJobBtnAction()">Apply</button>
+                                <button class="jobApplyBtnV2" style="float: right">Apply</button>
                                 <center>
                                     <span style="font-size: 11px" id="reopenDate">
                                     </span>
@@ -439,7 +439,7 @@
                         </div>
                         <div class="col-sm-9">
                             <div class="row">
-                                <div class="companyTitleHead" id="postedCompanyTitle">Company Title</div>
+                                <h2 class="companyTitleHead" id="postedCompanyTitle" style="margin:1% 0">Company Title</h2>
                                 <hr>
                                 <div class="row" style="padding: 1% 0% 0% 0%">
                                     <div class="col-sm-4">
@@ -523,6 +523,7 @@
 
             </div>
         </div>
+        <div id="recruiterModal"></div>
             <!-- Start Footer-->
         <div id="footer_inc"></div>
         <script>
@@ -536,6 +537,7 @@
         <script type="text/javascript" src="@routes.Assets.versioned("js/bootbox.min.js")"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("partner/js/notify.min.js")"></script>
 
+        <script type="text/javascript" src="@routes.Assets.versioned("build/scripts/jobCardModule.min.js")"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("common/js/validation.js")"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("common/js/add_lead.js")"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("common/js/apply_job.js")"></script>
@@ -545,6 +547,8 @@
 
         <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("css/assessment_modal.css")"/>
         <script type="text/javascript" src="@routes.Assets.versioned("js/assessment_modal.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("common/js/candidate_upload_resume.js")"></script>
+
         <script>
                 $(document).ready(function () {
                     $(document).click(function (event) {
@@ -602,7 +606,9 @@
                 ga('send', 'pageview');
         </script>
 
+        <script type="text/javascript" src="@routes.Assets.versioned("support/js/bootstrap-notify.min.js")"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("common/js/script_constants.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("common/js/de_activation_util.js")"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("common/js/posted_jobs_page.js")"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("js/interview_modal.js")"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("common/js/all_job_role_footer.js")"></script>

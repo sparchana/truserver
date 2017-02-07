@@ -29,7 +29,7 @@
         <span class="icon-bar" style="border: 1px solid #fff;"></span>
 
       </button>
-      <div itemscope itemtype ="http://schema.org/logo">
+      <div itemscope itemtype ="https://schema.org/logo">
         <a class="navbar-brand" href="/partner/home">
             <img id="navLogo" itemprop="Brand" src="/assets/common/img/trujobs-partner.png" alt="TruJobs Logo" style="padding: 0px"></a>
       </div>
@@ -38,7 +38,7 @@
     <div class="collapse navbar-collapse" id="navigationbar">
       <ul class="nav navbar-nav navbar-right">
         <li><a href="/partner/home"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">PARTNER DASHBOARD</font></a></li>
-        <li><a href="/partner/candidate/0"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">ADD CANDIDATES</font></a></li>
+        <li><a data-target="#candidateCreateOptionModal" data-toggle="modal"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">ADD CANDIDATES</font></a></li>
         <li><a href="/partner/myCandidates"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">MY CANDIDATES</font></a></li>
         <li><a href="/partner/editProfile"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">PROFILE</font></a></li>
         <li><a href="#" onclick="logoutPartner()"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">LOGOUT</font></a></li>
@@ -67,4 +67,82 @@
         </div>
     </div>
 </div>
+    <!-- Add candidate Option Modal -->
+    <div class ="modal fade bs-example-modal-lg" id="candidateCreateOptionModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" id="candidateCreateOptionModalDialog" role="document">
+            <div class="modal-content" id="candidateCreateOptionModalContent">
+                <div class="row">
+
+                    <div class="col-sm-4 addCandidateColLeft" id="uploadCsvOp">
+                        <div class="row" style="margin-bottom:5px">
+                            <img src="/assets/partner/img/csv.svg" height="100px">
+                        </div>
+                        <div class="row" style="padding:6% 2%;margin:0;height: 60px">
+                            <font>Upload CSV File</font>
+                            <br>
+                        </div>
+                        <div class="row" id="addCandidateCant">
+                            <center>
+                                <label class="btn btn-default btn-file" id="uploadCSVBtn">UPLOAD CSV
+                                    <input type="file" accept=".csv" id="excelfile" style="display: none" onchange="uploadCSV(event)">
+                                </label>
+                            </center>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4 addCandidateColLeft" id="uploadResumeOp">
+                        <div class="row" style="margin-bottom:5px">
+                            <img src="/assets/partner/img/bulk.svg" height="100px">
+                        </div>
+                        <div class="row" style="padding:6% 2%;margin:0;height: 60px">
+                            <font>One click resume</font>
+                            <br>
+                        </div>
+                        <div class="row" id="addCandidateCant">
+                            <center>
+                                <label class="btn btn-default btn-file" id="uploadResumeBtn">UPLOAD RESUMES
+                                    <input type="file" accept=".pdf,.doc,.docx" onchange="uploadBulkResumes(event)" id="uploadBulkResumeContent" style="display: none" multiple>
+                                </label>
+                            </center>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4 addCandidateColRight" id="addCandidateOp">
+                        <div class="row" style="margin-bottom:5px">
+                            <img src="/assets/partner/img/single.svg" height="100px">
+                        </div>
+                        <div class="row" style="padding:6% 2%;margin:0;height: 60px">
+                            <font>No resume ? Click here to create a candidate</font>
+                        </div>
+                        <div class="row" id="addCandidateCant">
+                            <a href="/partner/candidate/0" id="addCandidate">
+                            <label class="btn btn-default btn-file" id="addCandidateBtn">ADD CANDIDATE</label>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Resume Progress Modal -->
+    <div class ="modal fade bs-example-modal-md" id="uploadResumeModalProcess" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-md" id="uploadResumeModalDialog" role="document">
+            <div class="modal-content" id="uploadResumeModalProcessContent">
+                <center id="resumeUpload">
+                    <svg viewBox="0 0 32 32" width="42" height="42">
+                        <circle id="loadingSpinnerResume" cx="16" cy="16" r="14" fill="none"></circle>
+                    </svg>
+                </center>
+                <h4>Processing Your Request...</h4>
+            </div>
+        </div>
+    </div>
+    <div class ="modal fade bs-example-modal-md" id="uploadResumeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-md" id="uploadResumeModalDialog" role="document">
+            <div class="modal-content" id="uploadResumeModalContent"></div>
+            <div class="modal-content textResponse"></div>
+        </div>
+    </div>
+
 

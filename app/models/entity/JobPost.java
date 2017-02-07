@@ -100,6 +100,9 @@ public class JobPost extends Model {
     @Column(name = "ReviewApplication", columnDefinition = "int(1) null")
     private Integer reviewApplication;
 
+    @Column(name = "job_post_access_level", columnDefinition = "int(2) signed not null default 0")
+    private int jobPostAccessLevel;
+
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "JobStatus")
@@ -166,6 +169,9 @@ public class JobPost extends Model {
 
     @Column(name = "JobPostPartnerJoiningIncentive", columnDefinition = "bigint signed null")
     private Long jobPostPartnerJoiningIncentive;
+
+    @Column(name = "resume_application_date", columnDefinition = "date null")
+    private Date resumeApplicationDate;
 
     @JsonManagedReference
     @PrivateOwned
@@ -758,5 +764,21 @@ public class JobPost extends Model {
 
     public void setApplyBtnStatus(int applyBtnStatus) {
         this.applyBtnStatus = applyBtnStatus;
+    }
+
+    public Date getResumeApplicationDate() {
+        return resumeApplicationDate;
+    }
+
+    public void setResumeApplicationDate(Date resumeApplicationDate) {
+        this.resumeApplicationDate = resumeApplicationDate;
+    }
+
+    public int getJobPostAccessLevel() {
+        return jobPostAccessLevel;
+    }
+
+    public void setJobPostAccessLevel(int jobPostAccessLevel) {
+        this.jobPostAccessLevel = jobPostAccessLevel;
     }
 }

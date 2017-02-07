@@ -4,22 +4,16 @@ import api.ServerConstants;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.PrivateOwned;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import models.entity.Company;
-import models.entity.OM.JobApplication;
-import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
-import models.entity.RecruiterCreditHistory;
 import models.entity.JobPost;
+import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.Static.RecruiterProfileStatus;
 import models.entity.Recruiter.Static.RecruiterStatus;
-import play.Logger;
-import play.core.server.Server;
+import models.entity.RecruiterCreditHistory;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -119,6 +113,12 @@ public class RecruiterProfile extends Model {
 
     @Transient
     private Integer interviewCreditCount = 0;
+
+    @Transient
+    private Integer ctaCreditCount = 0;
+
+    @Column(name = "recruiter_access_level", columnDefinition = "int(2) signed not null default 0")
+    private int recruiterAccessLevel;
 
     public static Finder<String, RecruiterProfile> find = new Finder(RecruiterProfile.class);
 
@@ -311,6 +311,7 @@ public class RecruiterProfile extends Model {
         this.recruiterAuth = recruiterAuth;
     }
 
+
     public Integer getContactCreditCount() {
         return creditCount(ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK);
     }
@@ -343,5 +344,21 @@ public class RecruiterProfile extends Model {
         }
 
         return count;
+    }
+
+    public int getRecruiterAccessLevel() {
+        return recruiterAccessLevel;
+    }
+
+    public void setRecruiterAccessLevel(int recruiterAccessLevel) {
+        this.recruiterAccessLevel = recruiterAccessLevel;
+    }
+
+    public Integer getCtaCreditCount() {
+        return creditCount(ServerConstants.RECRUITER_CATEGORY_CTA_CREDIT);
+    }
+
+    public void setCtaCreditCount(Integer ctaCreditCount) {
+        this.ctaCreditCount = ctaCreditCount;
     }
 }

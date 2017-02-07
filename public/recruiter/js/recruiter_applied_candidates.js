@@ -6,6 +6,7 @@ var globalCandidateId;
 var globalInterviewStatus;
 var rescheduledDate;
 var rescheduledSlot;
+var candidateCardData;
 
 var globalInterviewDay = null;
 var globalInterviewSlot = null;
@@ -206,6 +207,12 @@ function processDataUnlockedCandidates(returnedData) {
         try {
             $("#candidate_" + unlockedCandidate.candidate.candidateId).html(unlockedCandidate.candidate.candidateMobile);
             $("#unlock_candidate_" + unlockedCandidate.candidate.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 customUnlockBtn").addClass("contactUnlocked right").removeAttr('onclick');
+
+            var link = unlockedCandidate.candidate.candidateResumeLink;
+            if(link != null){
+                $("#candidate_resume_" + unlockedCandidate.candidate.candidateId).attr("val", "http://docs.google.com/gview?url=" + link + "&embedded=true");
+            }
+
         } catch (err){}
     });
 }
@@ -612,6 +619,11 @@ function openFeedbackModal(candidateId) {
         $('#reasonVal').append(option);
     });
 
+    $("#otherReason").hide();
+    $("#feedbackOption").val(0);
+    $("#reasonVal").val(0);
+    $("#feedbackNote").val('');
+
     $("#addFeedback").openModal();
 
     $("#feedbackOption").change(function (){
@@ -655,10 +667,27 @@ function confirmAddFeedback() {
 
 function processDataUpdateFeedBack(returnedData) {
     if(returnedData == 1){
-        notifySuccess("Feedback updated successfully. Refreshing the page..");
-        setTimeout(function () {
+        notifySuccess("Feedback updated successfully");
+        $("#candidate_card_" + globalCandidateId).remove();
+
+        $("#addFeedback").closeModal();
+/*        setTimeout(function () {
             location.reload();
-        }, 2000);
+        }, 2000);*/
+
+        if($("#feedbackOption").val() == FEEDBACK_OPTION_SELECTED){
+            candidateCardData.extraData.workflowStatus.statusId = JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED;
+        } else if($("#feedbackOption").val() == FEEDBACK_OPTION_REJECTED){
+            candidateCardData.extraData.workflowStatus.statusId = JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_REJECTED;
+        } else if($("#feedbackOption").val() == FEEDBACK_OPTION_NO_SHOW){
+            candidateCardData.extraData.workflowStatus.statusId = JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW;
+        } else{
+            candidateCardData.extraData.workflowStatus.statusId = JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED;
+        }
+
+        candidateCardData.extraData.workflowStatus.statusTitle = $("#feedbackOption option:selected").text();
+        renderIndividualCandidateCard(candidateCardData, null, view_applied_candidate);
+
     } else if(returnedData == -1){
         notifyError("You are out of interview credits. Please purchase interview credits!");
         openCreditModal();
@@ -809,10 +838,26 @@ function getRecruiterInfo() {
 }
 
 function processDataRecruiterProfile(returnedData) {
-    $("#remainingContactCredits").html(returnedData.contactCreditCount);
-    $("#remainingContactCreditsMobile").html(returnedData.contactCreditCount);
-    $("#remainingInterviewCredits").html(returnedData.interviewCreditCount);
-    $("#remainingInterviewCreditsMobile").html(returnedData.interviewCreditCount);
+    if(returnedData == 0){
+        logoutRecruiter();
+    } else{
+        if(returnedData.recruiterAccessLevel == 0){
+            $("#creditView").show();
+            $("#creditViewMobile").show();
+            $("#recruiterMsg").show();
+            $("#recruiterHIW").show();
+            $("#remainingContactCredits").html(returnedData.contactCreditCount);
+            $("#remainingContactCreditsMobile").html(returnedData.contactCreditCount);
+            $("#remainingInterviewCredits").html(returnedData.interviewCreditCount);
+            $("#remainingInterviewCreditsMobile").html(returnedData.interviewCreditCount);
+        } else{
+            $("#creditView").hide();
+            $("#creditViewMobile").hide();
+            $("#recruiterMsg").hide();
+            $("#recruiterHIW").hide();
+        }
+    }
+
 }
 
 

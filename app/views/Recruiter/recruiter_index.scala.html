@@ -14,11 +14,11 @@
         <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
 
         <!-- Bootstrap Core CSS -->
-        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("common/css/bootstrap.min.css")">
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("common/css/materialize.css")">
         <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("recruiter/css/recruiter_home.css")">
         <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
+        <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("recruiter/css/jquery.tokenize.css")" />
 
         <link rel="icon" type="image/png" href="@routes.Assets.versioned("common/img/icon.png")">
 
@@ -68,19 +68,34 @@
                                     <input style="border-bottom: 1px solid #e0e0e0" placeholder="Mobile" id="rec_mobile" type="text" maxlength="10" class="validate">
                                     <input style="border-bottom: 1px solid #e0e0e0" placeholder="Email" id="rec_email" type="email" class="validate">
 
-                                    <select id="rec_company" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
-                                    <script type="text/javascript">
-                                        $('#rec_company').tokenize({
-                                            displayDropdownOnFocus: true,
-                                            placeholder: "Enter your company",
-                                            nbDropdownElements: 1000,
-                                            newElements: true,
-                                            maxElements: 1,
-                                            onAddToken: function (value, text) {
-                                                validateCompanyVal(value, text);
-                                            }
-                                        });
-                                    </script>
+                                    <span style="float: left; margin-top: 8px">Have Company Unique Code?</span>
+                                    <div class="switch" style="position: inherit; margin-top: 24px">
+                                        <label>No
+                                            <input id="is_private_recruiter" type="checkbox">
+                                            <span class="lever"></span>Yes
+                                        </label>
+                                    </div>
+
+                                    <div style="margin-top: 72px">
+                                        <div id="privateRecruiter" style="display: none;">
+                                            <input style="border-bottom: 1px solid #e0e0e0" placeholder="Company unique code" id="rec_company_code" type="text" class="validate">
+                                        </div>
+                                        <div id="openRecruiter">
+                                            <select id="rec_company" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                                            <script type="text/javascript">
+                                                $('#rec_company').tokenize({
+                                                    displayDropdownOnFocus: true,
+                                                    placeholder: "Enter your company",
+                                                    nbDropdownElements: 1000,
+                                                    newElements: true,
+                                                    maxElements: 1,
+                                                    onAddToken: function (value, text) {
+                                                        validateCompanyVal(value, text);
+                                                    }
+                                                });
+                                            </script>
+                                        </div>
+                                    </div>
                                 </form>
                             </div>
                             <div class="input-field col s12">
@@ -498,7 +513,6 @@
                 <div class="row" style="margin: 0">
                     <div class="col l6 s12">
                         <h5 class="white-text">Hire in Bangalore</h5>
-                        <p class="grey-text text-lighten-4">Connect With Us On<img src="/assets/recruiter/img/fbmain.svg" id="fbLogo" style="margin-left:2%;width:6%"></p>
                     </div>
                     <div class="col l4 offset-l2 s12">
                         <h5 class="white-text">Get in touch</h5>
@@ -522,8 +536,8 @@
         </footer>
     </body>
 
-    <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
+    <script type="text/javascript" src="@routes.Assets.versioned("common/js/bootstrap.min.js")"></script>
+    <script type="text/javascript" src="@routes.Assets.versioned("common/js/materialize.js")"></script>
     <script type="text/javascript" src="@routes.Assets.versioned("common/js/validation.js")"></script>
     <script type="text/javascript" src="@routes.Assets.versioned("recruiter/js/recruiter_reset_password.js")"></script>
     <script type="text/javascript" src="@routes.Assets.versioned("recruiter/js/recruiter_page.js")"></script>

@@ -23,15 +23,35 @@ function processDataApplyJob(returnedData, jobPostId, candidateId, isPartner) {
     // enabling apply btn in partner
     try{
         $("#applyButton").addClass("jobApplyBtnModal").removeClass("jobApplied").prop('disabled',false).html("Apply");
+        document.getElementById('apply_btn_' + jobPostId).style.pointerEvents = 'auto';
     } catch (e){}
 
     if(returnedData.status == 1) {
+        if(returnedData.isCandidateDeActive == true && returnedData.deActiveBodyMessage != null) {
+            $("#messagePromptModal").modal("show");
+            $('body').addClass('open-modal');
+
+            $('#customMsgIcon').attr('src', "/assets/partner/img/wrong.png");
+            $("#customMsg").html(returnedData.deActiveBodyMessage);
+
+            try{
+                var applyBtn = $('.jobApplyBtnV2');
+                applyBtn.css("background", "#ffa726");
+                applyBtn.attr('onclick','').unbind('click');
+
+            } catch(err){
+                console.log(err);
+            }
+            return;
+        }
         //$('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
         //$("#customMsg").html("Your Job Application is Successful");
         // $.notify("Job Application successfully applied.", 'success');
         try{
             $(".jobApplyBtnV2").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
             $('.jobApplyBtnV2').attr('onclick','').unbind('click');
+
+            document.getElementById('apply_btn_' + jobPostId).style.pointerEvents = 'none';
         } catch(err){
             console.log(err);
         }

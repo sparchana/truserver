@@ -5,6 +5,7 @@ package api.http.httpResponse.interview;
  */
 public class InterviewResponse {
     public int status;
+    public String statusTitle;
 
     public int getStatus() {
         return status;
@@ -12,5 +13,13 @@ public class InterviewResponse {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public String getStatusTitle() {
+        return statusTitle;
+    }
+
+    public void setStatusTitle(String statusTitle) {
+        this.statusTitle = statusTitle;
     }
 }

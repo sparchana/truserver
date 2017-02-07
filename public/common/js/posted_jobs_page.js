@@ -139,7 +139,9 @@ function processDataForJobPostLocation(returnedData) {
     
 
     $('#jobLocality').html('');
-    var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
+    if(returnedData.jobPostToLocalityList.length > 1){
+        var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
+    }
     $('#jobLocality').append(defaultOption);
     var jobLocality = returnedData.jobPostToLocalityList;
     jobLocality.forEach(function (locality) {
@@ -191,6 +193,7 @@ function processDataForJobPostLocation(returnedData) {
     } else{
         $('#interviewSection').hide();
     }
+    enableLocalityBtn();
 }
 
 function confirmApply() {
@@ -202,11 +205,12 @@ function confirmApply() {
     applyJobSubmitViaCandidate(jobPostId, prefLocation, prefTimeSlot, scheduledInterviewDate, true);
 //    applyJob(jobPostId, prefLocation, true);
 }
-
-$(function() {
-    $("#jobLocality").change(function (){
-        if($(this).val() != -1 && $("#interviewSlot").val() != -1){
-            prefLocation = $(this).val();
+$("#jobLocality").change(function () {
+    enableLocalityBtn();
+});
+function enableLocalityBtn() {
+    if($("#jobLocality").val() != -1 && $("#interviewSlot").val() != -1){
+            prefLocation = $("#jobLocality").val();
             prefLocationName = $("#jobLocality option:selected").text();
 
             try{
@@ -217,11 +221,12 @@ $(function() {
                 }
             } catch(err){}
 
-            $("#applyButton").show();
+            $(".jobApplyBtnModal").prop('disabled', false);
+            $(".jobApplyBtnModal").css({'background-color':'#09ac58','color':'#ffffff','cursor':'default'});
         } else{
-            $("#applyButton").hide();
+            $(".jobApplyBtnModal").prop('disabled', true);
+            $(".jobApplyBtnModal").css({'background-color':'#dde0dd','color':'#000000','cursor':'not-allowed'});
         }
-    });
 
     $("#interviewSlot").change(function (){
         if($(this).val() != -1 && $("#jobLocality").val() != -1){
@@ -236,7 +241,7 @@ $(function() {
             $("#applyButton").hide();
         }
     });
-});
+}
 
 function getDayVal(month){
     switch(month) {
@@ -365,7 +370,7 @@ function applyJobBtnAction() {
     jobPostId = jobId;
     jobLocalityArray = [];
     //openCandidatePreScreenModal(jobPostId, localStorage.getItem("mobile"));
-    $('#applyButton').hide();
+    $('#applyButton').show();
     addLocalitiesToModal();
 }
 
@@ -593,16 +598,28 @@ function processDataForHotJobPost(returnedData) {
             $(".posted_jobs_company_details").hide();
             $("div#aboutCompanyTitle").hide();
         }
-
+        var applyBtn = $(".jobApplyBtnV2");
         if(returnedData.applyBtnStatus != null && returnedData.applyBtnStatus != CTA_BTN_APPLY){
             if(returnedData.applyBtnStatus == CTA_BTN_INTERVIEW_REQUIRED) {
-                $(".jobApplyBtnV2").html("Book Interview");
+                applyBtn.html("Book Interview");
+                applyBtn.css({"background":"#039be5","font-weight":"bold"});
+                applyBtn.on('click',function(){
+                    applyJobBtnAction();
+                });
+            } else if(returnedData.applyBtnStatus == CTA_BTN_DEACTIVE){
+                applyBtn.html("Apply");
+                applyBtn.css("background", "#ffa726");
+                applyBtn.attr('onclick','').unbind('click');
+                applyBtn.on("click", function () {
+                    jobCardUtil.method.notifyMsg(jobCardUtil.deActivationMessage, 'danger');
+                });
+
             } else if(returnedData.applyBtnStatus == CTA_BTN_INTERVIEW_CLOSED) {
-                $(".jobApplyBtnV2").removeClass("btn-primary").addClass("appliedBtn").prop('disabled',true).html("Application Closed");
-                $('.jobApplyBtnV2').attr('onclick','').unbind('click');
-                $('.jobApplyBtnV2').css("background", "#f4cb6c");
-                $('.jobApplyBtnV2').css("box-shadow", "none");
-                $('.jobApplyBtnV2').css("cursor", "default");
+                applyBtn.removeClass("btn-primary").addClass("appliedBtn").prop('disabled',true).html("Application Closed");
+                applyBtn.attr('onclick','').unbind('click');
+                applyBtn.css("background", "#f4cb6c");
+                applyBtn.css("box-shadow", "none");
+                applyBtn.css("cursor", "default");
 
                 var nextMonday = new Date();
                 nextMonday.setDate(nextMonday.getDate() + (1 + 7 - nextMonday.getDay()) % 7);
@@ -618,9 +635,27 @@ function processDataForHotJobPost(returnedData) {
                 }
 
                 $("#reopenDate").html("Will reopen on " + day + "-" + month + "-" + nextMonday.getFullYear());
+            } else if(returnedData.applyBtnStatus == CTA_BTN_CALL_TO_APPLY){
+                applyBtn.html("CALL");
+                applyBtn.css({"background":"#00e676","font-weight":"bold"});
+                applyBtn.on('click',function () {
+                    cardModule.method.genRecruiterContactModal(returnedData.recruiterProfile.recruiterProfileName,
+                        returnedData.recruiterProfile.recruiterProfileMobile,
+                        jobId);
+                });
+
+                var icon = document.createElement("span");
+                icon.className = "glyphicon glyphicon-earphone";
+                icon.setAttribute("aria-hidden","true");
+                icon.style = "padding:2%;margin-left:10px";
+                applyBtn.append(icon);
             }
         }
-
+        else{
+            applyBtn.on('click',function(){
+                applyJobBtnAction();
+            });
+        }
         try {
             $.ajax({
                 type: "GET",

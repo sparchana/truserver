@@ -133,4 +133,15 @@ public class Locality extends Model {
     public void setPlaceId(String placeId) {
         this.placeId = placeId;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        try{
+            if((obj != null) && (((Locality)obj).getLocalityId() == this.getLocalityId())) return Boolean.TRUE;
+            else return Boolean.FALSE;
+        } catch (ClassCastException e) {
+            return Boolean.FALSE;
+        }
+    }
+
 }

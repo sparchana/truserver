@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" xmlns="http://www.w3.org/1999/html">
+<html lang="en" xmlns="https://www.w3.org/1999/html">
   <head>
     <meta charset="UTF-8">
     <title>Recruiter Details - Support | Trujobs.in</title>
@@ -107,6 +107,13 @@
             </div>
 
             <div class="row">
+              <div class="col-sm-3"><h5>Candidate CTA credits:</h5></div>
+              <div class="col-sm-9" style="margin-top: 12px">
+                <div id="ctaCreditInfo" style="color: #00c853">N/A</div>
+              </div>
+            </div>
+
+            <div class="row">
               <div class="col-sm-3"><h5>Credit pack(s) expiring on:</h5></div>
               <div class="col-sm-9" style="margin-top: 12px">
                 <div id="expiringInfo" style="color: #00c853">N/A</div>
@@ -132,7 +139,6 @@
             <th>Pack No</th>
             <th>Category</th>
             <th>Available</th>
-            <th>Used</th>
             <th>Is Expired</th>
             <th>Expiry Date</th>
             <th>Add Credits</th>
@@ -208,6 +214,34 @@
                 </div>
               </div>
 
+              <!-- Begin: Call to Apply Fields -->
+              <hr>
+              <h5 style="color: #0D47A1; font-weight: bold">Purchased Call-To-Apply (CTA) Credits?</h5>
+              <div class="row" style="margin-top: 8px">
+                <div class="col-sm-12" style="margin-top: 4px">
+                  <div style="width: 100%;height: 34px;" class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-custom-check" style="width: 80px">
+                      <input type="radio" name="callCreditType" onchange="callType(1)" id="callCreditYes" value="1"> &nbsp;Yes&nbsp;&nbsp;
+                    </label>
+                    <label class="btn btn-custom-check" style="width: 80px">
+                      <input type="radio" name="callCreditType" onchange="callType(0)" id="callCreditNo" value="0"> &nbsp;No&nbsp;&nbsp;
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div id="callCreditSection" style="display: none;">
+                Call-to-apply credit details:
+                <div class="row" style="margin-top: 8px">
+                  <div class="col-sm-5" style="margin-top: 4px">
+                    No. of CTA credits:
+                  </div>
+                  <div class="col-sm-7">
+                    <input id="ctaCredits" placeholder="How many Call-to-Apply Credits?" type="number" class="form-control input-md">
+                  </div>
+                </div>
+              </div>
+              <!-- End: Call to Apply Fields -->
+
               <hr>
               <h5 style="color: #0D47A1; font-weight: bold">Pack Expiry date:</h5>
               <div class="row" style="margin-top: 8px">
@@ -242,14 +276,14 @@
                                  No. of credits:
                 </div>
                 <div class="col-sm-7">
-                  <input style="width: 90%; display: inline-block"  id="recruiterAddCredit" placeholder="Enter no. of credits" type="tel" class="form-control input-md">
+                  <input style="width: 90%; display: inline-block" value="0"  id="recruiterAddCredit" placeholder="Enter no. of credits" type="tel" class="form-control input-md">
                 </div>
               </div>
 
               <div class="row">
                 <div class="col-sm-5"><h5>Expire this pack on (optional):</h5></div>
                 <div class="col-sm-7">
-                  <input type="date" id="expiry_date_edit_pack" class="datepicker">
+                  <input type="date" id="expiry_date_edit_pack" class="datepicker" style="margin-top: 8px">
                 </div>
               </div>
 

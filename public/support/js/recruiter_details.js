@@ -7,6 +7,7 @@ var localityArray = [];
 
 var interviewCredits = 0;
 var contactCredits = 0;
+var ctaCredits = 0;
 
 var availableCredits = 0;
 var availableContactCredits = 0;
@@ -14,6 +15,7 @@ var availableInterviewCredits = 0;
 
 var candidateCreditTypeStatus = 1;
 var interviewCreditTypeStatus = 1;
+var ctaCreditTypeStatus = 1;
 
 var isNewPack = true;
 var pack;
@@ -51,9 +53,22 @@ function interviewType(val) {
     }
 }
 
+// CTA Begins
+function callType(val) {
+    if(val == 1){
+        $("#callCreditSection").show();
+    } else{
+        $("#callCreditSection").hide();
+    }
+}
+// CTA Ends
+
 function computeCreditValue() {
     var hasContactCredit = false;
     var hasInterviewCredit = false;
+// CTA Begins
+    var hasCTACredit = false;
+// CTA Ends
 
     if($('input:radio[name="candidateCreditType"]:checked').val() == 1){
         candidateCreditTypeStatus = 1;
@@ -66,6 +81,7 @@ function computeCreditValue() {
             hasContactCredit = true;
         }
     }
+
     if($('input:radio[name="interviewCreditType"]:checked').val() == 1){
         interviewCreditTypeStatus = 1;
 
@@ -77,10 +93,26 @@ function computeCreditValue() {
             hasInterviewCredit = true;
         }
     }
+
+    if($('input:radio[name="callCreditType"]:checked').val() == 1){
+        ctaCreditTypeStatus = 1;
+        ctaCredits = parseInt($("#ctaCredits").val());
+		hasCTACredit = true;
+/*
+        if(parseInt($("#interviewCredits").val()) < availableInterviewCredits){
+            interviewCreditTypeStatus = 0;
+            notifyError("Interview credits should be greater than existing credits");
+        } else{
+            interviewCredits = parseInt($("#interviewCredits").val());
+            hasInterviewCredit = true;
+        }
+*/
+    }
+
     var expiryStatus = 1;
     var selectedDate = null;
 
-    if(hasContactCredit || hasInterviewCredit){
+    if(hasContactCredit || hasInterviewCredit || hasCTACredit){
         if($("#expiry_date").val() != ""){
             selectedDate = new Date($("#expiry_date").val());
             var todaysDate = new Date();
@@ -98,7 +130,7 @@ function computeCreditValue() {
         }
     }
 
-    if(interviewCreditTypeStatus == 1 && candidateCreditTypeStatus == 1 && expiryStatus == 1){
+    if(interviewCreditTypeStatus == 1 && candidateCreditTypeStatus == 1 && ctaCreditTypeStatus == 1 && expiryStatus == 1){
         if(hasContactCredit){
             $("#addCreditInfoDiv").show();
             $("#contactUnlockCreditInfo").html("Adding a new contact unlock credit pack with " + contactCredits + " new credits");
@@ -108,6 +140,12 @@ function computeCreditValue() {
             $("#addCreditInfoDiv").show();
             $("#interviewUnlockCreditInfo").html("Adding a new interview unlock credit pack with " + interviewCredits + " new credits");
         }
+
+        if(hasCTACredit){
+            $("#addCreditInfoDiv").show();
+            $("#ctaCreditInfo").html("Adding a new CTA credit pack with " + ctaCredits + " new credits");
+        }
+
         $("#creditModal").modal("hide");
     }
 }
@@ -116,10 +154,10 @@ function computeNewCreditValue() {
     var checkStatus = 1;
 
     if($("#recruiterAddCredit").val() == ""){
-        checkStatus = 0;
-        notifyError("Please enter a value")
+        $("#recruiterAddCredit").val(0);
+    }
 
-    } else if(parseInt($("#recruiterAddCredit").val()) < -(availableCredits)){
+    if(parseInt($("#recruiterAddCredit").val()) < -(availableCredits)){
         checkStatus = 0;
         notifyError("Credits should be greater than available credits")
     }
@@ -143,23 +181,28 @@ function computeNewCreditValue() {
     }
 
     if(checkStatus == 1){
-        var d = {
-            recruiterMobile: $("#recruiterMobile").val(),
-            creditCount: parseInt($("#recruiterAddCredit").val()),
-            packId: pack.recruiterCreditPackNo,
-            expiryDate: expirydate
-        };
+        if((expirydate == null) && ($("#recruiterAddCredit").val() == 0)){
+            $("#editCreditModal").modal("hide");
+        } else{
+            var d = {
+                recruiterMobile: $("#recruiterMobile").val(),
+                creditCount: parseInt($("#recruiterAddCredit").val()),
+                packId: pack.recruiterCreditPackNo,
+                expiryDate: expirydate
+            };
 
-        try {
-            $.ajax({
-                type: "POST",
-                url: "/updateRecruiterCreditPack",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(d),
-                success: processDataUpdatePack
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
+            try {
+                $.ajax({
+                    type: "POST",
+                    url: "/updateRecruiterCreditPack",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
+                    success: processDataUpdatePack
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+
         }
     }
 }
@@ -260,6 +303,7 @@ function saveRecruiter() {
             recruiterCompany: $("#recruiterCompany").val(),
             contactCredits: contactCredits,
             interviewCredits: interviewCredits,
+            ctaCredits: ctaCredits,
             expiryDate: creditExpiryDate
         };
 
@@ -337,7 +381,6 @@ function processDataForRecruiterInfo(returnedData) {
                 }
             },
             pack.recruiterCreditsAvailable,
-            pack.recruiterCreditsUsed,
             function() {
                 if(pack.creditIsExpired == false){
                     return "Not Expired" + '<span onclick="expireCreditPack(' + packIndex + ')" style="padding: 4px; cursor: pointer; background: #d9534f; margin-left: 6px; color: white">Expire now</span>';

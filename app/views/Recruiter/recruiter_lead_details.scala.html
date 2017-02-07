@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recruiter Lead Details</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
+    <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
+    <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_myjobs.css">
+    <link rel="stylesheet" href="/assets/support/css/style.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css"/>
+    <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/dashboard.css"/>
+
+    <link rel="stylesheet" href="/assets/support/css/bootstrap-datetimepicker.min.css"/>
+    <script type="text/javascript" src="/assets/support/js/Moment.js"></script>
+    <link rel="stylesheet" href="/assets/support/css/material.indigo-pink.min.css"/>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
+
+    <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+
+    <!-- JQuery Core CSS -->
+    <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
+
+</head>
+<body>
+<h4> Recruiter Lead Details</h4>
+
+<div class="col-sm-6">
+    <br>
+    <form id="recruiterLeadDetailsForm">
+        <div>
+            <h3>Recruiter Details:</h3>
+            <hr>
+
+            <input id="recruiterLeadId" name="recruiterLeadId" type="hidden" class="form-control input-md" >
+            <input id="recruiterLeadUUId" name="recruiterLeadUUId" type="hidden" class="form-control input-md" >
+
+            <div class="row">
+                <div class="col-sm-3"><h5>Lead Status:</h5></div>
+                <div class="col-sm-9">
+                    <select id="recruiterLeadStatus" name="recruiterLeadStatus" class="form-control input-md" ></select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-3"><h5>Recruiter Name:</h5></div>
+                <div class="col-sm-9">
+                    <input id="recruiterLeadName" name="recruiterLeadName" placeholder="What is recruiter's name?" type="text" class="form-control input-md" >
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Recruiter Mobile:</h5></div>
+                <div class="col-sm-9">
+                    <input min="7000000000" max="9999999999" required id="recruiterLeadMobile" name="recruiterLeadMobile" placeholder="Mobile Number without +91?" type="text" class="form-control input-md" >
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Alternate Number:</h5></div>
+                <div class="col-sm-9">
+                    <input min="7000000000" max="9999999999" id="recruiterLeadAltNumber" name="recruiterLeadAltNumber" placeholder="Alternate Mobile Number without +91?" type="number" class="form-control input-md" >
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Email:</h5></div>
+                <div class="col-sm-9">
+                    <input id="recruiterLeadEmail" name="recruiterLeadEmail" placeholder="EMail?" type="text" class="form-control input-md" >
+                </div>
+            </div>
+
+            <input id="recruiterLeadChannel" name="recruiterLeadChannel" type="hidden" value="0">
+
+            <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Detailed Requirement:</h5></div>
+                <div class="col-sm-9">
+                    <textarea id="recruiterLeadRequirement" name="recruiterLeadRequirement" class="form-control input-md"></textarea>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Source Type:</h5></div>
+                <div class="col-sm-9">
+                    <select id="recruiterLeadSourceType" name="recruiterLeadSourceType" class="form-control input-md"></select>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Source Name:</h5></div>
+                <div class="col-sm-9">
+                    <select id="recruiterLeadSourceName" name="recruiterLeadSourceName" class="form-control input-md"></select>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Source Publish Date:</h5></div>
+                <div class="col-sm-9">
+                    <input type="date" id="recruiterLeadSourceDate" name="recruiterLeadSourceDate" class="form-control input-md">
+                </div>
+            </div>
+
+        </div>
+
+        <div>
+            <h3>Company Details:</h3>
+            <hr>
+
+            <input id="companyLeadId" name="companyLeadId" type="hidden">
+
+            <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Company Name:</h5></div>
+                <div class="col-sm-9">
+                    <input type="text" id="companyLeadName" name="companyLeadName" class="form-control input-md">
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Company Website:</h5></div>
+                <div class="col-sm-9">
+                    <input type="text" id="companyLeadWebsite" name="companyLeadWebsite" class="form-control input-md">
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Company Type:</h5></div>
+                <div class="col-sm-9">
+                    <select id="companyLeadType" name="companyLeadType" class="form-control input-md"></select>
+                </div>
+            </div>
+
+            <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Company Industry:</h5></div>
+                <div class="col-sm-9">
+                    <select id="companyLeadIndustry" name="companyLeadIndustry" class="form-control input-md"></select>
+                </div>
+            </div>
+
+        </div>
+
+        <div>
+            <h3>Job Role Requirements:</h3>
+            <hr>
+        <table id="jobRoleTable" name="jobRoleTable">
+            <tr>
+                <th style="display:none;">Job Role Id</th>
+                <th>Job Role</th>
+                <th>Location(s)</th>
+                <th>No of Vacancies</th>
+                <th>Salary Min</th>
+                <th>Salary Max</th>
+                <th>Gender</th>
+                <th>Interview Address</th>
+                <th>Detail Requirement</th>
+            </tr>
+        </table>
+        </div>
+        <input type="submit">
+    </form>
+</div>
+
+</body>
+<script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/assets/common/js/materialize.js"></script>
+<script type="text/javascript" src="/assets/common/js/validation.js"></script>
+<script type="text/javascript" src="/assets/recruiter/js/show_recruiter_lead_details.js"></script>
+</html>
