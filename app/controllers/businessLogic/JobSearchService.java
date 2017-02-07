@@ -41,7 +41,9 @@ public class JobSearchService {
     }
 
     public static List<JobPost> getAllJobPosts() {
-        return JobPost.find.all();
+        return JobPost.find.where()
+                      .ne("JobStatus", ServerConstants.JOB_STATUS_DEACTIVATED)
+                      .findList();
     }
 
 

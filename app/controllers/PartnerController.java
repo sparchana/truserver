@@ -9,8 +9,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
-import controllers.security.PartnerSecured;
 import controllers.security.FlashSessionController;
+import controllers.security.PartnerSecured;
 import dao.JobPostDAO;
 import models.entity.*;
 import models.entity.OM.PartnerToCandidate;
@@ -24,18 +24,12 @@ import play.mvc.Security;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static play.libs.Json.toJson;
-
 import static play.mvc.Controller.request;
 import static play.mvc.Controller.session;
-import static play.mvc.Results.badRequest;
-import static play.mvc.Results.ok;
-import static play.mvc.Results.redirect;
+import static play.mvc.Results.*;
 
 /**
  * Created by adarsh on 9/9/16.
@@ -383,6 +377,7 @@ public class PartnerController {
             List<PartnerToCandidate> partnerToCandidateList = new ArrayList<>();
             List<PartnerToCandidateToCompany> partnerToCandidateToCompanyList = new ArrayList<>();
             List<Candidate> candidateList = new ArrayList<>();
+            List<Long> candidateIdList = new ArrayList<>();
 
             if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
                 partnerToCandidateToCompanyList = PartnerToCandidateToCompany.find.where()
@@ -413,6 +408,11 @@ public class PartnerController {
             ArrayList<PartnerCandidatesResponse> responses = new ArrayList<>();
 
             SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
+            for(Candidate candidate : candidateList) {
+                candidateIdList.add(candidate.getCandidateId());
+            }
+
+            Map<?, Auth> authMap = Auth.find.where().in("candidateId", candidateIdList).setMapKey("candidateId").findMap();
 
             for(Candidate candidate : candidateList) {
                 PartnerCandidatesResponse response = new PartnerCandidatesResponse();
@@ -426,16 +426,16 @@ public class PartnerController {
                         response.setCandidateName(candidate.getCandidateFirstName() + " " + candidate.getCandidateLastName());
                     }
                 }
-                Auth auth = Auth.find.where().eq("candidateId", candidate.getCandidateId()).findUnique();
+                Auth auth = authMap.get(candidate.getCandidateId());
+
                 if(auth != null){
                     response.setCandidateStatus(auth.getAuthStatus());
                     if(auth.getAuthStatus() == ServerConstants.CANDIDATE_STATUS_VERIFIED){
                         response.setCandidateActiveDeactive(candidate.getCandidateprofilestatus().getProfileStatusId());
                     }
                 }
-                response.setAppliedJobList(JobPostWorkflowEngine.getPartnerAppliedJobsForCandidate(
-                        candidate, partner));
-                response.setCandidateAppliedJobs(response.getAppliedJobList().size());
+                response.setCandidateAppliedJobs(JobPostWorkflowEngine.getPartnerAppliedJobsForCandidate(
+                        candidate, partner).size());
                 response.setCandidateMobile(candidate.getCandidateMobile());
                 response.setCandidateResumeLink(candidate.getCandidateResumeLink());
                 responses.add(response);
