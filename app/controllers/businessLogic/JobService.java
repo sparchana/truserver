@@ -4,10 +4,12 @@ import api.GoogleSheetHttpRequest;
 import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
+import api.http.httpRequest.AddCandidateRequest;
 import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpRequest.ApplyJobRequest;
 import api.http.httpResponse.AddJobPostResponse;
 import api.http.httpResponse.ApplyJobResponse;
+import api.http.httpResponse.CallToApplyResponse;
 import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import api.http.httpResponse.interview.InterviewDateTime;
@@ -25,7 +27,6 @@ import models.entity.OM.*;
 import models.entity.Partner;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
-import models.entity.Static.InterviewTimeSlot;
 import models.util.EmailUtil;
 import models.util.InterviewUtil;
 import models.util.NotificationUtil;
@@ -758,7 +759,7 @@ public class JobService {
     }
 
     public static ApplyJobResponse applyJob(ApplyJobRequest applyJobRequest,
-                                            int channelType, int interactionType)
+                                            int channelType, int interactionType, boolean isSendSMSToCandidate)
             throws IOException, JSONException
     {
         Logger.info("checking user and jobId: " + applyJobRequest.getCandidateMobile() + " + " + applyJobRequest.getJobId());
@@ -859,7 +860,7 @@ public class JobService {
 
                         String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB;
                         Partner partner = null;
-                        if(applyJobRequest.getPartner()){
+                        if(applyJobRequest.getPartner()!= null && applyJobRequest.getPartner()){
                             // this job is being applied by a partner for a candidate, hence we need to get partner Id in the job Application table
                             partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
                             if(partner != null){
@@ -870,7 +871,10 @@ public class JobService {
                                 interactionResult = InteractionConstants.INTERACTION_RESULT_PARTNER_APPLIED_TO_JOB;
                             }
                         } else{
-                            SmsUtil.sendJobApplicationSms(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName(), channelType);
+
+                            if(isSendSMSToCandidate){
+                                SmsUtil.sendJobApplicationSms(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName(), channelType);
+                            }
 
                             //sending notification
                             NotificationUtil.sendJobApplicationNotification(existingCandidate, existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), jobApplication.getLocality().getLocalityName());
@@ -1412,4 +1416,135 @@ public class JobService {
         }
         return interviewSlotMap;
     }
+
+    /**
+     *
+     * API accepts only a name and a mobile number, fetch/create(leadSource: LooseCandidate)
+     * a candidate then push it to apply flow and deduct 1 CTA credit of the recruiter
+     *
+     *
+     * @param applyJobRequest
+     * @return ApplyJobResponse
+     */
+    public static CallToApplyResponse callToApply(ApplyJobRequest applyJobRequest){
+        CallToApplyResponse callToApplyResponse = new CallToApplyResponse();
+
+        if( applyJobRequest == null){
+            callToApplyResponse.setMessage("Invalid Params");
+            callToApplyResponse.setStatus(CallToApplyResponse.STATUS_INVALID_PARAMS);
+            return callToApplyResponse;
+        }
+
+        JobPost jobPost = applyJobRequest.getJobId() == null ? null : JobPostDAO.findById(applyJobRequest.getJobId());
+        if( jobPost == null)
+        {
+            callToApplyResponse.setMessage("Invalid Params");
+            callToApplyResponse.setStatus(CallToApplyResponse.STATUS_INVALID_PARAMS);
+            return callToApplyResponse;
+        }
+
+        String candidateMobile = FormValidator.convertToIndianMobileFormat(applyJobRequest.getCandidateMobile());
+
+        if( candidateMobile == null) {
+            callToApplyResponse.setMessage("Invalid Params");
+            callToApplyResponse.setStatus(CallToApplyResponse.STATUS_INVALID_PARAMS);
+            return callToApplyResponse;
+        }
+
+        Candidate candidate = CandidateService.isCandidateExists(candidateMobile);
+
+        AddCandidateRequest addCandidateRequest = new AddCandidateRequest();
+        addCandidateRequest.setCandidateMobile(candidateMobile);
+        addCandidateRequest.setCandidateFirstName(applyJobRequest.getCandidateName());
+        if( candidate == null) {
+            addCandidateRequest.setLeadSource(ServerConstants.LEAD_SOURCE_CALL_TO_APPLY_WEBSITE);
+
+            List<Integer> candidateJobPref = new ArrayList<>();
+            candidateJobPref.add(Math.toIntExact(jobPost.getJobRole().getJobRoleId()));
+            addCandidateRequest.setCandidateJobPref(candidateJobPref);
+
+            if(jobPost.getJobPostToLocalityList().size() > 1) {
+                // setting locality other ---- 345
+                addCandidateRequest.setCandidateHomeLocality(345);
+            } else {
+                addCandidateRequest.setCandidateHomeLocality(
+                        Math.toIntExact(jobPost.getJobPostToLocalityList()
+                                .get(0)
+                                .getLocality()
+                                .getLocalityId()));
+
+            }
+            CandidateService.createCandidateProfile(addCandidateRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE, ServerConstants.UPDATE_BASIC_PROFILE);
+
+        } else {
+            // direct update candidate, if required
+            boolean shouldUpdate = false;
+            // set locality if candidate locality is prev set to other
+            if(candidate.getLocality() == null
+                    || candidate.getLocality().getLocalityId() == 345
+                    && jobPost.getJobPostToLocalityList().size() == 1)
+            {
+
+                candidate.setLocality(
+                        jobPost.getJobPostToLocalityList()
+                                .get(0)
+                                .getLocality());
+
+                shouldUpdate = true;
+            }
+
+            // we will append but not rotate job preference
+            // update if job pref is not there and job pref is other
+
+            Map<Long, Long> candidateJobPrefMap = new HashMap<>();
+            if(candidate.getJobPreferencesList().size()<3){
+                List<JobPreference> candidateJobPref = candidate.getJobPreferencesList();
+
+                for (JobPreference jobPreference : candidate.getJobPreferencesList()) {
+                    Long jobRoleId = candidateJobPrefMap.get(jobPreference.getJobRole().getJobRoleId());
+                    if(jobRoleId == null) {
+                        candidateJobPrefMap.put(jobPreference.getJobRole().getJobRoleId(), jobPreference.getJobRole().getJobRoleId());
+                    }
+                }
+
+                for(JobPreference jobPreference : candidate.getJobPreferencesList()) {
+                    if(candidateJobPrefMap.get(jobPreference.getJobRole().getJobRoleId()) == null){
+                        JobPreference jobPref = new JobPreference();
+                        jobPref.setCandidate(candidate);
+                        jobPref.setJobRole(jobPreference.getJobRole());
+
+                        candidateJobPref.add(jobPref);
+                        shouldUpdate = true;
+                    }
+                }
+            }
+
+            if(shouldUpdate) candidate.update();
+        }
+
+
+            // prep apply date
+        applyJobRequest.setLocalityId(Math.toIntExact(jobPost.getJobPostToLocalityList().get(0).getLocality().getLocalityId()));
+
+            // push this candidate to apply flow
+        try {
+            ApplyJobResponse applyJobResponse = applyJob(applyJobRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE, InteractionConstants.INTERACTION_TYPE_APPLY_JOB_VIA_CALL_TO_APPLY, false);
+
+            callToApplyResponse.setResponse(applyJobResponse);
+            callToApplyResponse.setMessage("Successfully Applied !");
+            callToApplyResponse.setStatus(CallToApplyResponse.STATUS_SUCCESS);
+
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+
+            // debit recruiters
+        RecruiterService.debitCredits(jobPost.getRecruiterProfile(), ServerConstants.RECRUITER_CATEGORY_CTA_CREDIT, -1, "Recruiter: " + session().get("sessionUsername"));
+
+        callToApplyResponse.setRecruiterName(jobPost.getRecruiterProfile().getRecruiterProfileName());
+        callToApplyResponse.setRecruiterMobile(jobPost.getRecruiterProfile().getRecruiterProfileMobile());
+
+        return callToApplyResponse;
+    }
+
 }

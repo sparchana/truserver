@@ -387,5 +387,9 @@ GET         /t/:shortUrl                                                  contro
 
 # Candidate Excel Upload
 # ~~~~~~~~~
-GET         /support/administrator/uploadCandidates                       controllers.Application.uploadCandidates()
-POST        /support/administrator/processCandidates                      controllers.Application.processCandidates()
+GET         /support/administrator/uploadCandidates                         controllers.Application.uploadCandidates()
+POST        /support/administrator/processCandidates                        controllers.Application.processCandidates()
+
+# Candidate Call-To-Apply Route
+# ~~~~~~~~~
+POST        /quickApply/                                                    controllers.Application.doQuickApply()
