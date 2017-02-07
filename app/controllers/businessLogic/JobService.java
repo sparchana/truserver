@@ -1539,7 +1539,7 @@ public class JobService {
         }
 
             // debit recruiters
-        RecruiterService.debitCredits(jobPost.getRecruiterProfile(), ServerConstants.RECRUITER_CATEGORY_CTA_CREDIT, 1, "Recruiter: " + session().get("sessionUsername"));
+        RecruiterService.debitCredits(jobPost.getRecruiterProfile(), ServerConstants.RECRUITER_CATEGORY_CTA_CREDIT, -1, "Recruiter: " + session().get("sessionUsername"));
 
         callToApplyResponse.setRecruiterName(jobPost.getRecruiterProfile().getRecruiterProfileName());
         callToApplyResponse.setRecruiterMobile(jobPost.getRecruiterProfile().getRecruiterProfileMobile());

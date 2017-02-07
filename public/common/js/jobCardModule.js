@@ -11,8 +11,7 @@
  * Pass a parent div to which needs JobCard appended
  *
  */
-
-
+var candidateMobileNo = localStorage.getItem("mobile");
 var cardModule = (function ($) {
     'use strict';
 
@@ -26,6 +25,8 @@ var cardModule = (function ($) {
 
     var cardModule = {
         deActivationMessage: null,
+        applicationSuccess: "You have successfully applied",
+        applicationFail: "Something went wrong. Try after sometime",
         method: {
             genNewJobCard: function (_jobPostList, _parent) {
                 if(cardModule.deActivationMessage == null) {
@@ -521,20 +522,25 @@ var cardModule = (function ($) {
                     var applyJobText ;
 
                     if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != 4){
-                        if(jobPost.applyBtnStatus == 2) {
+                        if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_REQUIRED) {
                             applyJobText = "Book Interview";
-                        } else if(jobPost.applyBtnStatus == 3) {
+                            applyBtn.style = "background:#039be5;font-weight:bold";
+                        } else if(jobPost.applyBtnStatus == CTA_BTN_ALREADY_APPLIED) {
                             applyJobText = "Already Applied";
                             applyBtn.disabled =  true;
-                            applyBtn.style = "background:#ffa726";
-                        } else if(jobPost.applyBtnStatus == 5) {
+                            applyBtn.style = "background:#ffa726;font-weight:bold";
+                        } else if(jobPost.applyBtnStatus == CTA_BTN_INTERVIEW_CLOSED) {
                             applyJobText = "Application Closed";
                             applyBtn.disabled =  true;
-                            applyBtn.style = "background:#ffa726";
+                            applyBtn.style = "background:#ffa726;font-weight:bold";
+                        }else if(jobPost.applyBtnStatus == CTA_BTN_CALL_TO_APPLY) {
+                            applyJobText = "CALL";
+                            applyBtn.style = "background:#00e676;font-weight:bold";
                         }
 
                     } else {
                         applyJobText = "Apply";
+                        applyBtn.style = "background:#00c853";
                     }
                     applyBtn.textContent = applyJobText;
                     var w = window.innerWidth;
@@ -544,27 +550,31 @@ var cardModule = (function ($) {
                         jobApplyCol.appendChild(applyBtn);
                     }
                     applyBtnDiv.appendChild(applyBtnRow);
+
                     if(jobPost.applyBtnStatus == 5){
                         applyBtnDiv.appendChild(reopenRow);
                     }
                     applyBtn.onclick = function () {
-                        cardModule.method.genRecruiterContactModal(
-                            jobPost.recruiterProfile.recruiterProfileName,
-                            jobPost.recruiterProfile.recruiterProfileMobile,
-                            jobPost.jobPostId);
+                        if(jobPost.applyBtnStatus == 7){
+                            cardModule.method.genRecruiterContactModal(
+                                jobPost.recruiterProfile.recruiterProfileName,
+                                jobPost.recruiterProfile.recruiterProfileMobile,
+                                jobPost.jobPostId);
 
-                        /*var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
-                        jobPostBreak = jobPostBreak.toLowerCase();
-                        var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
-                        jobCompany = jobCompany.toLowerCase();
-                        try {
-                            window.location.href = "/jobs/" + jobPostBreak + "-jobs-in-bengaluru-at-" + jobCompany + "-" + jobPost.jobPostId;
-                        } catch (exception) {
-                            console.log("exception occured!!" + exception);
-                        }*/
+                        } else{
+                            var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
+                            jobPostBreak = jobPostBreak.toLowerCase();
+                            var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
+                            jobCompany = jobCompany.toLowerCase();
+                            try {
+                                window.location.href = "/jobs/" + jobPostBreak + "-jobs-in-bengaluru-at-" + jobCompany + "-" + jobPost.jobPostId;
+                            } catch (exception) {
+                                console.log("exception occured!!" + exception);
+                            }
+                        }
                     };
 
-                    if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != 4){
+                    /*if(jobPost.applyBtnStatus != null && jobPost.applyBtnStatus != 4){
                         if(jobPost.applyBtnStatus == 2) {
                             applyJobText = "Book Interview";
                         } else if(jobPost.applyBtnStatus == 3) {
@@ -584,8 +594,17 @@ var cardModule = (function ($) {
                         }
                     } else {
                         applyJobText = "Apply";
-                    }
+                    }*/
                     applyBtn.textContent = applyJobText;
+                    if(jobPost.applyBtnStatus == CTA_BTN_CALL_TO_APPLY){
+
+                        var icon = document.createElement("span");
+                        icon.className = "glyphicon glyphicon-earphone";
+                        icon.setAttribute("aria-hidden","true");
+                        icon.style = "padding:2%;margin-left:10px";
+                        applyBtn.appendChild(icon);
+
+                    }
                 });
             },
             getDeActivateMessage: function () {
@@ -629,7 +648,7 @@ var cardModule = (function ($) {
                 recruiterContactModalContent.appendChild(recruiterContactModalBody);
 
                 var modalHeadingText = document.createElement("h5");
-                modalHeadingText.style ="text-align:center";
+                modalHeadingText.style ="text-align:center;font-weight:bold";
                 modalHeadingText.textContent ="Contact recruiter ("+recruiterName+") and go !!";
                 recruiterContactModalBody.appendChild(modalHeadingText);
 
@@ -641,37 +660,46 @@ var cardModule = (function ($) {
                 recruiterContactMainDiv.id = "contactRecruiter";
                 recruiterContactMainDiv.style = "margin-top: 0; margin-right: 2%; margin-left: 2%";
                 recruiterContactModalBody.appendChild(recruiterContactMainDiv);
+                if(candidateMobileNo == null){
+                    var candidateName = document.createElement("input");
+                    candidateName.className= "form-control input-md";
+                    candidateName.id = "candidateNameRecruiterContactModal";
+                    candidateName.style = "margin:5px 0";
+                    candidateName.type = "type";
+                    candidateName.placeholder = "Your name (e.g. Ankit Singh)";
+                    recruiterContactMainDiv.appendChild(candidateName);
 
-                var candidateName = document.createElement("input");
-                candidateName.className= "form-control input-md";
-                candidateName.id = "candidateNameRecruiterContactModal";
-                candidateName.style = "margin:5px 0";
-                candidateName.type = "type";
-                candidateName.placeholder = "Your name (e.g. Ankit Singh)";
-                recruiterContactMainDiv.appendChild(candidateName);
+                    var candidateMobile = document.createElement("input");
+                    candidateMobile.className= "form-control input-md";
+                    candidateMobile.id = "candidateMobileRecruiterContactModal";
+                    candidateMobile.type = "type";
+                    candidateMobile.style = "margin:5px 0";
+                    candidateMobile.setAttribute("maxlength","10");
+                    candidateMobile.placeholder = "Your 10 digit mobile(e.g. 9998887770)";
+                    recruiterContactMainDiv.appendChild(candidateMobile);
 
-                var candidateMobile = document.createElement("input");
-                candidateMobile.className= "form-control input-md";
-                candidateMobile.id = "candidateMobileRecruiterContactModal";
-                candidateMobile.type = "type";
-                candidateMobile.style = "margin:5px 0";
-                candidateMobile.setAttribute("maxlength","10");
-                candidateMobile.placeholder = "Your 10 digit mobile(e.g. 9998887770)";
-                recruiterContactMainDiv.appendChild(candidateMobile);
+                }
 
                 var submitButton = document.createElement("button");
                 submitButton.className = "btn btn-default";
                 submitButton.id = "recruiterContactModalBtn";
-                submitButton.style = "margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%";
+                submitButton.style = "margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%;font-weight:bold";
                 submitButton.type = "button";
-                submitButton.textContent = "Call : XXXXXXX"+splitMobileNumber[splitMobileNumber.length-3]+splitMobileNumber[splitMobileNumber.length-2]+splitMobileNumber[splitMobileNumber.length-1];
+                submitButton.textContent = "Call : XXXX-XXX-"+splitMobileNumber[splitMobileNumber.length-3]+splitMobileNumber[splitMobileNumber.length-2]+splitMobileNumber[splitMobileNumber.length-1];
                 submitButton.onclick = function() {
-                        var candidateName = $("#candidateNameRecruiterContactModal").val();
-                        var candidateMobile = $("#candidateMobileRecruiterContactModal").val();
+                    submitButton.setAttribute("disabled","true");
+                    var candidateName;
 
-                        if(cardModule.validate.candidateName(candidateName) && cardModule.validate.candidateMobile(candidateMobile)){
+                        if(candidateMobileNo == null) {
+                            candidateName = $("#candidateNameRecruiterContactModal").val();
+                            candidateMobileNo = $("#candidateMobileRecruiterContactModal").val();
+                        } else{
+                            candidateName = localStorage.getItem("name");
+                            candidateMobileNo = (localStorage.getItem("mobile")).slice(3) ;
+                        }
+                        if(cardModule.validate.candidateName(candidateName) && cardModule.validate.candidateMobile(candidateMobileNo)){
                             var d = {
-                                candidateMobile:  candidateMobile,
+                                candidateMobile:  candidateMobileNo,
                                 candidateName: candidateName,
                                 jobId: jobPostId
                             };
@@ -683,17 +711,23 @@ var cardModule = (function ($) {
                                 }
                             ).then(function (returnedData) {
                                     if (returnedData != null) {
-                                        var w = window.innerWidth;
-                                        if (w < 786) {
-                                            document.location.href = "tel:" + recruiterNumber;
+                                        if(returnedData.status == 1){
+                                            submitButton.setAttribute("disabled","true");
+                                            submitButton.textContent = "Call : " + recruiterNumber;
+
+                                            var w = window.innerWidth;
+                                            if (w < 786) {
+                                                document.location.href = "tel:" + recruiterNumber;
+                                            }
+
+                                            /*notifyMsg(cardModule.applicationSuccess,'success');*/
+
+                                        } else{
+                                            notifyMsg(cardModule.applicationFail,'danger');
                                         }
-                                        submitButton.disable = true;
-                                        submitButton.textContent = "Call : " + recruiterNumber;
-                                        submitButton.onclick = function () {
-                                            return false;
-                                        };
 
                                     } else {
+                                        notifyMsg(cardModule.applicationFail,'danger');
                                     }
                                 },
                                 function (xhr, state, error) {
