@@ -11,7 +11,7 @@
  * Pass a parent div to which needs JobCard appended
  *
  */
-var candidateMobileNo = localStorage.getItem("mobile");
+var candidateMobileCheck = localStorage.getItem("mobile");
 var cardModule = (function ($) {
     'use strict';
 
@@ -660,7 +660,7 @@ var cardModule = (function ($) {
                 recruiterContactMainDiv.id = "contactRecruiter";
                 recruiterContactMainDiv.style = "margin-top: 0; margin-right: 2%; margin-left: 2%";
                 recruiterContactModalBody.appendChild(recruiterContactMainDiv);
-                if(candidateMobileNo == null){
+                if(candidateMobileCheck == null){
                     var candidateName = document.createElement("input");
                     candidateName.className= "form-control input-md";
                     candidateName.id = "candidateNameRecruiterContactModal";
@@ -687,19 +687,21 @@ var cardModule = (function ($) {
                 submitButton.type = "button";
                 submitButton.textContent = "Call : XXXX-XXX-"+splitMobileNumber[splitMobileNumber.length-3]+splitMobileNumber[splitMobileNumber.length-2]+splitMobileNumber[splitMobileNumber.length-1];
                 submitButton.onclick = function() {
-                    submitButton.setAttribute("disabled","true");
-                    var candidateName;
 
-                        if(candidateMobileNo == null) {
+                    var candidateName;
+                    var candidateMobileNumber;
+
+                        if(candidateMobileCheck == null) {
                             candidateName = $("#candidateNameRecruiterContactModal").val();
-                            candidateMobileNo = $("#candidateMobileRecruiterContactModal").val();
+                            candidateMobileNumber = $("#candidateMobileRecruiterContactModal").val();
                         } else{
                             candidateName = localStorage.getItem("name");
-                            candidateMobileNo = (localStorage.getItem("mobile")).slice(3) ;
+                            candidateMobileNumber = (localStorage.getItem("mobile")).slice(3) ;
                         }
-                        if(cardModule.validate.candidateName(candidateName) && cardModule.validate.candidateMobile(candidateMobileNo)){
+                        if(cardModule.validate.candidateNameValidation(candidateName) && cardModule.validate.candidateMobileValidation(candidateMobileNumber)){
+                            submitButton.setAttribute("disabled","true");
                             var d = {
-                                candidateMobile:  candidateMobileNo,
+                                candidateMobile:  candidateMobileNumber,
                                 candidateName: candidateName,
                                 jobId: jobPostId
                             };
@@ -739,27 +741,27 @@ var cardModule = (function ($) {
             }
         },
         validate: {
-            candidateMobile:function(phone){
+            candidateMobileValidation:function(phone){
                 var res = validateMobile(phone);
                 var validationResult = true;
                 if(res == 0){
-                    alert("Enter a valid mobile number");
+                    notifyMsg("Enter a valid mobile number",'danger');
                     validationResult = false;
                 } else if(res == 1){
-                    alert("Enter 10 digit mobile number");
+                    notifyMsg("Enter 10 digit mobile number",'danger');
                     validationResult = false;
                 }
 
                 return validationResult;
             },
-            candidateName:function (firstName) {
+            candidateNameValidation:function (firstName) {
                 var firstNameCheck = validateName(firstName);
                 var validationResult = true;
                 switch(firstNameCheck){
-                    case 0: alert("Name contains number. Please Enter a valid  name"); validationResult = false; break;
-                    case 2: alert("Name cannot be blank spaces. Enter a valid  name"); validationResult = false; break;
-                    case 3: alert("Name contains special symbols. Enter a valid  name"); validationResult = false; break;
-                    case 4: alert("Please enter your first name"); validationResult = false; break;
+                    case 0: notifyMsg("Name contains number. Please Enter a valid  name",'danger'); validationResult = false; break;
+                    case 2: notifyMsg("Name cannot be blank spaces. Enter a valid  name",'danger'); validationResult = false; break;
+                    case 3: notifyMsg("Name contains special symbols. Enter a valid  name",'danger'); validationResult = false; break;
+                    case 4: notifyMsg("Please enter your first name",'danger'); validationResult = false; break;
                 }
             return validationResult;
             },
