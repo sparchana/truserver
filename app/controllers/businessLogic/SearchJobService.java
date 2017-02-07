@@ -20,9 +20,10 @@ import models.entity.Static.Language;
 import models.entity.Static.Locality;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
-import play.Logger;
 
 import java.util.*;
+
+import static play.libs.Json.toJson;
 
 /**
  * Created by zero on 24/12/16.
@@ -381,15 +382,22 @@ public class SearchJobService {
     }
 
 
-    public void removeSensitiveDetail(List<JobPost> jobPostList) {
+    public static void removeSensitiveDetail(List<JobPost> jobPostList) {
 
         for (JobPost jobPost : jobPostList) {
             RecruiterProfile recruiterProfileShell = new RecruiterProfile();
 
             recruiterProfileShell.setRecruiterProfileId(jobPost.getRecruiterProfile().getRecruiterProfileId());
+            recruiterProfileShell.setRecruiterProfileUUId(jobPost.getRecruiterProfile().getRecruiterProfileUUId());
+            recruiterProfileShell.setRecruiterProfileCreateTimestamp(jobPost.getRecruiterProfile().getRecruiterProfileCreateTimestamp());
             recruiterProfileShell.setRecruiterProfileName(jobPost.getRecruiterProfile().getRecruiterProfileName());
-            recruiterProfileShell.setRecruiterProfileMobile(jobPost.getRecruiterProfile().getRecruiterProfileMobile());
 
+            // sending only last 4 digits of recruiter mobile
+            String subMobile = jobPost.getRecruiterProfile().getRecruiterProfileMobile();
+            subMobile = subMobile.substring(subMobile.length() - 4, subMobile.length() - 1);
+            recruiterProfileShell.setRecruiterProfileMobile(subMobile);
+
+            System.out.print(String.valueOf(toJson(recruiterProfileShell)));
             jobPost.setRecruiterProfile(recruiterProfileShell);
         }
     }

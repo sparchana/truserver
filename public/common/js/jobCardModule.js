@@ -623,7 +623,6 @@ var cardModule = (function ($) {
                     });
             },
             genRecruiterContactModal: function (recruiterName, recruiterNumber, jobPostId) {
-                var splitMobileNumber = recruiterNumber.split("");
 
                 $("#recruiterModal").html("");
                 var parent = $("#recruiterModal");
@@ -685,7 +684,7 @@ var cardModule = (function ($) {
                 submitButton.id = "recruiterContactModalBtn";
                 submitButton.style = "margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%;font-weight:bold";
                 submitButton.type = "button";
-                submitButton.textContent = "Call : XXXX-XXX-"+splitMobileNumber[splitMobileNumber.length-3]+splitMobileNumber[splitMobileNumber.length-2]+splitMobileNumber[splitMobileNumber.length-1];
+                submitButton.textContent = "Call : XXXX-XXX-"+recruiterNumber;
                 submitButton.onclick = function() {
 
                     var candidateName;
@@ -715,11 +714,11 @@ var cardModule = (function ($) {
                                     if (returnedData != null) {
                                         if(returnedData.status == 1){
                                             submitButton.setAttribute("disabled","true");
-                                            submitButton.textContent = "Call : " + recruiterNumber;
+                                            submitButton.textContent = "Call : " + returnedData.recruiterMobile;
 
                                             var w = window.innerWidth;
                                             if (w < 786) {
-                                                document.location.href = "tel:" + recruiterNumber;
+                                                document.location.href = "tel:" + returnedData.recruiterMobile;
                                             }
 
                                             /*notifyMsg(cardModule.applicationSuccess,'success');*/

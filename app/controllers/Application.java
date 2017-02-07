@@ -1658,6 +1658,7 @@ public class Application extends Controller {
                     FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()));
 
             SearchJobService.computeCTA(matchingJobList, id);
+            SearchJobService.removeSensitiveDetail(matchingJobList);
 
             return ok(toJson(matchingJobList));
         }
