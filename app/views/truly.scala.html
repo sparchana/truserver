@@ -11,35 +11,6 @@
     </head>
     <body>
         <div class="mdl-layout mdl-js-layout mdl-layout mdl-js-layout">
-            @*<header class="mdl-layout__header">
-                <div class="mdl-layout__header-row">
-                    <span id="header_view_title" class="mdl-layout__title">Title View</span>
-                    <div class="mdl-layout-spacer"></div>
-                    <nav class="mdl-navigation">
-                        <a class="mdl-navigation__link" href="/showCompanyAndJob">Dashboard</a>
-                        <a class="mdl-navigation__link" href="/logout">
-                            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="logoutBtn">
-                                Logout
-                            </button>
-                        </a>
-                    </nav>
-                </div>
-            </header>*@
-            @*<div class="mdl-layout__drawer">
-                <div class="mdl-grid">
-                    <div class="mdl-cell--12-col" style="margin: 4% 0">
-                        <center ><img src="/assets/common/img/logo.gif" height="40px"></center>
-                    </div>
-                </div>
-                <nav class="mdl-navigation" style="padding-top:0">
-                    <a id="match_view_drawer" class="mdl-navigation__link" href="?view=match_view">Match Candidates</a>
-                    <a id="pre_screen_view_drawer" class="mdl-navigation__link" href="?view=pre_screen_view">Pre-screen Candidates</a>
-                    <a id="pending_interview_schedule_drawer" class="mdl-navigation__link" href="?view=pending_interview_schedule">Schedule Interviews</a>
-                    <a id="pre_screen_completed_view_drawer" class="mdl-navigation__link" href="?view=pre_screen_completed_view">Confirm/Reject Interviews</a>
-                    <a id="confirmed_interview" class="mdl-navigation__link" href="?view=confirmed_interview_view">Confirmed Interviews</a>
-                    <a id="interview_view_drawer" class="mdl-navigation__link" href="?view=completed_interview_view">Completed Interviews</a>
-                </nav>
-            </div>*@
             <main class="mdl-layout__content" style="padding:1% 2%;background-color: #efefef">
                 <section class="section--center mdl-grid mdl-grid--no-spacing mdl-shadow--2dp">
                     <header class="mdl-cell mdl-cell--3-col-desktop mdl-cell--2-col-tablet mdl-cell--4-col-phone mdl-color--deep-orange-500 mdl-color-text--white">
@@ -78,9 +49,9 @@
                 </div>
             </main>
         </div>
-        <script type="text/javascript" src="/assets/common/js/material.js"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("common/js/material.js")"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.16/clipboard.min.js"></script>
-        <script type="text/javascript" src="/assets/truly/js/trulyController.js"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("truly/js/trulyController.js")"></script>
     </body>
 </html>
 
