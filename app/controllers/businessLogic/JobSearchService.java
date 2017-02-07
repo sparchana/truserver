@@ -671,6 +671,9 @@ public class JobSearchService {
             SearchJobService.computeCTA(jobPostList, cId);
             jobPostResponse.setAllJobPost(jobPostList);
 
+            // sanitize data
+            SearchJobService.removeSensitiveDetail(jobPostList);
+
             jobPostResponse.setTotalJobs(JobPost.find.where().eq("jobPostIsHot", "1").eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).eq("Source", ServerConstants.SOURCE_INTERNAL).findRowCount());
         }
         return jobPostResponse;
