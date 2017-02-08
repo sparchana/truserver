@@ -904,6 +904,7 @@ public class Application extends Controller {
         List<JobPost> jobPosts = JobPost.find.where()
                 .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
                 .orderBy().desc("jobPostUpdateTimestamp")
+                .setUseQueryCache(true)
                 .findList();
 
         // get all jobpost uuids
@@ -916,7 +917,9 @@ public class Application extends Controller {
 
         Map <?, Interaction> jobPostCreatedInteractionMap =
                 Interaction.find.where().eq("interactionType", InteractionConstants.INTERACTION_TYPE_NEW_JOB_CREATED)
-                        .in("objectBUUId", jobpostUUIDs).setMapKey("objectBUUId").findMap();
+                        .in("objectBUUId", jobpostUUIDs).setMapKey("objectBUUId")
+                        .setUseQueryCache(true)
+                        .findMap();
         for (JobPost jobPost : jobPosts) {
             Interaction createdInteraction = jobPostCreatedInteractionMap.get(jobPost.getJobPostUUId());
 

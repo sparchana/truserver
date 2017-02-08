@@ -346,13 +346,13 @@
         </div>
 
         <div id="footer_inc"></div>
-        <script type="text/javascript" src="@routes.Assets.versioned("partner/js/notify.min.js")"></script>
+        <script type="text/javascript" src="/assets/partner/js/notify.min.js"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("common/js/apply_job.js")"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("common/js/all_job_role_footer.js")"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("common/js/candidate_upload_resume.js")"></script>
 
             <!-- Job card module -->
-        <script type="text/javascript" src="@routes.Assets.versioned("support/js/bootstrap-notify.min.js")"></script>
+        <script type="text/javascript" src="/assets/support/js/bootstrap-notify.min.js"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("build/scripts/jobCardModule.min.js")"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("common/js/validation.js")"></script>
             <!-- Assessment Import -->
@@ -363,9 +363,7 @@
         <script type="text/javascript" src="/assets/js/assessment_indicator.js"></script>*@
         <script>
             $(document).ready(function () {
-                $(document).ready(function () {
-                    $('#footer_inc').load('/footer');
-                });
+                $('#footer_inc').load('/footer');
 
                 $('[data-toggle="tooltip"]').tooltip();
             });
