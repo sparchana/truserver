@@ -360,7 +360,9 @@ public class SearchJobService {
                 if(response.getStatus() == ServerConstants.INTERVIEW_REQUIRED){
                     jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_REQUIRED);
                 } else if(response.getStatus() == ServerConstants.INTERVIEW_CLOSED){
-                    jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_CLOSED);
+                    if(RecruiterService.isCTAAllowed(jobPost).getStatus() == ServerConstants.CALL_TO_APPLY)
+                        jobPost.setApplyBtnStatus(ServerConstants.CALL_TO_APPLY);
+                    else jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_CLOSED);
                 } else {
                     // Below CTA = Call-To-Apply button
                     response = RecruiterService.isCTAAllowed(jobPost);

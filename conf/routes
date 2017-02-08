@@ -328,7 +328,7 @@ GET         /generateCompanyCode                                          contro
 
 # GET         /testNotification                                             controllers.TestController.testnotification()
 # GET         /checkSmsDelivery                                             controllers.TestController.checkSmsDelivery()
-# GET         /convertOldData                                               controllers.TestController.convertOldData()
+GET         /convertOldData                                               controllers.TestController.convertOldData()
 # GET         /testQueue                                                    controllers.TestController.testQueue()
 # GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
 # GET         /testResponse                                                 controllers.TestController.testApplyInShortResponse()
