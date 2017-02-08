@@ -636,7 +636,7 @@ function processDataForHotJobPost(returnedData) {
 
                 $("#reopenDate").html("Will reopen on " + day + "-" + month + "-" + nextMonday.getFullYear());
             } else if(returnedData.applyBtnStatus == CTA_BTN_CALL_TO_APPLY){
-                applyBtn.html("CALL");
+                applyBtn.html("");
                 applyBtn.css({"background":"#00e676","font-weight":"bold"});
                 applyBtn.on('click',function () {
                     cardModule.method.genRecruiterContactModal(returnedData.recruiterProfile.recruiterProfileName,
@@ -644,10 +644,14 @@ function processDataForHotJobPost(returnedData) {
                         jobId);
                 });
 
+                var icon = document.createElement("img");
+                icon.setAttribute('src',"/assets/common/img/callToApply.svg");
+                icon.style = "height:18px;margin-top:-4px;";
+                applyBtn.append(icon);
+
                 var icon = document.createElement("span");
-                icon.className = "glyphicon glyphicon-earphone";
-                icon.setAttribute("aria-hidden","true");
-                icon.style = "padding:2%;margin-left:10px";
+                icon.style = "font-size:16px;margin-left:10px";
+                icon.textContent= "CALL NOW";
                 applyBtn.append(icon);
             }
         }

@@ -534,7 +534,6 @@ var cardModule = (function ($) {
                             applyBtn.disabled =  true;
                             applyBtn.style = "background:#ffa726;font-weight:bold";
                         }else if(jobPost.applyBtnStatus == CTA_BTN_CALL_TO_APPLY) {
-                            applyJobText = "CALL";
                             applyBtn.style = "background:#00e676;font-weight:bold";
                         }
 
@@ -558,7 +557,6 @@ var cardModule = (function ($) {
                         if(jobPost.applyBtnStatus == 7){
                             cardModule.method.genRecruiterContactModal(
                                 jobPost.recruiterProfile.recruiterProfileName,
-                                jobPost.recruiterProfile.recruiterProfileMobile,
                                 jobPost.jobPostId);
 
                         } else{
@@ -598,10 +596,14 @@ var cardModule = (function ($) {
                     applyBtn.textContent = applyJobText;
                     if(jobPost.applyBtnStatus == CTA_BTN_CALL_TO_APPLY){
 
+                        var icon = document.createElement("img");
+                        icon.setAttribute('src',"/assets/common/img/callToApply.svg");
+                        icon.style = "height:18px;margin-top:-4px;";
+                        applyBtn.appendChild(icon);
+
                         var icon = document.createElement("span");
-                        icon.className = "glyphicon glyphicon-earphone";
-                        icon.setAttribute("aria-hidden","true");
-                        icon.style = "padding:2%;margin-left:10px";
+                        icon.style = "font-size:14px;margin-left:5px";
+                        icon.textContent= "CALL NOW";
                         applyBtn.appendChild(icon);
 
                     }
@@ -622,7 +624,7 @@ var cardModule = (function ($) {
                     function (xhr, state, error) {
                     });
             },
-            genRecruiterContactModal: function (recruiterName, recruiterNumber, jobPostId) {
+            genRecruiterContactModal: function (recruiterName, jobPostId) {
 
                 $("#recruiterModal").html("");
                 var parent = $("#recruiterModal");
@@ -646,9 +648,14 @@ var cardModule = (function ($) {
                 recruiterContactModalBody.style = "padding:0";
                 recruiterContactModalContent.appendChild(recruiterContactModalBody);
 
-                var modalHeadingText = document.createElement("h5");
-                modalHeadingText.style ="text-align:center;font-weight:bold";
-                modalHeadingText.textContent ="Contact recruiter ("+recruiterName+") and go !!";
+                var recruiterFirstName = recruiterName.split(" ");
+                if(recruiterFirstName[0].length <= 3){
+                    recruiterFirstName[0] = recruiterFirstName[0]+" "+recruiterFirstName[1];
+                }
+
+                var modalHeadingText = document.createElement("h4");
+                modalHeadingText.style ="text-align:center;font-weight:bold;font-size:16px";
+                modalHeadingText.textContent ="Call HR ("+recruiterFirstName[0]+") and Go !!";
                 recruiterContactModalBody.appendChild(modalHeadingText);
 
                 var hr = document.createElement("hr");
@@ -665,7 +672,7 @@ var cardModule = (function ($) {
                     candidateName.id = "candidateNameRecruiterContactModal";
                     candidateName.style = "margin:5px 0";
                     candidateName.type = "type";
-                    candidateName.placeholder = "Your name (e.g. Ankit Singh)";
+                    candidateName.placeholder = "Name (e.g. Ankit Singh)";
                     recruiterContactMainDiv.appendChild(candidateName);
 
                     var candidateMobile = document.createElement("input");
@@ -674,17 +681,17 @@ var cardModule = (function ($) {
                     candidateMobile.type = "type";
                     candidateMobile.style = "margin:5px 0";
                     candidateMobile.setAttribute("maxlength","10");
-                    candidateMobile.placeholder = "Your 10 digit mobile(e.g. 9998887770)";
+                    candidateMobile.placeholder = "Your Phone No (e.g. 9998887770)";
                     recruiterContactMainDiv.appendChild(candidateMobile);
 
+                    $("#candidateNameRecruiterContactModal").focus();
                 }
 
                 var submitButton = document.createElement("button");
                 submitButton.className = "btn btn-default";
                 submitButton.id = "recruiterContactModalBtn";
-                submitButton.style = "margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%;font-weight:bold";
+                submitButton.style = "font-size:18px;background:#00e676;margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%;font-weight:bold";
                 submitButton.type = "button";
-                submitButton.textContent = "Call : XXXX-XXX-"+recruiterNumber;
                 submitButton.onclick = function() {
 
                     var candidateName;
@@ -699,6 +706,8 @@ var cardModule = (function ($) {
                         }
                         if(cardModule.validate.candidateNameValidation(candidateName) && cardModule.validate.candidateMobileValidation(candidateMobileNumber)){
                             submitButton.setAttribute("disabled","true");
+                            submitButton.textContent = "Please wait...";
+
                             var d = {
                                 candidateMobile:  candidateMobileNumber,
                                 candidateName: candidateName,
@@ -713,15 +722,14 @@ var cardModule = (function ($) {
                             ).then(function (returnedData) {
                                     if (returnedData != null) {
                                         if(returnedData.status == 1){
+                                            var recruiterNumber = returnedData.recruiterMobile;
                                             submitButton.setAttribute("disabled","true");
-                                            submitButton.textContent = "Call : " + returnedData.recruiterMobile;
+                                            submitButton.textContent = "Call : " +recruiterNumber.slice(3,recruiterNumber.length) ;
 
                                             var w = window.innerWidth;
                                             if (w < 786) {
-                                                document.location.href = "tel:" + returnedData.recruiterMobile;
+                                                document.location.href = "tel:" + recruiterNumber.slice(3,recruiterNumber.length);
                                             }
-
-                                            /*notifyMsg(cardModule.applicationSuccess,'success');*/
 
                                         } else{
                                             notifyMsg(cardModule.applicationFail,'danger');
@@ -736,6 +744,17 @@ var cardModule = (function ($) {
                         }
                 };
                 recruiterContactMainDiv.appendChild(submitButton);
+
+                var icon = document.createElement("img");
+                icon.setAttribute('src',"/assets/common/img/callToApply.svg");
+                icon.style = "height:22px;margin-top:-8px;margin-left:-15px";
+                submitButton.appendChild(icon);
+
+                var icon = document.createElement("span");
+                icon.style = "font-size:18px;margin-left:15px";
+                icon.textContent= "CALL NOW";
+                submitButton.appendChild(icon);
+
                 $("#recruiterContact").modal("show");
             }
         },
