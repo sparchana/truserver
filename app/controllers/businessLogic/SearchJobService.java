@@ -23,8 +23,6 @@ import org.apache.commons.lang3.text.WordUtils;
 
 import java.util.*;
 
-import static play.libs.Json.toJson;
-
 /**
  * Created by zero on 24/12/16.
  */
@@ -394,7 +392,7 @@ public class SearchJobService {
 
             // sending only last 4 digits of recruiter mobile
             String subMobile = jobPost.getRecruiterProfile().getRecruiterProfileMobile();
-            subMobile = subMobile.substring(subMobile.length() - 4, subMobile.length() - 1);
+            subMobile = subMobile.substring(subMobile.length() - 3, subMobile.length());
             recruiterProfileShell.setRecruiterProfileMobile(subMobile);
 
             jobPost.setRecruiterProfile(recruiterProfileShell);
