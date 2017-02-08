@@ -788,7 +788,7 @@ function saveJob() {
                 jobPostStatusId: jobPostStatus,
                 jobPostExperienceId: jobPostExperience,
                 jobPostRecruiterId: jpRecruiterId,
-                partnerInterviewIncentive: 400,
+                partnerInterviewIncentive: 200,
                 partnerJoiningIncentive: 2000,
                 jobPostLanguage: jobPostLanguageList,
                 jobPostMaxAge: maxAge,
