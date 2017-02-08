@@ -63,6 +63,4 @@ libraryDependencies += evolutions
 /* for some reason with default setting of gzip, image were not getting gzipped hence this line was added */
 includeFilter in gzip := "*.html" || "*.js" || "*.css" || "*.png" || "*.jpg" || "*.jpeg" || "*.svg"
 
-includeFilter in htmlMinifier := "*.scala.html"
-
-pipelineStages := Seq(imagemin, htmlMinifier, digest, gzip)
+pipelineStages := Seq(imagemin, digest, gzip)
