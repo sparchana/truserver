@@ -17,23 +17,26 @@
         fresher and experienced jobs.Give a missed call at 8880007799 for best jobs." />
 
             <!-- Bootstrap Core CSS -->
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("common/css/bootstrap.min.css")">
-        @*<script type="text/javascript" src="@routes.Assets.versioned("common/js/jquery.min_1_12_0.js")"></script>*@
-        <script type="text/javascript" src="@routes.Assets.versioned("common/js/jquery-1.12.4.js")"></script>
-        <script type="text/javascript" src="@routes.Assets.versioned("common/js/bootstrap.min.js")"></script>
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+        @*<script type="text/javascript" src="/assets/common/js/jquery.min_1_12_0.js"></script>*@
+        <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
+        <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
 
             <!-- dashboard CSS and JS -->
         <script type="text/javascript" src="//www.google.com/jsapi"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("common/js/script_constants.js")"></script>
+        <script type="text/javascript" src="@routes.Assets.versioned("dashboard/js/candidate_home.js")"></script>
 
         <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("search/css/search.css")">
         <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("common/css/myStyle.css")">
         <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("dashboard/css/materialDashboard.css")">
         <script type="text/javascript" src="@routes.Assets.versioned("dashboard/js/user_login.js")"></script>
         <script type="text/javascript" src="@routes.Assets.versioned("dashboard/js/materialDashboard.js")"></script>
+
         <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
 
         <meta name="theme-color" content="#286ab6">
-        <link rel="icon" type="image/png" href="@routes.Assets.versioned("common/img/icon.png")">
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
         <script type="text/javascript">
           $('html, body').css({
               'overflow': 'hidden',
@@ -117,58 +120,58 @@
         </div>
         <div id="sectionHead" class="container profileBody">
             <div class="row" id="profileBox">
-                    <div class="col-sm-2" id="userImageDiv">
-                        <img src="/assets/dashboard/img/userMale.svg" id="userImg">
+                <div class="col-sm-2" id="userImageDiv">
+                    <img src="/assets/dashboard/img/userMale.svg" id="userImg">
+                </div>
+                <div class="col-sm-6" id="profileInfoDiv">
+                    <h4>
+                        <b>
+                            <div id="userName" style="display: inline-block;font-size:28px"></div>
+                            <div id="userAge" style="display: inline-block"></div>
+                            <div id="userGender" style="display: inline-block"></div>
+                        </b>
+                    </h4>
+                    <h5>
+                        <img src="/assets/dashboard/img/phone.svg" style="margin:-3px 3px 0 5px" height="18px">
+                        <div id="userMobile" style="display: inline-block"></div>
+                        <img src="/assets/dashboard/img/location-point.svg" style="margin:-3px 3px 0 5px" height="18px">
+                        <div style="display: inline-block;">Bangalore</div>
+                    </h5>
+                </div>
+                <div class="col-sm-3 col-sm-offset-1" id="profileProgressDiv" >
+                    <div class="row">
+                        <h4 style="margin: 8px 0 0 0">Profile Status</h4>
                     </div>
-                    <div class="col-sm-6" id="profileInfoDiv">
-                        <h4>
-                            <b>
-                                <div id="userName" style="display: inline-block;font-size:28px"></div>
-                                <div id="userAge" style="display: inline-block"></div>
-                                <div id="userGender" style="display: inline-block"></div>
-                            </b>
-                        </h4>
-                        <h5>
-                            <img src="/assets/dashboard/img/phone.svg" style="margin:-3px 3px 0 5px" height="18px">
-                            <div id="userMobile" style="display: inline-block"></div>
-                            <img src="/assets/dashboard/img/location-point.svg" style="margin:-3px 3px 0 5px" height="18px">
-                            <div style="display: inline-block;">Bangalore</div>
-                        </h5>
-                    </div>
-                    <div class="col-sm-3 col-sm-offset-1" id="profileProgressDiv" >
-                        <div class="row">
-                            <h4 style="margin: 8px 0 0 0">Profile Status</h4>
-                        </div>
-                        <div class="row inblockDiv">
-                            <a href="/dashboard/editProfile">
-                                <div class="profileIncomplete indicatorBtnRed">
-                                    <img src="/assets/dashboard/img/incomplete.svg" height="18px">
-                                    <img src="/assets/dashboard/img/incomplete.svg" height="18px">
-                                    <img src="/assets/dashboard/img/incomplete.svg" height="18px">
-                                    <div style="margin-top: 6px"><b><font style="color:#ffffff">Incomplete</font></b></div>
-                                </div>
-                            </a>
-                            <div class="profileComplete" style="display: none">
-                                <img src="/assets/dashboard/img/complete.svg" height="18px">
-                                <img src="/assets/dashboard/img/complete.svg" height="18px">
-                                <img src="/assets/dashboard/img/complete.svg" height="18px">
-                                <div style="margin-top: 6px"><b>Complete</b></div>
+                    <div class="row inblockDiv">
+                        <a href="/dashboard/editProfile">
+                            <div class="profileIncomplete indicatorBtnRed">
+                                <img src="/assets/dashboard/img/incomplete.svg" height="18px">
+                                <img src="/assets/dashboard/img/incomplete.svg" height="18px">
+                                <img src="/assets/dashboard/img/incomplete.svg" height="18px">
+                                <div style="margin-top: 6px"><b><font style="color:#ffffff">Incomplete</font></b></div>
                             </div>
+                        </a>
+                        <div class="profileComplete" style="display: none">
+                            <img src="/assets/dashboard/img/complete.svg" height="18px">
+                            <img src="/assets/dashboard/img/complete.svg" height="18px">
+                            <img src="/assets/dashboard/img/complete.svg" height="18px">
+                            <div style="margin-top: 6px"><b>Complete</b></div>
                         </div>
                     </div>
+                </div>
             </div>
         </div>
-@*
-            <div class="col-sm-6" style="display: flex;
-                justify-content: center;
-                align-items: flex-end;
-                padding-top: 30px;">
-                <div >
-                    <div id="assessmentDiv" class="inblockDiv" style="margin-left: 16px;"><div class="assessmentHeader">Assessment Status</div></div>
-                </div>
+        @*
+        <div class="col-sm-6" style="display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        padding-top: 30px;">
+        <div >
+        <div id="assessmentDiv" class="inblockDiv" style="margin-left: 16px;"><div class="assessmentHeader">Assessment Status</div></div>
+        </div>
 
-            </div>
-*@
+        </div>
+        *@
         <div id="sectionBody" class="startBody">
             <div class="container profileBody">
                 <h3 style="display: inline-block">Profile</h3>
@@ -354,10 +357,10 @@
         <script type="text/javascript" src="@routes.Assets.versioned("common/js/validation.js")"></script>
             <!-- Assessment Import -->
 
-@*        <link rel="stylesheet" type="text/css" href="@routes.Assets.versioned("css/assessment_modal.css")">
-        <script type="text/javascript" src="@routes.Assets.versioned("js/bootbox.min.js")"></script>
-        <script type="text/javascript" src="@routes.Assets.versioned("js/assessment_modal.js")"></script>
-        <script type="text/javascript" src="@routes.Assets.versioned("js/assessment_indicator.js")"></script>*@
+        @*        <link rel="stylesheet" type="text/css" href="/assets/css/assessment_modal.css">
+        <script type="text/javascript" src="/assets/js/bootbox.min.js"></script>
+        <script type="text/javascript" src="/assets/js/assessment_modal.js"></script>
+        <script type="text/javascript" src="/assets/js/assessment_indicator.js"></script>*@
         <script>
             $(document).ready(function () {
                 $(document).ready(function () {
@@ -423,7 +426,7 @@
         }
         /* ]]> */
     </script>
-        <script type="text/javascript" src='//www.googleadservices.com/pagead/conversion_async.js'></script>
+        <script type="text/javascript" src="//www.googleadservices.com/pagead/conversion_async.js"></script>
 
             <!-- End google conversion tracker Code -->
     </body>
