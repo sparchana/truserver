@@ -16,7 +16,53 @@ $(window).load(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/checkPrivateRecruiterPartnerAccount",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckpartnerAccount
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 });
+
+function processDataCheckpartnerAccount(returnedData) {
+    if(returnedData == 1){
+        $("#accountSwitcher").show();
+        $("#accountSwitcherMobile").show();
+    } else{
+        $("#accountSwitcher").hide();
+        $("#accountSwitcherMobile").hide();
+    }
+}
+
+function switchToPartner() {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/switchToPartner",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataPartnerSwitch
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataPartnerSwitch(returnedData) {
+    if(returnedData == 1){
+        window.location = "/partner";
+    } else{
+        notifyError("Something went wrong");
+    }
+}
 
 function processDataGetJobPostDetails(returnedData){
     var jobPostList = returnedData;

@@ -69,8 +69,8 @@
             </center>
         </div>
 
-        <div id="container-fluid" style="padding:1% 2%;margin-bottom: 50px">
-            <table id="postedJobTable" style="background: white;" class="table table-bordered" cellspacing="0" width="100%">
+        <div id="container-fluid" class="postedJobTableDiv" style="padding:1% 2%;margin-bottom: 50px; display: none">
+            <table id="postedJobTable" style="background: white" class="table table-bordered" cellspacing="0" width="100%">
                 <thead style="background: #656565; color: white">
                     <tr>
                         <th style="font-size: 14px">Posted On</th>
@@ -88,47 +88,15 @@
             </table>
         </div>
 
-        @*<div id="noJobs" style="padding: 120px 6% 120px 6%; display: none">
+        <div id="noJobs" style="padding: 120px 6% 120px 6%; display: none">
             <center>
                 <img src="/assets/recruiter/img/empty_box.svg" width="116px">
                 <h5>No Jobs Found!</h5>
                 <h6>Looks like you have not posted any job yet. <a href="/recruiter/jobPost/0">Post now</a> and contact thousands of verified candidates!</h6>
             </center>
         </div>
-        <div class="container-fluid" id="jobTable" style="display: none">
-            *@@*<div class="card" id="myJobPost">
-                <div class="row hide-on-small-only" id='headerForData' style="font-size: 14px">
-                    <div class="col s1 l1" id="colHeadDataTable">
-                        <font>Date Posted</font>
-                    </div>
-                    <div class="col s2 l2" id="colHeadDataTable">
-                        <font>Job Title</font>
-                    </div>
-                    <div class="col s2 l2" id="colHeadDataTable">
-                        <font>Location(s)</font>
-                    </div>
-                    <div class="col s1 l1" id="colHeadDataTable">
-                        <font>Salary</font>
-                    </div>
-                    <div class="col s1 l2" id="colHeadDataTable">
-                        <font>Track</font>
-                    </div>
-                    <div class="col s1 l2" id="colHeadDataTable">
-                        <font>Status</font>
-                    </div>
-                    <div class="col s1 l1" id="">
-                        <font>Edit Job</font>
-                    </div>
-                    <div class="col s1 l1" id="viewCandidateBtn">
-                        <font>Candidates</font>
-                    </div>
-                </div>
-                <div class="myJobsRecruiter">
-            </div>
-            </div>*@@*
-        </div>*@
 
-            <!-- pause interview modal -->
+        <!-- pause interview modal -->
         <div id="pauseInterviewModal" class="modal" style="background: transparent; box-shadow: none">
             <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closePauseModal()"></div>
             <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">

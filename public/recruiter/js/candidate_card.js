@@ -361,7 +361,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                 viewResume = true;
                 unlockContact(value.candidate.candidateId);
             } else{
-                window.open("http://docs.google.com/gview?url=" + $(this).attr("val") + "&embedded=true");
+                window.open($(this).attr("val"));
             }
         };
         resumeLink.style = "font-size: 14px; font-weight: bold; color: rgb(84, 192, 235); ";
