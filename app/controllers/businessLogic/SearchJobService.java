@@ -13,13 +13,13 @@ import models.entity.JobPost;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.OM.JobPreference;
 import models.entity.OM.LanguageKnown;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.Education;
 import models.entity.Static.Experience;
 import models.entity.Static.Language;
 import models.entity.Static.Locality;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
-import play.Logger;
 
 import java.util.*;
 
@@ -382,10 +382,22 @@ public class SearchJobService {
     }
 
 
-    public void removeSensitiveDetail(List<JobPost> jobPostList) {
+    public static void removeSensitiveDetail(List<JobPost> jobPostList) {
 
-        for(JobPost jobPost: jobPostList){
-            jobPost.setRecruiterProfile(null);
+        for (JobPost jobPost : jobPostList) {
+            RecruiterProfile recruiterProfileShell = new RecruiterProfile();
+
+            recruiterProfileShell.setRecruiterProfileId(jobPost.getRecruiterProfile().getRecruiterProfileId());
+            recruiterProfileShell.setRecruiterProfileUUId(jobPost.getRecruiterProfile().getRecruiterProfileUUId());
+            recruiterProfileShell.setRecruiterProfileCreateTimestamp(jobPost.getRecruiterProfile().getRecruiterProfileCreateTimestamp());
+            recruiterProfileShell.setRecruiterProfileName(jobPost.getRecruiterProfile().getRecruiterProfileName());
+
+            // sending only last 4 digits of recruiter mobile
+            String subMobile = jobPost.getRecruiterProfile().getRecruiterProfileMobile();
+            subMobile = subMobile.substring(subMobile.length() - 3, subMobile.length());
+            recruiterProfileShell.setRecruiterProfileMobile(subMobile);
+
+            jobPost.setRecruiterProfile(recruiterProfileShell);
         }
     }
 }

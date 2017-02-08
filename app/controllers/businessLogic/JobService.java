@@ -759,7 +759,7 @@ public class JobService {
     }
 
     public static ApplyJobResponse applyJob(ApplyJobRequest applyJobRequest,
-                                            int channelType, int interactionType)
+                                            int channelType, int interactionType, boolean isSendSMSToCandidate)
             throws IOException, JSONException
     {
         Logger.info("checking user and jobId: " + applyJobRequest.getCandidateMobile() + " + " + applyJobRequest.getJobId());
@@ -871,7 +871,10 @@ public class JobService {
                                 interactionResult = InteractionConstants.INTERACTION_RESULT_PARTNER_APPLIED_TO_JOB;
                             }
                         } else{
-                            SmsUtil.sendJobApplicationSms(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName(), channelType);
+
+                            if(isSendSMSToCandidate){
+                                SmsUtil.sendJobApplicationSms(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName(), channelType);
+                            }
 
                             //sending notification
                             NotificationUtil.sendJobApplicationNotification(existingCandidate, existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), jobApplication.getLocality().getLocalityName());
@@ -1417,7 +1420,7 @@ public class JobService {
     /**
      *
      * API accepts only a name and a mobile number, fetch/create(leadSource: LooseCandidate)
-     * a candidate then push it to apply flow,
+     * a candidate then push it to apply flow and deduct 1 CTA credit of the recruiter
      *
      *
      * @param applyJobRequest
@@ -1520,13 +1523,12 @@ public class JobService {
         }
 
 
-        // prep apply date
+            // prep apply date
         applyJobRequest.setLocalityId(Math.toIntExact(jobPost.getJobPostToLocalityList().get(0).getLocality().getLocalityId()));
 
-        // push this candidate to apply flow
-
+            // push this candidate to apply flow
         try {
-            ApplyJobResponse applyJobResponse = applyJob(applyJobRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE, InteractionConstants.INTERACTION_TYPE_APPLY_JOB_VIA_CALL_TO_APPLY);
+            ApplyJobResponse applyJobResponse = applyJob(applyJobRequest, INTERACTION_CHANNEL_CANDIDATE_WEBSITE, InteractionConstants.INTERACTION_TYPE_APPLY_JOB_VIA_CALL_TO_APPLY, false);
 
             callToApplyResponse.setResponse(applyJobResponse);
             callToApplyResponse.setMessage("Successfully Applied !");
@@ -1535,7 +1537,12 @@ public class JobService {
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
-        // TODO code to deduct the new credit will come here + response formation here with rec mobile and name
+
+            // debit recruiters
+        RecruiterService.debitCredits(jobPost.getRecruiterProfile(), ServerConstants.RECRUITER_CATEGORY_CTA_CREDIT, -1, "Recruiter: " + session().get("sessionUsername"));
+
+        callToApplyResponse.setRecruiterName(jobPost.getRecruiterProfile().getRecruiterProfileName());
+        callToApplyResponse.setRecruiterMobile(jobPost.getRecruiterProfile().getRecruiterProfileMobile());
 
         return callToApplyResponse;
     }

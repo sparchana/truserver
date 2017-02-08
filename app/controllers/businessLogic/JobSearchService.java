@@ -41,7 +41,9 @@ public class JobSearchService {
     }
 
     public static List<JobPost> getAllJobPosts() {
-        return JobPost.find.all();
+        return JobPost.find.where()
+                      .ne("JobStatus", ServerConstants.JOB_STATUS_DEACTIVATED)
+                      .findList();
     }
 
 
@@ -668,6 +670,9 @@ public class JobSearchService {
 
             SearchJobService.computeCTA(jobPostList, cId);
             jobPostResponse.setAllJobPost(jobPostList);
+
+            // sanitize data
+            SearchJobService.removeSensitiveDetail(jobPostList);
 
             jobPostResponse.setTotalJobs(JobPost.find.where().eq("jobPostIsHot", "1").eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).eq("Source", ServerConstants.SOURCE_INTERNAL).findRowCount());
         }

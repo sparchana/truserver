@@ -13,17 +13,13 @@ import api.http.httpResponse.Recruiter.AddCreditResponse;
 import api.http.httpResponse.Recruiter.AddRecruiterResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
-import api.http.httpResponse.Recruiter.recruiterAdmin.JobPostSummaryResponse;
-import api.http.httpResponse.Recruiter.recruiterAdmin.PercentageBundle;
-import api.http.httpResponse.Recruiter.recruiterAdmin.RecruiterSummaryResponse;
+import api.http.httpResponse.Recruiter.recruiterAdmin.*;
 import api.http.httpResponse.ResetPasswordResponse;
 import api.http.httpResponse.interview.InterviewResponse;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import dao.*;
-import dao.JobPostDAO;
-import dao.RecruiterCreditHistoryDAO;
 import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
@@ -923,11 +919,13 @@ public class RecruiterService {
         return newHistory;
     }
 
-    public List<RecruiterSummaryResponse> getRecruiterSummary(Long companyId, Long callerRecruiterId, String from, String to) {
+    public RecruiterSummaryResponse getRecruiterSummary(Long companyId, Long callerRecruiterId, String from, String to) {
 
         if(callerRecruiterId == null) {
-            return new ArrayList<>();
+            return new RecruiterSummaryResponse();
         }
+
+        RecruiterSummaryResponse response = new RecruiterSummaryResponse();
 
         final SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
         Date startDate = null;
@@ -945,17 +943,18 @@ public class RecruiterService {
         if(companyId == null) {
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", callerRecruiterId).findUnique();
             if(recruiterProfile == null || recruiterProfile.getCompany() == null) {
-                return new ArrayList<>();
+                return new RecruiterSummaryResponse();
             }
             companyId = recruiterProfile.getCompany().getCompanyId();
+            response.setCompanyName(recruiterProfile.getCompany().getCompanyName());
         }
 
-        List<RecruiterSummaryResponse> recruiterSummaryResponseList = new ArrayList<>();
+        List<RecruiterSummary> recruiterSummaryList = new ArrayList<>();
         Map<?, RecruiterProfile> recruiterProfileMap = RecruiterDAO.findMapByCompanyId(companyId, ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE);
 
         for(Map.Entry entry: recruiterProfileMap.entrySet()) {
 
-            RecruiterSummaryResponse recruiterSummaryResponse = new RecruiterSummaryResponse();
+            RecruiterSummary recruiterSummary = new RecruiterSummary();
             RecruiterProfile recruiterProfile = (RecruiterProfile) entry.getValue();
 
             List<Long> jobPostIdList = new ArrayList<>();
@@ -974,24 +973,25 @@ public class RecruiterService {
                 jobPostIdList.add(jobPost.getJobPostId());
             }
 
-            recruiterSummaryResponse.setRecruiterId(recruiterProfile.getRecruiterProfileId());
-            recruiterSummaryResponse.setRecruiterName(recruiterProfile.getRecruiterProfileName());
-            recruiterSummaryResponse.setRecruiterMobile(recruiterProfile.getRecruiterProfileMobile() +
+            recruiterSummary.setRecruiterId(recruiterProfile.getRecruiterProfileId());
+            recruiterSummary.setRecruiterName(recruiterProfile.getRecruiterProfileName());
+            recruiterSummary.setRecruiterMobile(recruiterProfile.getRecruiterProfileMobile() +
                     ((recruiterProfile.getRecruiterAlternateMobile() == null) ? "": "/"+recruiterProfile.getRecruiterAlternateMobile()));
 
-            recruiterSummaryResponse.setNoOfJobPosted(jobPostList.size());
-            recruiterSummaryResponse.setTotalCandidatesApplied(computeTotalApplicant(jobPostIdList, startDate, endDate));
-            recruiterSummaryResponse.setTotalInterviewConducted(computeTotalInterviewConducted(jobPostIdList,  startDate, endDate));
-            recruiterSummaryResponse.setTotalSelected(computeTotalSelected(jobPostIdList, startDate, endDate));
+            recruiterSummary.setNoOfJobPosted(jobPostList.size());
+            recruiterSummary.setTotalCandidatesApplied(computeTotalApplicant(jobPostIdList, startDate, endDate));
+            recruiterSummary.setTotalInterviewConducted(computeTotalInterviewConducted(jobPostIdList,  startDate, endDate));
+            recruiterSummary.setTotalSelected(computeTotalSelected(jobPostIdList, startDate, endDate));
 
-            recruiterSummaryResponse.setPercentageFulfillment(
-                    formatPercentageFulfilled(computePercentageFulfilled(jobPostList, recruiterSummaryResponse.getTotalSelected()))
+            recruiterSummary.setPercentageFulfillment(
+                    formatPercentageFulfilled(computePercentageFulfilled(jobPostList, recruiterSummary.getTotalSelected()))
                                      );
 
-            recruiterSummaryResponseList.add(recruiterSummaryResponse);
+            recruiterSummaryList.add(recruiterSummary);
         }
 
-        return recruiterSummaryResponseList;
+        response.setRecruiterSummaryList(recruiterSummaryList);
+        return response;
     }
 
     private PercentageBundle computePercentageFulfilled(List<JobPost> jobPostList, Integer totalSelected) {
@@ -1078,50 +1078,55 @@ public class RecruiterService {
         return JobPostWorkFlowDAO.getRecords(jobPostIdList, statusList, fromDate, toDate).size();
     }
 
-    public List<JobPostSummaryResponse> getAllJobPostPerRecruiterSummary(Long targetRecruiterId, Long callerRecruiterId) {
-        if(targetRecruiterId == null || callerRecruiterId == null) return null;
+    public JobPostSummaryResponse getAllJobPostPerRecruiterSummary(Long targetRecruiterId, Long callerRecruiterId) {
+        if(targetRecruiterId == null || callerRecruiterId == null) return new JobPostSummaryResponse();
 
-        List<JobPostSummaryResponse> jobPostSummaryResponseList = new ArrayList<>();
+        JobPostSummaryResponse response = new JobPostSummaryResponse();
+
+        List<JobPostSummary> jobPostSummaryList = new ArrayList<>();
         Map<?, JobPost> jobPostMap = JobPostDAO.findMapByRecruiterId(targetRecruiterId, ServerConstants.JOB_POST_TYPE_PRIVATE);
 
         SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_DDMMYYYY);
 
         for(Map.Entry entry: jobPostMap.entrySet()) {
 
-            JobPostSummaryResponse jobPostSummaryResponse = new JobPostSummaryResponse();
+            JobPostSummary jobPostSummary = new JobPostSummary();
             JobPost jobPost = (JobPost) entry.getValue();
 
             if(jobPost == null) continue;
-
+            if(response.getRecruiterName().isEmpty()){
+                response.setRecruiterName(jobPost.getRecruiterProfile().getRecruiterProfileName());
+            }
             String jobTitle = jobPost.getJobPostTitle() + " ("+jobPost.getJobPostStatus().getJobStatusName()+")";
             // forming individual responses again each jobpost
-            jobPostSummaryResponse.setJobPostId(jobPost.getJobPostId());
-            jobPostSummaryResponse.setJobTitle(jobTitle);
-            jobPostSummaryResponse.setJobPostedOn(sdf.format(jobPost.getJobPostCreateTimestamp()));
+            jobPostSummary.setJobPostId(jobPost.getJobPostId());
+            jobPostSummary.setJobTitle(jobTitle);
+            jobPostSummary.setJobPostedOn(sdf.format(jobPost.getJobPostCreateTimestamp()));
 
             // not using the jobpost.getapplication since support matching doesn't goes here
             // need to clarify if support can interact with private flow or not
             // for now this uses the jobpost workflow to figure out these info
-            jobPostSummaryResponse.setTotalApplicants(computeTotalApplicant(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))));
-            jobPostSummaryResponse.setTotalInterviewConducted(computeTotalInterviewConducted(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))));
-            jobPostSummaryResponse.setPercentageFulfillment(
+            jobPostSummary.setTotalApplicants(computeTotalApplicant(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))));
+            jobPostSummary.setTotalInterviewConducted(computeTotalInterviewConducted(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))));
+            jobPostSummary.setPercentageFulfillment(
                     formatPercentageFulfilled(computePercentageFulfilled(new ArrayList<>(Arrays.asList(jobPost)),
                     computeTotalSelected(new ArrayList<>(Arrays.asList(jobPost.getJobPostId()))))));
 
             try {
-                jobPostSummaryResponse.setCycleTime(formatCycleTime(computeAvgCycleTime(jobPost.getJobPostId(), jobPost.getJobPostCreateTimestamp())));
+                jobPostSummary.setCycleTime(formatCycleTime(computeAvgCycleTime(jobPost.getJobPostId(), jobPost.getJobPostCreateTimestamp())));
             } catch (ParseException e) {
                 e.printStackTrace();
                 Logger.error("unable to parse date for date diff in computeAvgCycleTime");
             }
             // TODO move this to map and then use it here
-            jobPostSummaryResponse.setTotalSmsSent(SmsReportDAO.getTotalSMSByRecruiterNJobPost(targetRecruiterId, jobPost.getJobPostId()));
+            jobPostSummary.setTotalSmsSent(SmsReportDAO.getTotalSMSByRecruiterNJobPost(targetRecruiterId, jobPost.getJobPostId()));
 
             // adding it to the list
-            jobPostSummaryResponseList.add(jobPostSummaryResponse);
+            jobPostSummaryList.add(jobPostSummary);
         }
 
-        return jobPostSummaryResponseList;
+        response.setJobPostSummaryList(jobPostSummaryList);
+        return response;
     }
 
     private String formatCycleTime(float i) {
