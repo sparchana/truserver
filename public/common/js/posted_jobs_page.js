@@ -640,7 +640,6 @@ function processDataForHotJobPost(returnedData) {
                 applyBtn.css({"background":"#00e676","font-weight":"bold"});
                 applyBtn.on('click',function () {
                     cardModule.method.genRecruiterContactModal(returnedData.recruiterProfile.recruiterProfileName,
-                        returnedData.recruiterProfile.recruiterProfileMobile,
                         jobId);
                 });
 
