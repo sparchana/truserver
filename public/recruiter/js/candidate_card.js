@@ -1244,7 +1244,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                         feedbackBtn.className = "customFeedbackBtn feedbackVal";
                         feedbackBtn.onclick = function () {
                             candidateCardData = value;
-                            openFeedbackModal();
+                            openFeedbackModal(value.candidate.candidateId);
                         };
                         feedbackBtn.textContent = "Add Feedback";
                         feedbackBtn.style = "font-size: 12px; background: rgb(46, 200, 102)";
