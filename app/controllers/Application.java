@@ -899,7 +899,7 @@ public class Application extends Controller {
         return ok(toJson(JobSearchService.getAllActiveJobsPaginated(index)));
     }
 
-    public static Result getAllHotJobPosts(Long index, String sessionSalt) {
+    public static Result getAllHotJobPosts(Integer index, Integer sessionSalt) {
         return ok(toJson(JobSearchService.getAllHotJobsPaginated(index, sessionSalt)));
     }
 
