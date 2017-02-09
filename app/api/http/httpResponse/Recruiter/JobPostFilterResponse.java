@@ -23,6 +23,7 @@ public class JobPostFilterResponse {
     private List<Integer> jobPostAssetIdList;
 
     private List<LocalityIdName> jobPostLocalityList ;
+    private String jobPostTitle;
 
 
     public static class LocalityIdName{
@@ -155,4 +156,11 @@ public class JobPostFilterResponse {
         return jobPostLocalityList;
     }
 
+    public String getJobPostTitle() {
+        return jobPostTitle;
+    }
+
+    public void setJobPostTitle(String jobPostTitle) {
+        this.jobPostTitle = jobPostTitle;
+    }
 }

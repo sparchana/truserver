@@ -29,7 +29,6 @@ $(document).ready(function(){
                             var postedJobList = returnedData;
                             var returned_data  = new Array();
                             if(postedJobList.length > 0){
-                                $("#postedJobTable").show();
                                 postedJobList.forEach(function (jobPost) {
                                     returned_data.push({
                                         'datePosted': function() {
@@ -96,6 +95,7 @@ $(document).ready(function(){
                                         'candidates':'<button type="button" class="mBtn" style="width: 94%" onclick="openCandidateView('+jobPost.jobPost.jobPostId+')" id="viewCandidateBtn" >Find</button>'
                                     })
                                 });
+                                $(".postedJobTableDiv").show();
                             }else{
                                 $("#noJobs").show();
                             }
@@ -126,7 +126,53 @@ $(document).ready(function(){
     } catch (exception){
         console.log("exception occured !!" + exception);
     }
+
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/checkPrivateRecruiterPartnerAccount",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckpartnerAccount
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 });
+
+function processDataCheckpartnerAccount(returnedData) {
+    if(returnedData == 1){
+        $("#accountSwitcher").show();
+        $("#accountSwitcherMobile").show();
+    } else{
+        $("#accountSwitcher").hide();
+        $("#accountSwitcherMobile").hide();
+    }
+}
+
+function switchToPartner() {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/switchToPartner",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataPartnerSwitch
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataPartnerSwitch(returnedData) {
+    if(returnedData == 1){
+        window.location = "/partner";
+    } else{
+        notifyError("Something went wrong");
+    }
+}
 
 function jobPostApplicationStatus(jobPost) {
     var parent = $("#jobPostStatusDiv_"+jobPost.jobPost.jobPostId);

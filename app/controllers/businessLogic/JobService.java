@@ -88,7 +88,9 @@ public class JobService {
             addJobPostResponse.setStatus(AddJobPostResponse.STATUS_SUCCESS);
 
             // if support creates a job post in new status, no alert is sent to recruiter
-            if (existingJobPost.getJobPostStatus().getJobStatusId() == ServerConstants.JOB_STATUS_ACTIVE) {
+            if (existingJobPost.getJobPostStatus().getJobStatusId() == ServerConstants.JOB_STATUS_ACTIVE &&
+                    existingJobPost.getJobPostAccessLevel() == ServerConstants.JOB_POST_TYPE_OPEN)
+            {
                 isSendJobActivationAlert = true;
             } else if (channelType == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE) {
                 // These sms and mail alerts are sent only in case of self-job posts by recruiter
