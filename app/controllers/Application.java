@@ -899,8 +899,8 @@ public class Application extends Controller {
         return ok(toJson(JobSearchService.getAllActiveJobsPaginated(index)));
     }
 
-    public static Result getAllHotJobPosts(Long index) {
-        return ok(toJson(JobSearchService.getAllHotJobsPaginated(index)));
+    public static Result getAllHotJobPosts(Long index, String sessionSalt) {
+        return ok(toJson(JobSearchService.getAllHotJobsPaginated(index, sessionSalt)));
     }
 
     @Security.Authenticated(Secured.class)

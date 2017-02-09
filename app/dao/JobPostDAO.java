@@ -80,4 +80,26 @@ public class JobPostDAO {
                 .eq("jobPostAccessLevel", accessLevel)
                 .setMapKey("jobPostId").findMap();
     }
+
+    public static List<JobPost> getRandomJobPost(Integer randId) {
+
+        String jobPostQueryBuilder = " SELECT jobpostid FROM jobpost" +
+                " where job_post_access_level = " + ServerConstants.JOB_POST_TYPE_OPEN +
+                " and source = " + ServerConstants.SOURCE_INTERNAL +
+                " and jobpostishot = " + ServerConstants.IS_HOT +
+                " and jobstatus = " + ServerConstants.JOB_STATUS_ACTIVE +
+                " and jobstatus = " + ServerConstants.JOB_STATUS_ACTIVE +
+                " order by rand(" + randId + ") LIMIT 5";
+
+        Logger.info(jobPostQueryBuilder);
+        RawSql rawSql = RawSqlBuilder.parse(jobPostQueryBuilder)
+                .columnMapping("jobpostid", "jobPostId")
+                .create();
+
+        return Ebean.find(JobPost.class)
+                .setRawSql(rawSql)
+                .findList();
+
+    }
+
 }
