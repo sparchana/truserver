@@ -88,7 +88,9 @@ public class JobService {
             addJobPostResponse.setStatus(AddJobPostResponse.STATUS_SUCCESS);
 
             // if support creates a job post in new status, no alert is sent to recruiter
-            if (existingJobPost.getJobPostStatus().getJobStatusId() == ServerConstants.JOB_STATUS_ACTIVE) {
+            if (existingJobPost.getJobPostStatus().getJobStatusId() == ServerConstants.JOB_STATUS_ACTIVE &&
+                    existingJobPost.getJobPostAccessLevel() == ServerConstants.JOB_POST_TYPE_OPEN)
+            {
                 isSendJobActivationAlert = true;
             } else if (channelType == InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE) {
                 // These sms and mail alerts are sent only in case of self-job posts by recruiter
@@ -1479,11 +1481,13 @@ public class JobService {
         } else {
             // direct update candidate, if required
             boolean shouldUpdate = false;
+
             // set locality if candidate locality is prev set to other
+            // in locality table | 345--> other
+
             if(candidate.getLocality() == null
-                    || candidate.getLocality().getLocalityId() == 345
-                    && jobPost.getJobPostToLocalityList().size() == 1)
-            {
+                    || (candidate.getLocality().getLocalityId() == 345
+                    && jobPost.getJobPostToLocalityList().size() == 1)) {
 
                 candidate.setLocality(
                         jobPost.getJobPostToLocalityList()
@@ -1496,32 +1500,50 @@ public class JobService {
             // we will append but not rotate job preference
             // update if job pref is not there and job pref is other
 
-            Map<Long, Long> candidateJobPrefMap = new HashMap<>();
-            if(candidate.getJobPreferencesList().size()<3){
-                List<JobPreference> candidateJobPref = candidate.getJobPreferencesList();
+            boolean shouldAppend =false;
+            switch (candidate.getJobPreferencesList().size()){
 
-                for (JobPreference jobPreference : candidate.getJobPreferencesList()) {
-                    Long jobRoleId = candidateJobPrefMap.get(jobPreference.getJobRole().getJobRoleId());
-                    if(jobRoleId == null) {
-                        candidateJobPrefMap.put(jobPreference.getJobRole().getJobRoleId(), jobPreference.getJobRole().getJobRoleId());
+                case 0:
+                    shouldAppend =true;
+                case 1:
+                    /* in jobrole table | 34--> other */
+                    if(!shouldAppend && candidate.getJobPreferencesList().get(0) != null
+                            && candidate.getJobPreferencesList().get(0).getJobRole().getJobRoleId() == 34){
+                        shouldAppend = true;
+                        candidate.getJobPreferencesList().clear();
                     }
-                }
 
-                for(JobPreference jobPreference : candidate.getJobPreferencesList()) {
-                    if(candidateJobPrefMap.get(jobPreference.getJobRole().getJobRoleId()) == null){
-                        JobPreference jobPref = new JobPreference();
-                        jobPref.setCandidate(candidate);
-                        jobPref.setJobRole(jobPreference.getJobRole());
+                    if(shouldAppend) {
 
-                        candidateJobPref.add(jobPref);
+                        // add it to candidate jobpref list
+                        candidate.getJobPreferencesList().add(getJobPreferenceObject(candidate, jobPost.getJobRole()));
                         shouldUpdate = true;
                     }
+                    break;
+                default: break;
+            }
+
+                // if job pref not yet changed
+                // change only if job pref list size < 3
+            if(!shouldAppend && candidate.getJobPreferencesList().size() < 3){
+
+                    // prep map
+                Map<Long, Long> candidateJobPrefMap = new HashMap<>();
+                for(JobPreference jobPreference: candidate.getJobPreferencesList()) {
+                    candidateJobPrefMap.putIfAbsent(jobPreference.getJobRole().getJobRoleId(), jobPreference.getJobRole().getJobRoleId());
+                }
+
+                    // if candidate job pref map doesn't have jobpost_job_role yet, then append it
+                    // also don't change 'other' here as we don't modify candidate's choice forcefully
+                if(candidateJobPrefMap.get(jobPost.getJobRole().getJobRoleId()) == null){
+                        // add it to candidate jobpref list
+                    candidate.getJobPreferencesList().add( getJobPreferenceObject(candidate, jobPost.getJobRole()));
+                    shouldUpdate = true;
                 }
             }
 
             if(shouldUpdate) candidate.update();
         }
-
 
             // prep apply date
         applyJobRequest.setLocalityId(Math.toIntExact(jobPost.getJobPostToLocalityList().get(0).getLocality().getLocalityId()));
@@ -1546,5 +1568,13 @@ public class JobService {
 
         return callToApplyResponse;
     }
+
+    private static JobPreference getJobPreferenceObject(Candidate candidate, JobRole jobRole) {
+        JobPreference jobPref = new JobPreference();
+        jobPref.setCandidate(candidate);
+        jobPref.setJobRole(jobRole);
+        return jobPref;
+    }
+
 
 }

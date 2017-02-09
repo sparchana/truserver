@@ -12,10 +12,13 @@ import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.FlashSessionController;
 import controllers.security.PartnerSecured;
 import dao.JobPostDAO;
+import dao.PartnerToCandidateToCompanyDAO;
 import models.entity.*;
 import models.entity.OM.PartnerToCandidate;
 import models.entity.OM.PartnerToCandidateToCompany;
 import models.entity.OM.PartnerToCompany;
+import models.entity.Recruiter.RecruiterAuth;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.LeadSource;
 import models.entity.Static.PartnerType;
 import play.Logger;
@@ -26,6 +29,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static controllers.businessLogic.Recruiter.RecruiterAuthService.addSession;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.request;
 import static play.mvc.Controller.session;
@@ -195,10 +199,7 @@ public class PartnerController {
             }
 
             //to check partner to candidate pool
-            PartnerToCandidateToCompany partnerToCandidateToCompany = PartnerToCandidateToCompany.find.where()
-                    .eq("partnerToCandidate.candidate.candidateId", candidate.getCandidateId())
-                    .in("partnerToCompany.company.companyId", companyIdList)
-                    .findUnique();
+            PartnerToCandidateToCompany partnerToCandidateToCompany = PartnerToCandidateToCompanyDAO.getPartnerCreatedCandidateById(candidate, companyIdList);
 
             if(partnerToCandidateToCompany == null){
                 response = ServerConstants.STATUS_CANDIDATE_EXISTS_DIFFERENT_COMPANY;
@@ -380,9 +381,7 @@ public class PartnerController {
             List<Long> candidateIdList = new ArrayList<>();
 
             if(partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
-                partnerToCandidateToCompanyList = PartnerToCandidateToCompany.find.where()
-                        .eq("partner_id", partner.getPartnerId())
-                        .findList();
+                partnerToCandidateToCompanyList = PartnerToCandidateToCompanyDAO.getPartnerCreatedCandidateList(partner);
 
                 for(PartnerToCandidateToCompany partnerToCandidateToCompany : partnerToCandidateToCompanyList) {
                     candidateList.add(partnerToCandidateToCompany.getPartnerToCandidate().getCandidate());
@@ -540,8 +539,8 @@ public class PartnerController {
     }
 
 public static Result checkExistingCompany(String CompanyCode) {
-    Company company = Company.find.where().eq("CompanyCode", CompanyCode).findUnique();
-    if(company != null){
+    Integer companyCount = Company.find.where().eq("CompanyCode", CompanyCode).findRowCount();
+    if(companyCount > 0){
         return ok("1");
     } else{
         return ok("0");
@@ -560,6 +559,64 @@ public static Result checkExistingCompany(String CompanyCode) {
         }
         return ok("0");
 
+    }
+
+    @Security.Authenticated(PartnerSecured.class)
+    public static Result checkPrivatePartnerRecruiterAccount() {
+        if(session().get("partnerId") != null){
+            Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+            if(partner != null && partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+                List<Integer> recruiterTypeList = new ArrayList<>();
+                recruiterTypeList.add(ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE);
+                recruiterTypeList.add(ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE_ADMIN);
+
+                RecruiterProfile recruiterProfile = RecruiterProfile.find.where()
+                        .eq("RecruiterProfileMobile", partner.getPartnerMobile())
+                        .in("recruiter_access_level", recruiterTypeList)
+                        .findUnique();
+
+                if(recruiterProfile != null){
+                    RecruiterAuth recruiterAuth = RecruiterAuth.find.where().eq("recruiter_id",
+                            recruiterProfile.getRecruiterProfileId()).findUnique();
+
+                    if(recruiterAuth != null){
+                        return ok("1");
+                    }
+                }
+            }
+        }
+        return ok("0");
+    }
+
+    @Security.Authenticated(PartnerSecured.class)
+    public static Result switchToRecruiter() {
+        if(session().get("partnerId") != null){
+            Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+            if(partner != null && partner.getPartnerType().getPartnerTypeId() == ServerConstants.PARTNER_TYPE_PRIVATE){
+                List<Integer> recruiterTypeList = new ArrayList<>();
+                recruiterTypeList.add(ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE);
+                recruiterTypeList.add(ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE_ADMIN);
+
+                RecruiterProfile existingRecruiter = RecruiterProfile.find.where()
+                    .eq("RecruiterProfileMobile", partner.getPartnerMobile())
+                    .in("recruiter_access_level", recruiterTypeList)
+                    .findUnique();
+
+                if(existingRecruiter != null){
+
+                    RecruiterAuth recruiterAuth = RecruiterAuth.find.where().eq("recruiter_id",
+                            existingRecruiter.getRecruiterProfileId()).findUnique();
+
+                    if(recruiterAuth != null){
+                        //clearing session for partner
+                        FlashSessionController.clearSessionExceptFlash();
+                        addSession(recruiterAuth, existingRecruiter);
+                        return ok("1");
+                    }
+                }
+            }
+        }
+        return ok("0");
     }
 
     public static Result getCandidateMatchingJobs(long id) {

@@ -1416,6 +1416,10 @@ public class CandidateService
                                                             String institute,
                                                             Candidate candidate)
     {
+        if((educationLevelId == null || degreeId == null )) {
+            return null;
+        }
+
         if(educationLevelId == -1 && degreeId == -1) {
             return null;
         }

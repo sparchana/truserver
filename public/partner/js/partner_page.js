@@ -80,6 +80,19 @@ function processDataPartnerSession(returnedData) {
             $("#openPartner").hide();
             $("#footer_inc").remove();
             $("#privatePartner").show();
+
+            try {
+                $.ajax({
+                    type: "GET",
+                    url: "/checkPrivatePartnerRecruiterAccount",
+                    data: false,
+                    contentType: false,
+                    processData: false,
+                    success: processDataCheckRecruiterAccount
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
         } else{
             $("#openPartner").show();
             $("#privatePartner").hide();
@@ -87,6 +100,36 @@ function processDataPartnerSession(returnedData) {
     }
 }
 
+function processDataCheckRecruiterAccount(returnedData) {
+    if(returnedData == 1){
+        $("#accountSwitcher").show();
+    } else{
+        $("#accountSwitcher").hide();
+    }
+}
+
+function switchToRecruiter() {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/switchToRecruiter",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataRecruiterSwitch
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataRecruiterSwitch(returnedData) {
+    if(returnedData == 1){
+        window.location = "/recruiter/home";
+    } else{
+        notifyError("Something went wrong");
+    }
+}
 
 function processDataUpdateProfile(returnedData) {
     if(returnedData.status == 1){
