@@ -626,6 +626,8 @@ var cardModule = (function ($) {
             },
             genRecruiterContactModal: function (recruiterName, jobPostId) {
 
+                var w = window.innerWidth;
+
                 $("#recruiterModal").html("");
                 var parent = $("#recruiterModal");
 
@@ -637,6 +639,11 @@ var cardModule = (function ($) {
 
                 var recruiterContactModalDialog = document.createElement("div");
                 recruiterContactModalDialog.className = "modal-dialog";
+                if(w > 786){
+                    recruiterContactModalDialog.style = "margin-top:10%";
+                }else{
+                    recruiterContactModalDialog.style = "margin-top:40%";
+                }
                 recruiterContactModal.appendChild(recruiterContactModalDialog);
 
                 var recruiterContactModalContent = document.createElement("div");
@@ -673,6 +680,7 @@ var cardModule = (function ($) {
                     candidateName.style = "margin:5px 0";
                     candidateName.type = "type";
                     candidateName.placeholder = "Name (e.g. Ankit Singh)";
+                    candidateName.setAttribute('autofocus', 'autofocus');
                     recruiterContactMainDiv.appendChild(candidateName);
 
                     var candidateMobile = document.createElement("input");
