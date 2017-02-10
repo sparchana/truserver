@@ -387,7 +387,6 @@ public class SearchJobService {
 
         for (JobPost jobPost : jobPostList) {
             RecruiterProfile recruiterProfileShell = new RecruiterProfile();
-            Logger.info("rec profile in sanetization: " + recruiterProfileShell);
 
             if(jobPost == null || jobPost.getRecruiterProfile() == null) {
                 continue;
