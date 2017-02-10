@@ -20,6 +20,7 @@ import models.entity.Static.Language;
 import models.entity.Static.Locality;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import play.Logger;
 
 import java.util.*;
 
@@ -387,6 +388,9 @@ public class SearchJobService {
         for (JobPost jobPost : jobPostList) {
             RecruiterProfile recruiterProfileShell = new RecruiterProfile();
 
+            if(jobPost == null || jobPost.getRecruiterProfile() == null) {
+                continue;
+            }
             recruiterProfileShell.setRecruiterProfileId(jobPost.getRecruiterProfile().getRecruiterProfileId());
             recruiterProfileShell.setRecruiterProfileUUId(jobPost.getRecruiterProfile().getRecruiterProfileUUId());
             recruiterProfileShell.setRecruiterProfileCreateTimestamp(jobPost.getRecruiterProfile().getRecruiterProfileCreateTimestamp());
