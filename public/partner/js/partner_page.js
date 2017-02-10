@@ -81,22 +81,26 @@ function processDataPartnerSession(returnedData) {
             $("#footer_inc").remove();
             $("#privatePartner").show();
 
-            try {
-                $.ajax({
-                    type: "GET",
-                    url: "/checkPrivatePartnerRecruiterAccount",
-                    data: false,
-                    contentType: false,
-                    processData: false,
-                    success: processDataCheckRecruiterAccount
-                });
-            } catch (exception) {
-                console.log("exception occured!!" + exception);
-            }
+            checkPartnerSwitcher();
         } else{
             $("#openPartner").show();
             $("#privatePartner").hide();
         }
+    }
+}
+
+function checkPartnerSwitcher(){
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/checkPrivatePartnerRecruiterAccount",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckRecruiterAccount
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
     }
 }
 
