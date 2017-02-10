@@ -332,7 +332,7 @@ GET         /generateCompanyCode                                          contro
 
 # GET         /testNotification                                             controllers.TestController.testnotification()
 # GET         /checkSmsDelivery                                             controllers.TestController.checkSmsDelivery()
-# GET         /convertOldData                                               controllers.TestController.convertOldData()
+GET         /convertOldData                                               controllers.TestController.convertOldData()
 # GET         /testQueue                                                    controllers.TestController.testQueue()
 # GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
 # GET         /testResponse                                                 controllers.TestController.testApplyInShortResponse()
@@ -368,7 +368,7 @@ POST        /api/compute/verifyAadhar/:candidateMobile                    contro
 GET         /robots.txt                                                   controllers.Assets.at(path="/public", file="robots.txt")
 GET         /assets/*file                                                 controllers.Assets.at(path="/public", file)
 GET         /sitemap.xml                                                  controllers.Assets.at(path="/public", file="sitemap.xml")
-GET         /favicon.ico                                                  controllers.Assets.at(path="/public/img/", file="icon.png")
+GET         /favicon.ico                                                  controllers.Assets.at(path="/public/common/img/", file="icon.png")
 #GET        /webjars/*file                                                controllers.WebJarAssets.at(file)
 
 # Resume Upload
@@ -377,7 +377,6 @@ GET         /favicon.ico                                                  contro
 POST        /addResume/                                                   controllers.Application.doResumeUpload(candidateId: String ?=null)
 POST        /receive-parsed-resume                                        controllers.Application.receiveParsedResume()
 GET         /fetchResume/                                                 controllers.Application.fetchResume(candidateId: String ?=null)
-GET         /favicon.ico                                                  controllers.Assets.at(path="/public/common/img/", file="icon.png")
 
 #GET        /webjars/*file                                                  controllers.WebJarAssets.at(file)
 
