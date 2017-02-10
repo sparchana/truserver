@@ -35,59 +35,32 @@ function renderDashboard() {
                     var returned_data = new Array();
                     returnedData.forEach(function (jobPost) {
 
-                        var remainingContactCredits = 0;
-                        var remainingInterviewCredits = 0;
-                        if(jobPost.recruiterProfile != null){
-                            remainingContactCredits = jobPost.recruiterProfile.contactCreditCount;
-                            remainingInterviewCredits = jobPost.recruiterProfile.interviewCreditCount;
-                        }
+                        var remainingContactCredits = jobPost.totalContactCredits;
+                        var remainingInterviewCredits = jobPost.totalInterviewCredits;
 
                         //addFooter();
                         returned_data.push({
                             'jobId': '<a href="'+"/jobPostDetails/"+jobPost.jobPostId+'" id="'+jobPost.jobPostId+'" style="cursor:pointer;" target="_blank">'+jobPost.jobPostId+'</a>',
                             'jobCreationTimestamp' : function() {
-                                var returnedCreationDate = new Date(jobPost.jobPostCreateTimestamp);
-                                var creationDate = new Date(returnedCreationDate).toLocaleDateString();
-                                return creationDate;
+                                var returnedCreationDate = new Date(jobPost.creationTimeStamp);
+                                return new Date(returnedCreationDate).toLocaleDateString();
                             },
-                            'company': '<a href="'+"/companyDetails/"+jobPost.company.companyId+'" id="'+jobPost.company.companyId+'" style="cursor:pointer;" target="_blank">'+jobPost.company.companyName+'</a>',
+                            'company': '<a href="'+"/companyDetails/"+jobPost.companyId+'" id="'+jobPost.companyId+'" style="cursor:pointer;" target="_blank">'+jobPost.companyName+'</a>',
                             'jobTitle': function () {
-                                if(jobPost.jobPostAccessLevel == 1){
-                                    return "[PRIVATE JOB] " + jobPost.jobPostTitle;
-                                } else{
-                                    return jobPost.jobPostTitle;
-                                }
+                                return jobPost.jobTitle;
                             },
                             'jobSalary' : function () {
-                                if(jobPost.jobPostMaxSalary != 0 && jobPost.jobPostMaxSalary != null){
-                                    return ((jobPost.jobPostMinSalary != null) ? "₹" + jobPost.jobPostMinSalary : "0") + " - ₹" + ((jobPost.jobPostMaxSalary != null) ? jobPost.jobPostMaxSalary : "0");
-                                } else{
-                                    return ((jobPost.jobPostMinSalary != null) ? "₹" + jobPost.jobPostMinSalary : "0");
-                                }
+                                return jobPost.salary;
                             },
                             'jobRecruiter': function () {
-                                if(jobPost.recruiterProfile != null){
-                                    var extraMsg = "";
-                                    if(jobPost.company.companyId != jobPost.recruiterProfile.company.companyId){
-                                        extraMsg = "(Recruiter changed company to : " + jobPost.recruiterProfile.company.companyName + ") ";
-                                    }
-                                    return '<a href="'+"/recruiterDetails/"+jobPost.recruiterProfile.recruiterProfileId+'" id="'+jobPost.recruiterProfile.recruiterProfileId+'" style="cursor:pointer;" target="_blank">'
-                                        + jobPost.recruiterProfile.recruiterProfileName + " " + extraMsg + '</a>';
-                                } else{
-                                    return " - ";
-                                }
+                                return '<a href="'+"/recruiterDetails/"+jobPost.recruiterId+'" id="'+jobPost.recruiterId+'" style="cursor:pointer;" target="_blank">'
+                                    + jobPost.recruiterName + '</a>';
                             },
                             'jobLocation' : function(){
-                                var jobLocality = "";
-                                if(jobPost.jobPostToLocalityList){
-                                    jobPost.jobPostToLocalityList.forEach(function (locality) {
-                                        jobLocality += locality.locality.localityName + ", ";
-                                    });
-                                }
-                                return jobLocality;
+                                return jobPost.jobLocation;
                             },
-                            'jobRole' : ((jobPost.jobRole.jobName != null) ? jobPost.jobRole.jobName : ""),
-                            'jobExperience' : ((jobPost.jobPostExperience != null && jobPost.jobPostExperience.experienceType != null) ? jobPost.jobPostExperience.experienceType : ""),
+                            'jobRole' : jobPost.jobRole,
+                            'jobExperience' : jobPost.jobExperience,
                             'jobInterviewSchedule' : function () {
                                 if(jobPost.interviewDetailsList != null && jobPost.interviewDetailsList.length > 0){
                                     var interviewDetailsList = jobPost.interviewDetailsList;
@@ -119,81 +92,40 @@ function renderDashboard() {
                             },
 
                             'jobInterviewAddress' : function () {
-                                if(jobPost.interviewFullAddress != null && jobPost.interviewFullAddress != ""){
-                                    return jobPost.interviewFullAddress;
-                                } else{
-                                    return "Not Available";
-                                }
+                                return jobPost.interviewAddress;
                             },
                             'jobIsHot' : function () {
-                                if(jobPost.jobPostIsHot == true){
+                                if(jobPost.jobIsHot == true){
                                     return "Is Hot";
                                 }
                                 return "Is not Hot";
                             },
                             'jobType' : function(){
-                                if(jobPost.pricingPlanType != null) {
-                                    return jobPost.pricingPlanType.pricingPlanTypeName;
-                                } else {
-                                    return "Not Specified";
-                                }
+                                return jobPost.jobPlan;
                             },
                             'jobStatus' : function(){
-                                if(jobPost.jobPostStatus != null) {
-                                    return jobPost.jobPostStatus.jobStatusName;
-                                } else{
-                                    return "Not Specified";
-                                }
+                                return jobPost.jobStatus;
                             },
                             'createdBy' : function(){
-                                if(jobPost.createdBy != null) {
-                                    return jobPost.createdBy;
-                                } else {
-                                    return "Not Specified";
-                                }
+                                return jobPost.createdBy;
                             },
                             'awaitingInterviewSchedule' : function(){
-                                if(jobPost.awaitingInterviewScheduleCount != null) {
-                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=pending_interview_schedule" style="cursor:pointer;" target="_blank">'+jobPost.awaitingInterviewScheduleCount+'</a>';
-                                } else {
-                                    return "NA";
-                                }
+                                return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=pending_interview_schedule" style="cursor:pointer;" target="_blank">'+jobPost.awaitingInterviewSchedule+'</a>';
                             },
                             'awaitingRecruiterConfirmation' : function(){
-                                if(jobPost.awaitingRecruiterConfirmationCount != null) {
-                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=pre_screen_completed_view" style="cursor:pointer;" target="_blank">'+jobPost.awaitingRecruiterConfirmationCount+'</a>';
-                                } else {
-                                    return "NA";
-                                }
+                                return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=pre_screen_completed_view" style="cursor:pointer;" target="_blank">'+jobPost.awaitingRecruiterConfirmation+'</a>';
                             },
                             'confirmedInterviews' : function(){
-                                if(jobPost.confirmedInterviewsCount != null) {
-                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=confirmed_interview_view" style="cursor:pointer;" target="_blank">'+jobPost.confirmedInterviewsCount+'</a>';
-                                } else {
-                                    return "NA";
-                                }
+                                return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=confirmed_interview_view" style="cursor:pointer;" target="_blank">'+jobPost.confirmedInterviews+'</a>';
                             },
                             'todaysInterview' : function(){
-                                if(jobPost.todaysInterviewCount != null) {
-                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=confirmed_interview_view" style="cursor:pointer;" target="_blank">'+jobPost.todaysInterviewCount+'</a>';
-                                } else {
-                                    return "NA";
-                                }
+                                return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=confirmed_interview_view" style="cursor:pointer;" target="_blank">'+jobPost.todaysInterviews+'</a>';
                             },
                             'tomorrowsInterview' : function(){
-                                if(jobPost.tomorrowsInterviewCount != null) {
-                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=confirmed_interview_view" style="cursor:pointer;" target="_blank">'+jobPost.tomorrowsInterviewCount+'</a>';
-                                } else {
-                                    return "NA";
-                                }
+                                return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=confirmed_interview_view" style="cursor:pointer;" target="_blank">'+jobPost.tomorrowsInterviews+'</a>';
                             },
-
                             'completedInterview' : function(){
-                                if(jobPost.completedInterviewCount != null) {
-                                    return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=completed_interview_view" style="cursor:pointer;" target="_blank">'+jobPost.completedInterviewCount+'</a>';
-                                } else {
-                                    return "NA";
-                                }
+                                return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=completed_interview_view" style="cursor:pointer;" target="_blank">'+jobPost.completedInterviews+'</a>';
                             },
                             'match' : function () {
                                 return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=match_view" style="cursor:pointer;" target="_blank"><button class="btn btn-success">Dashboard</button></a>'
