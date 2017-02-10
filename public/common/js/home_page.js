@@ -68,7 +68,9 @@ $(window).load(function(){
     autoPlay.trigger('owl.play',2200);
 });
 
+var randomSalt = "";
 $(document).ready(function(){
+    randomSalt = Math.floor(100000 + Math.random() * 900000);
     $(".navbar-nav li a").click(function(event) {
         $(".navbar-collapse").collapse('hide');
     });
@@ -228,7 +230,7 @@ function processDataAllJobPosts(returnedData) {
         $("#backgroundLoader").hide();
         $("#jobLoaderDiv").hide();
         cardModule.method.genNewJobCard(_jobPostList, parent);
-    }else{
+    } else{
         $("#backgroundLoader").hide();
         $("#jobLoaderDiv").hide();
         var parent = $("#hotJobs");
