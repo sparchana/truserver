@@ -340,6 +340,8 @@ function renderIndividualCandidateCard(value, parent, view) {
     candidateExperience.style = "font-size: 14px";
     candidateExperience.textContent = ", " + expVal;
 
+    candidateCardRowColOne.appendChild(candidateExperience);
+
     if(value.candidate.candidateResumeLink != null){
         var resumeIcon = document.createElement("img");
         resumeIcon.src = "/assets/recruiter/img/icons/cv.svg";
@@ -365,8 +367,6 @@ function renderIndividualCandidateCard(value, parent, view) {
             }
         };
         resumeLink.style = "font-size: 14px; font-weight: bold; color: rgb(84, 192, 235); ";
-
-        candidateCardRowColOne.appendChild(candidateExperience);
 
         candidateCardRowColOne.appendChild(resumeIcon);
         candidateCardRowColOne.appendChild(resumeLink);
