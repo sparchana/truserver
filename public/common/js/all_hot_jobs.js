@@ -10,7 +10,7 @@ function getAllJobs(index) {
     try {
         $.ajax({
             type: "POST",
-            url: "/getAllHotJobPosts/?i=" + index,
+            url: "/getAllHotJobPosts/?i=" + index + "&salt=" + randomSalt,
             data: false,
             async: true,
             contentType: false,
