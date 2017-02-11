@@ -168,6 +168,7 @@ GET         /showRecruiterLeadStatus                                      contro
 GET         /recruiter/job/track/:id                                      controllers.RecruiterController.trackApplication(id : Long)
 GET         /checkPrivateRecruiterPartnerAccount                          controllers.RecruiterController.checkPrivateRecruiterPartnerAccount()
 GET         /switchToPartner                                              controllers.RecruiterController.switchToPartner()
+GET         /recruiter/getNextRoundComponents/:jpId                       controllers.RecruiterController.getNextRoundComponents(jpId: Long)
 
 #Temp route delete after use
 GET         /recruiter/job/candidateModal                                 controllers.RecruiterController.recruiterCandidateModal()
