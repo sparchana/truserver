@@ -504,6 +504,7 @@ function tabChange3() {
 
                                                 return '<div class="mLabel" >'
                                                     + '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openFeedbackModal('+ workflowObj.candidate.candidateId +')" >Add Feedback</span>'
+                                                    + '<span class="customBtn btnOrange" style="cursor: pointer" onclick="openPreviousFeedbackModal('+ workflowObj.candidate.candidateId +')" >View</span>'
                                                     + '</div>';
                                             }
                                         } else{
@@ -678,6 +679,7 @@ function showSlotModal() {
 }
 
 function processDataForJobPostInfo(returnedData) {
+    console.log("Returned data : "+ JSON.stringify(returnedData));
     if (Object.keys(returnedData.interviewDetailsList).length > 0) {
         //slots
         var i;
@@ -742,6 +744,10 @@ function checkSlotAvailability(x, interviewDays) {
         return true;
     }
 }
+//previous feedback
+function openPreviousFeedbackModal(candidateId){
+    $("#previousFeedbackModal").openModal();
+}
 
 //feedback
 function openFeedbackModal(candidateId) {
@@ -754,7 +760,7 @@ function openFeedbackModal(candidateId) {
         var option = $('<option value=' + reason.id + '></option>').text(reason.name);
         $('#reasonVal').append(option);
     });
-
+    $("#nextRoundInterview").hide();
     $("#otherReason").hide();
     $("#feedbackOption").val(0);
     $("#reasonVal").val(0);
@@ -767,6 +773,14 @@ function openFeedbackModal(candidateId) {
             $("#otherReason").show();
         } else{
             $("#otherReason").hide();
+        }
+    });
+    $("#feedbackOption").change(function (){
+        if($(this).val() == 5){
+            $("#nextRoundInterview").show();
+            nextRoundInterview();
+        } else{
+            $("#nextRoundInterview").hide();
         }
     });
 }
@@ -968,10 +982,91 @@ function closeFeedbackModal() {
     $("#addFeedback").closeModal();
 }
 
-function closeRescheduleModal() {
-    $("#modalRescheduleSlot").closeModal();
+function closePreviousFeedbackModal() {
+    $("#previousFeedbackModal").closeModal();
 }
 
 function closeRejectModal() {
     $("#modalRejectReason").closeModal();
+}
+function nextRoundInterview(){
+    var d = {
+        recruiterName:[
+            {
+                recruiterId:3667,
+                recruiterName:"A"
+            },
+            {
+                recruiterId:3668,
+                recruiterName:"B"
+            }
+        ],
+        interviewSlot:[
+            {
+                interviewId:1,
+                interviewSlot:"Mon"
+            },
+            {
+                interviewId:2,
+                interviewSlot:"Tue"
+            },
+            {
+                interviewId:3,
+                interviewSlot:"Wed"
+            },
+        ],
+        locality:"Guwahati"
+    }
+
+    processNextRoundInterviewData(d);
+}
+function processNextRoundInterviewData(returnedData) {
+     var recruiterNameList = returnedData.recruiterName;
+
+    var optionName = $('<option value="0"></option>').text("Select recruiter");
+    $("#nextRoundRecruiterNameVal").append(optionName);
+
+    recruiterNameList.forEach(function(data){
+        var optionName = $('<option value='+data.recruiterId+'></option>').text(data.recruiterName);
+        $("#nextRoundRecruiterNameVal").append(optionName);
+    });
+
+
+    var optionLocality = $('<option value="0"></option>').text("Select interview slot");
+    $("#nextRoundDateAndSlot").append(optionLocality);
+
+    var localityList = returnedData.interviewSlot;
+    localityList.forEach(function(data){
+        var optionLocality = $('<option value='+data.interviewId+'></option>').text(data.interviewSlot);
+        $("#nextRoundDateAndSlot").append(optionLocality);
+    });
+
+    renderMap(null,null);
+
+}
+function renderMap(interviewLat,interviewLng){
+    if(interviewLat == null){
+        //default values of MG Road
+        interviewLat = 12.975568542471832;
+        interviewLng = 77.60660031434168;
+    }
+    $('#map_parent').locationpicker({
+        location: {
+            latitude: interviewLat,
+            longitude: interviewLng
+        },
+        radius: 80,
+        inputBinding: {
+            latitudeInput: $('#jp_lat'),
+            longitudeInput: $('#jp_lon'),
+            locationNameInput: $('#interviewAddress')
+        },
+        enableAutocomplete: true,
+        onchanged: function (currentLocation, radius, isMarkerDropped) {
+            //add method if we want to perform any action
+            $("#jp_lat").val(currentLocation.latitude);
+            $("#jp_lon").val(currentLocation.longitude);
+            $("#landmarkDetails").show();
+        }
+    });
 }

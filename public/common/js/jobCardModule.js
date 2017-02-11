@@ -554,10 +554,14 @@ var cardModule = (function ($) {
                         applyBtnDiv.appendChild(reopenRow);
                     }
                     applyBtn.onclick = function () {
-                        if(jobPost.applyBtnStatus == 7){
-                            cardModule.method.genRecruiterContactModal(
-                                jobPost.recruiterProfile.recruiterProfileName,
-                                jobPost.jobPostId);
+                            if(jobPost.applyBtnStatus == 7){
+                                if(candidateMobileCheck != null){
+                                cardModule.method.callToApplyAction(jobPost.jobPostId);
+                                } else{
+                                    cardModule.method.genRecruiterContactModal(
+                                        jobPost.recruiterProfile.recruiterProfileName,
+                                        jobPost.jobPostId);
+                                }
 
                         } else{
                             var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'-');
@@ -624,7 +628,60 @@ var cardModule = (function ($) {
                     function (xhr, state, error) {
                     });
             },
-            genRecruiterContactModal: function (recruiterName, jobPostId) {
+            callToApplyAction: function (jobPostId) {
+
+                var candidateName;
+                var candidateMobileNumber;
+                var submitButton = $("#recruiterContactModalBtn");
+
+                if(candidateMobileCheck == null) {
+                    candidateName = $("#candidateNameRecruiterContactModal").val();
+                    candidateMobileNumber = $("#candidateMobileRecruiterContactModal").val();
+                } else{
+                    candidateName = localStorage.getItem("name");
+                    candidateMobileNumber = (localStorage.getItem("mobile")).slice(3) ;
+                }
+                if(cardModule.validate.candidateNameValidation(candidateName) && cardModule.validate.candidateMobileValidation(candidateMobileNumber)){
+                    submitButton.prop("disabled","true");
+                    submitButton.html("Please wait...");
+
+                    var d = {
+                        candidateMobile:  candidateMobileNumber,
+                        candidateName: candidateName,
+                        jobId: jobPostId
+                    };
+
+                    $.ajax({
+                            type: 'POST', url: '/quickApply/',
+                            contentType: "application/json; charset=utf-8",
+                            data: JSON.stringify(d)
+                        }
+                    ).then(function (returnedData) {
+                            if (returnedData != null) {
+
+                                if(returnedData.status == 1){
+                                    var recruiterNumber = returnedData.recruiterMobile;
+                                    submitButton.prop("disabled","true");
+                                    submitButton.html("Call : " +recruiterNumber.slice(3,recruiterNumber.length)) ;
+
+                                    var w = window.innerWidth;
+                                    if (w < 786) {
+                                        document.location.href = "tel:" + recruiterNumber.slice(3,recruiterNumber.length);
+                                    }
+
+                                } else{
+                                    notifyMsg(cardModule.applicationFail,'danger');
+                                }
+
+                            } else {
+                                notifyMsg(cardModule.applicationFail,'danger');
+                            }
+                        },
+                        function (xhr, state, error) {
+                        });
+                }
+            },
+            genRecruiterContactModal: function (recruiterName,jobPostId) {
 
                 var w = window.innerWidth;
 
@@ -691,8 +748,6 @@ var cardModule = (function ($) {
                     candidateMobile.setAttribute("maxlength","10");
                     candidateMobile.placeholder = "Your Phone No (e.g. 9998887770)";
                     recruiterContactMainDiv.appendChild(candidateMobile);
-
-                    $("#candidateNameRecruiterContactModal").focus();
                 }
 
                 var submitButton = document.createElement("button");
@@ -701,55 +756,7 @@ var cardModule = (function ($) {
                 submitButton.style = "font-size:18px;background:#00e676;margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%;font-weight:bold";
                 submitButton.type = "button";
                 submitButton.onclick = function() {
-
-                    var candidateName;
-                    var candidateMobileNumber;
-
-                        if(candidateMobileCheck == null) {
-                            candidateName = $("#candidateNameRecruiterContactModal").val();
-                            candidateMobileNumber = $("#candidateMobileRecruiterContactModal").val();
-                        } else{
-                            candidateName = localStorage.getItem("name");
-                            candidateMobileNumber = (localStorage.getItem("mobile")).slice(3) ;
-                        }
-                        if(cardModule.validate.candidateNameValidation(candidateName) && cardModule.validate.candidateMobileValidation(candidateMobileNumber)){
-                            submitButton.setAttribute("disabled","true");
-                            submitButton.textContent = "Please wait...";
-
-                            var d = {
-                                candidateMobile:  candidateMobileNumber,
-                                candidateName: candidateName,
-                                jobId: jobPostId
-                            };
-
-                            $.ajax({
-                                    type: 'POST', url: '/quickApply/',
-                                    contentType: "application/json; charset=utf-8",
-                                    data: JSON.stringify(d)
-                                }
-                            ).then(function (returnedData) {
-                                    if (returnedData != null) {
-                                        if(returnedData.status == 1){
-                                            var recruiterNumber = returnedData.recruiterMobile;
-                                            submitButton.setAttribute("disabled","true");
-                                            submitButton.textContent = "Call : " +recruiterNumber.slice(3,recruiterNumber.length) ;
-
-                                            var w = window.innerWidth;
-                                            if (w < 786) {
-                                                document.location.href = "tel:" + recruiterNumber.slice(3,recruiterNumber.length);
-                                            }
-
-                                        } else{
-                                            notifyMsg(cardModule.applicationFail,'danger');
-                                        }
-
-                                    } else {
-                                        notifyMsg(cardModule.applicationFail,'danger');
-                                    }
-                                },
-                                function (xhr, state, error) {
-                                });
-                        }
+                    cardModule.method.callToApplyAction(jobPostId);
                 };
                 recruiterContactMainDiv.appendChild(submitButton);
 
