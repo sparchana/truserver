@@ -761,4 +761,17 @@ public class SmsUtil {
         addSmsToNotificationQueue(recruiterProfile.getRecruiterProfileMobile(), msg);
     }
 
+
+    public static void sendNextRoundSmsToCandidate(JobPostWorkflow jobApplication) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Hi " + jobApplication.getCandidate().getCandidateFirstName() + ", Congratulations! You have been selected for next interview round for : " + jobApplication.getJobPost().getJobPostTitle()
+                + " at " + jobApplication.getJobPost().getCompany().getCompanyName() + ". ");
+        if(jobApplication.getJobPost().getJobPostAccessLevel() == ServerConstants.JOB_POST_TYPE_PRIVATE) {
+            stringBuilder.append("Please contact " + jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileName() + " at " + jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileMobile());
+        } else {
+            stringBuilder.append("The recruiter will contact you for further details. You can contact TruJobs at 8880007799 for any queries. www.trujobs.in. Download Trujobs app at http://bit.ly/2d7zDqR");
+        }
+        addSmsToNotificationQueue(jobApplication.getCandidate().getCandidateMobile(), stringBuilder.toString());
+    }
+
 }

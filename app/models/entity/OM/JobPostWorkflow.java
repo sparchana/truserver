@@ -4,6 +4,7 @@ import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.InterviewTimeSlot;
 import models.entity.Static.JobPostWorkflowStatus;
 
@@ -64,6 +65,15 @@ public class JobPostWorkflow extends Model {
 
     @Column(name = "interview_location_lng", columnDefinition = "double null")
     private Double interviewLocationLng;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "interview_recruiter_id", referencedColumnName = "RecruiterProfileId")
+    private RecruiterProfile recruiterProfile;
+
+    @Column(name = "interview_round", columnDefinition = "int null")
+    private Integer interviewRound;
+
 
     @Transient
     private boolean isPreScreenRequired = true;
@@ -169,5 +179,21 @@ public class JobPostWorkflow extends Model {
 
     public void setPreScreenRequired(boolean preScreenRequired) {
         isPreScreenRequired = preScreenRequired;
+    }
+
+    public RecruiterProfile getRecruiterProfile() {
+        return recruiterProfile;
+    }
+
+    public void setRecruiterProfile(RecruiterProfile recruiterProfile) {
+        this.recruiterProfile = recruiterProfile;
+    }
+
+    public Integer getInterviewRound() {
+        return interviewRound;
+    }
+
+    public void setInterviewRound(Integer interviewRound) {
+        this.interviewRound = interviewRound;
     }
 }
