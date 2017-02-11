@@ -2,6 +2,7 @@ package dao;
 
 import api.InteractionConstants;
 import api.ServerConstants;
+import api.http.FormValidator;
 import api.http.httpRequest.DeactivatedCandidateRequest;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.RawSql;
@@ -103,5 +104,14 @@ public class CandidateDAO {
 
     public static Candidate getById(long candidateId) {
         return Candidate.find.where().eq("candidateId", candidateId).findUnique();
+    }
+
+    public static int findByMobile(String mobile, int accessLevel) {
+        if(mobile == null) return -1;
+        return Candidate.find.where()
+                .eq("candidateAccessLevel", accessLevel)
+                .or(com.avaje.ebean.Expr.eq("candidateMobile",
+                FormValidator.convertToIndianMobileFormat(mobile)),com.avaje.ebean.Expr.eq("candidateSecondMobile",
+                FormValidator.convertToIndianMobileFormat(mobile))).findRowCount();
     }
 }

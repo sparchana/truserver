@@ -336,6 +336,7 @@ GET         /convertOldData                                               contro
 # GET         /testQueue                                                    controllers.TestController.testQueue()
 # GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
 # GET         /testResponse                                                 controllers.TestController.testApplyInShortResponse()
+# GET         /isPrivate/:mobile                                            controllers.TestController.isPrivate(mobile: String)
 
 # Scrap API
 # ~~~~~~~~~~~~~
