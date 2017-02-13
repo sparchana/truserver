@@ -2810,10 +2810,10 @@ public class Application extends Controller {
         Logger.info("hub.verify_token =" + request().getQueryString("hub.verify_token"));
         Logger.info("hub.challenge =" + request().getQueryString("hub.challenge"));
 
-        if(request().getQueryString("hub.challenge") == "huha_testing"){
-            return ok(request().getQueryString("hub.challenge"));
+        if(request().getQueryString("hub.verify_token") == "huha_testing"){
+            return ok(request().getQueryString("hub.verify_token"));
         }
-        else return badRequest(request().getQueryString("hub.challenge"));
+        else return badRequest(request().getQueryString("hub.verify_token"));
 
     }
 
