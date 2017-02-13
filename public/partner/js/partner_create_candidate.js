@@ -918,6 +918,7 @@ $(function() {
         var selectedTimeShift = $('#candidateTimeShift').val();
         var selectedDob = $('#dob_year').val() + "-" + $('#dob_month').val() + "-" + $('#dob_day').val();
         var c_dob = String(selectedDob);
+        var slicedDate = selectedDob.split('-');
 
         //experience
         var experienceStatus = $('input:radio[name="workExperience"]:checked').val(); // 1 -> "experienced"; 0 -> fresher
@@ -1048,7 +1049,14 @@ $(function() {
         } else if(selectedHomeLocality == "") {
             notifyErrorWithPrompt($("#candidateHomeLocalityField"), "Please Enter candidate's Home Locality");
             statusCheck=0;
-        } else if(selectedTimeShift == -1){
+        } else if(c_dob != "--"){
+            if((slicedDate[0] == "") || (slicedDate[1] == "") || (slicedDate[2] == "")){
+                notifyErrorWithPrompt($("#dob_year"), "Please select a valid date of birth");
+                statusCheck=0;
+            }
+        }
+
+        /* else if(selectedTimeShift == -1){
             notifyErrorWithPrompt($("#candidateTimeShift"), "Please select Preferred Work Shift");
             statusCheck=0;
         }  else if($('#dob_day').val() == "" || $('#dob_month').val() == "" || $('#dob_year').val() == ""){
@@ -1084,7 +1092,7 @@ $(function() {
         } else if(((highestEducation == 4) || (highestEducation == 5)) && selectedDegree == -1){
             notifyErrorWithPrompt($("#candidateHighestDegree"), "Please select candidate's Degree");
             statusCheck=0;
-        }
+        }*/
 
         if(statusCheck == 1){
             $("#registerBtnSubmit").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Saving");
@@ -1112,6 +1120,14 @@ $(function() {
 
             candidateUnVerifiedMobile = phone;
 
+            if(c_dob == "--"){
+                c_dob = null;
+            }
+
+            if(selectedTimeShift == -1){
+                selectedTimeShift = null;
+            }
+
             var d = {
                 //mandatory fields
                 leadSource: 25, //partner channel is '25'
@@ -1120,6 +1136,7 @@ $(function() {
                 candidateMobile: phone,
                 candidateJobPref: candidatePreferredJob,
                 candidateHomeLocality: selectedHomeLocality,
+
                 candidateTimeShiftPref: selectedTimeShift,
                 candidateIdProofList: documentValues,
                 candidateAssetList: candidatePreferredAsset,

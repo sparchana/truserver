@@ -1416,6 +1416,10 @@ public class CandidateService
                                                             String institute,
                                                             Candidate candidate)
     {
+        if((educationLevelId == null || degreeId == null )) {
+            return null;
+        }
+
         if(educationLevelId == -1 && degreeId == -1) {
             return null;
         }
@@ -2854,5 +2858,9 @@ public class CandidateService
             }
         }
         return null;
+    }
+
+    public static boolean isCandidatePrivate(String mobile) {
+        return CandidateDAO.findByMobile(mobile, ServerConstants.CANDIDATE_ACCESS_LEVEL_PRIVATE) > 0;
     }
 }
