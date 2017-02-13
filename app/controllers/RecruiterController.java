@@ -676,11 +676,15 @@ public class RecruiterController {
         if(jobPostId == null) {
             return badRequest();
         }
+        int minAccessLevel = 0;
         RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
 
+        if(recruiterProfile.getRecruiterAccessLevel()>0){
+            minAccessLevel = 1;
+        }
         NextRoundComponents nextRoundComponents = new NextRoundComponents();
         List<NextRoundComponents.Recruiter> recruiterList = new ArrayList<>();
-        for(RecruiterProfile profile: RecruiterDAO.findListByCompanyId(recruiterProfile.getCompany().getCompanyId())) {
+        for(RecruiterProfile profile: RecruiterDAO.findListByCompanyId(recruiterProfile.getCompany().getCompanyId(), minAccessLevel)) {
             NextRoundComponents.Recruiter recruiter = new NextRoundComponents.Recruiter();
 
             recruiter.setRecruiterProfileId(profile.getRecruiterProfileId());
@@ -1241,7 +1245,8 @@ public class RecruiterController {
             if(checkCompanyJob(jobPost)){
 
                 List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllJobApplicationWithinStatusId(jpId,
-                        ServerConstants.JWF_STATUS_SELECTED, ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE);
+                        ServerConstants.JWF_STATUS_SELECTED, ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE,
+                        Long.valueOf(session().get("recruiterId")));
 
                 for(JobPostWorkflow workflow : applicationList){
                     sanitizeCandidateData(workflow.getCandidate());
@@ -1305,7 +1310,8 @@ public class RecruiterController {
         if(jobPost != null){
             if(checkCompanyJob(jobPost)){
                 List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllConfirmedApplicationsJobPost(jpId,
-                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED, ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED);
+                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED, ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED,
+                        Long.valueOf(session().get("recruiterId")));
 
                 for(JobPostWorkflow workflow : applicationList){
                     sanitizeCandidateData(workflow.getCandidate());
