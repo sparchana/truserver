@@ -34,6 +34,9 @@ public class CandidateExtraData {
     public RejectReason reason;
     public Integer totalSmsSent;
     public List<CompanyIdName> companyList;
+    public Integer round;
+    public String interviewRecruiterName;
+    public Long interviewRecruiterId;
 
     public static class CompanyIdName {
         public Long companyId;
@@ -230,5 +233,29 @@ public class CandidateExtraData {
 
     public void setCompanyList(List<CompanyIdName> companyList) {
         this.companyList = companyList;
+    }
+
+    public Integer getRound() {
+        return round;
+    }
+
+    public void setRound(Integer round) {
+        this.round = round;
+    }
+
+    public String getInterviewRecruiterName() {
+        return interviewRecruiterName;
+    }
+
+    public void setInterviewRecruiterName(String interviewRecruiterName) {
+        this.interviewRecruiterName = interviewRecruiterName;
+    }
+
+    public Long getInterviewRecruiterId() {
+        return interviewRecruiterId;
+    }
+
+    public void setInterviewRecruiterId(Long interviewRecruiterId) {
+        this.interviewRecruiterId = interviewRecruiterId;
     }
 }

@@ -679,7 +679,6 @@ function showSlotModal() {
 }
 
 function processDataForJobPostInfo(returnedData) {
-    console.log("Returned data : "+ JSON.stringify(returnedData));
     if (Object.keys(returnedData.interviewDetailsList).length > 0) {
         //slots
         var i;
@@ -828,7 +827,6 @@ function confirmAddFeedback() {
                         interviewSlotId: parseInt(nextInterviewSlotId),
                         interviewAddress: $('#interviewAddress').val()
                     };
-                    console.log(data);
                 }
         }
         if(resultStatus == true){

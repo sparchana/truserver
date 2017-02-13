@@ -2218,6 +2218,11 @@ public class JobPostWorkflowEngine {
                         if(candidateStatusMap.get(candidate.getCandidateId()) != null){
                             candidateExtraData.setReason(candidateStatusMap.get(candidate.getCandidateId()).getRejectReason());
                         }
+                        if(jobPostWorkflow.getRecruiterProfile()!= null) {
+                            candidateExtraData.setRound(jobPostWorkflow.getInterviewRound());
+                            candidateExtraData.setInterviewRecruiterName(jobPostWorkflow.getRecruiterProfile().getRecruiterProfileName());
+                            candidateExtraData.setInterviewRecruiterId(jobPostWorkflow.getRecruiterProfile().getRecruiterProfileId());
+                        }
                     }
                 }
             }
