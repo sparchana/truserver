@@ -2277,7 +2277,7 @@ public class JobPostWorkflowEngine {
                                                           Date interviewDate,
                                                           int channel)
     {
-        JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(jobPostWorkflowCurrent, oldStatus, newStatus, interviewSlot, interviewDate, channel, null, null);
+        JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(jobPostWorkflowCurrent, oldStatus, newStatus, interviewSlot, interviewDate, channel, null, null, null, null);
 
         return jobPostWorkflowNew;
     }
@@ -2290,7 +2290,9 @@ public class JobPostWorkflowEngine {
                                                           Date interviewDate,
                                                           int channel,
                                                           Integer round,
-                                                          RecruiterProfile recruiterProfile)
+                                                          RecruiterProfile recruiterProfile,
+                                                          Double nextRoundInterviewLat,
+                                                          Double nextRoundInterviewLng)
     {
 
         JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", newStatus).findUnique();
@@ -2327,6 +2329,11 @@ public class JobPostWorkflowEngine {
                 jobPostWorkflowCurrent.setRecruiterProfile(recruiterProfile);
             } else {
                 jobPostWorkflowCurrent.setRecruiterProfile(defaultRecruiter);
+            }
+            // override interview lat/lng if provided
+            if(nextRoundInterviewLat != null && nextRoundInterviewLng !=null) {
+                jobPostWorkflowCurrent.setInterviewLocationLat(nextRoundInterviewLat);
+                jobPostWorkflowCurrent.setInterviewLocationLng(nextRoundInterviewLng);
             }
 
             jobPostWorkflowCurrent.setCandidate(candidate);
@@ -3004,7 +3011,8 @@ public class JobPostWorkflowEngine {
         JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(
                 jobPostWorkflowCurrent, jobPostWorkflowCurrent.getStatus().getStatusId(), jwStatus,
                 jobPostWorkflowCurrent.getScheduledInterviewTimeSlot().getInterviewTimeSlotId(),
-                jobPostWorkflowCurrent.getScheduledInterviewDate(), channel, interviewRound, interviewRecruiter);
+                jobPostWorkflowCurrent.getScheduledInterviewDate(), channel, interviewRound, interviewRecruiter,
+                addFeedbackRequest.getInterviewLat(), addFeedbackRequest.getInterviewLng());
 
         if(jobPostWorkflowNew == null) { return 0;}
 
@@ -3030,7 +3038,8 @@ public class JobPostWorkflowEngine {
 
             saveNewJobPostWorkflow(jobPostWorkflowNew, jobPostWorkflowNew.getStatus().getStatusId(),
                     ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED, slotId,
-                    interviewDate, channel, interviewRound, interviewRecruiter);
+                    interviewDate, channel, interviewRound, interviewRecruiter,
+                    addFeedbackRequest.getInterviewLat(), addFeedbackRequest.getInterviewLng());
         }
 
         InterviewFeedbackUpdate interviewFeedbackUpdate = new InterviewFeedbackUpdate();

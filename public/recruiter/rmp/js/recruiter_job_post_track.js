@@ -821,13 +821,14 @@ function confirmAddFeedback() {
                         feedbackStatus : $("#feedbackOption").val(),
                         feedbackComment : $("#feedbackNote").val(),
                         rejectReason: $("#reasonVal").val(),
-                        interviewLat: $("#jp_lat").val(),
-                        interviewLng: $("#jp_lon").val(),
-                        interviewRecruiterId: nextInterviewRecruiterId,
+                        interviewLat: parseFloat($("#jp_lat").val()),
+                        interviewLng: parseFloat($("#jp_lon").val()),
+                        interviewRecruiterId: parseInt(nextInterviewRecruiterId),
                         interviewDatetimeInMills: parseInt(nextInterviewDatetimeInMills),
-                        interviewSlotId: nextInterviewSlotId,
+                        interviewSlotId: parseInt(nextInterviewSlotId),
                         interviewAddress: $('#interviewAddress').val()
                     };
+                    console.log(data);
                 }
         }
         if(resultStatus == true){
