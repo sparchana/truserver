@@ -2812,11 +2812,11 @@ public class Application extends Controller {
 
         if(Objects.equals(request().getQueryString("hub.verify_token"), "huha_testing")){
             Logger.info("Match");
-            return ok(request().getQueryString("hub.verify_token"));
+            return ok(request().getQueryString("hub.challenge"));
         }
         else {
             Logger.info("No match");
-            return badRequest(request().getQueryString("hub.verify_token"));
+            return badRequest(request().getQueryString("hub.challenge"));
         }
 
     }
