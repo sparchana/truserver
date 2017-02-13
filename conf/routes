@@ -332,12 +332,16 @@ GET         /generateCompanyCode                                          contro
 
 # GET         /testNotification                                             controllers.TestController.testnotification()
 # GET         /checkSmsDelivery                                             controllers.TestController.checkSmsDelivery()
-GET         /convertOldData                                               controllers.TestController.convertOldData()
+GET         /convertOldData                                                 controllers.TestController.convertOldData()
 # GET         /testQueue                                                    controllers.TestController.testQueue()
 # GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
 # GET         /testResponse                                                 controllers.TestController.testApplyInShortResponse()
 # GET         /isPrivate/:mobile                                            controllers.TestController.isPrivate(mobile: String)
 
+# Test API for FB
+# ~~~~~~~~~~~~~
+GET           /fbvalidate                                                   controllers.Application.validatefb()
+POST          /fbhandleMessage                                              controllers.Application.handleMessagefb()
 # Scrap API
 # ~~~~~~~~~~~~~
 GET         /support/administrator/scrapCSV/dashboard                     controllers.Application.scrapArena()

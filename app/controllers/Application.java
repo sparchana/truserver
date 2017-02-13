@@ -2918,4 +2918,42 @@ public class Application extends Controller {
         return ok(toJson(JobService.callToApply(applyJobRequest)));
     }
 
+    public static Result validatefb(){
+
+        Logger.info("hub.verify_token =" + request().getQueryString("hub.verify_token"));
+        Logger.info("hub.challenge =" + request().getQueryString("hub.challenge"));
+
+        if(Objects.equals(request().getQueryString("hub.verify_token"), "huha_testing")){
+            Logger.info("Match");
+            return ok(request().getQueryString("hub.challenge"));
+        }
+        else {
+            Logger.info("No match");
+            return badRequest(request().getQueryString("hub.challenge"));
+        }
+
+    }
+
+    public static Result handleMessagefb(){
+
+        try{
+            JsonNode node = request().body().asJson();
+            Logger.info("JSON:"+node.asText());
+        } catch (Exception e){
+            Logger.info(e.getMessage());
+        }
+
+        try{
+            Map<String, String []> test = request().body().asFormUrlEncoded();
+            for(Map.Entry<String,String []> entry:test.entrySet()){
+                Logger.info("Key="+entry.getKey());
+                Logger.info("Value="+entry.getValue());
+            }
+        } catch (Exception e){
+            Logger.info(e.getMessage());
+        }
+
+        return ok("So far so good");
+    }
+
 }
