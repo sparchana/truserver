@@ -247,7 +247,7 @@ POST        /getAllEducation                                              contro
 POST        /getAllJobsRolesWithJobs                                      controllers.Application.getAllJobsRolesWithJobs()
 POST        /getAllNormalJobPosts/                                        controllers.Application.getAllNormalJobPosts(i: java.lang.Long ?= null)
 POST        /getPartnerViewJobs/                                          controllers.Application.getPartnerViewJobs(i: java.lang.Long ?= null)
-POST        /getAllHotJobPosts/                                           controllers.Application.getAllHotJobPosts(i: java.lang.Long ?= null)
+POST        /getAllHotJobPosts/                                           controllers.Application.getAllHotJobPosts(i: Integer ?= null, salt: Integer ?= null)
 POST        /getAllIdProof                                                controllers.Application.getAllIdProof()
 POST        /getAllJobs                                                   controllers.Application.getAllJobs()
 POST        /getAllLeadSource                                             controllers.Application.getAllLeadSource()
@@ -338,6 +338,7 @@ GET         /convertOldData                                               contro
 # GET         /testQueue                                                    controllers.TestController.testQueue()
 # GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
 # GET         /testResponse                                                 controllers.TestController.testApplyInShortResponse()
+# GET         /isPrivate/:mobile                                            controllers.TestController.isPrivate(mobile: String)
 
 # Scrap API
 # ~~~~~~~~~~~~~

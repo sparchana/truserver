@@ -2337,7 +2337,8 @@ public class JobPostWorkflowEngine {
         // pull rec value from session as well
         // if session is null then go for jpwf rec profile
 
-        RecruiterProfile defaultRecruiter = jobPostWorkflowCurrent.getJobPost().getRecruiterProfile();
+        RecruiterProfile defaultRecruiter = jobPostWorkflowCurrent.getRecruiterProfile() == null ?
+                jobPostWorkflowCurrent.getJobPost().getRecruiterProfile() : jobPostWorkflowCurrent.getRecruiterProfile();
         Candidate candidate = jobPostWorkflowCurrent.getCandidate();
         String toBePreservedUUId = jobPostWorkflowCurrent.getJobPostWorkflowUUId();
 

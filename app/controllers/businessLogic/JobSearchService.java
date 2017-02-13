@@ -9,6 +9,7 @@ import com.avaje.ebean.Junction;
 import com.avaje.ebean.PagedList;
 import com.avaje.ebean.Query;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
+import dao.JobPostDAO;
 import in.trujobs.proto.JobFilterRequest;
 import models.entity.Candidate;
 import models.entity.Company;
@@ -647,9 +648,10 @@ public class JobSearchService {
      * @param index index from where the set of jobs to be shown
      * @return hot jobs w.r.t index value and total number of hot jobs
      */
-    public static JobPostResponse getAllHotJobsPaginated(Long index) {
+    public static JobPostResponse getAllHotJobsPaginated(Integer index, Integer sessionSalt) {
         JobPostResponse jobPostResponse = new JobPostResponse();
         if (index != null) {
+/*
             PagedList<JobPost> pagedList = JobPost.find
                     .where()
                     .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_OPEN)
@@ -662,6 +664,8 @@ public class JobSearchService {
                     .orderBy().desc("jobPostUpdateTimestamp")
                     .findPagedList();
             List<JobPost> jobPostList = pagedList.getList();
+*/
+            List<JobPost> jobPostList = JobPostDAO.getRandomJobPost(index, sessionSalt);
 
             Long cId = null;
             if((session().get("candidateId") != null)){
