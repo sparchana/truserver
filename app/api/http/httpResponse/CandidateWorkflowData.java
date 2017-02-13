@@ -1,7 +1,6 @@
 package api.http.httpResponse;
 
 import models.entity.Candidate;
-import models.entity.OM.JobApplication;
 import models.entity.Partner;
 
 import java.util.Date;
