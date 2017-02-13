@@ -797,7 +797,7 @@ var cardModule = (function ($) {
                     case 0: notifyMsg("Name contains number. Please Enter a valid  name",'danger'); validationResult = false; break;
                     case 2: notifyMsg("Name cannot be blank spaces. Enter a valid  name",'danger'); validationResult = false; break;
                     case 3: notifyMsg("Name contains special symbols. Enter a valid  name",'danger'); validationResult = false; break;
-                    case 4: notifyMsg("Please enter your first name",'danger'); validationResult = false; break;
+                    case 4: notifyMsg("Please enter your name",'danger'); validationResult = false; break;
                 }
             return validationResult;
             },

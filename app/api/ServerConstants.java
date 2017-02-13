@@ -10,6 +10,8 @@ public class ServerConstants {
     // public static final String DEV_API_KEY = "123e4567-e89b-12d3-a456-426655440000";
     // public static final int TYPE_UNKNOW = 0;
 
+    public static final int NO_OF_JOBS_IN_A_PAGE = 5;
+
     public static final int TYPE_LEAD = 1;
     public static final int TYPE_POTENTIAL_CANDIDATE = 2;
     public static final int TYPE_POTENTIAL_RECRUITER = 3;

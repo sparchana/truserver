@@ -56,7 +56,6 @@ function scrapeCandidateIdFromUrl(){
 }
 
 $(document).ready(function(){
-    var w = window.innerWidth;
     appliedJobSection = false;
     popularJobsSection = true;
     $("#appliedJobsSection").hide();
@@ -124,6 +123,7 @@ $(document).ready(function(){
 
 
 function processDataPartnerSession(returnedData) {
+
     if(returnedData == 0){
         // js is available in nav bar
         logoutPartner();
@@ -135,6 +135,7 @@ function processDataPartnerSession(returnedData) {
             $("#privatePartner").show();
             isPartnerPrivate = true;
 
+            checkPartnerSwitcher();
         } else{
             isPartnerPrivate = false;
             $("#openPartner").show();

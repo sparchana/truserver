@@ -2859,4 +2859,8 @@ public class CandidateService
         }
         return null;
     }
+
+    public static boolean isCandidatePrivate(String mobile) {
+        return CandidateDAO.findByMobile(mobile, ServerConstants.CANDIDATE_ACCESS_LEVEL_PRIVATE) > 0;
+    }
 }

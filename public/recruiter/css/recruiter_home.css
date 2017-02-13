@@ -278,7 +278,7 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: rgb(55, 71, 79);
+    background: linear-gradient(to left, rgba(46, 200, 102, 0.5), 36%, rgba(0, 0, 0, 0.71)), url(/assets/recruiter/img/pattern-1.jpg) repeat;
     height: 100vh;
 }
 #inputContainerModalSignup{

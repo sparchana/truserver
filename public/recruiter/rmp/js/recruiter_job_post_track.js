@@ -488,7 +488,7 @@ function tabChange3() {
                                             var interviewDate = new Date(workflowObj.extraData.interviewDate);
 
                                             var interviewDateVal = validateDateFormat(interviewDate) +
-                                                " @ " + workflowObj.extraData.interviewSlot.interviewTimeSlotName;
+                                                " @ " + workflowObj.extraData.interviewSlot.interviewTimeSlotName +" (Round "+workflowObj.extraData.round+")";
                                             return '<div class="mLabel" style="width:100%" >' + interviewDateVal + '</div>';
                                         } else{
                                             return '<div class="mLabel" style="width:100%" >-</div>';
@@ -679,7 +679,6 @@ function showSlotModal() {
 }
 
 function processDataForJobPostInfo(returnedData) {
-    console.log("Returned data : "+ JSON.stringify(returnedData));
     if (Object.keys(returnedData.interviewDetailsList).length > 0) {
         //slots
         var i;
@@ -869,7 +868,6 @@ function confirmAddFeedback() {
                         interviewSlotId: parseInt(nextInterviewSlotId),
                         interviewAddress: $('#interviewAddress').val()
                     };
-                    console.log(data);
                 }
         }
         if(resultStatus == true){
