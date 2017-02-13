@@ -96,15 +96,19 @@ public class SchedulerManager implements Runnable {
 
         createAadhaarVerificationEvent(aadhaarVerificationDelay);
 
-        createStartOfTheDayJobPostEvent(jobPostInfoDelay);
+        // SMS for promoting jobs --> Temp switch off
+        //createStartOfTheDayJobPostEvent(jobPostInfoDelay);
 
         createEndOfTheDayJobPostEvent(eodJobPostInfoDelay);
 
-        createEODRateUsPostInterviewEvent(rateUsPostInterviewDelay);
+        // SMS for requesting app store rating --> Temp switch off
+        //createEODRateUsPostInterviewEvent(rateUsPostInterviewDelay);
 
-        createWeeklyAlertEvent(weeklyCandidateAlertTaskDelay);
+        // SMS to promote download android app --> Temp switch off
+        //createWeeklyAlertEvent(weeklyCandidateAlertTaskDelay);
 
-        createWeeklyProfileCompletionEvent(weeklyProfileCompletionTaskDelay);
+        // SMS to promote profile completion --> Temp switch off
+        //createWeeklyProfileCompletionEvent(weeklyProfileCompletionTaskDelay);
 
         createSODCandidateActivationEvent(sodActivationDelay);
 

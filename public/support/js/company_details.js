@@ -203,4 +203,8 @@ function processDataForCompanyInfo(returnedData) {
         }
         $("#companySource").val(source);
     }
+
+    if(returnedData.companyCode != null){
+        $("#companyCode").html(returnedData.companyCode);
+    }
 }

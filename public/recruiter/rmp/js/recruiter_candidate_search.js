@@ -371,6 +371,9 @@ function preFillFilter() {
                         jobPostId = jpId;
 
                         // assign jobPost info to global values
+                        if(returnedData.jobPostTitle != null){
+                            $("#jobPostTitle").html('Candidate Search for ' + returnedData.jobPostTitle);
+                        }
 
                         // appending locality id
                         if(returnedData.jobPostLocalityIdList != null

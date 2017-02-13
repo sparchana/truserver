@@ -20,6 +20,7 @@ import models.entity.Static.Language;
 import models.entity.Static.Locality;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
+import play.Logger;
 
 import java.util.*;
 
@@ -360,7 +361,9 @@ public class SearchJobService {
                 if(response.getStatus() == ServerConstants.INTERVIEW_REQUIRED){
                     jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_REQUIRED);
                 } else if(response.getStatus() == ServerConstants.INTERVIEW_CLOSED){
-                    jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_CLOSED);
+                    if(RecruiterService.isCTAAllowed(jobPost).getStatus() == ServerConstants.CALL_TO_APPLY)
+                        jobPost.setApplyBtnStatus(ServerConstants.CALL_TO_APPLY);
+                    else jobPost.setApplyBtnStatus(ServerConstants.INTERVIEW_CLOSED);
                 } else {
                     // Below CTA = Call-To-Apply button
                     response = RecruiterService.isCTAAllowed(jobPost);
@@ -385,6 +388,9 @@ public class SearchJobService {
         for (JobPost jobPost : jobPostList) {
             RecruiterProfile recruiterProfileShell = new RecruiterProfile();
 
+            if(jobPost == null || jobPost.getRecruiterProfile() == null) {
+                continue;
+            }
             recruiterProfileShell.setRecruiterProfileId(jobPost.getRecruiterProfile().getRecruiterProfileId());
             recruiterProfileShell.setRecruiterProfileUUId(jobPost.getRecruiterProfile().getRecruiterProfileUUId());
             recruiterProfileShell.setRecruiterProfileCreateTimestamp(jobPost.getRecruiterProfile().getRecruiterProfileCreateTimestamp());

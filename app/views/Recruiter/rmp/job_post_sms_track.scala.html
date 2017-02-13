@@ -263,22 +263,19 @@
                             </style>
                         </div>
                         <div class="input-field col s12 l12">
-                            <input id="interviewAddress" placeholder="Interview Location">
+                            <input id="interviewAddress" onclick="clearField()" placeholder="Start typing company / building name or landmark / locality name">
+
+                                <!-- hidden lat/long -->
+                            <input type="text" class="form-control" style="width: 110px;
+                                display: none" id="jp_lat" />
+                            <input type="text" class="form-control" style="width: 110px;
+                                display: none" id="jp_lon" />
+
                         </div>
                         <div class="col s12 l12" style="display: none;" id="landmarkDetails">
-                                <!-- office/building no -->
-                            @*<div class="input-field" style="margin-top: 16px">
-                                <label>Office No./Building no.:</label>
-                            </div>*@
                             <div class="input-field" style="margin-top: 20px">
                                 <input type="text" placeholder="Building no / door no / floor no / site no" class="form-control" id="interviewBuildingNo" />
                             </div>
-
-                                <!-- office/building no -->
-                           @* <div class="input-field" style="margin-top: 16px">
-                                <label>Landmark:</label>
-                            </div>*@
-
                             <div class="input-field" style="margin-top: 20px">
                                 <input type="text" placeholder="Enter landmark" class="form-control" id="interviewLandmark" />
                             </div>

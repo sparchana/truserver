@@ -50,8 +50,6 @@ function processJobPostInterviewSlot(returnedData, isSupport) {
         //slots
         $('#interViewSlot').html('');
 
-
-
         $.each( returnedData.interviewSlotMap, function( key, value ) {
             var slotValue = value.interviewDateMillis +"_"+value.interviewTimeSlot.slotId;
             var defaultOption = $('<option value="'+slotValue+'"></option>').text(key);

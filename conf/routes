@@ -130,6 +130,8 @@ GET         /partnerNavBarLoggedIn                                        contro
 GET         /partner/ifExists/:mobile                                     controllers.Application.ifCandidateExists(mobile: String)
 GET         /partner/:candidateId/jobs                                    controllers.PartnerController.renderCandidateJobPage(candidateId: Long)
 GET         /getAppliedJobsByPartnerForCandidate/:id                      controllers.PartnerController.getAppliedJobsByPartnerForCandidate(id : Long)
+GET         /checkPrivatePartnerRecruiterAccount                          controllers.PartnerController.checkPrivatePartnerRecruiterAccount()
+GET         /switchToRecruiter                                            controllers.PartnerController.switchToRecruiter()
 
 POST        /getJobPostInfoViaPartner/:id/:candidateId                    controllers.PartnerController.getJobPostInfoViaPartner(id : Long, candidateId : Long)
 POST        /getCandidateMatchingJobs/:id                                 controllers.PartnerController.getCandidateMatchingJobs(id : Long)
@@ -164,6 +166,9 @@ GET         /recruiterNavbar                                              contro
 GET         /showRecruiterLead/:id                                        controllers.RecruiterController.showRecruiterLead(id: Long)
 GET         /showRecruiterLeadStatus                                      controllers.RecruiterController.showRecruiterLeadStatus
 GET         /recruiter/job/track/:id                                      controllers.RecruiterController.trackApplication(id : Long)
+GET         /checkPrivateRecruiterPartnerAccount                          controllers.RecruiterController.checkPrivateRecruiterPartnerAccount()
+GET         /switchToPartner                                              controllers.RecruiterController.switchToPartner()
+GET         /recruiter/getNextRoundComponents/:jpId                       controllers.RecruiterController.getNextRoundComponents(jpId: Long)
 
 #Temp route delete after use
 GET         /recruiter/job/candidateModal                                 controllers.RecruiterController.recruiterCandidateModal()
@@ -328,7 +333,7 @@ GET         /generateCompanyCode                                          contro
 
 # GET         /testNotification                                             controllers.TestController.testnotification()
 # GET         /checkSmsDelivery                                             controllers.TestController.checkSmsDelivery()
-# GET         /convertOldData                                               controllers.TestController.convertOldData()
+GET         /convertOldData                                               controllers.TestController.convertOldData()
 # GET         /testQueue                                                    controllers.TestController.testQueue()
 # GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
 # GET         /testResponse                                                 controllers.TestController.testApplyInShortResponse()
@@ -364,7 +369,7 @@ POST        /api/compute/verifyAadhar/:candidateMobile                    contro
 GET         /robots.txt                                                   controllers.Assets.at(path="/public", file="robots.txt")
 GET         /assets/*file                                                 controllers.Assets.at(path="/public", file)
 GET         /sitemap.xml                                                  controllers.Assets.at(path="/public", file="sitemap.xml")
-GET         /favicon.ico                                                  controllers.Assets.at(path="/public/img/", file="icon.png")
+GET         /favicon.ico                                                  controllers.Assets.at(path="/public/common/img/", file="icon.png")
 #GET        /webjars/*file                                                controllers.WebJarAssets.at(file)
 
 # Resume Upload
@@ -373,7 +378,6 @@ GET         /favicon.ico                                                  contro
 POST        /addResume/                                                   controllers.Application.doResumeUpload(candidateId: String ?=null)
 POST        /receive-parsed-resume                                        controllers.Application.receiveParsedResume()
 GET         /fetchResume/                                                 controllers.Application.fetchResume(candidateId: String ?=null)
-GET         /favicon.ico                                                  controllers.Assets.at(path="/public/common/img/", file="icon.png")
 
 #GET        /webjars/*file                                                  controllers.WebJarAssets.at(file)
 

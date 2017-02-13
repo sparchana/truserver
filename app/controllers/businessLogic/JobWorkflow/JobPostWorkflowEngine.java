@@ -27,6 +27,7 @@ import controllers.RecruiterController;
 import controllers.businessLogic.*;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
+import dao.RecruiterDAO;
 import dao.staticdao.RejectReasonDAO;
 import models.entity.*;
 import models.entity.OM.*;
@@ -2276,9 +2277,26 @@ public class JobPostWorkflowEngine {
                                                           Date interviewDate,
                                                           int channel)
     {
+        JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(jobPostWorkflowCurrent, oldStatus, newStatus, interviewSlot, interviewDate, channel, null, null);
+
+        return jobPostWorkflowNew;
+    }
+
+    // this methods take the old jobpost uuid and set the new jobpost uuid to old jobpost uuid.
+    private static JobPostWorkflow saveNewJobPostWorkflow(JobPostWorkflow jobPostWorkflowCurrent,
+                                                          Integer oldStatus,
+                                                          Integer newStatus,
+                                                          Integer interviewSlot,
+                                                          Date interviewDate,
+                                                          int channel,
+                                                          Integer round,
+                                                          RecruiterProfile recruiterProfile)
+    {
 
         JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", newStatus).findUnique();
         JobPost jobPost = jobPostWorkflowCurrent.getJobPost();
+        Integer defaultInterviewRound = jobPostWorkflowCurrent.getInterviewRound();
+        RecruiterProfile defaultRecruiter = jobPostWorkflowCurrent.getJobPost().getRecruiterProfile();
         Candidate candidate = jobPostWorkflowCurrent.getCandidate();
         String toBePreservedUUId = jobPostWorkflowCurrent.getJobPostWorkflowUUId();
 
@@ -2300,6 +2318,17 @@ public class JobPostWorkflowEngine {
                 jobPostWorkflowCurrent.setInterviewLocationLat(jobPost.getLatitude());
                 jobPostWorkflowCurrent.setInterviewLocationLng(jobPost.getLongitude());
             }
+            if(round != null) {
+                jobPostWorkflowCurrent.setInterviewRound(round);
+            } else {
+                jobPostWorkflowCurrent.setInterviewRound(defaultInterviewRound !=null? defaultInterviewRound : 1);
+            }
+            if(recruiterProfile != null) {
+                jobPostWorkflowCurrent.setRecruiterProfile(recruiterProfile);
+            } else {
+                jobPostWorkflowCurrent.setRecruiterProfile(defaultRecruiter);
+            }
+
             jobPostWorkflowCurrent.setCandidate(candidate);
 
             jobPostWorkflowCurrent.setCreatedBy(session().get("sessionUsername") == null ? InteractionConstants.INTERACTION_CHANNEL_MAP.get(channel) : session().get("sessionUsername"));
@@ -2909,6 +2938,7 @@ public class JobPostWorkflowEngine {
     public static Integer updateFeedback(AddFeedbackRequest addFeedbackRequest, int channel) {
         // fetch existing workflow old for a specific candidate associated with a specific jobPost
 
+
         JobPostWorkflow jobPostWorkflowCurrent =
                         JobPostWorkFlowDAO.getJobPostWorkflowCurrent(
                                 addFeedbackRequest.getJobPostId(),
@@ -2917,6 +2947,8 @@ public class JobPostWorkflowEngine {
         if (jobPostWorkflowCurrent == null) {
             return 0;
         }
+
+        boolean isPrivateFlow = jobPostWorkflowCurrent.getJobPost().getJobPostAccessLevel() == ServerConstants.JOB_POST_TYPE_PRIVATE;
 
         Integer jwStatus;
         Integer interactionType;
@@ -2937,6 +2969,11 @@ public class JobPostWorkflowEngine {
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_FEEDBACK_NO_SHOW;
             interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_NO_SHOW;
 
+        } else if(  isPrivateFlow
+                    && addFeedbackRequest.getFeedbackStatus() == ServerConstants.CANDIDATE_FEEDBACK_SELECTED_NEXT_ROUND) {
+            jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_SELECTED_NEXT_ROUND;
+            interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_FEEDBACK_NEXT_ROUND;
+            interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_NEXT_ROUND;
         } else {
             jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED;
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_FEEDBACK_NOT_QUALIFIED;
@@ -2944,19 +2981,56 @@ public class JobPostWorkflowEngine {
 
         }
 
-        // Setting the existing jobpostworkflow status to confirmed
+        RecruiterProfile interviewRecruiter = jobPostWorkflowCurrent.getRecruiterProfile();
+        Integer interviewRound = jobPostWorkflowCurrent.getInterviewRound();
+
+        // 2 entry per round
+        // if one round then 5->selection, [14 - 18] -> completion of that round ==> [4, [14 - 18]]
+        // if multiple round then [5, 13, 18] -> [5, 13, 18] -> [5, 13, [14 - 18]]
+
+        if( isPrivateFlow
+                && jobPostWorkflowCurrent.getInterviewRound() == null) {
+            if(interviewRound == null) {
+                interviewRound = 1;
+            }
+            // set interview round
+            interviewRecruiter = addFeedbackRequest.getInterviewRecruiterId() != null ?
+                    RecruiterDAO.findById(addFeedbackRequest.getInterviewRecruiterId()) : jobPostWorkflowCurrent.getRecruiterProfile();
+
+        }
+
+
+        // creating new entry with new jwStatus
         JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(
                 jobPostWorkflowCurrent, jobPostWorkflowCurrent.getStatus().getStatusId(), jwStatus,
                 jobPostWorkflowCurrent.getScheduledInterviewTimeSlot().getInterviewTimeSlotId(),
-                jobPostWorkflowCurrent.getScheduledInterviewDate(), channel);
+                jobPostWorkflowCurrent.getScheduledInterviewDate(), channel, interviewRound, interviewRecruiter);
 
-        if(jobPostWorkflowNew == null){
-            return 0;
-        }
+        if(jobPostWorkflowNew == null) { return 0;}
 
-        if (jobPostWorkflowNew != null) {
-            jobPostWorkflowNew.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", jwStatus).findUnique());
-            jobPostWorkflowNew.update();
+//        jobPostWorkflowNew.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", jwStatus).findUnique());
+
+//        jobPostWorkflowNew.update();
+
+        if( isPrivateFlow
+                && jwStatus == ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_SELECTED_NEXT_ROUND) {
+
+            // set date and slot to default if null
+            int slotId = addFeedbackRequest.getInterviewSlotId() != null ?
+                         addFeedbackRequest.getInterviewSlotId() : jobPostWorkflowCurrent.getScheduledInterviewTimeSlot()
+                                                                                   .getInterviewTimeSlotId();
+
+            Date interviewDate =  addFeedbackRequest.getInterviewDatetimeInMills() != null ?
+                    new Date(addFeedbackRequest.getInterviewDatetimeInMills()): jobPostWorkflowCurrent.getScheduledInterviewDate();
+
+            interviewRecruiter = addFeedbackRequest.getInterviewRecruiterId() != null ?
+                    RecruiterDAO.findById(addFeedbackRequest.getInterviewRecruiterId()) : jobPostWorkflowNew.getRecruiterProfile();
+
+            interviewRound = jobPostWorkflowNew.getInterviewRound() + 1;
+
+            saveNewJobPostWorkflow(jobPostWorkflowNew, jobPostWorkflowNew.getStatus().getStatusId(),
+                    ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED, slotId,
+                    interviewDate, channel, interviewRound, interviewRecruiter);
         }
 
         InterviewFeedbackUpdate interviewFeedbackUpdate = new InterviewFeedbackUpdate();
@@ -2977,6 +3051,12 @@ public class JobPostWorkflowEngine {
 
             //sending sms
             sendSelectedSmsToCandidate(jobPostWorkflowNew);
+        } else if(jwStatus == ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_SELECTED_NEXT_ROUND){
+            //sending notification
+            NotificationUtil.sendInterviewNextRoundSelectionNotification(candidate, jobPostWorkflowNew);
+
+            //sending sms
+            sendNextRoundSmsToCandidate(jobPostWorkflowNew);
         } else {
             //sending notification
             NotificationUtil.sendInterviewRejectionNotification(candidate, jobPostWorkflowNew);

@@ -746,6 +746,7 @@ function checkSlotAvailability(x, interviewDays) {
 }
 //previous feedback
 function openPreviousFeedbackModal(candidateId){
+    globalCandidateId = candidateId;
     $("#previousFeedbackModal").openModal();
 }
 
@@ -786,24 +787,56 @@ function openFeedbackModal(candidateId) {
 }
 
 function confirmAddFeedback() {
+    var resultStatus = true;
+    var data;
     if($("#feedbackOption").val() > 0){
-        if(($("#feedbackOption").val() == 2 || $("#feedbackOption").val() == 4) && $("#reasonVal").val() == 0){
-            notifyError("Please select a reason");
-        } else{
-            try {
-                var d = {
+        if(($("#feedbackOption").val() != 5)) {
+            if (($("#feedbackOption").val() == 2 || $("#feedbackOption").val() == 4) && $("#reasonVal").val() == 0) {
+                notifyError("Please select a reason");
+                resultStatus = false;
+            } else{
+                data = {
                     candidateId: globalCandidateId,
-                    jobPostId : jobPostId,
-                    feedbackStatus : $("#feedbackOption").val(),
-                    feedbackComment : $("#feedbackNote").val(),
+                    jobPostId: jobPostId,
+                    feedbackStatus: $("#feedbackOption").val(),
+                    feedbackComment: $("#feedbackNote").val(),
                     rejectReason: $("#reasonVal").val()
                 };
+            }
+        } else{
+                var recruiterData = $("#nextRoundRecruiterNameVal").val().split("_");
+                if(recruiterData[0] == 0){
+                    notifyError("Please select a recruiter");
+                    resultStatus = false;
+                } else{
+                    var combinedValue = $("#nextRoundDateAndSlot").val().split("_");
+                    nextInterviewDatetimeInMills = combinedValue[0];
+                    nextInterviewSlotId = combinedValue[1];
 
+                    nextInterviewRecruiterId = recruiterData[0];
+
+                    data = {
+                        candidateId: globalCandidateId,
+                        jobPostId : jobPostId,
+                        feedbackStatus : $("#feedbackOption").val(),
+                        feedbackComment : $("#feedbackNote").val(),
+                        rejectReason: $("#reasonVal").val(),
+                        interviewLat: $("#jp_lat").val(),
+                        interviewLng: $("#jp_lon").val(),
+                        interviewRecruiterId: nextInterviewRecruiterId,
+                        interviewDatetimeInMills: parseInt(nextInterviewDatetimeInMills),
+                        interviewSlotId: nextInterviewSlotId,
+                        interviewAddress: $('#interviewAddress').val()
+                    };
+                }
+        }
+        if(resultStatus == true){
+            try {
                 $.ajax({
                     type: "POST",
                     url: "/updateFeedback",
                     contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(d),
+                    data: JSON.stringify(data),
                     success: processDataUpdateFeedBack
                 });
             } catch (exception) {
@@ -989,59 +1022,48 @@ function closePreviousFeedbackModal() {
 function closeRejectModal() {
     $("#modalRejectReason").closeModal();
 }
+
+function clearField(){
+    $('#interviewAddress').val('');
+}
+
 function nextRoundInterview(){
-    var d = {
-        recruiterName:[
-            {
-                recruiterId:3667,
-                recruiterName:"A"
-            },
-            {
-                recruiterId:3668,
-                recruiterName:"B"
-            }
-        ],
-        interviewSlot:[
-            {
-                interviewId:1,
-                interviewSlot:"Mon"
-            },
-            {
-                interviewId:2,
-                interviewSlot:"Tue"
-            },
-            {
-                interviewId:3,
-                interviewSlot:"Wed"
-            },
-        ],
-        locality:"Guwahati"
+    try{
+        $.ajax({
+            type:"GET",
+            url:"/recruiter/getNextRoundComponents/"+jobPostId,
+            data:false,
+            async:false,
+            contentType:false,
+            processData:false,
+            success:processNextRoundInterviewData
+        });
+    }catch (exception){
+        console.log("exception occured!!" + exception);
     }
 
-    processNextRoundInterviewData(d);
 }
 function processNextRoundInterviewData(returnedData) {
-     var recruiterNameList = returnedData.recruiterName;
 
+    var recruiterList = returnedData.recruiterList;
     var optionName = $('<option value="0"></option>').text("Select recruiter");
+
     $("#nextRoundRecruiterNameVal").append(optionName);
 
-    recruiterNameList.forEach(function(data){
-        var optionName = $('<option value='+data.recruiterId+'></option>').text(data.recruiterName);
+    recruiterList.forEach(function(data){
+        var optionName = $('<option value='+data.recruiterProfileId+'></option>').text(data.recruiterProfileName);
         $("#nextRoundRecruiterNameVal").append(optionName);
     });
 
+    var interviewDetailsList = returnedData.interviewSlotPopulateResponse.interviewSlotMap;
 
-    var optionLocality = $('<option value="0"></option>').text("Select interview slot");
-    $("#nextRoundDateAndSlot").append(optionLocality);
-
-    var localityList = returnedData.interviewSlot;
-    localityList.forEach(function(data){
-        var optionLocality = $('<option value='+data.interviewId+'></option>').text(data.interviewSlot);
-        $("#nextRoundDateAndSlot").append(optionLocality);
+    $.each( interviewDetailsList, function (key ,value) {
+        var slotValue = value.interviewDateMillis +"_"+value.interviewTimeSlot.slotId;
+        var defaultOption = $('<option value="'+slotValue+'"></option>').text(key);
+        $('#nextRoundDateAndSlot').append(defaultOption);
     });
 
-    renderMap(null,null);
+    renderMap(returnedData.location.latitude,returnedData.location.longitude);
 
 }
 function renderMap(interviewLat,interviewLng){
