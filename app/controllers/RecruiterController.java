@@ -713,6 +713,10 @@ public class RecruiterController {
         return ok(toJson(nextRoundComponents));
     }
 
+    public static Result getPreviousRounds(Long jpId, Long cId) {
+        return ok(toJson(JobPostWorkflowEngine.getPreviousRounds(jpId, cId)));
+    }
+
 
     public static class RecruiterJobPostObject{
 

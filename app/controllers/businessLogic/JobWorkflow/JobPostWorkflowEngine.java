@@ -12,6 +12,7 @@ import api.http.httpResponse.CandidateExtraData;
 import api.http.httpResponse.CandidateScoreData;
 import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Recruiter.InterviewTodayResponse;
+import api.http.httpResponse.Recruiter.RMP.PreviousRoundResponse;
 import api.http.httpResponse.Workflow.InterviewSlotPopulateResponse;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import api.http.httpResponse.Workflow.ShortJobApplyResponse;
@@ -1880,6 +1881,40 @@ public class JobPostWorkflowEngine {
         preScreenRequest.setPass(true);
         preScreenRequest.setPreScreenIdList(new ArrayList<>());
         JobPostWorkflowEngine.savePreScreenResult(preScreenRequest, channel, ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED);
+    }
+
+    public static PreviousRoundResponse getPreviousRounds(Long jobPostId, Long candidateId) {
+        PreviousRoundResponse response = new PreviousRoundResponse();
+        if(jobPostId == null || candidateId == null) {
+            return response;
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_DDMMYYYY);
+
+
+        List<InterviewFeedbackUpdate> feedbackUpdateList =
+                                      InterviewFeedbackUpdate.find.where()
+                                              .eq("candidate.candidateId", candidateId)
+                                              .eq("jobPost.jobPostId", jobPostId)
+                                              .findList();
+
+
+        for(InterviewFeedbackUpdate interviewFeedbackUpdate : feedbackUpdateList) {
+            PreviousRoundResponse.PreviousRound previousRound = new PreviousRoundResponse.PreviousRound();
+            previousRound.setCreationDate(sdf.format(interviewFeedbackUpdate.getCreateTimestamp()));
+            previousRound.setNote(interviewFeedbackUpdate.getCandidateInterviewStatusUpdateNote());
+
+            String recruiterName = "NA";
+
+            if(interviewFeedbackUpdate.getJobPostWorkflow().getRecruiterProfile() != null){
+                recruiterName = interviewFeedbackUpdate.getJobPostWorkflow().getRecruiterProfile().getRecruiterProfileName();
+            } else if(interviewFeedbackUpdate.getJobPost().getRecruiterProfile() != null){
+                recruiterName = interviewFeedbackUpdate.getJobPost().getRecruiterProfile().getRecruiterProfileName();
+            }
+
+            previousRound.setRecruiterName(recruiterName);
+            response.getPreviousRoundList().add(previousRound);
+        }
+        return response;
     }
 
     public static class LastActiveValue {
