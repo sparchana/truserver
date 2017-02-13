@@ -747,9 +747,24 @@ function checkSlotAvailability(x, interviewDays) {
 //previous feedback
 function openPreviousFeedbackModal(candidateId){
     globalCandidateId = candidateId;
+    try{
+        $.ajax({
+            type:"GET",
+            url:"/recruiter/getPrevRounds?jpId="+jobPostId+"&cId="+globalCandidateId,
+            data:false,
+            async:false,
+            contentType:false,
+            processData:false,
+            success:processPreviousFeedbackData
+        });
+    }catch (exception){
+        console.log("exception occured!!" + exception);
+    }
+}
+function processPreviousFeedbackData(returnedData){
+    console.log(JSON.stringify(returnedData));
     $("#previousFeedbackModal").openModal();
 }
-
 //feedback
 function openFeedbackModal(candidateId) {
     globalCandidateId = candidateId;
