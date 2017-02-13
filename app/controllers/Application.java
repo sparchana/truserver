@@ -2807,11 +2807,10 @@ public class Application extends Controller {
 
     public static Result validatefb(){
 
-        Logger.info(request().getQueryString("hub.verify_token"));
-        Logger.info(request().getQueryString("hub.challenge"));
+        Logger.info("hub.verify_token =" + request().getQueryString("hub.verify_token"));
+        Logger.info("hub.challenge =" + request().getQueryString("hub.challenge"));
 
-        if(request().getQueryString("hub.verify_token") == "verifycode" &&
-                request().getQueryString("hub.challenge") == "huha_testing"){
+        if(request().getQueryString("hub.challenge") == "huha_testing"){
             return ok(request().getQueryString("hub.challenge"));
         }
         else return badRequest(request().getQueryString("hub.challenge"));
