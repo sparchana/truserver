@@ -14,9 +14,16 @@ public class RecruiterDAO {
         return RecruiterProfile.find.where().eq("recruiterProfileId", recruiterId).findUnique();
     }
 
-    public static List<RecruiterProfile> findListByCompanyId(Long companyId) {
+    public static List<RecruiterProfile> findListByCompanyId(Long companyId, Integer accessLevel) {
         if(companyId == null) return null;
-        return RecruiterProfile.find.where().eq("company.companyId", companyId).findList();
+
+        if(companyId == null) return null;
+
+        if(accessLevel == null) {
+            accessLevel = 0;
+        }
+
+        return RecruiterProfile.find.where().eq("company.companyId", companyId).ge("recruiterAccessLevel", accessLevel).findList();
     }
 
     public static Map<?, RecruiterProfile> findMapByCompanyId(Long companyId, Integer accessLevel) {

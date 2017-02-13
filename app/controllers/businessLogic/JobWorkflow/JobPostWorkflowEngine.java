@@ -2333,10 +2333,17 @@ public class JobPostWorkflowEngine {
         JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", newStatus).findUnique();
         JobPost jobPost = jobPostWorkflowCurrent.getJobPost();
         Integer defaultInterviewRound = jobPostWorkflowCurrent.getInterviewRound();
+
+        // pull rec value from session as well
+        // if session is null then go for jpwf rec profile
+
         RecruiterProfile defaultRecruiter = jobPostWorkflowCurrent.getJobPost().getRecruiterProfile();
         Candidate candidate = jobPostWorkflowCurrent.getCandidate();
         String toBePreservedUUId = jobPostWorkflowCurrent.getJobPostWorkflowUUId();
 
+        if(session()!= null && session().get("recruiterId") != null) {
+            defaultRecruiter = RecruiterDAO.findById(Long.valueOf(session().get("recruiterId")));
+        }
         // interview validation
         if (interviewDate == null || interviewSlot == null) {
             Logger.info("Null interview Date/Slot received");
