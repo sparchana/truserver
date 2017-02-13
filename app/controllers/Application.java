@@ -2821,4 +2821,26 @@ public class Application extends Controller {
 
     }
 
+    public static Result handleMessagefb(){
+
+        try{
+            JsonNode node = request().body().asJson();
+            Logger.info("JSON:"+node.asText());
+        } catch (Exception e){
+            Logger.info(e.getMessage());
+        }
+
+        try{
+            Map<String, String []> test = request().body().asFormUrlEncoded();
+            for(Map.Entry<String,String []> entry:test.entrySet()){
+                Logger.info("Key="+entry.getKey());
+                Logger.info("Value="+entry.getValue());
+            }
+        } catch (Exception e){
+            Logger.info(e.getMessage());
+        }
+
+        return ok("So far so good");
+    }
+
 }

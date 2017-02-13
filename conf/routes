@@ -340,7 +340,7 @@ GET         /convertOldData                                                 cont
 # Test API for FB
 # ~~~~~~~~~~~~~
 GET           /fbvalidate                                                   controllers.Application.validatefb()
-
+POST          /fbhandleMessage                                              controllers.Application.handleMessagefb()
 # Scrap API
 # ~~~~~~~~~~~~~
 GET         /support/administrator/scrapCSV/dashboard                     controllers.Application.scrapArena()
