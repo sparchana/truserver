@@ -2220,8 +2220,6 @@ public class JobPostWorkflowEngine {
                         }
                         if(jobPostWorkflow.getRecruiterProfile()!= null) {
                             candidateExtraData.setRound(jobPostWorkflow.getInterviewRound());
-                            candidateExtraData.setInterviewRecruiterName(jobPostWorkflow.getRecruiterProfile().getRecruiterProfileName());
-                            candidateExtraData.setInterviewRecruiterId(jobPostWorkflow.getRecruiterProfile().getRecruiterProfileId());
                         }
                     }
                 }
