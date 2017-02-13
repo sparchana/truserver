@@ -762,7 +762,33 @@ function openPreviousFeedbackModal(candidateId){
     }
 }
 function processPreviousFeedbackData(returnedData){
-    console.log(JSON.stringify(returnedData));
+    var previousRoundFeedbackList = returnedData.previousRoundList;
+
+    var parent = $("#previousFeedback");
+    var count = 0;
+    parent.html("");
+    previousRoundFeedbackList.forEach(function(data) {
+        count++;
+        var colRecruiterName = document.createElement("div");
+        colRecruiterName.className = "col s12 l6";
+        colRecruiterName.style = "font-size:16px";
+        colRecruiterName.textContent ="Round "+ count +" ("+data.recruiterName+")";
+        parent.append(colRecruiterName);
+
+        var colDate = document.createElement("div");
+        colDate.className = "col s12 l6";
+        colDate.style = "font-size:16px;text-align:right";
+        colDate.textContent = data.creationDate;
+        parent.append(colDate);
+
+        var colNote = document.createElement("div");
+        colNote.className = "col s12 l12";
+        colNote.style = "background:#eceff1;padding:2%;margin:2px 0 10px 0;font-weight:bold";
+        colNote.textContent = data.note;
+        parent.append(colNote);
+
+
+    });
     $("#previousFeedbackModal").openModal();
 }
 //feedback
@@ -1062,16 +1088,19 @@ function nextRoundInterview(){
 function processNextRoundInterviewData(returnedData) {
 
     var recruiterList = returnedData.recruiterList;
+
+    $("#nextRoundRecruiterNameVal").html("");
+
     var optionName = $('<option value="0"></option>').text("Select recruiter");
-
     $("#nextRoundRecruiterNameVal").append(optionName);
-
     recruiterList.forEach(function(data){
         var optionName = $('<option value='+data.recruiterProfileId+'></option>').text(data.recruiterProfileName);
         $("#nextRoundRecruiterNameVal").append(optionName);
     });
 
     var interviewDetailsList = returnedData.interviewSlotPopulateResponse.interviewSlotMap;
+
+    $("#nextRoundDateAndSlot").html("");
 
     $.each( interviewDetailsList, function (key ,value) {
         var slotValue = value.interviewDateMillis +"_"+value.interviewTimeSlot.slotId;

@@ -556,7 +556,10 @@ var cardModule = (function ($) {
                     applyBtn.onclick = function () {
                             if(jobPost.applyBtnStatus == 7){
                                 if(candidateMobileCheck != null){
-                                cardModule.method.callToApplyAction(jobPost.jobPostId);
+                                    cardModule.method.genRecruiterContactModal(
+                                        jobPost.recruiterProfile.recruiterProfileName,
+                                        jobPost.jobPostId);
+                                    cardModule.method.callToApplyAction(jobPost.jobPostId);
                                 } else{
                                     cardModule.method.genRecruiterContactModal(
                                         jobPost.recruiterProfile.recruiterProfileName,
@@ -668,7 +671,6 @@ var cardModule = (function ($) {
                                     if (w < 786) {
                                         document.location.href = "tel:" + recruiterNumber.slice(3,recruiterNumber.length);
                                     }
-
                                 } else{
                                     notifyMsg(cardModule.applicationFail,'danger');
                                 }
@@ -756,6 +758,7 @@ var cardModule = (function ($) {
                 submitButton.style = "font-size:18px;background:#00e676;margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%;font-weight:bold";
                 submitButton.type = "button";
                 submitButton.onclick = function() {
+                    //Call to action function for non-login candidate
                     cardModule.method.callToApplyAction(jobPostId);
                 };
                 recruiterContactMainDiv.appendChild(submitButton);
