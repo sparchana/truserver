@@ -10,6 +10,7 @@ var globalInterviewSlot = null;
 var globalSchedule = null;
 var allTimeSlots = [];
 var allReason = [];
+var nextRound = false;
 
 var notSelectedReason = [];
 var selectedCandidateList = [];
@@ -351,7 +352,7 @@ function tabChange2() {
                                             var interviewDate = new Date(workflowObj.extraData.interviewDate);
 
                                             var interviewDateVal = validateDateFormat(interviewDate) +
-                                                " @ " + workflowObj.extraData.interviewSlot.interviewTimeSlotName;
+                                                " @ " + workflowObj.extraData.interviewSlot.interviewTimeSlotName+" (Round "+workflowObj.extraData.round+")";
                                             return '<div class="mLabel" style="width:100%" >' + interviewDateVal + '</div>';
                                         } else{
                                             return '-';
@@ -499,13 +500,20 @@ function tabChange3() {
                                         if(workflowObj.extraData.workflowStatus != null){
                                             if(workflowObj.extraData.workflowStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                                                 var feedbackVal = workflowObj.extraData.workflowStatus.statusTitle;
-                                                return '<div class="mLabel" style="width:100%" >' + feedbackVal + '</div>';
+                                                return '<div class="mLabel" style="width:100%" >' + feedbackVal +
+                                                       '<span class="customBtn btnOrange" id="previousFeedbackBtn" style="cursor: pointer;margin-left:10px" onclick="openPreviousFeedbackModal('+ workflowObj.candidate.candidateId +')" >Reason</span>'+
+                                                       '</div>';
                                             } else{
-
-                                                return '<div class="mLabel" >'
-                                                    + '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openFeedbackModal('+ workflowObj.candidate.candidateId +')" >Add Feedback</span>'
-                                                    + '<span class="customBtn btnOrange" style="cursor: pointer" onclick="openPreviousFeedbackModal('+ workflowObj.candidate.candidateId +')" >View</span>'
-                                                    + '</div>';
+                                                if(workflowObj.extraData.round > 1){
+                                                    return '<div class="mLabel" >'
+                                                        + '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openFeedbackModal('+ workflowObj.candidate.candidateId +')" >Add Feedback</span>'
+                                                        + '<span class="customBtn btnOrange" id="previousFeedbackBtn" style="cursor: pointer;" onclick="openPreviousFeedbackModal('+ workflowObj.candidate.candidateId +')" >View</span>'
+                                                        + '</div>';
+                                                } else{
+                                                    return '<div class="mLabel" >'
+                                                        + '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openFeedbackModal('+ workflowObj.candidate.candidateId +')" >Add Feedback</span>'
+                                                        + '</div>';
+                                                }
                                             }
                                         } else{
                                             return '<div class="mLabel" style="width:100%" >-</div>'
@@ -854,7 +862,7 @@ function confirmAddFeedback() {
                     nextInterviewSlotId = combinedValue[1];
 
                     nextInterviewRecruiterId = recruiterData[0];
-
+                    nextRound = true;
                     data = {
                         candidateId: globalCandidateId,
                         jobPostId : jobPostId,
@@ -928,10 +936,14 @@ function processDataBulkSms(returnedData) {
 }
 
 function processDataUpdateFeedBack(returnedData) {
+    console.log(returnedData);
     if(returnedData == 1){
+        if(nextRound == true){
+            notifySuccess("Feedback updated successfully. Candidate selected for next round");
+        } else{
+            notifySuccess("Feedback updated successfully");
+        }
         tabChange3();
-        notifySuccess("Feedback updated successfully");
-
         $("#addFeedback").closeModal();
 
     } else if(returnedData == -1){
