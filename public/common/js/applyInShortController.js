@@ -100,6 +100,7 @@ var applyInShort = (function ($) {
               return new Promise(function (resolve, reject) {
                       appz.method.getMissingData().then(
                           function (returnedData) {
+                              console.log(" returned object "+ JSON.stringify(returnedData));
                               if (returnedData != null) {
                                   appz.missingData = returnedData;
                               }
@@ -161,7 +162,7 @@ var applyInShort = (function ($) {
                     }
                     // success | display ui
                     else if(appz.missingData.statusCode == 4){
-
+                        appz.render.jobBasicDetails();
                         $("#finalSubmitBtn").prop("disabled", false);
                         /* render locality card */
                         if(appz.missingData.localityPopulateResponse != null) {
@@ -197,6 +198,103 @@ var applyInShort = (function ($) {
                 }).catch(function (fromReject) {
                     console.log(fromReject);
                 });
+
+            },
+            jobBasicDetails:function () {
+                var parentSalary = $("#jobSalaryIncentives");
+                var parentTime = $("#jobTime");
+
+                var jobTimeString = "";
+                var jobSalaryString = "";
+
+                var salaryText = document.createElement("font");
+                if (appz.missingData.jobPost.jobPostMinSalary != null && appz.missingData.jobPost.jobPostMinSalary != 0) {
+                    if (appz.missingData.jobPost.jobPostMaxSalary == null || appz.missingData.jobPost.jobPostMaxSalary == "0") {
+                        jobSalaryString += " ₹ "+rupeeFormatSalary(appz.missingData.jobPost.jobPostMinSalary) + " monthly";
+                    }
+                    else {
+                        jobSalaryString += " ₹ "+rupeeFormatSalary(appz.missingData.jobPost.jobPostMinSalary) +" -  ₹ " + rupeeFormatSalary(appz.missingData.jobPost.jobPostMaxSalary)+ " monthly";
+                    }
+                }
+                if(appz.missingData.jobPost.jobPostIncentives != null){
+                    jobSalaryString += " ("+appz.missingData.jobPost.jobPostIncentives+" )";
+                }else{
+                    jobSalaryString += " (Incentives not specified)";
+                }
+                salaryText.textContent = jobSalaryString;
+                parentSalary.append(salaryText);
+
+                if(appz.missingData.jobPost.jobPostStartTime != null && appz.missingData.jobPost.jobPostStartTime != -1
+                    && appz.missingData.jobPost.jobPostEndTime != null && appz.missingData.jobPost.jobPostEndTime != null != -1)
+                {
+                    var valStart;
+                    var valEnd;
+                    if (appz.missingData.jobPost.jobPostStartTime > 12) {
+                        appz.missingData.jobPost.jobPostStartTime = appz.missingData.jobPost.jobPostStartTime - 12;
+                        valStart = "PM";
+                    }
+                    else {
+                        valStart = "AM";
+                    }
+                    if (appz.missingData.jobPost.jobPostEndTime > 12) {
+                        appz.missingData.jobPost.jobPostEndTime = appz.missingData.jobPost.jobPostEndTime - 12;
+                        valEnd = "PM";
+                    }
+                    else {
+                        valEnd = "AM";
+                    }
+                    jobTimeString += "("+appz.missingData.jobPost.jobPostStartTime + " " + valStart + " - " + appz.missingData.jobPost.jobPostEndTime + " " + valEnd+")";
+                }
+                else{
+                    jobTimeString += "Timing Not Specified";
+                }
+                if (appz.missingData.jobPost.jobPostWorkingDays != "" && appz.missingData.jobPost.jobPostWorkingDays != null) {
+                    if(appz.missingData.jobPost.jobPostWorkingDays == 127){
+                        jobTimeString += " (No - Off) ";
+                    }else {
+                        var workingDays = appz.missingData.jobPost.jobPostWorkingDays.toString(2);
+                        var i;
+                        /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
+                        if (workingDays.length != 7) {
+                            var x = 7 - workingDays.length;
+                            var modifiedWorkingDays = "";
+
+                            for (i = 0; i < x; i++) {
+                                modifiedWorkingDays += "0";
+                            }
+                            modifiedWorkingDays += workingDays;
+                            workingDays = modifiedWorkingDays;
+                        }
+                        var holiday = "";
+                        var arryDay = workingDays.split("");
+                        if (arryDay[0] != 1) {
+                            holiday += "Mon, ";
+                        }
+                        if (arryDay[1] != 1) {
+                            holiday += "Tue, ";
+                        }
+                        if (arryDay[2] != 1) {
+                            holiday += "Wed, ";
+                        }
+                        if (arryDay[3] != 1) {
+                            holiday += "Thu, ";
+                        }
+                        if (arryDay[4] != 1) {
+                            holiday += "Fri, ";
+                        }
+                        if (arryDay[5] != 1) {
+
+                            holiday += "Sat, ";
+                        }
+                        if (arryDay[6] != 1) {
+                            holiday += "Sun ";
+                        }
+                        jobTimeString += "("+ holiday + " - Off)";
+                    }
+                }
+                var salaryTime = document.createElement("font");
+                salaryTime.textContent = appz.missingData.jobPost.jobPostShift.timeShiftName+" "+ jobTimeString;
+                parentTime.append(salaryTime);
 
             },
             jobLocalityCard: function (localityResponse) {
@@ -1440,6 +1538,14 @@ var applyInShort = (function ($) {
                     $("#detailsCollapsePanelIcon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
                 }
             },
+            basicDetailsIconChange: function () {
+                if($("#jobBasicDetailsPanel").hasClass("in")== true){
+                    $("#jobBasicDetailsPanelIcon").removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+                }
+                else{
+                    $("#jobBasicDetailsPanelIcon").removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+                }
+            },
             validateSubmit: function () {
 
                 appz.missingData.shortPSPopulateResponse.propertyIdList;
@@ -1879,6 +1985,10 @@ var applyInShort = (function ($) {
 
     document.getElementById("jobdetailsHead").addEventListener("click",function () {
         appz.do.detailsIconChange();
+    });
+
+    document.getElementById("jobBasicDetailsHead").addEventListener("click",function () {
+        appz.do.basicDetailsIconChange();
     });
 
     return appz;
