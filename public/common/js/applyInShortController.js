@@ -100,7 +100,6 @@ var applyInShort = (function ($) {
               return new Promise(function (resolve, reject) {
                       appz.method.getMissingData().then(
                           function (returnedData) {
-                              console.log(" returned object "+ JSON.stringify(returnedData));
                               if (returnedData != null) {
                                   appz.missingData = returnedData;
                               }

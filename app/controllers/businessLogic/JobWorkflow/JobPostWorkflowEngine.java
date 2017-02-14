@@ -3082,8 +3082,12 @@ public class JobPostWorkflowEngine {
 
             interviewRound = jobPostWorkflowNew.getInterviewRound() + 1;
 
+            int jwfStatus = jobPostWorkflowCurrent.getJobPost().getReviewApplication()
+                    == ServerConstants.REVIEW_APPLICATION_AUTO ?
+                       ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED : ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED;
+
             saveNewJobPostWorkflow(jobPostWorkflowNew, jobPostWorkflowNew.getStatus().getStatusId(),
-                    ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED, slotId,
+                    jwfStatus, slotId,
                     interviewDate, channel, interviewRound, interviewRecruiter,
                     addFeedbackRequest.getInterviewLat(), addFeedbackRequest.getInterviewLng());
         }
