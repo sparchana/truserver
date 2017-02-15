@@ -691,12 +691,10 @@ public class RecruiterController {
             Logger.info("Uploading " + file);
             BulkUploadResponse bulkUploadResponse = RecruiterService.bulkUploadJob(file,fileName);
             return ok(toJson(bulkUploadResponse));
-        }
-        else{
+        } else{
             return ok("0");
         }
     }
-
 
     public static class RecruiterJobPostObject{
 

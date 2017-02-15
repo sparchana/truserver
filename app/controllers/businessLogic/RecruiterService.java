@@ -1503,6 +1503,7 @@ public class RecruiterService {
                         }
 
                         addJobPostRequest.setJobPostStatusId(ServerConstants.JOB_STATUS_ACTIVE);
+                        addJobPostRequest.setReviewApplications(ServerConstants.REVIEW_APPLICATION_AUTO);
                         addJobPostRequest.setJobPostRecruiterId(recruiterProfile.getRecruiterProfileId());
                         addJobPostRequest.setJobPostCompanyId(Math.toIntExact(recruiterProfile.getCompany().getCompanyId()));
 
