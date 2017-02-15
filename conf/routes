@@ -331,8 +331,9 @@ GET         /generateCompanyCode                                          contro
 # GET         /api/test/testScheduler/                                      controllers.TestController.testScheduler()
 
 # GET         /testNotification                                             controllers.TestController.testnotification()
+GET         /addressResolver/                                             controllers.TestController.addressResolver(addr: String ?= null)
 # GET         /checkSmsDelivery                                             controllers.TestController.checkSmsDelivery()
-GET         /convertOldData                                               controllers.TestController.convertOldData()
+# GET         /convertOldData                                               controllers.TestController.convertOldData()
 # GET         /testQueue                                                    controllers.TestController.testQueue()
 # GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
 # GET         /testResponse                                                 controllers.TestController.testApplyInShortResponse()
@@ -393,6 +394,10 @@ GET         /t/:shortUrl                                                  contro
 # ~~~~~~~~~
 GET         /support/administrator/uploadCandidates                         controllers.Application.uploadCandidates()
 POST        /support/administrator/processCandidates                        controllers.Application.processCandidates()
+
+# Job Post Excel Upload
+# ~~~~~~~~~
+POST        /recruiter/processJobCSV                                        controllers.RecruiterController.processJobCSV()
 
 # Candidate Call-To-Apply Route
 # ~~~~~~~~~
