@@ -9,7 +9,6 @@ import models.entity.OM.JobPostWorkflow;
 import models.entity.Static.InterviewTimeSlot;
 import notificationService.FCMEvent;
 import notificationService.NotificationEvent;
-import play.Logger;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -176,6 +175,13 @@ public class NotificationUtil {
 
         if(candidate.getCandidateAndroidToken() != null){
             addFcmToNotificationQueue(msg, jobCount + " new jobs near you!", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_SEARCH_JOBS);
+        }
+    }
+    public static void sendInterviewNextRoundSelectionNotification(Candidate candidate, JobPostWorkflow jobPostWorkflow) {
+        String msg = "Hi " + candidate.getCandidateFirstName() + "! You have been selected for next interview round for : " + jobPostWorkflow.getJobPost().getJobPostTitle() + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() +
+                ". Congratulations!";
+        if(candidate.getCandidateAndroidToken() != null){
+            addFcmToNotificationQueue(msg, "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_MY_JOBS_COMPLETED);
         }
     }
 }
