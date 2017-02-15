@@ -1506,7 +1506,6 @@ public class RecruiterService {
                         addJobPostRequest.setJobPostRecruiterId(recruiterProfile.getRecruiterProfileId());
                         addJobPostRequest.setJobPostCompanyId(Math.toIntExact(recruiterProfile.getCompany().getCompanyId()));
 
-                        Logger.info(toJson(addJobPostRequest) + " \n");
                         if (shouldSave) {
                             AddJobPostResponse addJobPostResponse = JobService.addJobPost(addJobPostRequest, InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE);
                             if(addJobPostResponse.getStatus() == AddJobPostResponse.STATUS_SUCCESS){
