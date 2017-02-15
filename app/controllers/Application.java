@@ -57,10 +57,7 @@ import org.json.simple.JSONArray;
 import play.Logger;
 import play.api.Play;
 import play.data.Form;
-import play.mvc.Controller;
-import play.mvc.Http;
-import play.mvc.Result;
-import play.mvc.Security;
+import play.mvc.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,6 +73,7 @@ import static com.avaje.ebean.Expr.eq;
 import static controllers.PartnerController.checkCandidateExistence;
 import static play.libs.Json.toJson;
 
+@With(ForceHttps.class)
 public class Application extends Controller {
 
     private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());

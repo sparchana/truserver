@@ -25,6 +25,7 @@ import controllers.businessLogic.PartnerAuthService;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import controllers.businessLogic.Recruiter.RecruiterLeadStatusService;
+import controllers.security.ForceHttps;
 import controllers.security.RecruiterSecured;
 import controllers.businessLogic.RecruiterService;
 import controllers.security.FlashSessionController;
@@ -50,6 +51,7 @@ import play.Logger;
 import play.api.Play;
 import play.mvc.Result;
 import play.mvc.Security;
+import play.mvc.With;
 
 import java.io.IOException;
 import java.util.*;
@@ -70,6 +72,7 @@ import static play.mvc.Results.redirect;
 /**
  * Created by dodo on 4/10/16.
  */
+@With(ForceHttps.class)
 public class RecruiterController {
     private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
 
