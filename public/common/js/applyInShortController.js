@@ -200,6 +200,7 @@ var applyInShort = (function ($) {
 
             },
             jobBasicDetails:function () {
+                console.log("Returned : "+ JSON.stringify(appz.missingData));
                 var parentSalary = $("#jobSalaryIncentives");
                 var parentTime = $("#jobTime");
 
@@ -217,8 +218,6 @@ var applyInShort = (function ($) {
                 }
                 if(appz.missingData.jobPost.jobPostIncentives != null){
                     jobSalaryString += " ("+appz.missingData.jobPost.jobPostIncentives+" )";
-                }else{
-                    jobSalaryString += " (Incentives not specified)";
                 }
                 salaryText.textContent = jobSalaryString;
                 parentSalary.append(salaryText);
@@ -242,10 +241,7 @@ var applyInShort = (function ($) {
                     else {
                         valEnd = "AM";
                     }
-                    jobTimeString += "("+appz.missingData.jobPost.jobPostStartTime + " " + valStart + " - " + appz.missingData.jobPost.jobPostEndTime + " " + valEnd+")";
-                }
-                else{
-                    jobTimeString += "Timing Not Specified";
+                    jobTimeString += ", "+appz.missingData.jobPost.jobPostStartTime + " " + valStart + " - " + appz.missingData.jobPost.jobPostEndTime + " " + valEnd;
                 }
                 if (appz.missingData.jobPost.jobPostWorkingDays != "" && appz.missingData.jobPost.jobPostWorkingDays != null) {
                     if(appz.missingData.jobPost.jobPostWorkingDays == 127){
@@ -288,12 +284,17 @@ var applyInShort = (function ($) {
                         if (arryDay[6] != 1) {
                             holiday += "Sun ";
                         }
-                        jobTimeString += "("+ holiday + " - Off)";
+                        jobTimeString += " ("+ holiday + " - Off)";
                     }
                 }
                 var salaryTime = document.createElement("font");
                 salaryTime.textContent = appz.missingData.jobPost.jobPostShift.timeShiftName+" "+ jobTimeString;
                 parentTime.append(salaryTime);
+                if(appz.missingData.jobPostDescription != null){
+                    $("#jobDescription").html(appz.missingData.jobPostDescription);
+                } else{
+                    $("#jobDescriptionContainer").remove();
+                }
 
             },
             jobLocalityCard: function (localityResponse) {
@@ -303,7 +304,13 @@ var applyInShort = (function ($) {
 
                 appz.jobTitle = localityResponse.jobTitle +" ";
                 appz.companyName = localityResponse.companyName;
-
+                if(appz.missingData.gender == 0){
+                    $('#genderDetail').html("Male Only");
+                }else if(appz.missingData.gender == 1){
+                    $('#genderDetail').html("Female Only");
+                }else{
+                    $('#genderDetail').hide();
+                }
                 $('#locality_jobNameConfirmation').html(appz.jobTitle);
                 $('#locality_companyNameConfirmation').html(appz.companyName);
 
