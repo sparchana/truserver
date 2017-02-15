@@ -200,7 +200,6 @@ var applyInShort = (function ($) {
 
             },
             jobBasicDetails:function () {
-                console.log("Returned : "+ JSON.stringify(appz.missingData));
                 var parentSalary = $("#jobSalaryIncentives");
                 var parentTime = $("#jobTime");
 
@@ -216,8 +215,8 @@ var applyInShort = (function ($) {
                         jobSalaryString += " ₹ "+rupeeFormatSalary(appz.missingData.jobPost.jobPostMinSalary) +" -  ₹ " + rupeeFormatSalary(appz.missingData.jobPost.jobPostMaxSalary)+ " monthly";
                     }
                 }
-                if(appz.missingData.jobPost.jobPostIncentives != null){
-                    jobSalaryString += " ("+appz.missingData.jobPost.jobPostIncentives+" )";
+                if(appz.missingData.jobPost.jobPostIncentives != null && appz.missingData.jobPost.jobPostIncentives != ""){
+                    jobSalaryString += " ("+appz.missingData.jobPost.jobPostIncentives+")";
                 }
                 salaryText.textContent = jobSalaryString;
                 parentSalary.append(salaryText);
@@ -288,10 +287,31 @@ var applyInShort = (function ($) {
                     }
                 }
                 var salaryTime = document.createElement("font");
-                salaryTime.textContent = appz.missingData.jobPost.jobPostShift.timeShiftName+" "+ jobTimeString;
+                salaryTime.textContent = appz.missingData.jobPost.jobPostShift.timeShiftName+ jobTimeString;
                 parentTime.append(salaryTime);
-                if(appz.missingData.jobPostDescription != null){
-                    $("#jobDescription").html(appz.missingData.jobPostDescription);
+                if(appz.missingData.jobPost.jobPostDescription != null){
+                    if(appz.missingData.jobPost.jobPostDescription.length >65){
+                        var description = appz.missingData.jobPost.jobPostDescription;
+
+                        description = description.substr(0,65);
+
+                        description = description.substr(0,Math.min(description.length,description.lastIndexOf(" ")));
+
+                        $("#jobDescription").html(description +'<a id="more">..more</a>');
+                        $("#jobDescriptionFull").html(appz.missingData.jobPost.jobPostDescription +'<a id="less">..less</a>');
+                        $("#jobDescriptionFull").css("display","none");
+
+                        $("#more").on('click',function () {
+                            $("#jobDescription").hide();
+                            $("#jobDescriptionFull").show();
+                        });
+                        $("#less").on('click',function () {
+                            $("#jobDescriptionFull").hide();
+                            $("#jobDescription").show();
+                        });
+                    } else{
+                        $("#jobDescription").html(appz.missingData.jobPost.jobPostDescription);
+                    }
                 } else{
                     $("#jobDescriptionContainer").remove();
                 }
@@ -304,10 +324,10 @@ var applyInShort = (function ($) {
 
                 appz.jobTitle = localityResponse.jobTitle +" ";
                 appz.companyName = localityResponse.companyName;
-                if(appz.missingData.gender == 0){
-                    $('#genderDetail').html("Male Only");
-                }else if(appz.missingData.gender == 1){
-                    $('#genderDetail').html("Female Only");
+                if(appz.missingData.jobPost.gender == 0){
+                    $('#genderDetail').html("(Male Only)");
+                }else if(appz.missingData.jobPost.gender == 1){
+                    $('#genderDetail').html("(Female Only)");
                 }else{
                     $('#genderDetail').hide();
                 }
