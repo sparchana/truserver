@@ -651,7 +651,7 @@ public class RecruiterController {
     }
 
     public static void sanitizeJobPostData(JobPost jobPost){
-        jobPost.setJobPostDescription(null);
+        /*jobPost.setJobPostDescription(null);*/
         jobPost.setJobPostAddress(null);
         jobPost.setPricingPlanType(null);
         jobPost.setJobRole(null);
