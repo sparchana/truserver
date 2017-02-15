@@ -395,6 +395,10 @@ GET         /t/:shortUrl                                                  contro
 GET         /support/administrator/uploadCandidates                         controllers.Application.uploadCandidates()
 POST        /support/administrator/processCandidates                        controllers.Application.processCandidates()
 
+# Job Post Excel Upload
+# ~~~~~~~~~
+POST        /recruiter/processJobCSV                                        controllers.RecruiterController.processJobCSV()
+
 # Candidate Call-To-Apply Route
 # ~~~~~~~~~
 POST        /quickApply/                                                    controllers.Application.doQuickApply()

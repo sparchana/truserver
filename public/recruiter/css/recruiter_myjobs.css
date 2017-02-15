@@ -188,6 +188,15 @@
     background-color: rgb(85, 179, 208);
     border-color: rgb(85, 179, 208);
 }
+#loadingSpinnerResume{
+    box-sizing: border-box;
+    stroke: #fff;
+    stroke-width: 3px;
+    -webkit-transform-origin: 50%;
+    transform-origin: 50%;
+    -webkit-animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+    animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+}
 
 .viewCandidateModal{
     background: none;
@@ -196,6 +205,21 @@
     height: 40%;
     top: 0;
 }
+
+.table>thead:first-child>tr:first-child>th{
+    background: #656565; !important;
+    color: white;
+}
+
+.textResponse,#uploadCsvModalContent,#uploadCsvModalProcessContent{
+    padding:2%;
+    margin-top:10%;
+    background: white;
+    color: #249249;
+    text-align: center;
+    border-radius: 2px;
+}
+
 
 @media screen and (max-width:1000px){
     .viewCandidateModal{
