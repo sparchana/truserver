@@ -370,10 +370,6 @@ var applyInShort = (function ($) {
 
                 if(slotMap != null) {
                     /* add select interview slot hint if slot is more the one  */
-                    if(Object.keys(slotMap).length > 1){
-                        var option = $('<option value=0></option>').text("Select Interview slot");
-                        $('#interViewSlot').append(option);
-                    }
                     for (var value in slotMap) {
                         var date = slotMap[value].interviewDateMillis;
                         var id = date +"_"+slotMap[value].interviewTimeSlot.slotId;
