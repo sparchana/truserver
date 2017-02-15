@@ -73,6 +73,11 @@ function closeErrorReportModal() {
     $("#csvErrorModal").closeModal();
     var table = $("table#postedJobTable").DataTable();
     table.destroy();
+
+    $("#postedJobTable_wrapper").hide();
+    $("#postedJobTable").hide();
+
+    //fetch all the jobs
     getRecruiterJobPost();
 //    location.reload();
 }

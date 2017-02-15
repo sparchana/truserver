@@ -134,7 +134,12 @@ function getRecruiterJobPost() {
                             });
                             $("#noJobs").hide();
                             $(".postedJobTableDiv").show();
+                            $("#postedJobTable_wrapper").show();
+                            $("#postedJobTable").show();
+
                         } else{
+                            $("#postedJobTable_wrapper").hide();
+                            $("#postedJobTable").hide();
                             $("#noJobs").show();
                         }
                         return returned_data
@@ -158,7 +163,17 @@ function getRecruiterJobPost() {
             "destroy": true,
             "dom":'Bfrtip',
             "buttons": [
-                'copy','csv','excel'
+                'copy','csv','excel',
+                {
+                    text: '<img src="/assets/recruiter/img/icons/refresh.svg" width="12px"> Refresh',
+                    action: function ( e, dt, node, config ) {
+                        var table = $("table#postedJobTable").DataTable();
+                        table.destroy();
+                        $("#postedJobTable_wrapper").hide();
+                        $("#postedJobTable").hide();
+                        getRecruiterJobPost();
+                    }
+                }
             ]
         });
     } catch (exception){
