@@ -1,13 +1,13 @@
 .back-banner-recruiter{
     height: 150px;
     background: #348F50; /* fallback for old browsers */
-    background: url('../img/bg_rects.svg'), linear-gradient(to left, #348F50 , #56B4D3);
+    background: url('../img/pattern.svg'), linear-gradient(to left, #348F50 , #56B4D3);
 }
 .back-banner-recruiter-applied-candidate{
     height: 150px;
     margin-top: -72px;
     background: #348F50; /* fallback for old browsers */
-    background: url('../img/bg_rects.svg'), linear-gradient(to left, #348F50 , #56B4D3);
+    background: url('../img/pattern.svg'), linear-gradient(to left, #348F50 , #56B4D3);
 }
 #outerBoxMain{
     font-size: 14px;

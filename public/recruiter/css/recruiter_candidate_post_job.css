@@ -70,7 +70,7 @@ body{
     margin-top: -5%;
     height: 200px;
     background: #348F50; /* fallback for old browsers */
-    background: url('../img/bg_rects.svg'), linear-gradient(to left, #348F50 , #56B4D3);
+    background: url('../img/pattern.svg'), linear-gradient(to left, #348F50 , #56B4D3);
 }
 .tabs{
     border:4px;

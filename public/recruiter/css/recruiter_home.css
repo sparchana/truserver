@@ -423,7 +423,7 @@ body#recruiterHome{
 .back-banner{
     height: 380px;
     background: #348F50; /* fallback for old browsers */
-    background: url('../img/bg_rects.svg'), linear-gradient(to left, #348F50 , #56B4D3);
+    background: url('../img/pattern.svg'), linear-gradient(to left, #348F50 , #56B4D3);
 }
 input[type=text]:disabled{
     color: rgb(169, 169, 169);
