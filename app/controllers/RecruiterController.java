@@ -1287,6 +1287,9 @@ public class RecruiterController {
                         data.setAppliedOn(application.getJobApplicationCreateTimeStamp());
 
                         if(application.getPartner() != null){
+                            // TODO check partner access level first, ==1 then normal , if ==2 then employee
+                            // set server constant as channel_EMPLOYEE
+                            // FE recruiter_job_post_track.js
                             data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_PARTNER);
                             data.setPartner(application.getPartner());
                         } else{
