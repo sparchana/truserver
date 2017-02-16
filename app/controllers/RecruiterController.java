@@ -555,6 +555,7 @@ public class RecruiterController {
 
                         // finding all the jobs in which the recruiter \has been associated by other recruiters
                         List<Integer> jpwfStatusList = new ArrayList<>();
+                        jpwfStatusList.add(ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED);
                         jpwfStatusList.add(ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE);
                         jpwfStatusList.add(ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED);
                         jpwfStatusList.add(ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING);

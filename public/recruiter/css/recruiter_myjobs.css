@@ -197,6 +197,16 @@
     top: 0;
 }
 
+.interview-slot-selector-modal{
+    background: transparent; !important;
+    box-shadow: none;
+}
+
+.table>thead:first-child>tr:first-child>th{
+    background: #656565; !important;
+    color: white;
+}
+
 @media screen and (max-width:1000px){
     .viewCandidateModal{
         width: 90%;
