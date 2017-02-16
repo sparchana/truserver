@@ -3,6 +3,7 @@
  */
 
 var jobPostObj;
+var viewType;
 
 $(document).scroll(function(){
     if ($(this).scrollTop() > 30) {
@@ -14,95 +15,126 @@ $(document).scroll(function(){
 });
 
 $(document).ready(function(){
+    viewType = 2;
+
+    getRecruiterJobPosts();
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/checkPrivateRecruiterPartnerAccount",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckpartnerAccount
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+    $('input[type=radio][name=viewTypeGroup]').on('change', function() {
+        viewType = $(this).val();
+        var table = $("table#postedJobTable").DataTable();
+        table.destroy();
+        $("#postedJobTable_wrapper").hide();
+        $("#postedJobTable").hide();
+        getRecruiterJobPosts();
+    });
+});
+
+function getRecruiterJobPosts() {
     $("#loadingIcon").show();
     try{
         var table = $("table#postedJobTable").DataTable({
             "ajax": {
-               "type":"POST",
-                "url":"/getAllRecruiterJobPosts",
+                "type":"POST",
+                "url":"/getAllRecruiterJobPosts/?view=" + viewType,
                 "dataSrc": function (returnedData) {
-                        $("#loadingIcon").hide();
-                        if(returnedData == "0"){
-                            console.log("Data not receive");
-                            logoutRecruiter();
-                        } else{
-                            var postedJobList = returnedData;
-                            var returned_data  = new Array();
-                            if(postedJobList.length > 0){
-                                postedJobList.forEach(function (jobPost) {
-                                    returned_data.push({
-                                        'datePosted': function() {
-                                            var postedOn = new Date(jobPost.jobPost.jobPostCreateTimestamp);
-                                            var dateValue = ('0' + postedOn.getDate()).slice(-2) + '-' + getMonthVal((postedOn.getMonth() + 1)) + '-' + postedOn.getFullYear()
-                                            return '<div class="mLabel" style="width:100%" >' + dateValue + '</div>'
-                                        },
-                                        'jobTitle':'<div class="mLabel" style="width:100%">'+jobPost.jobPost.jobPostTitle+' </div>',
-                                        'recruiterName':function () {
-                                            if(jobPost.jobPost.recruiterProfile !=null){
-                                                return '<div class="mLabel" style="width:100%">'+ jobPost.jobPost.recruiterProfile.recruiterProfileName +' </div>'
-                                            }else{
-                                                return '<div class="mLabel" style="width:100%"> Recruiter </div>'
-                                            }
-                                        },
-                                        'location': function () {
-                                            var localities = "";
-                                            var locationList = jobPost.jobPost.jobPostToLocalityList;
+                    $("#loadingIcon").hide();
+                    if(returnedData == "0"){
+                        console.log("Data not receive");
+                        logoutRecruiter();
+                    } else{
+                        var postedJobList = returnedData;
+                        var returned_data  = new Array();
+                        if(postedJobList.length > 0){
+                            postedJobList.forEach(function (jobPost) {
+                                returned_data.push({
+                                    'datePosted': function() {
+                                        var postedOn = new Date(jobPost.jobPost.jobPostCreateTimestamp);
+                                        var dateValue = ('0' + postedOn.getDate()).slice(-2) + '-' + getMonthVal((postedOn.getMonth() + 1)) + '-' + postedOn.getFullYear()
+                                        return '<div class="mLabel" style="width:100%" >' + dateValue + '</div>'
+                                    },
+                                    'jobTitle':'<div class="mLabel" style="width:100%">'+jobPost.jobPost.jobPostTitle+' </div>',
+                                    'recruiterName':function () {
+                                        if(jobPost.jobPost.recruiterProfile !=null){
+                                            return '<div class="mLabel" style="width:100%">'+ jobPost.jobPost.recruiterProfile.recruiterProfileName +' </div>'
+                                        }else{
+                                            return '<div class="mLabel" style="width:100%"> Recruiter </div>'
+                                        }
+                                    },
+                                    'location': function () {
+                                        var localities = "";
+                                        var locationList = jobPost.jobPost.jobPostToLocalityList;
 
-                                            locationList.forEach(function (locality) {
-                                                localities += locality.locality.localityName + ", ";
-                                            });
+                                        locationList.forEach(function (locality) {
+                                            localities += locality.locality.localityName + ", ";
+                                        });
 
-                                            return '<div class="mLabel" style="width:100%">'+localities.substring(0, localities.length - 2)+'</div>';
-                                        },
-                                        'salary': function () {
+                                        return '<div class="mLabel" style="width:100%">'+localities.substring(0, localities.length - 2)+'</div>';
+                                    },
+                                    'salary': function () {
 
-                                            if(jobPost.jobPost.jobPostMaxSalary == 0 || jobPost.jobPost.jobPostMaxSalary == null){
+                                        if(jobPost.jobPost.jobPostMaxSalary == 0 || jobPost.jobPost.jobPostMaxSalary == null){
 
-                                                return '<div class="mLabel" style="width:100%"> ₹ '+ rupeeFormatSalary(jobPost.jobPost.jobPostMinSalary)+'</div>'
+                                            return '<div class="mLabel" style="width:100%"> ₹ '+ rupeeFormatSalary(jobPost.jobPost.jobPostMinSalary)+'</div>'
                                                 ;
-                                            } else{
-                                                return '<div class="mLabel" style="width:100%"> ₹ '+ rupeeFormatSalary(jobPost.jobPost.jobPostMinSalary) + ' - ₹ ' + rupeeFormatSalary(jobPost.jobPost.jobPostMaxSalary)+'</div>';
-                                            }
-                                        },
-                                        'track': function () {
-                                            if (jobPost.pendingCount > 0 && jobPost.upcomingCount > 0) {
+                                        } else{
+                                            return '<div class="mLabel" style="width:100%"> ₹ '+ rupeeFormatSalary(jobPost.jobPost.jobPostMinSalary) + ' - ₹ ' + rupeeFormatSalary(jobPost.jobPost.jobPostMaxSalary)+'</div>';
+                                        }
+                                    },
+                                    'track': function () {
+                                        if (jobPost.pendingCount > 0 && jobPost.upcomingCount > 0) {
+
+                                            return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>'+
+                                                '<div style="width:100%;font-size:11px">' + jobPost.upcomingCount + ' Upcoming</div>'+
+                                                '<div style="width:100%;font-size:11px">' + jobPost.pendingCount + ' Action Required</div>';
+
+                                        } else {
+                                            if(jobPost.upcomingCount > 0 && jobPost.pendingCount == 0 ){
 
                                                 return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>'+
-                                                    '<div style="width:100%;font-size:11px">' + jobPost.upcomingCount + ' Upcoming</div>'+
+                                                    '<div style="width:100%;font-size:11px">' + jobPost.upcomingCount + ' Upcoming</div>';
+
+                                            } else if(jobPost.upcomingCount == 0 && jobPost.pendingCount > 0 ){
+
+                                                return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>'+
                                                     '<div style="width:100%;font-size:11px">' + jobPost.pendingCount + ' Action Required</div>';
 
-                                            } else {
-                                                if(jobPost.upcomingCount > 0 && jobPost.pendingCount == 0 ){
-
-                                                    return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>'+
-                                                        '<div style="width:100%;font-size:11px">' + jobPost.upcomingCount + ' Upcoming</div>';
-
-                                                } else if(jobPost.upcomingCount == 0 && jobPost.pendingCount > 0 ){
-
-                                                    return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>'+
-                                                        '<div style="width:100%;font-size:11px">' + jobPost.pendingCount + ' Action Required</div>';
-
-                                                } else{
-                                                    return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>';
-                                                }
+                                            } else{
+                                                return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>';
                                             }
-                                        },
-                                        'status': function () {
-                                             jobPostApplicationStatus(jobPost);
-                                            return '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>'
-                                            },
-                                        'editJob':'<button type="button" class="mBtn" style="width: 94%" onclick="openJobPost(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Edit</button>',
-                                        'candidates':'<button type="button" class="mBtn" style="width: 94%" onclick="openCandidateView('+jobPost.jobPost.jobPostId+')" id="viewCandidateBtn" >Find</button>'
-                                    })
-                                });
-                                $(".postedJobTableDiv").show();
-                            }else{
-                                $("#noJobs").show();
-                            }
-                            return returned_data
+                                        }
+                                    },
+                                    'status': function () {
+                                        jobPostApplicationStatus(jobPost);
+                                        return '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>'
+                                    },
+                                    'editJob':'<button type="button" class="mBtn" style="width: 94%" onclick="openJobPost(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Edit</button>',
+                                    'candidates':'<button type="button" class="mBtn" style="width: 94%" onclick="openCandidateView('+jobPost.jobPost.jobPostId+')" id="viewCandidateBtn" >Find</button>'
+                                })
+                            });
+                            $("#noJobs").hide();
+                            $(".postedJobTableDiv").show();
+                            $("#postedJobTable").show();
+                        } else{
+                            $("#noJobs").show();
+                            $("#postedJobTable").hide();
+                            $("#postedJobTable").hide();
                         }
+                        return returned_data
                     }
-                },
+                }
+            },
             "deferRender":true,
             "columns": [
                 { "data": "datePosted" },
@@ -126,20 +158,7 @@ $(document).ready(function(){
     } catch (exception){
         console.log("exception occured !!" + exception);
     }
-
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/checkPrivateRecruiterPartnerAccount",
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataCheckpartnerAccount
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-});
+}
 
 function processDataCheckpartnerAccount(returnedData) {
     if(returnedData == 1){

@@ -4,6 +4,7 @@
 
 var jpId = 0;
 var jpCompanyId;
+var sessionRecruiterId;
 var jpRecruiterId;
 var recruiterObj;
 
@@ -314,6 +315,7 @@ function processDataRecruiterSession(returnedData) {
     } else{
         recruiterObj = returnedData;
         jpRecruiterId = returnedData.recruiterProfileId;
+        sessionRecruiterId = returnedData.recruiterProfileId;
         jpCompanyId = returnedData.company.companyId;
     }
 }
@@ -518,6 +520,7 @@ $(document).ready(function () {
 
 function copyJob() {
     jpId = null;
+    jpRecruiterId = sessionRecruiterId;
     saveJob();
 }
 

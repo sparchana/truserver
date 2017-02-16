@@ -106,7 +106,7 @@ $(document).ready(function(){
     try {
         $.ajax({
             type: "POST",
-            url: "/getAllRecruiterJobPosts",
+            url: "/getAllRecruiterJobPosts/?view=2",
             data: false,
             async: false,
             contentType: false,

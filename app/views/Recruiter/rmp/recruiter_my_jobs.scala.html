@@ -46,10 +46,16 @@
         <div class="recruiter_navbar"></div>
         <script>
             $('.recruiter_navbar').load('/recruiterNavbar');
-    </script>
+        </script>
 
         <div class="back-banner-recruiter" style="height: 90px"></div>
-        <h5 style="margin: 8px 8px 8px 16px">Posted Jobs</h5>
+        <h5 style="margin: 8px 8px 8px 16px; display: inline-block">Posted Jobs</h5>
+        <label>View:</label>
+        <input name="viewTypeGroup" value="2" type="radio" id="my" checked/>
+        <label for="my">My Jobs</label>
+
+        <input name="viewTypeGroup" value="1" type="radio" id="all" />
+        <label for="all" style="margin-left: 12px">All Jobs</label>
 
         <div style="padding-top: 8%; padding-bottom: 8%" id="loadingIcon">
             <center>
@@ -75,7 +81,7 @@
                     <tr>
                         <th style="font-size: 14px">Posted On</th>
                         <th style="font-size: 14px">Job Title</th>
-                        <th style="font-size: 14px">Recruiter</th>
+                        <th style="font-size: 14px">Created By</th>
                         <th style="font-size: 14px">Location(s)</th>
                         <th style="font-size: 14px">Salary</th>
                         <th style="font-size: 14px">Track</th>

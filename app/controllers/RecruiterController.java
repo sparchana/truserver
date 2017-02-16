@@ -5,17 +5,20 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpRequest.LoginRequest;
-import api.http.httpRequest.Recruiter.AddCreditRequest;
-import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
-import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.Recruiter.*;
 import api.http.httpRequest.ResetPasswordResquest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Recruiter.MultipleCandidateContactUnlockResponse;
 import api.http.httpResponse.Recruiter.RMP.ApplicationResponse;
+import api.http.httpResponse.Recruiter.RMP.NextRoundComponents;
 import api.http.httpResponse.Recruiter.RMP.SmsReportResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
+import api.http.httpResponse.Workflow.InterviewSlotPopulateResponse;
+import api.http.httpResponse.interview.InterviewResponse;
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.RawSql;
+import com.avaje.ebean.RawSqlBuilder;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,16 +61,11 @@ import java.util.*;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static api.ServerConstants.*;
-import static api.ServerConstants.SMS_STATUS_DND;
-import static api.ServerConstants.SMS_STATUS_PENDING;
-import static controllers.businessLogic.Recruiter.RecruiterAuthService.addSession;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterSearchCandidate;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.request;
 import static play.mvc.Controller.session;
-import static play.mvc.Results.badRequest;
-import static play.mvc.Results.ok;
-import static play.mvc.Results.redirect;
+import static play.mvc.Results.*;
 
 /**
  * Created by dodo on 4/10/16.
@@ -530,136 +528,212 @@ public class RecruiterController {
     }
 
     @Security.Authenticated(RecruiterSecured.class)
-    public static Result getAllRecruiterJobPosts() {
+    public static Result getAllRecruiterJobPosts(Integer viewType) {
         if(session().get("recruiterId") != null){
 
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
-            Map<?, JobPost> recruiterJobPostMap;
-            if(recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
-                recruiterJobPostMap = JobPost.find.where()
-                        .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_PRIVATE)
-                        .eq("CompanyId", recruiterProfile.getCompany().getCompanyId())
-                        .setMapKey("jobPostId")
-                        .findMap();
-            } else{
-                recruiterJobPostMap = JobPost.find.where()
-                        .eq("JobRecruiterId", recruiterProfile.getRecruiterProfileId())
-                        .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_OPEN)
-                        .setMapKey("jobPostId")
-                        .findMap();
-            }
+            if(recruiterProfile != null){
+                Map<Long, JobPost> recJobPostMap = new HashMap<>();
+                Map<?, JobPost> recruiterJobPostMap;
+                Map<Long, JobPost> otherJobPostMap = new HashMap<>();
 
-            String jpIdList = "";
+                if(recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
+                    recruiterJobPostMap = JobPost.find.where()
+                            .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_PRIVATE)
+                            .eq("CompanyId", recruiterProfile.getCompany().getCompanyId())
+                            .setMapKey("jobPostId")
+                            .findMap();
 
-            for(Map.Entry<?, JobPost> entity: recruiterJobPostMap.entrySet()) {
-                JobPost jobPost = entity.getValue();
+                    //get recruiter's owned jobs
+                    if(viewType != null && Objects.equals(viewType, ServerConstants.VIEW_TYPE_MY_JOBS)){
+                        // finding all the jobs created by this recruiter
+                        recruiterJobPostMap = JobPost.find.where()
+                                .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_PRIVATE)
+                                .eq("JobRecruiterId", recruiterProfile.getRecruiterProfileId())
+                                .setMapKey("jobPostId")
+                                .findMap();
 
-                //checking recruiter and job post company
-                if(Objects.equals(jobPost.getCompany().getCompanyId(), recruiterProfile.getCompany().getCompanyId())){
-                    jpIdList += "'" + jobPost.getJobPostId() + "', ";
-                }
-            }
+                        // finding all the jobs in which the recruiter \has been associated by other recruiters
+                        List<Integer> jpwfStatusList = new ArrayList<>();
+                        jpwfStatusList.add(ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE);
+                        jpwfStatusList.add(ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED);
+                        jpwfStatusList.add(ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING);
+                        jpwfStatusList.add(ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED);
+                        jpwfStatusList.add(ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_ON_THE_WAY);
+                        jpwfStatusList.add(ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED);
+                        jpwfStatusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED);
+                        jpwfStatusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_REJECTED);
+                        jpwfStatusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NO_SHOW);
+                        jpwfStatusList.add(ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED);
 
-            List<JobPostWorkflow> jobPostWorkflowList = new ArrayList<>();
-
-            if(Objects.equals(jpIdList, "")){
-                return ok(toJson(jobPostWorkflowList));
-            }
-            // if candidate who have applied to the jobpost, only those jobpostworkflow obj will be returned
-            jobPostWorkflowList = JobPostWorkFlowDAO.getJobApplications(jpIdList.substring(0, jpIdList.length()-2));
-
-            Map<Long, RecruiterJobPostObject> recruiterJobPostResponseMap = new LinkedHashMap<>();
-            for(JobPostWorkflow jpwf : jobPostWorkflowList){
-                RecruiterJobPostObject singleObject = recruiterJobPostResponseMap.get(jpwf.getJobPost().getJobPostId());
-
-                if(singleObject == null ){
-                    singleObject = new RecruiterJobPostObject();
-                    recruiterJobPostResponseMap.put(jpwf.getJobPost().getJobPostId(), singleObject);
-                    singleObject.setJobPost(jpwf.getJobPost());
-                }
-
-                // jpwf of one candidate
-                Map<Long, JobPostWorkflow> response = singleObject.getJobPostWorkflowMap();
-                if(response == null){
-                    response = new HashMap<>();
-                }
-                if(response.get(jpwf.getCandidate().getCandidateId()) == null){
-                    response.put(jpwf.getCandidate().getCandidateId(), jpwf);
-
-                    //here we are enhancing the 'new application' interview count. We have two variables now.
-                    // pendingCount: contains all the application whose status is 'Scheduled'
-                    // upcoming count: contains all the application whose status is confirmed and feedback is not set
-
-                    Date today = new Date();
-                    Calendar now = Calendar.getInstance();
-                    Calendar cal = Calendar.getInstance();
-
-                    //checking all the pendingConfirmation applications
-                    if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
-                        singleObject.setPendingCount(singleObject.getPendingCount() + 1);
-                    } else if(jpwf.getStatus().getStatusId() >= ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED
-                            && jpwf.getStatus().getStatusId() < ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
-
-                        //checking all the todays and upcoming interview applications
-
-
-                        Date interviewDate = jpwf.getScheduledInterviewDate();
-                        cal.setTime(interviewDate);
-
-                        //today's interviews
-                        if(now.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && (now.get(Calendar.MONTH) + 1) == (cal.get(Calendar.MONTH) + 1)
-                                && now.get(Calendar.DATE) == cal.get(Calendar.DATE)){
-
-                            singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
-                        } else if(interviewDate.after(today)){
-                            //future interviews
-                            singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
+                        String statusList = "";
+                        for(Integer status : jpwfStatusList){
+                            statusList += "'" + status + "', ";
                         }
 
-                        //rest all the applications are past interviews, hence we are not counting
+                        List<JobPostWorkflow> otherApplicationList =
+                                JobPostWorkFlowDAO.getAssociatedRecruiterJobsApplications(statusList, Math.toIntExact(recruiterProfile.getRecruiterProfileId()));
+
+                        //removing duplicate data from list
+                        Set<JobPostWorkflow> jobSet = new HashSet<>();
+                        jobSet.addAll(otherApplicationList);
+                        otherApplicationList.clear();
+                        otherApplicationList.addAll(jobSet);
+
+                        for(JobPostWorkflow jobPostWorkflow : otherApplicationList){
+                            otherJobPostMap.put(jobPostWorkflow.getJobPost().getJobPostId(), jobPostWorkflow.getJobPost());
+                        }
                     }
 
-                    singleObject.setTotalCount(singleObject.getTotalCount()+1);
-                    singleObject.setJobPostWorkflowMap(response);
+                } else{
+                    recruiterJobPostMap = JobPost.find.where()
+                            .eq("JobRecruiterId", recruiterProfile.getRecruiterProfileId())
+                            .eq("job_post_access_level", ServerConstants.JOB_POST_TYPE_OPEN)
+                            .setMapKey("jobPostId")
+                            .findMap();
                 }
-            }
+
+                String jpIdList = "";
 
 
-            for(Map.Entry<?, JobPost> entity: recruiterJobPostMap.entrySet()) {
-                // jobpost to which no candidate has applied
-                RecruiterJobPostObject singleObject = recruiterJobPostResponseMap.get(entity.getKey());
-                if(singleObject == null) {
-                    singleObject = new RecruiterJobPostObject();
-                    singleObject.setJobPost(entity.getValue());
-                    singleObject.setTotalCount(0);
-                    singleObject.setPendingCount(0);
+                for(Map.Entry<?, JobPost> entity: recruiterJobPostMap.entrySet()) {
+                    JobPost jobPost = entity.getValue();
+                    recJobPostMap.put(jobPost.getJobPostId(), jobPost);
 
-                    recruiterJobPostResponseMap.put((Long) entity.getKey(), singleObject);
+                    //checking recruiter and job post company
+                    if(Objects.equals(jobPost.getCompany().getCompanyId(), recruiterProfile.getCompany().getCompanyId())){
+                        jpIdList += "'" + jobPost.getJobPostId() + "', ";
+                    }
                 }
-            }
 
-            List<RecruiterJobPostObject> listToBeReturned = new ArrayList<>();
+                //association other related jobs for this recruiter
+                if(recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
 
-            for(Map.Entry<?, RecruiterJobPostObject> map : recruiterJobPostResponseMap.entrySet()) {
-                RecruiterJobPostObject object = new RecruiterJobPostObject();
-                if(Objects.equals(map.getValue().getJobPost().getCompany().getCompanyId(), map.getValue().getJobPost().getRecruiterProfile().getCompany().getCompanyId())){
-                    sanitizeJobPostData(map.getValue().getJobPost());
-                    object.setJobPost(map.getValue().getJobPost());
-                    object.setTotalCount(map.getValue().getTotalCount());
-                    object.setPendingCount(map.getValue().getPendingCount());
-                    object.setUpcomingCount(map.getValue().getUpcomingCount());
+                    //get recruiter's owned jobs
+                    if(viewType != null &&
+                            Objects.equals(viewType, ServerConstants.VIEW_TYPE_MY_JOBS)
+                            && recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE)
+                    {
+                        for(Map.Entry<?, JobPost> entity: otherJobPostMap.entrySet()) {
+                            JobPost jobPost = entity.getValue();
+                            recJobPostMap.put(jobPost.getJobPostId(), jobPost);
 
-                    listToBeReturned.add(object);
+                            //checking recruiter and job post company
+                            if(Objects.equals(jobPost.getCompany().getCompanyId(), recruiterProfile.getCompany().getCompanyId())){
+                                jpIdList += "'" + jobPost.getJobPostId() + "', ";
+                            }
+                        }
+                    }
+
                 }
-            }
 
-            return ok(toJson(listToBeReturned));
+                List<JobPostWorkflow> jobPostWorkflowList = new ArrayList<>();
+
+                if(Objects.equals(jpIdList, "")){
+                    return ok(toJson(jobPostWorkflowList));
+                }
+
+                // if candidate who have applied to the jobpost, only those jobpostworkflow obj will be returned
+                jobPostWorkflowList = JobPostWorkFlowDAO.getJobApplications(jpIdList.substring(0, jpIdList.length()-2),
+                        Math.toIntExact(recruiterProfile.getRecruiterProfileId()));
+
+                Map<Long, RecruiterJobPostObject> recruiterJobPostResponseMap = new LinkedHashMap<>();
+                for(JobPostWorkflow jpwf : jobPostWorkflowList){
+                    RecruiterJobPostObject singleObject = recruiterJobPostResponseMap.get(jpwf.getJobPost().getJobPostId());
+
+                    if(singleObject == null ){
+                        singleObject = new RecruiterJobPostObject();
+                        recruiterJobPostResponseMap.put(jpwf.getJobPost().getJobPostId(), singleObject);
+                        singleObject.setJobPost(jpwf.getJobPost());
+                    }
+
+                    // jpwf of one candidate
+                    Map<Long, JobPostWorkflow> response = singleObject.getJobPostWorkflowMap();
+                    if(response == null){
+                        response = new HashMap<>();
+                    }
+                    if(response.get(jpwf.getCandidate().getCandidateId()) == null){
+                        response.put(jpwf.getCandidate().getCandidateId(), jpwf);
+
+                        //here we are enhancing the 'new application' interview count. We have two variables now.
+                        // pendingCount: contains all the application whose status is 'Scheduled'
+                        // upcoming count: contains all the application whose status is confirmed and feedback is not set
+
+                        Date today = new Date();
+                        Calendar now = Calendar.getInstance();
+                        Calendar cal = Calendar.getInstance();
+
+                        //checking all the pendingConfirmation applications
+                        if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED){
+                            singleObject.setPendingCount(singleObject.getPendingCount() + 1);
+                        } else if(jpwf.getStatus().getStatusId() >= ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED
+                                && jpwf.getStatus().getStatusId() < ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_COMPLETE_SELECTED){
+
+                            //checking all the todays and upcoming interview applications
+
+
+                            Date interviewDate = jpwf.getScheduledInterviewDate();
+                            cal.setTime(interviewDate);
+
+                            //today's interviews
+                            if(now.get(Calendar.YEAR) == cal.get(Calendar.YEAR) && (now.get(Calendar.MONTH) + 1) == (cal.get(Calendar.MONTH) + 1)
+                                    && now.get(Calendar.DATE) == cal.get(Calendar.DATE)){
+
+                                singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
+                            } else if(interviewDate.after(today)){
+                                //future interviews
+                                singleObject.setUpcomingCount(singleObject.getUpcomingCount() + 1);
+                            }
+
+                        } else if(jpwf.getStatus().getStatusId() == ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED
+                                && recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
+
+                            singleObject.setPendingCount(singleObject.getPendingCount() + 1);
+                        }
+                        //rest all the applications are past interviews, hence we are not counting
+
+                        singleObject.setTotalCount(singleObject.getTotalCount()+1);
+                        singleObject.setJobPostWorkflowMap(response);
+                    }
+                }
+
+
+                for(Map.Entry<?, JobPost> entity: recJobPostMap.entrySet()) {
+                    // jobpost to which no candidate has applied
+                    RecruiterJobPostObject singleObject = recruiterJobPostResponseMap.get(entity.getKey());
+                    if(singleObject == null) {
+                        singleObject = new RecruiterJobPostObject();
+                        singleObject.setJobPost(entity.getValue());
+                        singleObject.setTotalCount(0);
+                        singleObject.setPendingCount(0);
+
+                        recruiterJobPostResponseMap.put((Long) entity.getKey(), singleObject);
+                    }
+                }
+
+                List<RecruiterJobPostObject> listToBeReturned = new ArrayList<>();
+
+                for(Map.Entry<?, RecruiterJobPostObject> map : recruiterJobPostResponseMap.entrySet()) {
+                    RecruiterJobPostObject object = new RecruiterJobPostObject();
+                    if(Objects.equals(map.getValue().getJobPost().getCompany().getCompanyId(), map.getValue().getJobPost().getRecruiterProfile().getCompany().getCompanyId())){
+                        sanitizeJobPostData(map.getValue().getJobPost());
+                        object.setJobPost(map.getValue().getJobPost());
+                        object.setTotalCount(map.getValue().getTotalCount());
+                        object.setPendingCount(map.getValue().getPendingCount());
+                        object.setUpcomingCount(map.getValue().getUpcomingCount());
+
+                        listToBeReturned.add(object);
+                    }
+                }
+
+                return ok(toJson(listToBeReturned));
+            }
         }
         return ok("0");
     }
 
     public static void sanitizeJobPostData(JobPost jobPost){
-        jobPost.setJobPostDescription(null);
+        /*jobPost.setJobPostDescription(null);*/
         jobPost.setJobPostAddress(null);
         jobPost.setPricingPlanType(null);
         jobPost.setJobRole(null);
@@ -675,6 +749,58 @@ public class RecruiterController {
         jobPost.setRecruiterProfile(oldRec);
         jobPost.setJobPostLanguageRequirements(null);
         jobPost.setJobPostDocumentRequirements(null);
+    }
+
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result getNextRoundComponents(Long jobPostId) {
+        // get details from session
+        //
+        if(jobPostId == null) {
+            return badRequest();
+        }
+        int minAccessLevel = 0;
+        RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+
+        if(recruiterProfile.getRecruiterAccessLevel()>0){
+            minAccessLevel = 1;
+        }
+        NextRoundComponents nextRoundComponents = new NextRoundComponents();
+        List<NextRoundComponents.Recruiter> recruiterList = new ArrayList<>();
+        for(RecruiterProfile profile: RecruiterDAO.findListByCompanyId(recruiterProfile.getCompany().getCompanyId(), minAccessLevel)) {
+            NextRoundComponents.Recruiter recruiter = new NextRoundComponents.Recruiter();
+
+            recruiter.setRecruiterProfileId(profile.getRecruiterProfileId());
+            recruiter.setRecruiterProfileMobile(profile.getRecruiterProfileMobile());
+            recruiter.setRecruiterProfileName(profile.getRecruiterProfileName());
+
+            recruiterList.add(recruiter);
+        }
+        nextRoundComponents.setRecruiterList(recruiterList);
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
+        InterviewResponse interviewResponse = RecruiterService.isInterviewRequired(jobPost);
+
+        InterviewSlotPopulateResponse response =
+                new InterviewSlotPopulateResponse(
+                        JobService.getInterviewSlot(jobPost), interviewResponse, jobPost);
+
+        // removing jobpost object from response
+        response.setJobPost(null);
+        nextRoundComponents.setInterviewSlotPopulateResponse(response);
+
+        NextRoundComponents.Location location = new NextRoundComponents.Location();
+        location.setJobPostAddress(jobPost.getJobPostAddress());
+        location.setLatitude(jobPost.getLatitude());
+        location.setLongitude(jobPost.getLongitude());
+        location.setJobPostPinCode(jobPost.getJobPostPinCode());
+
+        nextRoundComponents.setLocation(location);
+        nextRoundComponents.setJobPostId(jobPostId);
+
+        return ok(toJson(nextRoundComponents));
+    }
+
+    public static Result getPreviousRounds(Long jpId, Long cId) {
+        return ok(toJson(JobPostWorkflowEngine.getPreviousRounds(jpId, cId)));
     }
 
 
@@ -1201,7 +1327,8 @@ public class RecruiterController {
             if(checkCompanyJob(jobPost)){
 
                 List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllJobApplicationWithinStatusId(jpId,
-                        ServerConstants.JWF_STATUS_SELECTED, ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE);
+                        ServerConstants.JWF_STATUS_SELECTED, ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE,
+                        Long.valueOf(session().get("recruiterId")));
 
                 for(JobPostWorkflow workflow : applicationList){
                     sanitizeCandidateData(workflow.getCandidate());
@@ -1265,7 +1392,8 @@ public class RecruiterController {
         if(jobPost != null){
             if(checkCompanyJob(jobPost)){
                 List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllConfirmedApplicationsJobPost(jpId,
-                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED, ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED);
+                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED, ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED,
+                        Long.valueOf(session().get("recruiterId")));
 
                 for(JobPostWorkflow workflow : applicationList){
                     sanitizeCandidateData(workflow.getCandidate());
