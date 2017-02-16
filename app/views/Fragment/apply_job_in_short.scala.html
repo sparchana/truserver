@@ -70,9 +70,9 @@
         <div class="container" style="margin-top: 30px;margin-bottom: 40px" id="card_container">
             <div class="row" style="margin: 10px 0;text-align: center">
                 <div class="col-xs-12 col-sm-8 col-sm-offset-2">
-                    <h4>Apply to <b><span style="display: inline-block" id="locality_jobNameConfirmation"></span>
+                    <font style="font-size:16px">Apply to <b><span style="display: inline-block" id="locality_jobNameConfirmation"></span>
                         </b><span style="display: inline-block" id="genderDetail"></span> job at <b><span style="display: inline-block" id="locality_companyNameConfirmation"></span></b>
-                    </h4>
+                    </font>
                 </div>
             </div>
             @* Job basic details*@
@@ -81,22 +81,23 @@
                     <div class="panel-group">
                         <div class="panel panel-default">
                             <div class="panel-heading data-toggle" id="jobBasicDetailsHead" data-target="#jobBasicDetailsPanel" data-toggle="collapse" style="background-color: #cfd8dc" href="#sortByOpener">
-                                <h4 class="panel-title" style="font-weight: bold">Job details
-                                    <span id="jobBasicDetailsPanelIcon" class="glyphicon glyphicon-chevron-up pull-right"></span>
+                                <h4 class="panel-title" style="font-weight: bold;">Job details
+                                    <span id="jobBasicDetailsPanelIcon" class="glyphicon glyphicon-chevron-down pull-right"></span>
                                 </h4>
                             </div>
                             <div class="panel-collapse collapse" id="jobBasicDetailsPanel">
                                 <div class="row" style="margin: 10px 0">
                                     <div class="col-xs-12">
-                                        <div id="jobSalaryIncentives" style="text-align: center;"></div>
+                                        <div id="jobSalaryIncentives"></div>
                                         <hr>
                                     </div>
                                     <div class="col-xs-12">
-                                        <div id="jobTime" style="text-align: center;"></div>
+                                        <div id="jobTime"></div>
                                     </div>
                                     <div class="col-xs-12" id="jobDescriptionContainer">
                                         <hr>
-                                        <div id="jobDescription" style="text-align: center;"></div>
+                                        <div id="jobDescription"></div>
+                                        <div id="jobDescriptionFull"></div>
                                     </div>
                                 </div>
                             </div>

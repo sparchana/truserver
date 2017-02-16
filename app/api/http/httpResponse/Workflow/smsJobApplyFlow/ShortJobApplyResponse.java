@@ -1,7 +1,6 @@
-package api.http.httpResponse.Workflow;
+package api.http.httpResponse.Workflow.smsJobApplyFlow;
 
-import api.http.httpResponse.Workflow.smsJobApplyFlow.LocalityPopulateResponse;
-import api.http.httpResponse.Workflow.smsJobApplyFlow.ShortPSPopulateResponse;
+import api.http.httpResponse.Workflow.InterviewSlotPopulateResponse;
 import com.fasterxml.jackson.annotation.JsonValue;
 import models.entity.JobPost;
 
