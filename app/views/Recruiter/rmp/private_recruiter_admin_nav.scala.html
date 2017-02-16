@@ -15,6 +15,7 @@ nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i {
                 <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
                 <ul class="right hide-on-med-and-down">
                     <li class="homeNav"><a href="/recruiter/home">Home</a></li>
+                    <li class="csvModalTrigger" onclick="openCsvModal()"><a href="#">Upload CSV</a></li>
                     <li class="report"><a href="/recruiter/report/">Report</a></li>
                     <li class="profileNav"><a href="/recruiter/profile">Profile</a></li>
                     <li class="jobNav"><a href="/recruiter/allRecruiterJobPosts">View Application(s)<div class="newNotification" id="pendingApproval" style="display: none"></div></a></li>
@@ -35,6 +36,28 @@ nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i {
             </ul>
         </div>
     </nav>
+</div>
+
+<div id="csvUploadModal" class="modal" style="background: transparent; box-shadow: none">
+    <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeCSVModal()"></div>
+    <div style="background: rgba(0, 0, 0, 0.75); padding: 2%">
+        <center><font style="color: #fff"><h5>Upload Employee CSV</h5></font></center>
+    </div>
+    <div style="background: #fff; padding: 12px">
+        <div class="row" style="margin:20px 0 0 0">
+            <center>
+                <img src="/assets/recruiter/img/csv.svg" style="width:80px">
+            </center>
+        </div>
+        <div id="uploadContainer" style="text-align: center;margin:20px 0"></div>
+        <div class="row">
+            <center>
+                <label class="btn btn-default btn-file" id="uploadCSVBtn">UPLOAD CSV
+                    <input type="file" accept=".csv" id="excelfile" style="display: none" onchange="UploadCSVFile(event)">
+                </label>
+            </center>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -60,7 +83,7 @@ nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i {
 
     $(document).ready(function () {
         $(".button-collapse").sideNav();
-        $(".dropdown-button").dropdown();
+        $(".dropdown-button").dropdown()
     });
 
     $(document).scroll(function(){
