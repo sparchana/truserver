@@ -3197,8 +3197,6 @@ public class JobPostWorkflowEngine {
                 channel
         );
 
-        Logger.info("Yes");
-
         return 1;
     }
     
