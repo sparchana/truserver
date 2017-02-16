@@ -6,6 +6,7 @@ import com.avaje.ebean.RawSql;
 import com.avaje.ebean.RawSqlBuilder;
 import models.entity.OM.JobPostWorkflow;
 import org.apache.commons.lang3.StringUtils;
+import play.Logger;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -72,11 +73,42 @@ public class JobPostWorkFlowDAO {
      * @param jobPostId, accepts a 'JobPostId'
      * @return List<JobPostWorkflow>, workflow equivalent of all the candidate who has applied to a Job Post with id: 'jobPostId'
      */
-    public static List<JobPostWorkflow> getJobApplications(String jobPostId) {
-        String statusSql = " and (status_id NOT IN ( '" + ServerConstants.JWF_STATUS_PRESCREEN_FAILED + "')) ";
+    public static List<JobPostWorkflow> getJobApplications(String jobPostId, Integer recId) {
+        String statusSql = " and (status_id NOT IN ( '" + ServerConstants.JWF_STATUS_PRESCREEN_FAILED + "', '" + ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_SELECTED_NEXT_ROUND + "')) ";
         String workFlowQueryBuilder = "select createdby, candidate_id, job_post_workflow_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
                 " where i.job_post_id " +
                 " in (" + jobPostId + ") " +
+                " and (interview_recruiter_id is null or interview_recruiter_id = '" + recId + "') " +
+                statusSql +
+                " and job_post_workflow_id = " +
+                " (select max(job_post_workflow_id) from job_post_workflow " +
+                "       where i.candidate_id = job_post_workflow.candidate_id " +
+                "       and i.job_post_id = job_post_workflow.job_post_id) " +
+                " order by job_post_workflow_id desc ";
+
+        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder)
+                .columnMapping("creation_timestamp", "creationTimestamp")
+                .columnMapping("job_post_id", "jobPost.jobPostId")
+                .columnMapping("status_id", "status.statusId")
+                .columnMapping("candidate_id", "candidate.candidateId")
+                .columnMapping("createdby", "createdBy")
+                .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
+                .create();
+
+        return Ebean.find(JobPostWorkflow.class)
+                .setRawSql(rawSql)
+                .findList();
+    }
+
+    /**
+     * @param statusList, accepts a 'JobPostId'
+     * @return List<JobPostWorkflow>, list of workflow objecs/application which are associated with the given recruiter
+     */
+    public static List<JobPostWorkflow> getAssociatedRecruiterJobsApplications(String statusList, Integer recId) {
+        String statusSql = " and (status_id IN ( " + statusList.substring(0, statusList.length() - 2) + ")) ";
+        String workFlowQueryBuilder = "select createdby, candidate_id, job_post_workflow_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
+                " where i.job_post_id " +
+                " and interview_recruiter_id = '" + recId + "'" +
                 statusSql +
                 " and job_post_workflow_id = " +
                 " (select max(job_post_workflow_id) from job_post_workflow " +
@@ -529,25 +561,32 @@ public class JobPostWorkFlowDAO {
      * @return List<JobPostWorkflow>, all the applications within a given status
      */
 
-    public static List<JobPostWorkflow> getAllJobApplicationWithinStatusId(Long jpId, int startStatus, int endStatus) {
-        String workFlowQueryBuilder = " select createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
+    public static List<JobPostWorkflow> getAllJobApplicationWithinStatusId(Long jpId, int startStatus, int endStatus, Long recruiterId) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(" select interview_recruiter_id, createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
                 " job_post_id, status_id from job_post_workflow i " +
                 " where i.job_post_id = " + jpId +
                 " and status_id >= " + startStatus +
-                " and status_id <= " + endStatus +
-                " and job_post_workflow_id = " +
+                " and status_id <= " + endStatus);
+        if(recruiterId != null && recruiterId> 0) {
+            builder.append(" and (interview_recruiter_id is null or interview_recruiter_id = " + recruiterId+")");
+        }
+        builder.append(  " and job_post_workflow_id = " +
                 " (select max(job_post_workflow_id) from job_post_workflow " +
-                        "       where i.candidate_id = job_post_workflow.candidate_id " +
-                        "       and i.job_post_id = job_post_workflow.job_post_id) " +
-                " order by job_post_workflow_id desc";
+                "       where i.candidate_id = job_post_workflow.candidate_id " +
+                "       and i.job_post_id = job_post_workflow.job_post_id) " +
+                " order by job_post_workflow_id desc");
 
-        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder)
+        String workFlowQueryStr = builder.toString();
+
+        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryStr)
                 .columnMapping("creation_timestamp", "creationTimestamp")
                 .columnMapping("job_post_id", "jobPost.jobPostId")
                 .columnMapping("status_id", "status.statusId")
                 .columnMapping("candidate_id", "candidate.candidateId")
                 .columnMapping("createdby", "createdBy")
                 .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
+                .columnMapping("interview_recruiter_id", "recruiterProfile.recruiterProfileId")
                 .create();
 
         return Ebean.find(JobPostWorkflow.class)
@@ -561,25 +600,32 @@ public class JobPostWorkFlowDAO {
      * @return List<JobPostWorkflow>, all the applications within a given status
      */
 
-    public static List<JobPostWorkflow> getAllConfirmedApplicationsJobPost(Long jpId, int startStatus, int endStatus) {
-        String workFlowQueryBuilder = " select createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
+    public static List<JobPostWorkflow> getAllConfirmedApplicationsJobPost(Long jpId, int startStatus, int endStatus, Long recruiterId) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(" select interview_recruiter_id, createdby, candidate_id, job_post_workflow_id, scheduled_interview_date, creation_timestamp," +
                 " job_post_id, status_id from job_post_workflow i " +
                 " where i.job_post_id = " + jpId +
                 " and status_id >= " + startStatus +
-                " and status_id <= " + endStatus +
-                " and job_post_workflow_id = " +
+                " and status_id <= " + endStatus);
+        if(recruiterId != null && recruiterId> 0) {
+            builder.append(" and (interview_recruiter_id is null or interview_recruiter_id = " + recruiterId+")");
+        }
+        builder.append( " and job_post_workflow_id = " +
                 " (select max(job_post_workflow_id) from job_post_workflow " +
-                        "       where i.candidate_id = job_post_workflow.candidate_id " +
-                        "       and i.job_post_id = job_post_workflow.job_post_id) " +
-                " order by scheduled_interview_date desc";
+                "       where i.candidate_id = job_post_workflow.candidate_id " +
+                "       and i.job_post_id = job_post_workflow.job_post_id) " +
+                " order by scheduled_interview_date desc");
 
-        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder)
+        String workFlowQueryStr = builder.toString();
+
+        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryStr)
                 .columnMapping("creation_timestamp", "creationTimestamp")
                 .columnMapping("job_post_id", "jobPost.jobPostId")
                 .columnMapping("status_id", "status.statusId")
                 .columnMapping("candidate_id", "candidate.candidateId")
                 .columnMapping("createdby", "createdBy")
                 .columnMapping("job_post_workflow_id", "jobPostWorkflowId")
+                .columnMapping("interview_recruiter_id", "recruiterProfile.recruiterProfileId")
                 .create();
 
         return Ebean.find(JobPostWorkflow.class)

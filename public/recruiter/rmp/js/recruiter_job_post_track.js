@@ -10,6 +10,7 @@ var globalInterviewSlot = null;
 var globalSchedule = null;
 var allTimeSlots = [];
 var allReason = [];
+var nextRound = false;
 
 var notSelectedReason = [];
 var selectedCandidateList = [];
@@ -351,7 +352,7 @@ function tabChange2() {
                                             var interviewDate = new Date(workflowObj.extraData.interviewDate);
 
                                             var interviewDateVal = validateDateFormat(interviewDate) +
-                                                " @ " + workflowObj.extraData.interviewSlot.interviewTimeSlotName;
+                                                " @ " + workflowObj.extraData.interviewSlot.interviewTimeSlotName+" (Round "+workflowObj.extraData.round+")";
                                             return '<div class="mLabel" style="width:100%" >' + interviewDateVal + '</div>';
                                         } else{
                                             return '-';
@@ -488,7 +489,7 @@ function tabChange3() {
                                             var interviewDate = new Date(workflowObj.extraData.interviewDate);
 
                                             var interviewDateVal = validateDateFormat(interviewDate) +
-                                                " @ " + workflowObj.extraData.interviewSlot.interviewTimeSlotName;
+                                                " @ " + workflowObj.extraData.interviewSlot.interviewTimeSlotName +" (Round "+workflowObj.extraData.round+")";
                                             return '<div class="mLabel" style="width:100%" >' + interviewDateVal + '</div>';
                                         } else{
                                             return '<div class="mLabel" style="width:100%" >-</div>';
@@ -499,12 +500,20 @@ function tabChange3() {
                                         if(workflowObj.extraData.workflowStatus != null){
                                             if(workflowObj.extraData.workflowStatus.statusId > JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED){
                                                 var feedbackVal = workflowObj.extraData.workflowStatus.statusTitle;
-                                                return '<div class="mLabel" style="width:100%" >' + feedbackVal + '</div>';
+                                                return '<div class="mLabel" style="width:100%" >' + feedbackVal +
+                                                       '<span class="customBtn btnOrange" id="previousFeedbackBtn" style="cursor: pointer;margin-left:10px" onclick="openPreviousFeedbackModal('+ workflowObj.candidate.candidateId +')" >Reason</span>'+
+                                                       '</div>';
                                             } else{
-
-                                                return '<div class="mLabel" >'
-                                                    + '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openFeedbackModal('+ workflowObj.candidate.candidateId +')" >Add Feedback</span>'
-                                                    + '</div>';
+                                                if(workflowObj.extraData.round > 1){
+                                                    return '<div class="mLabel" >'
+                                                        + '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openFeedbackModal('+ workflowObj.candidate.candidateId +')" >Add Feedback</span>'
+                                                        + '<span class="customBtn btnOrange" id="previousFeedbackBtn" style="cursor: pointer;" onclick="openPreviousFeedbackModal('+ workflowObj.candidate.candidateId +')" >View</span>'
+                                                        + '</div>';
+                                                } else{
+                                                    return '<div class="mLabel" >'
+                                                        + '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openFeedbackModal('+ workflowObj.candidate.candidateId +')" >Add Feedback</span>'
+                                                        + '</div>';
+                                                }
                                             }
                                         } else{
                                             return '<div class="mLabel" style="width:100%" >-</div>'
@@ -742,7 +751,53 @@ function checkSlotAvailability(x, interviewDays) {
         return true;
     }
 }
+//previous feedback
+function openPreviousFeedbackModal(candidateId){
+    globalCandidateId = candidateId;
+    try{
+        $.ajax({
+            type:"GET",
+            url:"/recruiter/getPrevRounds?jpId="+jobPostId+"&cId="+globalCandidateId,
+            data:false,
+            async:false,
+            contentType:false,
+            processData:false,
+            success:processPreviousFeedbackData
+        });
+    }catch (exception){
+        console.log("exception occured!!" + exception);
+    }
+}
+function processPreviousFeedbackData(returnedData){
+    var previousRoundFeedbackList = returnedData.previousRoundList;
 
+    var parent = $("#previousFeedback");
+    var count = 0;
+    parent.html("");
+    previousRoundFeedbackList.forEach(function(data) {
+        count++;
+        var colRecruiterName = document.createElement("div");
+        colRecruiterName.className = "col s12 l6";
+        colRecruiterName.style = "font-size:16px";
+        colRecruiterName.textContent ="Round "+ count +" ("+data.recruiterName+")";
+        parent.append(colRecruiterName);
+
+        var colDate = document.createElement("div");
+        colDate.className = "col s12 l6";
+        colDate.style = "font-size:16px;text-align:right";
+        colDate.textContent = data.creationDate;
+        parent.append(colDate);
+
+        var colNote = document.createElement("div");
+        colNote.className = "col s12 l12";
+        colNote.style = "background:#eceff1;padding:2%;margin:2px 0 10px 0;font-weight:bold";
+        colNote.textContent = data.note;
+        parent.append(colNote);
+
+
+    });
+    $("#previousFeedbackModal").openModal();
+}
 //feedback
 function openFeedbackModal(candidateId) {
     globalCandidateId = candidateId;
@@ -754,7 +809,7 @@ function openFeedbackModal(candidateId) {
         var option = $('<option value=' + reason.id + '></option>').text(reason.name);
         $('#reasonVal').append(option);
     });
-
+    $("#nextRoundInterview").hide();
     $("#otherReason").hide();
     $("#feedbackOption").val(0);
     $("#reasonVal").val(0);
@@ -769,27 +824,67 @@ function openFeedbackModal(candidateId) {
             $("#otherReason").hide();
         }
     });
+    $("#feedbackOption").change(function (){
+        if($(this).val() == 5){
+            $("#nextRoundInterview").show();
+            nextRoundInterview();
+        } else{
+            $("#nextRoundInterview").hide();
+        }
+    });
 }
 
 function confirmAddFeedback() {
+    var resultStatus = true;
+    var data;
     if($("#feedbackOption").val() > 0){
-        if(($("#feedbackOption").val() == 2 || $("#feedbackOption").val() == 4) && $("#reasonVal").val() == 0){
-            notifyError("Please select a reason");
-        } else{
-            try {
-                var d = {
+        if(($("#feedbackOption").val() != 5)) {
+            if (($("#feedbackOption").val() == 2 || $("#feedbackOption").val() == 4) && $("#reasonVal").val() == 0) {
+                notifyError("Please select a reason");
+                resultStatus = false;
+            } else{
+                data = {
                     candidateId: globalCandidateId,
-                    jobPostId : jobPostId,
-                    feedbackStatus : $("#feedbackOption").val(),
-                    feedbackComment : $("#feedbackNote").val(),
+                    jobPostId: jobPostId,
+                    feedbackStatus: $("#feedbackOption").val(),
+                    feedbackComment: $("#feedbackNote").val(),
                     rejectReason: $("#reasonVal").val()
                 };
+            }
+        } else{
+                var recruiterData = $("#nextRoundRecruiterNameVal").val().split("_");
+                if(recruiterData[0] == 0){
+                    notifyError("Please select a recruiter");
+                    resultStatus = false;
+                } else{
+                    var combinedValue = $("#nextRoundDateAndSlot").val().split("_");
+                    nextInterviewDatetimeInMills = combinedValue[0];
+                    nextInterviewSlotId = combinedValue[1];
 
+                    nextInterviewRecruiterId = recruiterData[0];
+                    nextRound = true;
+                    data = {
+                        candidateId: globalCandidateId,
+                        jobPostId : jobPostId,
+                        feedbackStatus : $("#feedbackOption").val(),
+                        feedbackComment : $("#feedbackNote").val(),
+                        rejectReason: $("#reasonVal").val(),
+                        interviewLat: parseFloat($("#jp_lat").val()),
+                        interviewLng: parseFloat($("#jp_lon").val()),
+                        interviewRecruiterId: parseInt(nextInterviewRecruiterId),
+                        interviewDatetimeInMills: parseInt(nextInterviewDatetimeInMills),
+                        interviewSlotId: parseInt(nextInterviewSlotId),
+                        interviewAddress: $('#interviewAddress').val()
+                    };
+                }
+        }
+        if(resultStatus == true){
+            try {
                 $.ajax({
                     type: "POST",
                     url: "/updateFeedback",
                     contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(d),
+                    data: JSON.stringify(data),
                     success: processDataUpdateFeedBack
                 });
             } catch (exception) {
@@ -841,10 +936,14 @@ function processDataBulkSms(returnedData) {
 }
 
 function processDataUpdateFeedBack(returnedData) {
+    console.log(returnedData);
     if(returnedData == 1){
+        if(nextRound == true){
+            notifySuccess("Feedback updated successfully. Candidate selected for next round");
+        } else{
+            notifySuccess("Feedback updated successfully");
+        }
         tabChange3();
-        notifySuccess("Feedback updated successfully");
-
         $("#addFeedback").closeModal();
 
     } else if(returnedData == -1){
@@ -968,10 +1067,83 @@ function closeFeedbackModal() {
     $("#addFeedback").closeModal();
 }
 
-function closeRescheduleModal() {
-    $("#modalRescheduleSlot").closeModal();
+function closePreviousFeedbackModal() {
+    $("#previousFeedbackModal").closeModal();
 }
 
 function closeRejectModal() {
     $("#modalRejectReason").closeModal();
+}
+
+function clearField(){
+    $('#interviewAddress').val('');
+}
+
+function nextRoundInterview(){
+    try{
+        $.ajax({
+            type:"GET",
+            url:"/recruiter/getNextRoundComponents/"+jobPostId,
+            data:false,
+            async:false,
+            contentType:false,
+            processData:false,
+            success:processNextRoundInterviewData
+        });
+    }catch (exception){
+        console.log("exception occured!!" + exception);
+    }
+
+}
+function processNextRoundInterviewData(returnedData) {
+
+    var recruiterList = returnedData.recruiterList;
+
+    $("#nextRoundRecruiterNameVal").html("");
+
+    var optionName = $('<option value="0"></option>').text("Select recruiter");
+    $("#nextRoundRecruiterNameVal").append(optionName);
+    recruiterList.forEach(function(data){
+        var optionName = $('<option value='+data.recruiterProfileId+'></option>').text(data.recruiterProfileName);
+        $("#nextRoundRecruiterNameVal").append(optionName);
+    });
+
+    var interviewDetailsList = returnedData.interviewSlotPopulateResponse.interviewSlotMap;
+
+    $("#nextRoundDateAndSlot").html("");
+
+    $.each( interviewDetailsList, function (key ,value) {
+        var slotValue = value.interviewDateMillis +"_"+value.interviewTimeSlot.slotId;
+        var defaultOption = $('<option value="'+slotValue+'"></option>').text(key);
+        $('#nextRoundDateAndSlot').append(defaultOption);
+    });
+
+    renderMap(returnedData.location.latitude,returnedData.location.longitude);
+
+}
+function renderMap(interviewLat,interviewLng){
+    if(interviewLat == null){
+        //default values of MG Road
+        interviewLat = 12.975568542471832;
+        interviewLng = 77.60660031434168;
+    }
+    $('#map_parent').locationpicker({
+        location: {
+            latitude: interviewLat,
+            longitude: interviewLng
+        },
+        radius: 80,
+        inputBinding: {
+            latitudeInput: $('#jp_lat'),
+            longitudeInput: $('#jp_lon'),
+            locationNameInput: $('#interviewAddress')
+        },
+        enableAutocomplete: true,
+        onchanged: function (currentLocation, radius, isMarkerDropped) {
+            //add method if we want to perform any action
+            $("#jp_lat").val(currentLocation.latitude);
+            $("#jp_lon").val(currentLocation.longitude);
+            $("#landmarkDetails").show();
+        }
+    });
 }
