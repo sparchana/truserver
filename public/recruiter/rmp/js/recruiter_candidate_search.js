@@ -26,6 +26,7 @@ var jobPostDocumentIdList = [];
 var jobPostAssetIdList = [];
 var distanceRadius = 10;
 var showOnlyFreshCandidate = false;
+var jobPostId = null;
 
 var resultCount = 10;
 
@@ -367,8 +368,12 @@ function preFillFilter() {
                         if(returnedData.jobPostId != jpId){
                             return;
                         }
+                        jobPostId = jpId;
 
                         // assign jobPost info to global values
+                        if(returnedData.jobPostTitle != null){
+                            $("#jobPostTitle").html('Candidate Search for ' + returnedData.jobPostTitle);
+                        }
 
                         // appending locality id
                         if(returnedData.jobPostLocalityIdList != null
@@ -691,6 +696,7 @@ function performSearch() {
     var searchJobRole = null;
     var searchGender = "-1";
     var searchOnlyFreshCandidate = false;
+    var jpId = null;
 
     //locality
     var selectedLocality = $("#searchLocality").val();
@@ -783,7 +789,8 @@ function performSearch() {
             distanceRadius: parseFloat($("#filterDistance").val()),
             initialValue: counter,
             sortBy: sortByVal,
-            showOnlyFreshCandidate: searchOnlyFreshCandidate
+            showOnlyFreshCandidate: searchOnlyFreshCandidate,
+            jobPostId: jobPostId
         };
 
         //setting global variables

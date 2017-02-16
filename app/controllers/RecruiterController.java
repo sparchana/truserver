@@ -16,15 +16,16 @@ import api.http.httpResponse.Recruiter.MultipleCandidateContactUnlockResponse;
 import api.http.httpResponse.Recruiter.RMP.ApplicationResponse;
 import api.http.httpResponse.Recruiter.RMP.SmsReportResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
-import com.avaje.ebean.PagedList;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.JobService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import controllers.businessLogic.PartnerAuthService;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import controllers.businessLogic.Recruiter.RecruiterLeadStatusService;
+import controllers.security.ForceHttps;
 import controllers.security.RecruiterSecured;
 import controllers.businessLogic.RecruiterService;
 import controllers.security.FlashSessionController;
@@ -33,9 +34,7 @@ import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.RecruiterDAO;
 import dao.SmsReportDAO;
-import models.entity.Candidate;
-import models.entity.JobPost;
-import models.entity.OM.CandidateResume;
+import models.entity.*;
 import models.entity.OM.JobApplication;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.OM.SmsReport;
@@ -43,7 +42,6 @@ import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
-import models.entity.RecruiterCreditHistory;
 import models.entity.Static.SmsDeliveryStatus;
 import models.entity.Static.SmsType;
 import models.util.SmsUtil;
@@ -53,6 +51,7 @@ import play.Logger;
 import play.api.Play;
 import play.mvc.Result;
 import play.mvc.Security;
+import play.mvc.With;
 
 import java.io.IOException;
 import java.util.*;
@@ -61,6 +60,7 @@ import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static api.ServerConstants.*;
 import static api.ServerConstants.SMS_STATUS_DND;
 import static api.ServerConstants.SMS_STATUS_PENDING;
+import static controllers.businessLogic.Recruiter.RecruiterAuthService.addSession;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterSearchCandidate;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.request;
@@ -72,6 +72,7 @@ import static play.mvc.Results.redirect;
 /**
  * Created by dodo on 4/10/16.
  */
+@With(ForceHttps.class)
 public class RecruiterController {
     private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
 
@@ -436,7 +437,7 @@ public class RecruiterController {
                 SmsDeliveryStatus status = SmsDeliveryStatus.find.where().eq("status_id", SMS_STATUS_PENDING).findUnique();
                 Boolean reRun = false;
                 if(status != null){
-                    List<SmsReport> smsReportList = SmsReportDAO.getAllSMSByStatus(status);
+                    List<SmsReport> smsReportList = SmsReportDAO.getAllSMSByStatusSinceLastOneDay(status);
                     Logger.info("Checking " + smsReportList.size() + " sms's report");
                     for(SmsReport report : smsReportList){
                         String response = SmsUtil.checkDeliveryReport(report.getSmsSchedulerId());
@@ -775,8 +776,10 @@ public class RecruiterController {
                             matchingCandidateRequest.getJobPostDocumentIdList(),
                             matchingCandidateRequest.getJobPostAssetIdList(),
                             matchingCandidateRequest.getDistanceRadius(),
+                            matchingCandidateRequest.getJobPostId(),
                             matchingCandidateRequest.getShowOnlyFreshCandidate() ==  null? false: matchingCandidateRequest.getShowOnlyFreshCandidate(),
-                            isPrivate);
+                            isPrivate,
+                            recruiterProfile);
 
                     //computing interactionResult values
                     String result = "Search Candidate. Total Candidates found: " + candidateSearchMap.size() +
@@ -1378,4 +1381,54 @@ public class RecruiterController {
     public static Result recruiterCandidateModal() {
         return ok(views.html.Recruiter.recruiter_candidate_modal.render());
     }
+
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result checkPrivateRecruiterPartnerAccount() {
+        if(session().get("recruiterId") != null){
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
+                Partner partner = Partner.find.where()
+                        .eq("partner_mobile", recruiterProfile.getRecruiterProfileMobile())
+                        .eq("partner_type", ServerConstants.PARTNER_TYPE_PRIVATE)
+                        .findUnique();
+
+                if(partner != null){
+                    PartnerAuth existingAuth = PartnerAuth.find.where().eq("partner_id", partner.getPartnerId()).findUnique();
+
+                    if(existingAuth != null){
+                        return ok("1");
+                    }
+                }
+
+            }
+        }
+        return ok("0");
+    }
+
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result switchToPartner() {
+        if(session().get("recruiterId") != null){
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null && recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
+                Partner existingPartner = Partner.find.where()
+                        .eq("partner_mobile", recruiterProfile.getRecruiterProfileMobile())
+                        .eq("partner_type", ServerConstants.PARTNER_TYPE_PRIVATE)
+                        .findUnique();
+
+                if(existingPartner != null){
+                    PartnerAuth existingAuth = PartnerAuth.find.where().eq("partner_id", existingPartner.getPartnerId()).findUnique();
+
+                    if(existingAuth != null){
+                        //clearing session for recruiter
+                        FlashSessionController.clearSessionExceptFlash();
+
+                        PartnerAuthService.addSession(existingAuth, existingPartner);
+                        return ok("1");
+                    }
+                }
+            }
+        }
+        return ok("0");
+    }
+
 }

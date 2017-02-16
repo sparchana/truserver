@@ -59,18 +59,23 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 
-    /*try {
+    try {
         $.ajax({
-            type: "POST",
-            url: "/getAllHotJobPosts",
+            type: "GET",
+            url: "/job/"+ jobRoleNameRender  + "-jobs-in-"+ jobLocationRender +"-at-"+ jobCompanyRender +"-"+ jobPostIdRender,
+            contentType: "application/json; charset=utf-8",
             data: false,
-            contentType: false,
             processData: false,
-            success: processDataAllJobPosts
+            success: processDataForHotJobPost,
+            error: function (xhr, ajaxOption, throwError) {
+                if(xhr.status == 400){
+                    window.location = '/pageNotFound';
+                }
+            }
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
-    }*/
+    }
 });
 
 $(window).load(function() {
@@ -81,27 +86,6 @@ $(window).load(function() {
     $("#status").fadeOut();
     $("#loaderLogo").fadeOut();
     $("#preloader").delay(1000).fadeOut("slow");
-});
-
-$(document).ready(function(){
-    try {
-            $.ajax({
-                type: "GET",
-                url: "/job/"+ jobRoleNameRender  + "-jobs-in-"+ jobLocationRender +"-at-"+ jobCompanyRender +"-"+ jobPostIdRender,
-                contentType: "application/json; charset=utf-8",
-                data: false,
-                processData: false,
-                success: processDataForHotJobPost,
-                error: function (xhr, ajaxOption, throwError) {
-                    console.log(xhr.status);
-                    if(xhr.status == 400){
-                        window.location = '/pageNotFound';
-                    }
-                }
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
-        }
 });
 
 function processDataCheckLocality(returnedData) {
@@ -205,9 +189,11 @@ function confirmApply() {
     applyJobSubmitViaCandidate(jobPostId, prefLocation, prefTimeSlot, scheduledInterviewDate, true);
 //    applyJob(jobPostId, prefLocation, true);
 }
+
 $("#jobLocality").change(function () {
     enableLocalityBtn();
 });
+
 function enableLocalityBtn() {
     if($("#jobLocality").val() != -1 && $("#interviewSlot").val() != -1){
             prefLocation = $("#jobLocality").val();
@@ -598,11 +584,14 @@ function processDataForHotJobPost(returnedData) {
             $(".posted_jobs_company_details").hide();
             $("div#aboutCompanyTitle").hide();
         }
-
+        var applyBtn = $(".jobApplyBtnV2");
         if(returnedData.applyBtnStatus != null && returnedData.applyBtnStatus != CTA_BTN_APPLY){
-            var applyBtn = $(".jobApplyBtnV2");
             if(returnedData.applyBtnStatus == CTA_BTN_INTERVIEW_REQUIRED) {
                 applyBtn.html("Book Interview");
+                applyBtn.css({"background":"#039be5","font-weight":"bold"});
+                applyBtn.on('click',function(){
+                    applyJobBtnAction();
+                });
             } else if(returnedData.applyBtnStatus == CTA_BTN_DEACTIVE){
                 applyBtn.html("Apply");
                 applyBtn.css("background", "#ffa726");
@@ -632,9 +621,42 @@ function processDataForHotJobPost(returnedData) {
                 }
 
                 $("#reopenDate").html("Will reopen on " + day + "-" + month + "-" + nextMonday.getFullYear());
+            } else if(returnedData.applyBtnStatus == CTA_BTN_CALL_TO_APPLY){
+                applyBtn.html("");
+                applyBtn.css({"background":"#00e676","font-weight":"bold"});
+                applyBtn.on('click',function () {
+                    cardModule.method.genRecruiterContactModal(returnedData.recruiterProfile.recruiterProfileName,
+                        jobId);
+                });
+
+                var icon = document.createElement("img");
+                icon.setAttribute('src',"/assets/common/img/callToApply.svg");
+                icon.style = "height:18px;margin-top:-4px;";
+                applyBtn.append(icon);
+
+                var icon = document.createElement("span");
+                icon.style = "font-size:16px;margin-left:10px";
+                icon.textContent= "CALL NOW";
+                applyBtn.append(icon);
+            } else if(returnedData.applyBtnStatus == CTA_BTN_ALREADY_APPLIED){
+                applyBtn.removeClass("btn-primary").addClass("appliedBtn").prop('disabled',true).html("Applied");
+                applyBtn.attr('onclick','').unbind('click');
+                applyBtn.css("background", "#f4cb6c");
+                applyBtn.css("box-shadow", "none");
+                applyBtn.css("cursor", "default");
             }
         }
+        else{
+            applyBtn.on('click',function(){
+                applyJobBtnAction();
+            });
+        }
 
+        if(returnedData.jobPostAccessLevel == 1){
+            //if the job is private, remove footer
+            $("#footer_inc").remove();
+        }
+/*
         try {
             $.ajax({
                 type: "GET",
@@ -647,6 +669,7 @@ function processDataForHotJobPost(returnedData) {
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
+*/
     } else {
         window.location.href = "/pageNotFound";
     }

@@ -10,6 +10,8 @@ public class ServerConstants {
     // public static final String DEV_API_KEY = "123e4567-e89b-12d3-a456-426655440000";
     // public static final int TYPE_UNKNOW = 0;
 
+    public static final int NO_OF_JOBS_IN_A_PAGE = 5;
+
     public static final int TYPE_LEAD = 1;
     public static final int TYPE_POTENTIAL_CANDIDATE = 2;
     public static final int TYPE_POTENTIAL_RECRUITER = 3;
@@ -89,6 +91,7 @@ public class ServerConstants {
     public static final int LEAD_SOURCE_UNKNOWN = 1; // 1 is unknown
 
     public static final int LEAD_SOURCE_WEBSITE = 2;
+    public static final int LEAD_SOURCE_CALL_TO_APPLY_WEBSITE = 26;
 
     public static final String LEAD_INTEREST_UNKNOWN = "Unknown";
 
@@ -324,6 +327,7 @@ public class ServerConstants {
     // Recruiter constants
     public static int RECRUITER_CATEGORY_CONTACT_UNLOCK = 1;
     public static int RECRUITER_CATEGORY_INTERVIEW_UNLOCK = 2;
+    public static int RECRUITER_CATEGORY_CTA_CREDIT = 3;
 
     public static int RECRUITER_FREE_CONTACT_CREDITS = 3;
     public static int RECRUITER_DEFAULT_INTERVIEW_CREDITS = 99999999;
@@ -351,10 +355,11 @@ public class ServerConstants {
     public static final int ERROR = 0;
     public static final int INTERVIEW_NOT_REQUIRED = 1; // "OK"
     public static final int INTERVIEW_REQUIRED = 2;     // "INTERVIEW"
-    public static final int ALREADY_APPLIED = 3;     // "JOB POST ALREADY APPLIED"
-    public static final int APPLY = 4;     // "JOB POST ALREADY APPLIED"
-    public static final int INTERVIEW_CLOSED = 5;     // "INTERVIEW CLOSED FOR THE WEEK"
-    public static final int DEACTIVE = 6;     // "CANDIDATE DEACTIVATED"
+    public static final int ALREADY_APPLIED = 3;        // "JOB POST ALREADY APPLIED"
+    public static final int APPLY = 4;                  // "JOB POST ALREADY APPLIED"
+    public static final int INTERVIEW_CLOSED = 5;       // "INTERVIEW CLOSED FOR THE WEEK"
+    public static final int DEACTIVE = 6;               // "CANDIDATE DEACTIVATED"
+    public static final int CALL_TO_APPLY = 7;          // "CALL TO APPLY"
 
     // rescheduled Interview status
     public static final int RESCHEULED_INTERVIEW_STATUS_ACCEPTED = 1;

@@ -3,6 +3,7 @@ package models.util;
 import api.ServerConstants;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
 import controllers.Global;
+import controllers.businessLogic.CandidateService;
 import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.OM.JobPostToLocality;
@@ -97,10 +98,16 @@ public class SmsUtil {
 
     public static void sendWelcomeSmsFromSupport(String name, String mobile, String password)
     {
-        String msg = "Hi " + name + ", Welcome to www.Trujobs.in! Your login details are Username: "
-                + mobile.substring(3, 13) + " and password: " + password + ". Log on to trujobs.in or download Trujobs app at http://bit.ly/2d7zDqR to login and apply to jobs!!";
+        StringBuilder stringBuilder = new StringBuilder();
 
-        addSmsToNotificationQueue(mobile, msg);
+        stringBuilder.append("Hi " + name + ", Welcome to www.Trujobs.in! Your login details are Username: "
+                + mobile.substring(3, 13) + " and password: " + password + ". Log on to trujobs.in ");
+        if(!CandidateService.isCandidatePrivate(mobile)){
+            stringBuilder.append("or download Trujobs app at http://bit.ly/2d7zDqR to login ");
+        }
+        stringBuilder.append("and apply to jobs!!");
+
+        addSmsToNotificationQueue(mobile, stringBuilder.toString().trim());
     }
 
     public static void sendWelcomeSmsFromWebsite(String name, String mobile)
@@ -203,9 +210,11 @@ public class SmsUtil {
     }
 
     public static void sendJobApplicationSmsViaPartner(String candidateFirstName, String jobPostTitle, String companyName, String candidateMobile, String localityName, String partnerName) {
-        String msg = "Hi " + candidateFirstName + ", we have received your job application for " + jobPostTitle + " job at " + companyName + " @" + localityName + " from our recruitment partner (" + partnerName + ").  " +
-                "Kindly login at www.trujobs.in and access 'View Applied Jobs' section to complete assessment! Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
-        addSmsToNotificationQueue(candidateMobile, msg);
+        String msg = "Hi " + candidateFirstName + ", we have received your job application for " + jobPostTitle + " job at " + companyName + " @" + localityName + " from our recruitment partner (" + partnerName + "). ";
+        if(!CandidateService.isCandidatePrivate(candidateMobile)){
+            msg += "Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+        }
+        addSmsToNotificationQueue(candidateMobile, msg.trim());
     }
 
     public static void sendJobApplicationSmsToPartner(String candidateFirstName, String jobPostTitle, String companyName, String partnerMobile, String localityName, String partnerFirstName) {
@@ -452,8 +461,12 @@ public class SmsUtil {
 
     public static void sendInterviewRejectionSms(JobPostWorkflow jobPost, Candidate candidate) {
         String msg = "Hi " + candidate.getCandidateFirstName() + ", your job application for " + jobPost.getJobPost().getJobPostTitle() + " at " + jobPost.getJobPost().getCompany().getCompanyName() +
-                " was not shortlisted for the interview. Please log on to www.trujobs.in and apply to other jobs. Download Trujobs app at http://bit.ly/2d7zDqR!";
-        addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
+                " was not shortlisted for the interview. Please log on to www.trujobs.in and apply to other jobs. ";
+
+        if (!CandidateService.isCandidatePrivate(candidate.getCandidateMobile())) {
+            msg += "Download Trujobs app at http://bit.ly/2d7zDqR!";
+        }
+        addSmsToNotificationQueue(candidate.getCandidateMobile(), msg.trim());
     }
 
     public static void sendInterviewRejectionSmsToPartner(JobPostWorkflow jobApplication, Candidate candidate, Partner partner) {
@@ -483,10 +496,17 @@ public class SmsUtil {
 
         String interviewDateString = day + "-" + (month + 1) + "-" + year;
 
-        String msg = "Hi " + candidate.getCandidateFirstName() + ", your interview for " + jobApplication.getJobPost().getJobPostTitle() + " at " + jobApplication.getJobPost().getCompany().getCompanyName() +
-                " has been rescheduled on " + interviewDateString + " between " + slot.getInterviewTimeSlotName() + ". Download Trujobs app at http://bit.ly/2d7zDqR or log on to www.trujobs.in and confirm the new interview date." +
-                "and time in \"View Applied Jobs\" section. Thank you!";
-        addSmsToNotificationQueue(candidate.getCandidateMobile(), msg);
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("Hi " + candidate.getCandidateFirstName() + ", your interview for " + jobApplication.getJobPost().getJobPostTitle() + " at " + jobApplication.getJobPost().getCompany().getCompanyName() +
+                " has been rescheduled on " + interviewDateString + " between " + slot.getInterviewTimeSlotName() + ". ");
+        if(!CandidateService.isCandidatePrivate(candidate.getCandidateMobile())) {
+            stringBuilder.append("Download Trujobs app at http://bit.ly/2d7zDqR or ");
+        }
+        stringBuilder.append("log on to www.trujobs.in and confirm the new interview date." +
+                "and time in \"View Applied Jobs\" section. Thank you!");
+
+        addSmsToNotificationQueue(candidate.getCandidateMobile(), stringBuilder.toString().trim());
     }
 
     public static void sendInterviewReschedulingSmsToPartner(JobPostWorkflow jobApplication, Candidate candidate, Date interviewDate, InterviewTimeSlot slot, Partner partner) {
@@ -734,9 +754,13 @@ public class SmsUtil {
         String msg = "Hi " + jobPostWorkflow.getCandidate().getCandidateFirstName() + ", your interview for " + jobPostWorkflow.getJobPost().getJobPostTitle()
                 + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() + " on " + interviewDate
                 + " has been temporarily cancelled by the recruiter. Please call recruiter on " + jobPostWorkflow.getJobPost().getRecruiterProfile().getRecruiterProfileMobile()
-                + " to reschedule your interview. Thanks! Download Trujobs app at bit.ly/trujobsapp to apply to more jobs.";
+                + " to reschedule your interview. Thanks! ";
 
-        addSmsToNotificationQueue(jobPostWorkflow.getCandidate().getCandidateMobile(), msg);
+        if(!CandidateService.isCandidatePrivate(jobPostWorkflow.getCandidate().getCandidateMobile())){
+            msg += "Download Trujobs app at bit.ly/trujobsapp to apply to more jobs.";
+        }
+
+        addSmsToNotificationQueue(jobPostWorkflow.getCandidate().getCandidateMobile(), msg.trim());
     }
 
     public static void sendClosedJobSmsAlert(JobPostWorkflow jobPostWorkflow) {
@@ -749,9 +773,13 @@ public class SmsUtil {
         String interviewDate = day + "-" + (month + 1) + "-" + year;
         String msg = "Hi " + jobPostWorkflow.getCandidate().getCandidateFirstName() + ", The recruiter has closed vacancies for " + jobPostWorkflow.getJobPost().getJobPostTitle()
                 + " at " + jobPostWorkflow.getJobPost().getCompany().getCompanyName() + ". Your interview scheduled on " + interviewDate
-                + " is hence cancelled. Download TruJobs app at bit.ly/trujobsapp and apply to more jobs";
+                + " is hence cancelled. ";
 
-        addSmsToNotificationQueue(jobPostWorkflow.getCandidate().getCandidateMobile(), msg);
+        if(!CandidateService.isCandidatePrivate(jobPostWorkflow.getCandidate().getCandidateMobile())){
+            msg += "Download TruJobs app at bit.ly/trujobsapp and apply to more jobs";
+        }
+
+        addSmsToNotificationQueue(jobPostWorkflow.getCandidate().getCandidateMobile(), msg.trim());
     }
 
     public static void sendCompanyChangeSmsToRecruiter(RecruiterProfile recruiterProfile, String newCompany, String oldCompany) {

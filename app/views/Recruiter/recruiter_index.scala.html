@@ -52,37 +52,37 @@
         </div>
             <!-- Modal SignUp Structure -->
         <div id="modalSignUp" class="modal">
-            <div class="row">
-                <div class="col l4 hide-on-small-only" id="modalLeftBox">
-                    <img src="/assets/recruiter/img/modal_background.jpg">
-                </div>
+
+            <div class="modal-content" style="background: transparent; padding: 0; border: none">
+                <div class="row" style="margin-bottom: 0">
+                    <div class="col l4 hide-on-small-only" id="modalLeftBox">
+@*                        <img src="/assets/recruiter/img/modal_background.jpg">*@
+                    </div>
                     <div class="col l8" id="modalRightBox">
                         <font style="font-size: 22px">Sign Up With TruJobs</font>
-                        <center><div class="materialDashSignUp"></div></center>
-                        <font style="font-size: 14px;">Signup and get access to 40000+ verified candidate profiles</font>
                         <form>
-                        <div class="row" id="inputContainerModalSignup">
-                            <div class="input-field col s12">
-                                <form id="signUpForm">
-                                    <input style="border-bottom: 1px solid #e0e0e0" placeholder="Name" id="rec_name" type="text" class="validate">
-                                    <input style="border-bottom: 1px solid #e0e0e0" placeholder="Mobile" id="rec_mobile" type="text" maxlength="10" class="validate">
-                                    <input style="border-bottom: 1px solid #e0e0e0" placeholder="Email" id="rec_email" type="email" class="validate">
+                            <div class="row" id="inputContainerModalSignup">
+                                <div class="input-field col s12">
+                                    <form id="signUpForm">
+                                        <input style="border-bottom: 1px solid #e0e0e0" placeholder="Name" id="rec_name" type="text" class="validate">
+                                        <input style="border-bottom: 1px solid #e0e0e0" placeholder="Mobile" id="rec_mobile" type="text" maxlength="10" class="validate">
+                                        <input style="border-bottom: 1px solid #e0e0e0" placeholder="Email" id="rec_email" type="email" class="validate">
 
-                                    <span style="float: left; margin-top: 8px">Have Company Unique Code?</span>
-                                    <div class="switch" style="position: inherit; margin-top: 24px">
-                                        <label>No
-                                            <input id="is_private_recruiter" type="checkbox">
-                                            <span class="lever"></span>Yes
-                                        </label>
-                                    </div>
-
-                                    <div style="margin-top: 72px">
-                                        <div id="privateRecruiter" style="display: none;">
-                                            <input style="border-bottom: 1px solid #e0e0e0" placeholder="Company unique code" id="rec_company_code" type="text" class="validate">
+                                        <span style="float: left; margin-top: 8px">Have Company Unique Code?</span>
+                                        <div class="switch" style="position: inherit; margin-top: 24px">
+                                            <label>No
+                                                <input id="is_private_recruiter" type="checkbox">
+                                                <span class="lever"></span>Yes
+                                            </label>
                                         </div>
-                                        <div id="openRecruiter">
-                                            <select id="rec_company" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
-                                            <script type="text/javascript">
+
+                                        <div style="margin-top: 72px">
+                                            <div id="privateRecruiter" style="display: none;">
+                                                <input style="border-bottom: 1px solid #e0e0e0" placeholder="Company unique code" id="rec_company_code" type="text" class="validate">
+                                            </div>
+                                            <div id="openRecruiter">
+                                                <select id="rec_company" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                                                <script type="text/javascript">
                                                 $('#rec_company').tokenize({
                                                     displayDropdownOnFocus: true,
                                                     placeholder: "Enter your company",
@@ -94,20 +94,24 @@
                                                     }
                                                 });
                                             </script>
+                                            </div>
                                         </div>
-                                    </div>
-                                </form>
+                                    </form>
+                                </div>
+                                <div class="input-field col s12">
+                                    <button type="submit" id="SignSubmitUpBtn" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">SignUp</font></button>
+                                    <p><font style="font-size: 14px; cursor: pointer">Have an Account? <span onclick="openLoginModal()"><font style="cursor: pointer; color: #2ec866; font-weight:600;">Sign In</font></span></font></p>
+                                </div>
                             </div>
-                            <div class="input-field col s12">
-                              <button type="submit" id="SignSubmitUpBtn" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">SignUp</font></button>
-                                <p><font style="font-size: 14px; cursor: pointer">Have an Account? <span onclick="openLoginModal()"><font style="cursor: pointer; color: #2ec866; font-weight:600;">Sign In</font></span></font></p>
-                            </div>
-                        </div>
                         </form>
                     </div>
+                </div>
+
             </div>
+
         </div>
-            <!-- Modal otp Structure -->
+
+        <!-- Modal otp Structure -->
         <div id="modalOtp" class="modal">
             <div id="otpSection">
                 <div style="background: rgba(0, 0, 0, 0.75); padding: 8%">

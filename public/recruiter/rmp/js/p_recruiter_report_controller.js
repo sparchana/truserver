@@ -13,6 +13,7 @@ var zapp = (function () {
         csvString: "",
         startDate: null,
         endDate: null,
+        companyName: "",
 
         method: {
             init: function () {
@@ -52,7 +53,11 @@ var zapp = (function () {
                             "url": '/recruiter/api/summary/recruiter?from='+zapp.startDate+'&to='+zapp.endDate,
                             "dataSrc": function (returnedData) {
 
-                                zapp.rows = returnedData;
+                                zapp.companyName = returnedData.companyName;
+
+                                $('#companyName').text(zapp.companyName);
+
+                                zapp.rows = returnedData.recruiterSummaryList;
 
                                 $("#recruiterTable").show();
                                 $("#recruiterTableContainer").show();

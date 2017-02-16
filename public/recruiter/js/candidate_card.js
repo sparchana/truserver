@@ -340,6 +340,8 @@ function renderIndividualCandidateCard(value, parent, view) {
     candidateExperience.style = "font-size: 14px";
     candidateExperience.textContent = ", " + expVal;
 
+    candidateCardRowColOne.appendChild(candidateExperience);
+
     if(value.candidate.candidateResumeLink != null){
         var resumeIcon = document.createElement("img");
         resumeIcon.src = "/assets/recruiter/img/icons/cv.svg";
@@ -361,12 +363,10 @@ function renderIndividualCandidateCard(value, parent, view) {
                 viewResume = true;
                 unlockContact(value.candidate.candidateId);
             } else{
-                window.open("http://docs.google.com/gview?url=" + $(this).attr("val") + "&embedded=true");
+                window.open($(this).attr("val"));
             }
         };
         resumeLink.style = "font-size: 14px; font-weight: bold; color: rgb(84, 192, 235); ";
-
-        candidateCardRowColOne.appendChild(candidateExperience);
 
         candidateCardRowColOne.appendChild(resumeIcon);
         candidateCardRowColOne.appendChild(resumeLink);
@@ -1244,7 +1244,7 @@ function renderIndividualCandidateCard(value, parent, view) {
                         feedbackBtn.className = "customFeedbackBtn feedbackVal";
                         feedbackBtn.onclick = function () {
                             candidateCardData = value;
-                            openFeedbackModal();
+                            openFeedbackModal(value.candidate.candidateId);
                         };
                         feedbackBtn.textContent = "Add Feedback";
                         feedbackBtn.style = "font-size: 12px; background: rgb(46, 200, 102)";

@@ -1416,6 +1416,10 @@ public class CandidateService
                                                             String institute,
                                                             Candidate candidate)
     {
+        if((educationLevelId == null || degreeId == null )) {
+            return null;
+        }
+
         if(educationLevelId == -1 && degreeId == -1) {
             return null;
         }
@@ -2611,24 +2615,29 @@ public class CandidateService
                                 case "education":
                                     String educationString = nextLine[i].toLowerCase();
                                     AddCandidateEducationRequest addCandidateEducationRequest = new AddCandidateEducationRequest();
+                                    // Default to "Any"
+                                    addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_ANY);
+                                    // Try to get a precise value
                                     if(educationString.startsWith("8")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_LT_10TH_ID);}
+                                    else if(educationString.startsWith("below 8")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_LT_10TH_ID);}
                                     else if(educationString.startsWith("10")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_10TH_PASS_ID);}
                                     else if(educationString.startsWith("12")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_12TH_PASS_ID);}
                                     else if(educationString.startsWith("diploma")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_UG);}
                                     else if(educationString.startsWith("graduat")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_UG);}
                                     else if(educationString.startsWith("postgraduat")){addCandidateEducationRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_PG);}
+
                                     if(addCandidateEducationRequest.getCandidateEducationLevel() > 0){
                                         addSupportCandidateRequest.setCandidateEducationLevel(addCandidateEducationRequest.getCandidateEducationLevel());
                                         //Logger.info("addSupportCandidateRequest.setCandidateEducationLevel ="+addSupportCandidateRequest.getCandidateEducationLevel());
                                     }
-                                    else addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_ANY);
+                                    //else addSupportCandidateRequest.setCandidateEducationLevel(ServerConstants.EDUCATION_TYPE_ANY);
                                     //Logger.info("Education level set to "+addSupportCandidateRequest.getCandidateEducationLevel()+" for mobile "+addSupportCandidateRequest.getCandidateMobile());
                                     break;
                                 case "company":
-                                    if(nextLine[i].toLowerCase() != "nil" ||
-                                            nextLine[i].toLowerCase() != "no" ||
-                                            nextLine[i].toLowerCase() != "any" ||
-                                            nextLine[i].toLowerCase() != "any company"){
+                                    if(!Objects.equals(nextLine[i].toLowerCase(), "nil") ||
+                                            !Objects.equals(nextLine[i].toLowerCase(), "no") ||
+                                            !Objects.equals(nextLine[i].toLowerCase(), "any") ||
+                                            !Objects.equals(nextLine[i].toLowerCase(), "any company")){
                                         List<AddSupportCandidateRequest.PastCompany> pastCompanyList = new ArrayList<>();
                                         AddSupportCandidateRequest.PastCompany pastCompany = new AddSupportCandidateRequest.PastCompany();
                                         pastCompany.setCompanyName(nextLine[i]);
@@ -2854,5 +2863,9 @@ public class CandidateService
             }
         }
         return null;
+    }
+
+    public static boolean isCandidatePrivate(String mobile) {
+        return CandidateDAO.findByMobile(mobile, ServerConstants.CANDIDATE_ACCESS_LEVEL_PRIVATE) > 0;
     }
 }

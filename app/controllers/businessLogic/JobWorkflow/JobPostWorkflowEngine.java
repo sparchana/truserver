@@ -28,11 +28,9 @@ import controllers.businessLogic.*;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.staticdao.RejectReasonDAO;
-import models.entity.Candidate;
-import models.entity.Interaction;
-import models.entity.JobPost;
+import models.entity.*;
 import models.entity.OM.*;
-import models.entity.Partner;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.*;
 import models.util.NotificationUtil;
 import models.util.SmsUtil;
@@ -273,8 +271,10 @@ public class JobPostWorkflowEngine {
                                                                                   List<Integer> jobPostDocumentIdList,
                                                                                   List<Integer> jobPostAssetIdList,
                                                                                   Double radius,
+                                                                                  Long jobPostId,
                                                                                   boolean showOnlyFreshCandidate,
-                                                                                  boolean isPrivate) {
+                                                                                  boolean isPrivate,
+                                                                                  RecruiterProfile recruiterProfile) {
         List<Integer> minExperienceList = new ArrayList<>();
         List<Integer> maxExperienceList = new ArrayList<>();
 
@@ -442,16 +442,40 @@ public class JobPostWorkflowEngine {
 
         List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList, radius, true);
 
-        Map<Long, CandidateExtraData> allFeature = computeExtraDataForRecruiterSearchResult(candidateList, isPrivate);
+        Map<Long, CandidateExtraData> allFeature = computeExtraDataForRecruiterSearchResult(candidateList, jobPostId, isPrivate);
 
         if (candidateList.size() != 0) {
             for (Candidate candidate : candidateList) {
 
-                // filter out all candidate to whom recruiter has already sent sms
-                Integer totalSms = allFeature.get(candidate.getCandidateId()).getTotalSmsSent();
-                if(showOnlyFreshCandidate && totalSms != null && totalSms > 0){
-                    continue;
+                if(isPrivate){
+
+                    // filter out all candidate to whom recruiter has already sent sms
+                    Integer totalSms = allFeature.get(candidate.getCandidateId()).getTotalSmsSent();
+                    if(showOnlyFreshCandidate && totalSms != null && totalSms > 0){
+                        continue;
+                    }
+
+                    // TODO enhancement: find a way to query only those candidates which belong to the company of this recruiter
+                    // filter out candidate who don't belong to this recruiter
+                    List<CandidateExtraData.CompanyIdName> companyList = allFeature.get(candidate.getCandidateId()).getCompanyList();
+                    if(companyList == null|| companyList.size() == 0){
+                        // all private recruiter will have candidates with company association
+                        continue;
+
+                    } else {
+                        boolean shouldAdd = false;
+                        for(CandidateExtraData.CompanyIdName companyIdName: companyList) {
+                            if(Objects.equals(companyIdName.getCompanyId(), recruiterProfile.getCompany().getCompanyId())) {
+                                shouldAdd = true;
+                            }
+                        }
+                        if(!shouldAdd){
+                            continue;
+                        }
+                    }
                 }
+
+
                 if (CandidateService.getP0FieldsCompletionPercent(candidate) > 0.5) {
                     CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
                     candidateWorkflowData.setCandidate(candidate);
@@ -2302,7 +2326,7 @@ public class JobPostWorkflowEngine {
         return null;
     }
 
-    private static Map<Long, CandidateExtraData> computeExtraDataForRecruiterSearchResult(List<Candidate> candidateList, boolean isPrivate) {
+    private static Map<Long, CandidateExtraData> computeExtraDataForRecruiterSearchResult(List<Candidate> candidateList, Long jobPostId, boolean isPrivate) {
 
         if (candidateList.size() == 0) return null;
         // candidateId --> featureMap
@@ -2322,11 +2346,19 @@ public class JobPostWorkflowEngine {
                 .setRawSql(getRawSqlForInteraction(candidateListString))
                 .findMap("objectAUUId", String.class);
 
-            // sms count for each candidate
-        List<SmsReport> smsReportList =  SmsReport.find.where().in("CandidateId", candidateIdList).findList();
+            // sms count for each candidate per jobpost
+        List<SmsReport> smsReportList =
+                        jobPostId == null ?
+                                  SmsReport.find.where()
+                                           .in("CandidateId", candidateIdList).findList() :
+                                        SmsReport.find.where()
+                                                 .eq("JobPostId", jobPostId)
+                                                 .in("CandidateId", candidateIdList).findList();
+
         Map<Candidate, List<SmsReport>> smsReportMap = new HashMap<>();
 
-            // list to map
+
+        // list to map
         for(SmsReport report : smsReportList) {
             List<SmsReport> valueList = smsReportMap.get(report.getCandidate());
             if( valueList == null) {
@@ -2335,6 +2367,22 @@ public class JobPostWorkflowEngine {
             valueList.add(report);
             smsReportMap.put(report.getCandidate(), valueList);
         }
+
+
+        List<PartnerToCandidateToCompany> candidateToCompanyList =
+                PartnerToCandidateToCompany.find.where().in("partnerToCandidate.candidate.candidateId", candidateIdList).findList();
+        Map<Candidate, List<Company>> pCCMap = new HashMap<>();
+
+        // list to map
+        for(PartnerToCandidateToCompany pcc : candidateToCompanyList) {
+            List<Company> valueList = pCCMap.get(pcc.getPartnerToCandidate().getCandidate());
+            if( valueList == null) {
+                valueList = new ArrayList<>();
+            }
+            valueList.add(pcc.getPartnerToCompany().getCompany());
+            pCCMap.put(pcc.getPartnerToCandidate().getCandidate(), valueList);
+        }
+
 
         for (Candidate candidate : candidateList) {
             CandidateExtraData candidateExtraData = candidateExtraDataMap.get(candidate.getCandidateId());
@@ -2351,6 +2399,16 @@ public class JobPostWorkflowEngine {
                     // sms count
                 if(isPrivate && smsReportMap.size()>0 && smsReportMap.get(candidate) !=null){
                     candidateExtraData.setTotalSmsSent(smsReportMap.get(candidate).size());
+                }
+                    // company compute
+                if(isPrivate && pCCMap.size()>0 && pCCMap.get(candidate) !=null) {
+                    List<CandidateExtraData.CompanyIdName> companyIdNameList = new ArrayList<>();
+                    for(Company company: pCCMap.get(candidate)){
+                        if(company != null){
+                            companyIdNameList.add(new CandidateExtraData.CompanyIdName(company.getCompanyId(), company.getCompanyName()));
+                        }
+                    }
+                    candidateExtraData.setCompanyList(companyIdNameList);
                 }
             }
 
@@ -2381,7 +2439,6 @@ public class JobPostWorkflowEngine {
     }
 
     public static Result updateInterviewStatus(InterviewStatusRequest interviewStatusRequest, int channel) {
-        Logger.info("Yes herer");
         Candidate candidate = Candidate.find.where().eq("candidateId", interviewStatusRequest.getCandidateId()).findUnique();
         if (candidate != null) {
             int jwStatus = ServerConstants.INTERVIEW_STATUS_ACCEPTED;

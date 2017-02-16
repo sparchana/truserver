@@ -57,10 +57,7 @@ import org.json.simple.JSONArray;
 import play.Logger;
 import play.api.Play;
 import play.data.Form;
-import play.mvc.Controller;
-import play.mvc.Http;
-import play.mvc.Result;
-import play.mvc.Security;
+import play.mvc.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,6 +73,7 @@ import static com.avaje.ebean.Expr.eq;
 import static controllers.PartnerController.checkCandidateExistence;
 import static play.libs.Json.toJson;
 
+@With(ForceHttps.class)
 public class Application extends Controller {
 
     private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
@@ -287,7 +285,7 @@ public class Application extends Controller {
         if(session().get("sessionChannel") != null || !session().get("sessionChannel").isEmpty()){
             Integer channelId = Integer.parseInt(session().get("sessionChannel"));
             int channelType = channelId == null ? InteractionConstants.INTERACTION_CHANNEL_UNKNOWN : channelId;
-            return ok(toJson(JobService.applyJob(applyJobRequest, channelType, InteractionConstants.INTERACTION_TYPE_APPLIED_JOB)));
+            return ok(toJson(JobService.applyJob(applyJobRequest, channelType, InteractionConstants.INTERACTION_TYPE_APPLIED_JOB, true)));
         } else {
             return badRequest();
         }
@@ -899,8 +897,8 @@ public class Application extends Controller {
         return ok(toJson(JobSearchService.getAllActiveJobsPaginated(index)));
     }
 
-    public static Result getAllHotJobPosts(Long index) {
-        return ok(toJson(JobSearchService.getAllHotJobsPaginated(index)));
+    public static Result getAllHotJobPosts(Integer index, Integer sessionSalt) {
+        return ok(toJson(JobSearchService.getAllHotJobsPaginated(index, sessionSalt)));
     }
 
     @Security.Authenticated(Secured.class)
@@ -917,19 +915,132 @@ public class Application extends Controller {
         }
 
         // Query interactions table to get who created this job post
-
         Map <?, Interaction> jobPostCreatedInteractionMap =
                 Interaction.find.where().eq("interactionType", InteractionConstants.INTERACTION_TYPE_NEW_JOB_CREATED)
                         .in("objectBUUId", jobpostUUIDs).setMapKey("objectBUUId").findMap();
-        for (JobPost jobPost : jobPosts) {
-            Interaction createdInteraction = jobPostCreatedInteractionMap.get(jobPost.getJobPostUUId());
 
-            if (createdInteraction != null) {
-                jobPost.setCreatedBy(createdInteraction.getCreatedBy());
+        List<RecDashboardResponse> jobList = new ArrayList<>();
+
+        //setting list objects
+        for (JobPost jobPost : jobPosts) {
+            RecDashboardResponse response = new RecDashboardResponse();
+
+            response.setJobPostId(Math.toIntExact(jobPost.getJobPostId()));
+            response.setCreationTimeStamp(jobPost.getJobPostCreateTimestamp());
+
+            //company
+            if(jobPost.getCompany() != null){
+                response.setCompanyId(Math.toIntExact(jobPost.getCompany().getCompanyId()));
+                response.setCompanyName(jobPost.getCompany().getCompanyName());
             }
+            response.setJobTitle(jobPost.getJobPostTitle());
+
+            //if its a private job
+            if(jobPost.getJobPostAccessLevel() == ServerConstants.JOB_POST_TYPE_PRIVATE){
+                response.setJobTitle("[Private Job] " + jobPost.getJobPostTitle());
+            }
+
+            //salary
+            response.setSalary(String.valueOf(jobPost.getJobPostMinSalary()));
+            if(jobPost.getJobPostMaxSalary() != null && jobPost.getJobPostMaxSalary() > 0){
+                response.setSalary(jobPost.getJobPostMinSalary() + " - " + jobPost.getJobPostMaxSalary());
+            }
+
+            //localities
+            String localities = "";
+            for(JobPostToLocality jobLocality : jobPost.getJobPostToLocalityList()){
+                localities += jobLocality.getLocality().getLocalityName() + ", ";
+            }
+            if(!Objects.equals(localities, "")){
+                response.setJobLocation(localities.substring(0, (localities.length() - 2)));
+            } else{
+                response.setJobLocation(localities);
+            }
+
+            //is hot
+            if(jobPost.getJobPostIsHot() != null){
+                response.setJobIsHot(jobPost.getJobPostIsHot());
+            }
+
+            if(jobPost.getPricingPlanType() != null){
+                response.setJobPlan(jobPost.getPricingPlanType().getPricingPlanTypeName());
+            }
+
+            //job role
+            if(jobPost.getJobRole() != null){
+                response.setJobRole(jobPost.getJobRole().getJobName());
+            }
+
+            //job status
+            if(jobPost.getJobPostStatus() != null){
+                response.setJobStatus(jobPost.getJobPostStatus().getJobStatusName());
+            }
+
+            //job type id
+            response.setJobTypeId(ServerConstants.JOB_POST_TYPE_OPEN);
+
+            //created by
+            Interaction createdInteraction = jobPostCreatedInteractionMap.get(jobPost.getJobPostUUId());
+            if (createdInteraction != null) {
+                response.setCreatedBy(createdInteraction.getCreatedBy());
+            }
+
+            //awaiting interview schedule
+            response.setAwaitingInterviewSchedule(jobPost.getAwaitingInterviewScheduleCount());
+
+            //awaiting recruiter confirmation
+            response.setAwaitingRecruiterConfirmation(jobPost.getAwaitingRecruiterConfirmationCount());
+
+            //confirmed interviews
+            response.setConfirmedInterviews(jobPost.getConfirmedInterviewsCount());
+
+            //today's interviews
+            response.setTodaysInterviews(jobPost.getTodaysInterviewCount());
+
+            //tomorrow's interviews
+            response.setTomorrowsInterviews(jobPost.getTomorrowsInterviewCount());
+
+            //completed interviews
+            response.setCompletedInterviews(jobPost.getCompletedInterviewCount());
+
+            //job experience
+            if(jobPost.getJobPostExperience() != null){
+                response.setJobExperience(jobPost.getJobPostExperience().getExperienceType());
+            }
+
+            //job experience
+            if(jobPost.getJobPostExperience() != null){
+                response.setJobExperience(jobPost.getJobPostExperience().getExperienceType());
+            }
+
+            //interview address
+            if(jobPost.getInterviewFullAddress() != null){
+                response.setInterviewAddress(jobPost.getInterviewFullAddress());
+            }
+
+            //interview days
+            response.setInterviewDetailsList(jobPost.getInterviewDetailsList());
+
+            //recruiter info
+            if(jobPost.getRecruiterProfile() != null){
+                String extraMsg = "";
+                if(!Objects.equals(jobPost.getCompany().getCompanyId(), jobPost.getRecruiterProfile().getCompany().getCompanyId())){
+                    extraMsg = "(Recruiter changed company to : " + jobPost.getRecruiterProfile().getCompany().getCompanyName() + ") ";
+                }
+                response.setRecruiterName(jobPost.getRecruiterProfile().getRecruiterProfileName() + " " + extraMsg);
+                response.setRecruiterId(Math.toIntExact(jobPost.getRecruiterProfile().getRecruiterProfileId()));
+                response.setTotalInterviewCredits(jobPost.getRecruiterProfile().getInterviewCreditCount());
+                response.setTotalContactCredits(jobPost.getRecruiterProfile().getContactCreditCount());
+            }
+
+            //adding in list
+            jobList.add(response);
         }
 
+/*
         return ok(toJson(jobPosts));
+*/
+        return ok(toJson(jobList));
     }
 
     public static Result getAllLocality() {
@@ -1658,6 +1769,7 @@ public class Application extends Controller {
                     FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()));
 
             SearchJobService.computeCTA(matchingJobList, id);
+            SearchJobService.removeSensitiveDetail(matchingJobList);
 
             return ok(toJson(matchingJobList));
         }
@@ -2650,7 +2762,7 @@ public class Application extends Controller {
 
         Integer channelId = Integer.parseInt(session().get("sessionChannel"));
         int channelType = channelId == null ? InteractionConstants.INTERACTION_CHANNEL_UNKNOWN : channelId;
-        ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, channelType, InteractionConstants.INTERACTION_TYPE_APPLIED_JOB_IN_SHORT);
+        ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, channelType, InteractionConstants.INTERACTION_TYPE_APPLIED_JOB_IN_SHORT, true);
 
         if(applyJobResponse.getStatus() == ApplyJobResponse.STATUS_EXISTS){
             response.setStatus(PostApplyInShortResponse.Status.ALREADY_APPLIED);
@@ -2718,6 +2830,7 @@ public class Application extends Controller {
         JobPostFilterResponse response = new JobPostFilterResponse();
 
         response.setJobPostId(jobPost.getJobPostId());
+        response.setJobPostTitle(jobPost.getJobPostTitle());
         response.setGender(jobPost.getGender());
         response.setMaxSalary(jobPost.getJobPostMaxSalary());
         response.setJobPostJobRoleId(jobPost.getJobRole().getJobRoleId());
@@ -2787,4 +2900,19 @@ public class Application extends Controller {
         }
         return ok("Done");
     }
+
+    public static Result doQuickApply() {
+
+        JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+        ApplyJobRequest applyJobRequest = new ApplyJobRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            applyJobRequest = newMapper.readValue(req.toString(), ApplyJobRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(JobService.callToApply(applyJobRequest)));
+    }
+
 }
