@@ -359,13 +359,18 @@ function tabChange2() {
                                     },
                                     'action' : function() {
                                         var actionBtn = '-';
-                                        if(workflowObj.extraData.workflowStatus != null && workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED){
-                                            actionBtn = '<div class="mLabel" id="candidate_action_'+ workflowObj.candidate.candidateId +'"  style="width:100%" >'
-                                                + '<span class="customBtn btnGreen" onclick="acceptAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId  + ');" >Accept</span>'
-                                                + '<span class="customBtn btnRed" onclick="rejectAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId  + ');" >Reject</span>'
-                                                + '<span class="customBtn btnOrange" onclick="rescheduleAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId  + ');">Reschedule</span>'
-                                                + '</span>';
-
+                                        if(workflowObj.extraData.workflowStatus != null){
+                                            if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED){
+                                                actionBtn = '<div class="mLabel" id="candidate_action_'+ workflowObj.candidate.candidateId +'"  style="width:100%" >'
+                                                    + '<span class="customBtn btnGreen" onclick="acceptAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId + ');" >Accept</span>'
+                                                    + '<span class="customBtn btnRed" onclick="rejectAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId + ');" >Reject</span>'
+                                                    + '<span class="customBtn btnOrange" onclick="rescheduleAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId + ');">Reschedule</span>'
+                                                    + '</span>';
+                                            } else if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_PRESCREEN_COMPLETED){
+                                                actionBtn = '<div class="mLabel" id="candidate_action_'+ workflowObj.candidate.candidateId +'"  style="width:100%" >'
+                                                    + '<span class="customBtn btnBlue" onclick="initInterviewModal(' + workflowObj.candidate.candidateId + ', ' + jobPostId + ', ' +  false + ', ' + false + ')">Schedule Interview</span>'
+                                                    + '</span>';
+                                            }
                                         }
 
                                         return actionBtn;
@@ -613,8 +618,7 @@ function processDataInterviewStatus(returnedData) {
             notifySuccess("Interview Rejected");
         } else if(globalInterviewStatus == 3){
             notifySuccess("Interview Rescheduled");
-            $("#candidate_action_" + globalCandidateId).html('');
-            $("#candidate_action_" + globalCandidateId).html("Rescheduled");
+            $("#" + globalCandidateId).remove();
         }
     } else{
         notifyError("Something went wrong. Please try again later. Refreshing page..");

@@ -204,19 +204,23 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
         animate: true,
         onEscape: function() {
             $('body').removeClass('open-interview-selector-modal');
-            if(isPartnerVal == false || isPartnerVal == null ){
-                nfy("Submitted successfully. Refreshing page.", 'success');
+            if(window.location.pathname == "/recruiter/jobPostTrack/" + jobPostId){
 
-                setTimeout(function () {
-                    if(window.location.pathname == "/dashboard/appliedJobs/"){
-                        window.location.href = "/dashboard/appliedJobs/";
-                    } else {
-                        location.reload();
-                    }
-                    // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
-                }, 2000);
             } else{
-                nfy("Submitted successfully.", 'success');
+                if(isPartnerVal == false || isPartnerVal == null ){
+                    nfy("Submitted successfully. Refreshing page.", 'success');
+
+                    setTimeout(function () {
+                        if(window.location.pathname == "/dashboard/appliedJobs/"){
+                            window.location.href = "/dashboard/appliedJobs/";
+                        } else {
+                            location.reload();
+                        }
+                        // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
+                    }, 2000);
+                } else{
+                    nfy("Submitted successfully.", 'success');
+                }
             }
         },
         buttons: {
@@ -305,15 +309,25 @@ function processInterviewSubmissionResponse(returnData) {
             $("#confirmationModal").modal("show");
         } else {
             if(isPartnerVal == false || isPartnerVal == null ){
-                nfy("Submitted successfully. Refreshing page.", 'success');
 
-                setTimeout(function () {
-                    if(window.location.pathname == "/dashboard/appliedJobs/"){
-                        window.location.href = "/dashboard/appliedJobs/";
-                    } else {
-                        location.reload();
-                    }
-                }, 2000);
+                if(window.location.pathname == "/recruiter/jobPostTrack/" + jobPostId){
+                    nfy("Interview scheduled!", 'success');
+                    hideTab1();
+                    hideTab2();
+                    hideTab3();
+
+                    tabChange2();
+                } else{
+                    nfy("Submitted successfully. Refreshing page.", 'success');
+
+                    setTimeout(function () {
+                        if(window.location.pathname == "/dashboard/appliedJobs/"){
+                            window.location.href = "/dashboard/appliedJobs/";
+                        } else {
+                            location.reload();
+                        }
+                    }, 2000);
+                }
             } else{
                 nfy("Submitted successfully.", 'success');
             }
