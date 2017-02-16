@@ -2,13 +2,9 @@ package controllers.businessLogic;
 
 import api.InteractionConstants;
 import api.ServerConstants;
-import api.http.CandidateKnownLanguage;
-import api.http.CandidateSkills;
 import api.http.FormValidator;
-import api.http.httpRequest.AddCandidateEducationRequest;
 import api.http.httpRequest.AddCompanyRequest;
 import api.http.httpRequest.AddJobPostRequest;
-import api.http.httpRequest.AddSupportCandidateRequest;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
 import api.http.httpRequest.Recruiter.AddRecruiterRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
@@ -20,7 +16,6 @@ import api.http.httpResponse.Recruiter.UnlockContactResponse;
 import api.http.httpResponse.Recruiter.recruiterAdmin.*;
 import api.http.httpResponse.interview.InterviewResponse;
 import au.com.bytecode.opencsv.CSVReader;
-import com.google.common.base.CharMatcher;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;
@@ -31,7 +26,6 @@ import dao.*;
 import models.entity.*;
 import models.entity.OM.CandidateResume;
 import models.entity.OM.InterviewDetails;
-import models.entity.OM.JobPostToLocality;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
@@ -43,9 +37,7 @@ import models.entity.Static.*;
 import models.util.EmailUtil;
 import models.util.SmsUtil;
 import models.util.Util;
-import models.util.Validator;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import play.Logger;
@@ -61,13 +53,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
-import static controllers.PartnerController.checkCandidateExistence;
-import static controllers.PartnerController.createCandidateViaPartner;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
 import static models.util.Util.generateOtp;
-import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
-import static play.mvc.Results.TODO;
 
 /**
  * Created by batcoder1 on 7/7/16.
@@ -1288,12 +1276,12 @@ public class RecruiterService {
 
                                     case "min salary":
                                         String minSalary = nextLine[i];
-                                        if(Validator.isInteger(minSalary)){
+                                        if(StringUtils.isNumeric(minSalary)){
                                             if(Integer.valueOf(minSalary) > 2000 && Integer.valueOf(minSalary) < 99999){
                                                 addJobPostRequest.setJobPostMinSalary(Long.valueOf(minSalary));
                                             } else{
                                                 shouldSave = false;
-                                                invalidFields += "\"" + header[i] + "\" should be between 2000 and 99999. " + rowCount + ",";
+                                                invalidFields += "\"" + header[i] + "\" should be numeric & should be between 2000 and 99999. " + rowCount + ",";
                                             }
 
                                         } else{
@@ -1304,7 +1292,7 @@ public class RecruiterService {
 
                                     case "max salary":
                                         String maxSalary = nextLine[i];
-                                        if(Validator.isInteger(maxSalary)){
+                                        if(StringUtils.isNumeric(maxSalary)){
                                             if(Integer.valueOf(maxSalary) > 2000 && Integer.valueOf(maxSalary) < 99999){
                                                 addJobPostRequest.setJobPostMaxSalary(Long.valueOf(maxSalary));
                                             } else{
@@ -1320,7 +1308,7 @@ public class RecruiterService {
                                     case "vacancies":
                                         String vacancies = nextLine[i];
                                         if(vacancies != null){
-                                            if(Validator.isInteger(vacancies)){
+                                            if(StringUtils.isNumeric(vacancies)){
                                                 addJobPostRequest.setJobPostVacancies(Integer.valueOf(vacancies));
                                             } else{
                                                 shouldSave = false;
@@ -1354,7 +1342,7 @@ public class RecruiterService {
 
                                     case "shift":
                                         String shift = nextLine[i];
-                                        if(Validator.isInteger(shift)){
+                                        if(StringUtils.isNumeric(shift)){
                                             TimeShift timeShift = TimeShift.find.where().eq("TimeShiftId", nextLine[i]).findUnique();
                                             if(timeShift != null){
                                                 addJobPostRequest.setJobPostShiftId(timeShift.getTimeShiftId());
@@ -1388,7 +1376,10 @@ public class RecruiterService {
                                                 shouldSave = false;
                                                 invalidFields += "Unable to resolve \"" + header[i] + "\" in row no. " + rowCount + ",";
                                             }
-                                        } catch (Exception ignored) {}
+                                        } catch (Exception e) {
+                                            shouldSave = false;
+                                            invalidFields += "Unable to resolve \"" + header[i] + "\" in row no. " + rowCount + ",";
+                                        }
                                         break;
 
                                     case "building name":
@@ -1402,10 +1393,8 @@ public class RecruiterService {
 
                                             Boolean toProceed = true;
                                             for(String slot : interviewSlotList){
-                                                if(Validator.isInteger(slot)){
-                                                    Logger.info("right");
+                                                if(StringUtils.isNumeric(slot)){
                                                 } else{
-                                                    Logger.info("no");
                                                     toProceed = false;
                                                 }
                                             }
@@ -1433,57 +1422,52 @@ public class RecruiterService {
 
                                             for(String day : interviewDaysList){
 
-                                                //monday
-                                                if(Objects.equals(day.toLowerCase().trim(), "monday") ||
-                                                        Objects.equals(day.toLowerCase().trim(), "mon")){
+                                                switch(day.toLowerCase().trim()){
+                                                    case "monday":
+                                                    case "mon": interviewDays = "1" + interviewDays.substring(1, interviewDays.length());
+                                                        break;
 
-                                                    interviewDays = "1" + interviewDays.substring(1, interviewDays.length());
+                                                    case "tu":
+                                                    case "tue":
+                                                    case "tues":
+                                                    case "tuesday": interviewDays = interviewDays.substring(0, 1) + "1" + interviewDays.substring(2, interviewDays.length());
+                                                        break;
+
+                                                    case "wed":
+                                                    case "wednesday": interviewDays = interviewDays.substring(0, 2) + "1" + interviewDays.substring(3, interviewDays.length());
+                                                        break;
+
+                                                    case "th":
+                                                    case "thu":
+                                                    case "thur":
+                                                    case "thurs":
+                                                    case "thursday": interviewDays = interviewDays.substring(0, 3) + "1" + interviewDays.substring(4, interviewDays.length());
+                                                        break;
+
+                                                    case "fri":
+                                                    case "friday": interviewDays = interviewDays.substring(0, 4) + "1" + interviewDays.substring(5, interviewDays.length());
+                                                        break;
+
+                                                    case "sat":
+                                                    case "saturday": interviewDays = interviewDays.substring(0, 5) + "1" + interviewDays.substring(6, interviewDays.length());
+                                                        break;
+
+                                                    case "sun":
+                                                    case "sunday": interviewDays = interviewDays.substring(0, 6) + "1" + interviewDays.substring(7, interviewDays.length());
+                                                        break;
+
                                                 }
 
-                                                //tuesday
-                                                if(Objects.equals(day.toLowerCase().trim(), "tuesday") ||
-                                                        Objects.equals(day.toLowerCase().trim(), "tue")){
-
-                                                    interviewDays = interviewDays.substring(0, 1) + "1" + interviewDays.substring(2, interviewDays.length());
+                                                if(Objects.equals(interviewDays, "0000000")){
+                                                    shouldSave = false;
+                                                    invalidFields += "No \"" + header[i] + "\" value found at row no. " + rowCount + ",";
+                                                } else{
+                                                    addJobPostRequest.setJobPostInterviewDays(interviewDays);
                                                 }
-
-                                                //wednesday
-                                                if(Objects.equals(day.toLowerCase().trim(), "wednesday") ||
-                                                        Objects.equals(day.toLowerCase().trim(), "wed")){
-
-                                                    interviewDays = interviewDays.substring(0, 2) + "1" + interviewDays.substring(3, interviewDays.length());
-                                                }
-
-                                                //thursday
-                                                if(Objects.equals(day.toLowerCase().trim(), "thursday") ||
-                                                        Objects.equals(day.toLowerCase().trim(), "thur")){
-
-                                                    interviewDays = interviewDays.substring(0, 3) + "1" + interviewDays.substring(4, interviewDays.length());                                            }
-
-                                                //friday
-                                                if(Objects.equals(day.toLowerCase().trim(), "friday") ||
-                                                        Objects.equals(day.toLowerCase().trim(), "fri")){
-
-                                                    interviewDays = interviewDays.substring(0, 4) + "1" + interviewDays.substring(5, interviewDays.length());                                            }
-
-                                                //saturday
-                                                if(Objects.equals(day.toLowerCase().trim(), "saturday") ||
-                                                        Objects.equals(day.toLowerCase().trim(), "sat")){
-
-                                                    interviewDays = interviewDays.substring(0, 5) + "1" + interviewDays.substring(6, interviewDays.length());
-                                                }
-
-                                                //sunday
-                                                if(Objects.equals(day.toLowerCase().trim(), "sunday") ||
-                                                        Objects.equals(day.toLowerCase().trim(), "sun")){
-
-                                                    interviewDays = interviewDays.substring(0, 6) + "1" + interviewDays.substring(7, interviewDays.length());
-                                                }
-
-                                                addJobPostRequest.setJobPostInterviewDays(interviewDays);
                                             }
                                         } else{
                                             shouldSave = false;
+                                            invalidFields += "No \"" + header[i] + "\" value found at row no. " + rowCount + ",";
                                         }
                                         break;
 
