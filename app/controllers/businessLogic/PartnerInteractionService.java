@@ -10,15 +10,15 @@ import static api.InteractionConstants.*;
  * Created by adarsh on 12/9/16.
  */
 public class PartnerInteractionService {
-    public static void createInteractionForPartnerSignUp(String objectAUUId, String result, Integer interactionType) {
+    public static void createInteractionForPartnerSignUp(String objectAUUId, String result, Integer interactionType, boolean isBulkUpload, int channel) {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_PARTNER,
-                interactionType,
+                isBulkUpload ? InteractionConstants.INTERACTION_TYPE_RECRUITER_CREATED_EMPLOYEE : interactionType,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
-                InteractionConstants.INTERACTION_CREATED_SELF,
-                InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE
+                isBulkUpload ? InteractionConstants.INTERACTION_CREATED_RECRUITER : InteractionConstants.INTERACTION_CREATED_SELF,
+                channel
         );
         InteractionService.createInteraction(interaction);
     }

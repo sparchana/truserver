@@ -1,9 +1,6 @@
 package api.http.httpRequest;
 
 import api.http.FormValidator;
-import models.entity.Interaction;
-
-import java.util.List;
 
 /**
  * Created by adarsh on 10/9/16.
@@ -14,13 +11,16 @@ public class PartnerSignUpRequest {
     private String partnerMobile;
 
     private Integer partnerType;
-    private Integer partnerLocality;
+    private Long partnerLocality;
 
+    // TODO rename this in js to partnerCompanyCode
     private String partnerCompanyId;
 
     //for setting password
     private String partnerPassword;
     private String partnerAuthMobile;
+
+    private String partnerEmail;
 
 
     public String getPartnerName() {
@@ -71,19 +71,28 @@ public class PartnerSignUpRequest {
         this.partnerType = partnerType;
     }
 
-    public Integer getPartnerLocality() {
+    public Long getPartnerLocality() {
         return partnerLocality;
     }
 
-    public void setPartnerLocality(Integer partnerLocality) {
+    public void setPartnerLocality(Long partnerLocality) {
         this.partnerLocality = partnerLocality;
     }
 
-    public String getPartnerCompanyId() {
+    public String getPartnerCompanyCode() {
         return partnerCompanyId;
     }
 
-    public void setPartnerCompanyId(String partnerCompanyId) {
+    public void setPartnerCompanyCode(String partnerCompanyId) {
         this.partnerCompanyId = partnerCompanyId;
     }
+
+    public String getPartnerEmail() {
+        return partnerEmail;
+    }
+
+    public void setPartnerEmail(String partnerEmail) {
+        this.partnerEmail = partnerEmail;
+    }
+
 }

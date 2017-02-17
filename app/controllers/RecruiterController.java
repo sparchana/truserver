@@ -1485,9 +1485,9 @@ public class RecruiterController {
     public static Result uploadEmployee() throws Exception {
         java.io.File file = (java.io.File) request().body().asMultipartFormData().getFile("file").getFile();
 
-        EmployeeService employeeService = new EmployeeService();
+        EmployeeService employeeService = new EmployeeService(InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE);
 
-        return ok(toJson(employeeService.parseEmployeeCsv(file)));
+        return ok(toJson(employeeService.parseEmployeeCsv(file, RecruiterDAO.findById(Long.valueOf(session().get("recruiterId"))))));
     }
 
 }

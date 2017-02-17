@@ -43,6 +43,7 @@ public class ServerConstants {
     public static final int CANDIDATE_STATUS_VERIFIED= 1;
 
     public static final int PARTNER_TYPE_PRIVATE = 7;
+    public static final int PARTNER_TYPE_PRIVATE_EMPLOYEE = 8;
 
     public static final int JOB_POST_TYPE_OPEN = 0;
     public static final int JOB_POST_TYPE_PRIVATE = 1;
