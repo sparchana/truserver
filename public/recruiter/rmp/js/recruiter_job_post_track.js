@@ -467,9 +467,11 @@ function tabChange3() {
                     if(returnedData == 0){
                         logoutRecruiter();
                     } else{
+                        $("#confirmedApplications").show();
                         var applicationList = returnedData.applicationList;
+                        var returned_data = new Array();
+
                         if(applicationList.length > 0) {
-                            var returned_data = new Array();
                             applicationList.forEach(function (workflowObj) {
                                 returned_data.push({
                                     'candidateId' : workflowObj.candidate.candidateId,
@@ -530,10 +532,10 @@ function tabChange3() {
                             });
 
                             $("#confirmedApplicationContainer").show();
-                            return returned_data;
                         } else{
                             $("#noConfirmedApplications").show();
                         }
+                        return returned_data;
                     }
                 }
             },
@@ -968,6 +970,7 @@ function hideTab2() {
 }
 
 function hideTab3() {
+    $("#confirmedApplications").hide();
     $("#noConfirmedApplications").hide();
     $("#confirmedApplicationContainer").hide();
 }
