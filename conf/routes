@@ -170,6 +170,7 @@ GET         /checkPrivateRecruiterPartnerAccount                          contro
 GET         /switchToPartner                                              controllers.RecruiterController.switchToPartner()
 GET         /recruiter/getNextRoundComponents/:jpId                       controllers.RecruiterController.getNextRoundComponents(jpId: Long)
 GET         /recruiter/getPrevRounds                                      controllers.RecruiterController.getPreviousRounds(jpId: java.lang.Long ?= null, cId: java.lang.Long ?= null)
+GET         /recruiter/uploadEmployee                                     controllers.RecruiterController.uploadEmployee()
 
 #Temp route delete after use
 GET         /recruiter/job/candidateModal                                 controllers.RecruiterController.recruiterCandidateModal()
@@ -339,6 +340,8 @@ GET         /convertOldData                                               contro
 # GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
 # GET         /testResponse                                                 controllers.TestController.testApplyInShortResponse()
 # GET         /isPrivate/:mobile                                            controllers.TestController.isPrivate(mobile: String)
+GET          /testUploadEmployeeCSV                                         controllers.TestController.renderEmployeeCSVUpload()
+POST         /testProcessEmployeeCSV                                        controllers.TestController.processEmployeeCSV()
 
 # Scrap API
 # ~~~~~~~~~~~~~

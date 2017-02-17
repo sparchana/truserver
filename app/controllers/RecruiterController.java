@@ -19,6 +19,7 @@ import api.http.httpResponse.interview.InterviewResponse;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import controllers.businessLogic.EmployeeService;
 import controllers.businessLogic.JobService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.businessLogic.PartnerAuthService;
@@ -1478,6 +1479,15 @@ public class RecruiterController {
             }
         }
         return ok("0");
+    }
+
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result uploadEmployee() throws Exception {
+        java.io.File file = (java.io.File) request().body().asMultipartFormData().getFile("file").getFile();
+
+        EmployeeService employeeService = new EmployeeService();
+
+        return ok(toJson(employeeService.parseEmployeeCsv(file)));
     }
 
 }
