@@ -170,7 +170,6 @@ GET         /checkPrivateRecruiterPartnerAccount                          contro
 GET         /switchToPartner                                              controllers.RecruiterController.switchToPartner()
 GET         /recruiter/getNextRoundComponents/:jpId                       controllers.RecruiterController.getNextRoundComponents(jpId: Long)
 GET         /recruiter/getPrevRounds                                      controllers.RecruiterController.getPreviousRounds(jpId: java.lang.Long ?= null, cId: java.lang.Long ?= null)
-GET         /recruiter/uploadEmployee                                     controllers.RecruiterController.uploadEmployee()
 
 #Temp route delete after use
 GET         /recruiter/job/candidateModal                                 controllers.RecruiterController.recruiterCandidateModal()
@@ -204,6 +203,7 @@ POST        /getSentSms/                                                  contro
 POST        /getAppliedCandidates/                                        controllers.RecruiterController.getAppliedCandidates(jpId: java.lang.Long ?= null)
 POST        /getConfirmedApplication/                                     controllers.RecruiterController.getConfirmedApplication(jpId: java.lang.Long ?= null)
 POST        /getFetchedCandidateData                                      controllers.RecruiterController.getFetchedCandidateData()
+POST        /recruiter/uploadEmployee                                     controllers.RecruiterController.uploadEmployee()
 
 # Recruiter SuperAdmin API
 # ~~~~~~~~~~~~~
