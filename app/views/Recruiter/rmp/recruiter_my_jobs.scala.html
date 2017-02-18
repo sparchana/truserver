@@ -57,14 +57,14 @@
         <input name="viewTypeGroup" value="1" type="radio" id="all" />
         <label for="all" style="margin-left: 12px; padding-left: 24px">All Jobs</label>
 
-        <span class="customBtn btnGreen" style="display: inline-block;
+        <label class="customBtn btnGreen" style="display: inline-block;
             cursor: pointer;
             float: right;
-            margin: 12px 38px 0px 0px">
+            margin: 12px 38px 0px 0px"><b>
             <img src="/assets/recruiter/img/icons/upload.svg" width="24px" style="margin-top: -4px; padding-right: 6px">
-            <b>Bulk Upload</b>
+            Bulk Upload</b>
             <input type="file" id="uploadedFile" accept=".csv" onchange="uploadCSV(event)" style="display: none">
-        </span>
+        </label>
 
         <div style="padding-top: 8%; padding-bottom: 8%" id="loadingIcon">
             <center>
