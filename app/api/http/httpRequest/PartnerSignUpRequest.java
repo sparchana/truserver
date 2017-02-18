@@ -13,14 +13,17 @@ public class PartnerSignUpRequest {
     private Integer partnerType;
     private Long partnerLocality;
 
-    // TODO rename this in js to partnerCompanyCode
-    private String partnerCompanyId;
+    private String partnerCompanyCode;
 
     //for setting password
     private String partnerPassword;
     private String partnerAuthMobile;
 
     private String partnerEmail;
+
+
+    // used in employee bulk upload via recruiter
+    private String createdByRecuiterUUId;
 
 
     public String getPartnerName() {
@@ -80,11 +83,11 @@ public class PartnerSignUpRequest {
     }
 
     public String getPartnerCompanyCode() {
-        return partnerCompanyId;
+        return partnerCompanyCode;
     }
 
     public void setPartnerCompanyCode(String partnerCompanyId) {
-        this.partnerCompanyId = partnerCompanyId;
+        this.partnerCompanyCode = partnerCompanyId;
     }
 
     public String getPartnerEmail() {
@@ -95,4 +98,11 @@ public class PartnerSignUpRequest {
         this.partnerEmail = partnerEmail;
     }
 
+    public String getCreatedByRecuiterUUId() {
+        return createdByRecuiterUUId;
+    }
+
+    public void setCreatedByRecuiterUUId(String createdByRecuiterUUId) {
+        this.createdByRecuiterUUId = createdByRecuiterUUId;
+    }
 }

@@ -8,7 +8,6 @@ import controllers.businessLogic.employee.ParseEmployeeCSV;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.Locality;
 import models.util.Message;
-import play.Logger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -36,6 +35,7 @@ public class EmployeeService {
 
                 // create partner with access level 2
             response.getMessages().addAll(createEmployee(response.getParsedList(), recruiterProfile));
+
         }
 
         return response;
@@ -47,23 +47,28 @@ public class EmployeeService {
             return messageList;
         }
 
+            // contains all the elements to be removed, can't remove directly from parsedList , it breaks internal loop
+            // count
+        List<EmployeeCSVBean> removalList = new ArrayList<>();
+
         for(EmployeeCSVBean bean: parsedList) {
-            Logger.warn("operating on bean mobile: " + bean.getMobile());
+
+            if(bean == null) {continue;}
+
             PartnerSignUpRequest signUpRequest = new PartnerSignUpRequest();
             signUpRequest.setPartnerEmail(bean.getEmail());
             signUpRequest.setpartnerAuthMobile(bean.getMobile());
             signUpRequest.setPartnerMobile(bean.getMobile());
             signUpRequest.setPartnerName(bean.getName());
             signUpRequest.setPartnerType(ServerConstants.PARTNER_TYPE_PRIVATE_EMPLOYEE);
-
+            signUpRequest.setCreatedByRecuiterUUId(recruiterProfile.getRecruiterProfileUUId());
             SearchJobService searchJobService = new SearchJobService();
             Locality locality = searchJobService.determineLocality(bean.getLocality());
 
             if (locality == null){
                 Message message = new Message(Message.MESSAGE_ERROR, "Unable to resolve locality: " + bean.getLocality() + " for mobile: "+ bean.getMobile());
                 messageList.add(message);
-                Logger.error("removed element " + bean.getMobile());
-                parsedList.remove(bean);
+                removalList.add(bean);
                 continue;
             }
 
@@ -71,8 +76,11 @@ public class EmployeeService {
 
             signUpRequest.setPartnerCompanyCode(String.valueOf(recruiterProfile.getCompany().getCompanyCode()));
             PartnerService.signUpPartner(signUpRequest, channel, ServerConstants.LEAD_SOURCE_UNKNOWN);
+
         }
 
+        // remove non resolved locality beans
+        parsedList.removeAll(removalList); removalList.clear();
         return messageList;
     }
 }

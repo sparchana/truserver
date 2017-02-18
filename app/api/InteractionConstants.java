@@ -51,6 +51,7 @@ public class InteractionConstants {
     public static final String INTERACTION_RESULT_EXISTING_JOB_POST_UPDATED = "Existing Job post updated";
     public static final String INTERACTION_RESULT_NEW_RECRUITER_LEAD_ADDED = "New Recruiter Lead made contact";
     public static final String INTERACTION_RESULT_EXISTING_RECRUITER_MADE_CONTACT = "Existing Recruiter Lead made contact";
+    public static final String INTERACTION_RESULT_EMPLOYEE_BULK_UPLOAD_VIA_RECRUITER = "Recruiter Bulk Upload Employee/Partner";
 
     public static final String INTERACTION_RESULT_RECRUITER_AUTO_ACCEPT_JOB_INTERVIEW_DATE = "Recruiter has enabled auto-confirm for interview date and time";
     public static final String INTERACTION_RESULT_RECRUITER_ACCEPT_JOB_INTERVIEW_DATE = "Recruiter accepts interview date and time";
