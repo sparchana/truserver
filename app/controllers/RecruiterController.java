@@ -8,6 +8,7 @@ import api.http.httpRequest.LoginRequest;
 import api.http.httpRequest.Recruiter.*;
 import api.http.httpRequest.ResetPasswordResquest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
+import api.http.httpResponse.BulkUploadResponse;
 import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Recruiter.MultipleCandidateContactUnlockResponse;
 import api.http.httpResponse.Recruiter.RMP.ApplicationResponse;
@@ -22,6 +23,7 @@ import com.avaje.ebean.RawSqlBuilder;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.JobService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.businessLogic.PartnerAuthService;
@@ -52,10 +54,12 @@ import notificationService.NotificationEvent;
 import notificationService.SMSEvent;
 import play.Logger;
 import play.api.Play;
+import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 import play.mvc.With;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -804,6 +808,20 @@ public class RecruiterController {
         return ok(toJson(JobPostWorkflowEngine.getPreviousRounds(jpId, cId)));
     }
 
+    public static Result processJobCSV() throws IOException {
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart excel = body.getFile("file");
+        if (excel != null) {
+            String fileName = excel.getFilename();
+            Logger.info("fileName=" + fileName);
+            File file = (File) excel.getFile();
+            Logger.info("Uploading " + file);
+            BulkUploadResponse bulkUploadResponse = RecruiterService.bulkUploadJob(file,fileName);
+            return ok(toJson(bulkUploadResponse));
+        } else{
+            return ok("0");
+        }
+    }
 
     public static class RecruiterJobPostObject{
 

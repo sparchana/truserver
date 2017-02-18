@@ -141,11 +141,30 @@ function getRecruiterJobPosts() {
                                     },
                                     'status': function () {
                                         jobPostApplicationStatus(jobPost);
-                                        return '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>'
+                                        if(jobPost.jobPost.jobPostStatus != null){
+                                            if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_NEW){
+                                                return '<div id="jobPostStatusDivVal_'+ jobPost.jobPost.jobPostId +'" style="color: orange; margin-bottom: 2px; text-align: center;font-weight:bold">' + jobPost.jobPost.jobPostStatus.jobStatusName + '</div>' +
+                                                    '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>';
+                                            } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_ACTIVE){
+                                                return '<div id="jobPostStatusDivVal_'+ jobPost.jobPost.jobPostId +'" style="color: #69CF37; margin-bottom: 2px; text-align: center;font-weight:bold">' + jobPost.jobPost.jobPostStatus.jobStatusName + '</div>' +
+                                                    '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>';
+                                            } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_PAUSED){
+                                                return '<div id="jobPostStatusDivVal_'+ jobPost.jobPost.jobPostId +'" style="color: orange; margin-bottom: 2px; text-align: center;font-weight:bold">' + jobPost.jobPost.jobPostStatus.jobStatusName + '</div>' +
+                                                    '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>';
+                                            } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_CLOSED){
+                                                return '<div id="jobPostStatusDivVal_'+ jobPost.jobPost.jobPostId +'" style="color: red; margin-bottom: 2px; text-align: center;font-weight:bold">' + jobPost.jobPost.jobPostStatus.jobStatusName + '</div>' +
+                                                    '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>';
+                                            } else{
+                                                return '<div id="jobPostStatusDivVal_'+ jobPost.jobPost.jobPostId +'" style="color: red; margin-bottom: 2px; text-align: center;font-weight:bold">' + jobPost.jobPost.jobPostStatus.jobStatusName + '</div>' +
+                                                    '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>';
+                                            }
+                                        } else{
+                                            return '<div id="jobPostStatusDivVal_'+ jobPost.jobPost.jobPostId +'" style="text-align: center">' + jobPost.jobPost.jobPostStatus.jobStatusName + '</div>' +
+                                                '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>';
+                                        }
                                     },
                                     'editJob':'<center style="margin-top: 24px"><span class="customBtn btnGreen" style="cursor: pointer" onclick="openJobPost(' + jobPost.jobPost.jobPostId + ')">View/Edit</span></center>',
-                                    'candidates':'<center style="margin-top: 24px"><span class="customBtn btnGreen" style="cursor: pointer" onclick="openCandidateView('+jobPost.jobPost.jobPostId+')">Find</span></center>'
-                                })
+                                    'candidates':'<center style="margin-top: 24px"><span class="customBtn btnGreen" style="cursor: pointer" onclick="openCandidateView('+jobPost.jobPost.jobPostId+')">Find</span></center>'                                })
                             });
                             $("#noJobs").hide();
                             $(".postedJobTableDiv").show();
@@ -169,14 +188,24 @@ function getRecruiterJobPosts() {
                 { "data": "track" },
                 { "data": "status" },
                 { "data": "editJob" },
-                { "data": "candidates" },
+                { "data": "candidates" }
             ],
             "order": [[2, "desc"]],
             responsive: true,
             "destroy": true,
             "dom":'Bfrtip',
             "buttons": [
-                'copy','csv','excel'
+                'copy','csv','excel',
+                {
+                    text: '<img src="/assets/recruiter/img/icons/refresh.svg" width="12px"> Refresh',
+                    action: function ( e, dt, node, config ) {
+                        var table = $("table#postedJobTable").DataTable();
+                        table.destroy();
+                        $("#postedJobTable_wrapper").hide();
+                        $("#postedJobTable").hide();
+                        getRecruiterJobPosts();
+                    }
+                }
             ]
         });
     } catch (exception){
@@ -310,31 +339,18 @@ function jobPostApplicationStatus(jobPost) {
 
     if(jobPost.jobPost.jobPostStatus != null){
         if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_NEW){
-            statusName.textContent = "Under review";
-            statusName.style = "color: orange; margin-bottom: 2px; text-align: center;font-weight:bold";
-
             colJobStatus.appendChild(stopDiv);
 
         } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_ACTIVE){
-            statusName.textContent = "Active";
-            statusName.style = "color: #69CF37; margin-bottom: 2px; text-align: center;font-weight:bold";
 
             colJobStatus.appendChild(pauseDiv);
             colJobStatus.appendChild(stopDiv);
 
         } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_PAUSED){
-            statusName.textContent = "Paused";
-            statusName.style = "color: orange; margin-bottom: 2px; text-align: center;font-weight:bold";
 
             colJobStatus.appendChild(resumeDiv);
             colJobStatus.appendChild(stopDiv);
 
-        } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_CLOSED){
-            statusName.textContent = "Closed";
-            statusName.style = "color: red; margin-bottom: 2px; text-align: center;font-weight:bold";
-
-        } else{
-            statusName.textContent = jobPost.jobPost.jobPostStatus.jobStatusName;
         }
     } else{
         statusName.textContent = "Not specified";
@@ -446,6 +462,22 @@ function processDataAddJobPost(returnedData) {
             jobPost: jobPostObj
         };
         jobPostApplicationStatus(customObj);
+
+        if(customObj.jobPost.jobPostStatus != null){
+            if(customObj.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_NEW){
+                $("#jobPostStatusDivVal_" + jobPostObj.jobPostId).html('Under Review').css("color",  "orange");
+
+            } else if(customObj.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_ACTIVE){
+                $("#jobPostStatusDivVal_" + jobPostObj.jobPostId).html('Active').css("color", "#69CF37");
+            } else if(customObj.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_PAUSED){
+                $("#jobPostStatusDivVal_" + jobPostObj.jobPostId).html('Paused').css("color", "orange");
+            } else{
+                $("#jobPostStatusDivVal_" + jobPostObj.jobPostId).html('Closed').css("color", "red");
+            }
+        } else{
+            $("#jobPostStatusDivVal_" + jobPostObj.jobPostId).html('Not Specified').css("color", "black");
+        }
+
         notifySuccess("Job Status updated successfully!");
     } else{
         notifyError("Something went wrong. Please try again later!");
