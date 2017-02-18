@@ -15,15 +15,10 @@ function UploadCSVFile(event){
     var fileSize = (file[0].size/1024)/1024;
     if(ext == "csv"){
         if(fileSize < 10){
-            var d = {
-                numberOfSent:10,
-                numberOfSuccess:5,
-            }
-            processDataForUploadCSVFile(d);
-            /*try {
+            try {
                 $.ajax({
                  type: "POST",
-                 url:"",
+                 url:"/recruiter/uploadEmployee",
                  data: data,
                  contentType: false,
                  processData:false,
@@ -31,7 +26,7 @@ function UploadCSVFile(event){
                 });
             } catch(exception){
              console.log("Exception occured!!"+ exception);
-            }*/
+            }
         } else{
             notifyError("File size should not be greater then 10MB");
         }

@@ -16,18 +16,21 @@ nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i {
                 <ul class="right hide-on-med-and-down">
                     <li class="homeNav"><a href="/recruiter/home">Home</a></li>
                     <li class="profileNav"><a href="/recruiter/profile">Profile</a></li>
-                    <li class="" onclick="openCsvModal()">Upload CSV</li>
-                    <li class="jobNav"><a href="/recruiter/allRecruiterJobPosts">View Application(s)<div class="newNotification" id="pendingApproval" style="display: none"></div></a></li>
+                    <li><a class="dropdown-button" href="#!" data-activates="dropdown1">Referral</a></li>
+                    <li class="jobNav"><a href="/recruiter/allRecruiterJobPosts">Application(s)<div class="newNotification" id="pendingApproval" style="display: none"></div></a></li>
                     <li class="postJobNav"><a href="/recruiter/jobPost/0">Post Job</a></li>
                     <li class="postJobNav" id="accountSwitcher" style="display: none"><a href="#" onclick="switchToPartner()">Switch to Partner</a></li>
                     <li><a onclick="logoutRecruiter()">Logout</a></li>
                 </ul>
+                    <ul id="dropdown1" class="dropdown-content">
+                        <li class="" onclick="openCsvModal()">Upload CSV</li>
+                    </ul>
             </div>
 
             <ul class="side-nav" id="mobile-demo">
                 <li class="homeNavMobile"><a href="/recruiter/home">Home</a></li>
                 <li class="profileNavMobile"><a href="/recruiter/profile">Profile</a></li>
-                <li class="jobNavMobile"><a href="/recruiter/allRecruiterJobPosts">View Application(s)<div class="newNotification" id="pendingApprovalMobile"></div></a></li>
+                <li class="jobNavMobile"><a href="/recruiter/allRecruiterJobPosts">Application(s)<div class="newNotification" id="pendingApprovalMobile"></div></a></li>
                 <li class="postJobNavMobile"><a href="/recruiter/jobPost/0">Post Job</a></li>
                 <li class="postJobNavMobile" id="accountSwitcherMobile" style="display: none"><a href="#" onclick="switchToPartner()">Switch to Partner</a></li>
                 <li><a onclick="logoutRecruiter()">Logout</a></li>
