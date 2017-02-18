@@ -71,7 +71,7 @@ public class EmployeeService {
             SearchJobService searchJobService = new SearchJobService();
             Locality locality = searchJobService.determineLocality(bean.getLocality());
 
-            if (locality == null){
+            if (locality == null) {
                 Message message = new Message(Message.MESSAGE_ERROR, "Unable to resolve locality: " + bean.getLocality() + " for mobile: "+ bean.getMobile());
                 messageList.add(message);
                 removalList.add(bean);

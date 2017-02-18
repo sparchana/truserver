@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.FlashSessionController;
+import controllers.security.ForceHttps;
 import controllers.security.PartnerSecured;
 import dao.JobPostDAO;
 import dao.PartnerToCandidateToCompanyDAO;
@@ -24,6 +25,7 @@ import models.entity.Static.PartnerType;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;
+import play.mvc.With;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -38,6 +40,7 @@ import static play.mvc.Results.*;
 /**
  * Created by adarsh on 9/9/16.
  */
+@With(ForceHttps.class)
 public class PartnerController {
     public static Result partnerIndex() {
         String sessionId = session().get("partnerId");
