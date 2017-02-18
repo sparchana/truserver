@@ -7,12 +7,12 @@ function openCsvModal(){
     $("#uploadContainer").html("");
 }
 function UploadCSVFile(event){
-    var file = event.target.files;
+    var file = event.target.files[0];
     var ext;
     var data = new FormData();
-    ext = (file[0].name).split('.').pop().toLowerCase();
+    ext = (file.name).split('.').pop().toLowerCase();
     data.append('file', file);
-    var fileSize = (file[0].size/1024)/1024;
+    var fileSize = (file.size/1024)/1024;
     if(ext == "csv"){
         if(fileSize < 10){
             try {
@@ -36,13 +36,13 @@ function UploadCSVFile(event){
 }
 
 function processDataForUploadCSVFile(returnedData) {
-    if( returnedData.numberOfSuccess != 0){
+    if( returnedData != -1){
         notifySuccess("Successfully Uploaded CSV!");
         var parent = $("#uploadContainer");
         parent.html(" ");
 
         var successStatus = document.createElement("h6");
-        successStatus.textContent = "No. of Employee created "+returnedData.numberOfSuccess+" out of "+returnedData.numberOfSent;
+        successStatus.textContent = "No. of Employee created "+ returnedData.successCount+" out of "+ returnedData.totalCount;
         parent.append(successStatus);
 
         $("#uploadCSVBtn").prop("disabled",true);

@@ -2,7 +2,7 @@ package models.util;
 
 import api.InteractionConstants;
 import api.ServerConstants;
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 import models.entity.Company;
 import models.entity.Interaction;
 import models.entity.JobPost;

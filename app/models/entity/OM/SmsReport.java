@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
+import models.entity.Partner;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.SmsDeliveryStatus;
 import models.entity.Static.SmsType;
@@ -66,6 +67,11 @@ public class SmsReport extends Model {
 
     @Transient
     private Integer hasApplied = 0;
+
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "partner_id", referencedColumnName = "partner_id")
+    private Partner partner;
 
     public static Model.Finder<String, SmsReport> find = new Model.Finder(SmsReport.class);
 
@@ -173,5 +179,13 @@ public class SmsReport extends Model {
 
     public void setSmsType(SmsType smsType) {
         this.smsType = smsType;
+    }
+
+    public Partner getPartner() {
+        return partner;
+    }
+
+    public void setPartner(Partner partner) {
+        this.partner = partner;
     }
 }

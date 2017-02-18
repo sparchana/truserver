@@ -37,6 +37,9 @@ public class PartnerToCompany extends Model {
     @Column(name = "verification_status", columnDefinition = "int(2) signed not null default 0")
     private int verification_status;
 
+    @Column(name = "foreign_employee_id", columnDefinition = "varchar(255) null")
+    private String foreignEmployeeId;
+
     public PartnerToCompany(){
         this.creationTimeStamp = new Timestamp(System.currentTimeMillis());
     }
@@ -81,5 +84,13 @@ public class PartnerToCompany extends Model {
 
     public void setVerification_status(int verification_status) {
         this.verification_status = verification_status;
+    }
+
+    public String getForeignEmployeeId() {
+        return foreignEmployeeId;
+    }
+
+    public void setForeignEmployeeId(String foreignEmployeeId) {
+        this.foreignEmployeeId = foreignEmployeeId;
     }
 }

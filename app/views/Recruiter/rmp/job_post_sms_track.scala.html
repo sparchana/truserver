@@ -29,6 +29,11 @@
         <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
         <meta name="theme-color" content="#000000">
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <style>
+            .pac-container {
+                z-index: 1051 !important;
+            }
+        </style>
     </head>
     <body>
         <div class="recruiter_navbar"></div>
@@ -171,71 +176,114 @@
 
             </div>
         </div>
+            <!-- Modal previous feedback -->
+        <div id="previousFeedbackModal" class="modal" style="background: transparent; box-shadow: none">
+            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closePreviousFeedbackModal()"></div>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 2%">
+                <center><font style="color: #fff"><h5>Previous Interview Feedback!</h5></font></center>
+            </div>
+            <div class="row" id="previousFeedback" style="background: #fff; padding: 12px">
+
+            </div>
+        </div>
 
             <!-- feedback credit Structure -->
-        <div id="addFeedback" class="modal" style="background: transparent; box-shadow: none">
-            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeFeedbackModal()"></div>
-            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
-                <center><font style="color: #fff"><h5>Interview Feedback!</h5></font></center>
+        <div id="addFeedback" class="modal" style="background: transparent; box-shadow: none;">
+            <div style="float: right; padding: 12px; cursor: pointer">
+                <img src="/assets/recruiter/img/cancel_white.png" onclick="closeFeedbackModal()">
+            </div>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 2%">
+                <center>
+                    <font style="color: #fff">
+                        <h5>Interview Feedback!</h5>
+                    </font>
+                </center>
             </div>
             <div style="background: #fff; padding: 12px">
                 <center>
-                    <div class="row">
-                        <div class="col s12 l12">
-                            <br>
-                            <img src="/assets/recruiter/img/feedback.svg" width="70px">
-                            <div class="row" style="margin-top: 12px; margin-bottom: 0" >
-                                <div class="col-sm-6">
-                                    <h6 style="text-align: right; margin-top: 28px;">Please select a feedback result:</h6>
-                                </div>
-                                <div class="input-field col s12 l6">
-                                    <select id="feedbackOption" class="selectDropdown">
-                                        <option value="0">Select a feedback</option>
-                                        <option value="1">Interview Complete - Selected</option>
-                                        <option value="2">Interview Complete - Rejected</option>
-                                        <option value="3">Candidate no show</option>
-                                        <option value="4">Candidate not qualified</option>
-                                    </select>
-                                    <style>
-                                    select{
-                                        display: inline-block;
-                                    }
-                                    </style>
-                                </div>
+                    <div class="row" style="margin:0">
+                        <div class="col s12 l6">
+                            <h6 style="text-align: left; margin-top: 28px;">Please select a feedback result:</h6>
+                        </div>
+                        <div class="input-field col s12 l6">
+                            <select id="feedbackOption" class="selectDropdown">
+                                <option value="0">Select a feedback</option>
+                                <option value="1">Interview Complete - Selected</option>
+                                <option value="2">Interview Complete - Rejected</option>
+                                <option value="3">Candidate no show</option>
+                                <option value="4">Candidate not qualified</option>
+                                <option value="5">Selected for next round</option>
+                            </select>
+                            <style>
+                            select { display: inline-block; }
+                            </style>
+                        </div>
+                        <div class="row" id="otherReason" style="margin: 0; display: none">
+                            <div class="col s12 l6">
+                                <h6 style="text-align: left; margin-top: 28px">Please select a reason:</h6>
                             </div>
-
-                            <div class="row" id="otherReason" style="margin-top: 12px; margin-bottom: 0; display: none">
-                                <div class="col-sm-6">
-                                    <h6 style="text-align: right; margin-top: 28px">Please select a reason:</h6>
-                                </div>
-                                <div class="input-field col s12 l6">
-                                    <select id="reasonVal" class="selectDropdown"></select>
-                                    <style>
-                                    select{
-                                        display: inline-block;
-                                    }
-                                    </style>
-                                </div>
+                            <div class="input-field col s12 l6">
+                                <select id="reasonVal" class="selectDropdown"></select>
+                                <style> select { display: inline-block; }</style>
                             </div>
-
                         </div>
                     </div>
                 </center>
-                <div class="row">
-                    <form class="col s12">
-                        <div class="row">
+                    <div class="row" style="margin:0">
+                        <form>
                             <div class="input-field col s12">
-                                <i class="material-icons prefix">mode_edit</i>
                                 <textarea id="feedbackNote" class="materialize-textarea"></textarea>
                                 <label for="feedbackNote">Interview Comments</label>
                             </div>
+                        </form>
+                    </div>
+                    <div class="row" id="nextRoundInterview" style="margin-top: 12px; margin-bottom: 0; display: none">
+                        <div class="col s12 l12">
+                            <h6 style="color:#2aae5e;font-weight:bold">Next Round Details</h6>
                         </div>
-                    </form>
-                </div>
+                        <div class="input-field col l6">
+                            <select id="nextRoundRecruiterNameVal" class="selectDropdown"></select>
+                            <style>
+                            select{
+                                display: inline-block;
+                            }
+                            </style>
+                        </div>
+                        <div class="input-field col s12 l6">
+                            <select id="nextRoundDateAndSlot" class="selectDropdown"></select>
+                            <style>
+                            select{
+                                display: inline-block;
+                            }
+                            </style>
+                        </div>
+                        <div class="input-field col s12 l12">
+                            <input id="interviewAddress" onclick="clearField()" placeholder="Start typing company / building name or landmark / locality name">
+
+                                <!-- hidden lat/long -->
+                            <input type="text" class="form-control" style="width: 110px;
+                                display: none" id="jp_lat" />
+                            <input type="text" class="form-control" style="width: 110px;
+                                display: none" id="jp_lon" />
+
+                        </div>
+                        <div class="col s12 l12" style="display: none;" id="landmarkDetails">
+                            <div class="input-field" style="margin-top: 20px">
+                                <input type="text" placeholder="Building no / door no / floor no / site no" class="form-control" id="interviewBuildingNo" />
+                            </div>
+                            <div class="input-field" style="margin-top: 20px">
+                                <input type="text" placeholder="Enter landmark" class="form-control" id="interviewLandmark" />
+                            </div>
+                        </div>
+                        <div class="col s12 l12">
+                            <div id="map_parent" style="width: 100%;
+                                height: 480px;margin-bottom: 20px"></div>
+                        </div>
+                    </div>
 
                 <center>
                     <div id="rescheduleInterviewDateBtn" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="confirmAddFeedback()"><font style="color: #fff;
-                        font-weight: 400"><b>Submit Feedback!</b></font>
+                        font-weight: 400"><b>Submit !</b></font>
                     </div>
                 </center>
             </div>
@@ -271,75 +319,6 @@
                     </div>
                     <div id="rescheduleInterviewDateBtn" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="rescheduleInterviewStatus()"><font style="color: #fff;
                         font-weight: 400"><b>Reschedule Date and Time!</b></font>
-                    </div>
-                </center>
-            </div>
-        </div>
-
-            <!-- feedback modal Structure -->
-        <div id="addFeedback" class="modal" style="background: transparent; box-shadow: none">
-            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeFeedbackModal()"></div>
-            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
-                <center><font style="color: #fff"><h5>Interview Feedback!</h5></font></center>
-            </div>
-            <div style="background: #fff; padding: 12px">
-                <center>
-                    <div class="row">
-                        <div class="col s12 l12">
-                            <br>
-                            <img src="/assets/recruiter/img/feedback.svg" width="70px">
-                            <div class="row" style="margin-top: 12px; margin-bottom: 0" >
-                                <div class="col-sm-6">
-                                    <h6 style="text-align: right; margin-top: 28px;">Please select a feedback result:</h6>
-                                </div>
-                                <div class="input-field col s12 l6">
-                                    <select id="feedbackOption" class="selectDropdown">
-                                        <option value="0">Select a feedback</option>
-                                        <option value="1">Interview Complete - Selected</option>
-                                        <option value="2">Interview Complete - Rejected</option>
-                                        <option value="3">Candidate no show</option>
-                                        <option value="4">Candidate not qualified</option>
-                                    </select>
-                                    <style>
-                                    select{
-                                        display: inline-block;
-                                    }
-                                    </style>
-                                </div>
-                            </div>
-
-                            <div class="row" id="otherReason" style="margin-top: 12px; margin-bottom: 0; display: none">
-                                <div class="col-sm-6">
-                                    <h6 style="text-align: right; margin-top: 28px">Please select a reason:</h6>
-                                </div>
-                                <div class="input-field col s12 l6">
-                                    <select id="reasonVal" class="selectDropdown"></select>
-                                    <style>
-                                    select{
-                                        display: inline-block;
-                                    }
-                                    </style>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </center>
-                <div class="row">
-                    <form class="col s12">
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">mode_edit</i>
-                                <textarea id="feedbackNote" class="materialize-textarea"></textarea>
-                                <label for="feedbackNote">Interview Comments</label>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <center>
-                    <div id="rescheduleInterviewDateBtn" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="confirmAddFeedback()"><font style="color: #fff;
-                        font-weight: 400"><b>Submit Feedback!</b></font>
                     </div>
                 </center>
             </div>
@@ -417,7 +396,8 @@
     <script>
             $('.recruiter_navbar').load('/recruiterNavbar');
     </script>
-    @*<script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>*@
+
+    <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
 
     <script type="text/javascript" src="/assets/support/js/datatables.min.js"></script>
     <script type="text/javascript" src="/assets/partner/js/dataTables.rowReorder.min.js"></script>
@@ -435,4 +415,7 @@
     <script type="text/javascript" src="/assets/recruiter/js/recruiter_notifier.js"></script>
 
     <script type="text/javascript" src="/assets/recruiter/js/recruiter_upload_csv.js"></script>
+
+    <script type="text/javascript" src='https://maps.google.com/maps/api/js?key=AIzaSyCKHf7GijuzKW84Ggz0fFWWHD0y9_onUhg&sensor=false&libraries=places'></script>
+    <script src="/assets/recruiter/js/locationpicker.jquery.min.js"></script>
 </html>

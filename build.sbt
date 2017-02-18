@@ -36,7 +36,7 @@ libraryDependencies += "com.google.protobuf" % "protobuf-java" % "3.0.0-beta-2"
 
 libraryDependencies += "com.squareup.okhttp3" % "okhttp" % "3.4.2"
 
-libraryDependencies += "net.sf.opencsv" % "opencsv" % "2.3"
+libraryDependencies += "com.opencsv" % "opencsv" % "3.9"
 
 libraryDependencies += "com.typesafe.play" % "play-json_2.11" % "2.5.0"
 

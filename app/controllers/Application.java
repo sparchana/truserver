@@ -2431,6 +2431,7 @@ public class Application extends Controller {
     @Security.Authenticated(SecuredUser.class)
     public static Result updateFeedback() {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req);
         AddFeedbackRequest addFeedbackRequest = new AddFeedbackRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
