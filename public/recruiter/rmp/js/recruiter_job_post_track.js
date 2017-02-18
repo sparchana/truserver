@@ -203,7 +203,7 @@ function tabChange1() {
                                             if(smsObject.smsDeliveryStatus.statusId == 1){
                                                 return '<div class="mLabel" style="width:100%; color: orange; font-weight: bold" >'+ smsObject.smsDeliveryStatus.statusName + '</div>';
                                             } else if(smsObject.smsDeliveryStatus.statusId == 2){
-                                                return '<div class="mLabel" style="width:100%; color: #2ec866; font-weight: bold" >'+ smsObject.smsDeliveryStatus.statusName + '</div>';
+                                                 return '<div class="mLabel" style="width:100%; color: #2ec866; font-weight: bold" >'+ smsObject.smsDeliveryStatus.statusName + '</div>';
                                             } else{
                                                 return '<div class="mLabel" style="width:100%; color: red; font-weight: bold" >'+ smsObject.smsDeliveryStatus.statusName + '</div>';
                                             }
