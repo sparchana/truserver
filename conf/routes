@@ -159,7 +159,7 @@ GET         /getRecruiterProfileInfo                                      contro
 GET         /recruiter/profile                                            controllers.RecruiterController.recruiterEditProfile()
 GET         /recruiter/candidateSearch                                    controllers.RecruiterController.recruiterCandidateSearch(jpId: java.lang.Long ?= null)
 GET         /recruiter/allRecruiterJobPosts                               controllers.RecruiterController.renderAllRecruiterJobPosts
-GET         /recruiter/jobPostTrack/:id                                   controllers.RecruiterController.renderJobPostTrack(id : Long)
+GET         /recruiter/jobPostTrack/:id/:v                                controllers.RecruiterController.renderJobPostTrack(id : Long, v : String)
 GET         /recruiter/unlockedCandidates                                 controllers.RecruiterController.renderAllUnlockedCandidates
 GET         /recruiter/jobApplicants/:id                                  controllers.RecruiterController.renderAllApplications(id : Long)
 GET         /recruiterNavbar                                              controllers.RecruiterController.recruiterNavbar()

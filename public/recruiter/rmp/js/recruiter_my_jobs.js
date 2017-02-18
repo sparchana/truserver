@@ -95,30 +95,46 @@ function getRecruiterJobPosts() {
                                     'track': function () {
                                         if (jobPost.pendingCount > 0 && jobPost.upcomingCount > 0) {
 
-                                            return '<center><div style="text-align: left; display: inline-block">' +
-                                                '<span class="customBtn btnGreen" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')">Applications</span>'+
-                                                '<div style="font-weight: bold; font-size: 14px; margin-top: 8px">' + jobPost.upcomingCount + ' Upcoming</div>'+
-                                                '<div style="font-weight: bold; font-size: 14px">' + jobPost.pendingCount + ' Action Required</div>' +
+                                            return '<center><div style="display: inline-block">' +
+                                                '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')">Applications</span>'+
+
+                                                    //Interview tab
+                                                '<div style="font-weight: bold; color: #56b4d1; cursor: pointer; font-size: 14px; margin-top: 8px" ' +
+                                                    'onclick="openInterviewTab(' + jobPost.jobPost.jobPostId + ')">' +
+                                                    jobPost.upcomingCount + ' Interview Action(s)' +
+                                                '</div>'+
+
+                                                    //applicaiton tab
+                                                '<div style="font-weight: bold; color: #56b4d1; cursor: pointer; font-size: 14px" ' +
+                                                    'onclick="openApplicationTab(' + jobPost.jobPost.jobPostId + ')">' +
+                                                    jobPost.pendingCount + ' Application Action</div>' +
                                                 '</div></center>';
 
                                         } else {
                                             if(jobPost.upcomingCount > 0 && jobPost.pendingCount == 0 ){
 
-                                                return '<center style="margin-top: 14px"><div style="text-align: left; display: inline-block">' +
-                                                    '<span class="customBtn btnGreen" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')">Applications</span>'+
-                                                    '<div style="font-weight: bold; font-size: 14px; margin-top: 8px">' + jobPost.upcomingCount + ' Upcoming</div>'+
+                                                //interview tab
+                                                return '<center style="margin-top: 14px"><div style="display: inline-block">' +
+                                                    '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')">Applications</span>'+
+                                                    '<div style="font-weight: bold; color: #56b4d1; cursor: pointer; font-size: 14px; margin-top: 8px" ' +
+                                                        'onclick="openInterviewTab(' + jobPost.jobPost.jobPostId + ')">' + jobPost.upcomingCount + ' Interview Action(s)</div>'+
                                                     '</div></center>';
 
                                             } else if(jobPost.upcomingCount == 0 && jobPost.pendingCount > 0 ){
 
-                                                return '<center style="margin-top: 12px"><div style="text-align: left; display: inline-block">' +
-                                                    '<span class="customBtn btnGreen" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')">Applications</span>'+
-                                                    '<div style="font-weight: bold; font-size: 14px; margin-top: 8px">' + jobPost.pendingCount + ' Action Required</div>'+
+                                                return '<center style="margin-top: 12px"><div style="display: inline-block">' +
+                                                    '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')">Applications</span>'+
+
+                                                        //application tab
+                                                    '<div style="font-weight: bold; color: #56b4d1; cursor: pointer; font-size: 14px; margin-top: 8px" ' +
+                                                        'onclick="openApplicationTab(' + jobPost.jobPost.jobPostId + ')">' +
+                                                        jobPost.pendingCount + ' Application Action(s)' +
+                                                    '</div>'+
                                                     '</div></center>';
 
                                             } else{
-                                                return '<center style="margin-top: 24px"><div style="text-align: left; display: inline-block">' +
-                                                    '<span class="customBtn btnGreen" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')">Applications</span>'+
+                                                return '<center style="margin-top: 24px"><div style="display: inline-block">' +
+                                                    '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')">Applications</span>'+
                                                     '</div></center>';
                                             }
                                         }
@@ -127,8 +143,8 @@ function getRecruiterJobPosts() {
                                         jobPostApplicationStatus(jobPost);
                                         return '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>'
                                     },
-                                    'editJob':'<center style="margin-top: 24px"><span class="customBtn btnGreen" onclick="openJobPost(' + jobPost.jobPost.jobPostId + ')">View/Edit</span></center>',
-                                    'candidates':'<center style="margin-top: 24px"><span class="customBtn btnGreen" onclick="openCandidateView('+jobPost.jobPost.jobPostId+')">Find</span></center>'
+                                    'editJob':'<center style="margin-top: 24px"><span class="customBtn btnGreen" style="cursor: pointer" onclick="openJobPost(' + jobPost.jobPost.jobPostId + ')">View/Edit</span></center>',
+                                    'candidates':'<center style="margin-top: 24px"><span class="customBtn btnGreen" style="cursor: pointer" onclick="openCandidateView('+jobPost.jobPost.jobPostId+')">Find</span></center>'
                                 })
                             });
                             $("#noJobs").hide();
@@ -352,12 +368,17 @@ function openJobPost(jobId) {
 function openCandidateView(jpId) {
     window.location = "/recruiter/candidateSearch?jpId="+jpId;
 }
+
 function openJobPosttrackView(jpId) {
-    window.location = "/recruiter/jobPostTrack/" + jpId;
+    window.location = "/recruiter/jobPostTrack/" + jpId + "/s";
 }
 
-function openAppliedCandidate(jobId) {
-    window.location = "/recruiter/jobApplicants/" + jobId;
+function openApplicationTab(jpId) {
+    window.location = "/recruiter/jobPostTrack/" + jpId + "/a";
+}
+
+function openInterviewTab(jpId) {
+    window.location = "/recruiter/jobPostTrack/" + jpId + "/i";
 }
 
 function openPauseInterviewModal() {

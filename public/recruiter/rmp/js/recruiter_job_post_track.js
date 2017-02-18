@@ -42,9 +42,16 @@ $(document).ready(function(){
 
     var pathname = window.location.pathname; // Returns path only
     var jobPostIdUrl = pathname.split('/');
-    jobPostId = jobPostIdUrl[(jobPostIdUrl.length)-1];
+    var tabId = jobPostIdUrl[(jobPostIdUrl.length)-1];
+    jobPostId = jobPostIdUrl[(jobPostIdUrl.length)-2];
 
-    tabChange1();
+    if(tabId == "s"){
+        tabChange1();
+    } else if(tabId == "a"){
+        tabChange2();
+    } else if(tabId == "i"){
+        tabChange3();
+    }
 
     try {
         $.ajax({

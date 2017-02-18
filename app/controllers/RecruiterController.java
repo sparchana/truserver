@@ -1065,7 +1065,7 @@ public class RecruiterController {
     }
 
     @Security.Authenticated(RecruiterSecured.class)
-    public static Result renderJobPostTrack(Long id) {
+    public static Result renderJobPostTrack(Long id, String tabView) {
         Long recruiterId = Long.valueOf(session().get("recruiterId"));
         RecruiterProfile recruiterProfile = RecruiterDAO.findById(recruiterId);
         if(recruiterProfile == null) {
