@@ -53,7 +53,7 @@ public class ParseEmployeeCSV {
             // setting parsing strategy
         ColumnPositionMappingStrategy<EmployeeCSVBean> strategy = new ColumnPositionMappingStrategy<EmployeeCSVBean>();
         strategy.setType(EmployeeCSVBean.class);
-        String[] columns = new String[] {"slno", "name", "mobile", "email", "locality", "employee id"}; // the fields to bind do in JavaBean
+        String[] columns = new String[] {"slno", "fullName", "mobile", "email", "locality", "employeeId"}; // the fields to bind do in JavaBean
         strategy.setColumnMapping(columns);
 
             /* this list may contain duplicate data, process it further with business logic */
@@ -143,7 +143,7 @@ public class ParseEmployeeCSV {
             return successCount;
         }
 
-        private void setSuccessCount(long successCount) {
+        public void setSuccessCount(long successCount) {
             this.successCount = successCount;
         }
 

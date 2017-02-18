@@ -166,7 +166,7 @@ public class PartnerService {
 
                 if(companyAssociationResponse == ServerConstants.PARTNER_NEED_COMPANY_ASSOCIATION){
                     Logger.info("Creating association with the company");
-                    associatePrivatePartnerToCompany(partner, partnerSignUpRequest.getPartnerCompanyCode(), isBulkUploadCreation);
+                    associatePrivatePartnerToCompany(partner, partnerSignUpRequest, isBulkUploadCreation);
                 }
 
                 //creating interaction
@@ -231,15 +231,16 @@ public class PartnerService {
     }
 
 
-    public static void associatePrivatePartnerToCompany(Partner partner, String companyCode, boolean isEmployee){
+    public static void associatePrivatePartnerToCompany(Partner partner, PartnerSignUpRequest request, boolean isEmployee){
         if(!isEmployee ){
-            associatePrivatePartnerToCompany(partner, companyCode);
+            associatePrivatePartnerToCompany(partner, request.getPartnerCompanyCode());
         } else {
-            if(companyCode != null){
-                Company company = Company.find.where().eq("CompanyCode", companyCode).findUnique();
+            if(request.getPartnerCompanyCode() != null){
+                Company company = Company.find.where().eq("CompanyCode", request.getPartnerCompanyCode()).findUnique();
                 PartnerToCompany partnerToCompany = new PartnerToCompany();
                 partnerToCompany.setPartner(partner);
                 partnerToCompany.setCompany(company);
+                partnerToCompany.setForeignEmployeeId(request.getForeginEmployeeId());
                 partnerToCompany.save();
 
                 //setting partner type as a private partner

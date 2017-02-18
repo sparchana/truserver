@@ -36,6 +36,8 @@ public class EmployeeService {
                 // create partner with access level 2
             response.getMessages().addAll(createEmployee(response.getParsedList(), recruiterProfile));
 
+                // override success to reflect unique parsed list size;
+            response.setSuccessCount(response.getParsedList().size());
         }
 
         return response;
@@ -59,9 +61,13 @@ public class EmployeeService {
             signUpRequest.setPartnerEmail(bean.getEmail());
             signUpRequest.setpartnerAuthMobile(bean.getMobile());
             signUpRequest.setPartnerMobile(bean.getMobile());
-            signUpRequest.setPartnerName(bean.getName());
+
+            signUpRequest.setPartnerName(bean.getFirstName());
+            signUpRequest.setPartnerLastName(bean.getLastName());
+
             signUpRequest.setPartnerType(ServerConstants.PARTNER_TYPE_PRIVATE_EMPLOYEE);
             signUpRequest.setCreatedByRecuiterUUId(recruiterProfile.getRecruiterProfileUUId());
+            signUpRequest.setForeginEmployeeId(bean.getEmployeeId());
             SearchJobService searchJobService = new SearchJobService();
             Locality locality = searchJobService.determineLocality(bean.getLocality());
 

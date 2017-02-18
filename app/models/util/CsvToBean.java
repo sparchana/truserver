@@ -245,6 +245,7 @@ public class CsvToBean<T> extends AbstractCSVToBean {
                 }
                 // this exception is trigger when setter of T.class throws any exception
                 catch (InvocationTargetException ive){
+
                     CsvDataTypeMismatchException mcsve = new CsvDataTypeMismatchException(ive.getCause().getMessage());
                     mcsve.setLineNumber(lineProcessed);
                     getCapturedExceptions().add(mcsve);

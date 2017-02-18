@@ -24,6 +24,7 @@ public class PartnerSignUpRequest {
 
     // used in employee bulk upload via recruiter
     private String createdByRecuiterUUId;
+    private String foreginEmployeeId;
 
 
     public String getPartnerName() {
@@ -104,5 +105,13 @@ public class PartnerSignUpRequest {
 
     public void setCreatedByRecuiterUUId(String createdByRecuiterUUId) {
         this.createdByRecuiterUUId = createdByRecuiterUUId;
+    }
+
+    public String getForeginEmployeeId() {
+        return foreginEmployeeId;
+    }
+
+    public void setForeginEmployeeId(String foreginEmployeeId) {
+        this.foreginEmployeeId = foreginEmployeeId;
     }
 }
