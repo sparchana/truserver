@@ -370,13 +370,19 @@ function tabChange2() {
                                         if(workflowObj.extraData.workflowStatus != null){
                                             if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED){
                                                 actionBtn = '<div class="mLabel" id="candidate_action_'+ workflowObj.candidate.candidateId +'"  style="width:100%" >'
-                                                    + '<span class="customBtn btnGreen" onclick="acceptAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId + ');" >Accept</span>'
-                                                    + '<span class="customBtn btnRed" onclick="rejectAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId + ');" >Reject</span>'
-                                                    + '<span class="customBtn btnOrange" onclick="rescheduleAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId + ');">Reschedule</span>'
+                                                    + '<span class="customBtn btnGreen" onclick="acceptAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId + ');" >' +
+                                                        '<img src="/assets/recruiter/img/icons/tick.svg" width="16px" style="margin-top: -4px; padding-right: 6px">Accept</span>'
+
+                                                    + '<span class="customBtn btnRed" onclick="rejectAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId + ');" >' +
+                                                        '<img src="/assets/recruiter/img/icons/cross.svg" width="16px" style="margin-top: -4px; padding-right: 6px">Reject</span>'
+
+                                                    + '<span class="customBtn btnOrange" onclick="rescheduleAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId + ');">' +
+                                                        '<img src="/assets/recruiter/img/icons/history.svg" width="16px" style="margin-top: -4px; padding-right: 6px">Reschedule</span>'
                                                     + '</span>';
                                             } else if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_PRESCREEN_COMPLETED){
                                                 actionBtn = '<div class="mLabel" id="candidate_action_'+ workflowObj.candidate.candidateId +'"  style="width:100%" >'
-                                                    + '<span class="customBtn btnBlue" onclick="initInterviewModal(' + workflowObj.candidate.candidateId + ', ' + jobPostId + ', ' +  false + ', ' + false + ')">Schedule Interview</span>'
+                                                    + '<span class="customBtn btnBlue" onclick="initInterviewModal(' + workflowObj.candidate.candidateId + ', ' + jobPostId + ', ' +  false + ', ' + false + ')">' +
+                                                        '<img src="/assets/recruiter/img/icons/history.svg" width="16px" style="margin-top: -4px; padding-right: 6px">Schedule Interview</span>'
                                                     + '</span>';
                                             }
                                         }
@@ -520,12 +526,14 @@ function tabChange3() {
                                             } else{
                                                 if(workflowObj.extraData.round > 1){
                                                     return '<div class="mLabel" >'
-                                                        + '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openFeedbackModal('+ workflowObj.candidate.candidateId +')" >Add Feedback</span>'
+                                                        + '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openFeedbackModal('+ workflowObj.candidate.candidateId +')" >' +
+                                                            '<img src="/assets/recruiter/img/icons/add.svg" width="16px" style="margin-top: -4px; padding-right: 6px">Add Feedback</span>'
                                                         + '<span class="customBtn btnOrange" id="previousFeedbackBtn" style="cursor: pointer;" onclick="openPreviousFeedbackModal('+ workflowObj.candidate.candidateId +')" >View</span>'
                                                         + '</div>';
                                                 } else{
                                                     return '<div class="mLabel" >'
-                                                        + '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openFeedbackModal('+ workflowObj.candidate.candidateId +')" >Add Feedback</span>'
+                                                        + '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openFeedbackModal('+ workflowObj.candidate.candidateId +')" >' +
+                                                            '<img src="/assets/recruiter/img/icons/tick.svg" width="16px" style="margin-top: -4px; padding-right: 6px">Add Feedback</span>'
                                                         + '</div>';
                                                 }
                                             }

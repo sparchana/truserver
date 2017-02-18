@@ -96,7 +96,8 @@ function getRecruiterJobPosts() {
                                         if (jobPost.pendingCount > 0 && jobPost.upcomingCount > 0) {
 
                                             return '<center><div style="display: inline-block">' +
-                                                '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')">Applications</span>'+
+                                                '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')">' +
+                                                    '<img src="/assets/recruiter/img/icons/list.svg" width="12px" style="margin-top: -4px; padding-right: 6px">Applications</span>'+
 
                                                     //Interview tab
                                                 '<div style="font-weight: bold; color: #56b4d1; cursor: pointer; font-size: 14px; margin-top: 8px" ' +
@@ -115,7 +116,9 @@ function getRecruiterJobPosts() {
 
                                                 //interview tab
                                                 return '<center style="margin-top: 14px"><div style="display: inline-block">' +
-                                                    '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')">Applications</span>'+
+                                                    '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')">' +
+                                                        '<img src="/assets/recruiter/img/icons/list.svg" width="12px" style="margin-top: -4px; padding-right: 6px">Applications</span>'+
+
                                                     '<div style="font-weight: bold; color: #56b4d1; cursor: pointer; font-size: 14px; margin-top: 8px" ' +
                                                         'onclick="openInterviewTab(' + jobPost.jobPost.jobPostId + ')">' + jobPost.upcomingCount + ' Interview Action(s)</div>'+
                                                     '</div></center>';
@@ -123,7 +126,8 @@ function getRecruiterJobPosts() {
                                             } else if(jobPost.upcomingCount == 0 && jobPost.pendingCount > 0 ){
 
                                                 return '<center style="margin-top: 12px"><div style="display: inline-block">' +
-                                                    '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')">Applications</span>'+
+                                                    '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')">' +
+                                                        '<img src="/assets/recruiter/img/icons/list.svg" width="12px" style="margin-top: -4px; padding-right: 6px">Applications</span>'+
 
                                                         //application tab
                                                     '<div style="font-weight: bold; color: #56b4d1; cursor: pointer; font-size: 14px; margin-top: 8px" ' +
@@ -134,7 +138,8 @@ function getRecruiterJobPosts() {
 
                                             } else{
                                                 return '<center style="margin-top: 24px"><div style="display: inline-block">' +
-                                                    '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')">Applications</span>'+
+                                                    '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')">' +
+                                                        '<img src="/assets/recruiter/img/icons/list.svg" width="12px" style="margin-top: -4px; padding-right: 6px">Applications</span>'+
                                                     '</div></center>';
                                             }
                                         }
@@ -163,8 +168,12 @@ function getRecruiterJobPosts() {
                                                 '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>';
                                         }
                                     },
-                                    'editJob':'<center style="margin-top: 24px"><span class="customBtn btnGreen" style="cursor: pointer" onclick="openJobPost(' + jobPost.jobPost.jobPostId + ')">View/Edit</span></center>',
-                                    'candidates':'<center style="margin-top: 24px"><span class="customBtn btnGreen" style="cursor: pointer" onclick="openCandidateView('+jobPost.jobPost.jobPostId+')">Find</span></center>'                                })
+                                    'editJob':'<center style="margin-top: 24px"><span class="customBtn btnBlue" style="cursor: pointer" onclick="openJobPost(' + jobPost.jobPost.jobPostId + ')">' +
+                                        '<img src="/assets/recruiter/img/icons/edit.svg" width="12px" style="margin-top: -4px; padding-right: 6px">View/Edit</span></center>',
+
+                                    'candidates':'<center style="margin-top: 24px"><span class="customBtn btnOrange" style="cursor: pointer" onclick="openCandidateView('+jobPost.jobPost.jobPostId+')">' +
+                                        '<img src="/assets/recruiter/img/icons/search.svg" width="12px" style="margin-top: -4px; padding-right: 6px">Find</span></center>'
+                                })
                             });
                             $("#noJobs").hide();
                             $(".postedJobTableDiv").show();

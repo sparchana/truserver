@@ -202,7 +202,8 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
         animate: true,
         onEscape: function() {
             $('body').removeClass('open-interview-selector-modal');
-            if(window.location.pathname == "/recruiter/jobPostTrack/" + jobPostId){
+            var url = window.location.pathname;
+            if(url.includes("/recruiter/jobPostTrack/" + jobPostId)){
 
             } else{
                 if(isPartnerVal == false || isPartnerVal == null ){
@@ -308,7 +309,8 @@ function processInterviewSubmissionResponse(returnData) {
         } else {
             if(isPartnerVal == false || isPartnerVal == null ){
 
-                if(window.location.pathname == "/recruiter/jobPostTrack/" + jobPostId){
+                var url = window.location.pathname;
+                if(url.includes("/recruiter/jobPostTrack/" + jobPostId)){
                     nfy("Interview scheduled!", 'success');
                     hideTab1();
                     hideTab2();
