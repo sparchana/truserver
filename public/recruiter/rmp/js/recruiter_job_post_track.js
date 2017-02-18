@@ -540,6 +540,7 @@ function tabChange3() {
 
                             $("#confirmedApplicationContainer").show();
                         } else{
+                            $("#confirmedApplicationContainer").hide();
                             $("#noConfirmedApplications").show();
                         }
                         return returned_data;
@@ -629,11 +630,13 @@ function processDataInterviewStatus(returnedData) {
         if(globalInterviewStatus == 1){
             $("#" + globalCandidateId).remove();
             notifySuccess("Interview Confirmed"); //accepted
+
         } else if(globalInterviewStatus == 2){ //rejected by recruiter
             $("#candidate_action_" + globalCandidateId).html('');
             $("#candidate_action_" + globalCandidateId).html("Rejected");
             $("#modalRejectReason").closeModal();
             notifySuccess("Interview Rejected");
+
         } else if(globalInterviewStatus == 3){
             notifySuccess("Interview Rescheduled");
             $("#" + globalCandidateId).remove();
@@ -949,7 +952,6 @@ function processDataBulkSms(returnedData) {
 }
 
 function processDataUpdateFeedBack(returnedData) {
-    console.log(returnedData);
     if(returnedData == 1){
         if(nextRound == true){
             notifySuccess("Feedback updated successfully. Candidate selected for next round");
