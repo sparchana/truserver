@@ -1491,6 +1491,13 @@ public class RecruiterService {
                         addJobPostRequest.setJobPostRecruiterId(recruiterProfile.getRecruiterProfileId());
                         addJobPostRequest.setJobPostCompanyId(Math.toIntExact(recruiterProfile.getCompany().getCompanyId()));
 
+                        //final validation
+                        if(addJobPostRequest.getJobPostTitle() == null && addJobPostRequest.getJobPostMinSalary() == null
+                                && addJobPostRequest.getJobPostLocalities() == null && addJobPostRequest.getJobPostJobRoleId() == null){
+                            shouldSave = false;
+                            invalidFields = "Uploaded CSV format not correct";
+                        }
+
                         if (shouldSave) {
                             AddJobPostResponse addJobPostResponse = JobService.addJobPost(addJobPostRequest, InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE);
                             if(addJobPostResponse.getStatus() == AddJobPostResponse.STATUS_SUCCESS){
