@@ -26,12 +26,9 @@ import controllers.businessLogic.PartnerAuthService;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import controllers.businessLogic.Recruiter.RecruiterLeadStatusService;
-
-import controllers.security.ForceHttps;
-import controllers.security.RecruiterSecured;
-
 import controllers.businessLogic.RecruiterService;
 import controllers.security.FlashSessionController;
+import controllers.security.ForceHttps;
 import controllers.security.RecruiterAdminSecured;
 import controllers.security.RecruiterSecured;
 import dao.JobPostDAO;
@@ -41,6 +38,7 @@ import dao.SmsReportDAO;
 import models.entity.*;
 import models.entity.OM.JobApplication;
 import models.entity.OM.JobPostWorkflow;
+import models.entity.OM.PartnerToCompany;
 import models.entity.OM.SmsReport;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
@@ -727,7 +725,6 @@ public class RecruiterController {
     public static Result getPreviousRounds(Long jpId, Long cId) {
         return ok(toJson(JobPostWorkflowEngine.getPreviousRounds(jpId, cId)));
     }
-
 
     public static class RecruiterJobPostObject{
 
@@ -1495,5 +1492,27 @@ public class RecruiterController {
 
         return ok(toJson(employeeService.parseEmployeeCsv(file, RecruiterDAO.findById(Long.valueOf(session().get("recruiterId"))))));
     }
+
+    /** jpId in url is used in front-end for sms-module */
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result getAllEmployee(String jpIds) {
+
+        RecruiterProfile recruiterProfile = RecruiterDAO.findById(Long.valueOf(session().get("recruiterId")));
+
+            // allow employee lookup only to private recruiters
+        if(recruiterProfile.getRecruiterAccessLevel() < ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
+            return badRequest();
+        }
+
+
+        List<PartnerToCompany> pToCList =
+                               PartnerToCompany.find.where()
+                                               .eq("CompanyId", recruiterProfile.getCompany().getCompanyId())
+                                               .eq("partner.partnerType.partnerTypeId", ServerConstants.PARTNER_TYPE_PRIVATE_EMPLOYEE)
+                                               .findList();
+
+        return ok(toJson(pToCList));
+    }
+
 
 }
