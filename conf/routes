@@ -170,7 +170,8 @@ GET         /checkPrivateRecruiterPartnerAccount                          contro
 GET         /switchToPartner                                              controllers.RecruiterController.switchToPartner()
 GET         /recruiter/getNextRoundComponents/:jpId                       controllers.RecruiterController.getNextRoundComponents(jpId: Long)
 GET         /recruiter/getPrevRounds                                      controllers.RecruiterController.getPreviousRounds(jpId: java.lang.Long ?= null, cId: java.lang.Long ?= null)
-GET         /recruiter/getAllEmployee                                     controllers.RecruiterController.getAllEmployee(jpIds: String ?= null)
+GET         /recruiter/getAllEmployee                                     controllers.RecruiterController.getAllEmployee()
+GET         /recruiter/employee                                           controllers.RecruiterController.employeeView(jpId: String ?= null)
 
 #Temp route delete after use
 GET         /recruiter/job/candidateModal                                 controllers.RecruiterController.recruiterCandidateModal()

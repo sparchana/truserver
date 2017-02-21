@@ -11,6 +11,7 @@ import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Recruiter.MultipleCandidateContactUnlockResponse;
 import api.http.httpResponse.Recruiter.RMP.ApplicationResponse;
+import api.http.httpResponse.Recruiter.RMP.EmployeeResponse;
 import api.http.httpResponse.Recruiter.RMP.NextRoundComponents;
 import api.http.httpResponse.Recruiter.RMP.SmsReportResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
@@ -36,10 +37,7 @@ import dao.JobPostWorkFlowDAO;
 import dao.RecruiterDAO;
 import dao.SmsReportDAO;
 import models.entity.*;
-import models.entity.OM.JobApplication;
-import models.entity.OM.JobPostWorkflow;
-import models.entity.OM.PartnerToCompany;
-import models.entity.OM.SmsReport;
+import models.entity.OM.*;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterProfile;
@@ -1493,9 +1491,8 @@ public class RecruiterController {
         return ok(toJson(employeeService.parseEmployeeCsv(file, RecruiterDAO.findById(Long.valueOf(session().get("recruiterId"))))));
     }
 
-    /** jpId in url is used in front-end for sms-module */
     @Security.Authenticated(RecruiterSecured.class)
-    public static Result getAllEmployee(String jpIds) {
+    public static Result getAllEmployee() {
 
         RecruiterProfile recruiterProfile = RecruiterDAO.findById(Long.valueOf(session().get("recruiterId")));
 
@@ -1511,8 +1508,33 @@ public class RecruiterController {
                                                .eq("partner.partnerType.partnerTypeId", ServerConstants.PARTNER_TYPE_PRIVATE_EMPLOYEE)
                                                .findList();
 
-        return ok(toJson(pToCList));
+        List<EmployeeResponse> employeeList = new ArrayList<>();
+
+        for(PartnerToCompany partnerToCompany: pToCList) {
+            EmployeeResponse response = new EmployeeResponse();
+
+            response.setPartnerId(partnerToCompany.getPartner().getPartnerId());
+            response.setEmailId(partnerToCompany.getPartner().getPartnerEmail());
+            response.setFirstName(partnerToCompany.getPartner().getPartnerFirstName());
+            response.setLastName(partnerToCompany.getPartner().getPartnerLastName());
+            response.setMobile(partnerToCompany.getPartner().getPartnerMobile());
+            response.setEmployeeId(partnerToCompany.getForeignEmployeeId());
+            response.setLocality(partnerToCompany.getPartner().getLocality().getLocalityName());
+
+            employeeList.add(response);
+        }
+
+        return ok(toJson(employeeList));
     }
 
+    /** jpId in url is used in front-end for sms-module */
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result employeeView(String jpId) {
+        if(jpId == null || jpId.isEmpty()){
+            return badRequest();
+        }
+
+        return ok(views.html.Recruiter.rmp.private_recruiter_employee_view.render());
+    }
 
 }
