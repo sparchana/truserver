@@ -12,6 +12,7 @@ var zapp = (function () {
         companyName: "",
         sEmployeeList: [],
         jpIdList: [],
+        smsText: null,
 
         method: {
             init: function () {
@@ -20,8 +21,19 @@ var zapp = (function () {
             }
         },
         render: {
-            buklSendSms: function () {
-              console.log("bulk send comes here");
+            buklSendSmsResponse: function (returnedData) {
+              console.log(returnedData);
+                if(returnedData != null) {
+                    if(returnedData.status == 1) {
+                        // success
+                        notifySuccess("Sms Successfully sent");
+                    } else {
+                        // failed
+                        returnedData.messages.forEach(function (msg) {
+                            notifyError(msg.text);
+                        });
+                    }
+                }
             },
             employeeDataTable: function () {
                 try {
@@ -121,25 +133,31 @@ var zapp = (function () {
           sendSms: function () {
               console.log("sms send trigger");
 
-              var urlParams = window.location.search.split('=');
-              var jpId = null;
-              if(urlParams[0] == "?jpId") {
-                  jpId = parseInt(urlParams[1]);
-              }
+              zapp.smsText = $("#smsText").val();
+
               if(zapp.sEmployeeList.length > 0){
+
+                  // prep jp_id_list
+                  zapp.get.jpIdListFromUrl();
+
+                  if(zapp.smsText == null) {
+                      console.log("empty message");
+                  }
+
                   $("#sendSms").addClass("disabled");
                   var s = {
                       employeeIdList: zapp.sEmployeeList,
                       jobPostIdList :zapp.jpIdList,
+                      smsText :zapp.smsText,
                       smsType : 3
                   };
 
                   $.ajax({
                       type: "POST",
-                      url: "/bulkSendSmsEmployee",
+                      url: "/recruiter/bulkSendSmsEmployee",
                       contentType: "application/json; charset=utf-8",
                       data: JSON.stringify(s),
-                      success: zapp.render.buklSendSms
+                      success: zapp.render.buklSendSmsResponse
                   });
               } else{
                   notifyError("Please select atleast 1 candidate to send SMS");

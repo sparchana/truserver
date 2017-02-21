@@ -180,6 +180,12 @@ public class ServerConstants {
     public static final int REVIEW_APPLICATION_AUTO = 1;
     public static Map<String, String> devTeamMobile;
 
+    // SMS report type
+    public static final int SMS_TYPE_APPLY_JOB_SMS = 1;
+    public static final int SMS_TYPE_APPLY_INTERVIEW_SMS = 2;
+    public static final int SMS_TYPE_REFERRAL = 3;
+
+
     // company status
     public static final int COMPANY_STATUS_ACTIVE = 2;
 

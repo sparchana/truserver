@@ -6,6 +6,7 @@ import api.http.FormValidator;
 import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpRequest.LoginRequest;
 import api.http.httpRequest.Recruiter.*;
+import api.http.httpRequest.Recruiter.rmp.EmployeeBulkSmsRequest;
 import api.http.httpRequest.ResetPasswordResquest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.CandidateWorkflowData;
@@ -1209,9 +1210,11 @@ public class RecruiterController {
             if(checkCompanyJob(jobPost)){
                 SmsReportResponse smsReportResponse = new SmsReportResponse();
 
+                // only get sms of type one and two
                 List<SmsReport> smsReportList = SmsReport.find
                         .where()
                         .eq("JobPostId", jpId)
+                        .le("SmsType", ServerConstants.SMS_TYPE_APPLY_INTERVIEW_SMS)
                         .orderBy().desc("sms_report_id")
                         .findList();
 
@@ -1537,4 +1540,27 @@ public class RecruiterController {
         return ok(views.html.Recruiter.rmp.private_recruiter_employee_view.render());
     }
 
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result bulkSendSmsEmployee() {
+        JsonNode req = request().body().asJson();
+        EmployeeBulkSmsRequest employeeBulkSmsRequest = new EmployeeBulkSmsRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            employeeBulkSmsRequest = newMapper.readValue(req.toString(), EmployeeBulkSmsRequest.class);
+
+            RecruiterProfile recruiterProfile = RecruiterDAO.findById(Long.valueOf(session().get("recruiterId")));
+
+            if(recruiterProfile == null) {
+                return badRequest(" No Recruiter found with recId: " + session().get("recruiterId"));
+            }
+
+            return ok(toJson(RecruiterService.sendBulkSmsEmployee(employeeBulkSmsRequest, recruiterProfile)));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return badRequest();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return badRequest();
+    }
 }

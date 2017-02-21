@@ -206,6 +206,7 @@ POST        /getAppliedCandidates/                                        contro
 POST        /getConfirmedApplication/                                     controllers.RecruiterController.getConfirmedApplication(jpId: java.lang.Long ?= null)
 POST        /getFetchedCandidateData                                      controllers.RecruiterController.getFetchedCandidateData()
 POST        /recruiter/uploadEmployee                                     controllers.RecruiterController.uploadEmployee()
+POST        /recruiter/bulkSendSmsEmployee                                controllers.RecruiterController.bulkSendSmsEmployee()
 
 # Recruiter SuperAdmin API
 # ~~~~~~~~~~~~~

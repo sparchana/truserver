@@ -7,6 +7,7 @@ import api.http.httpRequest.AddCompanyRequest;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
 import api.http.httpRequest.Recruiter.AddRecruiterRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
+import api.http.httpRequest.Recruiter.rmp.EmployeeBulkSmsRequest;
 import api.http.httpResponse.AddCompanyResponse;
 import api.http.httpResponse.LoginResponse;
 import api.http.httpResponse.Recruiter.AddCreditResponse;
@@ -15,14 +16,14 @@ import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
 import api.http.httpResponse.Recruiter.recruiterAdmin.*;
 import api.http.httpResponse.ResetPasswordResponse;
+import api.http.httpResponse.TruResponse;
 import api.http.httpResponse.interview.InterviewResponse;
+import controllers.Global;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import dao.*;
-import models.entity.Candidate;
-import models.entity.Company;
-import models.entity.JobPost;
+import models.entity.*;
 import models.entity.OM.CandidateResume;
 import models.entity.OM.InterviewDetails;
 import models.entity.OM.JobPostWorkflow;
@@ -32,11 +33,14 @@ import models.entity.Recruiter.RecruiterLead;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.Recruiter.Static.RecruiterStatus;
-import models.entity.RecruiterCreditHistory;
 import models.entity.Static.JobStatus;
+import models.entity.Static.SmsType;
 import models.util.EmailUtil;
+import models.util.Message;
 import models.util.SmsUtil;
 import models.util.Util;
+import notificationService.NotificationEvent;
+import notificationService.SMSEvent;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import play.Logger;
@@ -52,7 +56,6 @@ import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
 import static models.util.Util.generateOtp;
 import static play.mvc.Controller.session;
-import static play.mvc.Results.TODO;
 
 /**
  * Created by batcoder1 on 7/7/16.
@@ -1186,6 +1189,29 @@ public class RecruiterService {
         return modifiedSMS.toString();
     }
 
+
+    public static String modifyEmployeeSMS(String smsMessage, Partner partner, List<JobPost> jobPostList) {
+        String referralInShort = Util.generateReferralInShortUrl(partner, jobPostList);
+        StringBuilder modifiedSMS = new StringBuilder();
+        if(referralInShort != null) {
+
+            modifiedSMS.append("Refer Now: ");
+            modifiedSMS.append(referralInShort);
+            modifiedSMS.append("\n\n");
+        }
+
+        modifiedSMS.append(smsMessage);
+
+        if(referralInShort != null) {
+            modifiedSMS.append("\n\n");
+
+            modifiedSMS.append("Refer Now: ");
+            modifiedSMS.append(referralInShort);
+        }
+
+        return modifiedSMS.toString();
+    }
+
     public static InterviewResponse isCTAAllowed(JobPost jobPost) {
         InterviewResponse interviewResponse = new InterviewResponse();
         if (jobPost == null || jobPost.getRecruiterProfile() == null) {
@@ -1201,4 +1227,64 @@ public class RecruiterService {
         return interviewResponse;
     }
 
+    public static TruResponse sendBulkSmsEmployee(EmployeeBulkSmsRequest employeeBulkSmsRequest, RecruiterProfile recruiterProfile) throws Exception {
+        // modify sms with inShort url for employee
+        TruResponse response = new TruResponse();
+
+        List<Partner> employeeList = Partner.find.where().in("partnerId", employeeBulkSmsRequest.getEmployeeIdList()).findList();
+        List<JobPost> jobPostList = JobPostDAO.findByIdList(employeeBulkSmsRequest.getJobPostIdList());
+
+        if(jobPostList.isEmpty()) {
+            Logger.error(" no jobpost found for ids " + employeeBulkSmsRequest.getJobPostIdList());
+            response.setMessages(Arrays.asList(new Message( Message.MESSAGE_ERROR,
+                    "No Job Post found for ids " + employeeBulkSmsRequest.getJobPostIdList())));
+            response.setStatus(TruResponse.STATUS_FAILURE);
+            return response;
+        }
+
+        SmsType smsType = SmsType.find.where().eq("sms_type_id", ServerConstants.SMS_TYPE_REFERRAL).findUnique();
+
+        if(smsType == null) {
+            Logger.info("static table sms_type doesn't have referral in it against value p_key: 3" +
+                    " Auto inserting referral static value");
+
+            smsType = new SmsType();
+            smsType.setSmsTypeId(ServerConstants.SMS_TYPE_REFERRAL);
+            smsType.setTypeName("Referral");
+            smsType.save();
+        }
+
+        if(employeeList.size() != employeeBulkSmsRequest.getEmployeeIdList().size()){
+            Logger.error(" some of the employee/partner id received from front end are not available in db." +
+                    " should Should not have happened, data modified on the way");
+            response.setMessages(Arrays.asList(new Message( Message.MESSAGE_ERROR,
+                    "Some selected partnerId not found in db")));
+            response.setStatus(TruResponse.STATUS_FAILURE);
+            return response;
+        }
+
+        // loop for personalized sms event
+        for(Partner employee: employeeList) {
+            if(employee == null) {
+                Logger.info("null partner found for req id " + employeeBulkSmsRequest.getEmployeeIdList());
+                continue;
+            }
+            String personalizedModifiedSms = modifyEmployeeSMS(employeeBulkSmsRequest.getSmsText(), employee, jobPostList);
+
+            NotificationEvent notificationEvent =
+                    new SMSEvent(employee.getPartnerMobile(),
+                            personalizedModifiedSms,
+                            recruiterProfile.getCompany(),
+                            recruiterProfile,
+                            employee,
+                            smsType);
+
+            Logger.warn(personalizedModifiedSms);
+            Global.getmNotificationHandler().addToQueue(notificationEvent);
+        }
+        response.setMessages(Arrays.asList(new Message(Message.MESSAGE_INFO,
+                "Successfully send referral sms")));
+        response.setStatus(TruResponse.STATUS_SUCCESS);
+        return response;
+    }
 }
