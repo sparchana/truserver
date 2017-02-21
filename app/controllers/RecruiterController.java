@@ -5,17 +5,17 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpRequest.LoginRequest;
-import api.http.httpRequest.Recruiter.AddCreditRequest;
-import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
-import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.Recruiter.*;
 import api.http.httpRequest.ResetPasswordResquest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Recruiter.MultipleCandidateContactUnlockResponse;
 import api.http.httpResponse.Recruiter.RMP.ApplicationResponse;
+import api.http.httpResponse.Recruiter.RMP.NextRoundComponents;
 import api.http.httpResponse.Recruiter.RMP.SmsReportResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
+import api.http.httpResponse.Workflow.InterviewSlotPopulateResponse;
+import api.http.httpResponse.interview.InterviewResponse;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +30,7 @@ import controllers.security.RecruiterSecured;
 import controllers.businessLogic.RecruiterService;
 import controllers.security.FlashSessionController;
 import controllers.security.RecruiterAdminSecured;
+import controllers.security.RecruiterSecured;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.RecruiterDAO;
@@ -58,16 +59,11 @@ import java.util.*;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static api.ServerConstants.*;
-import static api.ServerConstants.SMS_STATUS_DND;
-import static api.ServerConstants.SMS_STATUS_PENDING;
-import static controllers.businessLogic.Recruiter.RecruiterAuthService.addSession;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterSearchCandidate;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.request;
 import static play.mvc.Controller.session;
-import static play.mvc.Results.badRequest;
-import static play.mvc.Results.ok;
-import static play.mvc.Results.redirect;
+import static play.mvc.Results.*;
 
 /**
  * Created by dodo on 4/10/16.
@@ -659,7 +655,7 @@ public class RecruiterController {
     }
 
     public static void sanitizeJobPostData(JobPost jobPost){
-        jobPost.setJobPostDescription(null);
+        /*jobPost.setJobPostDescription(null);*/
         jobPost.setJobPostAddress(null);
         jobPost.setPricingPlanType(null);
         jobPost.setJobRole(null);
@@ -675,6 +671,58 @@ public class RecruiterController {
         jobPost.setRecruiterProfile(oldRec);
         jobPost.setJobPostLanguageRequirements(null);
         jobPost.setJobPostDocumentRequirements(null);
+    }
+
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result getNextRoundComponents(Long jobPostId) {
+        // get details from session
+        //
+        if(jobPostId == null) {
+            return badRequest();
+        }
+        int minAccessLevel = 0;
+        RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+
+        if(recruiterProfile.getRecruiterAccessLevel()>0){
+            minAccessLevel = 1;
+        }
+        NextRoundComponents nextRoundComponents = new NextRoundComponents();
+        List<NextRoundComponents.Recruiter> recruiterList = new ArrayList<>();
+        for(RecruiterProfile profile: RecruiterDAO.findListByCompanyId(recruiterProfile.getCompany().getCompanyId(), minAccessLevel)) {
+            NextRoundComponents.Recruiter recruiter = new NextRoundComponents.Recruiter();
+
+            recruiter.setRecruiterProfileId(profile.getRecruiterProfileId());
+            recruiter.setRecruiterProfileMobile(profile.getRecruiterProfileMobile());
+            recruiter.setRecruiterProfileName(profile.getRecruiterProfileName());
+
+            recruiterList.add(recruiter);
+        }
+        nextRoundComponents.setRecruiterList(recruiterList);
+        JobPost jobPost = JobPostDAO.findById(jobPostId);
+        InterviewResponse interviewResponse = RecruiterService.isInterviewRequired(jobPost);
+
+        InterviewSlotPopulateResponse response =
+                new InterviewSlotPopulateResponse(
+                        JobService.getInterviewSlot(jobPost), interviewResponse, jobPost);
+
+        // removing jobpost object from response
+        response.setJobPost(null);
+        nextRoundComponents.setInterviewSlotPopulateResponse(response);
+
+        NextRoundComponents.Location location = new NextRoundComponents.Location();
+        location.setJobPostAddress(jobPost.getJobPostAddress());
+        location.setLatitude(jobPost.getLatitude());
+        location.setLongitude(jobPost.getLongitude());
+        location.setJobPostPinCode(jobPost.getJobPostPinCode());
+
+        nextRoundComponents.setLocation(location);
+        nextRoundComponents.setJobPostId(jobPostId);
+
+        return ok(toJson(nextRoundComponents));
+    }
+
+    public static Result getPreviousRounds(Long jpId, Long cId) {
+        return ok(toJson(JobPostWorkflowEngine.getPreviousRounds(jpId, cId)));
     }
 
 
@@ -1201,7 +1249,8 @@ public class RecruiterController {
             if(checkCompanyJob(jobPost)){
 
                 List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllJobApplicationWithinStatusId(jpId,
-                        ServerConstants.JWF_STATUS_SELECTED, ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE);
+                        ServerConstants.JWF_STATUS_SELECTED, ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE,
+                        Long.valueOf(session().get("recruiterId")));
 
                 for(JobPostWorkflow workflow : applicationList){
                     sanitizeCandidateData(workflow.getCandidate());
@@ -1265,7 +1314,8 @@ public class RecruiterController {
         if(jobPost != null){
             if(checkCompanyJob(jobPost)){
                 List<JobPostWorkflow> applicationList = JobPostWorkFlowDAO.getAllConfirmedApplicationsJobPost(jpId,
-                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED, ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED);
+                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED, ServerConstants.JWF_STATUS_CANDIDATE_FEEDBACK_STATUS_NOT_QUALIFIED,
+                        Long.valueOf(session().get("recruiterId")));
 
                 for(JobPostWorkflow workflow : applicationList){
                     sanitizeCandidateData(workflow.getCandidate());

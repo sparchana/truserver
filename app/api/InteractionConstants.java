@@ -69,6 +69,7 @@ public class InteractionConstants {
     public static final String INTERACTION_RESULT_CANDIDATE_REJECTED = "Candidate rejected in interview";
     public static final String INTERACTION_RESULT_CANDIDATE_NO_SHOW = "Candidate no show in interview";
     public static final String INTERACTION_RESULT_CANDIDATE_NOT_QUALIFIED = "Candidate not qualified in interview";
+    public static final String INTERACTION_RESULT_CANDIDATE_NEXT_ROUND= "Candidate selected for next interview round";
 
     public static final String INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB = "Candidate applied to a job: ";
     public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB = "Candidate tried to apply to a job: ";
@@ -185,6 +186,8 @@ public class InteractionConstants {
     public static final int INTERACTION_TYPE_APPLIED_JOB_IN_SHORT = 70;
     public static final int INTERACTION_TYPE_APPLY_JOB_VIA_CALL_TO_APPLY = 71;
 
+    public static final int INTERACTION_TYPE_CANDIDATE_FEEDBACK_NEXT_ROUND = 72;
+
     public static final Map<Integer, String> INTERACTION_CHANNEL_MAP = new HashMap<>();
 
     public static final int INTERACTION_CHANNEL_UNKNOWN = 0;
@@ -239,6 +242,7 @@ public class InteractionConstants {
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_FEEDBACK_REJECTED, "Candidate rejected at interview");
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_FEEDBACK_NO_SHOW, "Candidate no show at interview");
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_FEEDBACK_NOT_QUALIFIED, "Candidate not qualified at interview");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_FEEDBACK_NEXT_ROUND, "Candidate selected for next round of interview");
 
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_TRIED_PASSWORD_RESET, "Tried to reset Password");
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_PASSWORD_RESET_SUCCESS, "Reset Password Successful");

@@ -424,7 +424,7 @@ function processDataForHotJobPost(returnedData) {
 
         if (returnedData.jobPostWorkingDays != "" && returnedData.jobPostWorkingDays != null) {
             if(returnedData.jobPostWorkingDays == 127){
-                $("#postedJobWorkingDays").html("No - Holiday");
+                $("#postedJobWorkingDays").html("No - Off");
             }else{
                 var workingDays = returnedData.jobPostWorkingDays.toString(2);
                 var i;
@@ -463,7 +463,7 @@ function processDataForHotJobPost(returnedData) {
                 if (arryDay[6] != 1) {
                     holiday += "Sun ";
                 }
-                $("#postedJobWorkingDays").html(holiday + " - Holiday");
+                $("#postedJobWorkingDays").html(holiday + " - Off");
             }
 
         }

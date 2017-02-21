@@ -34,6 +34,7 @@ public class CandidateExtraData {
     public RejectReason reason;
     public Integer totalSmsSent;
     public List<CompanyIdName> companyList;
+    public Integer round;
 
     public static class CompanyIdName {
         public Long companyId;
@@ -231,4 +232,13 @@ public class CandidateExtraData {
     public void setCompanyList(List<CompanyIdName> companyList) {
         this.companyList = companyList;
     }
+
+    public Integer getRound() {
+        return round;
+    }
+
+    public void setRound(Integer round) {
+        this.round = round;
+    }
+
 }
