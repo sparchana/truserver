@@ -65,14 +65,18 @@ var zapp = (function () {
                             { "data": "employeeId" }
                         ],
                         "language": {
-                            "emptyTable": "No Employee found!"
+                            "emptyTable": "No Employee found!",
+                            buttons: {
+                                selectAll: "Select All",
+                                selectNone: "Select None"
+                            }
                         },
                         "order": [[1, "desc"]],
                         responsive: true,
                         "destroy": true,
                         "dom": 'Bfrtip',
                         "buttons": [
-                            'copy', 'csv', 'excel',
+                            'copy', 'csv', 'excel','selectAll', 'selectNone',
                             {
                                 text: 'Send SMS',
                                 action: function ( e, dt, node, config ) {
