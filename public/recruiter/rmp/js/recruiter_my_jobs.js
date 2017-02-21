@@ -199,7 +199,7 @@ function getRecruiterJobPosts() {
                 { "data": "editJob" },
                 { "data": "candidates" }
             ],
-            "order": [[2, "desc"]],
+            "order": [[0, "desc"]],
             responsive: true,
             "destroy": true,
             "dom":'Bfrtip',
