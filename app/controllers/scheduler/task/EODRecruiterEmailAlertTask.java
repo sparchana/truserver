@@ -30,9 +30,6 @@ import static controllers.scheduler.SchedulerConstants.*;
 public class EODRecruiterEmailAlertTask extends TimerTask{
     private static final String BASE_URL = "http://trujobs.in/recruiter";
 
-    private Calendar mCalendar = Calendar.getInstance();
-    private Date mToday = mCalendar.getTime();
-
     private final SimpleDateFormat mSdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
 
     private void sendTodaysInterview(){
@@ -54,7 +51,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
         // club all interviews that happened today into their respective
         // recruiters (map<RecruiterId, List<JobPostWorkflow>)
 
-        Map<Long, List<JobPostWorkflow>> interviewsPerRecruiterMap = getInterviewMap(mToday);
+        Map<Long, List<JobPostWorkflow>> interviewsPerRecruiterMap = getInterviewMap(Calendar.getInstance().getTime());
         String subject = " TruJobs.in : Provide feedback for today's interviews and earn credits!! ";
 
         // from map, create email event and append it to the Queue
@@ -88,9 +85,12 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
                 .findUnique();
         String note = "Interview Email alert for tomorrow's interview line up.";
 
-        mCalendar.set(Calendar.DAY_OF_MONTH, mToday.getDate() + 1);
-        Date tomorrow = mCalendar.getTime();
+        /* done separately to solve date issue in email being sent*/
 
+        Calendar mCalendar = Calendar.getInstance();
+        Date mToday = mCalendar.getTime();
+        mCalendar.set(Calendar.DAY_OF_MONTH,  mToday.getDate() + 1);
+        Date tomorrow = mCalendar.getTime();
 
         String subject = "TruJobs.in : Tomorrow's line up details inside! ";
         // Get all interview that are scheduled for tomorrow, reminder
@@ -109,7 +109,6 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
 
         SchedulerManager.saveNewSchedulerStats(startTime, type, subType, note, endTime, true);
 
-        mCalendar = Calendar.getInstance(); // reset calendar back to current state
     }
 
     private void sendEODSummary() {
@@ -137,9 +136,9 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
 
         // total applicants applied for jobs posted by
         // a recruiter map<recruiterId, map<jobPostId, total_application_received_today>>
-        mCalendar.set(Calendar.DAY_OF_MONTH, mToday.getDate() - 1);
+        Calendar mCalendar = Calendar.getInstance();
+        mCalendar.set(Calendar.DAY_OF_MONTH, Calendar.getInstance().getTime().getDate() - 1);
         Date yesterday = mCalendar.getTime();
-        mCalendar = Calendar.getInstance(); // reset calendar back to current state
 
         String statusSql;
         statusSql = " (status_id in (" + ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED+ " , "+ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED+")) ";
@@ -218,7 +217,7 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
 
         if(date == null){
             isReqForToday = true;
-            date = mToday;
+            date = Calendar.getInstance().getTime();
             htmlTable.append(
                       "<div>We value your feedback! \n Please login to www.trujobs.in/recruiter and provide feedback for the candidates that you interviewed today!</div><br> \n\n\n"
                     + "<div><font color=\"#0000ff\"><b>For every feedback you provide we would add an interview credit back to your account!! </b></font></div><br>\n\n\n"
@@ -452,4 +451,5 @@ public class EODRecruiterEmailAlertTask extends TimerTask{
         // summary mail at the end of day like 5PM
         sendEODSummary();
     }
+
 }
