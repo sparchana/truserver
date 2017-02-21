@@ -15,6 +15,7 @@ var zapp = (function () {
 
         method: {
             init: function () {
+                zapp.get.jpIdListFromUrl();
                 zapp.get.allEmployee();
             }
         },
@@ -124,10 +125,9 @@ var zapp = (function () {
               if(zapp.sEmployeeList.length > 0){
                   $("#sendSms").addClass("disabled");
                   var s = {
-                      candidateIdList: zapp.sEmployeeList,
-                      smsMessage :$("#smsText").val(),
-                      jobPostId :jobPostId,
-                      smsType :2
+                      employeeIdList: zapp.sEmployeeList,
+                      jobPostIdList :zapp.jpIdList,
+                      smsType : 3
                   };
 
                   $.ajax({
@@ -145,7 +145,15 @@ var zapp = (function () {
         get: {
             allEmployee: function () {
                 zapp.render.employeeDataTable();
-            }
+            },
+            jpIdListFromUrl: function () {
+                zapp.jpIdList = [];
+                var jpIdList = window.location.search.split('=')[1].split(",");
+                jpIdList.forEach(function(jpId)
+                {
+                    zapp.jpIdList.push(parseInt(jpId));
+                });
+             }
         },
         validate: {
             sms: function () {
