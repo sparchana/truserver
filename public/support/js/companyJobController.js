@@ -290,7 +290,7 @@ function getAllRecruiters() {
                 "dataSrc": function (returnedData) {
 
                     var returned_data = new Array();
-                    var contactCredits = 0;
+                    var contactCredits = returnedData.contactCreditCount;
                     var interviewCredits = 0;
                     var mobileVerificationStatus;
                     returnedData.forEach(function (recruiter) {
@@ -306,34 +306,6 @@ function getAllRecruiters() {
                         else {
                             mobileVerificationStatus = "Unknown";
                         }
-
-                        var creditHistoryCount = Object.keys(recruiter.recruiterCreditHistoryList).length;
-                        if(creditHistoryCount > 0){
-                            var creditHistoryList = recruiter.recruiterCreditHistoryList;
-                            creditHistoryList.reverse();
-                            var contactCreditCount = 0;
-                            var interviewCreditCount = 0;
-                            creditHistoryList.forEach(function (creditHistory){
-                                if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
-                                    if(contactCreditCount == 0){
-                                        if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
-                                            contactCredits = creditHistory.recruiterCreditsAvailable;
-                                            contactCreditCount = 1;
-                                        }
-                                    }
-                                } else {
-                                    if(interviewCreditCount == 0){
-                                        if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
-                                            interviewCredits = creditHistory.recruiterCreditsAvailable;
-                                            interviewCreditCount = 1;
-                                        }
-                                    }
-                                }
-                                if(contactCreditCount > 0 && interviewCreditCount > 0) {
-                                    return false;
-                                }
-                            });
-                        }
                         returned_data.push({
                             'recruiterId': '<a href="'+"/recruiterDetails/"+recruiter.recruiterProfileId+'" id="'+recruiter.recruiterProfileId+'" style="cursor:pointer;" target="_blank">' + recruiter.recruiterProfileId + '</a>',
                             'creationTimestamp' : function() {
@@ -345,9 +317,9 @@ function getAllRecruiters() {
                             'recruiterMobile' : recruiter.recruiterProfileMobile,
                             'recruiterMobileVerificationStatus' : mobileVerificationStatus,
                             'recruiterEmail' : recruiter.recruiterProfileEmail,
-                            'recruiterContactCredit' : contactCredits,
-                            'recruiterInterviewCredit' : interviewCredits
-                        })
+                            'recruiterContactCredit' : recruiter.contactCreditCount,
+                            'recruiterInterviewCredit' : recruiter.interviewCreditCount
+                        });
 
                         contactCredits = 0;
                         interviewCredits = 0;

@@ -14,119 +14,8 @@ $(document).scroll(function(){
 });
 
 $(document).ready(function(){
-    $("#loadingIcon").show();
-    try{
-        var table = $("table#postedJobTable").DataTable({
-            "ajax": {
-               "type":"POST",
-                "url":"/getAllRecruiterJobPosts",
-                "dataSrc": function (returnedData) {
-                        $("#loadingIcon").hide();
-                        if(returnedData == "0"){
-                            console.log("Data not receive");
-                            logoutRecruiter();
-                        } else{
-                            var postedJobList = returnedData;
-                            var returned_data  = new Array();
-                            if(postedJobList.length > 0){
-                                postedJobList.forEach(function (jobPost) {
-                                    returned_data.push({
-                                        'datePosted': function() {
-                                            var postedOn = new Date(jobPost.jobPost.jobPostCreateTimestamp);
-                                            var dateValue = ('0' + postedOn.getDate()).slice(-2) + '-' + getMonthVal((postedOn.getMonth() + 1)) + '-' + postedOn.getFullYear()
-                                            return '<div class="mLabel" style="width:100%" >' + dateValue + '</div>'
-                                        },
-                                        'jobTitle':'<div class="mLabel" style="width:100%">'+jobPost.jobPost.jobPostTitle+' </div>',
-                                        'recruiterName':function () {
-                                            if(jobPost.jobPost.recruiterProfile !=null){
-                                                return '<div class="mLabel" style="width:100%">'+ jobPost.jobPost.recruiterProfile.recruiterProfileName +' </div>'
-                                            }else{
-                                                return '<div class="mLabel" style="width:100%"> Recruiter </div>'
-                                            }
-                                        },
-                                        'location': function () {
-                                            var localities = "";
-                                            var locationList = jobPost.jobPost.jobPostToLocalityList;
 
-                                            locationList.forEach(function (locality) {
-                                                localities += locality.locality.localityName + ", ";
-                                            });
-
-                                            return '<div class="mLabel" style="width:100%">'+localities.substring(0, localities.length - 2)+'</div>';
-                                        },
-                                        'salary': function () {
-
-                                            if(jobPost.jobPost.jobPostMaxSalary == 0 || jobPost.jobPost.jobPostMaxSalary == null){
-
-                                                return '<div class="mLabel" style="width:100%"> ₹ '+ rupeeFormatSalary(jobPost.jobPost.jobPostMinSalary)+'</div>'
-                                                ;
-                                            } else{
-                                                return '<div class="mLabel" style="width:100%"> ₹ '+ rupeeFormatSalary(jobPost.jobPost.jobPostMinSalary) + ' - ₹ ' + rupeeFormatSalary(jobPost.jobPost.jobPostMaxSalary)+'</div>';
-                                            }
-                                        },
-                                        'track': function () {
-                                            if (jobPost.pendingCount > 0 && jobPost.upcomingCount > 0) {
-
-                                                return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>'+
-                                                    '<div style="width:100%;font-size:11px">' + jobPost.upcomingCount + ' Upcoming</div>'+
-                                                    '<div style="width:100%;font-size:11px">' + jobPost.pendingCount + ' Action Required</div>';
-
-                                            } else {
-                                                if(jobPost.upcomingCount > 0 && jobPost.pendingCount == 0 ){
-
-                                                    return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>'+
-                                                        '<div style="width:100%;font-size:11px">' + jobPost.upcomingCount + ' Upcoming</div>';
-
-                                                } else if(jobPost.upcomingCount == 0 && jobPost.pendingCount > 0 ){
-
-                                                    return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>'+
-                                                        '<div style="width:100%;font-size:11px">' + jobPost.pendingCount + ' Action Required</div>';
-
-                                                } else{
-                                                    return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>';
-                                                }
-                                            }
-                                        },
-                                        'status': function () {
-                                             jobPostApplicationStatus(jobPost);
-                                            return '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>'
-                                            },
-                                        'editJob':'<button type="button" class="mBtn" style="width: 94%" onclick="openJobPost(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Edit</button>',
-                                        'candidates':'<button type="button" class="mBtn" style="width: 94%" onclick="openCandidateView('+jobPost.jobPost.jobPostId+')" id="viewCandidateBtn" >Find</button>'
-                                    })
-                                });
-                                $(".postedJobTableDiv").show();
-                            }else{
-                                $("#noJobs").show();
-                            }
-                            return returned_data
-                        }
-                    }
-                },
-            "deferRender":true,
-            "columns": [
-                { "data": "datePosted" },
-                { "data": "jobTitle" },
-                { "data": "recruiterName" },
-                { "data": "location" },
-                { "data": "salary" },
-                { "data": "track" },
-                { "data": "status" },
-                { "data": "editJob" },
-                { "data": "candidates" },
-            ],
-            "order": [[2, "desc"]],
-            responsive: true,
-            "destroy": true,
-            "dom":'Bfrtip',
-            "buttons": [
-                'copy','csv','excel'
-            ]
-        });
-    } catch (exception){
-        console.log("exception occured !!" + exception);
-    }
-
+    getRecruiterJobPost();
     try {
         $.ajax({
             type: "GET",
@@ -140,6 +29,157 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 });
+
+function getRecruiterJobPost() {
+    $("#loadingIcon").show();
+    try{
+        var table = $("table#postedJobTable").DataTable({
+            "ajax": {
+                "type":"POST",
+                "url":"/getAllRecruiterJobPosts",
+                "dataSrc": function (returnedData) {
+                    $("#loadingIcon").hide();
+                    if(returnedData == "0"){
+                        console.log("Data not receive");
+                        logoutRecruiter();
+                    } else{
+                        var postedJobList = returnedData;
+                        var returned_data  = new Array();
+                        if(postedJobList.length > 0){
+                            postedJobList.forEach(function (jobPost) {
+                                returned_data.push({
+                                    'datePosted': function() {
+                                        var postedOn = new Date(jobPost.jobPost.jobPostCreateTimestamp);
+                                        var dateValue = ('0' + postedOn.getDate()).slice(-2) + '-' + getMonthVal((postedOn.getMonth() + 1)) + '-' + postedOn.getFullYear()
+                                        return '<div class="mLabel" style="width:100%" >' + dateValue + '</div>'
+                                    },
+                                    'jobTitle':'<div class="mLabel" style="width:100%">'+jobPost.jobPost.jobPostTitle+' </div>',
+                                    'recruiterName':function () {
+                                        if(jobPost.jobPost.recruiterProfile !=null){
+                                            return '<div class="mLabel" style="width:100%">'+ jobPost.jobPost.recruiterProfile.recruiterProfileName +' </div>'
+                                        }else{
+                                            return '<div class="mLabel" style="width:100%"> Recruiter </div>'
+                                        }
+                                    },
+                                    'location': function () {
+                                        var localities = "";
+                                        var locationList = jobPost.jobPost.jobPostToLocalityList;
+
+                                        locationList.forEach(function (locality) {
+                                            localities += locality.locality.localityName + ", ";
+                                        });
+
+                                        return '<div class="mLabel" style="width:100%">'+localities.substring(0, localities.length - 2)+'</div>';
+                                    },
+                                    'salary': function () {
+
+                                        if(jobPost.jobPost.jobPostMaxSalary == 0 || jobPost.jobPost.jobPostMaxSalary == null){
+
+                                            return '<div class="mLabel" style="width:100%"> ₹ '+ rupeeFormatSalary(jobPost.jobPost.jobPostMinSalary)+'</div>'
+                                                ;
+                                        } else{
+                                            return '<div class="mLabel" style="width:100%"> ₹ '+ rupeeFormatSalary(jobPost.jobPost.jobPostMinSalary) + ' - ₹ ' + rupeeFormatSalary(jobPost.jobPost.jobPostMaxSalary)+'</div>';
+                                        }
+                                    },
+                                    'track': function () {
+                                        if (jobPost.pendingCount > 0 && jobPost.upcomingCount > 0) {
+
+                                            return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>'+
+                                                '<div style="width:100%;font-size:11px">' + jobPost.upcomingCount + ' Upcoming</div>'+
+                                                '<div style="width:100%;font-size:11px">' + jobPost.pendingCount + ' Action Required</div>';
+
+                                        } else {
+                                            if(jobPost.upcomingCount > 0 && jobPost.pendingCount == 0 ){
+
+                                                return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>'+
+                                                    '<div style="width:100%;font-size:11px">' + jobPost.upcomingCount + ' Upcoming</div>';
+
+                                            } else if(jobPost.upcomingCount == 0 && jobPost.pendingCount > 0 ){
+
+                                                return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>'+
+                                                    '<div style="width:100%;font-size:11px">' + jobPost.pendingCount + ' Action Required</div>';
+
+                                            } else{
+                                                return '<button type="button" class="mBtn" style="width: 94%" onclick="openJobPosttrackView(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Applications</button>';
+                                            }
+                                        }
+                                    },
+                                    'status': function () {
+                                        jobPostApplicationStatus(jobPost);
+                                        if(jobPost.jobPost.jobPostStatus != null){
+                                            if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_NEW){
+                                                return '<div id="jobPostStatusDivVal_'+ jobPost.jobPost.jobPostId +'" style="color: orange; margin-bottom: 2px; text-align: center;font-weight:bold">' + jobPost.jobPost.jobPostStatus.jobStatusName + '</div>' +
+                                                    '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>';
+                                            } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_ACTIVE){
+                                                return '<div id="jobPostStatusDivVal_'+ jobPost.jobPost.jobPostId +'" style="color: #69CF37; margin-bottom: 2px; text-align: center;font-weight:bold">' + jobPost.jobPost.jobPostStatus.jobStatusName + '</div>' +
+                                                    '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>';
+                                            } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_PAUSED){
+                                                return '<div id="jobPostStatusDivVal_'+ jobPost.jobPost.jobPostId +'" style="color: orange; margin-bottom: 2px; text-align: center;font-weight:bold">' + jobPost.jobPost.jobPostStatus.jobStatusName + '</div>' +
+                                                    '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>';
+                                            } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_CLOSED){
+                                                return '<div id="jobPostStatusDivVal_'+ jobPost.jobPost.jobPostId +'" style="color: red; margin-bottom: 2px; text-align: center;font-weight:bold">' + jobPost.jobPost.jobPostStatus.jobStatusName + '</div>' +
+                                                    '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>';
+                                            } else{
+                                                return '<div id="jobPostStatusDivVal_'+ jobPost.jobPost.jobPostId +'" style="color: red; margin-bottom: 2px; text-align: center;font-weight:bold">' + jobPost.jobPost.jobPostStatus.jobStatusName + '</div>' +
+                                                    '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>';
+                                            }
+                                        } else{
+                                            return '<div id="jobPostStatusDivVal_'+ jobPost.jobPost.jobPostId +'" style="text-align: center">' + jobPost.jobPost.jobPostStatus.jobStatusName + '</div>' +
+                                                '<div id="jobPostStatusDiv_'+ jobPost.jobPost.jobPostId +'" style="text-align: center"></div>';
+                                        }
+                                    },
+                                    'editJob':'<button type="button" class="mBtn" style="width: 94%" onclick="openJobPost(' + jobPost.jobPost.jobPostId + ')" id="viewCandidateBtn" >Edit</button>',
+                                    'candidates':'<button type="button" class="mBtn" style="width: 94%" onclick="openCandidateView('+jobPost.jobPost.jobPostId+')" id="viewCandidateBtn" >Find</button>'
+                                })
+                            });
+                            $("#noJobs").hide();
+                            $(".postedJobTableDiv").show();
+                            $("#postedJobTable_wrapper").show();
+                            $("#postedJobTable").show();
+
+                        } else{
+                            $("#postedJobTable_wrapper").hide();
+                            $("#postedJobTable").hide();
+                            $("#noJobs").show();
+                        }
+                        return returned_data
+                    }
+                }
+            },
+            "deferRender":true,
+            "columns": [
+                { "data": "datePosted" },
+                { "data": "jobTitle" },
+                { "data": "recruiterName" },
+                { "data": "location" },
+                { "data": "salary" },
+                { "data": "track" },
+                { "data": "status" },
+                { "data": "editJob" },
+                { "data": "candidates" }
+            ],
+            "order": [[2, "desc"]],
+            responsive: true,
+            "destroy": true,
+            "dom":'Bfrtip',
+            "buttons": [
+                'copy','csv','excel',
+                {
+                    text: '<img src="/assets/recruiter/img/icons/refresh.svg" width="12px"> Refresh',
+                    action: function ( e, dt, node, config ) {
+                        var table = $("table#postedJobTable").DataTable();
+                        table.destroy();
+                        $("#postedJobTable_wrapper").hide();
+                        $("#postedJobTable").hide();
+                        getRecruiterJobPost();
+                    }
+                }
+            ]
+        });
+    } catch (exception){
+        console.log("exception occured !!" + exception);
+    }
+}
 
 function processDataCheckpartnerAccount(returnedData) {
     if(returnedData == 1){
@@ -267,31 +307,18 @@ function jobPostApplicationStatus(jobPost) {
 
     if(jobPost.jobPost.jobPostStatus != null){
         if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_NEW){
-            statusName.textContent = "Under review";
-            statusName.style = "color: orange; margin-bottom: 2px; text-align: center;font-weight:bold";
-
             colJobStatus.appendChild(stopDiv);
 
         } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_ACTIVE){
-            statusName.textContent = "Active";
-            statusName.style = "color: #69CF37; margin-bottom: 2px; text-align: center;font-weight:bold";
 
             colJobStatus.appendChild(pauseDiv);
             colJobStatus.appendChild(stopDiv);
 
         } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_PAUSED){
-            statusName.textContent = "Paused";
-            statusName.style = "color: orange; margin-bottom: 2px; text-align: center;font-weight:bold";
 
             colJobStatus.appendChild(resumeDiv);
             colJobStatus.appendChild(stopDiv);
 
-        } else if(jobPost.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_CLOSED){
-            statusName.textContent = "Closed";
-            statusName.style = "color: red; margin-bottom: 2px; text-align: center;font-weight:bold";
-
-        } else{
-            statusName.textContent = jobPost.jobPost.jobPostStatus.jobStatusName;
         }
     } else{
         statusName.textContent = "Not specified";
@@ -398,6 +425,22 @@ function processDataAddJobPost(returnedData) {
             jobPost: jobPostObj
         };
         jobPostApplicationStatus(customObj);
+
+        if(customObj.jobPost.jobPostStatus != null){
+            if(customObj.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_NEW){
+                $("#jobPostStatusDivVal_" + jobPostObj.jobPostId).html('Under Review').css("color",  "orange");
+
+            } else if(customObj.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_ACTIVE){
+                $("#jobPostStatusDivVal_" + jobPostObj.jobPostId).html('Active').css("color", "#69CF37");
+            } else if(customObj.jobPost.jobPostStatus.jobStatusId == JOB_STATUS_PAUSED){
+                $("#jobPostStatusDivVal_" + jobPostObj.jobPostId).html('Paused').css("color", "orange");
+            } else{
+                $("#jobPostStatusDivVal_" + jobPostObj.jobPostId).html('Closed').css("color", "red");
+            }
+        } else{
+            $("#jobPostStatusDivVal_" + jobPostObj.jobPostId).html('Not Specified').css("color", "black");
+        }
+
         notifySuccess("Job Status updated successfully!");
     } else{
         notifyError("Something went wrong. Please try again later!");
