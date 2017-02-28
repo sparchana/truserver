@@ -2,6 +2,9 @@ package controllers;
 
 import api.ServerConstants;
 import api.http.httpResponse.Workflow.smsJobApplyFlow.PostApplyInShortResponse;
+import com.google.maps.GeoApiContext;
+import com.google.maps.GeocodingApi;
+import com.google.maps.model.GeocodingResult;
 import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.scheduler.SchedulerManager;
@@ -11,6 +14,7 @@ import models.util.Validator;
 import notificationService.EmailEvent;
 import notificationService.NotificationEvent;
 import notificationService.SMSEvent;
+import play.Logger;
 import play.mvc.Controller;
 import play.mvc.Result;
 
@@ -56,14 +60,37 @@ public class TestController extends Controller{
         return ok();
     }
 
-    public static Result testnotification(){
+    public static Result testnotification() {
 /*        Candidate candidate = Candidate.find.where().eq("CandidateMobile", "+918971739586").findUnique();
         if(candidate.getCandidateAndroidToken() != null){
             NotificationUtil.addFcmToNotificationQueue("Hi", "Interview Selected", candidate.getCandidateAndroidToken(), ServerConstants.ANDROID_INTENT_ACTIVITY_JOB_DETAIL, 967L);
             return ok("1");
         }*/
+        return ok("Null token");
+    }
 
-        return ok("Null token!");
+    public static Result addressResolver(String searchAddress){
+        GeoApiContext context = new GeoApiContext().setApiKey("AIzaSyBsfsIw9OwmVtQDF3JUB0VWkEleebS217g");
+        GeocodingResult[] results;
+        String resolvedAddress = "Enter an address as param in the url (eg: .../addressResolver/?addr=<your address>)";
+        try {
+            results = GeocodingApi.geocode(context,
+                    searchAddress).await();
+
+            if(results.length > 0){
+                resolvedAddress = results[0].formattedAddress
+                        + " ("
+                        + results[0].geometry.location.lat
+                        + ", "
+                        + results[0].geometry.location.lng
+                        + ")";
+            } else{
+                resolvedAddress = "Unable to resolve. Try changing the search parameter";
+            }
+
+        } catch (Exception ignored) {}
+
+        return ok("Resolved Address and lat/lng for \"" + searchAddress + "\" --->\n\n" + resolvedAddress);
 
     }
 

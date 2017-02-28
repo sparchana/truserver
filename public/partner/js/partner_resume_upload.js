@@ -162,7 +162,6 @@ function uploadResumeCandidate(evt,candidateId) {
 }
 function processDataForSingleResume(returnedData) {
     $('#uploadResumeModalProcess').modal('hide');
-    console.log("Returned data : "+returnedData.candidateResumeLink);
     if(returnedData != null){
         if(returnedData.status == 1)
         {

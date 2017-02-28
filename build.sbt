@@ -58,4 +58,6 @@ libraryDependencies += "org.apache.poi" % "poi-ooxml-schemas" % "3.11"
 
 libraryDependencies += "org.apache.tika" % "tika-parsers" % "1.4"
 
+libraryDependencies += "com.google.maps" % "google-maps-services" % "0.1.17"
+
 libraryDependencies += evolutions
