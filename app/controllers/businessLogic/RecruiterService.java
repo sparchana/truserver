@@ -4,25 +4,26 @@ import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.AddCompanyRequest;
+import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
 import api.http.httpRequest.Recruiter.AddRecruiterRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
-import api.http.httpResponse.AddCompanyResponse;
-import api.http.httpResponse.LoginResponse;
+import api.http.httpResponse.*;
 import api.http.httpResponse.Recruiter.AddCreditResponse;
 import api.http.httpResponse.Recruiter.AddRecruiterResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
 import api.http.httpResponse.Recruiter.recruiterAdmin.*;
-import api.http.httpResponse.ResetPasswordResponse;
 import api.http.httpResponse.interview.InterviewResponse;
+import au.com.bytecode.opencsv.CSVReader;
+import com.google.maps.GeoApiContext;
+import com.google.maps.GeocodingApi;
+import com.google.maps.model.GeocodingResult;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import dao.*;
-import models.entity.Candidate;
-import models.entity.Company;
-import models.entity.JobPost;
+import models.entity.*;
 import models.entity.OM.CandidateResume;
 import models.entity.OM.InterviewDetails;
 import models.entity.OM.JobPostWorkflow;
@@ -32,15 +33,18 @@ import models.entity.Recruiter.RecruiterLead;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.Recruiter.Static.RecruiterStatus;
-import models.entity.RecruiterCreditHistory;
-import models.entity.Static.JobStatus;
+import models.entity.Static.*;
 import models.util.EmailUtil;
 import models.util.SmsUtil;
 import models.util.Util;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import play.Logger;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -52,7 +56,6 @@ import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
 import static models.util.Util.generateOtp;
 import static play.mvc.Controller.session;
-import static play.mvc.Results.TODO;
 
 /**
  * Created by batcoder1 on 7/7/16.
@@ -1201,4 +1204,309 @@ public class RecruiterService {
         return interviewResponse;
     }
 
+    public static BulkUploadResponse bulkUploadJob(File file, String fileName) throws IOException {
+        BulkUploadResponse response = new BulkUploadResponse();
+        Integer totalCount = 0;
+        Integer successCount = 0;
+        Integer rowCount = 0;
+        Boolean shouldSave;
+        String invalidFields = "";
+
+        RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session("recruiterId")).findUnique();
+        if(recruiterProfile != null) {
+            try {
+                CSVReader reader = new CSVReader(new FileReader(file));
+                String[] header;
+                String[] nextLine;
+
+                header = reader.readNext();
+
+                if(header != null){
+                    while((nextLine = reader.readNext()) != null){
+                        rowCount++;
+                        totalCount++;
+                        AddJobPostRequest addJobPostRequest = new AddJobPostRequest();
+
+                        shouldSave = true;
+                        for(int i = 0; i < nextLine.length ; i++){
+                            if(!nextLine[i].isEmpty()){
+                                switch (header[i].toLowerCase().trim()){
+                                    case "job title":
+                                        String jobTitle = nextLine[i];
+                                        addJobPostRequest.setJobPostTitle(jobTitle);
+                                        break;
+
+                                    case "gender":
+                                        String genderReq = nextLine[i];
+                                        if(Objects.equals(genderReq.toLowerCase().trim(), "male")){
+                                            addJobPostRequest.setJobPostGender(0);
+                                        } else if(Objects.equals(genderReq.toLowerCase().trim(), "female")){
+                                            addJobPostRequest.setJobPostGender(1);
+                                        } else{
+                                            addJobPostRequest.setJobPostGender(2);
+                                        }
+                                        break;
+
+                                    case "job role":
+                                        JobRole jobRole = JobRole.find.where().ilike("jobname","%"+nextLine[i]+"%").findUnique();
+                                        if(jobRole != null){
+                                            addJobPostRequest.setJobPostJobRoleId(Math.toIntExact(jobRole.getJobRoleId()));
+                                        }
+                                        // Default is "Others" --> Id 34
+                                        else addJobPostRequest.setJobPostJobRoleId(34);
+                                        break;
+
+                                    case "job localities":
+                                        String[] jobLocalities = nextLine[i].split(",");
+                                        if(jobLocalities.length > 0){
+                                            List<Integer> localityIdList = new ArrayList<>();
+                                            for(String jobLocality : jobLocalities){
+                                                Locality locality = Locality.find.where().ieq("LocalityName",jobLocality.trim()).findUnique();
+                                                if(locality != null){
+                                                    localityIdList.add(Math.toIntExact(locality.getLocalityId()));
+                                                }
+                                            }
+                                            if(localityIdList.size() > 0) {
+                                                addJobPostRequest.setJobPostLocalities(localityIdList);
+                                            }
+                                        } else{
+                                            shouldSave = false;
+                                        }
+                                        break;
+
+                                    case "min salary":
+                                        String minSalary = nextLine[i];
+                                        if(StringUtils.isNumeric(minSalary)){
+                                            if(Integer.valueOf(minSalary) > 2000 && Integer.valueOf(minSalary) < 99999){
+                                                addJobPostRequest.setJobPostMinSalary(Long.valueOf(minSalary));
+                                            } else{
+                                                shouldSave = false;
+                                                invalidFields += "\"" + header[i] + "\" should be numeric & should be between 2000 and 99999. " + rowCount + ",";
+                                            }
+
+                                        } else{
+                                            shouldSave = false;
+                                            invalidFields += "\"" + header[i] + "\" in row no. " + rowCount + " should be between 2000 and 99999,";
+                                        }
+                                        break;
+
+                                    case "max salary":
+                                        String maxSalary = nextLine[i];
+                                        if(StringUtils.isNumeric(maxSalary)){
+                                            if(Integer.valueOf(maxSalary) > 2000 && Integer.valueOf(maxSalary) < 99999){
+                                                addJobPostRequest.setJobPostMaxSalary(Long.valueOf(maxSalary));
+                                            } else{
+                                                shouldSave = false;
+                                                invalidFields += "\"" + header[i] + "\" in row no. " + rowCount + " should be between 2000 and 99999,";
+                                            }
+                                        } else{
+                                            shouldSave = false;
+                                            invalidFields += "Invalid \"" + header[i] + "\" value in row no. " + rowCount + ",";
+                                        }
+                                        break;
+
+                                    case "vacancies":
+                                        String vacancies = nextLine[i];
+                                        if(vacancies != null){
+                                            if(StringUtils.isNumeric(vacancies)){
+                                                addJobPostRequest.setJobPostVacancies(Integer.valueOf(vacancies));
+                                            } else{
+                                                shouldSave = false;
+                                                invalidFields += "Invalid \"" + header[i] + "\" value in row no. " + rowCount + ",";
+                                            }
+                                        } else{
+                                            shouldSave = false;
+                                            invalidFields += "Invalid \"" + header[i] + "\" value in row no. " + rowCount + ",";
+                                        }
+                                        break;
+
+                                    case "min experience":
+                                        Experience experience = Experience.find.where().ilike("ExperienceType","%"+nextLine[i]+"%").findUnique();
+                                        if(experience != null){
+                                            if(Objects.equals(experience.getExperienceType().toLowerCase().trim(), "fresher")) {
+                                                addJobPostRequest.setJobPostExperienceId(experience.getExperienceId());
+                                            } else if(Objects.equals(experience.getExperienceType().toLowerCase().trim(), "6 mths - 2 yrs")){
+                                                addJobPostRequest.setJobPostExperienceId(experience.getExperienceId());
+                                            } else if(Objects.equals(experience.getExperienceType().toLowerCase().trim(), "2 - 4 yrs")){
+                                                addJobPostRequest.setJobPostExperienceId(experience.getExperienceId());
+                                            } else if(Objects.equals(experience.getExperienceType().toLowerCase().trim(), "4 - 6 yrs")){
+                                                addJobPostRequest.setJobPostExperienceId(experience.getExperienceId());
+                                            } else{
+                                                addJobPostRequest.setJobPostExperienceId(5);
+                                            }
+                                        } else{
+                                            // Default is "Any" --> Id 5
+                                            addJobPostRequest.setJobPostExperienceId(5);
+                                        }
+                                        break;
+
+                                    case "shift":
+                                        String shift = nextLine[i];
+                                        if(StringUtils.isNumeric(shift)){
+                                            TimeShift timeShift = TimeShift.find.where().eq("TimeShiftId", nextLine[i]).findUnique();
+                                            if(timeShift != null){
+                                                addJobPostRequest.setJobPostShiftId(timeShift.getTimeShiftId());
+                                            } else{
+                                                // Default is "Any" --> Id 5
+                                                addJobPostRequest.setJobPostShiftId(5);
+                                            }
+                                        } else{
+                                            shouldSave = false;
+                                            invalidFields += "Invalid \"" + header[i] + "\" value in row no. " + rowCount + ",";
+                                        }
+                                        break;
+
+                                    case "interview address":
+                                        String givenAddress = nextLine[i];
+
+                                        String apiKey = (play.Play.application().configuration().getString("google.maps.apiKey"));
+                                        GeoApiContext context = new GeoApiContext().setApiKey(apiKey);
+                                        GeocodingResult[] results;
+                                        String resolvedAddress = "";
+                                        try {
+                                            results = GeocodingApi.geocode(context,
+                                                    givenAddress).await();
+
+                                            if(results.length > 0){
+                                                resolvedAddress = results[0].formattedAddress;
+                                                addJobPostRequest.setJobPostAddress(resolvedAddress);
+                                                addJobPostRequest.setJobPostInterviewLocationLat(results[0].geometry.location.lat);
+                                                addJobPostRequest.setJobPostInterviewLocationLng(results[0].geometry.location.lng);
+                                            } else{
+                                                shouldSave = false;
+                                                invalidFields += "Unable to resolve \"" + header[i] + "\" in row no. " + rowCount + ",";
+                                            }
+                                        } catch (Exception e) {
+                                            shouldSave = false;
+                                            invalidFields += "Unable to resolve \"" + header[i] + "\" in row no. " + rowCount + ",";
+                                        }
+                                        break;
+
+                                    case "building name":
+                                        addJobPostRequest.setJobPostAddressBuildingNo(nextLine[i]);
+                                        break;
+
+                                    case "interview slots":
+                                        List<String> interviewSlotList = Arrays.asList(nextLine[i].trim().split("\\s*,\\s*"));
+                                        if(interviewSlotList.size() > 0){
+                                            List<Integer> slotIdList = new ArrayList<>();
+
+                                            Boolean toProceed = true;
+                                            for(String slot : interviewSlotList){
+                                                if(StringUtils.isNumeric(slot)){
+                                                } else{
+                                                    toProceed = false;
+                                                }
+                                            }
+
+
+                                            if(toProceed){
+                                                for(String slot : interviewSlotList){
+                                                    slotIdList.add(Integer.valueOf(slot));
+                                                }
+                                                addJobPostRequest.setInterviewTimeSlot(slotIdList);
+                                            } else{
+                                                invalidFields += "Invalid \"" + header[i] + "\" value in row no. " + rowCount + ",";
+                                                shouldSave = false;
+                                            }
+                                        } else{
+                                            shouldSave = false;
+                                            invalidFields += "Invalid \"" + header[i] + "\" value in row no. " + rowCount + ",";
+                                        }
+                                        break;
+
+                                    case "interview days":
+                                        List<String> interviewDaysList = Arrays.asList(nextLine[i].split("\\s*,\\s*"));
+                                        if(interviewDaysList.size() > 0){
+                                            String interviewDays = "0000000";
+
+                                            for(String day : interviewDaysList){
+
+                                                switch(day.toLowerCase().trim()){
+                                                    case "monday":
+                                                    case "mon": interviewDays = "1" + interviewDays.substring(1, interviewDays.length());
+                                                        break;
+
+                                                    case "tu":
+                                                    case "tue":
+                                                    case "tues":
+                                                    case "tuesday": interviewDays = interviewDays.substring(0, 1) + "1" + interviewDays.substring(2, interviewDays.length());
+                                                        break;
+
+                                                    case "wed":
+                                                    case "wednesday": interviewDays = interviewDays.substring(0, 2) + "1" + interviewDays.substring(3, interviewDays.length());
+                                                        break;
+
+                                                    case "th":
+                                                    case "thu":
+                                                    case "thur":
+                                                    case "thurs":
+                                                    case "thursday": interviewDays = interviewDays.substring(0, 3) + "1" + interviewDays.substring(4, interviewDays.length());
+                                                        break;
+
+                                                    case "fri":
+                                                    case "friday": interviewDays = interviewDays.substring(0, 4) + "1" + interviewDays.substring(5, interviewDays.length());
+                                                        break;
+
+                                                    case "sat":
+                                                    case "saturday": interviewDays = interviewDays.substring(0, 5) + "1" + interviewDays.substring(6, interviewDays.length());
+                                                        break;
+
+                                                    case "sun":
+                                                    case "sunday": interviewDays = interviewDays.substring(0, 6) + "1" + interviewDays.substring(7, interviewDays.length());
+                                                        break;
+
+                                                }
+
+                                                if(Objects.equals(interviewDays, "0000000")){
+                                                    shouldSave = false;
+                                                    invalidFields += "No \"" + header[i] + "\" value found at row no. " + rowCount + ",";
+                                                } else{
+                                                    addJobPostRequest.setJobPostInterviewDays(interviewDays);
+                                                }
+                                            }
+                                        } else{
+                                            shouldSave = false;
+                                            invalidFields += "No \"" + header[i] + "\" value found at row no. " + rowCount + ",";
+                                        }
+                                        break;
+
+                                    case "landmark":
+                                        addJobPostRequest.setJobPostAddressLandmark(nextLine[i]);
+                                        break;
+
+                                    case "description":
+                                        addJobPostRequest.setJobPostDescription(nextLine[i]);
+                                        break;
+                                }
+                            } else{
+                                shouldSave = false;
+
+                                invalidFields += "Invalid \"" + header[i] + "\" value in row no. " + rowCount + ",";
+                            }
+                        }
+
+                        addJobPostRequest.setJobPostStatusId(ServerConstants.JOB_STATUS_ACTIVE);
+                        addJobPostRequest.setReviewApplications(ServerConstants.REVIEW_APPLICATION_AUTO);
+                        addJobPostRequest.setJobPostRecruiterId(recruiterProfile.getRecruiterProfileId());
+                        addJobPostRequest.setJobPostCompanyId(Math.toIntExact(recruiterProfile.getCompany().getCompanyId()));
+
+                        if (shouldSave) {
+                            AddJobPostResponse addJobPostResponse = JobService.addJobPost(addJobPostRequest, InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE);
+                            if(addJobPostResponse.getStatus() == AddJobPostResponse.STATUS_SUCCESS){
+                                successCount++;
+                            }
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            response.setTotalJobsCreated(successCount);
+            response.setTotalJobsUploaded(totalCount);
+            response.setInvalidFields(invalidFields);
+        }
+
+        return response;
+    }
 }
