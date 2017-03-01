@@ -175,7 +175,7 @@ $(function() {
                                     partnerMobile : phone,
                                     partnerType : selectedPartnerType,
                                     partnerLocality : localitySelected,
-                                    partnerCompanyId : companyId
+                                    partnerCompanyCode : companyId
                                 };
 
                                 partnerSignUpSubmit(d);
@@ -197,7 +197,7 @@ $(function() {
                     partnerMobile : phone,
                     partnerType : selectedPartnerType,
                     partnerLocality : localitySelected,
-                    partnerCompanyId : companyId
+                    partnerCompanyCode : companyId
                 };
                 partnerSignUpSubmit(d);
             }

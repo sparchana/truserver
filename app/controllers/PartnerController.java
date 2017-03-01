@@ -180,7 +180,7 @@ public class PartnerController {
         Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
         if(partner != null){
             partnerProfileRequest.setPartnerMobile(partner.getPartnerMobile());
-            return ok(toJson(PartnerService.createPartnerProfile(partnerProfileRequest, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE, ServerConstants.UPDATE_BASIC_PROFILE)));
+            return ok(toJson(PartnerService.updatePartnerProfile(partnerProfileRequest, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE, ServerConstants.UPDATE_BASIC_PROFILE)));
         } else{
             return ok("0");
         }

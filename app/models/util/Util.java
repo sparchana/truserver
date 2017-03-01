@@ -4,10 +4,7 @@ import controllers.businessLogic.AuthService;
 import controllers.truly.TrulyService;
 import dao.CandidateDAO;
 import dao.JobPostDAO;
-import models.entity.Auth;
-import models.entity.Candidate;
-import models.entity.Company;
-import models.entity.JobPost;
+import models.entity.*;
 import org.apache.commons.lang3.StringUtils;
 import play.Logger;
 
@@ -15,9 +12,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Random;
+import java.util.*;
 
 import static api.ServerConstants.BASE_URL;
 
@@ -165,6 +160,47 @@ public class Util {
 
 
             return generateApplyInShortUrl(candidate, jobPost, auth);
+        }
+        return null;
+    }
+
+
+    public static String generateReferralInShortUrl(Partner partner, List<JobPost> jobPostList, PartnerAuth auth){
+        StringBuilder stringBuilder = new StringBuilder();
+        List<String> jobPostIdList = new ArrayList<>();
+
+        if(partner != null && !jobPostList.isEmpty()) {
+            stringBuilder.append(BASE_URL);
+            stringBuilder.append("/employee/refer/");
+
+            // prep job post id list
+            for(JobPost jobPost: jobPostList) {
+                jobPostIdList.add(String.valueOf(jobPost.getJobPostId()));
+            }
+            stringBuilder.append("?jpId="+String.join(",", jobPostIdList));
+
+            // commented out for now since bulk uploaded partner don't have auth
+//            stringBuilder.append("&key="+md5(String.valueOf(auth.getAuthSessionId())));
+        }
+
+        // trulyfy/simplify this url
+        TrulyService trulyService = new TrulyService();
+
+        return trulyService.generateShortURL(stringBuilder.toString());
+    }
+
+    public static String generateReferralInShortUrl(Partner partner, List<JobPost> jobPostList) {
+        if(partner != null && !jobPostList.isEmpty()) {
+
+            // update session id
+//            PartnerAuth auth = PartnerAuth.find.where().eq("partner_id",partner.getPartnerId()).findUnique();
+//            if(auth != null) {
+//                auth.setAuthSessionId(UUID.randomUUID().toString());
+//                auth.save();
+//
+//            }
+
+            return generateReferralInShortUrl(partner, jobPostList, null);
         }
         return null;
     }

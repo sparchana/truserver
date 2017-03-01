@@ -6,12 +6,14 @@ import api.http.FormValidator;
 import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpRequest.LoginRequest;
 import api.http.httpRequest.Recruiter.*;
+import api.http.httpRequest.Recruiter.rmp.EmployeeBulkSmsRequest;
 import api.http.httpRequest.ResetPasswordResquest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.BulkUploadResponse;
 import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Recruiter.MultipleCandidateContactUnlockResponse;
 import api.http.httpResponse.Recruiter.RMP.ApplicationResponse;
+import api.http.httpResponse.Recruiter.RMP.EmployeeResponse;
 import api.http.httpResponse.Recruiter.RMP.NextRoundComponents;
 import api.http.httpResponse.Recruiter.RMP.SmsReportResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
@@ -20,7 +22,7 @@ import api.http.httpResponse.interview.InterviewResponse;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import controllers.businessLogic.CandidateService;
+import controllers.businessLogic.EmployeeService;
 import controllers.businessLogic.JobService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.businessLogic.PartnerAuthService;
@@ -32,15 +34,12 @@ import controllers.security.RecruiterSecured;
 import controllers.businessLogic.RecruiterService;
 import controllers.security.FlashSessionController;
 import controllers.security.RecruiterAdminSecured;
-import controllers.security.RecruiterSecured;
 import dao.JobPostDAO;
 import dao.JobPostWorkFlowDAO;
 import dao.RecruiterDAO;
 import dao.SmsReportDAO;
 import models.entity.*;
-import models.entity.OM.JobApplication;
-import models.entity.OM.JobPostWorkflow;
-import models.entity.OM.SmsReport;
+import models.entity.OM.*;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterProfile;
@@ -1229,9 +1228,11 @@ public class RecruiterController {
             if(checkCompanyJob(jobPost)){
                 SmsReportResponse smsReportResponse = new SmsReportResponse();
 
+                // only get sms of type one and two
                 List<SmsReport> smsReportList = SmsReport.find
                         .where()
                         .eq("JobPostId", jpId)
+                        .le("SmsType", ServerConstants.SMS_TYPE_APPLY_INTERVIEW_SMS)
                         .orderBy().desc("sms_report_id")
                         .findList();
 
@@ -1309,6 +1310,9 @@ public class RecruiterController {
                         data.setAppliedOn(application.getJobApplicationCreateTimeStamp());
 
                         if(application.getPartner() != null){
+                            // TODO check partner access level first, ==1 then normal , if ==2 then employee
+                            // set server constant as channel_EMPLOYEE
+                            // FE recruiter_job_post_track.js
                             data.setApplicationChannel(ServerConstants.APPLICATION_CHANNEL_PARTNER);
                             data.setPartner(application.getPartner());
                         } else{
@@ -1499,4 +1503,82 @@ public class RecruiterController {
         return ok("0");
     }
 
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result uploadEmployee() throws Exception {
+        java.io.File file = (java.io.File) request().body().asMultipartFormData().getFile("file").getFile();
+
+        EmployeeService employeeService = new EmployeeService(InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE);
+
+        return ok(toJson(employeeService.parseEmployeeCsv(file, RecruiterDAO.findById(Long.valueOf(session().get("recruiterId"))))));
+    }
+
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result getAllEmployee() {
+
+        RecruiterProfile recruiterProfile = RecruiterDAO.findById(Long.valueOf(session().get("recruiterId")));
+
+            // allow employee lookup only to private recruiters
+        if(recruiterProfile.getRecruiterAccessLevel() < ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
+            return badRequest();
+        }
+
+
+        List<PartnerToCompany> pToCList =
+                               PartnerToCompany.find.where()
+                                               .eq("CompanyId", recruiterProfile.getCompany().getCompanyId())
+                                               .eq("partner.partnerType.partnerTypeId", ServerConstants.PARTNER_TYPE_PRIVATE_EMPLOYEE)
+                                               .findList();
+
+        List<EmployeeResponse> employeeList = new ArrayList<>();
+
+        for(PartnerToCompany partnerToCompany: pToCList) {
+            EmployeeResponse response = new EmployeeResponse();
+
+            response.setPartnerId(partnerToCompany.getPartner().getPartnerId());
+            response.setEmailId(partnerToCompany.getPartner().getPartnerEmail());
+            response.setFirstName(partnerToCompany.getPartner().getPartnerFirstName());
+            response.setLastName(partnerToCompany.getPartner().getPartnerLastName());
+            response.setMobile(partnerToCompany.getPartner().getPartnerMobile());
+            response.setEmployeeId(partnerToCompany.getForeignEmployeeId());
+            response.setLocality(partnerToCompany.getPartner().getLocality().getLocalityName());
+
+            employeeList.add(response);
+        }
+
+        return ok(toJson(employeeList));
+    }
+
+    /** jpId in url is used in front-end for sms-module */
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result employeeView(String jpId) {
+        if(jpId == null || jpId.isEmpty()){
+            return badRequest();
+        }
+
+        return ok(views.html.Recruiter.rmp.private_recruiter_employee_view.render());
+    }
+
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result bulkSendSmsEmployee() {
+        JsonNode req = request().body().asJson();
+        EmployeeBulkSmsRequest employeeBulkSmsRequest = new EmployeeBulkSmsRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            employeeBulkSmsRequest = newMapper.readValue(req.toString(), EmployeeBulkSmsRequest.class);
+
+            RecruiterProfile recruiterProfile = RecruiterDAO.findById(Long.valueOf(session().get("recruiterId")));
+
+            if(recruiterProfile == null) {
+                return badRequest(" No Recruiter found with recId: " + session().get("recruiterId"));
+            }
+
+            return ok(toJson(RecruiterService.sendBulkSmsEmployee(employeeBulkSmsRequest, recruiterProfile)));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return badRequest();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return badRequest();
+    }
 }
