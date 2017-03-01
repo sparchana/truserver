@@ -3,6 +3,7 @@ package notificationService;
 import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
+import models.entity.Partner;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.SmsType;
 
@@ -20,6 +21,9 @@ public abstract class NotificationEvent {
     private Candidate candidate;
     private JobPost jobPost;
     private SmsType smsType;
+
+    // rmp employee
+    private Partner partner;
 
     abstract String send();
 
@@ -77,5 +81,13 @@ public abstract class NotificationEvent {
 
     public void setSmsType(SmsType smsType) {
         this.smsType = smsType;
+    }
+
+    public Partner getPartner() {
+        return partner;
+    }
+
+    public void setPartner(Partner partner) {
+        this.partner = partner;
     }
 }

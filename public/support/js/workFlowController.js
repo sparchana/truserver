@@ -1771,7 +1771,7 @@ function openFeedbackModal(candidateId) {
 }
 
 function addFeedback() {
-    if($("#feedbackOption").val() > 0){
+    if($("#feedbackOption").val() > 0) {
         if(($("#feedbackOption").val() == 2 || $("#feedbackOption").val() == 4) && $("#reasonVal").val() == 0){
             notifyError("Please select a reason");
         } else{

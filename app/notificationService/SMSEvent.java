@@ -3,6 +3,7 @@ package notificationService;
 import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
+import models.entity.Partner;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.SmsType;
 import play.Logger;
@@ -39,6 +40,18 @@ public class SMSEvent extends NotificationEvent {
         this.setCandidate(candidate);
         this.setRecruiterProfile(recruiterProfile);
         this.setSmsType(smsType);
+    }
+
+    // for employee referral inShort url sms
+    public SMSEvent(String recipient, String message, Company company
+            , RecruiterProfile recruiterProfile, Partner partner, SmsType smsType)
+    {
+        this.setMessage(message);
+        this.setRecipient(recipient);
+        this.setCompany(company);
+        this.setRecruiterProfile(recruiterProfile);
+        this.setSmsType(smsType);
+        this.setPartner(partner);
     }
 
     @Override

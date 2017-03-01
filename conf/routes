@@ -170,6 +170,8 @@ GET         /checkPrivateRecruiterPartnerAccount                          contro
 GET         /switchToPartner                                              controllers.RecruiterController.switchToPartner()
 GET         /recruiter/getNextRoundComponents/:jpId                       controllers.RecruiterController.getNextRoundComponents(jpId: Long)
 GET         /recruiter/getPrevRounds                                      controllers.RecruiterController.getPreviousRounds(jpId: java.lang.Long ?= null, cId: java.lang.Long ?= null)
+GET         /recruiter/getAllEmployee                                     controllers.RecruiterController.getAllEmployee()
+GET         /recruiter/employee                                           controllers.RecruiterController.employeeView(jpId: String ?= null)
 
 #Temp route delete after use
 GET         /recruiter/job/candidateModal                                 controllers.RecruiterController.recruiterCandidateModal()
@@ -203,6 +205,8 @@ POST        /getSentSms/                                                  contro
 POST        /getAppliedCandidates/                                        controllers.RecruiterController.getAppliedCandidates(jpId: java.lang.Long ?= null)
 POST        /getConfirmedApplication/                                     controllers.RecruiterController.getConfirmedApplication(jpId: java.lang.Long ?= null)
 POST        /getFetchedCandidateData                                      controllers.RecruiterController.getFetchedCandidateData()
+POST        /recruiter/uploadEmployee                                     controllers.RecruiterController.uploadEmployee()
+POST        /recruiter/bulkSendSmsEmployee                                controllers.RecruiterController.bulkSendSmsEmployee()
 
 # Recruiter SuperAdmin API
 # ~~~~~~~~~~~~~
@@ -340,6 +344,8 @@ GET         /addressResolver/                                             contro
 # GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
 # GET         /testResponse                                                 controllers.TestController.testApplyInShortResponse()
 # GET         /isPrivate/:mobile                                            controllers.TestController.isPrivate(mobile: String)
+GET          /testUploadEmployeeCSV                                         controllers.TestController.renderEmployeeCSVUpload()
+POST         /testProcessEmployeeCSV                                        controllers.TestController.processEmployeeCSV()
 
 # Scrap API
 # ~~~~~~~~~~~~~

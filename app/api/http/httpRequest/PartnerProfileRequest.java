@@ -4,16 +4,7 @@ package api.http.httpRequest;
  * Created by adarsh on 12/9/16.
  */
 public class PartnerProfileRequest extends PartnerSignUpRequest{
-    public String partnerEmail;
-    public String partnerOrganizationName;
-
-    public String getPartnerEmail() {
-        return partnerEmail;
-    }
-
-    public void setPartnerEmail(String partnerEmail) {
-        this.partnerEmail = partnerEmail;
-    }
+    private String partnerOrganizationName;
 
     public String getPartnerOrganizationName() {
         return partnerOrganizationName;

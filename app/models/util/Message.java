@@ -3,6 +3,7 @@ package models.util;
 import api.http.httpResponse.TruResponse;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import play.Logger;
 
 import java.util.*;
 
@@ -20,7 +21,7 @@ public class Message {
 
     public Message(String type, String text) throws Exception {
         if(type != MESSAGE_ERROR && type != MESSAGE_INFO && type != MESSAGE_WARNING) {
-            throw new Exception("Unrecognized Message Type: \""+type+"\"");
+            throw new Exception("Unrecognized Message Type: \""+type+"\" \n");
         }
         this.type = type;
         this.text = text;
