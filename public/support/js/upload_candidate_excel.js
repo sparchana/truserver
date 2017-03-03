@@ -41,6 +41,7 @@ function processDataForCSV(returnedData) {
     $("#loadSpinner").hide();
     $(".textResponse").html("");
 
+	console.log("returnedData.totalNumberOfCandidateCreated = "+returnedData.totalNumberOfCandidateCreated);
     if(returnedData.totalNumberOfCandidateCreated == 0) {
 
         var parent = $(".textResponse");

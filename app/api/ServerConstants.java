@@ -1,5 +1,7 @@
 package api;
 
+import scala.Int;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -458,4 +460,9 @@ public class ServerConstants {
 
 
     public static String BASE_URL = "https://trujobs.in";
+
+    // recruiter(RMP) view type
+    public static final Integer VIEW_TYPE_ALL_JOBS = 1;
+    public static final Integer VIEW_TYPE_MY_JOBS = 2;
+
 }

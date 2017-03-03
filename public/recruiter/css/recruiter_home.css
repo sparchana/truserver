@@ -516,11 +516,13 @@ a:hover{
     color: #5c5c5c;
     padding: 6px 12px 6px 12px;
     border-radius: 3px;
+    transition: 0.2s;
 }
 
 .customBtn:hover{
     box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
     color: white;
+    transition: 0.2s;
 }
 
 .btnGreen{

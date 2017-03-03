@@ -333,7 +333,7 @@ function renderCandidateTable() {
                             'resume': function () {
                                 if(candidate.candidateResumeLink == null){
                                     return '<div id="resumeLink_'+candidate.candidateId+'" style="width:100%" >' +
-                                    '<label class="mBtn blue btn-file" style="text-align: center;font-weight:100">UPLOAD'+
+                                    '<label class="mBtn blue btn-file" style="text-align: center;font-weight:100">Upload'+
                                     '<input type="file" accept=".pdf,.doc,.docx" onchange="uploadResumeCandidate(event,'+candidate.candidateId+')" style="display: none">'+
                                     '</label>'+
                                     '</div>'

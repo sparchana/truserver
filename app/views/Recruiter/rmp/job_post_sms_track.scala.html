@@ -52,13 +52,13 @@
                     </li>
                     <li id="tab2Parent" class="tab col s3" onclick="preformTabChange(2)">
                         <a id="tabTrack" href="#confirmed">
-                            <font id="tab2">Track Application(s)</font>
+                            <font id="tab2">Application(s)</font>
                         </a>
 
                     </li>
                     <li id="tab3Parent" class="tab col s3" onclick="preformTabChange(3)">
                         <a id="tabConfirmed" href="#completed">
-                            <font id="tab3">Confirmed interview(s)</font>
+                            <font id="tab3">Interview(s)</font>
                         </a>
                     </li>
                 </ul>
@@ -66,7 +66,7 @@
 
             <div style="padding-top: 8%; padding-bottom: 8%" id="loadingIcon">
                 <center>
-                    <h6 id="loaderText">Fetching SMS Reports</h6>
+                    <h6 id="loaderText"></h6>
                     <div class="spinner">
                         <div class="double-bounce1"></div>
                         <div class="double-bounce2"></div>
@@ -126,12 +126,12 @@
                     </table>
                 </div>
             </div>
-            <div id="confirmedApplications" class="col s12">
+            <div id="confirmedApplications" class="col s12" style="display: none">
                 <div id="noConfirmedApplications" style="padding: 90px 6% 90px 6%; display: none">
                     <center>
                         <img src="/assets/recruiter/img/empty_box.svg" width="116px">
-                        <h5>No confirmed applications yet!</h5>
-                        <h6>Looks like there no confirmed applications!</h6>
+                        <h5>No confirmed interviews!</h5>
+                        <h6>Looks like there no newly confirmed interviews that need your attention!</h6>
                     </center>
                 </div>
                 <div id="confirmedApplicationContainer">
@@ -404,6 +404,7 @@
     <script type="text/javascript" src="/assets/partner/js/dataTables.responsive.min.js"></script>
     <script type="text/javascript" src="/assets/support/js/btnExport/dataTables.buttons.min.js"></script>
     <script type="text/javascript" src="/assets/support/js/btnExport/buttons.flash.min.js"></script>
+    <script type="text/javascript" src="/assets/partner/js/notify.min.js"></script>
 
     <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
     <script type="text/javascript" src="/assets/common/js/validation.js"></script>
@@ -418,4 +419,6 @@
 
     <script type="text/javascript" src='https://maps.google.com/maps/api/js?key=AIzaSyCKHf7GijuzKW84Ggz0fFWWHD0y9_onUhg&sensor=false&libraries=places'></script>
     <script src="/assets/recruiter/js/locationpicker.jquery.min.js"></script>
+    <script type="text/javascript" src="/assets/js/bootbox.min.js"></script>
+    <script type="text/javascript" src="/assets/js/interview_modal.js"></script>
 </html>
