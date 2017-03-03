@@ -115,7 +115,7 @@ $(window).load(function(){
     try {
         $.ajax({
             type: "POST",
-            url: "/getAllRecruiterJobPosts",
+            url: "/getAllRecruiterJobPosts/?view=2",
             data: false,
             async: false,
             contentType: false,
@@ -669,6 +669,7 @@ function processDataUpdateFeedBack(returnedData) {
     if(returnedData == 1){
         notifySuccess("Feedback updated successfully");
         $("#candidate_card_" + globalCandidateId).remove();
+        $("#noCompletedApplication").hide();
 
         $("#addFeedback").closeModal();
 /*        setTimeout(function () {

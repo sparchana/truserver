@@ -22,6 +22,7 @@ public class PartnerToCandidateToCompanyDAO {
 
         return PartnerToCandidateToCompany.find.where()
                 .eq("partner_id", partner.getPartnerId())
+                .orderBy("creation_timestamp desc")
                 .findList();
     }
 }
