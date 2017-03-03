@@ -2562,7 +2562,7 @@ public class CandidateService
                                     break;
                                 case "current salary per month":
                                 case "salary":
-                                    String salary = CharMatcher.digit().retainFrom(nextLine[i]);
+                                    String salary = CharMatcher.DIGIT.retainFrom(nextLine[i]);
                                     if(salary.isEmpty()) salary = "0";
                                     addSupportCandidateRequest.setCandidateLastWithdrawnSalary(Long.valueOf(salary,10));
                                     //Logger.info("addSupportCandidateRequest.setCandidateLastWithdrawnSalary ="+addSupportCandidateRequest.getCandidateLastWithdrawnSalary());

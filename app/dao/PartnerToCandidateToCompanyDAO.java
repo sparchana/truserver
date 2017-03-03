@@ -15,6 +15,7 @@ public class PartnerToCandidateToCompanyDAO {
         return PartnerToCandidateToCompany.find.where()
                 .eq("partnerToCandidate.candidate.candidateId", candidate.getCandidateId())
                 .in("partnerToCompany.company.companyId", companyIdList)
+                .setMaxRows(1)
                 .findUnique();
     }
 

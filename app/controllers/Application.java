@@ -2622,7 +2622,7 @@ public class Application extends Controller {
         else{ return ok(); }
     
     }
-    @Security.Authenticated(PartnerInternalSecured.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result processCandidates() {
         Http.MultipartFormData body = request().body().asMultipartFormData();
         Http.MultipartFormData.FilePart excel = body.getFile("file");

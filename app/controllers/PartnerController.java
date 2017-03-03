@@ -188,7 +188,7 @@ public class PartnerController {
 
     public static Integer checkCandidateExistence(Partner partner, String mobile){
         Integer response = ServerConstants.STATUS_NO_CANDIDATE;
-        Candidate candidate = Candidate.find.where().eq("CandidateMobile", mobile).findUnique();
+        Candidate candidate = Candidate.find.where().eq("CandidateMobile", mobile).setMaxRows(1).findUnique();
         if(candidate != null){
 
             //candidate exists! getting partnerToCompany list

@@ -576,15 +576,17 @@ public class RecruiterController {
                             statusList += "'" + status + "', ";
                         }
 
+                        //Logger.info("Calling getAssociatedRecruiterJobsApplications for recruiter "+Math.toIntExact(recruiterProfile.getRecruiterProfileId()));
                         List<JobPostWorkflow> otherApplicationList =
                                 JobPostWorkFlowDAO.getAssociatedRecruiterJobsApplications(statusList, Math.toIntExact(recruiterProfile.getRecruiterProfileId()));
-
+                        //Logger.info("otherApplicationList size "+otherApplicationList.size());
                         //removing duplicate data from list
                         Set<JobPostWorkflow> jobSet = new HashSet<>();
                         jobSet.addAll(otherApplicationList);
                         otherApplicationList.clear();
                         otherApplicationList.addAll(jobSet);
 
+                        //Logger.info("otherApplicationList size "+otherApplicationList.size());
                         for(JobPostWorkflow jobPostWorkflow : otherApplicationList){
                             otherJobPostMap.put(jobPostWorkflow.getJobPost().getJobPostId(), jobPostWorkflow.getJobPost());
                         }
@@ -614,11 +616,15 @@ public class RecruiterController {
                 //association other related jobs for this recruiter
                 if(recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE){
 
+                    //Logger.info("recruiterProfile.getRecruiterAccessLevel() "+recruiterProfile.getRecruiterAccessLevel());
+                    //Logger.info("viewType "+viewType);
+
                     //get recruiter's owned jobs
                     if(viewType != null &&
                             Objects.equals(viewType, ServerConstants.VIEW_TYPE_MY_JOBS)
-                            && recruiterProfile.getRecruiterAccessLevel() == ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE)
+                            && recruiterProfile.getRecruiterAccessLevel() >= ServerConstants.RECRUITER_ACCESS_LEVEL_PRIVATE)
                     {
+                        //Logger.info("otherJobPostMap size "+otherJobPostMap.size());
                         for(Map.Entry<?, JobPost> entity: otherJobPostMap.entrySet()) {
                             JobPost jobPost = entity.getValue();
                             recJobPostMap.put(jobPost.getJobPostId(), jobPost);
@@ -626,6 +632,7 @@ public class RecruiterController {
                             //checking recruiter and job post company
                             if(Objects.equals(jobPost.getCompany().getCompanyId(), recruiterProfile.getCompany().getCompanyId())){
                                 jpIdList += "'" + jobPost.getJobPostId() + "', ";
+                                //Logger.info("Adding associated job id to jpIdList "+jobPost.getJobPostId());
                             }
                         }
                     }
