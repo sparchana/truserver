@@ -1,9 +1,6 @@
 package api.http.httpRequest;
 
 import api.http.FormValidator;
-import models.entity.Interaction;
-
-import java.util.List;
 
 /**
  * Created by adarsh on 10/9/16.
@@ -14,13 +11,20 @@ public class PartnerSignUpRequest {
     private String partnerMobile;
 
     private Integer partnerType;
-    private Integer partnerLocality;
+    private Long partnerLocality;
 
-    private String partnerCompanyId;
+    private String partnerCompanyCode;
 
     //for setting password
     private String partnerPassword;
     private String partnerAuthMobile;
+
+    private String partnerEmail;
+
+
+    // used in employee bulk upload via recruiter
+    private String createdByRecuiterUUId;
+    private String foreginEmployeeId;
 
 
     public String getPartnerName() {
@@ -71,19 +75,43 @@ public class PartnerSignUpRequest {
         this.partnerType = partnerType;
     }
 
-    public Integer getPartnerLocality() {
+    public Long getPartnerLocality() {
         return partnerLocality;
     }
 
-    public void setPartnerLocality(Integer partnerLocality) {
+    public void setPartnerLocality(Long partnerLocality) {
         this.partnerLocality = partnerLocality;
     }
 
-    public String getPartnerCompanyId() {
-        return partnerCompanyId;
+    public String getPartnerCompanyCode() {
+        return partnerCompanyCode;
     }
 
-    public void setPartnerCompanyId(String partnerCompanyId) {
-        this.partnerCompanyId = partnerCompanyId;
+    public void setPartnerCompanyCode(String partnerCompanyId) {
+        this.partnerCompanyCode = partnerCompanyId;
+    }
+
+    public String getPartnerEmail() {
+        return partnerEmail;
+    }
+
+    public void setPartnerEmail(String partnerEmail) {
+        this.partnerEmail = partnerEmail;
+    }
+
+    public String getCreatedByRecuiterUUId() {
+        return createdByRecuiterUUId;
+    }
+
+    public void setCreatedByRecuiterUUId(String createdByRecuiterUUId) {
+        this.createdByRecuiterUUId = createdByRecuiterUUId;
+    }
+
+    public String getForeginEmployeeId() {
+        return foreginEmployeeId;
+    }
+
+    public void setForeginEmployeeId(String foreginEmployeeId) {
+        this.foreginEmployeeId = foreginEmployeeId;
     }
 }

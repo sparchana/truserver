@@ -1,13 +1,18 @@
 package controllers;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.httpResponse.Workflow.smsJobApplyFlow.PostApplyInShortResponse;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;
 import controllers.businessLogic.CandidateService;
+import controllers.businessLogic.EmployeeService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import controllers.businessLogic.employee.ParseEmployeeCSV;
 import controllers.scheduler.SchedulerManager;
+import controllers.security.RecruiterSecured;
+import dao.RecruiterDAO;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.RecruiterCreditHistory;
 import models.util.Validator;
@@ -17,6 +22,7 @@ import notificationService.SMSEvent;
 import play.Logger;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -198,5 +204,18 @@ public class TestController extends Controller{
 
     public static Result isPrivate(String mobile) {
         return ok(toJson(CandidateService.isCandidatePrivate(mobile)));
+    }
+
+    public static Result renderEmployeeCSVUpload() {
+        return ok(views.html.Recruiter.rmp.uploademployeecsv.render());
+    }
+
+    @Security.Authenticated(RecruiterSecured.class)
+    public static Result processEmployeeCSV() throws Exception {
+        java.io.File file = (java.io.File) request().body().asMultipartFormData().getFile("file").getFile();
+
+        EmployeeService employeeService = new EmployeeService(InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE);
+
+        return ok(toJson(employeeService.parseEmployeeCsv(file, RecruiterDAO.findById(Long.valueOf(session().get("recruiterId"))))));
     }
 }

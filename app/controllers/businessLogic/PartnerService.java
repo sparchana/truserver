@@ -74,6 +74,7 @@ public class PartnerService {
                                                         int channelType,
                                                         int leadSourceId) {
 
+        boolean isBulkUploadCreation = channelType == InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE;
         PartnerSignUpResponse partnerSignUpResponse = new PartnerSignUpResponse();
         String result = "";
         String objectAUUId = "";
@@ -89,10 +90,8 @@ public class PartnerService {
                     partner = new Partner();
                     Logger.info("creating new partner");
 
-                    interactionType = InteractionConstants.INTERACTION_TYPE_PARTNER_SIGN_UP;
-
                     companyAssociationResponse = checkPrivatePartnerCompanyAssociation(partnerSignUpRequest.getPartnerMobile()
-                            , partnerSignUpRequest.getPartnerCompanyId(), true);
+                            , partnerSignUpRequest.getPartnerCompanyCode(), true);
 
                     if(partnerSignUpRequest.getPartnerName()!= null){
                         partner.setPartnerFirstName(partnerSignUpRequest.getPartnerName());
@@ -109,30 +108,37 @@ public class PartnerService {
                     interactionType = InteractionConstants.INTERACTION_TYPE_PARTNER_SIGN_UP;
                     if(!(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE)){
                         // triggers when partner is self created
-                        triggerOtp(partner, partnerSignUpResponse);
+                        // also don't sent sms if the partner is created by bulk upload
+                        if(!isBulkUploadCreation) triggerOtp(partner, partnerSignUpResponse);
                         result = InteractionConstants.INTERACTION_RESULT_NEW_PARTNER;
                         objectAUUId = partner.getPartnerUUId();
+                    }
+
+                    if(partnerSignUpRequest.getPartnerEmail()!= null
+                            && !partnerSignUpRequest.getPartnerEmail().isEmpty()){
+                        partner.setPartnerEmail(partnerSignUpRequest.getPartnerEmail());
                     }
 
                 } else {
                     PartnerAuth auth = PartnerAuthService.isAuthExists(partner.getPartnerId());
                     companyAssociationResponse = checkPrivatePartnerCompanyAssociation(partnerSignUpRequest.getPartnerMobile()
-                            , partnerSignUpRequest.getPartnerCompanyId(), false);
+                            , partnerSignUpRequest.getPartnerCompanyCode(), false);
 
                     if(auth == null ) {
                         Logger.info("auth doesn't exists for this partner");
                         partner.setPartnerFirstName(partnerSignUpRequest.getPartnerName());
                         resetPartnerTypeAndLocality(partner, partnerSignUpRequest);
                         interactionType = InteractionConstants.INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP;
-                        if(!(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE)){
-                            triggerOtp(partner, partnerSignUpResponse);
+                        if(!(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE) ){
+                            // also don't sent sms if the partner is created by bulk upload
+                            if(!isBulkUploadCreation) triggerOtp(partner, partnerSignUpResponse);
                             result = InteractionConstants.INTERACTION_RESULT_EXISTING_PARTNER_VERIFICATION;
                             objectAUUId = partner.getPartnerUUId();
                             partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_SUCCESS);
 
                         }
                     } else{
-                        if(partnerSignUpRequest.getPartnerCompanyId() == null){
+                        if(partnerSignUpRequest.getPartnerCompanyCode() == null){
                             //its not a private partner
                             interactionType = InteractionConstants.INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED;
                             result = InteractionConstants.INTERACTION_RESULT_EXISTING_PARTNER_SIGNUP;
@@ -143,7 +149,8 @@ public class PartnerService {
                                 interactionType = InteractionConstants.INTERACTION_TYPE_PARTNER_SIGN_UP;
                                 if(!(channelType == INTERACTION_CHANNEL_SUPPORT_WEBSITE)){
                                     // triggers when partner is self created
-                                    triggerOtp(partner, partnerSignUpResponse);
+                                    // also don't sent sms if the partner is created by bulk upload
+                                    if(!isBulkUploadCreation) triggerOtp(partner, partnerSignUpResponse);
                                     result = InteractionConstants.INTERACTION_RESULT_NEW_PARTNER;
                                     objectAUUId = partner.getPartnerUUId();
                                 }
@@ -159,11 +166,17 @@ public class PartnerService {
 
                 if(companyAssociationResponse == ServerConstants.PARTNER_NEED_COMPANY_ASSOCIATION){
                     Logger.info("Creating association with the company");
-                    associatePrivatePartnerToCompany(partner, partnerSignUpRequest.getPartnerCompanyId());
+                    associatePrivatePartnerToCompany(partner, partnerSignUpRequest, isBulkUploadCreation);
                 }
 
                 //creating interaction
-                createInteractionForPartnerSignUp(objectAUUId, result, interactionType);
+                if(isBulkUploadCreation) {
+                    // employee bulk upload interaction
+                    createInteractionForPartnerSignUp(objectAUUId, partnerSignUpRequest.getCreatedByRecuiterUUId(), channelType);
+                } else {
+                    // partner self interaction
+                    createInteractionForPartnerSignUp(objectAUUId, result, interactionType, channelType);
+                }
 
             } catch (NullPointerException n){
                 n.printStackTrace();
@@ -215,6 +228,27 @@ public class PartnerService {
             partner.update();
             session().put("partnerToCompanyId", String.valueOf(partnerToCompany.getPartnerToCompanyId()));
         }
+    }
+
+
+    public static void associatePrivatePartnerToCompany(Partner partner, PartnerSignUpRequest request, boolean isEmployee){
+        if(!isEmployee ){
+            associatePrivatePartnerToCompany(partner, request.getPartnerCompanyCode());
+        } else {
+            if(request.getPartnerCompanyCode() != null){
+                Company company = Company.find.where().eq("CompanyCode", request.getPartnerCompanyCode()).findUnique();
+                PartnerToCompany partnerToCompany = new PartnerToCompany();
+                partnerToCompany.setPartner(partner);
+                partnerToCompany.setCompany(company);
+                partnerToCompany.setForeignEmployeeId(request.getForeginEmployeeId());
+                partnerToCompany.save();
+
+                //setting partner type as a private partner
+                partner.setPartnerType(PartnerType.find.where().eq("partner_type_id", ServerConstants.PARTNER_TYPE_PRIVATE_EMPLOYEE).findUnique());
+                partner.update();
+            }
+        }
+
     }
 
     public static void resetPartnerTypeAndLocality(Partner existingPartner, PartnerSignUpRequest partnerSignUpRequest) {
@@ -313,7 +347,7 @@ public class PartnerService {
         return resetPasswordResponse;
     }
 
-    public static PartnerSignUpResponse createPartnerProfile(PartnerProfileRequest partnerProfileRequest, int channelType,
+    public static PartnerSignUpResponse updatePartnerProfile(PartnerProfileRequest partnerProfileRequest, int channelType,
                                                              int profileUpdateFlag) {
         PartnerSignUpResponse partnerSignUpResponse = new PartnerSignUpResponse();
         // get partnerBasic obj from req

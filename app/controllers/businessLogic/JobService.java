@@ -1055,10 +1055,12 @@ public class JobService {
             jobIdVal = String.valueOf(jobpost.getJobPostId());
             jobPostNameVal = jobpost.getJobPostTitle();
             companyNameVal = jobpost.getCompany().getCompanyName();
-            if(jobpost.getJobPostIsHot()){
-                jobIsHotVal = "Hot";
-            } else{
-                jobIsHotVal = "Not Hot";
+            if(jobpost.getJobPostIsHot() != null){
+                if(jobpost.getJobPostIsHot()){
+                    jobIsHotVal = "Hot";
+                } else{
+                    jobIsHotVal = "Not Hot";
+                }
             }
 
             /* check source for the job and save it to appropriate sheet */

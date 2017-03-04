@@ -1,5 +1,7 @@
 package api;
 
+import scala.Int;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,6 +45,7 @@ public class ServerConstants {
     public static final int CANDIDATE_STATUS_VERIFIED= 1;
 
     public static final int PARTNER_TYPE_PRIVATE = 7;
+    public static final int PARTNER_TYPE_PRIVATE_EMPLOYEE = 8;
 
     public static final int JOB_POST_TYPE_OPEN = 0;
     public static final int JOB_POST_TYPE_PRIVATE = 1;
@@ -178,6 +181,12 @@ public class ServerConstants {
     public static final int REVIEW_APPLICATION_MANUAL = 0;
     public static final int REVIEW_APPLICATION_AUTO = 1;
     public static Map<String, String> devTeamMobile;
+
+    // SMS report type
+    public static final int SMS_TYPE_APPLY_JOB_SMS = 1;
+    public static final int SMS_TYPE_APPLY_INTERVIEW_SMS = 2;
+    public static final int SMS_TYPE_REFERRAL = 3;
+
 
     // company status
     public static final int COMPANY_STATUS_ACTIVE = 2;
@@ -451,4 +460,9 @@ public class ServerConstants {
 
 
     public static String BASE_URL = "https://trujobs.in";
+
+    // recruiter(RMP) view type
+    public static final Integer VIEW_TYPE_ALL_JOBS = 1;
+    public static final Integer VIEW_TYPE_MY_JOBS = 2;
+
 }

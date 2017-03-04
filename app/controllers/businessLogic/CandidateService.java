@@ -10,7 +10,6 @@ import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
 import api.http.httpResponse.hirewand.HireWandResponse;
 import api.http.httpResponse.ongrid.OngridAadhaarVerificationResponse;
-import au.com.bytecode.opencsv.CSVReader;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
@@ -23,6 +22,7 @@ import com.avaje.ebean.Expr;
 import com.avaje.ebean.Query;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
 import com.google.common.base.CharMatcher;
+import com.opencsv.CSVReader;
 import controllers.PartnerController;
 import controllers.businessLogic.hirewand.HWHTTPException;
 import controllers.businessLogic.hirewand.HireWandService;
@@ -2562,7 +2562,7 @@ public class CandidateService
                                     break;
                                 case "current salary per month":
                                 case "salary":
-                                    String salary = CharMatcher.digit().retainFrom(nextLine[i]);
+                                    String salary = CharMatcher.DIGIT.retainFrom(nextLine[i]);
                                     if(salary.isEmpty()) salary = "0";
                                     addSupportCandidateRequest.setCandidateLastWithdrawnSalary(Long.valueOf(salary,10));
                                     //Logger.info("addSupportCandidateRequest.setCandidateLastWithdrawnSalary ="+addSupportCandidateRequest.getCandidateLastWithdrawnSalary());

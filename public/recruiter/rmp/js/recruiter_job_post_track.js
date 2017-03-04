@@ -42,9 +42,16 @@ $(document).ready(function(){
 
     var pathname = window.location.pathname; // Returns path only
     var jobPostIdUrl = pathname.split('/');
-    jobPostId = jobPostIdUrl[(jobPostIdUrl.length)-1];
+    var tabId = jobPostIdUrl[(jobPostIdUrl.length)-1];
+    jobPostId = jobPostIdUrl[(jobPostIdUrl.length)-2];
 
-    tabChange1();
+    if(tabId == "s"){
+        tabChange1();
+    } else if(tabId == "a"){
+        tabChange2();
+    } else if(tabId == "i"){
+        tabChange3();
+    }
 
     try {
         $.ajax({
@@ -203,7 +210,7 @@ function tabChange1() {
                                             if(smsObject.smsDeliveryStatus.statusId == 1){
                                                 return '<div class="mLabel" style="width:100%; color: orange; font-weight: bold" >'+ smsObject.smsDeliveryStatus.statusName + '</div>';
                                             } else if(smsObject.smsDeliveryStatus.statusId == 2){
-                                                return '<div class="mLabel" style="width:100%; color: #2ec866; font-weight: bold" >'+ smsObject.smsDeliveryStatus.statusName + '</div>';
+                                                 return '<div class="mLabel" style="width:100%; color: #2ec866; font-weight: bold" >'+ smsObject.smsDeliveryStatus.statusName + '</div>';
                                             } else{
                                                 return '<div class="mLabel" style="width:100%; color: red; font-weight: bold" >'+ smsObject.smsDeliveryStatus.statusName + '</div>';
                                             }
@@ -360,13 +367,24 @@ function tabChange2() {
                                     },
                                     'action' : function() {
                                         var actionBtn = '-';
-                                        if(workflowObj.extraData.workflowStatus != null && workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED){
-                                            actionBtn = '<div class="mLabel" id="candidate_action_'+ workflowObj.candidate.candidateId +'"  style="width:100%" >'
-                                                + '<span class="customBtn btnGreen" onclick="acceptAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId  + ');" >Accept</span>'
-                                                + '<span class="customBtn btnRed" onclick="rejectAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId  + ');" >Reject</span>'
-                                                + '<span class="customBtn btnOrange" onclick="rescheduleAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId  + ');">Reschedule</span>'
-                                                + '</span>';
+                                        if(workflowObj.extraData.workflowStatus != null){
+                                            if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_INTERVIEW_SCHEDULED){
+                                                actionBtn = '<div class="mLabel" id="candidate_action_'+ workflowObj.candidate.candidateId +'"  style="width:100%" >'
+                                                    + '<span class="customBtn btnGreen" onclick="acceptAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId + ');" >' +
+                                                        '<img src="/assets/recruiter/img/icons/tick.svg" width="16px" style="margin-top: -4px; padding-right: 6px">Accept</span>'
 
+                                                    + '<span class="customBtn btnRed" onclick="rejectAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId + ');" >' +
+                                                        '<img src="/assets/recruiter/img/icons/cross.svg" width="16px" style="margin-top: -4px; padding-right: 6px">Reject</span>'
+
+                                                    + '<span class="customBtn btnOrange" onclick="rescheduleAction(' + workflowObj.candidate.candidateId + ', ' + workflowObj.extraData.interviewDate + ', ' + workflowObj.extraData.interviewSlot.interviewTimeSlotId + ');">' +
+                                                        '<img src="/assets/recruiter/img/icons/history.svg" width="16px" style="margin-top: -4px; padding-right: 6px">Reschedule</span>'
+                                                    + '</span>';
+                                            } else if(workflowObj.extraData.workflowStatus.statusId == JWF_STATUS_PRESCREEN_COMPLETED){
+                                                actionBtn = '<div class="mLabel" id="candidate_action_'+ workflowObj.candidate.candidateId +'"  style="width:100%" >'
+                                                    + '<span class="customBtn btnBlue" onclick="initInterviewModal(' + workflowObj.candidate.candidateId + ', ' + jobPostId + ', ' +  false + ', ' + false + ')">' +
+                                                        '<img src="/assets/recruiter/img/icons/history.svg" width="16px" style="margin-top: -4px; padding-right: 6px">Schedule Interview</span>'
+                                                    + '</span>';
+                                            }
                                         }
 
                                         return actionBtn;
@@ -462,9 +480,11 @@ function tabChange3() {
                     if(returnedData == 0){
                         logoutRecruiter();
                     } else{
+                        $("#confirmedApplications").show();
                         var applicationList = returnedData.applicationList;
+                        var returned_data = new Array();
+
                         if(applicationList.length > 0) {
-                            var returned_data = new Array();
                             applicationList.forEach(function (workflowObj) {
                                 returned_data.push({
                                     'candidateId' : workflowObj.candidate.candidateId,
@@ -506,12 +526,14 @@ function tabChange3() {
                                             } else{
                                                 if(workflowObj.extraData.round > 1){
                                                     return '<div class="mLabel" >'
-                                                        + '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openFeedbackModal('+ workflowObj.candidate.candidateId +')" >Add Feedback</span>'
+                                                        + '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openFeedbackModal('+ workflowObj.candidate.candidateId +')" >' +
+                                                            '<img src="/assets/recruiter/img/icons/add.svg" width="16px" style="margin-top: -4px; padding-right: 6px">Add Feedback</span>'
                                                         + '<span class="customBtn btnOrange" id="previousFeedbackBtn" style="cursor: pointer;" onclick="openPreviousFeedbackModal('+ workflowObj.candidate.candidateId +')" >View</span>'
                                                         + '</div>';
                                                 } else{
                                                     return '<div class="mLabel" >'
-                                                        + '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openFeedbackModal('+ workflowObj.candidate.candidateId +')" >Add Feedback</span>'
+                                                        + '<span class="customBtn btnGreen" style="cursor: pointer" onclick="openFeedbackModal('+ workflowObj.candidate.candidateId +')" >' +
+                                                            '<img src="/assets/recruiter/img/icons/tick.svg" width="16px" style="margin-top: -4px; padding-right: 6px">Add Feedback</span>'
                                                         + '</div>';
                                                 }
                                             }
@@ -525,10 +547,11 @@ function tabChange3() {
                             });
 
                             $("#confirmedApplicationContainer").show();
-                            return returned_data;
                         } else{
+                            $("#confirmedApplicationContainer").hide();
                             $("#noConfirmedApplications").show();
                         }
+                        return returned_data;
                     }
                 }
             },
@@ -615,15 +638,16 @@ function processDataInterviewStatus(returnedData) {
         if(globalInterviewStatus == 1){
             $("#" + globalCandidateId).remove();
             notifySuccess("Interview Confirmed"); //accepted
+
         } else if(globalInterviewStatus == 2){ //rejected by recruiter
             $("#candidate_action_" + globalCandidateId).html('');
             $("#candidate_action_" + globalCandidateId).html("Rejected");
             $("#modalRejectReason").closeModal();
             notifySuccess("Interview Rejected");
+
         } else if(globalInterviewStatus == 3){
             notifySuccess("Interview Rescheduled");
-            $("#candidate_action_" + globalCandidateId).html('');
-            $("#candidate_action_" + globalCandidateId).html("Rescheduled");
+            $("#" + globalCandidateId).remove();
         }
     } else{
         notifyError("Something went wrong. Please try again later. Refreshing page..");
@@ -936,7 +960,6 @@ function processDataBulkSms(returnedData) {
 }
 
 function processDataUpdateFeedBack(returnedData) {
-    console.log(returnedData);
     if(returnedData == 1){
         if(nextRound == true){
             notifySuccess("Feedback updated successfully. Candidate selected for next round");
@@ -964,6 +987,7 @@ function hideTab2() {
 }
 
 function hideTab3() {
+    $("#confirmedApplications").hide();
     $("#noConfirmedApplications").hide();
     $("#confirmedApplicationContainer").hide();
 }

@@ -180,7 +180,7 @@ public class PartnerController {
         Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
         if(partner != null){
             partnerProfileRequest.setPartnerMobile(partner.getPartnerMobile());
-            return ok(toJson(PartnerService.createPartnerProfile(partnerProfileRequest, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE, ServerConstants.UPDATE_BASIC_PROFILE)));
+            return ok(toJson(PartnerService.updatePartnerProfile(partnerProfileRequest, InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE, ServerConstants.UPDATE_BASIC_PROFILE)));
         } else{
             return ok("0");
         }
@@ -188,7 +188,7 @@ public class PartnerController {
 
     public static Integer checkCandidateExistence(Partner partner, String mobile){
         Integer response = ServerConstants.STATUS_NO_CANDIDATE;
-        Candidate candidate = Candidate.find.where().eq("CandidateMobile", mobile).findUnique();
+        Candidate candidate = Candidate.find.where().eq("CandidateMobile", mobile).setMaxRows(1).findUnique();
         if(candidate != null){
 
             //candidate exists! getting partnerToCompany list

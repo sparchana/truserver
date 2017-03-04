@@ -18,7 +18,7 @@ var zapp = (function () {
                 if(zapp.recruiterId == null) {
                     zapp.method.setRecruiterId();
                 }
-                zapp.get.allJobPosts();
+                zapp.get.allEmployee();
             },
             setRecruiterId: function () {
                 zapp.recruiterId = parseInt(window.location.search.split("&")[1].split("=")[1]);
@@ -102,7 +102,7 @@ var zapp = (function () {
             }
         },
         get: {
-            allJobPosts: function () {
+            allEmployee: function () {
                 zapp.render.jobPostDataTable();
             }
         }

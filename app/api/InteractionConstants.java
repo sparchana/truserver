@@ -51,6 +51,7 @@ public class InteractionConstants {
     public static final String INTERACTION_RESULT_EXISTING_JOB_POST_UPDATED = "Existing Job post updated";
     public static final String INTERACTION_RESULT_NEW_RECRUITER_LEAD_ADDED = "New Recruiter Lead made contact";
     public static final String INTERACTION_RESULT_EXISTING_RECRUITER_MADE_CONTACT = "Existing Recruiter Lead made contact";
+    public static final String INTERACTION_RESULT_EMPLOYEE_BULK_UPLOAD_VIA_RECRUITER = "Recruiter Bulk Upload Employee/Partner";
 
     public static final String INTERACTION_RESULT_RECRUITER_AUTO_ACCEPT_JOB_INTERVIEW_DATE = "Recruiter has enabled auto-confirm for interview date and time";
     public static final String INTERACTION_RESULT_RECRUITER_ACCEPT_JOB_INTERVIEW_DATE = "Recruiter accepts interview date and time";
@@ -84,6 +85,7 @@ public class InteractionConstants {
     public static final String INTERACTION_CREATED_SYSTEM = "System";
     public static final String INTERACTION_CREATED_SYSTEM_KNOWLARITY = "System - Knowlarity";
     public static final String INTERACTION_CREATED_PARTNER = "Partner";
+    public static final String INTERACTION_CREATED_RECRUITER = "Recruiter";
 
     public static final String INTERACTION_CREATED_ERROR = "Error";
     public static final String INTERACTION_NOTE_DUMMY_PASSWORD_CREATED = "Candidate got Registered with Mandatory Info and dummy password by system";
@@ -187,6 +189,7 @@ public class InteractionConstants {
     public static final int INTERACTION_TYPE_APPLY_JOB_VIA_CALL_TO_APPLY = 71;
 
     public static final int INTERACTION_TYPE_CANDIDATE_FEEDBACK_NEXT_ROUND = 72;
+    public static final int INTERACTION_TYPE_RECRUITER_CREATED_EMPLOYEE = 74;
 
     public static final Map<Integer, String> INTERACTION_CHANNEL_MAP = new HashMap<>();
 
@@ -261,6 +264,7 @@ public class InteractionConstants {
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_TRIED_JOB_APPLY_IN_SHORT, "Tried to Apply Via ApplyInShort URL");
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_APPLIED_JOB_IN_SHORT, "Applied to job Via ApplyInShort");
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_APPLY_JOB_VIA_CALL_TO_APPLY, "Applied to job Via call to apply");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_RECRUITER_CREATED_EMPLOYEE, "Private Recruiter Created Private Employee");
 
         //channel map
         INTERACTION_CHANNEL_MAP.put(INTERACTION_CHANNEL_CANDIDATE_WEBSITE, "Candidate via Website");

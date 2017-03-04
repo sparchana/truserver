@@ -39,10 +39,7 @@ function processDataForCSV(returnedData) {
     $("#loadSpinner").hide();
     $(".textResponse").html("");
 
-    if(returnedData.totalJobsCreated == 0) {
-        notifyError("0 jobs uploaded");
-    } else if(returnedData.totalJobsCreated > 0) {
-
+    if(returnedData != '0'){
         $("#uploadCount").html(returnedData.totalJobsUploaded);
         $("#successCount").html(returnedData.totalJobsCreated);
         $("#failedCount").html(returnedData.totalJobsUploaded - returnedData.totalJobsCreated);
@@ -78,6 +75,6 @@ function closeErrorReportModal() {
     $("#postedJobTable").hide();
 
     //fetch all the jobs
-    getRecruiterJobPost();
+    getRecruiterJobPosts();
 //    location.reload();
 }

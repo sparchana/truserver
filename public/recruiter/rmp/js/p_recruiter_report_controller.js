@@ -18,7 +18,7 @@ var zapp = (function () {
         method: {
             init: function () {
                 zapp.render.dateTimeRange();
-                zapp.get.allJobPosts();
+                zapp.get.allEmployee();
             },
             generateCSVString: function () {
                 var json = zapp.rows;
@@ -45,7 +45,7 @@ var zapp = (function () {
                     maxDate: moment()
                 });
             },
-            recruiterDataTable: function () {
+            employeeDataTable: function () {
                 try {
                     var table = $('table#recruiterTable').DataTable({
                         "ajax": {
@@ -111,8 +111,8 @@ var zapp = (function () {
             }
         },
         get: {
-            allJobPosts: function () {
-                zapp.render.recruiterDataTable();
+            allEmployee: function () {
+                zapp.render.employeeDataTable();
             }
         }
     };
@@ -126,7 +126,7 @@ var zapp = (function () {
         zapp.startDate = picker.startDate.format('YYYY-MM-DD');
         zapp.endDate = picker.endDate.format('YYYY-MM-DD');
 
-        zapp.render.recruiterDataTable();
+        zapp.render.employeeDataTable();
     });
 
     $('input[name="datefilter"]').on('cancel.daterangepicker', function(ev, picker) {
@@ -135,7 +135,7 @@ var zapp = (function () {
         zapp.startDate = null;
         zapp.endDate = null;
 
-        zapp.render.recruiterDataTable();
+        zapp.render.employeeDataTable();
     });
 
     return zapp;

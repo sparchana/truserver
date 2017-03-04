@@ -159,7 +159,7 @@ GET         /getRecruiterProfileInfo                                      contro
 GET         /recruiter/profile                                            controllers.RecruiterController.recruiterEditProfile()
 GET         /recruiter/candidateSearch                                    controllers.RecruiterController.recruiterCandidateSearch(jpId: java.lang.Long ?= null)
 GET         /recruiter/allRecruiterJobPosts                               controllers.RecruiterController.renderAllRecruiterJobPosts
-GET         /recruiter/jobPostTrack/:id                                   controllers.RecruiterController.renderJobPostTrack(id : Long)
+GET         /recruiter/jobPostTrack/:id/:v                                controllers.RecruiterController.renderJobPostTrack(id : Long, v : String)
 GET         /recruiter/unlockedCandidates                                 controllers.RecruiterController.renderAllUnlockedCandidates
 GET         /recruiter/jobApplicants/:id                                  controllers.RecruiterController.renderAllApplications(id : Long)
 GET         /recruiterNavbar                                              controllers.RecruiterController.recruiterNavbar()
@@ -170,6 +170,8 @@ GET         /checkPrivateRecruiterPartnerAccount                          contro
 GET         /switchToPartner                                              controllers.RecruiterController.switchToPartner()
 GET         /recruiter/getNextRoundComponents/:jpId                       controllers.RecruiterController.getNextRoundComponents(jpId: Long)
 GET         /recruiter/getPrevRounds                                      controllers.RecruiterController.getPreviousRounds(jpId: java.lang.Long ?= null, cId: java.lang.Long ?= null)
+GET         /recruiter/getAllEmployee                                     controllers.RecruiterController.getAllEmployee()
+GET         /recruiter/employee                                           controllers.RecruiterController.employeeView(jpId: String ?= null)
 
 #Temp route delete after use
 GET         /recruiter/job/candidateModal                                 controllers.RecruiterController.recruiterCandidateModal()
@@ -177,7 +179,7 @@ GET         /recruiter/getCandidateInfo/:id                               contro
 
 POST        /showRecruiterLead/:id                                        controllers.RecruiterController.readRecruiterLead(id: Long)
 POST        /getAllJobApplicants/:id                                      controllers.RecruiterController.getAllJobApplicants(id : Long)
-POST        /getAllRecruiterJobPosts                                      controllers.RecruiterController.getAllRecruiterJobPosts()
+POST        /getAllRecruiterJobPosts/                                     controllers.RecruiterController.getAllRecruiterJobPosts(view: Integer ?= null)
 POST        /getRecruiterCredits/:id                                      controllers.RecruiterController.getRecruiterCredits(id : Long)
 POST        /getAllCreditCategory                                         controllers.RecruiterController.getAllCreditCategory()
 POST        /recruiter/unlockCandidateContact/:id                         controllers.RecruiterController.unlockCandidateContact(id : Long)
@@ -203,6 +205,8 @@ POST        /getSentSms/                                                  contro
 POST        /getAppliedCandidates/                                        controllers.RecruiterController.getAppliedCandidates(jpId: java.lang.Long ?= null)
 POST        /getConfirmedApplication/                                     controllers.RecruiterController.getConfirmedApplication(jpId: java.lang.Long ?= null)
 POST        /getFetchedCandidateData                                      controllers.RecruiterController.getFetchedCandidateData()
+POST        /recruiter/uploadEmployee                                     controllers.RecruiterController.uploadEmployee()
+POST        /recruiter/bulkSendSmsEmployee                                controllers.RecruiterController.bulkSendSmsEmployee()
 
 # Recruiter SuperAdmin API
 # ~~~~~~~~~~~~~
@@ -340,6 +344,8 @@ GET         /addressResolver/                                             contro
 # GET         /testNewPS                                                    controllers.TestController.testNewPS(jobPostId: java.lang.Long ?=null, candidateId:java.lang.Long ?=null)
 # GET         /testResponse                                                 controllers.TestController.testApplyInShortResponse()
 # GET         /isPrivate/:mobile                                            controllers.TestController.isPrivate(mobile: String)
+GET          /testUploadEmployeeCSV                                         controllers.TestController.renderEmployeeCSVUpload()
+POST         /testProcessEmployeeCSV                                        controllers.TestController.processEmployeeCSV()
 
 # Scrap API
 # ~~~~~~~~~~~~~

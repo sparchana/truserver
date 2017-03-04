@@ -10,7 +10,7 @@ import static api.InteractionConstants.*;
  * Created by adarsh on 12/9/16.
  */
 public class PartnerInteractionService {
-    public static void createInteractionForPartnerSignUp(String objectAUUId, String result, Integer interactionType) {
+    public static void createInteractionForPartnerSignUp(String objectAUUId, String result, Integer interactionType, int channel) {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_PARTNER,
@@ -18,7 +18,22 @@ public class PartnerInteractionService {
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
                 InteractionConstants.INTERACTION_CREATED_SELF,
-                InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE
+                channel
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
+    public static void createInteractionForPartnerSignUp(String objectAUUId, String objectBUUId, int channel) {
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_PARTNER,
+                objectBUUId,
+                ServerConstants.OBJECT_TYPE_RECRUTER,
+                InteractionConstants.INTERACTION_TYPE_RECRUITER_CREATED_EMPLOYEE,
+                InteractionConstants.INTERACTION_NOTE_BLANK,
+                INTERACTION_TYPE_MAP.get(InteractionConstants.INTERACTION_TYPE_RECRUITER_CREATED_EMPLOYEE),
+                InteractionConstants.INTERACTION_CREATED_RECRUITER,
+                channel
         );
         InteractionService.createInteraction(interaction);
     }
