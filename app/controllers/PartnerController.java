@@ -294,19 +294,19 @@ public class PartnerController {
         //if the partner is a private partner
         if(isPrivatePartner || autoVerify){
 
-            if(isNewCandidate){
-                //auto verifying candidate profile as it is created via private partner
-                Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
-                if(existingAuth != null){
-                    existingAuth.setAuthStatus(ServerConstants.CANDIDATE_STATUS_VERIFIED);
-                    existingAuth.update();
+            //auto verifying candidate profile as it is created via private partner
+            Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
+            if(existingAuth != null){
+                existingAuth.setAuthStatus(ServerConstants.CANDIDATE_STATUS_VERIFIED);
+                existingAuth.update();
+                if(isNewCandidate) {
                     CandidateService.sendDummyAuthForCandidateByPartner(existingCandidate);
-                    String objAUUID = existingCandidate.getCandidateUUId();
-                    String objBUUID = partner.getPartnerUUId();
-
-                    //creating interaction
-                    PartnerInteractionService.createInteractionForPartnerVerifyingCandidate(objAUUID, objBUUID, partner.getPartnerFirstName());
                 }
+                String objAUUID = existingCandidate.getCandidateUUId();
+                String objBUUID = partner.getPartnerUUId();
+
+                //creating interaction
+                PartnerInteractionService.createInteractionForPartnerVerifyingCandidate(objAUUID, objBUUID, partner.getPartnerFirstName());
             }
 
             if(isPrivatePartner){
