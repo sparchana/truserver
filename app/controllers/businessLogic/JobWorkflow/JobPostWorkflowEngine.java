@@ -3145,10 +3145,13 @@ public class JobPostWorkflowEngine {
 
             interviewRound = jobPostWorkflowNew.getInterviewRound() + 1;
 
+/*
             int jwfStatus = jobPostWorkflowCurrent.getJobPost().getReviewApplication()
                     == ServerConstants.REVIEW_APPLICATION_AUTO ?
                        ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED : ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED;
-
+*/
+            // Always auto-confirm interviews from Round 2 onwards 
+            int jwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
             saveNewJobPostWorkflow(jobPostWorkflowNew, jobPostWorkflowNew.getStatus().getStatusId(),
                     jwfStatus, slotId,
                     interviewDate, channel, interviewRound, interviewRecruiter,

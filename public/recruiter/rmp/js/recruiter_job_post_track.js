@@ -314,7 +314,10 @@ function tabChange2() {
                                 returned_data.push({
                                     'candidateId' : workflowObj.candidate.candidateId,
                                     'date' : function() {
-                                        var postedOn = new Date(workflowObj.extraData.creationTimestamp);
+                                        if(workflowObj.appliedOn) {
+                                            var postedOn = new Date(workflowObj.appliedOn);
+                                        }
+                                        else var postedOn = new Date(workflowObj.extraData.creationTimestamp);
                                         var dateVal = ('0' + postedOn.getDate()).slice(-2) + '-' + getMonthVal((postedOn.getMonth()+1)) + '-' + postedOn.getFullYear()
                                         return '<div class="mLabel" style="width:100%" >'+ dateVal + '</div>'
                                     },
@@ -489,7 +492,10 @@ function tabChange3() {
                                 returned_data.push({
                                     'candidateId' : workflowObj.candidate.candidateId,
                                     'date' : function() {
-                                        var postedOn = new Date(workflowObj.extraData.creationTimestamp);
+                                        if(workflowObj.appliedOn) {
+                                            var postedOn = new Date(workflowObj.appliedOn);
+                                        }
+                                        else var postedOn = new Date(workflowObj.extraData.creationTimestamp);
                                         var dateVal = ('0' + postedOn.getDate()).slice(-2) + '-' + getMonthVal((postedOn.getMonth()+1)) + '-' + postedOn.getFullYear()
                                         return '<div class="mLabel" style="width:100%" >'+ dateVal + '</div>'
                                     },
