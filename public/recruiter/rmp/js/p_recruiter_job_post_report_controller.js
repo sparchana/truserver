@@ -60,7 +60,7 @@ var zapp = (function () {
 
                                     returned_data.push({
                                         'jobTitle': function () {
-                                            return '<div class="mLabel" style="width:100%"><a href="/recruiter/jobPostTrack/'+response.jobPostId + '">'+response.jobTitle+'</div>';
+                                            return '<div class="mLabel" style="width:100%"><a href="/recruiter/jobPostTrack/'+response.jobPostId + '/i">'+response.jobTitle+'</div>';
                                         },
                                         'jobPostedOn': response.jobPostedOn,
                                         'fulfillment': response.percentageFulfillment,
